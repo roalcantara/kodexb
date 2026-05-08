@@ -23,10 +23,10 @@ description: >
 | Validation  | `elysia` → `t` (TypeBox)       | Runtime validation at transport     |
 | Client      | `@elysiajs/eden` (Treaty)      | Auto-generated type-safe client     |
 | DB schemas  | `drizzle-typebox`              | Derive TypeBox from Drizzle tables  |
-| Domain      | `zod`                          | YAML parsing, core invariants only  |
+| Domain      | `@sinclair/typebox`            | YAML parsing, core invariants       |
 
-**Rule:** Zod lives in `src/core/` and `src/shell/app/db/import.service.ts`.
-TypeBox (via Elysia `t`) lives at the transport layer exclusively.
+**Rule:** TypeBox is the sole validation library. `*.schema.ts` files contain
+shapes; `*.parser.ts` files contain coercion logic and custom error messages.
 
 ---
 
@@ -128,6 +128,6 @@ same `AppService`, no mock logic.
   different from `t.Union([T, t.Null()])` which allows `null` as a value.
 - `drizzle-typebox` schemas include all columns including auto-generated ones
   (`id`, `created_at`). Wrap in `t.Pick()` when the endpoint only needs a subset.
-- Do NOT use `zod` for Elysia route validation — TypeBox only at the transport layer.
+- Do NOT mix validation libraries in routes or domain modules — TypeBox only.
 - The Elysia app is the **only** place where `AppService` methods are called from
   the main process toward the renderer — no direct module imports cross the boundary.
