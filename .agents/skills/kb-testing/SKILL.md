@@ -1,56 +1,156 @@
 ---
 name: kb-testing
 description: >
-  Load this skill before writing or modifying any test in the kb codebase —
-  unit tests, integration tests, renderer component specs, or Elysia RPC
-  handler tests. It defines the no-mock rule (real implementations with
-  controlled inputs, always), the drizzle-seed fixture pattern for in-memory
-  SQLite, Happy-DOM setup for React components, the server.handle() pattern
-  for RPC route testing, and coverage requirements (≥ 80%). Load it even for
-  small test fixes — wrong patterns (mocking AppService, using a real SQLite
-  file, creating real HTTP ports) compound fast and are expensive to unwind.
+  Use when writing or modifying any test in the kb codebase — unit specs,
+  integration specs, renderer component specs, Elysia RPC handler tests, or
+  pure FCIS core/domain specs. Triggers on: adding a function/component
+  without a co-located spec, fixing a flaky test, lowering coverage,
+  choosing a fixture pattern, debugging a test that needs `await` or
+  `beforeEach` for code that should be pure. Load it even for small fixes —
+  wrong patterns (mocking AppService, real SQLite files, real HTTP ports,
+  factories where domain validation matters) compound fast.
 ---
 
 # kb Testing Conventions
 
-## Runner & Framework
+## Overview
+
+Three guides govern testing in this repo. They are the source of truth — if
+this skill ever disagrees, the guides win:
+
+- [`assets/guides/TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md) — Bun
+  test runner, Better Specs conventions, no-mock rule.
+- [`assets/guides/FISHERY_GUIDE.md`](../../../assets/guides/FISHERY_GUIDE.md) — typed
+  factories via `factoryFor` from the `@testing` alias.
+- [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md) — pure
+  core specs: no setup, no mocks, no async.
+
+The kb test contract in one sentence: **`bun:test` only, co-located specs,
+real implementations with controlled inputs, factories from `@testing`,
+in-memory SQLite, ≥ 80% coverage.**
+
+## Runner
 
 ```bash
-bun test                   # run all specs
+bun test                   # all specs
 bun test --watch           # watch mode
-bun test src/shell/app/    # run subset
+bun test src/shell/app/    # subset
+bun test --coverage        # coverage report
 ```
 
-Use `bun:test` only — no Jest, Vitest, or Mocha.
+Use `bun:test` exclusively — never Jest, Vitest, or Mocha.
 
----
+## File location & naming
 
-## Test File Location
+Co-locate every spec next to its source. Suffix follows
+[`assets/guides/CODESTYLE_GUIDE.md`](../../../assets/guides/CODESTYLE_GUIDE.md)
+§Test files (machine-checked by ls-lint):
 
-Co-locate every spec next to its source file:
+| Source file                             | Spec file                                    |
+| --------------------------------------- | -------------------------------------------- |
+| `src/shell/app/app.service.ts`          | `src/shell/app/app.service.spec.ts`          |
+| `src/shell/renderer/list.page.tsx`      | `src/shell/renderer/list.page.spec.tsx`      |
+| `src/core/domain/guards/entry.guard.ts` | `src/core/domain/guards/entry.guard.spec.ts` |
+| `src/shared/utils/crc32.util.ts`        | `src/shared/utils/crc32.util.spec.ts`        |
+| End-to-end                              | `<name>.e2e.spec.ts`                         |
 
+Role suffixes survive into the spec name (`use_list_selection.hook.spec.tsx`,
+`task_state.util.spec.ts`). Plain `.test.ts` is **banned**.
+
+## Better Specs conventions
+
+[`TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md) §Better Specs is
+the canonical list; the rules that bite most often:
+
+| Rule                                             | Example                                                |
+| ------------------------------------------------ | ------------------------------------------------------ |
+| `.` for class methods, `#` for instance methods  | `describe('.create')`, `describe('#validate')`         |
+| Inner `describe` starts with "when/with/without" | `describe('when resource is found', …)`                |
+| Description ≤ 40 characters                      | `it('returns user data')` — split with nested describe |
+| Never use "should" / present tense, third person | `it('creates a new user')`, not `it('should create…')` |
+| One expectation per unit test                    | Multiple expectations only in slow integration tests   |
+| Test valid + edge + invalid cases                | `when found / when not found / when forbidden`         |
+| Use factories, not fixtures                      | `factoryFor('bookmark', { overrides: … })`             |
+| Use readable matchers                            | `toHaveLength(3)` not `length === 3`                   |
+
+## Table-driven tests
+
+The canonical kb shape (matches `TESTING_GUIDE.md` §Recommended Patterns):
+
+```ts
+import { describe, it, expect } from 'bun:test'
+import { normalizeLinks } from './normalize_links.parser'
+
+describe('normalizeLinks', () => {
+  const cases = [
+    { name: 'single URL string', input: 'https://example.com',
+      want: [{ title: 'https://example.com', url: 'https://example.com' }] },
+    { name: 'array of URLs', input: ['https://a.com', 'https://b.com'],
+      want: [
+        { title: 'https://a.com', url: 'https://a.com' },
+        { title: 'https://b.com', url: 'https://b.com' }
+      ] },
+    { name: 'empty array', input: [], want: [] }
+  ]
+
+  for (const { name, input, want } of cases) {
+    it(name, () => {
+      expect(normalizeLinks(input)).toEqual(want)
+    })
+  }
+})
 ```
-src/shell/app/app.ts          → src/shell/app/app.spec.ts
-src/shell/renderer/list.page.tsx → src/shell/renderer/list.page.spec.tsx
-src/shell/main/rpc/server.ts  → src/shell/main/rpc/server.spec.ts
+
+Use `it.each([...])` only when the input/output shape is identical across
+rows; otherwise prefer the `for` loop pattern above for readability.
+
+## No-mock rule
+
+[`TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md) §❌ Sparingly Use
+Mocking Policy: never use `mock()`, `spyOn()`, or `mock.module()` for
+internal code. The codebase is built around dependency injection.
+
+| Instead of mocking…     | Do this instead                                |
+| ----------------------- | ---------------------------------------------- |
+| `AppService`            | Instantiate with an in-memory DB fixture       |
+| SQLite DB               | `new Database(':memory:')` + factories         |
+| File system             | `createTempDir()` from `@testing`              |
+| `fetch` / network       | `data:` URIs or a local `Bun.serve()` fixture  |
+| Clipboard / OS adapters | A real test-double class implementing the port |
+
+Acceptable mock targets (TESTING_GUIDE §11): external HTTP services, slow
+operations a unit test must skip, non-deterministic behavior (random
+values, timestamps).
+
+## Test fixtures — Fishery preferred, drizzle-seed for raw schema
+
+### Fishery `factoryFor` (preferred — domain rows)
+
+[`FISHERY_GUIDE.md`](../../../assets/guides/FISHERY_GUIDE.md) is the canonical
+reference. Use this for `Knowledge` variants (bookmark/command/cheat/task),
+`Env`, `RawConfig`, `LoadedConfig`, and any other typed object that must
+satisfy domain validation.
+
+```ts
+import { factoryFor } from '@testing'
+
+const row = factoryFor('bookmark', { overrides: { desc: 'admin flow' } })
+const cfg = factoryFor('loadedConfig', {
+  overrides: { display: { pageSize: 5 } }
+})
+const trio = factoryFor('bookmark', { overrides: { tags: ['x'] } }) // single
+const list = Array.from({ length: 3 }, () => factoryFor('bookmark'))  // many
 ```
 
----
+The wrapper accepts either a plain partial OR
+`{ overrides?, associations?, transient?, afterBuild? }`. Defaults are
+declared in `src/__tests__/factories/factories.builder.ts`.
 
-## No-Mock Rule
+### drizzle-seed (secondary — raw schema seeding only)
 
-**Do not mock real implementations.** Use real code with controlled inputs.
-
-| Instead of mocking…       | Do this instead                              |
-|---------------------------|----------------------------------------------|
-| `AppService`              | Instantiate with an in-memory DB fixture     |
-| SQLite DB                 | `new Database(':memory:')` + drizzle-seed    |
-| File system               | `createTempDir()` helper from `@testing`     |
-| `fetch` / network         | `data:` URIs or a local Bun.serve() fixture  |
-
----
-
-## In-Memory SQLite + drizzle-seed
+Use only when you need bulk-shaped DB rows that bypass domain validation
+(e.g. seeding 100 rows for a pagination integration test). Prefer
+`createSeededMemoryDb` from `@testing` if a helper already exists.
 
 ```ts
 import { drizzle } from 'drizzle-orm/bun-sqlite'
@@ -58,120 +158,214 @@ import { Database } from 'bun:sqlite'
 import { seed } from 'drizzle-seed'
 import * as schema from '@db/schema'
 
-async function createTestDb() {
-  const sqlite = new Database(':memory:')
-  const db = drizzle(sqlite, { schema })
-  // Run migrations
-  // (or use the migrate helper from src/shell/app/db/index.ts)
-  await seed(db, schema).refine((f) => ({
-    knowledges: {
-      count: 10,
-      with: {
-        type: f.valuesFromArray({ values: ['bookmark', 'command', 'cheat', 'task'] }),
-        tags: f.json(),
-      }
-    }
-  }))
-  return { db, sqlite }
-}
+const sqlite = new Database(':memory:')
+const db = drizzle(sqlite, { schema })
+await seed(db, schema, { seed: 42 }).refine((f) => ({
+  knowledges: { count: 100, with: { type: f.valuesFromArray({
+    values: ['bookmark', 'command', 'cheat', 'task']
+  }) } }
+}))
 ```
 
-Use `afterEach(() => sqlite.close())` to release the in-memory DB.
+Always pass a `seed` value for reproducible sequences.
 
----
+> **Note:** `CLAUDE.md` currently says "Never fishery." That contradicts
+> [`TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md) and
+> [`FISHERY_GUIDE.md`](../../../assets/guides/FISHERY_GUIDE.md), which mandate
+> Fishery. The guides win — Fishery is the default. The CLAUDE.md line is
+> a known drift item to fix separately.
 
-## AppService Test Fixture
+## In-memory SQLite via `@testing`
+
+`@testing` (mapped in `tsconfig.json` to `src/__tests__/index.ts`) re-exports
+the canonical helpers:
+
+| Export                      | Role                                                                |
+| --------------------------- | ------------------------------------------------------------------- |
+| `factoryFor`                | Typed factories for `Knowledge`, `Env`, `RawConfig`, `LoadedConfig` |
+| `testingPaths`              | Absolute paths under `src/__tests__/fixtures/`                      |
+| `minimalEntriesYml`         | Path to the minimal YAML import fixture                             |
+| `createSeededMemoryDb`      | Drizzle on `:memory:` SQLite, FTS-ready                             |
+| `seedMinimalFixture`        | Run the YAML → DB import path against `:memory:`                    |
+| `readMinimalFixtureEntries` | Parse YAML directly without DB                                      |
+| `createTempDir`             | `mkdtemp` + `cleanup()` for disk-backed integration                 |
+| `createFactoryFor`          | Low-level builder when adding a new factory module                  |
 
 ```ts
-import { AppService } from '@app/app'
-import type { LoadedConfig } from '@app/config/config.loader'
+import { afterEach, beforeEach, describe, it, expect } from 'bun:test'
+import { createSeededMemoryDb } from '@testing'
 
-async function appFixture(): Promise<{ app: AppService; dbPath: string }> {
+describe('EntryRepository', () => {
+  let db: Awaited<ReturnType<typeof createSeededMemoryDb>>
+
+  beforeEach(async () => { db = await createSeededMemoryDb() })
+  afterEach(() => db.sqlite.close())
+
+  describe('#findByType', () => {
+    it('returns matching rows', async () => {
+      const rows = await db.repo.findByType('bookmark')
+      expect(rows).toHaveLength(1)
+    })
+  })
+})
+```
+
+## AppService fixture
+
+```ts
+import { AppService } from '@app/app.service'
+import { factoryFor, createTempDir } from '@testing'
+import path from 'node:path'
+
+async function appFixture() {
   const tmp = await createTempDir()
-  const dbPath = path.join(tmp.dir, 'kb.sqlite')
-  const config: LoadedConfig = {
-    configPath: path.join(tmp.dir, 'config.yaml'),
-    database: { path: dbPath },
-    sources: { path: testingPaths.minimal },
-    display: { pageSize: 20 },
-  }
+  const config = factoryFor('loadedConfig', {
+    overrides: {
+      configPath: path.join(tmp.dir, 'config.yaml'),
+      database:   { path: path.join(tmp.dir, 'kb.sqlite') }
+    }
+  })
   const app = new AppService(config)
-  return { app, dbPath }
+  return { app, cleanup: tmp.cleanup }
 }
 ```
 
----
+Always `await cleanup()` in `afterEach` (not `afterAll`) to prevent test
+pollution between cases.
 
-## Renderer (React) Tests
-
-Use `@testing-library/react` + Happy-DOM global registrar.
+## Renderer (React) tests — Happy-DOM + Testing Library
 
 ```ts
-// src/shell/renderer/components/entry-row.component.spec.tsx
-import '@happy-dom/global-registrator'  // once per file or in preload
+// src/shell/renderer/components/list/entry_row.component.spec.tsx
+import '@happy-dom/global-registrator'
+import { describe, it, expect } from 'bun:test'
 import { render, screen } from '@testing-library/react'
-import { EntryRow } from './entry-row.component'
+import { factoryFor } from '@testing'
+import { EntryRow } from './entry_row.component'
 
-test('shows entry key', () => {
-  render(<EntryRow entry={mockEntry} />)
-  expect(screen.getByText(mockEntry.key)).toBeInTheDocument()
+describe('EntryRow', () => {
+  describe('when entry is a bookmark', () => {
+    it('shows the entry key', () => {
+      const entry = factoryFor('bookmark')
+      render(<EntryRow entry={entry} />)
+      expect(screen.getByText(entry.key)).toBeInTheDocument()
+    })
+  })
 })
 ```
 
-For components that call `rpc.*`, provide a thin stub via React context —
-this is the **only** place where a controlled double is acceptable (the
-real Eden Treaty client requires a running Elysia server).
+For components that call `rpc.*`, wrap with a controlled `RpcContext` stub —
+this is the **only** acceptable controlled double, because the real Eden
+Treaty client requires a running Elysia server:
 
-```ts
-// In tests: wrap with <RpcContext.Provider value={fakeRpc}>
-const fakeRpc = {
-  list: { get: async () => ({ data: [], error: null }) }
-}
+```tsx
+const fakeRpc = { list: { get: async () => ({ data: [], error: null }) } }
+render(
+  <RpcContext.Provider value={fakeRpc}>
+    <ListPage />
+  </RpcContext.Provider>
+)
 ```
 
----
+For asynchronous side-effects, await `act` to flush React's update queue:
 
-## Elysia RPC Server Tests
+```tsx
+import { act } from '@testing-library/react'
+await act(async () => { /* trigger rpc-driven update */ })
+```
 
-Use `app.handle(request)` — no real HTTP port needed:
+## Elysia RPC tests — `server.handle()`, no real port
 
 ```ts
+import { describe, it, expect } from 'bun:test'
 import { createRpcServer } from '@rpc/server'
-import { appFixture } from '@testing/helpers'
+import { appFixture } from '@testing'
 
-test('GET /list returns entries', async () => {
-  const { app } = await appFixture()
-  const server = createRpcServer(app)
-  const res = await server.handle(new Request('http://localhost/list?limit=5'))
-  expect(res.status).toBe(200)
-  const body = await res.json()
-  expect(Array.isArray(body)).toBe(true)
+describe('GET /list', () => {
+  it('returns entries', async () => {
+    const { app } = await appFixture()
+    const server = createRpcServer(app)
+    const res = await server.handle(new Request('http://localhost/list?limit=5'))
+    expect(res.status).toBe(200)
+    expect(Array.isArray(await res.json())).toBe(true)
+  })
 })
 ```
 
----
+`server.handle()` exercises the same routes the real HTTP listener would,
+without binding a port — fast, parallel-safe, no flakes.
 
-## Coverage Requirement
+## FCIS core specs — no setup, no mocks, no async
 
-≥ 80% line coverage. Check with:
+[`FCIS.guide.md`](../../../assets/guides/FCIS.guide.md) §Testing: pure-core
+tests are the simplest tests in the repo. The litmus test:
+
+> If a test for code in `src/core/` needs `beforeEach`, `afterEach`,
+> `await`, or a mock, the function under test is in the **wrong layer**.
+
+```ts
+import { describe, it, expect } from 'bun:test'
+import { isOverdue } from './task.rule'
+
+describe('isOverdue', () => {
+  const NOW = new Date('2026-06-01T00:00:00Z')
+
+  describe('when due is in the past', () => {
+    it('returns true for non-done tasks', () => {
+      expect(isOverdue({ status: 'todo', dueAt: new Date('2026-05-01') }, NOW))
+        .toBe(true)
+    })
+
+    it('returns false for done tasks', () => {
+      expect(isOverdue({ status: 'done', dueAt: new Date('2026-05-01') }, NOW))
+        .toBe(false)
+    })
+  })
+})
+```
+
+Pass `now` in as a parameter — never call `new Date()` inside core code.
+
+## Coverage requirement
+
+≥ 80% line coverage on changed files (DoD §2):
 
 ```bash
 bun test --coverage
 ```
 
-New code without tests will be flagged by the quality-gate skill.
+Coverage only instruments imported files; orphan source files won't appear
+even when uncovered. Inspect the file list, don't trust the percentage
+alone. New code without a co-located spec is flagged by **kb-quality-gate**
+and blocks the gate.
 
----
+## Common Mistakes
+
+| Failure                                      | Likely cause                          | Fix                                                   |
+| -------------------------------------------- | ------------------------------------- | ----------------------------------------------------- |
+| Test needs `await` for `src/core/` code      | Code does I/O — wrong layer           | Move I/O to `src/shell/`; pass results in             |
+| `bun:test` cannot find `mock.module`         | Trying to mock internal code          | Use DI + a real test double class                     |
+| Real SQLite file persists between tests      | Forgot `:memory:`                     | `new Database(':memory:')` always                     |
+| Coverage drops on a renderer change          | Forgot the spec file                  | Add `<name>.component.spec.tsx` next to source        |
+| `it('should …')` triggers TESTING_GUIDE rule | Using "should" / future tense         | Rewrite in present tense, third person                |
+| Description > 40 chars                       | Single sentence trying to do too much | Split into nested `describe`                          |
+| Multiple `expect` in a unit test             | One test verifying many properties    | One per test (group via nested `describe` blocks)     |
+| Spec ends in `.test.ts`                      | Wrong suffix                          | Rename to `.spec.ts(x)` — ls-lint will fail otherwise |
+| Mocked AppService in a route test            | Trying to skip DB setup               | `appFixture()` from `@testing` — fast, real, no port  |
+| Renderer spec misses `act` for rpc calls     | Forgot to flush React queue           | `await act(async () => { … })`                        |
 
 ## Gotchas
 
-- Happy-DOM must be registered **before** any React imports in the test file.
-  Put it at the top, or use a `preload` script in `bunfig.toml`.
-- `drizzle-seed` generates deterministic data by default — pass a `seed` value
-  for reproducible sequences: `seed(db, schema, { seed: 42 })`.
-- `createTempDir()` returns `{ dir, cleanup }` — always call `await cleanup()`
-  in `afterEach`, not `afterAll`, to prevent test pollution.
-- Do not use `bun:test`'s `mock()` for module-level imports — prefer constructor
-  injection so real implementations can be swapped at instantiation time.
-- Renderer specs that test `rpc.*` side-effects must await the fake rpc promise
-  and flush the React update queue: `await act(async () => { ... })`.
+- `@happy-dom/global-registrator` must be registered **before** any React
+  imports in the test file. Put it at the top, or use a `preload` script in
+  `bunfig.toml` so it applies repo-wide.
+- Fishery sequences are per-factory and per-process. If a spec depends on
+  exact id values, call `rewindSequence()` from Fishery in `beforeEach`.
+- `createTempDir()` returns `{ dir, cleanup }` — always `await cleanup()`
+  in `afterEach`, not `afterAll`, or pollution between cases creeps in.
+- Do not use `bun:test`'s `mock()` for module-level imports — refactor to
+  constructor injection so real implementations swap at instantiation time.
+- For Elysia routes, validate with `t.*` (TypeBox), not Zod. Zod stays in
+  `src/core/` for domain invariants.
+- `factoryFor('knowledge', …)` returns a union — narrow with the type
+  discriminator before asserting type-specific fields.

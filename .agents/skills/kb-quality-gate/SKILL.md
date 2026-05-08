@@ -1,132 +1,172 @@
 ---
 name: kb-quality-gate
 description: >
-  Load and run this gate before declaring any kb feature or phase complete —
-  before committing, before handing off to the next phase, before reporting
-  "done" to the user, or whenever the user asks "is this ready?". It runs
-  five sequential checks: bun test, bun run lint, preview server smoke test,
-  knip (unused exports), and jscpd (duplication). All five must pass. It also
-  contains the full Definition of Done checklist (implementation, code quality,
-  tests, TypeScript, documentation, git). Do not skip it even for "small"
-  changes — the gate catches the category of bugs that feel minor but break
-  the next phase's foundation.
+  Use when about to declare any kb feature, phase, or task complete — before
+  commit, before PR, before reporting "done", or whenever asked "is this
+  ready?". Triggers on: finishing a task, marking a roadmap phase complete,
+  requesting review, claiming a fix. Also load it on every "small" change —
+  the gate catches the category of bugs that feel minor but break the next
+  phase's foundation.
 ---
 
 # kb Quality Gate
 
+## Overview
+
+This skill is the executable form of [`assets/guides/DoD.md`](../../../assets/guides/DoD.md).
+If the skill and DoD ever disagree, **DoD wins** — update the skill to match.
+The skill exists to give the agent a runnable sequence; DoD lists the contract.
+
+The gate is one sentence: **autofix → lint → test → smoke → DoD checklist → commit.**
+
 ## When to Run
 
-Run the gate after **every** feature or phase is declared done — before
-committing, before requesting a review, before signalling completion.
+Run the gate at the boundary where work transitions from "in progress" to
+"done":
+
+- Before staging files for a commit
+- Before opening or updating a PR
+- Before answering "is this ready?" or "is the phase complete?"
+- Before handing a branch off to another agent
+
+Do NOT skip even for "small" changes. Skipping the gate is how trivial
+violations (subject-line overage, an extra `console.log`, an orphan export)
+slip into a `main` that the next phase will build on.
+
+## The Gate
+
+Run the bundled script — it executes every stage in order and exits non-zero
+on the first failure:
 
 ```bash
 bash .agents/skills/kb-quality-gate/scripts/gate.sh
 ```
 
----
+If any stage fails, fix it, then re-run from Stage 0. Do NOT skip ahead.
 
-## Gate Stages
-
-### 1. Tests — all must be green
+### Stage 0 — Autofix first
 
 ```bash
-bun test
-# Expected: 0 failures, 0 skipped, coverage ≥ 80%
+bun run lint:fix
 ```
 
-### 2. Lint + Typecheck
+Runs `biome:fix` + `knip:fix` + `ast-grep:fix` (see `package.json`). Many
+violations are auto-correctable; running this **before** `bun run lint`
+saves a manual-fix loop. [`assets/guides/DoD.md`](../../../assets/guides/DoD.md)
+§1 lists this as the first DoD step.
+
+### Stage 1 — Lint + Typecheck
 
 ```bash
 bun run lint
-# Runs: biome check, knip, dependency-cruiser, jscpd, tsc --noEmit
-# Expected: exit 0
 ```
 
-### 3. Preview Server Smoke Test
+This single script runs **all** of: `tsc --noEmit`, `biome check`,
+`knip`, `dependency-cruiser`, `tombi check mise.toml`, `jscpd`,
+`@ls-lint/ls-lint`, `ast-grep scan`. Exit 0 means every architectural and
+style guard passed (including FCIS — `dependency-cruiser` enforces "no
+`core/` → `shell/` imports").
+
+### Stage 2 — Tests
+
+```bash
+bun test
+```
+
+Zero failures, zero skipped. Use the **kb-testing** skill for fixture and
+spec patterns. Coverage check:
+
+```bash
+bun test --coverage
+```
+
+DoD §2: aim for ≥ 80% line coverage on changed files.
+
+### Stage 3 — Preview-server smoke test
 
 ```bash
 bun tools/preview/server.ts &
 SERVER_PID=$!
-sleep 2
-curl -sf http://localhost:3456/ | grep -q 'kb — preview' && echo "PASS" || echo "FAIL"
-kill $SERVER_PID
+sleep 3
+curl -sf http://localhost:3456/ | grep -q 'kb — preview' && echo PASS || echo FAIL
+kill "$SERVER_PID"
 ```
 
-### 4. Knip — no unused exports
+Confirms every Elysia route added in this change has a matching mirror in
+`tools/preview/server.ts` (CLAUDE.md mandate).
+
+### Stage 4 — Build smoke
 
 ```bash
-bunx knip
-# Expected: no unused exports or unresolved imports
+bun run build
 ```
 
-### 5. JSCPD — no excessive duplication
+Per DoD §4: must produce `dist/kb.app` for macOS. Skip this stage only if
+`build:prod` is unavailable in the current environment (e.g. Linux runner
+without macOS toolchain) — but never skip on a developer machine before a
+release commit.
 
-```bash
-bunx jscpd src/ --min-lines 10 --threshold 5
-# Expected: duplication below 5%
-```
+## Definition of Done
 
----
+[`assets/guides/DoD.md`](../../../assets/guides/DoD.md) is the canonical list.
+Read it once per phase and tick each item. The kb-specific extras the guide
+does not fully spell out:
 
-## Definition of Done Checklist
+- Every new Elysia route is mirrored in `tools/preview/server.ts`.
+- `dependency-cruiser` reports zero violations — in particular no
+  `renderer/` → `shell/app/` and no `core/` → `shell/` imports.
+- Every new file under `src/` has a co-located `.spec.ts(x)` (DoD §2 +
+  CLAUDE.md "every new file in `src/` needs a co-located `.spec.ts(x)`").
+- Naming follows [`assets/guides/CODESTYLE_GUIDE.md`](../../../assets/guides/CODESTYLE_GUIDE.md)
+  §File Naming — the suffix table is **machine-checked** by ls-lint.
 
-Work through every item before reporting a phase complete.
+## Commit message rules
 
-### Implementation
-- [ ] All acceptance criteria from the feature's `docs/specs/<slug>/requirements.md` are met
-- [ ] No TODO/FIXME comments left in new code
-- [ ] No `console.log` debug statements in `src/`
-- [ ] Every new Elysia route is mirrored in `tools/preview/server.ts`
+Canonical source: [`assets/guides/GIT_COMMITS_GUIDE.md`](../../../assets/guides/GIT_COMMITS_GUIDE.md).
+Non-negotiable bits:
 
-### Code Quality
-- [ ] `bun run lint` exits 0
-- [ ] No new Biome warnings suppressed with `// biome-ignore` without a comment
-- [ ] Dependency-cruiser reports no architectural violations
-- [ ] File and export naming follows `kb-context` conventions
+- Conventional Commits: `type(scope): Subject` (capital S, imperative mood)
+- **Subject line ≤ 50 characters** (strict — gitlint enforces this)
+- Body wrapped at 72 chars; explains WHAT + WHY, not HOW
+- Atomic — one logical change per commit
+- DoD §6 hooks must pass (`gitlint` etc.)
 
-### Tests
-- [ ] Every new function/component has a co-located spec file
-- [ ] `bun test` exits 0 — zero failures, zero skipped
-- [ ] Coverage ≥ 80% for the changed files (`bun test --coverage`)
-- [ ] Renderer specs use `@testing-library/react` + Happy-DOM
-- [ ] RPC specs use `server.handle(request)` — no real port
+## Common Mistakes
 
-### TypeScript
-- [ ] `tsc --noEmit` exits 0
-- [ ] No `any` in new code (use `unknown` + type narrowing)
-- [ ] No `@ts-ignore` or `@ts-expect-error` without a code comment explaining why
+| Failure                           | Likely cause                                               | Fix                                              |
+| --------------------------------- | ---------------------------------------------------------- | ------------------------------------------------ |
+| Manual fixing biome/knip/ast-grep | Ran `bun run lint` before `bun run lint:fix`               | Re-run with `lint:fix` first; many auto-correct  |
+| `knip` unused export              | Added a helper not imported anywhere                       | Use it or delete it                              |
+| dep-cruiser violation             | Renderer imported from `src/shell/app/`                    | Route through Eden Treaty client only            |
+| dep-cruiser violation             | `core/` imported from `src/shell/` or `src/shared/logging` | Pass the dep in as a parameter (FCIS rule)       |
+| TypeBox + Zod type mismatch       | Used Zod schema in an Elysia route                         | Replace with `t.*` (TypeBox); Zod stays in core  |
+| Coverage < 80%                    | New branch/function not exercised                          | Add spec cases for uncovered paths               |
+| Preview-server route missing      | Added Elysia route but forgot to mirror                    | Add matching `case` in `tools/preview/server.ts` |
+| Subject line > 50 chars           | Wrote subject in 72-char "body width" mode                 | Rewrite — gitlint will reject the commit anyway  |
+| `console.log` in `src/`           | Debug statement left in                                    | Delete; logging goes through `@shared/logging`   |
 
-### Documentation
-- [ ] Every exported function/class/type has a JSDoc `/** */` comment
-- [ ] `docs/specs/<slug>/design.md` updated if architecture changed
-- [ ] Skill files updated if new patterns were established
+## Red Flags — STOP and re-run the gate
 
-### Git
-- [ ] Commits follow Conventional Commits: `type(scope): Subject` (capital S)
-- [ ] Subject line ≤ 72 characters
-- [ ] Each commit is atomic — one logical change
+- "It's a one-line change, I'll skip the gate" → run it; one-liners break things.
+- "The lint failure is unrelated, I'll fix it later" → fix it now or revert.
+- "I'll just add `// biome-ignore` to silence it" → only with a comment explaining *why* (DoD §1 ban on suppressed warnings without justification).
+- "Coverage dropped 1% but the feature works" → add the missing spec; the gate is non-negotiable.
+- "Preview server doesn't matter for this PR" → it does; the route mirror catches drift between the real RPC and the preview tooling.
 
----
-
-## Common Failure Patterns
-
-| Failure                          | Likely cause                                  | Fix                                      |
-|----------------------------------|-----------------------------------------------|------------------------------------------|
-| `knip` unused export             | Added a helper not called from anywhere       | Either use it or delete it               |
-| dep-cruiser violation            | Renderer imported from `src/shell/app/`       | Route through Elysia client only         |
-| TypeBox + Zod type mismatch      | Used Zod schema in an Elysia route            | Replace with `t.*` (TypeBox)             |
-| Coverage < 80%                   | New branch/function not tested                | Add spec cases for uncovered paths       |
-| Preview server route missing     | Added Elysia route but forgot to mirror       | Add matching `case` in `server.ts`       |
-
----
+All of these mean: **stop, complete the gate, then revisit.**
 
 ## Gotchas
 
-- `bun test --coverage` only instruments files that are imported by at least one
-  spec — orphan source files won't appear in coverage.
-- `dependency-cruiser` config is at `.dependency-cruiser.cjs` — run
-  `bunx depcruise src/ --config .dependency-cruiser.cjs` to check manually.
+- `bun test --coverage` only instruments files that are imported by at least
+  one spec — orphan source files won't appear. Check the list, don't trust
+  the percentage.
+- `dependency-cruiser` config lives at `.dependency-cruiser.cjs` — run
+  `bunx depcruise src/ --config .dependency-cruiser.cjs` for a focused pass.
 - Knip may flag re-exported types as unused if they're only consumed by the
-  Eden Treaty client's inferred types. Add those to `knip.config.ts` ignore list
-  with a comment explaining why.
-- The gate script exits non-zero on first failure. Fix each stage before proceeding.
+  Eden Treaty client's inferred types. Add those to the knip config ignore
+  list with a comment explaining why.
+- The `gate.sh` script exits non-zero on first failure — fix each stage
+  before proceeding rather than continuing past errors.
+- Mise tasks (`mise run <task>`) are preferred over ad-hoc shell for
+  complex workflows; for simple scripts, `bun run <script>` is fine. See
+  [`assets/guides/MISE_GUIDE.md`](../../../assets/guides/MISE_GUIDE.md).
