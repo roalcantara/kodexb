@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "bun .cursor/hooks/electrobun_session_start.ts"
+      }
+    ]
+  }
+}

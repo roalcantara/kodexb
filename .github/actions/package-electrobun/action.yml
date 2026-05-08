@@ -1,0 +1,66 @@
+# .github/actions/package-electrobun/action.yml
+name: Package Electrobun output
+description: Tarball Electrobun's Linux output, or rename the .dmg Electrobun produced for mac.
+
+inputs:
+  target:
+    description: 'linux-x64 | linux-arm64 | darwin-arm64'
+    required: true
+  platform:
+    description: 'linux | mac'
+    required: true
+  version:
+    description: Release version or tag (e.g. v0.1.0 or 0.1.0)
+    required: true
+  dist_dir:
+    description: Electrobun output directory
+    required: false
+    default: dist
+  apple_identity:
+    description: Empty string when unsigned fallback is desired
+    required: false
+    default: ''
+
+outputs:
+  archive:
+    description: Final archive path (relative to repo root)
+    value: ${{ steps.pkg.outputs.archive }}
+
+runs:
+  using: composite
+  steps:
+    - id: pkg
+      shell: bash
+      run: |
+        set -euo pipefail
+        T="${{ inputs.target }}"
+        P="${{ inputs.platform }}"
+        V="${{ inputs.version }}"
+        D="${{ inputs.dist_dir }}"
+        ID="${{ inputs.apple_identity }}"
+        VER="${V#v}"
+        case "$P" in
+          linux)
+            OUT="kb-${VER}-${T}.tar.gz"
+            tar czf "$OUT" -C "$D" .
+            ;;
+          mac)
+            DMG="$(find "$D" -maxdepth 3 -type f -name '*.dmg' | head -n 1)"
+            if [[ -z "$DMG" ]]; then
+              echo "::error::No .dmg found under $D — Electrobun did not produce a DMG."
+              exit 1
+            fi
+            if [[ -z "$ID" ]]; then
+              OUT="kb-${VER}-${T}-unsigned.dmg"
+            else
+              OUT="kb-${VER}-${T}.dmg"
+            fi
+            mv "$DMG" "$OUT"
+            ;;
+          *)
+            echo "::error::Unknown platform: $P"
+            exit 1
+            ;;
+        esac
+        echo "archive=$OUT" >> "$GITHUB_OUTPUT"
+        echo "Packaged: $OUT"

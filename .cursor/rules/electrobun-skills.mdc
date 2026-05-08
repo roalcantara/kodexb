@@ -1,0 +1,20 @@
+---
+description: Route Electrobun work to local Cursor skills by reading SKILL.md files
+alwaysApply: true
+---
+
+# Electrobun skills in this repo
+
+When a task may involve **Electrobun** (desktop shell, webview/renderer, typed RPC, `electrobun.config.ts`, `electrobun build` / `dev`, or native app packaging):
+
+1. Open **`.cursor/electrobun-skill-routing.md`** and use its table to choose skills.
+2. Load each needed guide with the **Read** tool at  
+   **`$HOME/.config/cursor/skills/<skill-id>/SKILL.md`**  
+   (replace `<skill-id>` with the slug from the table, e.g. `electrobun-rpc`).  
+   If that path is missing, list `~/.config/cursor/skills` to confirm symlinks.
+
+If nothing matches, read **`electrobun-plugin-guide`** first, then narrow.
+
+Prefer repo guides for **kb-specific** wiring: `assets/guides/ELECTROBUN.md`, `assets/docs/design.md`.
+
+Do **not** rely on memory alone for Electrobun APIs when a skill covers the topic—read the skill, then implement.

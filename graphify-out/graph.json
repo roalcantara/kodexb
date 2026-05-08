@@ -1,0 +1,706 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "electrobun.config.ts",
+      "file_type": "code",
+      "source_file": "electrobun.config.ts",
+      "source_location": "L1",
+      "id": "electrobun_config_ts",
+      "community": 10,
+      "norm_label": "electrobun.config.ts"
+    },
+    {
+      "label": "app.tsx",
+      "file_type": "code",
+      "source_file": "src/shell/renderer/app.tsx",
+      "source_location": "L1",
+      "id": "src_shell_renderer_app_tsx",
+      "community": 2,
+      "norm_label": "app.tsx"
+    },
+    {
+      "label": "rootEl",
+      "file_type": "code",
+      "source_file": "src/shell/renderer/app.tsx",
+      "source_location": "L3",
+      "id": "renderer_app_rootel",
+      "community": 2,
+      "norm_label": "rootel"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "src/shell/renderer/index.ts",
+      "source_location": "L1",
+      "id": "src_shell_renderer_index_ts",
+      "community": 2,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "main.ts",
+      "file_type": "code",
+      "source_file": "src/shell/main/main.ts",
+      "source_location": "L1",
+      "id": "src_shell_main_main_ts",
+      "community": 3,
+      "norm_label": "main.ts"
+    },
+    {
+      "label": "win",
+      "file_type": "code",
+      "source_file": "src/shell/main/main.ts",
+      "source_location": "L3",
+      "id": "main_main_win",
+      "community": 3,
+      "norm_label": "win"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "src/shell/main/index.ts",
+      "source_location": "L1",
+      "id": "src_shell_main_index_ts",
+      "community": 3,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "icon_32x32.png",
+      "file_type": "image",
+      "source_file": "assets/icons/kb-logo.iconset/icon_32x32.png",
+      "id": "icon_32x32_png",
+      "community": 5,
+      "norm_label": "icon_32x32.png"
+    },
+    {
+      "label": "icon_512x512.png",
+      "file_type": "image",
+      "source_file": "assets/icons/kb-logo.iconset/icon_512x512.png",
+      "id": "icon_512x512_png",
+      "community": 5,
+      "norm_label": "icon_512x512.png"
+    },
+    {
+      "label": "icon_16x16.png",
+      "file_type": "image",
+      "source_file": "assets/icons/kb-logo.iconset/icon_16x16.png",
+      "id": "icon_16x16_png",
+      "community": 11,
+      "norm_label": "icon_16x16.png"
+    },
+    {
+      "label": "icon_16x16@2x.png",
+      "file_type": "image",
+      "source_file": "assets/icons/kb-logo.iconset/icon_16x16@2x.png",
+      "id": "icon_16x16_2x_png",
+      "community": 12,
+      "norm_label": "icon_16x16@2x.png"
+    },
+    {
+      "label": "icon_128x128@2x.png",
+      "file_type": "image",
+      "source_file": "assets/icons/kb-logo.iconset/icon_128x128@2x.png",
+      "id": "icon_128x128_2x_png",
+      "community": 13,
+      "norm_label": "icon_128x128@2x.png"
+    },
+    {
+      "label": "icon_512x512@2x.png",
+      "file_type": "image",
+      "source_file": "assets/icons/kb-logo.iconset/icon_512x512@2x.png",
+      "id": "icon_512x512_2x_png",
+      "community": 14,
+      "norm_label": "icon_512x512@2x.png"
+    },
+    {
+      "label": "icon_256x256.png",
+      "file_type": "image",
+      "source_file": "assets/icons/kb-logo.iconset/icon_256x256.png",
+      "id": "icon_256x256_png",
+      "community": 15,
+      "norm_label": "icon_256x256.png"
+    },
+    {
+      "label": "Renderer Entry Point",
+      "file_type": "code",
+      "source_file": "src/shell/renderer/index.html",
+      "id": "index_html",
+      "community": 4,
+      "norm_label": "renderer entry point"
+    },
+    {
+      "label": "index.js",
+      "file_type": "code",
+      "source_file": "src/shell/renderer/index.js",
+      "id": "index_js",
+      "community": 4,
+      "norm_label": "index.js"
+    },
+    {
+      "label": "index.css",
+      "file_type": "code",
+      "source_file": "src/shell/renderer/index.css",
+      "id": "index_css",
+      "community": 4,
+      "norm_label": "index.css"
+    },
+    {
+      "label": "Rule: No Renderer App Import",
+      "file_type": "concept",
+      "source_file": "tools/rules/no-renderer-app-import.yml",
+      "id": "no_renderer_app_import",
+      "community": 6,
+      "norm_label": "rule: no renderer app import"
+    },
+    {
+      "label": "Rule: No Await in Promise.all",
+      "file_type": "concept",
+      "source_file": "tools/rules/no-await-in-promise-all.yml",
+      "id": "no_await_in_promise_all",
+      "community": 16,
+      "norm_label": "rule: no await in promise.all"
+    },
+    {
+      "label": "Rule: No Fishery Import",
+      "file_type": "concept",
+      "source_file": "tools/rules/no-fishery-import.yml",
+      "id": "no_fishery_import",
+      "community": 7,
+      "norm_label": "rule: no fishery import"
+    },
+    {
+      "label": "Rule: No Zod in Routes",
+      "file_type": "concept",
+      "source_file": "tools/rules/no-zod-in-routes.yml",
+      "id": "no_zod_in_routes",
+      "community": 8,
+      "norm_label": "rule: no zod in routes"
+    },
+    {
+      "label": "Rule: No Bun in Core",
+      "file_type": "concept",
+      "source_file": "tools/rules/no-bun-in-core.yml",
+      "id": "no_bun_in_core",
+      "community": 17,
+      "norm_label": "rule: no bun in core"
+    },
+    {
+      "label": "Rule: No Console in Src",
+      "file_type": "concept",
+      "source_file": "tools/rules/no-console-in-src.yml",
+      "id": "no_console_in_src",
+      "community": 9,
+      "norm_label": "rule: no console in src"
+    },
+    {
+      "label": "@rpc/client",
+      "file_type": "concept",
+      "source_file": "tools/rules/no-renderer-app-import.yml",
+      "id": "rpc_client",
+      "community": 6,
+      "norm_label": "@rpc/client"
+    },
+    {
+      "label": "drizzle-seed",
+      "file_type": "concept",
+      "source_file": "tools/rules/no-fishery-import.yml",
+      "id": "drizzle_seed",
+      "community": 7,
+      "norm_label": "drizzle-seed"
+    },
+    {
+      "label": "TypeBox",
+      "file_type": "concept",
+      "source_file": "tools/rules/no-zod-in-routes.yml",
+      "id": "typebox",
+      "community": 8,
+      "norm_label": "typebox"
+    },
+    {
+      "label": "@shared/logging",
+      "file_type": "concept",
+      "source_file": "tools/rules/no-console-in-src.yml",
+      "id": "shared_logging",
+      "community": 9,
+      "norm_label": "@shared/logging"
+    },
+    {
+      "label": "Conventional Commits",
+      "file_type": "concept",
+      "source_file": "CHANGELOG.md",
+      "source_location": null,
+      "source_url": "https://conventionalcommits.org",
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "changelog_conventional_commits",
+      "community": 0,
+      "norm_label": "conventional commits"
+    },
+    {
+      "label": "release-it",
+      "file_type": "code",
+      "source_file": "CHANGELOG.md",
+      "source_location": null,
+      "source_url": "https://github.com/release-it/release-it",
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "changelog_release_it",
+      "community": 0,
+      "norm_label": "release-it"
+    },
+    {
+      "label": "kb",
+      "file_type": "code",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": "https://github.com/roalcantara/kb",
+      "captured_at": null,
+      "author": "roalcantara",
+      "contributor": null,
+      "id": "readme_kb",
+      "community": 0,
+      "norm_label": "kb"
+    },
+    {
+      "label": "Electrobun",
+      "file_type": "code",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": "https://blackboard.sh/electrobun",
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_electrobun",
+      "community": 0,
+      "norm_label": "electrobun"
+    },
+    {
+      "label": "Bun",
+      "file_type": "code",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": "https://bun.sh",
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_bun",
+      "community": 0,
+      "norm_label": "bun"
+    },
+    {
+      "label": "React",
+      "file_type": "code",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": "https://react.dev",
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_react",
+      "community": 0,
+      "norm_label": "react"
+    },
+    {
+      "label": "TypeScript",
+      "file_type": "code",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": "https://typescriptlang.org",
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_typescript",
+      "community": 0,
+      "norm_label": "typescript"
+    },
+    {
+      "label": "Biome",
+      "file_type": "code",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": "https://biomejs.dev/",
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_biome",
+      "community": 0,
+      "norm_label": "biome"
+    },
+    {
+      "label": "Mise",
+      "file_type": "code",
+      "source_file": "README.md",
+      "source_location": null,
+      "source_url": "https://mise.jdx.dev",
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "readme_mise",
+      "community": 0,
+      "norm_label": "mise"
+    },
+    {
+      "label": "Andromeda Void Design System",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "design_andromeda_void",
+      "community": 0,
+      "norm_label": "andromeda void design system"
+    },
+    {
+      "label": "FCIS Architecture Layers",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claude_fcis_layers",
+      "community": 18,
+      "norm_label": "fcis architecture layers"
+    },
+    {
+      "label": "src/core/",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claude_core",
+      "community": 19,
+      "norm_label": "src/core/"
+    },
+    {
+      "label": "src/shell/app/",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claude_shell_app",
+      "community": 1,
+      "norm_label": "src/shell/app/"
+    },
+    {
+      "label": "src/shell/main/",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claude_shell_main",
+      "community": 1,
+      "norm_label": "src/shell/main/"
+    },
+    {
+      "label": "src/shell/renderer/",
+      "file_type": "code",
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "claude_shell_renderer",
+      "community": 1,
+      "norm_label": "src/shell/renderer/"
+    },
+    {
+      "label": "Elysia RPC Bridge",
+      "file_type": "code",
+      "source_file": "assets/docs/specs/foundation/design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "design_elysia_rpc",
+      "community": 1,
+      "norm_label": "elysia rpc bridge"
+    },
+    {
+      "label": "Drizzle ORM",
+      "file_type": "code",
+      "source_file": "assets/docs/specs/foundation/design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "design_drizzle_orm",
+      "community": 1,
+      "norm_label": "drizzle orm"
+    },
+    {
+      "label": "SQLite",
+      "file_type": "code",
+      "source_file": "assets/docs/specs/foundation/design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "design_sqlite",
+      "community": 1,
+      "norm_label": "sqlite"
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/shell/renderer/app.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_shell_renderer_app_tsx",
+      "target": "renderer_app_rootel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/shell/renderer/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "src_shell_renderer_index_ts",
+      "target": "src_shell_renderer_app_tsx",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/shell/main/main.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_shell_main_main_ts",
+      "target": "main_main_win",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/shell/main/index.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "src_shell_main_index_ts",
+      "target": "src_shell_main_main_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "assets/icons/kb-logo.iconset/",
+      "source": "icon_32x32_png",
+      "target": "icon_512x512_png"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/shell/renderer/index.html",
+      "source": "index_html",
+      "target": "index_js"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/shell/renderer/index.html",
+      "source": "index_html",
+      "target": "index_css"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/rules/no-renderer-app-import.yml",
+      "source": "no_renderer_app_import",
+      "target": "rpc_client"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/rules/no-fishery-import.yml",
+      "source": "no_fishery_import",
+      "target": "drizzle_seed"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/rules/no-zod-in-routes.yml",
+      "source": "no_zod_in_routes",
+      "target": "typebox"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tools/rules/no-console-in-src.yml",
+      "source": "no_console_in_src",
+      "target": "shared_logging"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CHANGELOG.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_kb",
+      "target": "changelog_conventional_commits"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CHANGELOG.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_kb",
+      "target": "changelog_release_it"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_kb",
+      "target": "readme_electrobun"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_kb",
+      "target": "readme_bun"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_kb",
+      "target": "readme_react"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_kb",
+      "target": "readme_typescript"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_kb",
+      "target": "readme_biome"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_kb",
+      "target": "readme_mise"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "DESIGN.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "readme_kb",
+      "target": "design_andromeda_void"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "claude_shell_main",
+      "target": "claude_shell_app"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "claude_shell_app",
+      "target": "design_sqlite"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "assets/docs/specs/foundation/design.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "claude_shell_app",
+      "target": "design_drizzle_orm"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "claude_shell_renderer",
+      "target": "claude_shell_main"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "assets/docs/specs/foundation/design.md",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "claude_shell_renderer",
+      "target": "design_elysia_rpc"
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "560d28df34b0a9da0be1c22f3252c3a1b3a6a4ef"
+}

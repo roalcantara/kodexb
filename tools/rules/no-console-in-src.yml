@@ -1,0 +1,24 @@
+# console.* is banned inside src/. Use createLogger() from @shared/logging.
+# tools/ and test helpers may use console freely.
+id: no-console-in-src
+language: TypeScript
+files:
+  - "src/**/*.ts"
+  - "src/**/*.tsx"
+ignores:
+  - "src/**/*.spec.ts"
+  - "src/**/*.spec.tsx"
+  - "src/__tests__/**"
+  - "src/**/logging/**"   # logger implementation may use console internally
+severity: warning
+rule:
+  any:
+    - pattern: console.log($$$ARGS)
+    - pattern: console.warn($$$ARGS)
+    - pattern: console.error($$$ARGS)
+    - pattern: console.debug($$$ARGS)
+    - pattern: console.info($$$ARGS)
+message: >
+  Use createLogger() from @shared/logging instead of console.*.
+  Structured log lines are written to the Electrobun console via Logtape.
+note: See assets/docs/design.md — §Observability (phase labels, structured output).

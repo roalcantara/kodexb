@@ -1,0 +1,267 @@
+# https://mise.jdx.dev
+[tools]
+bun = "latest"
+usage = "latest"
+pre-commit = "4.4"
+ast-grep = "latest"
+tombi = "0.9.22"
+actionlint = "latest"
+
+[tasks]
+"prepare" = { description = "Install dependencies and hooks", usage = '''
+    flag "--ci" help="Install dependencies for CI"
+  ''', run = '''
+    #!/usr/bin/env bash
+    bun install $($usage_ci && echo '--frozen-lockfile')
+    $usage_ci || pre-commit install --hook-type commit-msg
+  ''' }
+"setup" = { description = "Install tools and dependencies", run = '''
+    #!/usr/bin/env bash
+    mise install --yes && mise run prepare
+  ''' }
+"ci:review" = { description = "Mirror review.yml end-to-end (lint + test + build smoke)", depends = [
+  "prepare"
+], run = '''
+    #!/usr/bin/env bash
+    set -e
+    mise run ci:review:lint
+    mise run ci:review:test
+    mise run ci:review:build
+  ''' }
+"ci:review:lint" = { description = "Run the full Phase-1 lint chain", run = "bun run lint" }
+"ci:review:test" = { description = "Run tests with JUnit + coverage (CI shape)", run = "bun run test:ci" }
+"ci:review:build" = { description = "Smoke build with macOS signing forced off", run = '''
+    #!/usr/bin/env bash
+    ELECTROBUN_DEVELOPER_ID="" bun run build
+  ''' }
+"ci:release:check-squash" = { description = "Validate HEAD is a single squash commit (no merge subject)", run = '''
+    #!/usr/bin/env bash
+    set -e
+    subject="$(git log -1 --pretty=%s HEAD)"
+    if [[ "$subject" =~ ^Merge\ (pull\ request|branch) ]]; then
+      echo "ERROR: HEAD is a merge commit: $subject" >&2
+      echo "Repository must use Squash and Merge only." >&2
+      exit 1
+    fi
+    echo "OK: HEAD subject is '$subject'"
+  ''' }
+"ci:release:check-signing" = { description = "Signed-commit + signed-tag self-test in a temp repo", run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+    tmp="$(mktemp -d)"
+    tag="signing-test-tag-$$"
+    trap 'rm -rf "$tmp"' EXIT
+    cd "$tmp"
+    git init -q
+    git config commit.gpgsign true
+    git config tag.gpgsign true
+    echo test > f.txt
+    git add f.txt
+    git commit -q -m "test: signing"
+    git cat-file -p HEAD | grep -q '^gpgsig' || { echo "ERROR: commit not signed"; exit 1; }
+    git tag -s "$tag" -m signing
+    git cat-file -p "$tag" | grep -qE 'BEGIN (PGP|SSH) SIGNATURE' || { echo "ERROR: tag not signed"; exit 1; }
+    echo "OK: signed commit + signed tag verified."
+  ''' }
+"ci:release:dry-run" = { description = "Preview the next release without touching git/GitHub", run = "bunx release-it --dry-run --ci" }
+"ci:release:notes" = { description = "Preview only the next CHANGELOG entry", run = '''
+    #!/usr/bin/env bash
+    bunx release-it --release-notes-only --dry-run --ci 2>/dev/null \
+      || bunx release-it --dry-run --ci 2>&1 | sed -n '/^# Changelog/,$p'
+  ''' }
+"ci:publish" = { description = "Mirror publish.yml end-to-end for the local platform (build + package + checksum)", depends = [
+  "prepare"
+], usage = '''
+    flag "--version <ver>" help="Release version (e.g. 0.1.0)"
+    flag "--target <target>" help="Build target (linux-x64 | linux-arm64 | darwin-arm64)"
+  ''', run = '''
+    #!/usr/bin/env bash
+    set -e
+    : "${usage_version:?--version is required (e.g. --version=0.1.0)}"
+    : "${usage_target:=$(uname -s | tr A-Z a-z)-$(uname -m | sed -e s/x86_64/x64/ -e s/aarch64/arm64/)}"
+    case "$usage_target" in
+      darwin-x64) usage_target=darwin-arm64 ;;
+    esac
+    mise run ci:publish:build
+    mise run ci:publish:package -- --version="$usage_version" --target="$usage_target"
+    mise run ci:publish:checksum
+  ''' }
+"ci:publish:build" = { description = "Production build for the local platform", run = "bun run build:prod" }
+"ci:publish:package" = { description = "Package dist/ as .tar.gz (linux) or rename .dmg (mac)", usage = '''
+    flag "--version <ver>" help="Release version" required
+    flag "--target <target>" help="Build target" required
+  ''', run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+    case "$usage_target" in
+      linux-*)
+        tar czf "kb-${usage_version}-${usage_target}.tar.gz" -C dist .
+        ;;
+      darwin-*)
+        DMG="$(find dist -maxdepth 3 -type f -name '*.dmg' | head -n 1)"
+        [[ -n "$DMG" ]] || { echo "ERROR: no .dmg under dist/"; exit 1; }
+        suffix=""
+        [[ -z "${ELECTROBUN_DEVELOPER_ID:-}" ]] && suffix="-unsigned"
+        mv "$DMG" "kb-${usage_version}-${usage_target}${suffix}.dmg"
+        ;;
+      *)
+        echo "ERROR: unknown target $usage_target"; exit 1
+        ;;
+    esac
+  ''' }
+"ci:publish:checksum" = { description = "Write checksums.txt for produced archives", run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+    shopt -s nullglob
+    sha256sum *.tar.gz *.dmg 2>/dev/null > checksums.txt || true
+    test -s checksums.txt
+    cat checksums.txt
+  ''' }
+"ci:reset-branch" = { description = "Reset main, delete tags, create fresh branch with CI fix, push and PR", run = '''
+    #!/usr/bin/env bash
+    set -e
+
+    echo "=== CI Branch Reset & Recreate Script ==="
+    echo ""
+
+    current_branch=$(git branch --show-current)
+    echo "Current branch: $current_branch"
+
+    echo ""
+    echo "=== Step 1: Delete remote tags ==="
+    for tag in $(git tag -l); do
+        echo "Deleting remote tag: $tag"
+        git push origin --delete "$tag" 2>/dev/null || echo "  (tag may not exist remotely)"
+    done
+
+    echo ""
+    echo "=== Step 2: Delete local tags ==="
+    for tag in $(git tag -l); do
+        echo "Deleting local tag: $tag"
+        git tag -d "$tag"
+    done
+
+    echo ""
+    echo "=== Step 3: Reset main to initial commit ==="
+    git checkout main
+    git fetch origin main
+    git reset --hard 9b59223
+    echo "Main reset to: $(git log --oneline -1)"
+
+    echo ""
+    echo "=== Step 4: Force push main ==="
+    git push --force origin main
+    echo "Main force pushed"
+
+    echo ""
+    echo "=== Step 5: Create new branch with CI fix ==="
+    ci_commit=$(git log --oneline --all | grep -m1 "feat(setup): Project foundation and CI" | cut -d' ' -f1)
+    echo "Using commit: $ci_commit"
+
+    git branch -D fix/release-workflow-v2 2>/dev/null || true
+    git checkout -b fix/release-workflow-v2 "$ci_commit"
+
+    echo ""
+    echo "=== Step 6: Run lint and test locally ==="
+    echo "Running bun run lint..."
+    bun run lint
+
+    echo ""
+    echo "Running bun test..."
+    bun test
+
+    echo ""
+    echo "=== Step 7: Push new branch to origin ==="
+    git push -u origin fix/release-workflow-v2
+
+    echo ""
+    echo "=== Step 8: Create PR ==="
+    if command -v gh &> /dev/null; then
+        pr_url=$(gh pr create \
+            --title "fix: Release workflow and CI improvements" \
+            --body "## Summary
+    - Fix release workflow to use gh release create instead of release-it's broken GitHub release
+    - Properly delete local and remote tags before creating releases
+    - Ensure CI passes before merging
+
+    ## Changes
+    - Disable release-it's GitHub release (set release: false)
+    - Use explicit gh release create in release.yml
+    - Properly handle tag cleanup
+
+    ## Testing
+    - Lint passes locally
+    - Tests pass locally" \
+            --base main)
+
+        echo "PR created: $pr_url"
+    else
+        echo "gh CLI not found. Please create PR manually:"
+        echo "  gh pr create --base main --head fix/release-workflow-v2"
+    fi
+
+    echo ""
+    echo "=== Done! ==="
+    echo "Branch: fix/release-workflow-v2"
+    echo "PR created with CI fix"
+  ''' }
+"repo:setup" = { description = "Create GitHub repo and set required secrets/vars for CI workflows", run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    echo "=== Setup GitHub Repo & CI Secrets ==="
+    echo ""
+
+    echo "=== Step 1: Create GitHub repository ==="
+    gh repo create kodexb --description "A knowledge base" --source=. --push --public
+
+    echo ""
+    echo "=== Step 2: Set GH_TOKEN secret ==="
+    GH_TOKEN="$(gopass show -n --password tokens/sudo.github.com)"
+    echo "$GH_TOKEN" | gh secret set GH_TOKEN
+
+    echo ""
+    echo "=== Step 3: Set RELEASE_SIGNING_SSH_KEY secret ==="
+    SSH_KEY="$(gopass cat tokens/pvt.release.github.com)"
+    echo "$SSH_KEY" | gh secret set RELEASE_SIGNING_SSH_KEY
+
+    echo ""
+    echo "=== Step 4: Set RELEASE_SIGNING_SIGNER_PUB variable ==="
+    PUB_KEY="$(gopass show -n --password tokens/pub.release.github.com)"
+    echo "$PUB_KEY" | gh variable set RELEASE_SIGNING_SIGNER_PUB
+
+    echo ""
+    echo "=== Done! ==="
+    echo "Repository 'kodexb' created with CI secrets configured."
+  ''' }
+"repo:prune" = { description = "Delete all tags, releases and repo from GitHub", run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    echo "=== Prune GitHub Repository ==="
+    repo="kodexb"
+    echo "Target: $repo"
+    echo ""
+
+    echo "=== Step 1: Delete all remote tags ==="
+    for tag in $(git ls-remote --tags origin | cut -d$'\t' -f2 | grep -v '^{$'); do
+        tag_name="${tag#refs/tags/}"
+        echo "Deleting tag: $tag_name"
+        gh repo delete "$repo" --yes 2>/dev/null || true
+    done || true
+    gh api repos/"$repo"/tags --method DELETE 2>/dev/null || true
+
+    echo ""
+    echo "=== Step 2: Delete all releases ==="
+    for release in $(gh release list --repo "$repo" --json name -q '.[].name' 2>/dev/null); do
+        echo "Deleting release: $release"
+        gh release delete "$release" --yes --repo "$repo" 2>/dev/null || true
+    done || true
+
+    echo ""
+    echo "=== Step 3: Delete repository ==="
+    echo "Deleting repository: $repo"
+    gh repo delete "$repo" --yes
+    echo ""
+    echo "Repository '$repo' deleted."
+  ''' }

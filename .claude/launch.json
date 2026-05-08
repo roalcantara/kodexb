@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kb-preview",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["tools/preview/server.ts"],
+      "port": 3456
+    }
+  ]
+}

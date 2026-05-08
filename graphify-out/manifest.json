@@ -1,0 +1,178 @@
+{
+  "/Users/roalcantara/Work/bun/kb/electrobun.config.ts": {
+    "mtime": 1778247525.8405564,
+    "hash": "8fbe478ac2b0207902584e98269e14fb"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/app.tsx": {
+    "mtime": 1778176586.450381,
+    "hash": "231f43b44507c6cd4d09294f8b055748"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/index.ts": {
+    "mtime": 1778176586.451397,
+    "hash": "9ff8468827efbaff4004b71bae9ab56f"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/main.ts": {
+    "mtime": 1778176586.4499793,
+    "hash": "6a7a8fff85f2d8ce8008b33e81d25f09"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/index.ts": {
+    "mtime": 1778176586.4495847,
+    "hash": "0537f2d65c98a250ba046af7c3828907"
+  },
+  "/Users/roalcantara/Work/bun/kb/CHANGELOG.md": {
+    "mtime": 1778247601.6438282,
+    "hash": "19a35147d10c43e131237e6ce9369b56"
+  },
+  "/Users/roalcantara/Work/bun/kb/README.md": {
+    "mtime": 1778176632.1089487,
+    "hash": "85db8ddc155f6d892fab515dfab8a01a"
+  },
+  "/Users/roalcantara/Work/bun/kb/sgconfig.yml": {
+    "mtime": 1778176632.1100438,
+    "hash": "9446eb9585709ade457b00aa586884e0"
+  },
+  "/Users/roalcantara/Work/bun/kb/DESIGN.md": {
+    "mtime": 1778176632.0795627,
+    "hash": "869f006983380e0c3d9b7495fb6f8516"
+  },
+  "/Users/roalcantara/Work/bun/kb/AGENTS.md": {
+    "mtime": 1778176632.0791812,
+    "hash": "d0a86f28000328e1761537ff73112eb2"
+  },
+  "/Users/roalcantara/Work/bun/kb/CLAUDE.md": {
+    "mtime": 1778176632.0792897,
+    "hash": "fd3908f368fb7cc8f56eba1327df44bf"
+  },
+  "/Users/roalcantara/Work/bun/kb/tools/rules/no-renderer-app-import.yml": {
+    "mtime": 1778176632.1114635,
+    "hash": "c45ddba73608822154ea650f6c566b01"
+  },
+  "/Users/roalcantara/Work/bun/kb/tools/rules/no-await-in-promise-all.yml": {
+    "mtime": 1778176632.1102467,
+    "hash": "ad420162f590af7a288019bb09de0825"
+  },
+  "/Users/roalcantara/Work/bun/kb/tools/rules/no-fishery-import.yml": {
+    "mtime": 1778176632.1109107,
+    "hash": "c182df7a382804e8a15109f8da93f444"
+  },
+  "/Users/roalcantara/Work/bun/kb/tools/rules/no-zod-in-routes.yml": {
+    "mtime": 1778176632.1115825,
+    "hash": "1bd95a32967a87c66776facaad437f32"
+  },
+  "/Users/roalcantara/Work/bun/kb/tools/rules/no-bun-in-core.yml": {
+    "mtime": 1778176632.1105342,
+    "hash": "3a4c2bdc8a623a33da2e9de7a4c04de3"
+  },
+  "/Users/roalcantara/Work/bun/kb/tools/rules/no-console-in-src.yml": {
+    "mtime": 1778176632.1107202,
+    "hash": "04c5f178b9b55b4d0a62ef3cf591c5c6"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/foundation/requirements.md": {
+    "mtime": 1778176632.0918376,
+    "hash": "fbf03bf6e0097c4cbad3a230abb7d3ba"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/foundation/roadmap.md": {
+    "mtime": 1778176632.092115,
+    "hash": "3efc7e1baaaae2a5813055e623969d3e"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/foundation/design.md": {
+    "mtime": 1778176632.0910769,
+    "hash": "ab205f22fb4a3308b45ef274a5052daa"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/ci-build-packaging/tasks.md": {
+    "mtime": 1778182305.611591,
+    "hash": "e58e2b66b42315c0d6c9a8a386f18814"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/ci-build-packaging/design.md": {
+    "mtime": 1778179882.1468592,
+    "hash": "0574d96193320d7db81a43b2b64a7082"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/guides/MISE_GUIDE.md": {
+    "mtime": 1778176632.0940416,
+    "hash": "30488e75682d98774ca1d8052796e796"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/guides/FISHERY_GUIDE.md": {
+    "mtime": 1778176632.093372,
+    "hash": "da6ce5e771c5ba555184371d7fc34187"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/guides/FCIS.guide.md": {
+    "mtime": 1778176632.0932326,
+    "hash": "149e623fed5820ec9b586635ef1fd289"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/guides/CODESTYLE_GUIDE.md": {
+    "mtime": 1778176632.0926106,
+    "hash": "4b7cae99d496226f87c402ea68c86cd6"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/guides/BUN_RUNTIME.md": {
+    "mtime": 1778176632.0923645,
+    "hash": "9fff0a769c0c6672268de6d9c01fa2b4"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/guides/GIT_COMMITS_GUIDE.md": {
+    "mtime": 1778176632.0935876,
+    "hash": "4c6bcefcba5ecbd31153642d34a8e16d"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/guides/ELECTROBUN.md": {
+    "mtime": 1778176632.093017,
+    "hash": "a50d2ef6987e9a01130b8e91e3d59da3"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/guides/TESTING_GUIDE.md": {
+    "mtime": 1778176632.0943158,
+    "hash": "824329d0aa4b876eaa363a7578995d02"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/guides/GIT_GUIDE.md": {
+    "mtime": 1778176632.0938962,
+    "hash": "2c3ea18231f55fcbc4cd5a858656414c"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/guides/DoD.md": {
+    "mtime": 1778176632.0928237,
+    "hash": "27f391eb24df225c74617a8064f6f6e0"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/index.html": {
+    "mtime": 1778176586.4507823,
+    "hash": "bd3f5e1277cf5f84fb6f9f03cc7f4d95"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.svg": {
+    "mtime": 1778176586.4471183,
+    "hash": "19ad4e66149ef50fc5e6f689d2114b31"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_32x32@2x.png": {
+    "mtime": 1778176586.443344,
+    "hash": "2cf5793a81afb8280a4c4d3b1e31c78f"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_128x128.png": {
+    "mtime": 1778176586.4408875,
+    "hash": "9d253b1deadb02be8d895d666da085ac"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_256x256@2x.png": {
+    "mtime": 1778176586.4429612,
+    "hash": "685e02f7b89a84e4e405fa47dd42e13c"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_32x32.png": {
+    "mtime": 1778176586.4431152,
+    "hash": "0081920c568c50f15c554bca04768a28"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_512x512.png": {
+    "mtime": 1778176586.4441223,
+    "hash": "685e02f7b89a84e4e405fa47dd42e13c"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_16x16.png": {
+    "mtime": 1778176586.4416893,
+    "hash": "7f4f85b50df8c12cddbc9dbf250b707e"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_16x16@2x.png": {
+    "mtime": 1778176586.4418628,
+    "hash": "0081920c568c50f15c554bca04768a28"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_128x128@2x.png": {
+    "mtime": 1778176586.4414873,
+    "hash": "e0dc1b4c4574735bba15b9bd7b12a267"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_512x512@2x.png": {
+    "mtime": 1778176586.4468763,
+    "hash": "8471c8b874f72dbc8b683d9712c25b71"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_256x256.png": {
+    "mtime": 1778176586.4421098,
+    "hash": "e0dc1b4c4574735bba15b9bd7b12a267"
+  }
+}

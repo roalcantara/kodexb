@@ -1,0 +1,15 @@
+# fishery has been replaced by drizzle-seed for test fixtures.
+# Any import from 'fishery' is an error — use drizzle-seed instead.
+id: no-fishery-import
+language: TypeScript
+severity: error
+rule:
+  any:
+    - pattern: import { $$$NAMES } from 'fishery'
+    - pattern: import { $$$NAMES } from "fishery"
+    - pattern: import * as $NAME from 'fishery'
+    - pattern: import * as $NAME from "fishery"
+message: >
+  fishery is not used in this project. Use drizzle-seed for test fixtures.
+  See .agents/skills/kb-testing/SKILL.md for the drizzle-seed pattern.
+note: See assets/docs/design.md — Decision 4 (drizzle-seed replaces fishery).
