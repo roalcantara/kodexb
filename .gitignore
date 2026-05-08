@@ -141,3 +141,48 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# dependencies
+node_modules
+
+# output
+out
+dist
+tmp
+*.tgz
+
+# code coverage
+coverage
+*.lcov
+
+# logs
+logs
+*.log
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# dotenv
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# IDE
+.idea
+
+# macOS
+.DS_Store
+._*
+
+# Override global Icon? rule which case-insensitively matches assets/icons/ on macOS
+!assets/icons/
+
+# Bun
+*.bun-build
+
+# Electrobun
+.electrobun-cache
+
+# Benchmark run artifacts (keep only baseline)
+tools/benchmarks/results/*/
+tools/benchmarks/results/latest.json

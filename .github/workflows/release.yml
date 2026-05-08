@@ -1,0 +1,129 @@
+# .github/workflows/release.yml
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: kb-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Validate squash-and-merge strategy
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+        run: |
+          set -euo pipefail
+          if [[ "$BEFORE" == "0000000000000000000000000000000000000000000" ]]; then
+            echo "Initial push — skipping squash check."
+            exit 0
+          fi
+          subject="$(git log -1 --pretty=%s "$AFTER")"
+          if [[ "$subject" =~ \[skip\ ci\] ]]; then
+            echo "Skipping release — commit message contains [skip ci]"
+            exit 0
+          fi
+          if [[ "$subject" =~ ^Merge\ (pull\ request|branch) ]]; then
+            echo "::error::Merge commit detected on main: '$subject'."
+            echo "::error::Repository must require Squash and Merge only."
+            exit 1
+          fi
+          count="$(git log --oneline "$BEFORE..$AFTER" | wc -l | tr -d ' ')"
+          if [[ "$count" -gt 1 ]]; then
+            echo "::error::Push contains $count commits — likely Rebase and Merge."
+            echo "::error::Repository must require Squash and Merge only."
+            exit 1
+          fi
+          echo "OK: single squash commit on main."
+
+      - uses: ./.github/actions/setup-bun-project
+        with:
+          setup_mode: mise
+
+      - name: Start ssh-agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.RELEASE_SIGNING_SSH_KEY }}
+
+      - name: Configure git signing & identity
+        env:
+          PUB: ${{ vars.RELEASE_SIGNING_SIGNER_PUB }}
+          GIT_USER_NAME: ${{ vars.RELEASE_GIT_USER_NAME }}
+          GIT_USER_EMAIL: ${{ vars.RELEASE_GIT_USER_EMAIL }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          if [[ -n "${PUB:-}" ]]; then
+            printf '%s\n' "$PUB" > ~/.ssh/release_signing_key.pub
+          else
+            ssh-add -L | head -n 1 > ~/.ssh/release_signing_key.pub
+          fi
+          chmod 600 ~/.ssh/release_signing_key.pub
+          git config gpg.format ssh
+          git config user.signingkey ~/.ssh/release_signing_key.pub
+          git config commit.gpgsign true
+          git config tag.gpgsign true
+          git config user.name  "${GIT_USER_NAME:-github-actions[bot]}"
+          git config user.email "${GIT_USER_EMAIL:-41898282+github-actions[bot]@users.noreply.github.com}"
+
+      - name: Verify signing works (commit + tag)
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          tag="signing-test-tag-$$"
+          trap 'rm -rf "$tmp"' EXIT
+          (
+            cd "$tmp"
+            git init -q
+            git config user.name  "$(git -C "$GITHUB_WORKSPACE" config user.name)"
+            git config user.email "$(git -C "$GITHUB_WORKSPACE" config user.email)"
+            git config gpg.format ssh
+            git config user.signingkey ~/.ssh/release_signing_key.pub
+            git config commit.gpgsign true
+            git config tag.gpgsign true
+            echo test > f.txt
+            git add f.txt
+            git commit -q -m "test: signing"
+            git cat-file -p HEAD | grep -q '^gpgsig' \
+              || { echo '::error::Signed commit missing gpgsig header'; exit 1; }
+            git tag -s "$tag" -m signing
+            git cat-file -p "$tag" \
+              | grep -qE 'BEGIN (PGP|SSH) SIGNATURE' \
+              || { echo '::error::Signed tag missing signature block'; exit 1; }
+          )
+
+      - name: Pull latest changes (defensive against push races)
+        run: git pull --rebase origin main
+
+      - name: Run release-it
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: bun run release:ci
+
+      - name: Create draft GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          set -euo pipefail
+          tag="$(git describe --tags --abbrev=0)"
+          echo "Creating draft release for tag: $tag"
+          gh release create "$tag" \
+            --draft \
+            --title "$tag" \
+            --notes-file CHANGELOG.md

@@ -1,0 +1,243 @@
+# .github/workflows/publish.yml
+name: Publish
+
+on:
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to publish (e.g. v1.2.3)'
+        required: true
+        type: string
+
+concurrency:
+  group: kb-${{ github.ref_name || inputs.tag }}
+  cancel-in-progress: true
+
+jobs:
+  resolve_tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+    steps:
+      - name: Gate on upstream Release success
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success'
+        run: |
+          echo "::error::Upstream Release concluded as ${{ github.event.workflow_run.conclusion }} — skipping publish."
+          exit 1
+      - uses: actions/checkout@v4
+      - id: resolve
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${INPUT_TAG:-}" ]]; then
+            TAG="$INPUT_TAG"
+          else
+            TAG="$(gh release list --limit 1 --json tagName,isDraft --jq 'if .[0].isDraft then .[0].tagName else "" end')"
+          fi
+          if [[ -z "$TAG" ]]; then
+            echo "::error::Could not resolve a release tag."
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Resolved tag: $TAG"
+
+  binaries:
+    needs: resolve_tag
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux-x64
+            runner: ubuntu-latest
+            platform: linux
+            ext: tar.gz
+          - target: linux-arm64
+            runner: ubuntu-24.04-arm
+            platform: linux
+            ext: tar.gz
+          - target: darwin-arm64
+            runner: macos-latest
+            platform: mac
+            ext: dmg
+    runs-on: ${{ matrix.runner }}
+    env:
+      RELEASE_TAG: ${{ needs.resolve_tag.outputs.tag }}
+      ELECTROBUN_DEVELOPER_ID: ${{ secrets.ELECTROBUN_DEVELOPER_ID }}
+      ELECTROBUN_APPLEID:      ${{ secrets.ELECTROBUN_APPLEID }}
+      ELECTROBUN_APPLEIDPASS:  ${{ secrets.ELECTROBUN_APPLEIDPASS }}
+      ELECTROBUN_TEAMID:       ${{ secrets.ELECTROBUN_TEAMID }}
+    steps:
+      - uses: actions/checkout@v4
+        if: matrix.platform != 'mac' || env.ELECTROBUN_DEVELOPER_ID != ''
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-bun-project
+        if: matrix.platform != 'mac' || env.ELECTROBUN_DEVELOPER_ID != ''
+        with:
+          setup_mode: mise
+      - name: Skip macOS if no code-signing configured
+        if: matrix.platform == 'mac' && env.ELECTROBUN_DEVELOPER_ID == ''
+        run: |
+          echo "ELECTROBUN_DEVELOPER_ID not set — skipping macOS build"
+          echo "::notice::Skipping macOS build - no code signing configured"
+          exit 0
+      - uses: actions/cache@v4
+        if: matrix.platform != 'mac' || env.ELECTROBUN_DEVELOPER_ID != ''
+        with:
+          path: ~/.electrobun
+          key: electrobun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            electrobun-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: Import macOS code-signing cert (signed path only)
+        if: matrix.target == 'darwin-arm64' && env.ELECTROBUN_DEVELOPER_ID != ''
+        env:
+          MAC_CERT_BASE64:   ${{ secrets.MAC_CERTIFICATE_BASE64 }}
+          MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+        run: |
+          set -euo pipefail
+          CERT="$RUNNER_TEMP/cert.p12"
+          KC="$RUNNER_TEMP/build.keychain-db"
+          KCPASS="$(openssl rand -hex 16)"
+          printf '%s' "$MAC_CERT_BASE64" | base64 -d > "$CERT"
+          security create-keychain -p "$KCPASS" "$KC"
+          security set-keychain-settings -lut 21600 "$KC"
+          security default-keychain -s "$KC"
+          security unlock-keychain -p "$KCPASS" "$KC"
+          security import "$CERT" -k "$KC" -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KCPASS" "$KC"
+          rm -f "$CERT"
+
+      - name: Build (Electrobun handles sign + notarize + staple internally)
+        if: matrix.platform != 'mac' || env.ELECTROBUN_DEVELOPER_ID != ''
+        run: bun run build:prod
+
+      - id: package
+        if: matrix.platform != 'mac' || env.ELECTROBUN_DEVELOPER_ID != ''
+        uses: ./.github/actions/package-electrobun
+        with:
+          target: ${{ matrix.target }}
+          platform: ${{ matrix.platform }}
+          version: ${{ env.RELEASE_TAG }}
+          dist_dir: build
+          apple_identity: ${{ env.ELECTROBUN_DEVELOPER_ID }}
+
+      - uses: actions/attest-build-provenance@v2
+        if: matrix.platform != 'mac' || env.ELECTROBUN_DEVELOPER_ID != ''
+        with:
+          subject-path: ${{ steps.package.outputs.archive }}
+
+      - uses: actions/upload-artifact@v4
+        if: matrix.platform != 'mac' || env.ELECTROBUN_DEVELOPER_ID != ''
+        with:
+          name: binary-${{ matrix.target }}
+          path: ${{ steps.package.outputs.archive }}
+          retention-days: 1
+
+  checksums:
+    needs: binaries
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: assets
+          merge-multiple: true
+      - name: Compute sha256 checksums
+        run: |
+          set -euo pipefail
+          cd assets
+          shopt -s nullglob
+          sha256sum *.tar.gz *.dmg 2>/dev/null > checksums.txt || true
+          test -s checksums.txt
+          cat checksums.txt
+      - uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: assets/checksums.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: checksums
+          path: assets/checksums.txt
+          retention-days: 1
+
+  attach_release:
+    needs: [checksums, resolve_tag]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ needs.resolve_tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          draft: true
+          fail_on_unmatched_files: false
+          files: |
+            release-assets/*.tar.gz
+            release-assets/*.dmg
+            release-assets/checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Verify attestations
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/verify
+          gh release download "$RELEASE_TAG" \
+            --pattern '*.tar.gz' --pattern '*.dmg' --pattern 'checksums.txt' \
+            --dir /tmp/verify
+          for f in /tmp/verify/*; do
+            gh attestation verify "$f" --repo "$GITHUB_REPOSITORY"
+          done
+
+  publish_release:
+    needs: [attach_release, resolve_tag]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ needs.resolve_tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Re-verify all release assets
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/verify
+          gh release download "$RELEASE_TAG" --dir /tmp/verify
+          for f in /tmp/verify/*; do
+            gh attestation verify "$f" --repo "$GITHUB_REPOSITORY" || exit 1
+          done
+
+      - name: Un-draft the release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh release edit "$RELEASE_TAG" --draft=false
+          echo "Release $RELEASE_TAG is now live."

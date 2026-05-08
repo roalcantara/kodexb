@@ -1,0 +1,8 @@
+# https://ast-grep.github.io/guide/rule-config.html
+id: no-await-in-promise-all
+language: TypeScript
+rule:
+  pattern: Promise.all($A)
+  has:
+    pattern: await $_
+    stopBy: end

@@ -1,0 +1,46 @@
+# .github/actions/setup-bun-project/action.yml
+name: Setup Bun project
+description: Install bun (or mise → bun + ast-grep + tombi), restore lockfile cache, install deps.
+
+inputs:
+  setup_mode:
+    description: 'bun | mise'
+    required: false
+    default: bun
+  bun_version:
+    description: Bun version when setup_mode=bun
+    required: false
+    default: latest
+  mise_version:
+    description: Mise version when setup_mode=mise
+    required: false
+    default: '2026.3.9'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Bun (direct)
+      if: inputs.setup_mode == 'bun'
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: ${{ inputs.bun_version }}
+
+    - name: Setup mise (provides bun + ast-grep + tombi + actionlint)
+      if: inputs.setup_mode == 'mise'
+      uses: jdx/mise-action@v4
+      with:
+        version: ${{ inputs.mise_version }}
+        install: true
+        cache: true
+
+    - name: Cache bun install cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.bun/install/cache
+        key: bun-cache-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('bun.lock') }}
+        restore-keys: |
+          bun-cache-${{ runner.os }}-${{ runner.arch }}-
+
+    - name: Install dependencies
+      shell: bash
+      run: bun install --frozen-lockfile

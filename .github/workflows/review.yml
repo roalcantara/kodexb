@@ -1,0 +1,114 @@
+# .github/workflows/review.yml
+name: Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+
+concurrency:
+  group: kb-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-bun-project
+        with:
+          setup_mode: mise
+      - name: Run lint chain (aggregated exit code)
+        run: |
+          set +e
+          mkdir -p tmp/reports/linters
+          e=0
+          bun run lint:biome:ci || e=$?
+          bun run lint:knip:ci || e=$?
+          bun run lint:depcruise:ci || e=$?
+          bun run lint:jscpd:ci || e=$?
+          bun run lint:ls:ci || e=$?
+          bun run lint:ast-grep:ci || e=$?
+          bun run lint:mise:ci || e=$?
+          bun run typecheck || e=$?
+          exit $e
+      - name: Write summary table
+        if: always()
+        run: |
+          {
+            echo "## Lint summary"
+            echo
+            echo "| Tool | Report |"
+            echo "| ---- | ------ |"
+            for f in tmp/reports/linters/*; do
+              [ -f "$f" ] && printf '| `%s` | see artifact |\n' "$(basename "$f")"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-linters
+          path: tmp/reports/linters
+          retention-days: 7
+
+  test:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-bun-project
+        with:
+          setup_mode: mise
+      - run: bun run test:ci
+      - name: Append JUnit summary
+        if: always()
+        uses: ./.github/actions/junit-summary
+        with:
+          xml_path: tmp/reports/tests/junit.xml
+          output_path: ${{ github.step_summary }}
+          title: Test Results
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-tests
+          path: tmp/reports/tests
+          retention-days: 7
+      - uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: tmp/reports/tests/junit.xml
+          fail_on_failure: true
+          require_tests: true
+
+  build:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-bun-project
+        with:
+          setup_mode: mise
+      - uses: actions/cache@v4
+        with:
+          path: ~/.electrobun
+          key: electrobun-${{ runner.os }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            electrobun-${{ runner.os }}-
+      - name: Smoke build (forced unsigned)
+        env:
+          ELECTROBUN_DEVELOPER_ID: ''
+        run: bun run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-smoke-linux-x64
+          path: dist/
+          retention-days: 3

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["src/shell/main/index.ts", "src/shell/renderer/index.ts", "src/shell/renderer/app.spec.tsx"],
+  "project": ["src/**/*.ts", "src/shell/renderer/**/*.tsx"],
+  "ignoreExportsUsedInFile": true,
+  "ignoreDependencies": ["@types/three"],
+  "ignoreBinaries": ["mise", "dot"]
+}

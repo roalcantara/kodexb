@@ -1,0 +1,22 @@
+# src/core/ must be pure — no Bun APIs, no Node built-ins, no I/O.
+# This keeps core logic portable and unit-testable without any runtime setup.
+id: no-bun-in-core
+language: TypeScript
+files:
+  - "src/core/**/*.ts"
+severity: error
+rule:
+  any:
+    - pattern: import $$$NAMES from 'bun'
+    - pattern: import $$$NAMES from "bun"
+    - pattern: import { $$$NAMES } from 'bun'
+    - pattern: import { $$$NAMES } from "bun"
+    - pattern: import $$$NAMES from 'node:$$$MOD'
+    - pattern: import $$$NAMES from "node:$$$MOD"
+    - pattern: import { $$$NAMES } from 'node:$$$MOD'
+    - pattern: import { $$$NAMES } from "node:$$$MOD"
+    - pattern: Bun.$$$ANYTHING
+message: >
+  src/core/ must be pure — no Bun APIs or Node built-ins allowed.
+  If this code needs I/O, it belongs in src/shell/, not src/core/.
+note: See assets/docs/design.md — FCIS layer rules (Functional Core).

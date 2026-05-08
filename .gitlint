@@ -1,0 +1,57 @@
+# Rule reference: https://jorisroovers.com/gitlint/latest/rules/
+#
+# Policy matches assets/guides/GIT_COMMITS_GUIDE.md (subject ≤50 chars,
+# imperative + capitalized description, body lines ≤72, Conventional Commits).
+#
+# If you have ~/.config/gitlint/gitlint.cfg, run:
+#   gitlint -C .gitlint --msg-filename .git/COMMIT_EDITMSG
+# Pre-commit sets the same -C .gitlint in .pre-commit-config.yaml.
+
+[general]
+verbosity = 2
+ignore-merge-commits=true
+ignore-revert-commits=true
+ignore-fixup-commits=true
+ignore-squash-commits=true
+# Keep stdin available: the commit-msg hook passes the message through
+# --msg-filename, and verification showed this works without ignore-stdin.
+# ignore-stdin=true
+# Enable staged metadata guessing so ignore-by-author-name can match and
+# skip Dependabot commits (commit.author_name is otherwise unknown).
+staged=true
+regex-style-search=true
+contrib=contrib-title-conventional-commits
+
+[title-max-length]
+line-length=50
+
+[title-min-length]
+min-length=5
+
+# Conventional Commits + description must start with a capital letter (guide § Subject).
+[title-match-regex]
+regex=^(feat|fix|docs|style|ref|test|revert|chore|ci|build)(\([^)]*\))?(!)?: [A-Z].*
+
+[title-must-not-contain-word]
+words=wip
+
+[body-max-line-length]
+line-length=72
+
+[body-min-length]
+min-length=20
+
+[body-is-missing]
+ignore-merge-commits=true
+
+[contrib-title-conventional-commits]
+types=feat,fix,docs,style,ref,test,revert,chore,ci,build
+
+# Only relax title length on obvious release commits (avoid matching "prerelease", etc.).
+[ignore-by-title]
+regex=^Release(\s|$)
+ignore=title-max-length
+
+[ignore-by-author-name]
+regex=(.*)dependabot(.*)
+ignore=all

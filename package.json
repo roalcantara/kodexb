@@ -1,0 +1,89 @@
+{
+  "name": "kb",
+  "version": "0.1.0",
+  "description": "Native desktop knowledge management app built on Electrobun",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf dist tmp",
+    "cleanup": "bun run clean && rm -rf node_modules bun.lock*",
+    "reinstall": "bun run cleanup && mise exec -- bun install",
+    "dev:kill": "mise run dev:kill",
+    "start": "electrobun dev",
+    "dev": "electrobun dev --watch",
+    "build": "NODE_TLS_REJECT_UNAUTHORIZED=0 electrobun build",
+    "build:prod": "electrobun build --env=stable",
+    "release:ci": "bunx release-it --ci",
+    "test:ci": "mkdir -p tmp/reports/tests && bun test --pass-with-no-tests --reporter=junit --reporter-outfile=tmp/reports/tests/junit.xml --coverage --coverage-dir=tmp/reports/tests/coverage",
+    "lint:biome:ci": "mkdir -p tmp/reports/linters && bunx biome check --reporter=github",
+    "lint:knip:ci": "mkdir -p tmp/reports/linters && bunx knip --reporter compact > tmp/reports/linters/knip.txt",
+    "lint:depcruise:ci": "mkdir -p tmp/reports/linters && bunx depcruise . --config .dependency-cruiser.cjs --output-type json --output-to tmp/reports/linters/depcruise.json",
+    "lint:jscpd:ci": "mkdir -p tmp/reports/linters && bunx jscpd . --reporters json,console --output tmp/reports/linters/jscpd",
+    "lint:ls:ci": "mkdir -p tmp/reports/linters && bunx @ls-lint/ls-lint | tee tmp/reports/linters/ls-lint.txt",
+    "lint:ast-grep:ci": "mkdir -p tmp/reports/linters && mise exec -- ast-grep scan --error --report-style=rich | tee tmp/reports/linters/ast-grep.txt",
+    "lint:mise:ci": "mkdir -p tmp/reports/linters && mise exec -- tombi check mise.toml | tee tmp/reports/linters/mise.txt",
+    "test": "bun test --pass-with-no-tests",
+    "typecheck": "bunx tsc --noEmit",
+    "lint:biome": "bunx biome check",
+    "lint:biome:fix": "bun run lint:biome -- --write",
+    "lint:biome:format": "bunx biome format",
+    "lint:mise": "mise exec -- tombi check mise.toml",
+    "lint:knip": "bunx knip",
+    "lint:knip:fix": "bunx knip --fix",
+    "lint:depcruise": "bunx depcruise . --config .dependency-cruiser.cjs",
+    "lint:depcruise:graph": "bunx depcruise . --config .dependency-cruiser.cjs --include-only '^.' --output-type dot | dot -T svg > report/dependency-graph.svg",
+    "lint:jscpd": "bunx jscpd .",
+    "lint:ls": "bunx @ls-lint/ls-lint",
+    "lint:ast-grep": "mise exec -- ast-grep scan --error",
+    "lint:ast-grep:fix": "mise exec -- ast-grep scan --update-all",
+    "lint": "e=0; bun run typecheck || e=1; bun run lint:biome || e=1; bun run lint:knip || e=1; bun run lint:depcruise || e=1; bun run lint:mise || e=1; bun run lint:jscpd || e=1; bun run lint:ls || e=1; bun run lint:ast-grep || e=1; exit $e",
+    "lint:fix": "e=0; bun run lint:biome:fix || e=1; bun run lint:knip:fix || e=1; bun run lint:ast-grep:fix || e=1; exit $e"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.14",
+    "@release-it/conventional-changelog": "^9",
+    "@types/bun": "latest",
+    "@types/node": "^25.6.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.184.1",
+    "dependency-cruiser": "^17.4.0",
+    "jscpd": "^4.0.9",
+    "knip": "^6.12.0",
+    "release-it": "^17",
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "electrobun": "^1.18.1",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore(release): v${version} [skip ci]",
+      "tagName": "v${version}",
+      "requireBranch": "main",
+      "requireCleanWorkingDir": true,
+      "requireCommits": true
+    },
+    "github": {
+      "release": false,
+      "tokenRef": "GH_TOKEN"
+    },
+    "npm": {
+      "publish": false
+    },
+    "hooks": {
+      "after:bump": "bun run typecheck"
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": {
+          "name": "conventionalcommits"
+        },
+        "infile": "CHANGELOG.md",
+        "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n"
+      }
+    }
+  }
+}

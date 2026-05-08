@@ -1,0 +1,134 @@
+ls:
+  # NOTE: For `.md`, ls-lint effectively validates the basename segment. We
+  # anchor it to avoid accidental substring matches, but this can't reliably
+  # reject extra dot segments (avoid names like `desktop.v2.md`; use
+  # snake_case instead).
+  assets/wireframe/specs:
+    .md: regex:^[a-z][a-z0-9_]*$
+
+  # References encode provenance in the filename:
+  # `<source>.<description>.(png|md)`. Only `README.md` is exempt.
+  # Allow numbered series descriptions like `gemini.00_colour_palette.(png|md)`.
+  assets/wireframe/references:
+    .png: regex:^[a-z][a-z0-9]+\.[a-z0-9][a-z0-9_]*$
+    .md: regex:^(README|[a-z][a-z0-9]+\.[a-z0-9][a-z0-9_]*)$
+
+  # Anchor the basename pattern to avoid substring matches. Like specs `.md`,
+  # ls-lint doesn't reliably reject extra dot segments in the name, so avoid
+  # filenames like `01_list.bad.png`.
+  assets/wireframe/prototypes:
+    .png: regex:^[0-9]{2}_[a-z][a-z0-9_]*$
+
+  # ── App: directory↔suffix contract ──────────────────────────────────────────
+  # Root: only the public interface of the layer and the barrel.
+  src/shell/app:
+    .ts: regex:^(app|index)(\.spec)?$
+
+  src/shell/app/db:
+    .ts: regex:^([a-z][a-z0-9_]*\.(repository|service)|client|schema)(\.spec)?$
+
+  # ── Main: directory↔suffix contract ─────────────────────────────────────────
+  # Root: only the entry point and barrel. Everything else lives in a sub-folder.
+  src/shell/main:
+    .ts: regex:^(main|index)(\.spec)?$
+
+  # Helpers mirror src/core/helpers/ — process-level OS-integration helpers.
+  src/shell/main/helpers:
+    .ts: regex:^[a-z][a-z0-9_]*\.helper(\.spec)?$
+
+  # Concern sub-folders drop redundant prefixes — folder provides context.
+  src/shell/main/rpc:
+    .ts: regex:^(host|requests|schemas)(\.spec)?$
+
+  src/shell/main/window:
+    .ts: regex:^state(\.spec)?$
+
+  # ── Renderer: directory↔suffix contract ─────────────────────────────────────
+  # Root: only the React root, entry point, and HTML shell.
+  src/shell/renderer:
+    .ts: regex:^index$
+    .tsx: regex:^app$
+    .html: regex:^index$
+
+  # RPC client — renderer side of the main↔renderer bridge.
+  src/shell/renderer/rpc:
+    .ts: regex:^client$
+
+  src/shell/renderer/pages/list:
+    .tsx: regex:[a-z][a-z0-9_]*\.page(\.spec)?
+
+  src/shell/renderer/pages/detail:
+    .tsx: regex:[a-z][a-z0-9_]*\.page(\.spec)?
+
+  # Pages are .tsx, but settings also has a local type-only module.
+  src/shell/renderer/pages/settings:
+    .tsx: regex:[a-z][a-z0-9_]*\.page(\.spec)?
+    .ts: regex:[a-z][a-z0-9_]*\.types
+
+  # Anchor hook rules because ls-lint regexes match substrings. The .ts rules
+  # intentionally allow future .hook.spec.ts tests in list/shared folders.
+  src/shell/renderer/hooks/list:
+    .ts: regex:^use_[a-z][a-z0-9_]*\.hook(\.spec)?$
+    .tsx: regex:^use_[a-z][a-z0-9_]*\.hook\.spec$
+
+  # Anchor hook rules because ls-lint regexes match substrings. The .ts rules
+  # intentionally allow future .hook.spec.ts tests in list/shared folders.
+  src/shell/renderer/hooks/settings:
+    .ts: regex:^use_[a-z][a-z0-9_]*\.hook$
+
+  # Anchor hook rules because ls-lint regexes match substrings. The .ts rules
+  # intentionally allow future .hook.spec.ts tests in list/shared folders.
+  src/shell/renderer/hooks/shared:
+    .ts: regex:^use_[a-z][a-z0-9_]*\.hook(\.spec)?$
+    .tsx: regex:^use_[a-z][a-z0-9_]*\.hook\.spec$
+
+  src/shell/renderer/utils/list:
+    .ts: regex:[a-z][a-z0-9_]*\.util(\.spec)?
+    .tsx: regex:[a-z][a-z0-9_]*\.util(\.spec)?
+
+  src/shell/renderer/utils/shared:
+    .ts: regex:[a-z][a-z0-9_]*\.util(\.spec)?
+    .tsx: regex:[a-z][a-z0-9_]*\.util(\.spec)?
+
+  src/shell/renderer/constants:
+    .ts: regex:([a-z][a-z0-9_]*\.const|index)
+
+  src/shell/renderer/components/list:
+    .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
+
+  src/shell/renderer/components/detail:
+    .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
+
+  src/shell/renderer/components/shared:
+    .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
+
+  # ── Core: directory↔suffix contract ─────────────────────────────────────────
+  src/core/helpers:
+    .ts: regex:^([a-z][a-z0-9_]*\.helper(\.spec)?|index)$
+
+  src/core/constants:
+    .ts: regex:([a-z][a-z0-9_]*\.const|index)
+
+  src/core/domain/guards:
+    .ts: regex:([a-z][a-z0-9_]*\.guard|index)
+
+  src/core/domain/types:
+    .ts: regex:([a-z][a-z0-9_]*\.types|index)
+
+  src/core/domain/models/entries/schemas:
+    .ts: regex:([a-z][a-z0-9_]*\.schema(\.spec)?|index)
+
+  src/core/domain/models/entries/parsers:
+    .ts: regex:([a-z][a-z0-9_]*\.parser(\.spec)?|index)
+
+  src/core/domain/models/entries/factories:
+    .ts: regex:([a-z][a-z0-9_]*\.factory(\.spec)?|index)
+
+  src/core/domain/models/sources/parsers:
+    .ts: regex:([a-z][a-z0-9_]*\.parser(\.spec)?|index)
+
+ignore:
+  - .DS_Store
+  - node_modules
+  - dist
+  - build

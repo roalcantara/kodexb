@@ -1,0 +1,120 @@
+# kb
+
+[![Review](https://github.com/roalcantara/kb/actions/workflows/review.yml/badge.svg)](https://github.com/roalcantara/kb/actions/workflows/review.yml) [![Release](https://github.com/roalcantara/kb/actions/workflows/release.yml/badge.svg)](https://github.com/roalcantara/kb/actions/workflows/release.yml) [![Publish](https://github.com/roalcantara/kb/actions/workflows/publish.yml/badge.svg)](https://github.com/roalcantara/kb/actions/workflows/publish.yml)
+
+A native desktop knowledge management app built on [Electrobun][12].
+
+[![MIT license](https://img.shields.io/badge/License-MIT-brightgreen.svg?style=flat-square)](LICENSE) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg?style=flat-square)][2] [![Editor Config](https://img.shields.io/badge/Editor%20Config-1.0.1-crimson.svg?style=flat-square)][3] [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)][4] [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?logo=conventional-commits&style=flat-square)][9] [![Biome](https://img.shields.io/badge/Biome-blue.svg?style=flat-square)][13]
+
+## INSTALLATION
+
+```sh
+git clone https://github.com/roalcantara/kb
+cd kb
+mise run setup
+```
+
+## DEVELOPMENT
+
+```sh
+bun run dev       # Build and launch in dev mode (Electrobun window)
+bun run build     # Production build — dist/kb.app (macOS)
+bun run test      # Run unit tests
+bun run typecheck # Type-check without emitting
+bun run lint      # Run the full Phase-1 quality chain
+bun run lint:fix  # Auto-fix what can be fixed (Biome / Knip / ast-grep)
+```
+
+### CI mirror tasks
+
+The same checks GitHub Actions runs are mirrored locally via [Mise][6]:
+
+```sh
+mise run ci:review              # lint + test + Linux smoke build
+mise run ci:release:dry-run     # preview the next release-it run
+mise run ci:release:notes       # preview only the next CHANGELOG entry
+mise run ci:publish --version=0.1.0 --target=linux-x64  # build + package + checksum
+```
+
+See the [CI / CD guide][20] for the full task table.
+
+### DEPENDENCIES
+
+- [Git][5] — version control
+- [Mise][6] — tool version management
+  - [Bun][11] — runtime, package manager, bundler, test runner
+    - [Electrobun][12] — desktop app framework
+    - [React][13] — renderer
+    - [TypeScript][10] — type safety
+    - [Biome][13] — lint and format
+    - [Knip][14] — unused files and dependencies
+    - [dependency-cruiser][15] — dependency rules ([`.dependency-cruiser.cjs`](.dependency-cruiser.cjs))
+    - [ls-lint][16] — file and folder naming convention enforcement ([`.ls-lint.yml`](.ls-lint.yml))
+    - [jscpd][17] — copy-paste / duplication detection
+  - [pre-commit][7] — git hooks
+  - [ast-grep][18] — code structural search, lint, rewriting at large scale
+  - [gitlint][8] — commit message validation
+
+
+## CI / CD
+
+Three workflows handle review, release, and publishing:
+
+| Workflow      | Trigger                                         | Outcome                                   |
+| ------------- | ----------------------------------------------- | ----------------------------------------- |
+| `review.yml`  | PR opened / synchronized                        | Lint + test + Linux smoke build           |
+| `release.yml` | Push to `main` (squash-merged PR)               | Draft GitHub Release via [release-it][19] |
+| `publish.yml` | After Release succeeds (or `workflow_dispatch`) | Native binaries → un-drafted Release      |
+
+Build targets:
+
+| Target         | Runner             | Artifact                                                  |
+| -------------- | ------------------ | --------------------------------------------------------- |
+| `linux-x64`    | `ubuntu-latest`    | `kb-<ver>-linux-x64.tar.gz`                               |
+| `linux-arm64`  | `ubuntu-24.04-arm` | `kb-<ver>-linux-arm64.tar.gz`                             |
+| `darwin-arm64` | `macos-latest`     | `kb-<ver>-darwin-arm64.dmg` (or `-unsigned.dmg` fallback) |
+
+macOS code signing is gated by `ELECTROBUN_DEVELOPER_ID`; if unset, the mac
+leg produces an unsigned `.dmg` that can be installed with
+`xattr -d com.apple.quarantine /Applications/kb.app`.
+
+See the [CI / CD guide][20] for full operational detail (secrets,
+provisioning, troubleshooting, local mirroring).
+
+
+## ACKNOWLEDGEMENTS
+
+- [Standard Readme][4]
+- [Conventional Commits][9]
+
+## CONTRIBUTING
+
+- Bug reports and pull requests are welcome on [GitHub][0]
+- Do follow [Editor Config][3] rules.
+- Everyone interacting in the project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [Contributor Covenant][2] code of conduct.
+
+## LICENSE
+
+The project is available as open source under the terms of the [MIT][1] [License](LICENSE)
+
+[0]: https://github.com/roalcantara/kb 'kb'
+[1]: https://opensource.org/licenses/MIT 'Open Source Initiative'
+[2]: https://contributor-covenant.org 'A Code of Conduct for Open Source Communities'
+[3]: https://editorconfig.org 'EditorConfig'
+[4]: https://github.com/RichardLitt/standard-readme 'Standard Readme'
+[5]: https://git-scm.com 'Distributed version control system'
+[6]: https://mise.jdx.dev 'Manages dev tools like node, python, cmake, terraform, and hundreds more'
+[7]: https://pre-commit.com 'Framework for managing and maintaining multi-language pre-commit hooks'
+[8]: https://jorisroovers.com/gitlint 'Git commit message linter'
+[9]: https://conventionalcommits.org 'Conventional Commits'
+[10]: https://typescriptlang.org
+[11]: https://bun.sh
+[12]: https://blackboard.sh/electrobun
+[13]: https://react.dev
+[14]: https://github.com/webpro/knip 'Dependency analysis'
+[15]: https://github.com/sverweij/dependency-cruiser 'Dependency graphing and circular-dep detection'
+[16]: https://github.com/ls-lint/ls-lint 'File and folder naming convention enforcement'
+[17]: https://github.com/kucherenko/jscpd 'Copy-paste / duplication detection'
+[18]: https://ast-grep.github.io 'Code structural search, lint, rewriting at large scale'
+[19]: https://github.com/release-it/release-it 'release-it'
+[20]: assets/guides/CI_GUIDE.md 'CI / CD operational guide'
