@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.3.0](https://github.com/roalcantara/kodexb/compare/v0.2.0...v0.3.0) (2026-05-09)
+
+### Features
+
+* **core:** Add domain types, schemas, parsers ([1700f52](https://github.com/roalcantara/kodexb/commit/1700f52dc02350422f67418603813279b066ff5e))
+
 ## 0.2.0 (2026-05-08)
 
 ### Features
