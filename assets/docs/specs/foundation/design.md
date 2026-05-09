@@ -11,12 +11,12 @@ a local SQLite index.
 The architecture is **Functional Core, Imperative Shell (FCIS)** extended with
 a renderer zone:
 
-| **Zone**         | **Location**            | **Rule**                                                  |
-| ---------------- | ----------------------- | --------------------------------------------------------- |
-| Functional Core  | `src/core/`             | Pure functions only. No I/O, no side-effects.             |
-| Imperative Shell | `src/shell/`            | All I/O: DB, config, file system, RPC server.             |
-| Shared           | `src/shared/`           | Pure utilities and shared types — no I/O.                 |
-| Renderer (UI)    | `src/shell/renderer/`   | React browser app. Calls main via Eden Treaty client.     |
+| **Zone**         | **Location**          | **Rule**                                              |
+| ---------------- | --------------------- | ----------------------------------------------------- |
+| Functional Core  | `src/core/`           | Pure functions only. No I/O, no side-effects.         |
+| Imperative Shell | `src/shell/`          | All I/O: DB, config, file system, RPC server.         |
+| Shared           | `src/shared/`         | Pure utilities and shared types — no I/O.             |
+| Renderer (UI)    | `src/shell/renderer/` | React browser app. Calls main via Eden Treaty client. |
 
 YAML sources are the source of truth. SQLite is a derived, rebuildable index.
 The main process owns all I/O. The renderer owns all UI. They communicate
@@ -45,11 +45,11 @@ defined by an [Elysia][10] app exported from `src/shell/main/rpc/server.ts`.
 
 **Files eliminated vs. the old approach:**
 
-| Old                             | New equivalent                   |
-|---------------------------------|----------------------------------|
-| `src/shared/rpc/schema.ts`      | `RpcApp` type in `server.ts`     |
-| `src/shell/main/rpc.host.ts`    | `src/shell/main/rpc/server.ts`   |
-| `src/shell/renderer/rpc.client.ts` | Eden Treaty: `treaty<RpcApp>` |
+| Old                                | New equivalent                 |
+| ---------------------------------- | ------------------------------ |
+| `src/shared/rpc/schema.ts`         | `RpcApp` type in `server.ts`   |
+| `src/shell/main/rpc.host.ts`       | `src/shell/main/rpc/server.ts` |
+| `src/shell/renderer/rpc.client.ts` | Eden Treaty: `treaty<RpcApp>`  |
 
 ### Decision 2 — TypeBox at the transport, Zod in the core
 
@@ -162,7 +162,7 @@ from `src/shell/app/` or any Bun module directly.
 ```
 YAML files
   → js-yaml parse()
-  → Zod validate (Knowledge schema)       ← domain invariants
+  → TypeBox validate (Knowledge schema)   ← domain invariants
   → derive stable id: crc32(type:key)
   → assembleDoc(entry)                    ← pure, no I/O
   → Drizzle upsert (knowledges table)
@@ -175,8 +175,9 @@ Query path:
   → JSON over IPC → Eden Treaty client
 ```
 
-Zod lives in `src/core/` and import service only. TypeBox lives at Elysia
-route definitions only. They do not mix.
+TypeBox is the sole validation library across core and transport. `*.schema.ts`
+files define shapes, and `*.parser.ts` files apply coercion plus custom
+messages.
 
 ---
 
@@ -273,7 +274,7 @@ and `cache_miss` are emitted at debug level.
 │   │       │   ├── notes.parser.ts
 │   │       │   ├── preamble.parser.ts
 │   │       │   └── youtube.parser.ts
-│   │       └── validators/            # Zod schemas for YAML shapes
+│   │       └── validators/            # TypeBox schemas for YAML shapes
 │   ├── shared/                  # PURE — importable by all layers
 │   │   ├── types/
 │   │   │   └── index.ts         # Re-exports of domain types
@@ -397,24 +398,24 @@ Structured log lines (Logtape) to the Electrobun console:
 ts=<ISO> phase=<label> label=<desc> dur_ms=<n>
 ```
 
-| Phase         | When emitted                           |
-|---------------|----------------------------------------|
-| `config_load` | After config file read + validated     |
-| `sqlite`      | After each SQLite query                |
-| `import`      | After each file processed during sync  |
-| `cache_hit`   | Query served from in-memory cache      |
-| `cache_miss`  | Cache bypassed, SQLite queried         |
-| `rpc`         | Each RPC call (route + duration)       |
+| Phase         | When emitted                          |
+| ------------- | ------------------------------------- |
+| `config_load` | After config file read + validated    |
+| `sqlite`      | After each SQLite query               |
+| `import`      | After each file processed during sync |
+| `cache_hit`   | Query served from in-memory cache     |
+| `cache_miss`  | Cache bypassed, SQLite queried        |
+| `rpc`         | Each RPC call (route + duration)      |
 
 ---
 
 ## WINDOW SIZING
 
-| Width            | CSS class          | Panels visible                    |
-|------------------|--------------------|-----------------------------------|
-| < 1050 px        | `layout--compact`  | List only                         |
-| ≥ 1050 px        | `layout--comfort`  | List + detail                     |
-| ≥ 1300 px        | `layout--expanded` | List + detail + metadata sidebar  |
+| Width     | CSS class          | Panels visible                   |
+| --------- | ------------------ | -------------------------------- |
+| < 1050 px | `layout--compact`  | List only                        |
+| ≥ 1050 px | `layout--comfort`  | List + detail                    |
+| ≥ 1300 px | `layout--expanded` | List + detail + metadata sidebar |
 
 App launches at **820 × 600 px** (compact). Pressing ↵ on a selected entry
 calls `resizeWindow(1200, current_height)` before the CSS slide-in fires, so
@@ -466,16 +467,16 @@ const DEFAULT_PATHS = {
 
 ## DESIGN SYSTEM — ANDROMEDA VOID
 
-| Token            | Value     | Role                          |
-|------------------|-----------|-------------------------------|
-| bg               | `#0b0e14` | App background                |
-| surface          | `#121721` | Cards, panels                 |
-| accent-command   | `#5ecfbe` | Commands, primary actions     |
-| accent-cheat     | `#a855f7` | Cheat-sheets                  |
-| accent-task      | `#ffae57` | Tasks                         |
-| accent-bookmark  | `#3399ff` | Bookmarks                     |
-| radius           | `6px`     | All interactive controls      |
-| shadow           | none      | Depth = tonal contrast only   |
+| Token           | Value     | Role                        |
+| --------------- | --------- | --------------------------- |
+| bg              | `#0b0e14` | App background              |
+| surface         | `#121721` | Cards, panels               |
+| accent-command  | `#5ecfbe` | Commands, primary actions   |
+| accent-cheat    | `#a855f7` | Cheat-sheets                |
+| accent-task     | `#ffae57` | Tasks                       |
+| accent-bookmark | `#3399ff` | Bookmarks                   |
+| radius          | `6px`     | All interactive controls    |
+| shadow          | none      | Depth = tonal contrast only |
 
 System font stack. No web fonts. No drop-shadows except floating overlays.
 
@@ -483,28 +484,28 @@ System font stack. No web fonts. No drop-shadows except floating overlays.
 
 ## CORRECTNESS PROPERTIES
 
-| Property                        | Validates                      |
-|---------------------------------|--------------------------------|
-| Sync idempotency                | V1-2                           |
-| Stable ID across rebuilds       | V1-2                           |
-| FTS consistency post-sync       | V1-3                           |
-| Platform path resolution        | V1-1                           |
-| RPC type safety                 | Compile-time (TypeScript)      |
-| Renderer has no Bun APIs        | dependency-cruiser rules       |
-| Task circular dep rejection     | V1-7 §8 (max depth 3)          |
-| Task YAML write-back atomicity  | V1-7 §2, §4                    |
+| Property                       | Validates                 |
+| ------------------------------ | ------------------------- |
+| Sync idempotency               | V1-2                      |
+| Stable ID across rebuilds      | V1-2                      |
+| FTS consistency post-sync      | V1-3                      |
+| Platform path resolution       | V1-1                      |
+| RPC type safety                | Compile-time (TypeScript) |
+| Renderer has no Bun APIs       | dependency-cruiser rules  |
+| Task circular dep rejection    | V1-7 §8 (max depth 3)     |
+| Task YAML write-back atomicity | V1-7 §2, §4               |
 
 ---
 
 ## TESTING STRATEGY
 
-| Layer          | Approach                                                  |
-|----------------|-----------------------------------------------------------|
-| Core parsers   | Pure unit — data in, assertions out. No mocks.            |
-| AppService     | In-memory SQLite + drizzle-seed fixtures                  |
-| Elysia routes  | `server.handle(new Request(...))` — no real port          |
+| Layer          | Approach                                                          |
+| -------------- | ----------------------------------------------------------------- |
+| Core parsers   | Pure unit — data in, assertions out. No mocks.                    |
+| AppService     | In-memory SQLite + drizzle-seed fixtures                          |
+| Elysia routes  | `server.handle(new Request(...))` — no real port                  |
 | Renderer       | React Testing Library + Happy-DOM; Eden Treaty via context double |
-| Import service | Real YAML fixture files in `src/__tests__/fixtures/`      |
+| Import service | Real YAML fixture files in `src/__tests__/fixtures/`              |
 
 See `kb-testing` skill for patterns and gotchas.
 

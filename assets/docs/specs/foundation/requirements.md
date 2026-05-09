@@ -13,16 +13,16 @@ using **Strategy 1 — Direct Main Process + Typed RPC** (see [design.md](design
 
 **PHASE 1 (this document):** Desktop UI. Eight features:
 
-| **Feature**    | **Summary**                                          |
-| -------------- | ---------------------------------------------------- |
-| `first-run`    | First-run setup and platform path resolution         |
-| `sync`         | Import YAML sources into SQLite                      |
-| `list`         | List and search entries (main window)                |
-| `detail`       | View one entry by stable id                          |
-| `stats`        | Database statistics panel                            |
-| `settings`     | App settings and configuration panel                 |
-| `task-mgmt`    | Create, edit, and manage tasks from the desktop UI   |
-| `actions`      | Context-sensitive ⌘K palette and per-type primaries  |
+| **Feature** | **Summary**                                         |
+| ----------- | --------------------------------------------------- |
+| `first-run` | First-run setup and platform path resolution        |
+| `sync`      | Import YAML sources into SQLite                     |
+| `list`      | List and search entries (main window)               |
+| `detail`    | View one entry by stable id                         |
+| `stats`     | Database statistics panel                           |
+| `settings`  | App settings and configuration panel                |
+| `task-mgmt` | Create, edit, and manage tasks from the desktop UI  |
+| `actions`   | Context-sensitive ⌘K palette and per-type primaries |
 
 ---
 
@@ -90,11 +90,11 @@ user-overridable via the Settings panel (V1-6).
 The app opens at **820 × 600 px** (compact — list only). The user can expand it
 freely; two responsive breakpoints unlock additional panels:
 
-| **Width**   | **Layout**                          | **Detail panel**                     |
-| ----------- | ----------------------------------- | ------------------------------------ |
-| 820 px      | List only (default launch)          | Hidden — ↵ to toggle                 |
-| ≥ 1050 px   | List + Content                      | Slides in (180 ms `ease-out`)        |
-| ≥ 1300 px   | List + Content + Metadata sidebar   | Full three-column                    |
+| **Width** | **Layout**                        | **Detail panel**              |
+| --------- | --------------------------------- | ----------------------------- |
+| 820 px    | List only (default launch)        | Hidden — ↵ to toggle          |
+| ≥ 1050 px | List + Content                    | Slides in (180 ms `ease-out`) |
+| ≥ 1300 px | List + Content + Metadata sidebar | Full three-column             |
 
 WHEN the user presses ↵ (or clicks "Toggle Details") and the window is at 820 px,
 THEN the system SHALL animate the window to 1200 × 600 px and slide in the detail
@@ -167,7 +167,7 @@ detail views reflect my latest knowledge files.
 2. WHEN the user configures an alternative sources directory in settings, THEN
    the sync SHALL use that directory.
 
-3. WHEN a file fails YAML parsing or Zod validation, THEN the system SHALL:
+3. WHEN a file fails YAML parsing or TypeBox validation, THEN the system SHALL:
    - Record the error and continue processing remaining files.
    - Show a summary notification listing files with errors.
    - Indicate partial failure (not all entries may be up to date).
@@ -443,13 +443,13 @@ integration.
 
 ## Appendix B — CLI parity map
 
-| **KodexB CLI** | **kb Desktop (this spec)**        | **Status**    |
-| -------------- | --------------------------------- | ------------- |
-| `kb config`    | Settings panel + first-run        | V1-1, V1-6    |
-| `kb import`    | Sync action                       | V1-2          |
-| `kb ls`        | List view                         | V1-3          |
-| `kb view`      | Detail panel                      | V1-4          |
-| `kb db`        | Stats panel                       | V1-5          |
-| `kb cache`     | Deferred (Phase 2)                | —             |
-| *(new)*        | Task management UI                | V1-7          |
-| *(new)*        | ⌘K action palette                 | V1-8          |
+| **KodexB CLI** | **kb Desktop (this spec)** | **Status** |
+| -------------- | -------------------------- | ---------- |
+| `kb config`    | Settings panel + first-run | V1-1, V1-6 |
+| `kb import`    | Sync action                | V1-2       |
+| `kb ls`        | List view                  | V1-3       |
+| `kb view`      | Detail panel               | V1-4       |
+| `kb db`        | Stats panel                | V1-5       |
+| `kb cache`     | Deferred (Phase 2)         | —          |
+| *(new)*        | Task management UI         | V1-7       |
+| *(new)*        | ⌘K action palette          | V1-8       |

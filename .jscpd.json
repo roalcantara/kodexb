@@ -7,6 +7,7 @@
     "src/__tests__/fixtures/fixture-s/**",
     "assets/images/**",
     "assets/sources/**",
+    "assets/docs/**",
     "**/tools/benchmarks/results/**",
     ".cursor/commands/**",
     "**/tmp/**"

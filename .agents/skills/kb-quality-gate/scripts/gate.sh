@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# kb quality gate — run all checks sequentially, exit 1 on first failure
+# kb quality gate — run all stages sequentially, exit 1 on first failure.
+# Mirrors the stage list in `.agents/skills/kb-quality-gate/SKILL.md`.
 set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
@@ -25,15 +26,19 @@ echo "kb Quality Gate"
 echo "═══════════════"
 
 echo ""
-echo "1 / Tests"
-run_check "bun test" bun test
+echo "0 / Autofix (biome + knip + ast-grep)"
+run_check "bun run lint:fix" bun run lint:fix
 
 echo ""
-echo "2 / Lint + Typecheck"
+echo "1 / Lint + Typecheck (typecheck + biome + knip + depcruise + jscpd + ls + ast-grep + mise)"
 run_check "bun run lint" bun run lint
 
 echo ""
-echo "3 / Preview Server"
+echo "2 / Tests"
+run_check "bun test" bun test
+
+echo ""
+echo "3 / Preview server smoke"
 bun tools/preview/server.ts &
 SERVER_PID=$!
 sleep 3
@@ -47,12 +52,12 @@ else
 fi
 
 echo ""
-echo "4 / Knip (unused exports)"
-run_check "knip" bunx knip
+echo "4 / Build smoke (skipped on non-macOS hosts)"
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  run_check "bun run build" bun run build
+else
+  echo "  bun run build … (skipped — non-macOS host)"
+fi
 
 echo ""
-echo "5 / JSCPD (duplication)"
-run_check "jscpd" bunx jscpd src/ --min-lines 10 --threshold 5
-
-echo ""
-echo -e "\033[0;32mAll checks passed.\033[0m"
+echo -e "\033[0;32mAll gate stages passed.\033[0m"

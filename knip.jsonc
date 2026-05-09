@@ -1,6 +1,14 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "entry": ["src/shell/main/index.ts", "src/shell/renderer/index.ts", "src/shell/renderer/app.spec.tsx"],
+  "entry": [
+    "src/shell/main/index.ts",
+    "src/shell/renderer/index.ts",
+    "src/core/index.ts",
+    "src/shared/types/index.ts",
+    "src/shared/utils/index.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.spec.tsx"
+  ],
   "project": ["src/**/*.ts", "src/shell/renderer/**/*.tsx"],
   "ignoreExportsUsedInFile": true,
   "ignoreDependencies": ["@types/three"],

@@ -230,8 +230,8 @@ fixtures for integration tests.
 
 `AppService` exposed through an Elysia app. Eden Treaty client wired to the
 renderer. All existing RPC handlers migrated from the manual schema to Elysia routes.
-TypeBox replaces Zod at the transport boundary. Preview server updated to use
-the same Elysia app over HTTP.
+TypeBox is the sole validation library across core and transport — Zod was
+removed in a prior refactor. Preview server uses the same Elysia app over HTTP.
 
 **Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
 `electrobun-rpc`, `electrobun-rpc-patterns`

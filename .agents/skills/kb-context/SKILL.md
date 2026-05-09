@@ -119,6 +119,10 @@ System font stack. No web fonts.
 
 ## Gotchas
 
+- TypeBox is the sole validation library across `src/core/` and transport.
+  `*.schema.ts` files contain TypeBox shapes; `*.parser.ts` files contain
+  coercion logic and custom error messages.
+
 - **Never** import `src/shell/app/` from renderer — use Eden Treaty client only.
 - **Never** add `node:` builtins in `src/core/` — pure functions only.
 - Elysia is Bun-only; do not use Express/Fastify/Hono as alternatives.

@@ -22,7 +22,14 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
-    "paths": {}
+    "paths": {
+      "@core": ["./src/core/index.ts"],
+      "@core/*": ["./src/core/*"],
+      "@shared/utils": ["./src/shared/utils/index.ts"],
+      "@shared/utils/*": ["./src/shared/utils/*"],
+      "@shared/types": ["./src/shared/types/index.ts"],
+      "@shared/types/*": ["./src/shared/types/*"]
+    }
   },
   "include": ["src/**/*", "tools/**/*"],
   "exclude": ["node_modules", "dist", "build"]
