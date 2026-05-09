@@ -8,6 +8,7 @@
     "assets/images/**",
     "assets/sources/**",
     "assets/docs/**",
+    "graphify-out/**",
     "**/tools/benchmarks/results/**",
     ".cursor/commands/**",
     "**/tmp/**"

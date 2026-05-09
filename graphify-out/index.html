@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>kb — graphify tree viewer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      margin: 20px 0 0 24px;
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #1e3a56;
+    }
+    .controls {
+      margin: 20px 0 15px 24px;
+    }
+    button {
+      margin-right: 10px;
+      padding: 8px 18px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    button:active {
+      background: #004085;
+    }
+    #tree-container {
+      width: calc(100vw - 48px); /* Adjust for body margin/padding */
+      height: 85vh;
+      overflow: auto;
+      border-radius: 8px;
+      background: #fff;
+      margin-left: 24px;
+      margin-right: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #ddd;
+    }
+    svg {
+      background: #fff;
+      border-radius: 8px;
+      display: block; /* Important for D3 */
+    }
+    .node circle {
+      stroke-width: 2.5px;
+    }
+    .node text { /* Base style for the <text> container */
+      font: 13px 'Segoe UI', sans-serif;
+      paint-order: stroke fill; /* Ensures text is readable over lines */
+      stroke: #fff; /* White halo */
+      stroke-width: 3px; /* Halo thickness */
+      stroke-linejoin: round;
+      stroke-opacity: 0.85; /* Halo opacity */
+    }
+    .link {
+      fill: none;
+      stroke-opacity: 0.7;
+      stroke-width: 2px;
+    }
+  </style>
+</head>
+<body>
+  <h1>kb — Knowledge Graph</h1>
+  <div class="controls">
+    <button onclick="expandAll()">Expand All</button>
+    <button onclick="collapseAll()">Collapse All</button>
+    <button onclick="resetView()">Reset View</button>
+  </div>
+  <div id="tree-container">
+    <svg id="tree-svg" width="6000" height="8000"></svg>
+  </div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    const initialJsonData = {"name":"kb","total_count":383,"children":[{"name":"AGENTS.md","total_count":4,"children":[{"name":"architecture_doctrine design spec (cited path)","total_count":1,"children":[]},{"name":"Electrobun Cursor skill routing and hooks","total_count":1,"children":[]},{"name":"Mandatory architecture doctrine before codegen","total_count":1,"children":[]},{"name":"One artifact type per file; suffix defines type","total_count":1,"children":[]}]},{"name":"assets","total_count":62,"children":[{"name":"docs","total_count":47,"children":[{"name":"design.md","total_count":1,"children":[{"name":"assets/docs/design.md (cited by rules)","total_count":1,"children":[]}]},{"name":"specs","total_count":46,"children":[{"name":"ci-build-packaging","total_count":8,"children":[{"name":"design.md","total_count":7,"children":[{"name":"@release-it/conventional-changelog","total_count":1,"children":[]},{"name":"Env-gated macOS codesign and notarize in electrobun.config","total_count":1,"children":[]},{"name":"Phase 2 CI Build Packaging Design","total_count":1,"children":[]},{"name":"publish.yml binary matrix and attest workflow","total_count":1,"children":[]},{"name":"release-it","total_count":1,"children":[]},{"name":"release.yml release-it draft workflow","total_count":1,"children":[]},{"name":"review.yml PR validation workflow","total_count":1,"children":[]}]},{"name":"tasks.md","total_count":1,"children":[{"name":"Phase 2 CI Build Packaging Tasks","total_count":1,"children":[]}]}]},{"name":"core-domain","total_count":5,"children":[{"name":"design.md","total_count":4,"children":[{"name":"Bun test documentation","total_count":1,"children":[]},{"name":"Phase 3 Core Domain Design","total_count":1,"children":[]},{"name":"Single atomic commit per foundation phase (3 and 4)","total_count":1,"children":[]},{"name":"Zod documentation","total_count":1,"children":[]}]},{"name":"tasks.md","total_count":1,"children":[{"name":"Phase 3 Core Domain Implementation Plan","total_count":1,"children":[]}]}]},{"name":"data-layer","total_count":6,"children":[{"name":"design.md","total_count":5,"children":[{"name":"Collapse phase stashes to phase-pending","total_count":1,"children":[]},{"name":"entry.repository typed SQLite query API","total_count":1,"children":[]},{"name":"ImportService.runOnce YAML to SQLite flow","total_count":1,"children":[]},{"name":"openDatabase idempotent DDL bootstrap","total_count":1,"children":[]},{"name":"Phase 4 Data Layer Design","total_count":1,"children":[]}]},{"name":"tasks.md","total_count":1,"children":[{"name":"Phase 4 Data Layer Implementation Plan","total_count":1,"children":[]}]}]},{"name":"foundation","total_count":17,"children":[{"name":"design.md","total_count":9,"children":[{"name":"Decision 1 — Elysia + Eden Treaty RPC bridge","total_count":1,"children":[]},{"name":"Decision 2 — TypeBox sole validation library","total_count":1,"children":[]},{"name":"Decision 3 — hand-written TypeBox RPC responses","total_count":1,"children":[]},{"name":"Decision 4 — Fishery factories; no drizzle-seed","total_count":1,"children":[]},{"name":"Decision 5 — bun:sqlite direct; Drizzle removed","total_count":1,"children":[]},{"name":"FCIS zones (core / shell / shared / renderer)","total_count":1,"children":[]},{"name":"Foundation Design","total_count":1,"children":[]},{"name":"kb desktop design","total_count":1,"children":[]},{"name":"Stable identity (crc32(type:key))","total_count":1,"children":[]}]},{"name":"requirements.md","total_count":4,"children":[{"name":"Default window 820×600 compact layout","total_count":1,"children":[]},{"name":"Foundation Requirements","total_count":1,"children":[]},{"name":"kb foundation requirements (V1-1–V1-8)","total_count":1,"children":[]},{"name":"Stable id (crc32 formula)","total_count":1,"children":[]}]},{"name":"roadmap.md","total_count":4,"children":[{"name":"CI before feature work","total_count":1,"children":[]},{"name":"Electrobun build vs CLI Docker pipeline","total_count":1,"children":[]},{"name":"Foundation Roadmap","total_count":1,"children":[]},{"name":"kb implementation roadmap","total_count":1,"children":[]}]}]},{"name":"validators","total_count":10,"children":[{"name":"design.md","total_count":6,"children":[{"name":"Validators Decision 1 — TypeBox throughout","total_count":1,"children":[]},{"name":"Validators Decision 2 — pure schema boundary (depcruise)","total_count":1,"children":[]},{"name":"Validators Decision 3 — typebox.helper module","total_count":1,"children":[]},{"name":"Validators Decision 4 — flat workspace","total_count":1,"children":[]},{"name":"Validators Decision 5 — type-fest discipline","total_count":1,"children":[]},{"name":"Validators TypeBox migration design","total_count":1,"children":[]}]},{"name":"requirements.md","total_count":3,"children":[{"name":"V-1 eliminate Zod from src/core","total_count":1,"children":[]},{"name":"V-2 strict schema vs parser split","total_count":1,"children":[]},{"name":"Validators migration requirements","total_count":1,"children":[]}]},{"name":"tasks.md","total_count":1,"children":[{"name":"Validators implementation tasks","total_count":1,"children":[]}]}]}]}]},{"name":"guides","total_count":15,"children":[{"name":"BUN_RUNTIME.md","total_count":1,"children":[{"name":"Bun runtime quick reference","total_count":1,"children":[]}]},{"name":"CI_GUIDE.md","total_count":1,"children":[{"name":"kb GitHub Actions CI/CD","total_count":1,"children":[]}]},{"name":"CODESTYLE_GUIDE.md","total_count":2,"children":[{"name":"File suffix and directory contract","total_count":1,"children":[]},{"name":"shell app main renderer split","total_count":1,"children":[]}]},{"name":"DoD.md","total_count":1,"children":[{"name":"Definition of Done checklist","total_count":1,"children":[]}]},{"name":"ELECTROBUN.md","total_count":1,"children":[{"name":"Electrobun docs map and RPC shape","total_count":1,"children":[]}]},{"name":"FCIS.guide.md","total_count":3,"children":[{"name":"Functional Core (FCIS)","total_count":1,"children":[]},{"name":"Imperative Shell (FCIS)","total_count":1,"children":[]},{"name":"Result type for expected failures","total_count":1,"children":[]}]},{"name":"FISHERY_GUIDE.md","total_count":1,"children":[{"name":"Fishery factories in kb","total_count":1,"children":[]}]},{"name":"GIT_COMMITS_GUIDE.md","total_count":1,"children":[{"name":"Conventional Commits (kb)","total_count":1,"children":[]}]},{"name":"GIT_GUIDE.md","total_count":1,"children":[{"name":"Extended Git and commit background","total_count":1,"children":[]}]},{"name":"MISE_GUIDE.md","total_count":1,"children":[{"name":"Prefer Mise for complex workflows","total_count":1,"children":[]}]},{"name":"TESTING_GUIDE.md","total_count":2,"children":[{"name":"Bun testing and Better Specs","total_count":1,"children":[]},{"name":"DI and minimal mocking policy","total_count":1,"children":[]}]}]}]},{"name":"CHANGELOG.md","total_count":1,"children":[{"name":"Project changelog and release tooling","total_count":1,"children":[]}]},{"name":"CLAUDE.md","total_count":3,"children":[{"name":"CLAUDE.md — stack, FCIS, conventions, skills","total_count":1,"children":[]},{"name":"FCIS layer layout (core/shared/shell)","total_count":1,"children":[]},{"name":"foundation design.md (Decisions 2–5 cited)","total_count":1,"children":[]}]},{"name":"DESIGN.md","total_count":3,"children":[{"name":"Andromeda Void design system (kb)","total_count":1,"children":[]},{"name":"Depth through tonal layering (no card shadows)","total_count":1,"children":[]},{"name":"Four jewel-toned entry-type accents in list UI","total_count":1,"children":[]}]},{"name":"electrobun.config.ts","total_count":2,"children":[{"name":"kb Electrobun app metadata and build config","total_count":1,"children":[]},{"name":"macOS codesign and notarize gating from env vars","total_count":1,"children":[]}]},{"name":"README.md","total_count":2,"children":[{"name":"CI/CD operational guide (cited from README)","total_count":1,"children":[]},{"name":"kb README — install, dev commands, CI/CD summary","total_count":1,"children":[]}]},{"name":"sgconfig.yml","total_count":1,"children":[{"name":"ast-grep project config (ruleDirs)","total_count":1,"children":[]}]},{"name":"src","total_count":296,"children":[{"name":"core","total_count":278,"children":[{"name":"constants","total_count":9,"children":[{"name":"app.const.ts","total_count":2,"children":[{"name":"APP_VERSION","total_count":1,"children":[]},{"name":"PACKAGE_DESCRIPTION","total_count":1,"children":[]}]},{"name":"defaults.const.ts","total_count":2,"children":[{"name":"DEFAULTS","total_count":1,"children":[]},{"name":"DEFAULTS tilde paths for config.yaml / Zod defaults","total_count":1,"children":[]}]},{"name":"lang.const.ts","total_count":4,"children":[{"name":"MARKDOWN_SUPPORTED_LANGS","total_count":1,"children":[]},{"name":"MARKDOWN_SUPPORTED_LANGS","total_count":1,"children":[]},{"name":"MarkdownLang","total_count":1,"children":[]},{"name":"MarkdownLang type","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[]}]},{"name":"domain","total_count":234,"children":[{"name":"constants","total_count":12,"children":[{"name":"entry.const.ts","total_count":11,"children":[{"name":"DEFAULT_ENTRY_ICONS","total_count":1,"children":[]},{"name":"ENTRY_KEYS","total_count":1,"children":[]},{"name":"ENTRY_TYPE_SECTIONS","total_count":1,"children":[]},{"name":"ENTRY_TYPE_VALUES","total_count":1,"children":[]},{"name":"ENTRY_TYPE_VALUES","total_count":1,"children":[]},{"name":"PATTERNS","total_count":1,"children":[]},{"name":"PATTERNS (tag regex)","total_count":1,"children":[]},{"name":"SECTION_ENTRY_TYPE_VALUES","total_count":1,"children":[]},{"name":"SECTION_ENTRY_TYPES","total_count":1,"children":[]},{"name":"TASK_PRIORITY_VALUES","total_count":1,"children":[]},{"name":"TASK_STATUS_VALUES","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[{"name":"domain constants barrel","total_count":1,"children":[]}]}]},{"name":"guards","total_count":10,"children":[{"name":"entry.guard.ts","total_count":2,"children":[{"name":"isEntryType","total_count":1,"children":[]},{"name":"isEntryType()","total_count":1,"children":[]}]},{"name":"entry_section.guard.ts","total_count":2,"children":[{"name":"isEntryTypeSection","total_count":1,"children":[]},{"name":"isEntryTypeSection()","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[{"name":"domain guards barrel re-exports","total_count":1,"children":[]}]},{"name":"lang.guard.ts","total_count":2,"children":[{"name":"isNoteLang","total_count":1,"children":[]},{"name":"isNoteLang()","total_count":1,"children":[]}]},{"name":"entry.guard.spec.ts","total_count":1,"children":[]},{"name":"entry_section.guard.spec.ts","total_count":1,"children":[]},{"name":"lang.guard.spec.ts","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[{"name":"src/core/domain/index barrel","total_count":1,"children":[]}]},{"name":"models","total_count":202,"children":[{"name":"entries","total_count":105,"children":[{"name":"factories","total_count":7,"children":[{"name":"entry.factory.spec.ts","total_count":3,"children":[{"name":"e","total_count":1,"children":[]},{"name":"entry factory tests","total_count":1,"children":[]},{"name":"raw","total_count":1,"children":[]}]},{"name":"entry.factory.ts","total_count":4,"children":[{"name":"toEntry","total_count":1,"children":[]},{"name":"toEntry()","total_count":1,"children":[]},{"name":"toEntryWithSourceHint","total_count":1,"children":[]},{"name":"toEntryWithSourceHint()","total_count":1,"children":[]}]}]},{"name":"index.ts","total_count":1,"children":[{"name":"src/core/domain/models/entries/index barrel","total_count":1,"children":[]}]},{"name":"parsers","total_count":40,"children":[{"name":"base_fields.parser.spec.ts","total_count":4,"children":[{"name":"base_fields.parser.spec","total_count":1,"children":[]},{"name":"r","total_count":1,"children":[]},{"name":"raw","total_count":1,"children":[]},{"name":"result","total_count":1,"children":[]}]},{"name":"base_fields.parser.ts","total_count":2,"children":[{"name":"parseBaseEntryFields","total_count":1,"children":[]},{"name":"parseBaseEntryFields()","total_count":1,"children":[]}]},{"name":"link.parser.spec.ts","total_count":1,"children":[{"name":"link.parser.spec","total_count":1,"children":[]}]},{"name":"link.parser.ts","total_count":9,"children":[{"name":"makeError()","total_count":1,"children":[]},{"name":"normaliseArrayItem","total_count":1,"children":[]},{"name":"normaliseArrayItem()","total_count":1,"children":[]},{"name":"parseLinksFromSource","total_count":1,"children":[]},{"name":"parseLinksFromSource()","total_count":1,"children":[]},{"name":"parseSingleLinkItem","total_count":1,"children":[]},{"name":"parseSingleLinkItem()","total_count":1,"children":[]},{"name":"parseTitledLink","total_count":1,"children":[]},{"name":"parseTitledLink()","total_count":1,"children":[]}]},{"name":"meta.parser.spec.ts","total_count":1,"children":[{"name":"meta.parser.spec","total_count":1,"children":[]}]},{"name":"meta.parser.ts","total_count":2,"children":[{"name":"parseMetaFromSource","total_count":1,"children":[]},{"name":"parseMetaFromSource()","total_count":1,"children":[]}]},{"name":"notes.parser.ts","total_count":5,"children":[{"name":"makeError()","total_count":1,"children":[]},{"name":"parseNoteBlock","total_count":1,"children":[]},{"name":"parseNoteBlock()","total_count":1,"children":[]},{"name":"parseNoteBlocksFromSource","total_count":1,"children":[]},{"name":"parseNoteBlocksFromSource()","total_count":1,"children":[]}]},{"name":"source_document.parser.spec.ts","total_count":6,"children":[{"name":"[e]","total_count":1,"children":[]},{"name":"entries","total_count":1,"children":[]},{"name":"knowledge","total_count":1,"children":[]},{"name":"result","total_count":1,"children":[]},{"name":"source_document.parser.spec","total_count":1,"children":[]},{"name":"task","total_count":1,"children":[]}]},{"name":"source_document.parser.ts","total_count":4,"children":[{"name":"parseSourceFile","total_count":1,"children":[]},{"name":"parseSourceFile()","total_count":1,"children":[]},{"name":"parseSourceSection","total_count":1,"children":[]},{"name":"parseSourceSection()","total_count":1,"children":[]}]},{"name":"tags.parser.spec.ts","total_count":1,"children":[{"name":"tags.parser.spec","total_count":1,"children":[]}]},{"name":"tags.parser.ts","total_count":4,"children":[{"name":"normalizeKnowledgeTag","total_count":1,"children":[]},{"name":"normalizeKnowledgeTag()","total_count":1,"children":[]},{"name":"parseTagsFromSource","total_count":1,"children":[]},{"name":"parseTagsFromSource()","total_count":1,"children":[]}]},{"name":"notes.parser.spec.ts","total_count":1,"children":[]}]},{"name":"schemas","total_count":57,"children":[{"name":"base.schema.ts","total_count":8,"children":[{"name":"nonEmpty","total_count":1,"children":[]},{"name":"NoteBlock","total_count":1,"children":[]},{"name":"noteBlockSchema","total_count":1,"children":[]},{"name":"noteBlockSchema","total_count":1,"children":[]},{"name":"ParsedSourceBaseFields","total_count":1,"children":[]},{"name":"sourceBaseEntryRowObjectSchema","total_count":1,"children":[]},{"name":"sourceBaseEntryRowObjectSchema","total_count":1,"children":[]},{"name":"SourceBaseParseContext","total_count":1,"children":[]}]},{"name":"entry.schema.ts","total_count":19,"children":[{"name":"BaseEntry","total_count":1,"children":[]},{"name":"BookmarkEntry","total_count":1,"children":[]},{"name":"bookmarkEntrySchema","total_count":1,"children":[]},{"name":"bookmarkEntrySchema","total_count":1,"children":[]},{"name":"CheatEntry","total_count":1,"children":[]},{"name":"cheatEntrySchema","total_count":1,"children":[]},{"name":"cheatEntrySchema","total_count":1,"children":[]},{"name":"CommandEntry","total_count":1,"children":[]},{"name":"commandEntrySchema","total_count":1,"children":[]},{"name":"commandEntrySchema","total_count":1,"children":[]},{"name":"Entry","total_count":1,"children":[]},{"name":"entrySchema","total_count":1,"children":[]},{"name":"entrySchema (discriminated union)","total_count":1,"children":[]},{"name":"entryTypeSchema","total_count":1,"children":[]},{"name":"entryTypeSchema","total_count":1,"children":[]},{"name":"SourceRow","total_count":1,"children":[]},{"name":"TaskEntry","total_count":1,"children":[]},{"name":"taskEntrySchema","total_count":1,"children":[]},{"name":"taskEntrySchema","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[{"name":"entries schemas barrel re-exports","total_count":1,"children":[]}]},{"name":"link.schema.ts","total_count":8,"children":[{"name":"httpUrlSchema","total_count":1,"children":[]},{"name":"httpUrlSchema","total_count":1,"children":[]},{"name":"LinkItem","total_count":1,"children":[]},{"name":"linkItemSchema","total_count":1,"children":[]},{"name":"linkItemSchema","total_count":1,"children":[]},{"name":"linkMapValueSchema","total_count":1,"children":[]},{"name":"linkObjectSchema","total_count":1,"children":[]},{"name":"linkObjectSchema","total_count":1,"children":[]}]},{"name":"source_row_min.schema.ts","total_count":6,"children":[{"name":"isValidSourceRowMin","total_count":1,"children":[]},{"name":"isValidSourceRowMin()","total_count":1,"children":[]},{"name":"SourceRowMin","total_count":1,"children":[]},{"name":"sourceRowMinChecker","total_count":1,"children":[]},{"name":"sourceRowMinSchema","total_count":1,"children":[]},{"name":"sourceRowMinSchema (TypeBox)","total_count":1,"children":[]}]},{"name":"tags.schema.ts","total_count":3,"children":[{"name":"Tags","total_count":1,"children":[]},{"name":"tagsSchema","total_count":1,"children":[]},{"name":"tagsSchema","total_count":1,"children":[]}]},{"name":"task.schema.ts","total_count":12,"children":[{"name":"parseTaskPriorityFromSource","total_count":1,"children":[]},{"name":"parseTaskPriorityFromSource()","total_count":1,"children":[]},{"name":"parseTaskStatusFromSource","total_count":1,"children":[]},{"name":"parseTaskStatusFromSource()","total_count":1,"children":[]},{"name":"Priority","total_count":1,"children":[]},{"name":"priorityChecker","total_count":1,"children":[]},{"name":"prioritySchema","total_count":1,"children":[]},{"name":"prioritySchema","total_count":1,"children":[]},{"name":"statusChecker","total_count":1,"children":[]},{"name":"TaskStatus","total_count":1,"children":[]},{"name":"taskStatusSchema","total_count":1,"children":[]},{"name":"taskStatusSchema","total_count":1,"children":[]}]}]}]},{"name":"index.ts","total_count":1,"children":[{"name":"src/core/domain/models/index barrel","total_count":1,"children":[]}]},{"name":"knowledges","total_count":88,"children":[{"name":"detail","total_count":62,"children":[{"name":"doc.assembler.spec.ts","total_count":8,"children":[{"name":"doc","total_count":1,"children":[]},{"name":"doc.assembler.spec","total_count":1,"children":[]},{"name":"knowledge","total_count":1,"children":[]},{"name":"makeBookmark()","total_count":1,"children":[]},{"name":"makeCommand()","total_count":1,"children":[]},{"name":"makeTask()","total_count":1,"children":[]},{"name":"NOW","total_count":1,"children":[]},{"name":"result","total_count":1,"children":[]}]},{"name":"doc.assembler.ts","total_count":12,"children":[{"name":"assembleDoc","total_count":1,"children":[]},{"name":"assembleDoc()","total_count":1,"children":[]},{"name":"assembleNotesDoc","total_count":1,"children":[]},{"name":"assembleNotesDoc()","total_count":1,"children":[]},{"name":"AssemblyError","total_count":1,"children":[]},{"name":"buildPreamble","total_count":1,"children":[]},{"name":"buildPreamble()","total_count":1,"children":[]},{"name":"renderFragment","total_count":1,"children":[]},{"name":"renderFragment()","total_count":1,"children":[]},{"name":"renderNoteFragments","total_count":1,"children":[]},{"name":"renderNoteFragments()","total_count":1,"children":[]},{"name":"toBase64()","total_count":1,"children":[]}]},{"name":"doc.bookmark.parser.spec.ts","total_count":4,"children":[{"name":"baseEntry","total_count":1,"children":[]},{"name":"doc.bookmark.parser.spec","total_count":1,"children":[]},{"name":"entry","total_count":1,"children":[]},{"name":"out","total_count":1,"children":[]}]},{"name":"doc.bookmark.parser.ts","total_count":2,"children":[{"name":"buildBookmarkPreamble","total_count":1,"children":[]},{"name":"buildBookmarkPreamble()","total_count":1,"children":[]}]},{"name":"doc.cheat.parser.spec.ts","total_count":2,"children":[{"name":"cheatEntry","total_count":1,"children":[]},{"name":"doc.cheat.parser.spec","total_count":1,"children":[]}]},{"name":"doc.cheat.parser.ts","total_count":2,"children":[{"name":"buildCheatPreamble","total_count":1,"children":[]},{"name":"buildCheatPreamble()","total_count":1,"children":[]}]},{"name":"doc.command.parser.spec.ts","total_count":3,"children":[{"name":"cmd","total_count":1,"children":[]},{"name":"doc.command.parser.spec","total_count":1,"children":[]},{"name":"out","total_count":1,"children":[]}]},{"name":"doc.command.parser.ts","total_count":2,"children":[{"name":"buildCommandPreamble","total_count":1,"children":[]},{"name":"buildCommandPreamble()","total_count":1,"children":[]}]},{"name":"doc.task.parser.spec.ts","total_count":4,"children":[{"name":"baseTask","total_count":1,"children":[]},{"name":"doc.task.parser.spec","total_count":1,"children":[]},{"name":"out","total_count":1,"children":[]},{"name":"t","total_count":1,"children":[]}]},{"name":"doc.task.parser.ts","total_count":2,"children":[{"name":"buildTaskPreamble","total_count":1,"children":[]},{"name":"buildTaskPreamble()","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[{"name":"detail module barrel exports","total_count":1,"children":[]}]},{"name":"notes.parser.spec.ts","total_count":1,"children":[{"name":"notes.parser.spec","total_count":1,"children":[]}]},{"name":"notes.parser.ts","total_count":4,"children":[{"name":"parseNotes","total_count":1,"children":[]},{"name":"parseNotes()","total_count":1,"children":[]},{"name":"parseNotesFromBlocks","total_count":1,"children":[]},{"name":"parseNotesFromBlocks()","total_count":1,"children":[]}]},{"name":"youtube.parser.spec.ts","total_count":2,"children":[{"name":"candidates","total_count":1,"children":[]},{"name":"youtube.parser.spec","total_count":1,"children":[]}]},{"name":"youtube.parser.ts","total_count":13,"children":[{"name":"extractYouTubeId","total_count":1,"children":[]},{"name":"extractYouTubeId()","total_count":1,"children":[]},{"name":"YOUTUBE_THUMB_JPEG_STEMS","total_count":1,"children":[]},{"name":"youTubeEmbedUrl","total_count":1,"children":[]},{"name":"youTubeEmbedUrl()","total_count":1,"children":[]},{"name":"YouTubeThumbJpegStem","total_count":1,"children":[]},{"name":"youTubeThumbJpegUrl()","total_count":1,"children":[]},{"name":"youTubeThumbnail","total_count":1,"children":[]},{"name":"youTubeThumbnail()","total_count":1,"children":[]},{"name":"youTubeThumbnailCandidates","total_count":1,"children":[]},{"name":"youTubeThumbnailCandidates()","total_count":1,"children":[]},{"name":"youTubeThumbnailMq","total_count":1,"children":[]},{"name":"youTubeThumbnailMq()","total_count":1,"children":[]}]}]},{"name":"factories","total_count":10,"children":[{"name":"knowledge.factory.spec.ts","total_count":6,"children":[{"name":"a","total_count":1,"children":[]},{"name":"b","total_count":1,"children":[]},{"name":"entry","total_count":1,"children":[]},{"name":"expected","total_count":1,"children":[]},{"name":"k","total_count":1,"children":[]},{"name":"knowledge factory tests","total_count":1,"children":[]}]},{"name":"knowledge.factory.ts","total_count":4,"children":[{"name":"deriveId","total_count":1,"children":[]},{"name":"deriveId()","total_count":1,"children":[]},{"name":"toKnowledge","total_count":1,"children":[]},{"name":"toKnowledge()","total_count":1,"children":[]}]}]},{"name":"index.ts","total_count":1,"children":[{"name":"src/core/domain/models/knowledges/index barrel","total_count":1,"children":[]}]},{"name":"schemas","total_count":15,"children":[{"name":"index.ts","total_count":1,"children":[{"name":"knowledge schemas barrel","total_count":1,"children":[]}]},{"name":"knowledge.schema.ts","total_count":14,"children":[{"name":"BookmarkKnowledge","total_count":1,"children":[]},{"name":"bookmarkKnowledgeSchema","total_count":1,"children":[]},{"name":"CheatKnowledge","total_count":1,"children":[]},{"name":"cheatKnowledgeSchema","total_count":1,"children":[]},{"name":"CommandKnowledge","total_count":1,"children":[]},{"name":"commandKnowledgeSchema","total_count":1,"children":[]},{"name":"Knowledge","total_count":1,"children":[]},{"name":"knowledgeSchema","total_count":1,"children":[]},{"name":"knowledgeSchema","total_count":1,"children":[]},{"name":"PersistFields","total_count":1,"children":[]},{"name":"persistFieldsSchema","total_count":1,"children":[]},{"name":"persistFieldsSchema","total_count":1,"children":[]},{"name":"TaskKnowledge","total_count":1,"children":[]},{"name":"taskKnowledgeSchema","total_count":1,"children":[]}]}]}]},{"name":"sources","total_count":8,"children":[{"name":"index.ts","total_count":1,"children":[{"name":"src/core/domain/models/sources/index barrel","total_count":1,"children":[]}]},{"name":"parsers","total_count":7,"children":[{"name":"source_location.parser.spec.ts","total_count":2,"children":[{"name":"source location parser tests","total_count":1,"children":[]},{"name":"yaml","total_count":1,"children":[]}]},{"name":"source_location.parser.ts","total_count":5,"children":[{"name":"approxEntryKeyLine","total_count":1,"children":[]},{"name":"approxEntryKeyLine()","total_count":1,"children":[]},{"name":"escapeRegex","total_count":1,"children":[]},{"name":"escapeRegex()","total_count":1,"children":[]},{"name":"nextTopLevelSectionLine()","total_count":1,"children":[]}]}]}]}]},{"name":"types","total_count":9,"children":[{"name":"entry.types.ts","total_count":4,"children":[{"name":"EntryKey","total_count":1,"children":[]},{"name":"EntryType","total_count":1,"children":[]},{"name":"EntryType / EntryKey / SectionEntryType aliases","total_count":1,"children":[]},{"name":"SectionEntryType","total_count":1,"children":[]}]},{"name":"note_fragments.types.ts","total_count":4,"children":[{"name":"NoteFragment","total_count":1,"children":[]},{"name":"NoteFragment","total_count":1,"children":[]},{"name":"RawNotes","total_count":1,"children":[]},{"name":"RawNotes","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[]}]}]},{"name":"helpers","total_count":6,"children":[{"name":"path.helper.spec.ts","total_count":3,"children":[{"name":"braceVar","total_count":1,"children":[]},{"name":"EXPAND_PATH_CASES","total_count":1,"children":[]},{"name":"mockEnv","total_count":1,"children":[]}]},{"name":"path.helper.ts","total_count":2,"children":[{"name":"expandPath","total_count":1,"children":[]},{"name":"expandPath()","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[{"name":"src/core/index barrel","total_count":1,"children":[]}]},{"name":"validation","total_count":28,"children":[{"name":"typebox.helper.spec.ts","total_count":13,"children":[{"name":"check","total_count":1,"children":[]},{"name":"err","total_count":1,"children":[]},{"name":"errors","total_count":1,"children":[]},{"name":"first","total_count":1,"children":[]},{"name":"formatted","total_count":1,"children":[]},{"name":"isValid","total_count":1,"children":[]},{"name":"result","total_count":1,"children":[]},{"name":"schema","total_count":1,"children":[]},{"name":"second","total_count":1,"children":[]},{"name":"start","total_count":1,"children":[]},{"name":"typedErr","total_count":1,"children":[]},{"name":"unionSchema","total_count":1,"children":[]},{"name":"value","total_count":1,"children":[]}]},{"name":"typebox.helper.ts","total_count":14,"children":[{"name":".constructor()","total_count":1,"children":[]},{"name":"checkCache","total_count":1,"children":[]},{"name":"compile","total_count":1,"children":[]},{"name":"compile()","total_count":1,"children":[]},{"name":"formatErrors","total_count":1,"children":[]},{"name":"formatErrors()","total_count":1,"children":[]},{"name":"makeGuard","total_count":1,"children":[]},{"name":"makeGuard()","total_count":1,"children":[]},{"name":"parse","total_count":1,"children":[]},{"name":"parse()","total_count":1,"children":[]},{"name":"safeParse","total_count":1,"children":[]},{"name":"safeParse()","total_count":1,"children":[]},{"name":"TypeBoxValidationError","total_count":1,"children":[]},{"name":"TypeBoxValidationError","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[]}]}]},{"name":"shared","total_count":9,"children":[{"name":"types","total_count":3,"children":[{"name":"env.types.ts","total_count":2,"children":[{"name":"Env","total_count":1,"children":[]},{"name":"Env","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[{"name":"shared types barrel","total_count":1,"children":[]}]}]},{"name":"utils","total_count":6,"children":[{"name":"crc32.spec.ts","total_count":2,"children":[{"name":"crc32 unit tests","total_count":1,"children":[]},{"name":"r","total_count":1,"children":[]}]},{"name":"crc32.ts","total_count":3,"children":[{"name":"crc32","total_count":1,"children":[]},{"name":"crc32()","total_count":1,"children":[]},{"name":"TABLE","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[{"name":"shared utils crc32 re-export","total_count":1,"children":[]}]}]}]},{"name":"shell","total_count":9,"children":[{"name":"main","total_count":3,"children":[{"name":"index.ts","total_count":1,"children":[{"name":"main process entry import","total_count":1,"children":[]}]},{"name":"main.ts","total_count":2,"children":[{"name":"Electrobun BrowserWindow bootstrap","total_count":1,"children":[]},{"name":"win","total_count":1,"children":[]}]}]},{"name":"renderer","total_count":6,"children":[{"name":"app.spec.tsx","total_count":2,"children":[{"name":"app.spec.tsx tests","total_count":1,"children":[]},{"name":"checkRoot()","total_count":1,"children":[]}]},{"name":"app.tsx","total_count":2,"children":[{"name":"Renderer root: createRoot + mount","total_count":1,"children":[]},{"name":"rootEl","total_count":1,"children":[]}]},{"name":"index.html","total_count":1,"children":[{"name":"renderer index.html shell","total_count":1,"children":[]}]},{"name":"index.ts","total_count":1,"children":[{"name":"renderer index imports app.tsx","total_count":1,"children":[]}]}]}]}]},{"name":"tmp","total_count":2,"children":[{"name":"_status_raw.txt","total_count":1,"children":[{"name":"Git status raw snapshot","total_count":1,"children":[]}]},{"name":"phase-3-stash-manifest.md","total_count":1,"children":[{"name":"Phase 3 stash manifest","total_count":1,"children":[]}]}]},{"name":"tools","total_count":7,"children":[{"name":"rules","total_count":7,"children":[{"name":"no-await-in-promise-all.yml","total_count":1,"children":[{"name":"ast-grep rule no-await-in-promise-all","total_count":1,"children":[]}]},{"name":"no-bun-in-core.yml","total_count":2,"children":[{"name":"ast-grep rule no-bun-in-core","total_count":1,"children":[]},{"name":"FCIS functional core (pure src/core)","total_count":1,"children":[]}]},{"name":"no-console-in-src.yml","total_count":1,"children":[{"name":"ast-grep rule no-console-in-src","total_count":1,"children":[]}]},{"name":"no-fishery-import.yml","total_count":1,"children":[{"name":"ast-grep rule no-fishery-import","total_count":1,"children":[]}]},{"name":"no-renderer-app-import.yml","total_count":1,"children":[{"name":"ast-grep rule no-renderer-app-import","total_count":1,"children":[]}]},{"name":"no-zod-in-routes.yml","total_count":1,"children":[{"name":"ast-grep rule no-zod-in-routes","total_count":1,"children":[]}]}]}]}]};
+
+    function transformData(jsonData) {
+        // Helper function to recursively build the children structure
+        function processNode(node, parentL1StageName) {
+            let displayName = node.name;
+            // Append total_count if it exists and is not already in the name
+            if (node.total_count !== undefined) {
+                if (!/\(Total Count: \d+\)$/.test(displayName)) {
+                    displayName += ` (Total Count: ${node.total_count})`;
+                }
+            }
+
+            const newNode = { name: displayName };
+
+            if (parentL1StageName === "Root") {
+                 newNode.originalStageName = node.name;
+            } else {
+                newNode.originalStageName = parentL1StageName;
+            }
+
+            if (node.children && node.children.length > 0) {
+                const stageNameToPass = (parentL1StageName === "Root") ? node.name : parentL1StageName;
+                newNode.children = node.children.map(child => processNode(child, stageNameToPass));
+            }
+
+            return newNode;
+        }
+
+        let rootDisplayName = jsonData.name;
+        if (jsonData.total_count !== undefined && !/\(Total Count: \d+\)$/.test(rootDisplayName)) {
+            rootDisplayName += ` (Total Count: ${jsonData.total_count})`;
+        }
+
+        return {
+            name: rootDisplayName,
+            originalStageName: "Root",
+            children: (jsonData.children || []).map(child => processNode(child, "Root"))
+        };
+    }
+
+    const treeData = transformData(initialJsonData);
+
+    // Auto-populated phaseColors: every depth-1 child of the root gets
+    // a stable colour from a bigger palette so all top-level dirs are
+    // distinguishable.
+    const PALETTE = [
+      ["#3498DB","#2980B9","#AED6F1"], ["#2ECC71","#27AE60","#A9DFBF"],
+      ["#E74C3C","#C0392B","#F5B7B1"], ["#9B59B6","#8E44AD","#D7BDE2"],
+      ["#F39C12","#D68910","#FAD7A0"], ["#1ABC9C","#117864","#A2D9CE"],
+      ["#34495E","#1B2631","#ABB2B9"], ["#E67E22","#BA4A00","#F5CBA7"],
+      ["#16A085","#0E6655","#A2D9CE"], ["#D35400","#A04000","#EDBB99"],
+      ["#7F8C8D","#566573","#D5DBDB"], ["#C0392B","#7B241C","#F5B7B1"],
+      ["#2E86C1","#1B4F72","#A9CCE3"], ["#28B463","#196F3D","#A9DFBF"],
+      ["#AF7AC5","#6C3483","#D2B4DE"],
+    ];
+    const phaseColors = { "Root": { fill: "#4A4A4A", stroke: "#333333", collapsedFill: "#6C757D" },
+                          "Default": { fill: "#BDC3C7", stroke: "#95A5A6", collapsedFill: "#ECF0F1" } };
+    (initialJsonData.children || []).forEach((c, i) => {
+      const pal = PALETTE[i % PALETTE.length];
+      phaseColors[c.name] = { fill: pal[0], stroke: pal[1], collapsedFill: pal[2] };
+    });
+
+    const levelSpecificPalettes = {
+      0: { fill: "#4A4A4A", stroke: "#333333", collapsedFill: "#6C757D" },
+      2: { fill: "#6ab04c", stroke: "#508a38", collapsedFill: "#a3d391" },
+      3: { fill: "#f0932b", stroke: "#d0730f", collapsedFill: "#f6c07e" },
+      4: { fill: "#be2edd", stroke: "#a01cb3", collapsedFill: "#e08bf2" },
+      5: { fill: "#00a8ff", stroke: "#007ac1", collapsedFill: "#74d2ff" },
+      6: { fill: "#e55039", stroke: "#c23620", collapsedFill: "#f09a8d" },
+      default: { fill: "#747d8c", stroke: "#57606f", collapsedFill: "#a4b0be" }
+    };
+
+    const svgElement = d3.select("#tree-svg");
+    const initialSvgWidth = +svgElement.attr("width");
+    const initialSvgHeight = +svgElement.attr("height");
+    const margin = { top: 40, right: 120, bottom: 80, left: 450 };
+    let width = initialSvgWidth - margin.left - margin.right;
+    let height = initialSvgHeight - margin.top - margin.bottom;
+    const duration = 500;
+    let nodeCounter = 0;
+    const g = svgElement.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    const treemap = d3.tree().nodeSize([40, 0]);
+    let rootNode = d3.hierarchy(treeData, d => d.children);
+    rootNode.x0 = 0;
+    rootNode.y0 = 0;
+
+    if (rootNode.children) {
+      rootNode.children.forEach(d_child => {
+        if (d_child.children) { collapseBranch(d_child); }
+      });
+    }
+    updateTree(rootNode);
+
+    function collapseBranch(d) { if (d.children) { d._children = d.children; d._children.forEach(collapseBranch); d.children = null; } }
+    function expandBranch(d) { if (d._children) { d.children = d._children; d._children = null; } if (d.children) { d.children.forEach(expandBranch); } }
+    window.expandAll = () => { expandBranch(rootNode); updateTree(rootNode); };
+    window.collapseAll = () => { if (rootNode.children) { rootNode.children.forEach(collapseBranch); } updateTree(rootNode); };
+    window.resetView = () => { if (rootNode.children) { rootNode.children.forEach(d_child => { if (d_child.children || d_child._children) { collapseBranch(d_child); } }); } if (rootNode._children && !rootNode.children) { rootNode.children = rootNode._children; rootNode._children = null; } updateTree(rootNode); };
+
+    function updateTree(source) {
+      const treeLayoutData = treemap(rootNode);
+      let nodes = treeLayoutData.descendants();
+      let links = treeLayoutData.descendants().slice(1);
+
+      let minX = 0;
+      let maxX = 0;
+      if (nodes.length > 0) {
+        minX = d3.min(nodes, d => d.x);
+        maxX = d3.max(nodes, d => d.x);
+      }
+
+      let neededHeight = Math.max(initialSvgHeight, maxX - minX + margin.top + margin.bottom + 100);
+      svgElement.transition().duration(duration / 2).attr("height", neededHeight);
+      g.transition().duration(duration / 2).attr("transform", `translate(${margin.left},${margin.top - minX + 40})`);
+
+      nodes.forEach(d => { d.y = d.depth * 400; }); // Adjust horizontal separation if needed
+
+      const node = g.selectAll('g.node').data(nodes, d => d.id || (d.id = ++nodeCounter));
+      const nodeEnter = node.enter().append('g')
+        .attr('class', d => "node" + (d.children || d._children ? " node--internal" : " node--leaf") + (d._children ? " _children" : ""))
+        .attr('transform', d => `translate(${source.y0},${source.x0})`)
+        .on('click', (event, d) => { if (d.children) { d._children = d.children; d.children = null; } else if (d._children) { d.children = d._children; d._children = null; } updateTree(d); })
+        .style('cursor', d => (d.children || d._children) ? 'pointer' : 'default');
+
+      nodeEnter.append('circle').attr('r', 1e-6);
+
+      nodeEnter.append('text')
+        .attr('dy', '.35em')
+        .attr('x', d => d.children || d._children ? -14 : 14)
+        .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
+        .style("fill-opacity", 1e-6)
+        .call(wrapText, 380);
+
+      const nodeUpdate = nodeEnter.merge(node);
+      nodeUpdate.transition().duration(duration)
+        .attr('transform', d => `translate(${d.y},${d.x})`)
+        .attr('class', d => "node" + (d.children ? " node--internal" : " node--leaf") + (d._children ? " node--internal _children" : ""));
+
+      nodeUpdate.select('circle').attr('r', 8.5)
+        .style('fill', d => {
+            let palette;
+            if (d.depth === 0) {
+                palette = levelSpecificPalettes[0];
+            } else if (d.depth === 1) {
+                palette = phaseColors[d.data.originalStageName] || phaseColors.Default;
+            } else {
+                palette = levelSpecificPalettes[d.depth] || levelSpecificPalettes.default;
+            }
+            if (d._children) return palette.collapsedFill;
+            if (d.children) return palette.fill;
+            return "#fff";
+        })
+        .style('stroke', d => {
+            let palette;
+            if (d.depth === 0) {
+                palette = levelSpecificPalettes[0];
+            } else if (d.depth === 1) {
+                palette = phaseColors[d.data.originalStageName] || phaseColors.Default;
+            } else {
+                palette = levelSpecificPalettes[d.depth] || levelSpecificPalettes.default;
+            }
+            return palette.stroke;
+        });
+      nodeUpdate.select('text').style("fill-opacity", 1).call(wrapText, 380);
+
+      const nodeExit = node.exit().transition().duration(duration).attr('transform', d => `translate(${source.y},${source.x})`).remove();
+      nodeExit.select('circle').attr('r', 1e-6);
+      nodeExit.select('text').style('fill-opacity', 1e-6);
+
+      const link = g.selectAll('path.link').data(links, d => d.id);
+      const linkEnter = link.enter().insert('path', "g").attr('class', 'link').attr('d', d => { const o = { x: source.x0, y: source.y0 }; return diagonal(o, o); });
+
+      linkEnter.merge(link).transition().duration(duration).attr('d', d => diagonal(d, d.parent))
+        .style('stroke', d => {
+            const sourceNode = d.parent;
+            if (!sourceNode) return phaseColors.Default.stroke;
+            const l1AncestorName = sourceNode.data.originalStageName;
+            const colorPalette = phaseColors[l1AncestorName] || phaseColors.Default;
+            return colorPalette.stroke;
+        });
+      link.exit().transition().duration(duration).attr('d', d => { const o = { x: source.x, y: source.y }; return diagonal(o, o); }).remove();
+      nodes.forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+    }
+
+    function diagonal(s, d) { return `M ${s.y} ${s.x} C ${(s.y + d.y) / 2} ${s.x}, ${(s.y + d.y) / 2} ${d.x}, ${d.y} ${d.x}`; }
+
+    function wrapText(textElements, maxWidth) {
+        const textPartColors = {
+            name: '#343a40',
+            count: '#0056b3'
+        };
+        const countRegex = /(\s\(Total Count: \d+\))$/;
+
+        textElements.each(function () {
+            const textD3 = d3.select(this);
+            const originalNodeText = textD3.datum().data.name;
+            const x = parseFloat(textD3.attr("x") || 0);
+            const initialDy = textD3.attr("dy");
+            const textAnchor = textD3.attr("text-anchor");
+            const lineHeight = 1.1;
+
+            textD3.text(null);
+
+            let namePart = originalNodeText;
+            let countPartText = "";
+
+            const countMatch = originalNodeText.match(countRegex);
+            if (countMatch && originalNodeText.endsWith(countMatch[0])) {
+                namePart = originalNodeText.substring(0, originalNodeText.length - countMatch[0].length).trim();
+                countPartText = countMatch[0].trim();
+            }
+
+            const tokens = [];
+            namePart.split(/\s+/).filter(Boolean).forEach(word => {
+                tokens.push({ text: word, type: 'name' });
+            });
+            if (countPartText) {
+                tokens.push({ text: countPartText, type: 'count' });
+            }
+
+            if (tokens.length === 0 && originalNodeText) {
+                tokens.push({ text: originalNodeText, type: 'name' });
+            }
+
+            let currentTspan = textD3.append("tspan").attr("x", x).attr("dy", initialDy);
+            if (textAnchor === "end") currentTspan.attr("text-anchor", "end");
+
+            let lineTokens = [];
+
+            for (let i = 0; i < tokens.length; i++) {
+                const tokenObj = tokens[i];
+
+                lineTokens.push(tokenObj);
+                currentTspan.text(lineTokens.map(t => t.text).join(" "));
+
+                if (currentTspan.node().getComputedTextLength() > maxWidth && lineTokens.length > 1) {
+                    lineTokens.pop();
+
+                    currentTspan.text(null);
+                    lineTokens.forEach((prevToken, idx) => {
+                        currentTspan.append("tspan")
+                            .text((idx > 0 ? " " : "") + prevToken.text)
+                            .style("fill", textPartColors[prevToken.type] || textPartColors.name)
+                            .style("font-weight", prevToken.type === 'count' ? "bold" : "normal");
+                    });
+
+                    lineTokens = [tokenObj];
+                    currentTspan = textD3.append("tspan").attr("x", x).attr("dy", lineHeight + "em");
+                    if (textAnchor === "end") currentTspan.attr("text-anchor", "end");
+                }
+            }
+
+            currentTspan.text(null);
+            lineTokens.forEach((token, idx) => {
+                currentTspan.append("tspan")
+                    .text((idx > 0 ? " " : "") + token.text)
+                    .style("fill", textPartColors[token.type] || textPartColors.name)
+                    .style("font-weight", token.type === 'count' ? "bold" : "normal");
+            });
+
+            if (textD3.selectAll("tspan > tspan").empty() && textD3.select("tspan").text().length === 0 && originalNodeText) {
+                let t = textD3.select("tspan");
+                let displayText = originalNodeText;
+                t.text(displayText).style("fill", textPartColors.name);
+                if (t.node() && t.node().getComputedTextLength() > maxWidth && displayText.length > 20) {
+                    let estimatedChars = Math.floor(maxWidth / (t.node().getComputedTextLength()/displayText.length) );
+                    displayText = displayText.substring(0, Math.max(0, estimatedChars - 3)) + "...";
+                    t.text(displayText);
+                }
+            }
+        });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+{
+  "communities": {
+    "0": [
+      "detail_doc_assembler_assembledoc",
+      "detail_doc_assembler_assemblenotesdoc",
+      "detail_doc_assembler_assemblyerror",
+      "detail_doc_assembler_buildpreamble",
+      "detail_doc_assembler_renderfragment",
+      "detail_doc_assembler_rendernotefragments",
+      "detail_doc_assembler_spec_doc",
+      "detail_doc_assembler_spec_knowledge",
+      "detail_doc_assembler_spec_makebookmark",
+      "detail_doc_assembler_spec_makecommand",
+      "detail_doc_assembler_spec_maketask",
+      "detail_doc_assembler_spec_now",
+      "detail_doc_assembler_spec_result",
+      "detail_doc_assembler_tobase64",
+      "detail_doc_cheat_parser_buildcheatpreamble",
+      "detail_doc_cheat_parser_spec_cheatentry",
+      "detail_doc_command_parser_buildcommandpreamble",
+      "detail_doc_command_parser_spec_cmd",
+      "detail_doc_command_parser_spec_out",
+      "detail_doc_task_parser_buildtaskpreamble",
+      "detail_doc_task_parser_spec_basetask",
+      "detail_doc_task_parser_spec_out",
+      "detail_doc_task_parser_spec_t",
+      "domain_models_entries_schemas_entry_schema_ts",
+      "domain_models_knowledges_detail_doc_assembler_spec_ts",
+      "domain_models_knowledges_detail_doc_assembler_ts",
+      "domain_models_knowledges_detail_doc_cheat_parser_spec_ts",
+      "domain_models_knowledges_detail_doc_cheat_parser_ts",
+      "domain_models_knowledges_detail_doc_command_parser_spec_ts",
+      "domain_models_knowledges_detail_doc_command_parser_ts",
+      "domain_models_knowledges_detail_doc_task_parser_spec_ts",
+      "domain_models_knowledges_detail_doc_task_parser_ts",
+      "domain_models_knowledges_schemas_knowledge_schema_ts",
+      "schemas_entry_schema_baseentry",
+      "schemas_entry_schema_bookmarkentry",
+      "schemas_entry_schema_bookmarkentryschema",
+      "schemas_entry_schema_cheatentry",
+      "schemas_entry_schema_cheatentryschema",
+      "schemas_entry_schema_commandentry",
+      "schemas_entry_schema_commandentryschema",
+      "schemas_entry_schema_entrytypeschema",
+      "schemas_entry_schema_taskentry",
+      "schemas_entry_schema_taskentryschema",
+      "schemas_knowledge_schema_bookmarkknowledgeschema",
+      "schemas_knowledge_schema_cheatknowledge",
+      "schemas_knowledge_schema_cheatknowledgeschema",
+      "schemas_knowledge_schema_commandknowledge",
+      "schemas_knowledge_schema_commandknowledgeschema",
+      "schemas_knowledge_schema_knowledge",
+      "schemas_knowledge_schema_persistfields",
+      "schemas_knowledge_schema_persistfieldsschema",
+      "schemas_knowledge_schema_taskknowledge",
+      "schemas_knowledge_schema_taskknowledgeschema"
+    ],
+    "1": [
+      "domain_guards_index_ts",
+      "domain_models_entries_parsers_base_fields_parser_spec_ts",
+      "domain_models_entries_parsers_base_fields_parser_ts",
+      "domain_models_entries_parsers_meta_parser_spec_ts",
+      "domain_models_entries_parsers_meta_parser_ts",
+      "domain_models_entries_parsers_notes_parser_spec_ts",
+      "domain_models_entries_parsers_notes_parser_ts",
+      "domain_models_entries_parsers_tags_parser_spec_ts",
+      "domain_models_entries_parsers_tags_parser_ts",
+      "domain_models_entries_schemas_base_schema_ts",
+      "domain_models_entries_schemas_meta_schema_ts",
+      "domain_models_entries_schemas_notes_schema_ts",
+      "parsers_base_fields_parser_spec_r",
+      "parsers_base_fields_parser_spec_raw",
+      "parsers_base_fields_parser_spec_result",
+      "parsers_meta_parser_parsemetafromsource",
+      "parsers_notes_parser_makeerror",
+      "parsers_notes_parser_parsenoteblock",
+      "parsers_notes_parser_parsenoteblocksfromsource",
+      "parsers_tags_parser_normalizeknowledgetag",
+      "parsers_tags_parser_parsetagsfromsource",
+      "schemas_base_schema_nonempty",
+      "schemas_base_schema_noteblock",
+      "schemas_base_schema_noteblockschema",
+      "schemas_base_schema_omitemptyoptionalrowfields",
+      "schemas_base_schema_parsedsourcebasefields",
+      "schemas_base_schema_parsesourcebaseentryfields",
+      "schemas_base_schema_sourcebaseentryrowobjectschema",
+      "schemas_base_schema_sourcebaseparsecontext",
+      "schemas_meta_schema_metafromsourceschema",
+      "schemas_meta_schema_parsemetafromsource",
+      "schemas_notes_schema_noteblocksfromsourceschema",
+      "schemas_notes_schema_parsenoteblocksfromsource",
+      "validation_index_ts"
+    ],
+    "2": [
+      "domain_models_entries_parsers_source_document_parser_spec_ts",
+      "domain_models_entries_parsers_source_document_parser_ts",
+      "domain_models_knowledges_factories_knowledge_factory_spec_ts",
+      "domain_models_knowledges_factories_knowledge_factory_ts",
+      "domain_types_entry_types_ts",
+      "factories_knowledge_factory_deriveid",
+      "factories_knowledge_factory_spec_a",
+      "factories_knowledge_factory_spec_b",
+      "factories_knowledge_factory_spec_entry",
+      "factories_knowledge_factory_spec_expected",
+      "factories_knowledge_factory_spec_k",
+      "factories_knowledge_factory_toknowledge",
+      "parsers_source_document_parser_parsesourcefile",
+      "parsers_source_document_parser_parsesourcesection",
+      "parsers_source_document_parser_spec_e",
+      "parsers_source_document_parser_spec_entries",
+      "parsers_source_document_parser_spec_knowledge",
+      "parsers_source_document_parser_spec_result",
+      "parsers_source_document_parser_spec_task",
+      "schemas_entry_schema_entry",
+      "schemas_entry_schema_sourcerow",
+      "schemas_knowledge_schema_knowledgeschema",
+      "types_entry_types_entrykey",
+      "types_entry_types_entrytype",
+      "types_entry_types_sectionentrytype"
+    ],
+    "3": [
+      "domain_models_entries_factories_entry_factory_spec_ts",
+      "domain_models_entries_factories_entry_factory_ts",
+      "domain_models_entries_schemas_task_schema_ts",
+      "domain_models_sources_parsers_source_location_parser_spec_ts",
+      "domain_models_sources_parsers_source_location_parser_ts",
+      "factories_entry_factory_spec_e",
+      "factories_entry_factory_spec_raw",
+      "factories_entry_factory_toentry",
+      "factories_entry_factory_toentrywithsourcehint",
+      "parsers_base_fields_parser_parsebaseentryfields",
+      "parsers_source_location_parser_approxentrykeyline",
+      "parsers_source_location_parser_escaperegex",
+      "parsers_source_location_parser_nexttoplevelsectionline",
+      "parsers_source_location_parser_spec_yaml",
+      "schemas_entry_schema_entryschema",
+      "schemas_task_schema_parsetaskpriorityfromsource",
+      "schemas_task_schema_parsetaskstatusfromsource",
+      "schemas_task_schema_priority",
+      "schemas_task_schema_prioritychecker",
+      "schemas_task_schema_priorityschema",
+      "schemas_task_schema_statuschecker",
+      "schemas_task_schema_taskstatus",
+      "schemas_task_schema_taskstatusschema"
+    ],
+    "4": [
+      "validation_typebox_helper_checkcache",
+      "validation_typebox_helper_compile",
+      "validation_typebox_helper_formaterrors",
+      "validation_typebox_helper_makeguard",
+      "validation_typebox_helper_parse",
+      "validation_typebox_helper_spec_check",
+      "validation_typebox_helper_spec_err",
+      "validation_typebox_helper_spec_errors",
+      "validation_typebox_helper_spec_first",
+      "validation_typebox_helper_spec_formatted",
+      "validation_typebox_helper_spec_isvalid",
+      "validation_typebox_helper_spec_result",
+      "validation_typebox_helper_spec_schema",
+      "validation_typebox_helper_spec_second",
+      "validation_typebox_helper_spec_start",
+      "validation_typebox_helper_spec_ts",
+      "validation_typebox_helper_spec_typederr",
+      "validation_typebox_helper_spec_unionschema",
+      "validation_typebox_helper_spec_value",
+      "validation_typebox_helper_ts",
+      "validation_typebox_helper_typeboxvalidationerror",
+      "validation_typebox_helper_typeboxvalidationerror_constructor"
+    ],
+    "5": [
+      "constants_entry_const_default_entry_icons",
+      "constants_entry_const_entry_keys",
+      "constants_entry_const_entry_type_sections",
+      "constants_entry_const_entry_type_values",
+      "constants_entry_const_patterns",
+      "constants_entry_const_section_entry_type_values",
+      "constants_entry_const_section_entry_types",
+      "constants_entry_const_task_priority_values",
+      "constants_entry_const_task_status_values",
+      "domain_constants_entry_const_ts",
+      "domain_models_entries_schemas_source_row_min_schema_ts",
+      "domain_models_entries_schemas_tags_schema_spec_ts",
+      "domain_models_entries_schemas_tags_schema_ts",
+      "schemas_source_row_min_schema_isvalidsourcerowmin",
+      "schemas_source_row_min_schema_sourcerowmin",
+      "schemas_source_row_min_schema_sourcerowminchecker",
+      "schemas_source_row_min_schema_sourcerowminschema",
+      "schemas_tags_schema_normalizeknowledgetag",
+      "schemas_tags_schema_parsetagsfromsource",
+      "schemas_tags_schema_tags",
+      "schemas_tags_schema_tagsschema"
+    ],
+    "6": [
+      "domain_models_entries_parsers_link_parser_spec_ts",
+      "domain_models_entries_parsers_link_parser_ts",
+      "domain_models_entries_schemas_link_schema_ts",
+      "parsers_link_parser_makeerror",
+      "parsers_link_parser_normalisearrayitem",
+      "parsers_link_parser_parselinksfromsource",
+      "parsers_link_parser_parsesinglelinkitem",
+      "parsers_link_parser_parsetitledlink",
+      "schemas_link_schema_httpurlschema",
+      "schemas_link_schema_linkitem",
+      "schemas_link_schema_linkitemschema",
+      "schemas_link_schema_linkmapvalueschema",
+      "schemas_link_schema_linkobjectschema",
+      "schemas_link_schema_makeerror",
+      "schemas_link_schema_normalisearrayitem",
+      "schemas_link_schema_parselinksfromsource",
+      "schemas_link_schema_parsesinglelinkitem",
+      "schemas_link_schema_parsetitledlink",
+      "validation_typebox_helper_safeparse"
+    ],
+    "7": [
+      "detail_doc_bookmark_parser_buildbookmarkpreamble",
+      "detail_doc_bookmark_parser_spec_baseentry",
+      "detail_doc_bookmark_parser_spec_entry",
+      "detail_doc_bookmark_parser_spec_out",
+      "detail_youtube_parser_extractyoutubeid",
+      "detail_youtube_parser_spec_candidates",
+      "detail_youtube_parser_youtube_thumb_jpeg_stems",
+      "detail_youtube_parser_youtubeembedurl",
+      "detail_youtube_parser_youtubethumbjpegstem",
+      "detail_youtube_parser_youtubethumbjpegurl",
+      "detail_youtube_parser_youtubethumbnail",
+      "detail_youtube_parser_youtubethumbnailcandidates",
+      "detail_youtube_parser_youtubethumbnailmq",
+      "domain_models_knowledges_detail_doc_bookmark_parser_spec_ts",
+      "domain_models_knowledges_detail_doc_bookmark_parser_ts",
+      "domain_models_knowledges_detail_youtube_parser_spec_ts",
+      "domain_models_knowledges_detail_youtube_parser_ts",
+      "schemas_knowledge_schema_bookmarkknowledge"
+    ],
+    "8": [
+      "constants_index_ts",
+      "detail_notes_parser_parsenotes",
+      "detail_notes_parser_parsenotesfromblocks",
+      "domain_guards_lang_guard_spec_ts",
+      "domain_guards_lang_guard_ts",
+      "domain_models_knowledges_detail_notes_parser_spec_ts",
+      "domain_models_knowledges_detail_notes_parser_ts",
+      "domain_types_note_fragments_types_ts",
+      "guards_lang_guard_isnotelang",
+      "types_note_fragments_types_notefragment",
+      "types_note_fragments_types_rawnotes"
+    ],
+    "9": [
+      "domain_constants_index_ts",
+      "domain_guards_entry_guard_spec_ts",
+      "domain_guards_entry_guard_ts",
+      "domain_guards_entry_section_guard_spec_ts",
+      "domain_guards_entry_section_guard_ts",
+      "domain_types_index_ts",
+      "guards_entry_guard_isentrytype",
+      "guards_entry_section_guard_isentrytypesection"
+    ],
+    "10": [
+      "helpers_path_helper_expandpath",
+      "helpers_path_helper_spec_bracevar",
+      "helpers_path_helper_spec_expand_path_cases",
+      "helpers_path_helper_spec_mockenv",
+      "helpers_path_helper_spec_ts",
+      "helpers_path_helper_ts"
+    ],
+    "11": [
+      "constants_lang_const_markdown_supported_langs",
+      "constants_lang_const_markdownlang",
+      "constants_lang_const_ts"
+    ],
+    "12": [
+      "constants_defaults_const_defaults",
+      "constants_defaults_const_ts"
+    ],
+    "13": [
+      "index_ts"
+    ],
+    "14": [
+      "constants_app_const_ts"
+    ],
+    "15": [
+      "domain_index_ts"
+    ],
+    "16": [
+      "domain_models_index_ts"
+    ],
+    "17": [
+      "domain_models_entries_index_ts"
+    ],
+    "18": [
+      "domain_models_entries_schemas_index_ts"
+    ],
+    "19": [
+      "domain_models_knowledges_index_ts"
+    ],
+    "20": [
+      "domain_models_knowledges_schemas_index_ts"
+    ],
+    "21": [
+      "domain_models_knowledges_detail_index_ts"
+    ],
+    "22": [
+      "domain_models_sources_index_ts"
+    ],
+    "23": [
+      "helpers_index_ts"
+    ]
+  },
+  "cohesion": {
+    "0": 0.06,
+    "1": 0.09,
+    "2": 0.12,
+    "3": 0.14,
+    "4": 0.13,
+    "5": 0.12,
+    "6": 0.2,
+    "7": 0.21,
+    "8": 0.27,
+    "9": 0.36,
+    "10": 0.4,
+    "11": 0.67,
+    "12": 1.0,
+    "13": 1.0,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0,
+    "22": 1.0,
+    "23": 1.0
+  },
+  "gods": [
+    {
+      "id": "validation_typebox_helper_safeparse",
+      "label": "safeParse()",
+      "degree": 13
+    },
+    {
+      "id": "validation_typebox_helper_typeboxvalidationerror",
+      "label": "TypeBoxValidationError",
+      "degree": 8
+    },
+    {
+      "id": "factories_entry_factory_toentry",
+      "label": "toEntry()",
+      "degree": 7
+    },
+    {
+      "id": "factories_entry_factory_toentrywithsourcehint",
+      "label": "toEntryWithSourceHint()",
+      "degree": 7
+    },
+    {
+      "id": "detail_doc_bookmark_parser_buildbookmarkpreamble",
+      "label": "buildBookmarkPreamble()",
+      "degree": 7
+    },
+    {
+      "id": "validation_typebox_helper_parse",
+      "label": "parse()",
+      "degree": 7
+    },
+    {
+      "id": "detail_doc_assembler_buildpreamble",
+      "label": "buildPreamble()",
+      "degree": 6
+    },
+    {
+      "id": "parsers_source_location_parser_approxentrykeyline",
+      "label": "approxEntryKeyLine()",
+      "degree": 6
+    },
+    {
+      "id": "parsers_base_fields_parser_parsebaseentryfields",
+      "label": "parseBaseEntryFields()",
+      "degree": 5
+    },
+    {
+      "id": "parsers_link_parser_parsesinglelinkitem",
+      "label": "parseSingleLinkItem()",
+      "degree": 5
+    }
+  ],
+  "surprises": [
+    {
+      "source": "parseBaseEntryFields()",
+      "target": "parse()",
+      "source_files": [
+        "domain/models/entries/parsers/base_fields.parser.ts",
+        "validation/typebox.helper.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "parseSourceBaseEntryFields()",
+      "target": "parse()",
+      "source_files": [
+        "domain/models/entries/schemas/base.schema.ts",
+        "validation/typebox.helper.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "toEntry()",
+      "target": "parse()",
+      "source_files": [
+        "domain/models/entries/factories/entry.factory.ts",
+        "validation/typebox.helper.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "toEntryWithSourceHint()",
+      "target": "formatErrors()",
+      "source_files": [
+        "domain/models/entries/factories/entry.factory.ts",
+        "validation/typebox.helper.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "toKnowledge()",
+      "target": "parse()",
+      "source_files": [
+        "domain/models/knowledges/factories/knowledge.factory.ts",
+        "validation/typebox.helper.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `parse()` connect `Community 4` to `Community 1`, `Community 2`, `Community 3`?",
+      "why": "High betweenness centrality (0.065) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `toKnowledge()` connect `Community 2` to `Community 4`?",
+      "why": "High betweenness centrality (0.049) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `safeParse()` connect `Community 6` to `Community 1`, `Community 4`, `Community 5`?",
+      "why": "High betweenness centrality (0.025) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `DEFAULTS`, `MARKDOWN_SUPPORTED_LANGS`, `MarkdownLang` to the rest of the system?",
+      "why": "91 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 0` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.06 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 1` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.09 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 2` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.12 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

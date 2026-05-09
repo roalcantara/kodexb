@@ -132,3 +132,4 @@ ignore:
   - node_modules
   - dist
   - build
+  - graphify-out
