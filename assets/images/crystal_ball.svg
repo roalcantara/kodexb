@@ -1,0 +1,47 @@
+<!-- https://www.svgrepo.com/svg/187724/crystal-ball-magic -->
+<svg height="200px" width="200px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000"
+  style="--darkreader-inline-fill: var(--darkreader-background-000000, #000000);" data-darkreader-inline-fill="">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <circle style="fill: rgb(39, 59, 122); --darkreader-inline-fill: var(--darkreader-text-273b7a, #8fb2db);" cx="256"
+      cy="256" r="256" data-darkreader-inline-fill=""></circle>
+    <g>
+      <path style="fill: rgb(18, 17, 73); --darkreader-inline-fill: var(--darkreader-text-121149, #ccc7c0);"
+        d="M275.189,511.286c111.775-8.283,203.559-88.338,229.469-194.245L335.656,148.04l-77.45,140.064 L120.161,150.061L93.172,177.05l143.596,143.596l-82.872,69.346L275.189,511.286z"
+        data-darkreader-inline-fill=""></path>
+      <path style="fill: rgb(18, 17, 73); --darkreader-inline-fill: var(--darkreader-text-121149, #ccc7c0);"
+        d="M366.826,126.817L511.519,271.51c0.307-5.132,0.481-10.3,0.481-15.51 c0-5.718-0.207-11.388-0.576-17.015L384.176,111.737L366.826,126.817z"
+        data-darkreader-inline-fill=""></path>
+    </g>
+    <circle style="fill: rgb(113, 226, 239); --darkreader-inline-fill: var(--darkreader-text-71e2ef, #6ee1ef);" cx="256"
+      cy="229.279" r="113.778" data-darkreader-inline-fill=""></circle>
+    <path style="fill: rgb(56, 198, 217); --darkreader-inline-fill: var(--darkreader-text-38c6d9, #49cbdc);"
+      d="M256,115.502c-0.193,0-0.381,0.014-0.574,0.014v227.526c0.193,0,0.381,0.014,0.574,0.014 c62.838,0,113.778-50.94,113.778-113.778S318.838,115.502,256,115.502z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(234, 162, 47); --darkreader-inline-fill: var(--darkreader-text-eaa22f, #eca93f);"
+      d="M172.085,325.185l-20.049,43.098c-6.399,13.755,2.908,29.939,17.217,29.939h173.494 c14.308,0,23.614-16.184,17.215-29.939l-20.049-43.098c-3.26-7.008-9.925-11.435-17.215-11.435H189.302 C182.012,313.751,175.347,318.178,172.085,325.185z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(224, 145, 18); --darkreader-inline-fill: var(--darkreader-text-e09112, #efa733);"
+      d="M359.964,368.283l-20.049-43.098c-3.26-7.008-9.925-11.436-17.215-11.436h-67.272v84.471h87.321 C357.055,398.222,366.363,382.038,359.964,368.283z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(255, 237, 181); --darkreader-inline-fill: var(--darkreader-text-ffedb5, #ffe698);"
+      d="M171.611,338.747h168.777c5.282,0,9.564-4.282,9.564-9.564v-20.521c0-5.282-4.282-9.564-9.564-9.564 H171.611c-5.282,0-9.564,4.282-9.564,9.564v20.521C162.047,334.465,166.329,338.747,171.611,338.747z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(254, 225, 135); --darkreader-inline-fill: var(--darkreader-text-fee187, #fedd78);"
+      d="M340.389,299.098h-84.963v39.65h84.963c5.282,0,9.564-4.282,9.564-9.564v-20.521 C349.953,303.38,345.671,299.098,340.389,299.098z"
+      data-darkreader-inline-fill=""></path>
+    <g>
+      <path style="fill: rgb(113, 226, 239); --darkreader-inline-fill: var(--darkreader-text-71e2ef, #6ee1ef);"
+        d="M116.417,163.556l3.744-3.744c2.694-2.693,2.694-7.059,0-9.75c-2.691-2.694-7.061-2.694-9.75,0 l-3.744,3.744l-3.744-3.744c-2.691-2.694-7.061-2.694-9.75,0c-2.694,2.693-2.694,7.059,0,9.75l3.744,3.744l-3.744,3.744 c-2.694,2.693-2.694,7.059,0,9.75c1.345,1.346,3.112,2.02,4.875,2.02c1.764,0,3.531-0.674,4.875-2.02l3.744-3.744l3.744,3.744 c1.345,1.346,3.112,2.02,4.875,2.02c1.764,0,3.531-0.674,4.875-2.02c2.694-2.693,2.694-7.059,0-9.75L116.417,163.556z"
+        data-darkreader-inline-fill=""></path>
+      <path style="fill: rgb(113, 226, 239); --darkreader-inline-fill: var(--darkreader-text-71e2ef, #6ee1ef);"
+        d="M412.936,236.175l2.124-2.124c1.684-1.684,1.684-4.411,0-6.094c-1.684-1.683-4.411-1.684-6.094,0 l-2.124,2.124l-2.124-2.124c-1.684-1.684-4.411-1.684-6.094,0c-1.683,1.684-1.684,4.411,0,6.094l2.124,2.124l-2.124,2.124 c-1.684,1.684-1.684,4.411,0,6.094c0.841,0.841,1.945,1.262,3.048,1.262s2.205-0.421,3.048-1.262l2.124-2.124l2.124,2.124 c0.841,0.841,1.945,1.262,3.048,1.262s2.205-0.421,3.048-1.262c1.684-1.684,1.684-4.411,0-6.094L412.936,236.175z"
+        data-darkreader-inline-fill=""></path>
+      <path style="fill: rgb(113, 226, 239); --darkreader-inline-fill: var(--darkreader-text-71e2ef, #6ee1ef);"
+        d="M381.043,118.949l2.124-2.124c1.684-1.684,1.684-4.411,0-6.094s-4.411-1.684-6.094,0l-2.124,2.124 l-2.124-2.124c-1.684-1.684-4.411-1.684-6.094,0s-1.684,4.411,0,6.094l2.124,2.124l-2.124,2.124c-1.684,1.684-1.684,4.411,0,6.094 c0.841,0.841,1.945,1.262,3.048,1.262s2.205-0.421,3.048-1.262l2.124-2.124l2.124,2.124c0.841,0.841,1.945,1.262,3.048,1.262 c1.103,0,2.205-0.421,3.048-1.262c1.684-1.684,1.684-4.411,0-6.094L381.043,118.949z"
+        data-darkreader-inline-fill=""></path>
+    </g>
+  </g>
+</svg>

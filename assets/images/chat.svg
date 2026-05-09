@@ -1,0 +1,21 @@
+<!-- https://www.svgrepo.com/svg/231189/chat -->
+<svg height="200px" width="200px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000"
+  style="--darkreader-inline-fill: var(--darkreader-background-000000, #000000);" data-darkreader-inline-fill="">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <path style="fill: rgb(255, 209, 93); --darkreader-inline-fill: var(--darkreader-text-ffd15d, #ffd05b);"
+      d="M312.889,256c0-47.128-50.94-85.333-113.778-85.333S85.333,208.872,85.333,256 c0,35.723,29.281,66.301,70.813,79.019c-1.55,23.483-16.51,42.086-16.51,42.086c32.125-6.647,50.717-20.858,61.449-35.809 C263.008,340.502,312.889,302.632,312.889,256z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(249, 181, 76); --darkreader-inline-fill: var(--darkreader-text-f9b54c, #f9b750);"
+      d="M199.111,170.667c-1.638,0-3.263,0.041-4.884,0.093v178.774c2.582-2.691,4.858-5.451,6.858-8.237 c61.924-0.793,111.804-38.664,111.804-85.295C312.889,208.872,261.949,170.667,199.111,170.667z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(252, 111, 88); --darkreader-inline-fill: var(--darkreader-text-fc6f58, #fc6f58);"
+      d="M199.111,227.556c0-47.128,50.94-85.333,113.778-85.333s113.778,38.205,113.778,85.333 c0,35.723-29.281,66.301-70.813,79.019c1.55,23.483,16.51,42.086,16.51,42.086c-32.125-6.647-50.717-20.858-61.449-35.809 C248.992,312.058,199.111,274.187,199.111,227.556z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(241, 84, 63); --darkreader-inline-fill: var(--darkreader-text-f1543f, #f25d49);"
+      d="M426.667,227.556c0-47.056-50.785-85.211-113.49-85.328v173.604 c11.017,13.833,29.206,26.624,59.187,32.828c0,0-14.96-18.603-16.51-42.086C397.386,293.857,426.667,263.278,426.667,227.556z"
+      data-darkreader-inline-fill=""></path>
+  </g>
+</svg>

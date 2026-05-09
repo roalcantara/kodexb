@@ -1,0 +1,18 @@
+<!-- https://svgrepo.com/svg/286524/window -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <path style="fill:#B4BBCC;"
+      d="M477.552,475.159c19.025,0,34.448-15.423,34.448-34.448V71.289c0-19.025-15.423-34.448-34.448-34.448 H34.448C15.423,36.842,0,52.264,0,71.289v369.423c0,19.025,15.423,34.448,34.448,34.448L477.552,475.159L477.552,475.159z">
+    </path>
+    <rect x="51.324" y="152.735" style="fill:#FFFFFF;" width="409.353" height="269.718"></rect>
+    <circle style="fill:#A5EB78;" cx="440.777" cy="94.788" r="19.904"></circle>
+    <circle style="fill:#FF6465;" cx="380.829" cy="94.788" r="19.904"></circle>
+    <rect x="51.324" y="152.735" style="opacity:0.1;enable-background:new ;" width="409.353" height="35.954"></rect>
+    <path style="opacity:0.1;enable-background:new ;"
+      d="M97.776,440.713V71.289c0-19.025,15.423-34.448,34.448-34.448H34.448 C15.423,36.842,0,52.264,0,71.289v369.423c0,19.025,15.423,34.448,34.448,34.448h97.776 C113.198,475.159,97.776,459.737,97.776,440.713z">
+    </path>
+  </g>
+</svg>

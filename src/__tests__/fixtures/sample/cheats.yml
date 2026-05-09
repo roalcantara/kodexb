@@ -1,0 +1,30 @@
+cheats:
+  Logaritmo e o inverso da exponenciacao:
+    desc: O logaritmo responde a qual potencia da base produz um numero.
+    tags: [math, pt_br]
+    notes:
+      - md: |
+          ### TL;DR
+
+          `log2(8) = 3` porque `2^3 = 8`.
+
+          `log5(25) = 2` porque `5^2 = 25`.
+  Keyboard Shortcuts writting order and best practices:
+    desc: Keyboard shortcut writing order and best practices
+    tags: [keyboard, shortcuts]
+    notes:
+      - md: |
+          The conventional order is `⌃`, `⌥`, `⇧`, `⌘`, then the final key.
+
+          Use upper case for a single-letter key, for example `⌘C`.
+  plantuml/sequence-diagram:
+    desc: PlantUML sequence diagram
+    tags: [yaml, diagram]
+    notes:
+      - plantuml: |
+          @startuml
+          participant Alice
+          participant Bob
+          Alice -> Bob: Authentication Request
+          Bob --> Alice: Authentication Response
+          @enduml

@@ -4,9 +4,13 @@
 ## Stack
 
 Bun runtime. Electrobun desktop framework (macOS + Linux). React 19 renderer.
-Elysia + Eden Treaty for RPC. TypeBox for transport validation. Zod for core domain only.
-Drizzle ORM + bun:sqlite. Fishery `factoryFor` for typed test factories;
-drizzle-seed only for raw schema seeding that bypasses domain validation.
+Elysia + Eden Treaty for RPC. TypeBox for **all** validation (transport,
+core domain, config). Zod is **not** a dependency.
+`bun:sqlite` directly — no Drizzle ORM, no drizzle-typebox, no drizzle-kit,
+no drizzle-seed. Fishery `factoryFor` for typed test factories; YAML
+fixtures only for end-to-end import tests. See
+[`assets/docs/specs/foundation/design.md`](assets/docs/specs/foundation/design.md)
+Decisions 2–5 for the rationale.
 
 ## Architecture — FCIS layers
 
@@ -27,13 +31,18 @@ src/shell/renderer/  React UI. Calls main via Eden Treaty client ONLY.
 
 ## Non-negotiable conventions
 
-- **Validation at transport**: use `t.*` (TypeBox / Elysia) in route files. Never `z.*` (Zod).
-- **Validation in core/import**: use Zod for YAML parsing and domain invariants only.
-- **Test factories**: Fishery via `factoryFor` from `@testing` for typed domain rows
-  (`Knowledge` variants, `Env`, `RawConfig`, `LoadedConfig`). Use `drizzle-seed`
-  only for raw schema seeding (e.g. bulk pagination fixtures) that bypasses
-  domain validation. See [`assets/guides/FISHERY_GUIDE.md`](assets/guides/FISHERY_GUIDE.md)
-  and [`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md).
+- **Validation everywhere**: use TypeBox (`t.*` in Elysia routes,
+  `Type.Object` + `Value.Check` in core / config). Never `z.*` — `zod` is
+  not a dependency.
+- **Database**: use `bun:sqlite` directly with typed prepared statements
+  (`db.query<RowType, [Params]>(sql)`). No Drizzle ORM, no drizzle-kit,
+  no drizzle-typebox.
+- **Test factories**: Fishery via `factoryFor` from `@testing` for typed
+  domain rows (`Knowledge` variants, `Env`, `RawConfig`, `LoadedConfig`).
+  YAML fixtures under `src/__tests__/fixtures/sample/` only for `ImportService`
+  end-to-end specs. No drizzle-seed. See
+  [`assets/guides/FISHERY_GUIDE.md`](assets/guides/FISHERY_GUIDE.md) and
+  [`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md).
 - **Logging**: use `createLogger()` from `@shared/logging`. Never `console.*` in `src/`.
 - **Every new Elysia route** must also appear in `tools/preview/server.ts`.
 - **Every new file** in `src/` needs a co-located `.spec.ts(x)`.

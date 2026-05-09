@@ -1,19 +1,14 @@
 <!-- markdownlint-disable-file -->
 # Agent notes (kb)
 
-## 🚨 Architecture Doctrine (MANDATORY)
+## 🚨 Process
 
-Before performing ANY code generation, refactor, or file modification, the agent MUST:
-
-1. Read and apply:
-   - `assets/docs/specs/architecture_doctrine/design.md`
-2. Invoke the skill:
-   - `architecture-doctrine-enforcer`
+Before performing ANY code generation, refactor, or file modification, the agent MUST follow:
 
 ### Required Execution Flow
 
 ```txt
-Claude → Doctrine Enforcer → Feature Skill → Code → Tooling
+Claude → Feature Skill → Code → Tooling
 ```
 
 ### Forbidden Flow
@@ -36,7 +31,7 @@ If any of the above cannot be satisfied:
 ### Priority Order
 
 ```txt
-Architecture Doctrine > Skills > Implementation
+Skills > Implementation
 ```
 
 This rule overrides ALL other instructions.
@@ -46,17 +41,13 @@ This rule overrides ALL other instructions.
 ## Electrobun
 
 This app uses **Electrobun**. Cursor skills are installed under
-`$HOME/.config/cursor/skills/` (see symlinks like `electrobun-rpc`).
+`$HOME/.agents/skills/` (see symlinks like `electrobun-rpc`).
 
 - **Routing table (which skill when):** [`.cursor/electrobun-skill-routing.md`](.cursor/electrobun-skill-routing.md)
 - **Standing instruction for the agent:** [`.cursor/rules/electrobun-skills.mdc`](.cursor/rules/electrobun-skills.mdc) (`alwaysApply`)
 
 At the start of work that might touch the desktop stack, **read the routing file**, then **Read** the relevant `SKILL.md` paths—do not guess Electrobun APIs.
 
-⚠️ BEFORE applying any Electrobun skill, you MUST first apply the Architecture Doctrine above.
-
 Optional: a **sessionStart** hook in [`.cursor/hooks.json`](.cursor/hooks.json) runs [`.cursor/hooks/electrobun_session_start.ts`](.cursor/hooks/electrobun_session_start.ts) to inject the same routing text when Cursor applies `additional_context` (if it does not appear, rely on the rule above).
 
-**Manual fallback:** in chat, run slash command **`/electrobun-skills`** ([`.cursor/commands/electrobun-skills.md`](.cursor/commands/electrobun-skills.md)) so `@`-references pull in the rule + routing doc and the agent re-runs the skill-selection steps.
-
-Repo docs: `assets/guides/ELECTROBUN.md`, `assets/docs/design.md`.
+Repo docs: `assets/guides/ELECTROBUN.md`, `assets/docs/foundation/design.md`.

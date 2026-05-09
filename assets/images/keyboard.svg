@@ -1,0 +1,72 @@
+<!-- https://www.svgrepo.com/svg/9895/keyboard -->
+
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox="0 0 297 297" xml:space="preserve" fill="#000000">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <g>
+      <g>
+        <path style="fill:#E3E5E4;"
+          d="M251,198H46c-7.18,0-13-5.82-13-13v-73c0-7.18,5.82-13,13-13h205c7.18,0,13,5.82,13,13v73 C264,192.18,258.18,198,251,198z">
+        </path>
+      </g>
+      <g>
+        <path style="fill:#C4C6C5;" d="M251,99H148.167v99H251c7.18,0,13-5.82,13-13v-73C264,104.82,258.18,99,251,99z">
+        </path>
+      </g>
+      <g>
+        <g>
+          <rect x="57.75" y="114.375" style="fill:#B6BBBF;" width="16.5" height="16.5"></rect>
+        </g>
+        <g>
+          <rect x="90.75" y="114.375" style="fill:#B6BBBF;" width="16.5" height="16.5"></rect>
+        </g>
+        <g>
+          <rect x="123.75" y="114.375" style="fill:#B6BBBF;" width="16.5" height="16.5"></rect>
+        </g>
+        <g>
+          <rect x="156.75" y="114.375" style="fill:#808A91;" width="16.5" height="16.5"></rect>
+        </g>
+        <g>
+          <rect x="189.75" y="114.375" style="fill:#808A91;" width="16.5" height="16.5"></rect>
+        </g>
+        <g>
+          <rect x="222.75" y="114.375" style="fill:#808A91;" width="16.5" height="16.5"></rect>
+        </g>
+      </g>
+      <g>
+        <g>
+          <rect x="57.75" y="140.25" style="fill:#B6BBBF;" width="16.5" height="16.5"></rect>
+        </g>
+        <g>
+          <rect x="90.75" y="140.25" style="fill:#B6BBBF;" width="16.5" height="16.5"></rect>
+        </g>
+        <g>
+          <rect x="123.75" y="140.25" style="fill:#B6BBBF;" width="16.5" height="16.5"></rect>
+        </g>
+        <g>
+          <rect x="156.75" y="140.25" style="fill:#808A91;" width="16.5" height="16.5"></rect>
+        </g>
+        <g>
+          <rect x="189.75" y="140.25" style="fill:#808A91;" width="16.5" height="16.5"></rect>
+        </g>
+        <g>
+          <rect x="222.75" y="140.25" style="fill:#808A91;" width="16.5" height="16.5"></rect>
+        </g>
+      </g>
+      <g>
+        <rect x="57.75" y="166.125" style="fill:#B6BBBF;" width="16.5" height="16.5"></rect>
+      </g>
+      <g>
+        <rect x="90.75" y="166.125" style="fill:#B6BBBF;" width="107.333" height="16.5"></rect>
+      </g>
+      <g>
+        <rect x="148.167" y="166.125" style="fill:#808A91;" width="49.916" height="16.5"></rect>
+      </g>
+      <g>
+        <rect x="222.75" y="166.125" style="fill:#808A91;" width="16.5" height="16.5"></rect>
+      </g>
+    </g>
+  </g>
+</svg>

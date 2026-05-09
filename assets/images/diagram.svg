@@ -1,0 +1,28 @@
+<!-- https://svgrepo.com/svg/165251/diagram -->
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox="0 0 58 58" xml:space="preserve" fill="#000000" data-darkreader-inline-fill=""
+  style="--darkreader-inline-fill: var(--darkreader-background-000000, #111111);">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <g>
+      <rect x="28" y="17"
+        style="fill: rgb(85, 96, 128); --darkreader-inline-fill: var(--darkreader-text-556080, #d4cabc);" width="2"
+        height="24" data-darkreader-inline-fill=""></rect>
+      <polygon style="fill: rgb(85, 96, 128); --darkreader-inline-fill: var(--darkreader-text-556080, #d4cabc);"
+        points="52,41 50,41 50,30 8,30 8,41 6,41 6,28 52,28 " data-darkreader-inline-fill=""></polygon>
+      <path style="fill: rgb(251, 123, 118); --darkreader-inline-fill: var(--darkreader-text-fb7b76, #ff9993);"
+        d="M7,55L7,55c-3.866,0-7-3.134-7-7v0c0-3.866,3.134-7,7-7h0c3.866,0,7,3.134,7,7v0 C14,51.866,10.866,55,7,55z"
+        data-darkreader-inline-fill=""></path>
+      <path style="fill: rgb(251, 123, 118); --darkreader-inline-fill: var(--darkreader-text-fb7b76, #ff9993);"
+        d="M51,55L51,55c-3.866,0-7-3.134-7-7v0c0-3.866,3.134-7,7-7h0c3.866,0,7,3.134,7,7v0 C58,51.866,54.866,55,51,55z"
+        data-darkreader-inline-fill=""></path>
+      <path style="fill: rgb(251, 123, 118); --darkreader-inline-fill: var(--darkreader-text-fb7b76, #ff9993);"
+        d="M29,55L29,55c-3.866,0-7-3.134-7-7v0c0-3.866,3.134-7,7-7h0c3.866,0,7,3.134,7,7v0 C36,51.866,32.866,55,29,55z"
+        data-darkreader-inline-fill=""></path>
+      <rect x="22" y="3"
+        style="fill: rgb(180, 154, 202); --darkreader-inline-fill: var(--darkreader-text-b49aca, #e3c3fd);" width="14"
+        height="14" data-darkreader-inline-fill=""></rect>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,43 @@
+<!-- https://www.svgrepo.com/svg/231148/cloud-computing-data -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox="0 0 512 512" xml:space="preserve" fill="#000000"
+  style="--darkreader-inline-fill: var(--darkreader-background-000000, #000000);" data-darkreader-inline-fill="">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <circle style="fill: rgb(50, 74, 94); --darkreader-inline-fill: var(--darkreader-text-324a5e, #a5bdcf);" cx="256"
+      cy="256" r="256" data-darkreader-inline-fill=""></circle>
+    <path style="fill: rgb(43, 59, 78); --darkreader-inline-fill: var(--darkreader-text-2b3b4e, #afc2d3);"
+      d="M507.259,305.19L398.222,196.153l-3.122,4.286l-82.211-82.211L145.67,253.7l-27.496,24.062 l50.138,50.138l-45.627,62.538L243.957,511.71c3.993,0.184,8.008,0.29,12.045,0.29C380.557,512,484.319,423.038,507.259,305.19z"
+      data-darkreader-inline-fill=""></path>
+    <rect x="249.966" y="284.444"
+      style="fill: rgb(253, 132, 105); --darkreader-inline-fill: var(--darkreader-text-fd8469, #fd8064);" width="12.067"
+      height="113.778" data-darkreader-inline-fill=""></rect>
+    <rect x="256" y="284.444"
+      style="fill: rgb(252, 111, 88); --darkreader-inline-fill: var(--darkreader-text-fc6f58, #fc6f58);" width="6.034"
+      height="113.778" data-darkreader-inline-fill=""></rect>
+    <rect x="164.644" y="275.835" transform="matrix(-0.8321 -0.5547 0.5547 -0.8321 131.2495 693.9667)"
+      style="fill: rgb(253, 132, 105); --darkreader-inline-fill: var(--darkreader-text-fd8469, #fd8064);" width="12.068"
+      height="102.559" data-darkreader-inline-fill=""></rect>
+    <rect x="290.031" y="321.087" transform="matrix(-0.5547 -0.8321 0.8321 -0.5547 258.4414 792.561)"
+      style="fill: rgb(252, 111, 88); --darkreader-inline-fill: var(--darkreader-text-fc6f58, #fc6f58);" width="102.559"
+      height="12.068" data-darkreader-inline-fill=""></rect>
+    <path style="fill: rgb(181, 241, 244); --darkreader-inline-fill: var(--darkreader-text-b5f1f4, #9fedf1);"
+      d="M348.013,304.269c36.299,0,65.724-29.425,65.724-65.724s-29.425-65.724-65.724-65.724 c-4.513,0-8.921,0.457-13.178,1.324c0.007-0.441,0.033-0.879,0.033-1.324c0-43.558-35.311-78.869-78.869-78.869 c-34.387,0-63.617,22.014-74.409,52.712c-1.476-0.083-2.962-0.133-4.46-0.133c-43.558,0-78.869,35.311-78.869,78.869 s35.311,78.869,78.869,78.869H348.013z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(132, 219, 255); --darkreader-inline-fill: var(--darkreader-text-84dbff, #76d7ff);"
+      d="M348.013,172.822c-4.513,0-8.921,0.457-13.178,1.324c0.007-0.441,0.033-0.879,0.033-1.324 c0-43.558-35.311-78.869-78.869-78.869v210.316h92.013c36.299,0,65.724-29.425,65.724-65.724S384.312,172.822,348.013,172.822z"
+      data-darkreader-inline-fill=""></path>
+    <circle style="fill: rgb(255, 209, 93); --darkreader-inline-fill: var(--darkreader-text-ffd15d, #ffd05b);" cx="256"
+      cy="398.222" r="28.444" data-darkreader-inline-fill=""></circle>
+    <g>
+      <path style="fill: rgb(249, 181, 76); --darkreader-inline-fill: var(--darkreader-text-f9b54c, #f9b750);"
+        d="M284.444,398.222c0-15.71-12.734-28.444-28.444-28.444v56.889 C271.71,426.667,284.444,413.932,284.444,398.222z"
+        data-darkreader-inline-fill=""></path>
+      <circle style="fill: rgb(249, 181, 76); --darkreader-inline-fill: var(--darkreader-text-f9b54c, #f9b750);"
+        cx="369.778" cy="369.778" r="28.444" data-darkreader-inline-fill=""></circle>
+    </g>
+    <circle style="fill: rgb(255, 209, 93); --darkreader-inline-fill: var(--darkreader-text-ffd15d, #ffd05b);"
+      cx="142.222" cy="369.778" r="28.444" data-darkreader-inline-fill=""></circle>
+  </g>
+</svg>

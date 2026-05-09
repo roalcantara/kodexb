@@ -1,0 +1,21 @@
+<!-- https://svgrepo.com/svg/250515/door-key-password -->
+<svg height="200px" width="200px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512.001 512.001" xml:space="preserve" fill="#000000"
+  data-darkreader-inline-fill="" style="--darkreader-inline-fill: var(--darkreader-background-000000, #111111);">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <path style="fill: rgb(87, 103, 110); --darkreader-inline-fill: var(--darkreader-text-57676e, #dad0c3);"
+      d="M437.027,74.982c-99.976-99.976-262.07-99.976-362.045,0s-99.976,262.07,0,362.045 c32.533,32.533,71.646,54.469,113.052,65.829l314.822-314.822C491.495,146.628,469.56,107.516,437.027,74.982z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(57, 68, 73); --darkreader-inline-fill: var(--darkreader-text-394449, #f3ebe2);"
+      d="M437.027,437.028c67.444-67.444,89.379-163.153,65.829-248.993l-89.44-89.44l-19.677,19.677 c-10.867-10.867-28.486-10.867-39.352,0s-10.867,28.486,0,39.352L98.594,413.417l89.44,89.44 C273.875,526.407,369.584,504.471,437.027,437.028z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(196, 211, 217); --darkreader-inline-fill: var(--darkreader-text-c4d3d9, #fefaf1);"
+      d="M413.415,224.523c34.774-34.774,34.774-91.154,0-125.929l-19.677,3.936l-3.936,19.677 c8.693,8.693,8.694,22.789,0,31.482c-8.694,8.694-22.789,8.693-31.482,0l-51.159,19.677L98.594,413.416H177.3v-31.482h31.482 v-31.482h31.482V318.97h31.482v-31.482l43.947-43.947C348.106,257.27,386.994,250.945,413.415,224.523z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(255, 255, 255); --darkreader-inline-fill: var(--darkreader-text-ffffff, #ffffff);"
+      d="M389.804,122.206l23.611-23.611c-34.774-34.774-91.154-34.774-125.929,0 c-26.422,26.422-32.746,65.309-19.018,97.722L98.593,366.193v47.223l259.728-259.728c-8.693-8.693-8.694-22.789,0-31.482 C367.015,113.513,381.111,113.512,389.804,122.206z"
+      data-darkreader-inline-fill=""></path>
+  </g>
+</svg>

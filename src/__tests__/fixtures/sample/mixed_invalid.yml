@@ -1,0 +1,9 @@
+bookmarks:
+  https://valid.example.com/alpha:
+    desc: Valid bookmark before the invalid row
+    tags: [valid, sample]
+  broken-bookmark:
+    tags: [invalid]
+  https://valid.example.com/omega:
+    desc: This row is structurally valid but never imports because the file fails
+    tags: [valid, skipped]

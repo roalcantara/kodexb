@@ -1,0 +1,14 @@
+<!-- https://svgrepo.com/svg/349309/bitwarden -->
+<svg xmlns="http://www.w3.org/2000/svg" aria-label="imgur" role="img" viewBox="0 0 512 512" fill="#000000"
+  data-darkreader-inline-fill="" style="--darkreader-inline-fill: var(--darkreader-background-000000, #111111);">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <rect width="512" height="512" rx="15%" fill="#175DDC" data-darkreader-inline-fill=""
+      style="--darkreader-inline-fill: var(--darkreader-background-175ddc, #2668e1);"></rect>
+    <path fill="#ffffff"
+      d="M372 297V131H256v294c47-28 115-74 116-128zm49-198v198c0 106-152 181-165 181S91 403 91 297V99s0-17 17-17h296s17 0 17 17z"
+      data-darkreader-inline-fill="" style="--darkreader-inline-fill: var(--darkreader-background-ffffff, #2d2f31);">
+    </path>
+  </g>
+</svg>

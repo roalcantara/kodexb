@@ -1,4 +1,4 @@
-/** Tilde paths used in default `config.yaml` and Zod `.default()` (before `expandPath`). */
+/** Tilde paths used in default `config.yaml` values (before `expandPath`). */
 export const DEFAULTS = {
   database: {
     path: '~/.config/kb/knowledge.sqlite' as const

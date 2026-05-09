@@ -26,9 +26,13 @@
       "@core": ["./src/core/index.ts"],
       "@core/*": ["./src/core/*"],
       "@shared/utils": ["./src/shared/utils/index.ts"],
-      "@shared/utils/*": ["./src/shared/utils/*"],
       "@shared/types": ["./src/shared/types/index.ts"],
-      "@shared/types/*": ["./src/shared/types/*"]
+      "@shared/logging": ["./src/shared/logging/index.ts"],
+      "@shared/rpc": ["./src/shared/rpc/index.ts"],
+      "@shell/app/db/*": ["./src/shell/app/db/*"],
+      "@shell/app/config/*": ["./src/shell/app/config/*"],
+      "@testing": ["./src/__tests__/index.ts"],
+      "@testing/*": ["./src/__tests__/*"]
     }
   },
   "include": ["src/**/*", "tools/**/*"],

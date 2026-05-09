@@ -1,0 +1,49 @@
+<!-- https://svgrepo.com/svg/191306/documents-document -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox="0 0 482.2 482.2" xml:space="preserve" fill="#000000" data-darkreader-inline-fill=""
+  style="--darkreader-inline-fill: var(--darkreader-background-000000, #111111);">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <circle style="fill: rgb(50, 74, 94); --darkreader-inline-fill: var(--darkreader-text-324a5e, #d4f0ff);" cx="241.1"
+      cy="241.1" r="241.1" data-darkreader-inline-fill=""></circle>
+    <path style="fill: rgb(255, 112, 88); --darkreader-inline-fill: var(--darkreader-text-ff7058, #ff9478);"
+      d="M342,157.4h24.6c1.6,0,2.8-1.3,2.8-2.8v-39.4c0-1.6-1.3-2.8-2.8-2.8H342c-1.6,0-2.8,1.3-2.8,2.8v39.4 C339.2,156.1,340.4,157.4,342,157.4z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(76, 219, 196); --darkreader-inline-fill: var(--darkreader-text-4cdbc4, #78fffd);"
+      d="M342,215.1h24.6c1.6,0,2.8-1.3,2.8-2.8v-39.4c0-1.6-1.3-2.8-2.8-2.8H342c-1.6,0-2.8,1.3-2.8,2.8v39.4 C339.2,213.9,340.4,215.1,342,215.1z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(84, 192, 235); --darkreader-inline-fill: var(--darkreader-text-54c0eb, #7bf6ff);"
+      d="M342,272.9h24.6c1.6,0,2.8-1.3,2.8-2.8v-39.4c0-1.6-1.3-2.8-2.8-2.8H342c-1.6,0-2.8,1.3-2.8,2.8v39.4 C339.2,271.6,340.4,272.9,342,272.9z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(255, 208, 91); --darkreader-inline-fill: var(--darkreader-text-ffd05b, #ffff7a);"
+      d="M342,330.6h24.6c1.6,0,2.8-1.3,2.8-2.8v-39.4c0-1.6-1.3-2.8-2.8-2.8H342c-1.6,0-2.8,1.3-2.8,2.8v39.4 C339.2,329.3,340.4,330.6,342,330.6z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(230, 233, 238); --darkreader-inline-fill: var(--darkreader-text-e6e9ee, #ffffff);"
+      d="M347,87.3H150.5v307.6H347c1.3,0,2.4-1.1,2.4-2.4V89.7C349.4,88.3,348.3,87.3,347,87.3z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(172, 179, 186); --darkreader-inline-fill: var(--darkreader-text-acb3ba, #eae3d9);"
+      d="M152.8,87.3h-25.2c-8.2,0-14.8,6.6-14.8,14.8v278c0,8.2,6.6,14.8,14.8,14.8h25.2V87.3z"
+      data-darkreader-inline-fill=""></path>
+    <g>
+      <circle style="fill: rgb(50, 74, 94); --darkreader-inline-fill: var(--darkreader-text-324a5e, #d4f0ff);"
+        cx="132.8" cy="156.1" r="9.3" data-darkreader-inline-fill=""></circle>
+      <circle style="fill: rgb(50, 74, 94); --darkreader-inline-fill: var(--darkreader-text-324a5e, #d4f0ff);"
+        cx="132.8" cy="326.1" r="9.3" data-darkreader-inline-fill=""></circle>
+    </g>
+    <g>
+      <rect x="179.5" y="124.6"
+        style="fill: rgb(206, 213, 224); --darkreader-inline-fill: var(--darkreader-text-ced5e0, #fffff8);"
+        width="137.1" height="15.1" data-darkreader-inline-fill=""></rect>
+      <rect x="179.5" y="165.3"
+        style="fill: rgb(206, 213, 224); --darkreader-inline-fill: var(--darkreader-text-ced5e0, #fffff8);"
+        width="137.1" height="15.1" data-darkreader-inline-fill=""></rect>
+      <rect x="179.5" y="206.1"
+        style="fill: rgb(206, 213, 224); --darkreader-inline-fill: var(--darkreader-text-ced5e0, #fffff8);"
+        width="137.1" height="15.1" data-darkreader-inline-fill=""></rect>
+      <rect x="179.5" y="246.8"
+        style="fill: rgb(206, 213, 224); --darkreader-inline-fill: var(--darkreader-text-ced5e0, #fffff8);" width="92.5"
+        height="15.1" data-darkreader-inline-fill=""></rect>
+    </g>
+  </g>
+</svg>

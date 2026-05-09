@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
+import { ListPage } from './pages/list/list.page'
 
 const rootEl = document.getElementById('root')
 if (!rootEl) throw new Error('Root element not found')
 
-createRoot(rootEl).render(<div>kb</div>)
+createRoot(rootEl).render(<ListPage />)

@@ -25,7 +25,7 @@ ls:
     .ts: regex:^(app|index)(\.spec)?$
 
   src/shell/app/db:
-    .ts: regex:^([a-z][a-z0-9_]*\.(repository|service)|client|schema)(\.spec)?$
+    .ts: regex:^([a-z][a-z0-9_]*\.(repository|service)|client|schema|index)(\.spec)?$
 
   # ── Main: directory↔suffix contract ─────────────────────────────────────────
   # Root: only the entry point and barrel. Everything else lives in a sub-folder.

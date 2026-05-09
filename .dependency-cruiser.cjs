@@ -20,6 +20,13 @@ module.exports = {
           '(^@sinclair/typebox($|/compiler$)|^type-fest$|^node_modules/@sinclair/typebox/|^node_modules/type-fest/|\\.schema\\.ts$|/types/|/constants/)',
       },
     },
+    {
+      name: 'no-zod-in-src',
+      severity: 'error',
+      comment: 'TypeBox is the canonical validator; do not import zod in src/',
+      from: { path: '^src/' },
+      to: { path: '^(zod|node_modules/zod)' },
+    },
   ],
   options: {
     // Symlinks to external dirs can ELOOP or be unreadable in some envs

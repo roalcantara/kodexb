@@ -1,6 +1,6 @@
 # https://mise.jdx.dev
 [tools]
-bun = "latest"
+bun = "1.3.13"
 usage = "latest"
 pre-commit = "4.4"
 ast-grep = "latest"

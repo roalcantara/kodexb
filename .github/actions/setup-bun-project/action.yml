@@ -10,7 +10,7 @@ inputs:
   bun_version:
     description: Bun version when setup_mode=bun
     required: false
-    default: latest
+    default: 1.3.13
   mise_version:
     description: Mise version when setup_mode=mise
     required: false

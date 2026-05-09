@@ -1,0 +1,45 @@
+tasks:
+  Cucumber/Screenplay Demo Project:
+    desc: Finish and publish the Cucumber/Screenplay Demo Project on GitHub
+    tags: [dev, bdd]
+    priority: high
+    status: doing
+    links: [https://github.com/cucumber/cucumber-js, https://github.com/cucumber/screenplay-js]
+    notes:
+      - md: |
+          ## Cucumber/Screenplay Demo Project
+
+          - [x] Create the demo repository
+          - [ ] Write backend features and scenarios
+          - [ ] Publish the project on GitHub
+  Create Budget Planning for 2026:
+    desc: Create a budget planning for 2026
+    tags: [finance, budget]
+    priority: mid
+    status: todo
+    notes:
+      - md: |
+          - [ ] Add income sources
+          - [ ] Add expenses
+          - [ ] Plan the entire year
+  Grimo Nx/Bun/SAM/Lambda Project:
+    desc: Create a new Grimo Nx/Bun/SAM/Lambda Project
+    tags: [dev, aws, lambda]
+    priority: urgent
+    status: doing
+    meta:
+      due: '2026-12-31'
+    notes:
+      - md: |
+          - [x] Create the Nx monorepo
+          - [x] Add shared libraries
+          - [ ] Create the seed DynamoDB script and run on AWS
+  Evaluate DuckDB to analyze KodexB data:
+    desc: Evaluate DuckDB to analyze KodexB data
+    tags: [dev, data, analytics]
+    priority: low
+    status: done
+    notes:
+      - md: |
+          DuckDB is useful for analytics-style questions such as tag co-occurrence,
+          stale knowledge detection, and capture velocity over time.

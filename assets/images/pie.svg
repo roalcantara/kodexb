@@ -1,0 +1,19 @@
+<!-- https://svgrepo.com/svg/134524/pie-chart -->
+<svg height="200px" width="200px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 57.924 57.924" xml:space="preserve" fill="#000000"
+  data-darkreader-inline-fill="" style="--darkreader-inline-fill: var(--darkreader-background-000000, #111111);">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <g>
+      <path style="fill: rgb(240, 196, 25); --darkreader-inline-fill: var(--darkreader-text-f0c419, #fffe47);"
+        d="M31,26.924h26.924C56.94,12.503,45.421,0.983,31,0V26.924z" data-darkreader-inline-fill=""></path>
+      <path style="fill: rgb(113, 194, 133); --darkreader-inline-fill: var(--darkreader-text-71c285, #9ffab5);"
+        d="M50.309,48.577c4.343-4.71,7.151-10.858,7.614-17.653H32.656L50.309,48.577z" data-darkreader-inline-fill="">
+      </path>
+      <path style="fill: rgb(85, 96, 128); --darkreader-inline-fill: var(--darkreader-text-556080, #d4cabc);"
+        d="M27,30.924V0C11.918,1.028,0,13.58,0,28.924c0,16.016,12.984,29,29,29 c6.99,0,13.396-2.479,18.401-6.599L27,30.924z"
+        data-darkreader-inline-fill=""></path>
+    </g>
+  </g>
+</svg>
