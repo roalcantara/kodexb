@@ -4,10 +4,11 @@
     "**/dist/**",
     "**/build/**",
     "**/.claude/**",
-    "src/__tests__/fixtures/fixture-s/**",
+    "src/__tests__/fixtures/sample/**",
     "assets/images/**",
     "assets/sources/**",
     "assets/docs/**",
+    "graphify-out/**",
     "**/tools/benchmarks/results/**",
     ".cursor/commands/**",
     "**/tmp/**"

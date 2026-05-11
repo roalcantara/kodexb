@@ -1,0 +1,41 @@
+commands:
+  flox install reveal-md:
+    desc: Install reveal-md
+    tags: [revealj, presentation]
+    links:
+      - Website: https://reveal-md.github.io
+      - Official Repository: https://github.com/webpro/reveal-md
+      - Reveal.js Documentation: https://revealjs.com
+    notes:
+      - md: |
+          ## Quick start
+
+          ```bash
+          flox install reveal-md
+          mkdir -p ~/presentations
+          cd ~/presentations
+          reveal-md SIMPLE.md --theme black
+          ```
+
+          Controls:
+
+          - Arrow keys or Space: navigate slides
+          - ESC: overview mode
+          - S: speaker notes
+  airport -I:
+    desc: Check whether macOS is connected to 2.4 GHz or 5 GHz Wi-Fi
+    tags: [wifi, wireless, airport]
+    notes:
+      - md: |
+          Create a symbolic link if you want a shorter command name:
+
+          ```sh
+          sudo ln -s /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport /usr/local/bin/airport
+          airport -I
+          ```
+  mas list:
+    desc: List installed apps from the Mac App Store
+    tags: [mas, maco]
+    links:
+      - Usage: https://github.com/mas-cli/mas?tab=readme-ov-file#-sign-in
+      - Known Issues: https://github.com/mas-cli/mas?tab=readme-ov-file#%EF%B8%8F-known-issues

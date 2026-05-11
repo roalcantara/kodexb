@@ -1,10 +1,9 @@
-# Elysia route files must use TypeBox (t.*) for validation, never Zod.
-# Zod belongs only in src/core/ and import.service.ts.
-id: no-zod-in-routes
+# src/ must use TypeBox-based validation; Zod is forbidden.
+id: no-zod-in-src
 language: TypeScript
 files:
-  - "src/**/*.routes.ts"
-  - "src/**/rpc/server.ts"
+  - 'src/**/*.ts'
+  - 'src/**/*.tsx'
 severity: error
 rule:
   any:
@@ -15,6 +14,5 @@ rule:
     - pattern: import z from 'zod'
     - pattern: import z from "zod"
 message: >
-  Route files must use TypeBox (`t.*` from Elysia) for validation, not Zod.
-  Move Zod usage to src/core/ domain validators or src/shell/app/db/import.service.ts.
-note: See assets/docs/design.md — Decision 2 (TypeBox at transport, Zod in core).
+  Do not import Zod in src/. Use TypeBox (@sinclair/typebox) and Value.Check/Value.Errors instead.
+note: See assets/docs/specs/foundation/design.md for validation policy.

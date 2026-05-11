@@ -21,8 +21,3 @@ export const sourceBaseEntryRowObjectSchema = Type.Object({
 })
 
 export type ParsedSourceBaseFields = Simplify<Static<typeof sourceBaseEntryRowObjectSchema>>
-
-export type SourceBaseParseContext = {
-  key: string
-  source: string
-}

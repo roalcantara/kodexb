@@ -1,0 +1,72 @@
+<!-- https://www.svgrepo.com/svg/231179/smartphone-list -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox="0 0 512 512" xml:space="preserve" fill="#000000"
+  style="--darkreader-inline-fill: var(--darkreader-background-000000, #000000);" data-darkreader-inline-fill="">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <circle style="fill: rgb(255, 209, 93); --darkreader-inline-fill: var(--darkreader-text-ffd15d, #ffd05b);" cx="256"
+      cy="256" r="256" data-darkreader-inline-fill=""></circle>
+    <path style="fill: rgb(249, 181, 76); --darkreader-inline-fill: var(--darkreader-text-f9b54c, #f9b750);"
+      d="M509.621,290.904L335.369,116.652L217.067,285.449l-42.942,107.565l116.627,116.627 C404.28,494.232,494.146,404.409,509.621,290.904z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(50, 74, 94); --darkreader-inline-fill: var(--darkreader-text-324a5e, #a5bdcf);"
+      d="M326.68,398.222H185.32c-8.092,0-14.653-6.561-14.653-14.653V128.431 c0-8.092,6.561-14.653,14.653-14.653h141.36c8.092,0,14.653,6.561,14.653,14.653v255.138 C341.333,391.663,334.774,398.222,326.68,398.222z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(43, 59, 78); --darkreader-inline-fill: var(--darkreader-text-2b3b4e, #afc2d3);"
+      d="M326.68,113.778h-72.116v284.444h72.116c8.092,0,14.653-6.561,14.653-14.653V128.431 C341.333,120.337,334.774,113.778,326.68,113.778z"
+      data-darkreader-inline-fill=""></path>
+    <rect x="178.424" y="128.431"
+      style="fill: rgb(60, 85, 102); --darkreader-inline-fill: var(--darkreader-text-3c5566, #97b1c2);" width="155.152"
+      height="227.556" data-darkreader-inline-fill=""></rect>
+    <rect x="254.569" y="128.431"
+      style="fill: rgb(50, 74, 94); --darkreader-inline-fill: var(--darkreader-text-324a5e, #a5bdcf);" width="79.012"
+      height="227.556" data-darkreader-inline-fill=""></rect>
+    <circle style="fill: rgb(60, 85, 102); --darkreader-inline-fill: var(--darkreader-text-3c5566, #97b1c2);" cx="256"
+      cy="376.673" r="11.205" data-darkreader-inline-fill=""></circle>
+    <path style="fill: rgb(50, 74, 94); --darkreader-inline-fill: var(--darkreader-text-324a5e, #a5bdcf);"
+      d="M256,365.468c-0.488,0-0.965,0.041-1.436,0.102v22.206c0.471,0.06,0.948,0.102,1.436,0.102 c6.189,0,11.205-5.017,11.205-11.205S262.189,365.468,256,365.468z"
+      data-darkreader-inline-fill=""></path>
+    <g>
+      <rect x="227.556" y="176.7"
+        style="fill: rgb(207, 219, 230); --darkreader-inline-fill: var(--darkreader-text-cfdbe6, #bccedc);"
+        width="95.677" height="6.896" data-darkreader-inline-fill=""></rect>
+      <rect x="227.556" y="230.572"
+        style="fill: rgb(207, 219, 230); --darkreader-inline-fill: var(--darkreader-text-cfdbe6, #bccedc);"
+        width="95.677" height="6.896" data-darkreader-inline-fill=""></rect>
+      <rect x="227.556" y="284.444"
+        style="fill: rgb(207, 219, 230); --darkreader-inline-fill: var(--darkreader-text-cfdbe6, #bccedc);"
+        width="95.677" height="6.896" data-darkreader-inline-fill=""></rect>
+    </g>
+    <g>
+      <rect x="254.569" y="176.7"
+        style="fill: rgb(184, 201, 217); --darkreader-inline-fill: var(--darkreader-text-b8c9d9, #acc2d3);"
+        width="68.668" height="6.896" data-darkreader-inline-fill=""></rect>
+      <rect x="254.569" y="230.572"
+        style="fill: rgb(184, 201, 217); --darkreader-inline-fill: var(--darkreader-text-b8c9d9, #acc2d3);"
+        width="68.668" height="6.896" data-darkreader-inline-fill=""></rect>
+      <rect x="254.569" y="284.444"
+        style="fill: rgb(184, 201, 217); --darkreader-inline-fill: var(--darkreader-text-b8c9d9, #acc2d3);"
+        width="68.668" height="6.896" data-darkreader-inline-fill=""></rect>
+    </g>
+    <g>
+      <rect x="190.061" y="155.152"
+        style="fill: rgb(230, 243, 255); --darkreader-inline-fill: var(--darkreader-text-e6f3ff, #bae1ff);"
+        width="28.444" height="28.444" data-darkreader-inline-fill=""></rect>
+      <rect x="190.061" y="209.024"
+        style="fill: rgb(230, 243, 255); --darkreader-inline-fill: var(--darkreader-text-e6f3ff, #bae1ff);"
+        width="28.444" height="28.444" data-darkreader-inline-fill=""></rect>
+      <rect x="190.061" y="262.896"
+        style="fill: rgb(230, 243, 255); --darkreader-inline-fill: var(--darkreader-text-e6f3ff, #bae1ff);"
+        width="28.444" height="28.444" data-darkreader-inline-fill=""></rect>
+    </g>
+    <g>
+      <polygon style="fill: rgb(253, 132, 105); --darkreader-inline-fill: var(--darkreader-text-fd8469, #fd8064);"
+        points="202.004,179.902 188.618,165.4 194.951,159.556 202.252,167.465 227.525,142.191 233.62,148.287 "
+        data-darkreader-inline-fill=""></polygon>
+      <polygon style="fill: rgb(253, 132, 105); --darkreader-inline-fill: var(--darkreader-text-fd8469, #fd8064);"
+        points="202.004,233.774 188.618,219.272 194.951,213.428 202.252,221.337 227.525,196.063 233.62,202.159 "
+        data-darkreader-inline-fill=""></polygon>
+    </g>
+  </g>
+</svg>

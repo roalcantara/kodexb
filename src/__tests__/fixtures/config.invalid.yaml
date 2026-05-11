@@ -1,0 +1,7 @@
+# Intentionally invalid for TypeBox `configSchema` (pageSize must be 25|50|100|200).
+database:
+  path: /tmp/kb-invalid.db
+sources:
+  path: /tmp/kb-invalid-sources
+display:
+  pageSize: '999'

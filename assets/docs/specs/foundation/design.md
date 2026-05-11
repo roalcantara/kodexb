@@ -39,7 +39,7 @@ defined by an [Elysia][10] app exported from `src/shell/main/rpc/server.ts`.
 - Eden Treaty produces end-to-end TypeScript types (request + response) without
   any code generation step.
 - Elysia's `t` (TypeBox) provides runtime validation at the transport boundary
-  that is structurally compatible with drizzle-typebox schemas.
+  using the same TypeBox dialect as the rest of the codebase (see Decision 2).
 - The same Elysia app runs over HTTP in the preview server (`tools/preview/server.ts`)
   without any mock shims — identical behaviour in dev and production.
 
@@ -51,34 +51,81 @@ defined by an [Elysia][10] app exported from `src/shell/main/rpc/server.ts`.
 | `src/shell/main/rpc.host.ts`       | `src/shell/main/rpc/server.ts` |
 | `src/shell/renderer/rpc.client.ts` | Eden Treaty: `treaty<RpcApp>`  |
 
-### Decision 2 — TypeBox at the transport, Zod in the core
+### Decision 2 — TypeBox everywhere; Zod removed from the stack
 
-**Decision:** [TypeBox][12] (via Elysia's `t`) validates all incoming RPC
-requests. [Zod][7] is restricted to `src/core/` (YAML parsing, domain
-invariants) and `src/shell/app/db/import.service.ts` (config file parsing).
+**Decision:** [TypeBox][12] (via Elysia's `t`) is the **sole** validation
+library. It validates RPC requests at the transport boundary, YAML inputs in
+`src/core/` (`*.schema.ts` files), config files in
+`src/shell/app/config/config.schema.ts`, and DB-row response shapes returned
+from Elysia routes. `zod` is **not** a dependency of the project.
 
-**Rationale:** TypeBox schemas are JSON-Schema-compatible and compose naturally
-with drizzle-typebox. Zod in the transport layer creates dual-validation
-overhead and import surface in the renderer bundle.
+**Rationale:** A single validation library means one schema dialect, one error
+format, one mental model, and one bundle. Cross-layer schemas (e.g. an entry
+schema reused by core parsing and route response validation) need no adapter.
 
-### Decision 3 — drizzle-typebox for schema unification
+### Decision 3 — RPC response schemas are hand-written TypeBox
 
-**Decision:** Transport-layer response shapes are derived from Drizzle table
-definitions using [drizzle-typebox][13] (`createSelectSchema`,
-`createInsertSchema`). Manual TypeBox objects are only written for shapes that
-have no direct DB column equivalent.
+**Decision:** Elysia route response shapes are described by hand-written
+TypeBox objects co-located with the route file (or under
+`src/shared/rpc/schemas/`). Database row shapes are TypeScript types declared
+in `src/shell/app/db/schema.ts` next to the raw SQL DDL; route schemas mirror
+them when needed.
 
-**Rationale:** Keeps DB schema and RPC response shape in sync automatically;
-reduces duplication between `db/schema.ts` and route definitions.
+**Rationale:** With Drizzle removed (Decision 5), `drizzle-typebox` is no
+longer applicable. The duplication cost of hand-writing one TypeBox schema per
+RPC response shape is bounded (~10 routes in MVP, each schema ≈ 20 lines) and
+buys explicit, audit-friendly contracts at the transport boundary. A single
+`KnowledgeSchema` in `src/shared/rpc/schemas/` covers the common entry-row
+shape used by `/list`, `/entry/:id`, and similar routes.
 
-### Decision 4 — drizzle-seed for test fixtures
+### Decision 4 — Fishery factories for test fixtures; drizzle-seed not used
 
-**Decision:** Test database fixtures are seeded with [drizzle-seed][14].
-The `fishery` library is removed.
+**Decision:** Test fixtures are produced by [Fishery][15] factories registered
+through `factoryFor(...)` in `src/__tests__/factories/`. YAML fixture files in
+`src/__tests__/fixtures/sample/` are kept **only** for end-to-end tests of
+`ImportService.runOnce()` and partial-failure paths (V1-2 §3). All other
+tests build typed rows via factories and call `upsert()` directly.
 
-**Rationale:** drizzle-seed produces type-safe, schema-aware seed data without
-a separate factory layer. Works with the in-memory SQLite databases used in all
-integration tests.
+**Rationale:** Fishery aligns with FCIS — factories are pure, sequence-based,
+override-friendly, and have no SQLite coupling. drizzle-seed is schema-bound,
+which conflicts with Decision 5 (no Drizzle). YAML fixtures still earn their
+keep where the unit-under-test is the YAML→DB pipeline itself.
+
+### Decision 5 — bun:sqlite directly; Drizzle ORM removed
+
+**Decision:** The data layer uses [`bun:sqlite`][16] directly. `drizzle-orm`,
+`drizzle-kit`, and `drizzle-typebox` are **not** dependencies of the project.
+
+**Rationale:** Empirical audit of the legacy implementation showed only
+`upsert()` used Drizzle; the other five exported functions (`findAll`,
+`findById`, `getDbStats`, `getTagCounts`, `rebuildFts`) all bypassed it
+because Drizzle cannot express FTS5 `MATCH`, virtual tables, or `json_each`.
+That ratio means Drizzle was paying its cost (~5 MB of deps, two parallel
+APIs flowing through every consumer signature, an extra abstraction) for
+≈ 10 % of the surface area.
+
+`bun:sqlite` recovers what was useful from Drizzle:
+
+- **Type-safe rows** via `db.query<KnowledgeRow, [number]>('SELECT …')`.
+- **`db.transaction()`** wraps `ImportService` bundles in a single
+  transaction — a real bulk-import perf win.
+- **Deterministic, fast drivers** (3–6× faster than `better-sqlite3` per the
+  Bun docs); no Drizzle layer between us and that performance.
+
+Trade-offs accepted:
+
+- `upsert()` is hand-written `INSERT … ON CONFLICT(id) DO UPDATE SET …`
+  (~25 lines instead of a Drizzle DSL chain).
+- `KnowledgeRow` / `KnowledgeInsert` are explicit TypeScript types in
+  `db/schema.ts`, declared once next to the raw `CREATE TABLE`.
+- Migrations land as numbered `*.sql` files under `tools/db/migrations/`,
+  applied by a small in-process runner (≈ 30 lines) when the first real
+  schema change ships (Phase 9 or whenever).
+
+This decision was registered after Phase 4 brainstorming. The earlier draft
+of this document referenced Drizzle, drizzle-typebox, drizzle-seed, and a
+project-root `drizzle/` migration directory; all such references have been
+purged.
 
 ---
 
@@ -93,7 +140,7 @@ integration tests.
 │    server.ts                — Elysia app (all routes + types) │
 │    host.ts                  — binds Elysia app to IPC          │
 │  src/shell/app/app.ts       — AppService (orchestrator)        │
-│  src/shell/app/db/          — bun:sqlite + Drizzle             │
+│  src/shell/app/db/          — bun:sqlite (raw SQL + FTS5)      │
 │  src/core/                  — pure domain logic               │
 │                                                               │
 │                │  Electrobun IPC  │                           │
@@ -165,13 +212,13 @@ YAML files
   → TypeBox validate (Knowledge schema)   ← domain invariants
   → derive stable id: crc32(type:key)
   → assembleDoc(entry)                    ← pure, no I/O
-  → Drizzle upsert (knowledges table)
+  → bun:sqlite upsert (raw INSERT … ON CONFLICT, knowledges table)
 
 Query path:
   Elysia route receives request
   → TypeBox (t.*) validates query/body    ← transport boundary
   → AppService method (domain logic)
-  → drizzle-typebox schema validates response shape
+  → TypeBox response schema (hand-written, mirrors KnowledgeRow)
   → JSON over IPC → Eden Treaty client
 ```
 
@@ -190,25 +237,88 @@ change IDs. This makes deep links (`kb://entry/<id>`) stable across syncs.
 
 ## DATA LAYER
 
-- **Engine:** SQLite via `bun:sqlite` + Drizzle ORM
-- **Primary table:** `knowledges` — one row per entry
-- **FTS5 virtual table:** `knowledges_fts` (content=knowledges, content_rowid=id)
-- **`doc` column:** pre-assembled Markdown from `assembleDoc()` — read directly
-  by the renderer via RPC
-- **Schema file:** `src/shell/app/db/schema.ts`
-- **Migrations:** `drizzle/` at project root (drizzle-kit)
-- **Seed:** `src/shell/app/db/seed.ts` (drizzle-seed — used in tests and dev)
+- **Engine:** SQLite via [`bun:sqlite`][16] (raw SQL + prepared statements).
+  No Drizzle ORM (Decision 5).
+- **Primary table:** `knowledges` — one row per entry.
+- **FTS5 virtual table:** `knowledges_fts` (content=`knowledges`,
+  content_rowid=`id`); rebuilt on demand at the end of each
+  `ImportService.runOnce()`.
+- **`doc` column:** pre-assembled Markdown from `assembleDoc()` — read
+  directly by the renderer via RPC. Phase 4 declares the column (default
+  `''`); Phase 7 populates it.
+- **Schema file:** `src/shell/app/db/schema.ts` — exports raw `CREATE TABLE`
+  / `CREATE VIRTUAL TABLE` / `CREATE INDEX` strings plus the `KnowledgeRow`
+  and `KnowledgeInsert` TypeScript types used across the repository.
+- **Migrations:** see "Migration mechanism" below. Phase 4 uses an
+  idempotent `CREATE TABLE IF NOT EXISTS` bootstrap in `client.ts` and
+  declares **all** Phase 5–8 columns up-front, so no migrations are
+  required between Phases 4 and the first real schema change.
+- **Seed:** Tests build typed rows via Fishery `factoryFor(...)` and call
+  `upsert()` directly (Decision 4). YAML fixtures under
+  `src/__tests__/fixtures/sample/` exist only for `ImportService` end-to-end
+  specs.
 
-### drizzle-typebox integration
+### Typed prepared statements
 
 ```ts
-// src/shell/app/db/schema-types.ts
-import { createSelectSchema } from 'drizzle-typebox'
-import { knowledges } from './schema'
+// src/shell/app/db/entry.repository.ts
+import type { Database } from 'bun:sqlite'
+import type { KnowledgeRow } from './schema'
 
-// Use in Elysia routes as the response schema — stays in sync with DB
-export const SelectKnowledgeSchema = createSelectSchema(knowledges)
+const findByIdStmt = (db: Database) =>
+  db.query<KnowledgeRow, [number]>(`SELECT * FROM knowledges WHERE id = ?`)
+
+export function findById(db: Database, id: number): Knowledge | null {
+  const row = findByIdStmt(db).get(id)
+  return row ? rowToKnowledge(row) : null
+}
 ```
+
+`bun:sqlite` caches the compiled statement on the `Database` instance, so the
+function-local prepared statement above is constant-cost across calls.
+
+### Migration mechanism
+
+There is no Drizzle, no `drizzle-kit`, and no schema diffing. Migrations are
+plain `*.sql` files applied by a small in-process runner. The mechanism has
+three phases of existence:
+
+| Stage                | When                                                                      | What exists                                                                                                                                                                                                                                                                                                                          |
+| -------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Bootstrap-only**   | Phase 4 (now)                                                             | `client.ts` runs idempotent `CREATE TABLE IF NOT EXISTS …` (+ FTS5 virtual table + indexes). No `tools/db/migrations/` folder. No runner. No `_kb_migrations` table.                                                                                                                                                                 |
+| **Runner activated** | First phase that needs a schema change (earliest Phase 9, possibly later) | `tools/db/migrations/0001_initial.sql` (extracted verbatim from the Phase 4 bootstrap) plus `0002_<change>.sql` for the new change. `src/shell/app/db/migrate.ts` (≈ 35 lines) is added. `client.ts` stops running the bootstrap and calls `migrate(db, migrationsDir)` instead. The `_kb_migrations` table is created on first run. |
+| **Steady state**     | Phase ≥ runner activation                                                 | Each schema change is one new `<NNNN>_<snake_case_label>.sql` file. The runner replays everything not in `_kb_migrations` in filename order, each in its own transaction.                                                                                                                                                            |
+
+The runner's contract:
+
+```ts
+// src/shell/app/db/migrate.ts (introduced when the first schema change ships)
+export function migrate(db: Database, dir: string): string[]
+//   - ensures _kb_migrations(filename PRIMARY KEY, applied_at INTEGER) exists
+//   - selects already-applied filenames into a Set
+//   - reads dir, keeps files matching /^\d{4}_[a-z0-9_]+\.sql$/, sorts ascending
+//   - for each pending file: db.transaction(() => { db.run(sql); insert(filename, now) })
+//   - returns the list of newly-applied filenames (for logging at phase=migrate)
+```
+
+Properties:
+
+- **Idempotent.** Already-applied files are skipped on every startup.
+- **Atomic per file.** Each migration runs in its own `db.transaction()`
+  — a SQL error rolls back the whole file *and* its `_kb_migrations`
+  insert.
+- **Deterministic ordering.** The 4-digit prefix is sorted as a string,
+  which is identical to numeric order up to file 9999. (We will not have
+  9999 migrations.)
+- **Hand-authored SQL.** Same level of care as the bootstrap DDL in
+  `client.ts`. No reverse-engineering, no implicit semantics.
+- **Testable.** A spec exercises empty DB, partial-applied DB, malformed
+  filename rejection, and SQL-error rollback.
+
+This is enough complexity for kb's data shape (one table family + FTS5 +
+a handful of indexes). Drizzle-kit's value proposition (auto-generated
+migrations from schema diffs) doesn't apply when we own a single, mostly
+stable schema.
 
 ### In-memory query cache
 
@@ -256,7 +366,6 @@ and `cache_miss` are emitted at debug level.
 │           ├── requirements.md  # EARS format
 │           ├── design.md        # Technical design
 │           └── tasks.md         # 2-4h task breakdown
-├── drizzle/                     # Drizzle migration files
 ├── src/
 │   ├── core/                    # PURE — no I/O
 │   │   ├── config/
@@ -285,15 +394,14 @@ and `cache_miss` are emitted at debug level.
 │       │   ├── app.ts           # AppService (sync, list, view, stats, task ops)
 │       │   ├── og.service.ts    # fetchPreviewImage() — HTTP + cache
 │       │   └── db/
-│       │       ├── schema.ts           # Drizzle table definitions
-│       │       ├── schema-types.ts     # drizzle-typebox derived schemas
-│       │       ├── index.ts            # openDatabase(path) — accepts :memory:
-│       │       ├── import.service.ts   # YAML → SQLite pipeline
-│       │       ├── entry.repository.ts # upsert, findAll, findById, FTS
-│       │       ├── task.repository.ts  # task queries, dependency graph
-│       │       └── seed.ts             # drizzle-seed (tests + dev)
+│       │       ├── schema.ts           # Raw CREATE TABLE/INDEX SQL + KnowledgeRow types
+│       │       ├── client.ts           # openDatabase(path) — accepts :memory:; runs bootstrap DDL
+│       │       ├── import.service.ts   # YAML → SQLite pipeline (transactional)
+│       │       ├── entry.repository.ts # upsert, findAll, findById, FTS, stats
+│       │       └── task.repository.ts  # task queries, dependency graph (Phase 9)
 │       ├── app/config/
-│       │   └── config.loader.ts # loadConfig() — file I/O, js-yaml
+│       │   ├── config.loader.ts # loadConfig() — file I/O, js-yaml
+│       │   └── config.schema.ts # TypeBox config schema + parseConfig()
 │       ├── main/
 │       │   ├── main.ts          # Electrobun app init, BrowserWindow
 │       │   ├── rpc/
@@ -335,6 +443,8 @@ and `cache_miss` are emitted at debug level.
 │               └── markdown/
 │                   └── MarkdownView.component.tsx
 ├── tools/
+│   ├── db/
+│   │   └── migrations/          # Numbered *.sql migration files (no Drizzle — applied by an in-house runner)
 │   └── preview/
 │       ├── server.ts            # Bun HTTP server — same Elysia app, HTTP mode
 │       └── mock_electroview.ts  # Replaces electrobun/view for browser preview
@@ -355,10 +465,10 @@ and `cache_miss` are emitted at debug level.
 ~/.config/kb/sources/**/*.yaml
   → fs.promises.readFile()       [import.service]
   → js-yaml parse()
-  → Zod validate (Knowledge)     [src/core/domain/validators/]
+  → TypeBox validate (Knowledge) [src/core/domain/models/entries/schemas/]
   → derive stable id: crc32(type:key)
-  → assembleDoc(entry)           [doc.builder.ts — pure]
-  → Drizzle upsert               [entry.repository]
+  → assembleDoc(entry)           [doc.assembler.ts — pure, populated in Phase 7]
+  → bun:sqlite upsert            [entry.repository — INSERT … ON CONFLICT]
   → rebuild FTS5 virtual table
   → IPC push: syncProgress / syncComplete → renderer
 ```
@@ -499,13 +609,13 @@ System font stack. No web fonts. No drop-shadows except floating overlays.
 
 ## TESTING STRATEGY
 
-| Layer          | Approach                                                          |
-| -------------- | ----------------------------------------------------------------- |
-| Core parsers   | Pure unit — data in, assertions out. No mocks.                    |
-| AppService     | In-memory SQLite + drizzle-seed fixtures                          |
-| Elysia routes  | `server.handle(new Request(...))` — no real port                  |
-| Renderer       | React Testing Library + Happy-DOM; Eden Treaty via context double |
-| Import service | Real YAML fixture files in `src/__tests__/fixtures/`              |
+| Layer          | Approach                                                                         |
+| -------------- | -------------------------------------------------------------------------------- |
+| Core parsers   | Pure unit — data in, assertions out. No mocks.                                   |
+| AppService     | In-memory `bun:sqlite` + Fishery `factoryFor(...)` rows                          |
+| Elysia routes  | `server.handle(new Request(...))` — no real port                                 |
+| Renderer       | React Testing Library + Happy-DOM; Eden Treaty via context double                |
+| Import service | Real YAML fixtures in `src/__tests__/fixtures/sample/` (5 curated files, ~10 KB) |
 
 See `kb-testing` skill for patterns and gotchas.
 
@@ -530,6 +640,57 @@ Output: `.app` bundle (macOS), code-signed + notarized for Gatekeeper.
 
 ---
 
+## REFERENCE IMPLEMENTATION (LEGACY WORKTREE)
+
+The codebase was rebuilt from an orphan branch with phases re-committed in
+sequence. A working **"ported from KodexB"** snapshot exists at commit
+`cc3d08b` (`feat(lint): Add ast-grep to lint pipeline`). When implementing or
+rewriting code in `src/shell/app/`, `src/shell/main/`, `src/shared/logging/`, or
+the test infrastructure under `src/__tests__/`, **prefer this commit as the
+authoritative reference** instead of digging through `git stash` entries (which
+were created as nested supersets and are not reliable for per-phase recovery).
+
+To inspect:
+
+```bash
+git worktree add ~/Work/bun/kb_legacy cc3d08b
+ls ~/Work/bun/kb_legacy/src/shell/app/db/
+```
+
+Files in `cc3d08b` that are partially or fully reusable in upcoming phases:
+
+| Phase | Path                                            | Notes                                                            |
+| ----- | ----------------------------------------------- | ---------------------------------------------------------------- |
+| 5     | `src/shell/app/app.ts`                          | AppService orchestrator (300 lines)                              |
+| 5     | `src/shell/main/rpc/{host,requests,schemas}.ts` | Pre-Elysia RPC bridge — pattern reference for the Elysia rewrite |
+| 5     | `src/shell/main/helpers/error.helper.ts`        | RPC error formatting                                             |
+| 8     | `src/shell/main/window/state.ts`                | Window position persistence (V1-1 §4)                            |
+
+Pending work that does **not** exist in legacy and must be net-new when the
+consumer phase needs it:
+
+- `src/shell/app/db/task.repository.ts` (Phase 9) — task dependency graph,
+  `wouldCreateCycle`, `maxTaskOrder`. Operates on the `task_order`,
+  `due_date`, and `depends_on` columns added in Phase 4.
+- Hand-written TypeBox response schemas under `src/shared/rpc/schemas/`
+  (Phase 5) — replace the `drizzle-typebox`-derived schemas the legacy
+  branch never had. Reference: `KnowledgeRow` in `src/shell/app/db/schema.ts`.
+- `tools/db/migrations/0001_*.sql` and a small in-process migration runner
+  (≈ 30 lines) — added when the first real schema change lands. Phase 4
+  uses an idempotent `CREATE TABLE IF NOT EXISTS` bootstrap and declares
+  every Phase 5–8 column up-front, so no migration is required mid-roadmap.
+- `assembleDoc()` integration in `import.service.ts` (Phase 7) — populate
+  the `doc` column at sync time instead of on-demand at detail-view RPC.
+
+Phase 4 lands the four design.md columns (`doc`, `task_order`, `due_date`,
+`depends_on`) as nullable / defaulted up-front so consumer phases (5, 7, 9) can
+start writing to them without a schema migration. Legacy code referenced by
+those phases (e.g. `src/shell/app/lib/task_views.util.ts`) must be re-pointed
+at hand-written TypeBox types instead of the legacy `@shared/rpc.TaskView`
+import — `task_views.types.ts` (1-line literal union) is added in Phase 4.
+
+---
+
 ## RELATED DOCS
 
 - [requirements.md](requirements.md) — EARS feature specs (V1-1 through V1-8)
@@ -542,12 +703,10 @@ Output: `.app` bundle (macOS), code-signed + notarized for Gatekeeper.
 
 [1]: https://bun.sh 'Bun'
 [2]: https://www.typescriptlang.org 'TypeScript'
-[3]: https://orm.drizzle.team 'Drizzle ORM'
-[7]: https://zod.dev 'Zod'
 [8]: https://blackboard.sh/electrobun/docs/ 'Electrobun'
 [9]: https://react.dev 'React'
 [10]: https://elysiajs.com 'Elysia'
 [11]: https://elysiajs.com/eden/treaty/overview 'Eden Treaty'
 [12]: https://typebox.github.io 'TypeBox'
-[13]: https://github.com/drizzle-team/drizzle-typebox 'drizzle-typebox'
-[14]: https://orm.drizzle.team/docs/seed-overview 'drizzle-seed'
+[15]: https://github.com/thoughtbot/fishery 'Fishery'
+[16]: https://bun.com/docs/runtime/sqlite 'bun:sqlite'

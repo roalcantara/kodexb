@@ -1,0 +1,35 @@
+/// <reference lib="dom" />
+
+import { expect, test } from 'bun:test'
+import { render } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+
+import { MdView } from './md_view.component'
+
+test('MdView renders a paragraph', () => {
+  render(<MdView markdown="Hello world" />)
+  const p = document.querySelector('.kb-mdView p')
+  expect(p?.textContent).toBe('Hello world')
+})
+
+test('MdView renders a fenced code block with language class', () => {
+  render(<MdView markdown={'```ts\nconst x = 1\n```'} />)
+  const code = document.querySelector('.kb-mdView code')
+  expect(code).not.toBeNull()
+  const hasLangClass = Array.from(code?.classList ?? []).some(c => c.startsWith('language-'))
+  expect(hasLangClass).toBe(true)
+})
+
+test('MdView routes links through callback', async () => {
+  let opened = ''
+  render(
+    <MdView
+      markdown="[Docs](https://example.com/docs)"
+      onOpenExternal={url => {
+        opened = url
+      }}
+    />
+  )
+  await userEvent.click(document.querySelector('.kb-mdView-link') as HTMLButtonElement)
+  expect(opened).toBe('https://example.com/docs')
+})

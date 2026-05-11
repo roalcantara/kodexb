@@ -1,0 +1,25 @@
+bookmarks:
+  https://eza.rocks:
+    desc: A modern, maintained replacement for ls
+    tags: [blog, tech]
+    links:
+      - Github: https://github.com/eza-community/eza
+    notes:
+      - sh: |
+          #!/bin/bash
+          brew install eza
+          eza --help
+  https://hub.docker.com/search?q={Query}:
+    desc: Search Docker Hub images with a query placeholder
+    tags: [docker, search]
+  https://youtu.be/Oj5lA7FfUkI:
+    desc: I Watch Your Videos But Never Change My Life | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          - Personal transformation often starts after a hard reset.
+          - Watching videos alone does not create change.
+          - Mastery comes from experimentation and recall.
+          - Patience matters when you are trying to change behavior.

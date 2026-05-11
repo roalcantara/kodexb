@@ -1,0 +1,45 @@
+<svg height="200px" width="200px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000"
+  style="--darkreader-inline-fill: var(--darkreader-background-000000, #000000);" data-darkreader-inline-fill="">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <circle style="fill: rgb(50, 74, 94); --darkreader-inline-fill: var(--darkreader-text-324a5e, #a5bdcf);" cx="256"
+      cy="256" r="256" data-darkreader-inline-fill=""></circle>
+    <path style="fill: rgb(43, 59, 78); --darkreader-inline-fill: var(--darkreader-text-2b3b4e, #afc2d3);"
+      d="M437.019,437.019c47.482-47.482,72.395-108.975,74.774-171.17L393.338,147.394L170.38,320.934 l-51.614,43.817l147.046,147.046C328.02,509.424,389.529,484.511,437.019,437.019z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(230, 243, 255); --darkreader-inline-fill: var(--darkreader-text-e6f3ff, #bae1ff);"
+      d="M381.128,369.778H130.874c-9.442,0-17.094-7.654-17.094-17.096V159.318 c0-9.442,7.654-17.094,17.094-17.094h250.254c9.442,0,17.094,7.654,17.094,17.094v193.365 C398.222,362.124,390.568,369.778,381.128,369.778z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(207, 219, 230); --darkreader-inline-fill: var(--darkreader-text-cfdbe6, #bccedc);"
+      d="M381.128,142.222H255.426v227.556h125.702c9.442,0,17.096-7.654,17.096-17.096V159.318 C398.222,149.876,390.568,142.222,381.128,142.222z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(181, 241, 244); --darkreader-inline-fill: var(--darkreader-text-b5f1f4, #9fedf1);"
+      d="M398.222,159.318c0-9.442-7.654-17.096-17.096-17.096H130.874c-9.442,0-17.096,7.654-17.096,17.096 v7.901h284.444V159.318z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(132, 219, 255); --darkreader-inline-fill: var(--darkreader-text-84dbff, #76d7ff);"
+      d="M398.222,159.318c0-9.442-7.654-17.096-17.096-17.096H255.424v24.997h142.798V159.318z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(181, 241, 244); --darkreader-inline-fill: var(--darkreader-text-b5f1f4, #9fedf1);"
+      d="M113.778,350.815v1.867c0,9.442,7.654,17.096,17.096,17.096h250.254 c9.442,0,17.096-7.654,17.096-17.096v-1.867H113.778z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(132, 219, 255); --darkreader-inline-fill: var(--darkreader-text-84dbff, #76d7ff);"
+      d="M255.426,350.815v18.963h125.702c9.442,0,17.096-7.654,17.096-17.096v-1.867H255.426z"
+      data-darkreader-inline-fill=""></path>
+    <g>
+      <circle style="fill: rgb(0, 164, 154); --darkreader-inline-fill: var(--darkreader-text-00a49a, #59fff5);"
+        cx="136.826" cy="156.444" r="6.034" data-darkreader-inline-fill=""></circle>
+      <circle style="fill: rgb(0, 164, 154); --darkreader-inline-fill: var(--darkreader-text-00a49a, #59fff5);"
+        cx="161.185" cy="156.444" r="6.034" data-darkreader-inline-fill=""></circle>
+      <circle style="fill: rgb(0, 164, 154); --darkreader-inline-fill: var(--darkreader-text-00a49a, #59fff5);"
+        cx="185.527" cy="156.444" r="6.034" data-darkreader-inline-fill=""></circle>
+    </g>
+    <path style="fill: rgb(252, 111, 88); --darkreader-inline-fill: var(--darkreader-text-fc6f58, #fc6f58);"
+      d="M327.111,270.222v-28.444h-16.015c-1.343-5.218-3.419-10.142-6.094-14.667l11.336-11.336 l-20.113-20.113l-11.336,11.336c-4.527-2.674-9.449-4.751-14.667-6.094v-16.015h-28.444v16.015 c-5.218,1.343-10.142,3.419-14.667,6.094l-11.336-11.336l-20.113,20.113l11.336,11.336c-2.674,4.525-4.749,9.449-6.092,14.667 h-16.015v28.444h16.015c1.343,5.22,3.419,10.143,6.094,14.67l-11.336,11.336l20.113,20.113l11.336-11.336 c4.527,2.674,9.449,4.749,14.667,6.092v16.015h28.444v-16.015c5.218-1.343,10.142-3.419,14.669-6.094l11.336,11.336l20.113-20.113 l-11.336-11.336c2.674-4.527,4.749-9.449,6.094-14.667h16.012V270.222z M259.698,284.212c-18.606,2.345-34.254-13.302-31.909-31.91 c1.598-12.678,11.835-22.916,24.512-24.512c18.606-2.345,34.254,13.302,31.909,31.908 C282.614,272.375,272.375,282.614,259.698,284.212z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(241, 84, 63); --darkreader-inline-fill: var(--darkreader-text-f1543f, #f25d49);"
+      d="M327.111,270.222v-28.444h-16.015c-1.343-5.218-3.419-10.142-6.094-14.667l11.336-11.336 l-20.113-20.113l-11.336,11.336c-4.527-2.674-9.449-4.751-14.667-6.094v-16.015h-14.796v42.68 c17.192-0.338,30.998,14.574,28.786,32.128c-1.598,12.678-11.835,22.916-24.512,24.514c-1.445,0.183-2.87,0.243-4.272,0.215v42.684 h14.796v-16.015c5.218-1.343,10.142-3.419,14.669-6.094l11.336,11.336l20.113-20.113l-11.336-11.336 c2.674-4.527,4.749-9.449,6.094-14.667L327.111,270.222L327.111,270.222z"
+      data-darkreader-inline-fill=""></path>
+  </g>
+</svg>

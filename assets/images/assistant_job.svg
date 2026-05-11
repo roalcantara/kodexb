@@ -1,0 +1,59 @@
+<!-- https://svgrepo.com/svg/219022/assistant-job -->
+<svg height="200px" width="200px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000"
+  style="--darkreader-inline-fill: var(--darkreader-background-000000, #000000);" data-darkreader-inline-fill="">
+  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+  <g id="SVGRepo_iconCarrier">
+    <circle style="fill: rgb(255, 49, 79); --darkreader-inline-fill: var(--darkreader-text-ff314f, #ff3c58);" cx="256"
+      cy="256" r="256" data-darkreader-inline-fill=""></circle>
+    <path style="fill: rgb(163, 15, 68); --darkreader-inline-fill: var(--darkreader-text-a30f44, #f05e92);"
+      d="M311.013,506.054c93.527-20.483,167.908-92.089,192.381-184.058L355.731,173.94l-14.088,25.54 L216.169,71.952L190.138,194.16l1.398,1.398l-21.132,11.823l-3.315-3.315l-17.922,5.782l80.779,80.779l-86.159,48.202 L311.013,506.054z"
+      data-darkreader-inline-fill=""></path>
+    <circle style="fill: rgb(63, 61, 61); --darkreader-inline-fill: var(--darkreader-text-3f3d3d, #c1bbb3);"
+      cx="172.839" cy="303.597" r="45.663" data-darkreader-inline-fill=""></circle>
+    <circle style="fill: rgb(39, 37, 37); --darkreader-inline-fill: var(--darkreader-text-272525, #d0ccc6);"
+      cx="340.109" cy="303.597" r="45.663" data-darkreader-inline-fill=""></circle>
+    <path style="fill: rgb(255, 237, 181); --darkreader-inline-fill: var(--darkreader-text-ffedb5, #ffe698);"
+      d="M259.044,393.337h-6.122c-42.094,0-76.217-34.125-76.217-76.217v-66.693 c0-42.094,34.125-76.217,76.217-76.217h6.122c42.094,0,76.217,34.125,76.217,76.217v66.693 C335.263,359.212,301.139,393.337,259.044,393.337z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(254, 225, 135); --darkreader-inline-fill: var(--darkreader-text-fee187, #fedd78);"
+      d="M259.044,174.206h-3.653v219.129h3.655c42.094,0,76.217-34.123,76.217-76.217v-66.693 C335.263,208.331,301.139,174.206,259.044,174.206z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(201, 47, 0); --darkreader-inline-fill: var(--darkreader-text-c92f00, #ff6c3f);"
+      d="M255.984,355.452c-7.202,0-13.064-5.861-13.064-13.064c0-1.967,1.595-3.563,3.563-3.563 c1.969,0,3.563,1.595,3.563,3.563c0,3.274,2.663,5.937,5.937,5.937c3.274,0,5.937-2.663,5.937-5.937 c0-1.967,1.595-3.563,3.563-3.563s3.563,1.595,3.563,3.563C269.048,349.591,263.187,355.452,255.984,355.452z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(147, 0, 0); --darkreader-inline-fill: var(--darkreader-text-930000, #ff6565);"
+      d="M265.485,338.825c-1.967,0-3.563,1.595-3.563,3.563c0,3.274-2.663,5.937-5.937,5.937 c-0.203,0-0.395-0.04-0.593-0.06v7.156c0.198,0.009,0.393,0.029,0.593,0.029c7.202,0,13.064-5.861,13.064-13.064 C269.048,340.421,267.452,338.825,265.485,338.825z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(63, 61, 61); --darkreader-inline-fill: var(--darkreader-text-3f3d3d, #c1bbb3);"
+      d="M378.861,231.257c-3.81-79.065-80.441-87.23-107.896-87.23 c-101.498-5.023-119.241,75.991-118.308,102.996c0.827,23.902,17.455,25.75,17.455,25.75c25.86,1.257,35.571-33.504,54.238-51.498 c14.115,21.766,80.072,58.273,104.8,58.273C356.604,279.549,380.145,257.898,378.861,231.257z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(39, 37, 37); --darkreader-inline-fill: var(--darkreader-text-272525, #d0ccc6);"
+      d="M378.861,231.257c-3.81-79.065-80.441-87.23-107.896-87.23c-5.434-0.269-10.612-0.278-15.575-0.074 v104.146c25.207,16.481,57.927,31.449,73.759,31.449C356.604,279.549,380.145,257.898,378.861,231.257z"
+      data-darkreader-inline-fill=""></path>
+    <g>
+      <path style="fill: rgb(224, 145, 18); --darkreader-inline-fill: var(--darkreader-text-e09112, #efa733);"
+        d="M226.771,274.03l4.137,8.382c0.574,1.162,1.683,1.969,2.965,2.155l9.25,1.345 c3.231,0.469,4.52,4.439,2.182,6.716l-6.694,6.525c-0.927,0.905-1.352,2.208-1.133,3.486l1.581,9.213 c0.552,3.217-2.825,5.67-5.715,4.151l-8.273-4.349c-1.146-0.603-2.519-0.603-3.665,0l-8.273,4.349 c-2.889,1.519-6.266-0.934-5.715-4.151l1.581-9.213c0.219-1.277-0.205-2.581-1.133-3.486l-6.694-6.525 c-2.338-2.279-1.048-6.247,2.182-6.716l9.25-1.345c1.283-0.186,2.391-0.991,2.965-2.155l4.137-8.382 C221.153,271.103,225.327,271.103,226.771,274.03z"
+        data-darkreader-inline-fill=""></path>
+      <path style="fill: rgb(224, 145, 18); --darkreader-inline-fill: var(--darkreader-text-e09112, #efa733);"
+        d="M292.259,274.03l4.137,8.382c0.574,1.162,1.683,1.969,2.965,2.155l9.25,1.345 c3.231,0.469,4.52,4.439,2.182,6.716l-6.694,6.525c-0.927,0.905-1.352,2.208-1.133,3.486l1.581,9.213 c0.552,3.217-2.825,5.67-5.715,4.151l-8.273-4.349c-1.146-0.603-2.519-0.603-3.665,0l-8.273,4.349 c-2.889,1.519-6.266-0.934-5.715-4.151l1.581-9.213c0.219-1.277-0.205-2.581-1.133-3.486l-6.694-6.525 c-2.338-2.279-1.048-6.247,2.182-6.716l9.25-1.345c1.283-0.186,2.391-0.991,2.965-2.155l4.137-8.382 C286.641,271.103,290.814,271.103,292.259,274.03z"
+        data-darkreader-inline-fill=""></path>
+    </g>
+    <g>
+      <circle style="fill: rgb(39, 37, 37); --darkreader-inline-fill: var(--darkreader-text-272525, #d0ccc6);"
+        cx="223.246" cy="295.098" r="8.511" data-darkreader-inline-fill=""></circle>
+      <circle style="fill: rgb(39, 37, 37); --darkreader-inline-fill: var(--darkreader-text-272525, #d0ccc6);"
+        cx="288.737" cy="295.098" r="8.511" data-darkreader-inline-fill=""></circle>
+    </g>
+    <path style="fill: rgb(255, 237, 181); --darkreader-inline-fill: var(--darkreader-text-ffedb5, #ffe698);"
+      d="M133.61,110.39l74.761-39.022c4.027-2.101,8.471-0.648,8.835,2.905 c3.143,30.71,18.249,57.565,43.192,76.491l-91.4,47.706c-1.265-31.285-14.66-59.033-38.057-79.17 C128.234,116.969,129.583,112.492,133.61,110.39z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(234, 162, 47); --darkreader-inline-fill: var(--darkreader-text-eaa22f, #eca93f);"
+      d="M167.093,181.707c1.027,5.454,1.674,11.049,1.905,16.765c30.467-15.901,60.933-31.804,91.4-47.706 c-4.556-3.458-8.776-7.187-12.664-11.148C220.853,153.645,193.974,167.676,167.093,181.707z"
+      data-darkreader-inline-fill=""></path>
+    <path style="fill: rgb(255, 198, 27); --darkreader-inline-fill: var(--darkreader-text-ffc61b, #ffca2c);"
+      d="M150.609,205.253l125.868-65.698c1.667-0.871,3.722-0.224,4.592,1.443l0,0 c0.871,1.667,0.224,3.722-1.443,4.592l-125.868,65.698c-1.667,0.871-3.722,0.224-4.592-1.443l0,0 C148.297,208.179,148.942,206.124,150.609,205.253z"
+      data-darkreader-inline-fill=""></path>
+  </g>
+</svg>

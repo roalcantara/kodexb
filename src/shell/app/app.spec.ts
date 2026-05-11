@@ -1,0 +1,188 @@
+import { afterEach, describe, expect, it, mock } from 'bun:test'
+import { mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { factoryFor, testingPaths } from '@testing'
+import { App } from './app'
+import type { LoadedConfig } from './config/config.loader'
+import { ImportService } from './db/import.service'
+
+const NOT_IMPLEMENTED_RE = /Not implemented/
+
+describe('App', () => {
+  let workDir: string | undefined
+
+  afterEach(async () => {
+    if (workDir !== undefined) await rm(workDir, { recursive: true, force: true })
+  })
+
+  async function loadedFixture(): Promise<LoadedConfig> {
+    workDir = await mkdtemp(join(tmpdir(), 'kb-appsvc-'))
+    const dbPath = join(workDir, 'kb.sqlite')
+    return factoryFor('loadedConfig', {
+      overrides: {
+        configPath: join(workDir, 'config.yaml'),
+        database: { path: dbPath },
+        sources: { path: testingPaths.minimal }
+      }
+    })
+  }
+
+  function insertManualBookmark(app: App, key: string) {
+    const { raw } = (
+      app as unknown as { getDb: () => { raw: { run: (sql: string, ...params: unknown[]) => unknown } } }
+    ).getDb()
+    raw.run(
+      `INSERT INTO knowledges
+        (type, key, source, desc, tags, links, notes, meta, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      'bookmark',
+      key,
+      '/manual.yml',
+      'Manual cache probe',
+      '["manual"]',
+      '[]',
+      '[]',
+      '{}',
+      Date.now(),
+      Date.now()
+    )
+  }
+
+  async function importedAppFixture(): Promise<{ loaded: LoadedConfig; app: App }> {
+    const loaded = await loadedFixture()
+    const importer = new ImportService(loaded.database.path)
+    await importer.run(loaded.sources.path)
+    return { loaded, app: new App(loaded) }
+  }
+
+  it('lists entries after import into the same db file', async () => {
+    const loaded = await loadedFixture()
+    const importer = new ImportService(loaded.database.path)
+    await importer.run(loaded.sources.path)
+
+    const app = new App(loaded)
+    const rows = await app.list({ limit: 20 })
+    expect(rows.length).toBeGreaterThanOrEqual(4)
+
+    const stats = await app.getListStats()
+    expect(stats.total).toBeGreaterThanOrEqual(4)
+    expect(stats.taskViews.all_pending).toBeGreaterThanOrEqual(1)
+    expect(stats.tags.git).toBe(2)
+    expect(stats.tags.example).toBe(1)
+  })
+
+  it('resizeWindow calls shell hook when set', async () => {
+    const loaded = await loadedFixture()
+    const sizes: Array<{ w: number; h: number }> = []
+    const shell = {
+      resizeWindow(w: number, h: number) {
+        sizes.push({ w, h })
+      }
+    }
+    const app = new App(loaded, {}, false, shell)
+    await app.resizeWindow(1200, 700)
+    expect(sizes).toEqual([{ w: 1200, h: 700 }])
+  })
+
+  it('openExternal calls shell hook for URL', async () => {
+    const loaded = await loadedFixture()
+    const opened: string[] = []
+    const app = new App(loaded, {}, false, { openExternal: url => opened.push(url) })
+    await app.openExternal('https://example.com/docs')
+    expect(opened).toEqual(['https://example.com/docs'])
+  })
+
+  it('openExternal rejects bad URL', async () => {
+    const loaded = await loadedFixture()
+    const app = new App(loaded)
+    await expect(app.openExternal('not a url')).rejects.toThrow()
+  })
+
+  it('showOpenDialog delegates to shell hook', async () => {
+    const loaded = await loadedFixture()
+    const showOpenDialog = mock(() => Promise.resolve('/picked'))
+    const app = new App(loaded, {}, false, { showOpenDialog })
+    await expect(app.showOpenDialog({ title: 'Pick' })).resolves.toBe('/picked')
+    expect(showOpenDialog).toHaveBeenCalled()
+  })
+
+  it('showOpenDialog rejects when hook missing', async () => {
+    const loaded = await loadedFixture()
+    const app = new App(loaded)
+    await expect(app.showOpenDialog({})).rejects.toThrow(NOT_IMPLEMENTED_RE)
+  })
+
+  it('fetchPreviewImage returns YouTube thumbnail', async () => {
+    const loaded = await loadedFixture()
+    const app = new App(loaded)
+    const result = await app.fetchPreviewImage('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+    expect(result?.url).toContain('dQw4w9WgXcQ')
+  })
+
+  it('fetchPreviewImage parses OG meta tags', async () => {
+    const loaded = await loadedFixture()
+    const app = new App(loaded)
+    const html = '<meta property="og:image" content="https://example.com/image.png">'
+    const result = await app.fetchPreviewImage(`data:text/html,${encodeURIComponent(html)}`)
+    expect(result).toEqual({ url: 'https://example.com/image.png' })
+  })
+
+  it('invalidates list cache after sync', async () => {
+    const { loaded, app } = await importedAppFixture()
+    await app.list({ limit: 1 })
+    await app.list({ limit: 1 })
+
+    await app.sync(loaded.sources.path)
+    const third = await app.list({ limit: 2 })
+    expect(third.length).toBeGreaterThan(0)
+  })
+
+  function assertCacheInvalidated(
+    first: { total: number; byType: Record<string, number> },
+    second: { total: number; byType: Record<string, number> }
+  ) {
+    // biome-ignore lint/suspicious/noMisplacedAssertion: shared test helper
+    expect(second).not.toBe(first)
+    // biome-ignore lint/suspicious/noMisplacedAssertion: shared test helper
+    expect(second.total).toBe(first.total + 1)
+    // biome-ignore lint/suspicious/noMisplacedAssertion: shared test helper
+    expect(second.byType.bookmark).toBe((first.byType.bookmark ?? 0) + 1)
+  }
+
+  describe('stats caching', () => {
+    it('returns cached listStats on second call without hitting DB', async () => {
+      const { app } = await importedAppFixture()
+      const first = await app.getListStats()
+      insertManualBookmark(app, 'manual-cached-list-stats')
+      const second = await app.getListStats()
+
+      expect(second).toBe(first)
+      expect(second.total).toBe(first.total)
+    })
+
+    // biome-ignore lint/nursery/useExpect: assertions delegated to assertCacheInvalidated helper
+    it('clears listStats cache after sync', async () => {
+      const { loaded, app } = await importedAppFixture()
+      const first = await app.getListStats()
+      insertManualBookmark(app, 'manual-list-stats-after-sync')
+
+      await app.sync(loaded.sources.path)
+      const second = await app.getListStats()
+
+      assertCacheInvalidated(first, second)
+    })
+
+    // biome-ignore lint/nursery/useExpect: assertions delegated to assertCacheInvalidated helper
+    it('clears dbStats cache after applyConfigPatch', async () => {
+      const { app } = await importedAppFixture()
+      const first = await app.getStats()
+      insertManualBookmark(app, 'manual-db-stats-after-config')
+
+      await app.applyConfigPatch({ pageSize: 25 })
+      const second = await app.getStats()
+
+      assertCacheInvalidated(first, second)
+    })
+  })
+})

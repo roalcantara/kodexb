@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="t1 d1">
+  <title id="t1">ZLE Icon — Minimal Monogram</title>
+  <desc id="d1">Stroke-only letters Z, L, and E with rounded terminals, designed to inherit currentColor.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Z -->
+    <path d="M44 84 H92 L44 172 H92"/>
+    <!-- L -->
+    <path d="M104 84 V172 H152"/>
+    <!-- E -->
+    <path d="M164 84 V172 M164 84 H212 M164 128 H200 M164 172 H212"/>
+    <!-- Prompt caret block (optional) -->
+    <rect x="220" y="116" width="8" height="24" rx="2" fill="currentColor" stroke="none"/>
+  </g>
+</svg>

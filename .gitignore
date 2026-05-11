@@ -186,3 +186,8 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # Benchmark run artifacts (keep only baseline)
 tools/benchmarks/results/*/
 tools/benchmarks/results/latest.json
+
+# Graphify cache
+graphify-out/cache/
+
+build
