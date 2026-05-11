@@ -19,10 +19,10 @@ sequencing, delivery value, and recommended skills only.
 |   2   | CI / Build / Packaging         | —            | ⬜ pending |
 |   3   | Core Domain (port from KodexB) | —            | ⬜ done    |
 |   4   | Data Layer                     | V1-2         | ⬜ done    |
-|   5   | App Service + Elysia RPC       | V1-1         | ⬜ rewrite |
+|   5   | App Service + Elysia RPC       | V1-1         | ✔ done    |
 |   6   | Renderer: List View            | V1-3         | ⬜ done    |
-|   7   | Renderer: Detail View          | V1-4         | ⬜ pending |
-|   8   | First-Run Setup & Settings     | V1-1, V1-6   | ⬜ pending |
+|   7   | Renderer: Detail View          | V1-4         | ✔ done    |
+|   8   | First-Run Setup & Settings     | V1-1, V1-6   | ✔ done    |
 |   9   | Task Management                | V1-7         | ⬜ pending |
 |  10   | Actions System (⌘K)            | V1-8         | ⬜ pending |
 |  11   | Sync UI                        | V1-2         | ⬜ pending |
@@ -226,12 +226,23 @@ fixtures for integration tests.
 
 ---
 
-### Phase 5 — App Service + Elysia RPC 🔄 rewrite
+### Phase 5 — App Service + Elysia RPC ✅
 
-`AppService` exposed through an Elysia app. Eden Treaty client wired to the
-renderer. All existing RPC handlers migrated from the manual schema to Elysia routes.
-TypeBox is the sole validation library across core and transport — Zod was
-removed in a prior refactor. Preview server uses the same Elysia app over HTTP.
+`App` (renamed from `AppService`) is now exposed through a single Elysia
+`RpcApp` defined in `src/shell/main/rpc/server.ts`. Both transports share that
+contract:
+
+- **Desktop**: `src/shell/main/rpc/host.ts` registers one Electrobun
+  `BrowserView.defineRPC` request (`rpcCall`) that rebuilds a `Request` and
+  delegates to `RpcApp.handle()`. Sync push (`syncProgress`/`syncComplete`)
+  still rides Electrobun `webview.messages`.
+- **Preview**: `tools/preview/server.ts` forwards every `/api/*` request to
+  the same `createRpcServer(app).handle(req)` — no parallel switch/case.
+- **Renderer**: `src/shell/renderer/rpc/client.ts` uses Eden Treaty
+  (`treaty<RpcApp>`) with a custom fetcher that tunnels requests through the
+  Electrobun `rpcCall` bridge (or `fetch` in preview).
+
+TypeBox is the sole validation library across core and transport.
 
 **Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
 `electrobun-rpc`, `electrobun-rpc-patterns`
@@ -309,12 +320,11 @@ Entry counts by type. Total count. Database path and size. Auto-refresh after sy
 
 ## Recommended order
 
-> 0 (scaffold) → **1 (CI)** → 4 (RPC rewrite) → 6 (detail) → 7 (first-run)
-> → 9 (⌘K) → 10 (sync UI) → 8 (tasks) → 11 (stats)
+> 0 (scaffold) → **2 (CI)** → 5 (RPC) → 7 (detail) → 8 (first-run)
+> → 9 (tasks) → 10 (⌘K) → 11 (sync UI) → 12 (stats)
 
-Phases 2, 3, 5 are done and do not need to be reimplemented unless the rewrite
-invalidates them. Phase 4 (RPC rewrite) is the critical path — everything from
-Phase 6 onward builds on the Elysia client.
+Phases 3, 4, 5, 6 are done. Phase 5 (App Service + Elysia RPC) is the critical
+path — everything from Phase 7 onward builds on the Eden Treaty client.
 
 ---
 

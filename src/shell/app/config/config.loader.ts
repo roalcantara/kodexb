@@ -1,9 +1,9 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import type { Env } from '@shared/types'
 import { err, ok, type Result } from 'neverthrow'
 import { DEFAULTS } from '../../../core/constants/defaults.const'
 import { expandPath } from '../../../core/helpers/path.helper'
+import type { Env } from '../../../shared/types'
 import { DEFAULT_CONFIG_BODY, parseConfig, type RawConfig, type ResolvedConfig } from './config.schema'
 
 export type LoadedConfig = ResolvedConfig & {

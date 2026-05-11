@@ -9,6 +9,7 @@ const baseEntry: BookmarkKnowledge = {
   source: '/f.yml',
   desc: 'Example site',
   tags: ['x'],
+  doc: '',
   createdAt: 0,
   updatedAt: 0
 }

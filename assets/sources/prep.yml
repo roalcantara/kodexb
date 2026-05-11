@@ -1,0 +1,263 @@
+cheats:
+  AWS JOB APPLICATIONS:
+    desc: AWS Job Applications Best Practices and Preparation Resources
+    tags: [aws]
+    links: [https://amazon.jobs/pt/jobs/2999442/sr-delivery-consultant-application-architecture-professional-services, https://amazon.jobs/content/en/how-we-hire, https://amazon.jobs/content/our-workplace/leadership-principles]
+    notes:
+      - md: | #markdown
+          ## PREPARATION RESOURCES
+
+          > Start with **Technical Program Manager (TPM)** and **Program Manager** guides as your foundation.
+          > These most closely align with the delivery consultant role, which combines technical architecture with customer-facing program delivery.
+          > Then review the **PM-Technical** guide for customer engagement strategies,
+          > and finally explore **SDM** and **SDE III** for deeper technical architecture preparation.
+
+          1. **[Everything you need to know about interviewing for technical program manager roles](https://amazon.jobs/content/en/how-we-hire/tpm-interview-prep)**
+            - Primary resource: Delivery Consultants share similarities with TPMs (customer-facing, project delivery, cross-functional coordination)
+            - Covers consulting, stakeholder management, systems design, and program management aspects
+
+          2. **[Everything you need to know about interviewing for program manager roles](https://amazon.jobs/content/en/how-we-hire/program-manager-interview-prep)**
+            - Covers program and project management experience, functional questions, and behavioral leadership principles
+            - Useful for understanding non-technical program management aspects
+
+          3. **[Everything you need to know about interviewing for Product Manager - Technical roles](https://amazon.jobs/content/en/how-we-hire/pm-t-interview-prep)**
+            - Bridges technical and business conversations
+            - Covers customer-centric perspective and technical product lifecycle
+
+          4. **[Everything you need to know about interviewing for software development manager roles (SDM)](https://amazon.jobs/content/en/how-we-hire/sdm-interview-prep)**
+            - Covers system design, technical leadership, and team management
+            - Useful for understanding technical architecture discussions
+
+          5. **[Everything you need to know about interviewing for senior software development engineer roles (SDE III)](https://amazon.jobs/content/en/how-we-hire/sde-iii-interview-prep)**
+            - Deep dive into system architecture, design patterns, and technical leadership
+            - Covers both high-level and low-level design approaches
+      - md: | #markdown
+          ## THE INTERVIEW PROCESS
+
+          The AWS interview process is rigorous and designed to assess both your technical capabilities and cultural fit. It consists of four main components:
+
+          ### 1. THE 16 LEADERSHIP PRINCIPLES __(15mins)__
+
+          AWS's Leadership Principles form the foundation of every interview decision.
+
+          **WHY IT MATTERS:**
+
+          - These principles guide how AWS employees make decisions, prioritize work, and collaborate
+          - Interviewers assess whether you'll thrive in AWS's unique culture
+          - Your ability to demonstrate these principles predicts your success in complex customer engagements
+
+          **HOW TO EXCEL:**
+
+          - Memorize all [16 Leadership Principles](https://amazon.jobs/content/our-workplace/leadership-principles) and understand their nuances
+          - Identify which principles are most relevant to consulting and customer-facing roles
+          - Practice articulating how you've applied each principle in past experiences
+          - Show genuine alignment-not just surface-level familiarity
+
+          > 💡 **HEADS UP:**
+          >
+          > For this role, expect heavy emphasis on **Customer Obsession**, **Bias for Action**, and **Learn and Be Curious**.
+
+          ### 2. BEHAVIORAL INTERVIEWS (STAR METHOD) __(15mins)__
+
+          Every behavioral question requires a structured STAR response: **Situation**, **Task**, **Action**, **Result**.
+
+          **WHY IT MATTERS:**
+
+          - AWS uses `"bar raiser"` interviewers who rigorously evaluate your past behavior as the best predictor of future performance
+          - Vague or unstructured answers signal lack of preparation or unclear thinking
+          - Strong STAR stories demonstrate self-awareness, impact, and communication skills
+
+          **HOW TO EXCEL:**
+
+          - Prepare 2 strong STAR stories per Leadership Principle (32 total minimum)
+            - STAR Story Template:
+              - **Situation:** Context of the problem (2-3 sentences)
+              - **Task:** Your specific role/responsibility
+              - **Action:** WHAT you did (use "I", not "We") - be specific!
+              - **Result:** Metrics, outcomes, learnings
+          - Ensure each story has quantifiable results and clear customer impact
+          - Practice telling stories concisely (2-3 minutes each)
+          - Map stories to multiple principles for flexibility during interviews
+          - Focus on stories where YOU drove the outcome, not just participated
+
+          ### 3. TECHNICAL & ARCHITECTURE KNOWLEDGE __(45mins)__
+
+          Expect deep dives into AWS services, architecture patterns, and solution design for customer scenarios.
+
+          **WHY IT MATTERS:**
+
+          - Senior Delivery Consultants must design solutions that are scalable, resilient, and cost-effective
+          - You'll need to guide customers through complex technical decisions
+          - Interviewers assess whether you can translate business requirements into sound technical architecture
+
+          **HOW TO EXCEL:**
+
+          - Master core AWS services across compute, storage, networking, databases, and security
+          - Understand the Well-Architected Framework pillars (Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, Sustainability)
+          - Practice designing architectures for common use cases (migration, modernization, data analytics, ML/AI)
+          - Be ready to explain trade-offs between different architectural approaches
+          - Stay current with recent AWS service launches and best practices
+
+          ### 4. WORK SIMULATION / CASE SCENARIOS __(50mins)__
+
+          You may encounter role-play exercises simulating real customer interactions or architecture design challenges.
+
+          **WHY IT MATTERS:**
+
+          - These simulations test your ability to apply knowledge under pressure
+          - They reveal how you communicate technical concepts to diverse audiences
+          - Interviewers evaluate your consultative approach and problem-solving methodology
+
+          **HOW TO EXCEL:**
+
+          - Practice whiteboarding architecture diagrams and explaining your reasoning
+          - Develop a structured approach: clarify requirements → propose solutions → address concerns → summarize
+          - Ask clarifying questions before jumping to solutions (demonstrates customer obsession)
+          - Show your thought process out loud-interviewers want to see how you think
+          - Balance technical depth with business value in your responses
+
+          > 💡 **GENERAL TIPS FOR SUCCESS:**
+          >
+          > - Study the job description closely-tailor your examples to the specific role requirements
+          > - Research AWS Professional Services and understand how delivery consultants add value
+          > - Be prepared to discuss specific customer outcomes, not just technical implementations
+          > - Show passion for cloud technology and continuous learning
+          > - Practice with mock interviews focusing on both behavioral and technical questions
+          > - Prepare thoughtful questions for your interviewers about the role, team, and AWS culture
+      - md: | #markdown
+          ## 🎯 GAPS & MITIGATION STRATEGIES
+
+          ### GAP 1: Limited AWS-Specific Experience => LEVERAGE EXISTING KNOWLEDGE
+
+          > "While most of my recent work has been on GCP, I've worked across AWS, GCP, and Azure throughout my career.
+          > The architectural principles - designing for failure, decoupling services, serverless-first thinking - are cloud-agnostic.
+          > At Equalize, I architected solutions on AWS (EC2, S3, Lambda, RDS), and I'm currently preparing for my AWS Solutions Architect certification to formalize this knowledge.
+          > What excites me about AWS is bringing my cross-cloud perspective to help customers make optimal architectural decisions."
+
+          ### GAP 2: Customer-facing consulting => REFRAME CTO as Advisory Role; HIGHLIGHT STAKEHOLDER MANAGEMENT
+
+          > "While my titles were internal, my roles were inherently consultative.
+          > As CTO at N2B, I advised our CEO on cloud strategy, worked with 16 partner companies on platform adoption, and led the technical due diligence when SmartFit acquired us.
+          > These experiences taught me to translate technical complexity into business value - exactly what customers need from AWS consultants."
+
+          ### GAP 3: AWS Certifications => LEVERAGE EXISTING KNOWLEDGE
+
+          > "I'm currently preparing for my AWS Certified Solutions Architect - Associate exam.
+          > Given my depth in cloud architecture and GCP expertise, I'm focusing on AWS-specific service nuances and best practices.
+          > I'm confident this certification will formalize the architectural knowledge I've applied across multiple cloud platforms."
+      - md: | #markdown
+          ## [THE 16 LEADERSHIP PRINCIPLES](https://amazon.jobs/content/our-workplace/leadership-principles)
+
+          > These principles guide how AWS employees make decisions, prioritize work, and collaborate.
+
+          ### 1. CUSTOMER OBSESSION __(Everything starts with the customer)__
+          - Leaders start with the customer.
+          - They work with determination to earn and keep customer trust.
+
+          ### 2. OWNERSHIP __(Think long-term, not just your own scope)__
+          - Leaders act like owners.
+          - They think long-term and don't sacrifice long-term value for short-term results.
+          - They act on behalf of the entire company, not just their own team.
+          - Leaders never say `"That's not my job."`
+
+          ### 3. INVENT AND SIMPLIFY __(Seek innovation and simplicity)__
+          - Leaders expect and require innovation and invention from their teams and always find ways to simplify.
+          - They are externally aware, look for new ideas everywhere, and do not use `"not invented here"` as an excuse.
+          - Because we are always innovating, we may be misunderstood for long periods of time.
+
+          ### 4. LEARN AND BE CURIOUS __(Never stop learning)__
+          - Leaders raise the performance bar with every hire and promotion.
+          - They recognize exceptional talent and encourage their movement throughout the organization.
+          - Leaders develop leaders and take their role as coach seriously.
+          - We work for our teams to create development mechanisms, such as the `"Career Choice"` program.
+
+          ### 5. HIRE AND DEVELOP THE BEST __(Constantly raise the bar)__
+          - Leaders are relentless in raising the bar.
+          - Many may think these standards are unrealistic.
+          - They expect more and more from their teams.
+          - Together, they deliver high-quality products, services, and processes.
+          - Leaders do not allow problems to be ignored.
+          - They ensure problems are resolved once and for all.
+
+          ### 6. INSIST ON THE HIGHEST STANDARDS __(Incredibly high standards)__
+          - Thinking small is settling for less.
+          - Leaders create and communicate a bold direction that inspires results.
+          - They think differently and seek innovative solutions to serve customers.
+
+          ### 7. THINK BIG __(Think big and communicate bold vision)__
+          - Do more with less.
+          - Constraints breed resourcefulness, self-sufficiency, and invention.
+          - No extra points for growing headcount, budget, or fixed expenses.
+
+          ### 8. BIAS FOR ACTION __(Speed matters in business)__
+          - Leaders listen attentively, speak candidly, and treat others with respect.
+          - They are vocally self-critical, even when doing so is awkward or embarrassing.
+          - Leaders know neither they nor their teams are perfect.
+          - They benchmark themselves and their teams against the best.
+
+          ### 9. FRUGALITY __(Do more with less)__
+          - Leaders operate at all levels, stay connected to the details, audit frequently, and are skeptical when metrics and anecdotes differ.
+          - No task is beneath them.
+
+          ### 10. EARN TRUST __(Listen attentively, speak candidly)__
+          - Leaders are obligated to respectfully challenge decisions when they disagree, even when doing so is uncomfortable or exhausting.
+          - Leaders have conviction and are tenacious.
+          - They do not compromise for the sake of social cohesion.
+          - Once a decision is determined, they commit wholly.
+
+          ### 11. DIVE DEEP __(Go deep into the details)__
+          - Focusing on key business elements, leaders work to deliver them with quality and timeliness.
+          - Setbacks happen, but leaders rise above and never settle.
+
+          ### 12. HAVE BACKBONE; DISAGREE AND COMMIT __(Respectfully disagree, then commit)__
+          - Leaders are obligated to respectfully challenge decisions when they disagree, even when doing so is uncomfortable or exhausting.
+          - Leaders have conviction and are tenacious.
+          - They do not compromise for the sake of social cohesion.
+          - Once a decision is determined, they commit wholly.
+
+          ### 13. DELIVER RESULTS __(Focus on critical inputs and deliver with quality)__
+          - Speed matters in business.
+          - Many decisions and actions are reversible and do not need extensive study.
+          - We value calculated risk-taking.
+
+          ### 14. STRIVE TO BE EARTH'S BEST EMPLOYER __(Work to create a better environment)__
+          - Leaders create a safer, more productive, diverse, and fair work environment.
+          - They lead with empathy, have fun, and make it easier for others to succeed.
+          - They ask: Is my team growing? Do they feel empowered? Are they ready for the next step? Do they have vision and commitment to the team's success, at Amazon or elsewhere?
+
+          ### 15. SUCCESS AND SCALE BRING BROAD RESPONSIBILITY __(Start humbly)__
+          - Leaders never stop learning and always seek to improve.
+          - They are curious about new possibilities and remain curious.
+
+          ### 16. DELIVER VALUE __(Maximize value for customers)__
+          - Speed matters in business. Many decisions and actions are reversible and do not need extensive study.
+          - We value calculated risk-taking.
+      - md: | #markdown
+          ## ⚠️ CRITICAL RULES DURING THE ASSESSMENT
+
+          **THE TEXT YOU SHARED IS SERIOUS:**
+          - ❌ DO NOT copy or paste content
+          - ❌ DO NOT take screenshots or use print screen
+          - ❌ DO NOT navigate away from the assessment screen
+          - ❌ DO NOT receive external assistance (people or tools)
+
+          **YOUR BROWSER USAGE IS MONITORED:**
+          - If you use the print screen functionality, your session will be terminated and you will be blocked.
+
+          ## 💡 INTERVIEWEE INSIGHTS
+
+          Candidates report that the process is very challenging and focuses less on technical skills and more on HOW you answer questions related to the leadership principles.
+
+          An important tip: `"You know much less than you think you know"` - be prepared for questions that dive deep even into concepts you believe you have mastered.
+
+          ## 🎯 BEFORE THE ASSESSMENT
+
+          1. **Today/Tomorrow:** Read and internalize the 16 Leadership Principles
+          2. **This Week:** Prepare 2 STAR stories for each principle (32 stories in total)
+          3. **Review technical concepts:** Especially basic AWS services (EC2, S3, RDS, Lambda, VPC)
+          4. **Practice scenarios:** Think about how you would solve real customer problems
+
+          ## 📊 WHAT HAPPENS NEXT
+
+          - Candidates with a good score advance to a round of interviews and then take an additional technical test specific to the role.
+          - With an average score, you will need to go through an additional phone interview with an AWS employee to determine if you should advance.

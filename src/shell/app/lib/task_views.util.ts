@@ -1,5 +1,5 @@
-import type { Knowledge } from '@core'
-import type { TaskView } from '@shared/rpc'
+import type { Knowledge } from '../../../core'
+import type { TaskView } from '../../../shared/rpc'
 
 type TaskKnowledge = Extract<Knowledge, { type: 'task' }>
 

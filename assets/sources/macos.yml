@@ -1,0 +1,446 @@
+bookmarks:
+  https://support.apple.com/en-us/102522:
+    desc: Using Security Utility to Change Secure Boot (T2 & Apple Silicon)
+    tags: [ macos, security, t2, apple-silicon ]
+    notes:
+      - md: | #markdown
+          # Using Security Utility to Change Secure Boot (T2 & Apple Silicon)
+
+          1. **Boot into Recovery:** Turn on your Mac then immediately press and hold Command (⌘)-R (Intel) or hold the power button (Apple Silicon) until the recovery screen appears.
+          2. **Open Utility:** Select Utilities in the menu bar, then choose Startup Security Utility.
+          3. **Authenticate:** Enter your administrator password when prompted.
+          4. **View Settings:** You can now see if you are on `"Full Security"` or `"No Security"`.
+
+  https://support.apple.com/en-gb/guide/terminal/apdc6c1077b-5d5d-4d35-9c19-60f2397b2369/mac:
+    desc: launchctl command official docs
+    tags: [ macos, schedule, service ]
+    links: [ https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/Introduction.html#//apple_ref/doc/uid/10000172i-SW1-SW1 ]
+    notes:
+      - md: | #markdown
+          ## Script management with launchd in Terminal on Mac
+
+          > The `launchd` process is used by macOS to manage daemons and agents, and you can use it to run your shell scripts.
+          > You don't interact with launchd directly; instead you use the `launchctl` command to load or unload launchd daemons and agents.
+
+          ### Key points about `launchd`
+
+          - During system startup, `launchd` is the first process the kernel runs to set up the computer.
+          - If you want your shell script to be run as a daemon, it should be started by launchd.
+          - Other mechanisms for starting daemons and agents are subject to removal at Apple's discretion.
+
+          ### Configuration files
+
+          Get an idea of the various daemons and agents managed by launchd at the configuration files in:
+
+          | **FOLDER**                    |**USAGE**                                                          |
+          | ----------------------------- | ----------------------------------------------------------------- |
+          | /System/Library/LaunchDaemons | Apple-supplied system daemons                                     |
+          | /System/Library/LaunchAgents  | Apple-supplied agents that apply to all users on a per-user basis |
+          | /Library/LaunchDaemons        | Third-party system daemons                                        |
+          | /Library/LaunchAgents         | Third-party agents that apply to all users on a per-user basis    |
+          | ~/Library/LaunchAgents        | Third-party agents that apply only to the logged-in user          |
+
+          ### Key advantages over `cron`
+
+          - Better integrated with macOS (respects sleep/wake, system events)
+          - Clearer logging via `log stream`
+          - Handles environment variables and working directories better
+          - Can run scripts with different permissions (user vs system)
+          - More resilient across macOS updates
+  https://launchd.info:
+    desc: Comprehensive reference about launchd and launchctl
+    tags: [ macos, schedule, service ]
+    notes:
+      - md: | #markdown
+          ## launchctl
+
+          > Tool used to control launchd on the macOS system
+          > launchd is the equivalent of systemd and other service managers
+      - md: | #markdown
+          ## DAEMONS MANAGED BY LAUNCHD
+
+          - **Daemons** are services run by the system either as the root user or any other username specified in the service definition.
+            - Therefore, They don't require anyone to be logged in
+            - Typically used for system-level tasks (e.g., networking, system maintenance)
+            - Cannot interact with the user (no GUI, notifications, etc)
+            - `sudo launchctl list` shows system-wide daemons
+
+          - Daemons are loaded from:
+            | **FOLDER**                    | **USAGE**                     |
+            | ----------------------------- | ----------------------------- |
+            | /Library/LaunchDaemons        | third-party system daemons    |
+            | /System/Library/LaunchDaemons | Apple-provided system daemons |
+
+          ### COMMON DAEMONS EXAMPLES
+
+          - Networking services (e.g., SSH server)
+          - System maintenance tasks (e.g., software updates, backups)
+          - Background services (e.g., indexing, logging)
+      - md: | #markdown
+          ## AGENTS MANAGED BY LAUNCHD
+
+          - **Agents** are services run for the logged in user:
+            - Therefore, it require someone to be logged in to run
+            - Typically used for user-level tasks (e.g., syncing, background apps)
+            - Can interact with the user (GUI apps, notifications, etc)
+            - `launchctl list` shows only user agents by default
+
+          - Agents are loaded from:
+            | **FOLDER**                   | **USAGE**                 |
+            | ---------------------------- | ------------------------- |
+            | ~/Library/LaunchAgents       | per-user                  |
+            | /Library/LaunchAgents        | all users                 |
+            | /System/Library/LaunchAgents | Apple-provided, all users |
+
+          ### COMMON AGENTS EXAMPLES
+
+          - Sync services (e.g., Dropbox, iCloud)
+          - Background apps (e.g., messaging apps, cloud storage)
+          - User-specific maintenance tasks (e.g., backups, cleanup scripts)
+
+          ### PRACTICAL EXAMPLES
+
+          1. Set up Ruby environment for services
+
+                ```sh
+                launchctl setenv GEM_HOME ~/.gem
+                launchctl setenv GEM_PATH ~/.gem
+                launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.myapp.worker.plist
+                launchctl enable gui/$(id -u)/com.myapp.worker
+                ```
+
+          2. Deploy a service and verify it works
+
+                ```sh
+                launchctl bootstrap system /Library/LaunchDaemons/com.company.sync.plist
+                sleep 1
+                launchctl runstats system/com.company.sync
+                # Check the output for errors
+                ```
+
+          3. Troubleshoot a failing service
+
+                ```sh
+                launchctl runstats gui/$(id -u)/com.backup.service
+                # If ExitStatus != 0, the script failed
+                ```
+
+          4. Temporary service activation (no persist)
+
+              ```sh
+              launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.test.plist
+              launchctl start gui/$(id -u)/com.test
+              launchctl runstats gui/$(id -u)/com.test
+              launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.test.plist
+              ```
+      - sh: | #shell
+          #!/bin/sh
+
+          ### Commonly used `launchctl` commands
+
+          # List all your own loaded agents
+          launchctl list
+          # List all system-wide loaded daemons
+          sudo launchctl list
+          # View details of a specific service
+          sudo launchctl list com.openssh.sshd
+          # Load a launchd plist file and start the service
+          launchctl load ~/Library/LaunchAgents/com.example.task.plist
+          # View details of a specific service
+          launchctl info system/com.example.task
+          # Enable a service to start on login (10.15+)
+          launchctl enable gui/501/com.example.task
+          # Disable a service
+          launchctl disable gui/501/com.example.task
+          # Manually trigger a service right now
+          launchctl start com.example.task
+          # Stop a running service
+          launchctl stop com.example.task
+          # Unload (stop) a service
+          launchctl unload ~/Library/LaunchAgents/com.example.task.plist
+          # View launchd logs in real-time
+          log stream --predicate 'process == "launchd"' --level debug
+          # View logs for a specific service
+          log show --predicate 'process == "launchd" and eventMessage contains "com.example.task"' --last 1h
+          # Check stderr/stdout logs (if configured)
+          cat ~/Library/Logs/com.example.task.log
+commands:
+  sudo reboot:
+    desc: Restart your Mac
+    tags: [ macos ]
+  sudo shutdown -r now:
+    desc: Restart your Mac
+    tags: [ macos ]
+  scutil --get LocalHostName:
+    desc: Check current Mac's local hostname
+    tags: [ macos, hostname ]
+  sudo scutil --set LocalHostName "macbook-roalcantara":
+    desc: Change Mac's local hostname
+    tags: [ macos, hostname ]
+  sudo dscacheutil -flushcache:
+    desc: Flush the DNS cache to ensure the change takes effect
+    tags: [ macos, hostname ]
+  scutil --get LocalHostName && sudo scutil --set LocalHostName "macbook-roalcantara" && sudo dscacheutil -flushcache && sudo reboot:
+    desc: Check current Mac's local hostname, change it, flush the DNS cache to ensure the change takes effect and restart your Mac for all networking services to recognize the new hostname
+    tags: [ macos, hostname ]
+  sudo systemsetup -listtimezones:
+    desc: List Timezones
+    tags: [ macos, timezones ]
+  sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk:
+    desc: Link openjdk to /Library/Java/JavaVirtualMachines
+    tags: [ macos, java, openjdk ]
+
+  csrutil status:
+    desc: Check if SIP is enabled or disabled
+    tags: [ macos, security, sip ]
+  fdesetup status:
+    desc: Check if FileVault is enabled or disabled
+    tags: [ macos, security, filevault ]
+  sysadminctl -secureTokenStatus <username>:
+    desc: Check if the user has a secure token (required for FileVault)
+    tags: [ macos, security, filevault ]
+
+  dscl . -read "/Users/$USER" UserShell 2>/dev/null | awk '{print $2}':
+    desc: Check the user's shell (as used by the current login session)
+    tags: [ macos, user, shell ]
+  dscl . -read /Groups/"wheel" &>/dev/null:
+    desc: Check if the wheel group exists
+    tags: [ macos, user, group ]
+
+  ### defaults | macOS user preferences system
+  defaults help:
+    desc: Show help for defaults
+    tags: [ macos, defaults ]
+    links: [ https://macos-defaults.com ]
+  defaults domains:
+    desc: List all domains
+    tags: [ macos, defaults ]
+    links: [ https://macos-defaults.com ]
+  defaults write:
+    desc: Write a default value
+    tags: [ macos, defaults ]
+    links: [ https://macos-defaults.com ]
+  defaults delete:
+    desc: Delete a default value
+    tags: [ macos, defaults ]
+    links: [ https://macos-defaults.com ]
+
+  ### launchctl | Task scheduler using launchd (macOS preferred approach)
+  ## AGENTS ==> Services launched for the logged-in user
+  ls -la ~/Library/LaunchAgents:
+    desc: User's Agents are plist files placed in ~/Library/LaunchAgents
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  launchctl list:
+    desc: List all loaded Agents
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  launchctl list | grep ssh:
+    desc: List all loaded Agents related to ssh
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  launchctl enable gui/$(id -u)/com.example.task:
+    desc: Set Service Agents to start on login (10.15+) with full user context. PERSISTS across reboots (auto-starts)
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+    notes:
+      - md: | #markdown
+          ### Enabling Service Agents with User Context
+
+          On macOS 10.15 and later, use the user ID to enable Service Agents
+
+            ```sh
+            launchctl enable gui/$(id -u)/com.example.task
+            ```
+
+          #### WHy?
+
+          - Ensures that the agent runs with the appropriate permissions and environment
+          - Avoids conflicts (when same service name in multiple domains)
+          - Is explicit, avoiding ambiguity (particularly in SCRIPTS & AUTOMATION)
+          - When targeting different users than the currently logged in
+          - Adheres to best practices for service management on macOS
+  launchctl stop gui/$(id -u)/com.example.task:
+    desc: Stop running Service Agents
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  launchctl start gui/$(id -u)/com.example.task:
+    desc: Manually triggers Service Agents right now
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.example.task.plist:
+    desc: Load and start immediately Service Agents from plist files into ~/Library/LaunchAgents/.
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.example.task.plist:
+    desc: Stop and remove immediately Service Agents. Does NOT delete the plist file from ~/Library/LaunchAgents/.
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  launchctl disable gui/$(id -u)/com.example.task:
+    desc: Disable Service Agents. PREVENTS auto-start on reboot!
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  launchctl unload ~/Library/LaunchAgents/com.example.task.plist:
+    desc: (DEPRECATED! Use bootout!) Stops Service Agents immediately. Does NOT prevent auto-start on reboot!
+    tags: [ macos, schedule, service, deprecated ]
+    links: [ https://launchd.info ]
+  launchctl load ~/Library/LaunchAgents/com.example.task.plist:
+    desc: (DEPRECATED! Use bootstrap!) Load and start Service Agents immediately. Does NOT persist across reboots!
+    tags: [ macos, schedule, service, deprecated ]
+    links: [ https://launchd.info ]
+  launchctl print-disabled user/$(id -u):
+    desc: List all disabled Service Agents
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  # Viewing launchd logs
+  log stream --predicate 'process == "launchd"' --level debug:
+    desc: View launchd logs in real-time
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  log show --predicate 'process == "launchd" and eventMessage contains "com.example.task"' --last 1h:
+    desc: View logs for a specific service
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  cat ~/Library/Logs/com.example.task.log:
+    desc: Check stderr/stdout logs (if configured)
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  # Environment Variables for launchd and its services
+  launchctl getenv PATH:
+    desc: Get launchd's Environment Variables' values
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  launchctl unsetenv CUSTOM_VAR:
+    desc: Unset the specified env vars for all services within the domain
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  launchctl setenv PATH "/usr/local/bin:/usr/bin:/bin":
+    desc: Set Environment Variable for launchd and all its children
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  launchctl enable gui/$(id -u)/setenv.local:
+    desc: Set GLOBAL Environment Variable that all launchd services inherit. PERSISTS across reboots (auto-starts)
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+    notes:
+      - xml: | #xml
+          <!-- ~/Library/LaunchAgents/setenv.plist -->
+          <!-- Useful for services that won't see .bashrc/.zshrc env vars (no shell context) -->
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>Label</key>
+            <string>setenv.local</string>
+            <key>ProgramArguments</key>
+            <array>
+              <string>/bin/sh</string>
+              <string>-c</string>
+              <string>launchctl setenv PATH /usr/local/bin:/usr/bin:/bin</string>
+            </array>
+            <key>RunAtLoad</key>
+            <true/>
+          </dict>
+          </plist>
+  ## DAEMONS ==> System-wide services launched by the OS
+  sudo launchctl list:
+    desc: List all system-wide loaded daemons
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info, https://rakhesh.com/mac/macos-launchctl-commands ]
+    notes:
+      - md: | #markdown
+          ### OVERVIEW
+
+          - `launchd` is the service management framework in macOS that handles the starting, stopping, and managing of system and user services.
+          - Services managed by `launchd` are defined in property list (plist) files located in specific directories.
+          - There are two main types of services managed by `launchd`:
+            1. **Agents**: Run on behalf of the logged-in user.
+            2. **Daemons**: Run on behalf of the system or specific users, regardless of user login status.
+          - Each type has its own set of directories where their plist files are stored, and they serve different purposes within the macOS ecosystem.
+  sudo launchctl list | grep ssh:
+    desc: List all system-wide loaded agents related to ssh
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info, https://rakhesh.com/mac/macos-launchctl-commands ]
+  sudo launchctl list com.openssh.sshd:
+    desc: View details of the sshd service
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info, https://rakhesh.com/mac/macos-launchctl-commands ]
+  sudo launchctl enable system/com.openssh.sshd:
+    desc: Enable dev.dotfiles.setup service
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info, https://rakhesh.com/mac/macos-launchctl-commands ]
+  sudo launchctl stop system/com.openssh.sshd:
+    desc: Enable dev.dotfiles.setup service
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info, https://rakhesh.com/mac/macos-launchctl-commands ]
+  sudo launchctl start system/com.openssh.sshd:
+    desc: Start the sshd service
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info, https://rakhesh.com/mac/macos-launchctl-commands ]
+  sudo launchctl disabled system/com.openssh.sshd:
+    desc: Enable dev.dotfiles.setup service
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info, https://rakhesh.com/mac/macos-launchctl-commands ]
+  # Viewing launchd logs
+  sudo launchctl print-disabled system/$(id -u):
+    desc: List all disabled Service Daemons
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  sudo launchctl print-disabled user/$(id -u):
+    desc: List all disabled Service Agents
+    tags: [ macos, schedule, service ]
+    links: [ https://launchd.info ]
+  ### security | Keychain management
+  security add-generic-password -a bitwarden_client_id -s Bitwarden -w "$CLIENT_ID" -U:
+    desc: Add a secret on the account"bitwarden_client_id" for the service "Bitwarden" with the account "bitwarden_client_id" to the keychain. The -U flag is the key detail - without it, running the command twice creates duplicates. With it, it
+      just updates the existing entry.
+    tags: [ macos, security ]
+    links: [ https://bitwarden.com ]
+  security add-generic-password -a bitwarden_client_secret -s Bitwarden -w "$CLIENT_SECRET" -U:
+    desc: Add a secret on the account"bitwarden_client_secret" for the service "Bitwarden" with the account "bitwarden_client_secret" to the keychain. The -U flag is the key detail - without it, running the command twice creates duplicates.
+      With it, it just updates the existing entry.
+    tags: [ macos, security ]
+    links: [ https://bitwarden.com ]
+  security find-generic-password -w -a bitwarden_client_id -s Bitwarden:
+    desc: Find a secret on the account"bitwarden_client_id" for the service "Bitwarden" with the account "bitwarden_client_id" in the keychain
+    tags: [ macos, security ]
+    links: [ https://bitwarden.com ]
+  security find-generic-password -w -a bitwarden_client_secret -s Bitwarden:
+    desc: Find a secret on the account"bitwarden_client_secret" for the service "Bitwarden" with the account "bitwarden_client_secret" in the keychain
+    tags: [ macos, security ]
+    links: [ https://bitwarden.com ]
+  sudo rm -rf ~/Library/Caches/*.* && sudo AssetCacheManagerUtil flushCache && sudo AssetCacheManagerUtil flushSharedCache && sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder:
+    desc: Clean up cache
+    tags: [ macos, cache ]
+  sudo spctl --master-disable:
+    desc: Disable Gatekeeper temporarily
+    tags: [ macos, security ]
+  sudo spctl --master-enable:
+    desc: Enable Gatekeeper
+    tags: [ macos, security ]
+cheats:
+  Installing yabai (latest release) and scripting addition:
+    desc: A tiling window manager for macOS based on binary space partitioning
+    tags: [ macos, yabai, twm ]
+    links:
+      - Yabai - GitHub: https://github.com/koekeishiya/yabai
+      - Installing yabai (latest release): https://github.com/koekeishiya/yabai/wiki/Installing-yabai-(latest-release)#configure-scripting-addition
+    notes:
+      - sh: | #shell
+          #!/bin/sh
+
+          # Copy the example configuration into your home directory:
+          cp /opt/homebrew/opt/yabai/share/yabai/examples/yabairc ~/.yabairc
+          cp /opt/homebrew/opt/yabai/share/yabai/examples/skhdrc ~/.skhdrc
+
+          # If you want yabai to be managed by launchd (start automatically upon login):
+          yabai --start-service
+
+          # When running as a launchd service logs will be found in:
+          /tmp/yabai_<user>.[out|err].log
+
+          # If you are using the scripting-addition; remember to update your sudoers file:
+          sudo visudo -f /private/etc/sudoers.d/yabai
+
+          # Build the configuration row by running:
+          echo "$(whoami) ALL=(root) NOPASSWD: sha256:$(shasum -a 256 $(which yabai) | cut -d " " -f 1) $(which yabai) --load-sa"

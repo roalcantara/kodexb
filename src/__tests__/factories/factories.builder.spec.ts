@@ -15,4 +15,18 @@ describe('factoryFor()', () => {
       expect(cfg.sources.path).toContain('minimal')
     })
   })
+
+  it('produces rows with non-empty doc', () => {
+    const bookmark = factoryFor('bookmark')
+    expect(bookmark.doc.length).toBeGreaterThan(0)
+
+    const command = factoryFor('command')
+    expect(command.doc.length).toBeGreaterThan(0)
+
+    const cheat = factoryFor('cheat')
+    expect(cheat.doc.length).toBeGreaterThan(0)
+
+    const task = factoryFor('task')
+    expect(task.doc.length).toBeGreaterThan(0)
+  })
 })

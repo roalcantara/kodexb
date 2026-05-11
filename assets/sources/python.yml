@@ -1,0 +1,680 @@
+bookmarks:
+  https://docs.astral.sh/uv:
+    tags: [ py, uv ]
+    desc: An extremely fast Python package and project manager, written in Rust
+    links:
+      - Guides overview: https://docs.astral.sh/uv/guides/#guides-overview
+      - Integration guides: https://docs.astral.sh/uv/guides/integration
+      - Settings: https://docs.astral.sh/uv/reference/settings
+    notes:
+      - md: | #markdown
+          ## Highlights
+
+          > uv is backed by Astral, the creators of Ruff
+
+          🚀 A single tool to replace pip, pip-tools, pipx, poetry, pyenv, twine, virtualenv, and more.
+          ⚡️ 10-100x faster than pip.
+          🐍 Installs and manages Python versions.
+          🛠️ Runs and installs Python applications.
+          ❇️ Runs scripts, with support for inline dependency metadata.
+          🗂️ Provides comprehensive project management, with a universal lockfile.
+          🔩 Includes a pip-compatible interface for a performance boost with a familiar CLI.
+          🏢 Supports Cargo-style workspaces for scalable projects.
+          💾 Disk-space efficient, with a global cache for dependency deduplication.
+          ⏬ Installable without Rust or Python via curl or pip.
+          🖥️ Supports macOS, Linux, and Windows.
+      - md: | #markdown
+          ### TL;DR: UV - Fast Python Package Manager
+
+          > WHAT IS UV?
+          > UV is a blazing-fast Python package installer and resolver written in Rust.
+          > It replaces pip, pip-tools, and venv with a single unified tool.
+
+          #### KEY PURPOSES:
+          - Install Python packages 10-100x faster than pip
+          - Manage virtual environments
+          - Lock dependencies reproducibly
+          - Handle complex dependency resolution efficiently
+
+          #### MAIN FEATURES:
+          - Lightning-fast package installation (Rust-based)
+          - Replaces pip, venv, and requirements.txt management
+          - Built-in virtual environment management
+          - Lock file support for reproducible installs
+          - Python version management
+          - Workspace support for monorepos
+          - Drop-in pip replacement (mostly compatible)
+      - sh: | #shell
+          #!/bin/bash
+          ################################################################################
+          ## QUICKSTART - INSTALLATION
+          ################################################################################
+
+          # Option 1: Install via curl (recommended)
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+
+          # Option 2: Install via Homebrew (macOS/Linux)
+          brew install uv
+
+          # Option 3: Install via Flox
+          flox install uv
+
+          # Option 4: Install via pip (bootstrap)
+          pip install uv
+
+          # Verify installation
+          uv --version
+
+          # Enable shell completion for uv commands in Zsh
+          echo 'eval "$(uv generate-shell-completion zsh)"' >> ~/.zshrc
+
+          # Enable shell completion for uvx commands in Zsh
+          echo 'eval "$(uvx --generate-shell-completion zsh)"' >> ~/.zshrc
+      - sh: | #shell
+          #!/bin/bash
+          ################################################################################
+          ## COMMON WORKFLOWS
+          ################################################################################
+
+          # 1. CREATE A NEW PROJECT WITH VIRTUAL ENV
+          # ============================================
+          uv init my_project
+          cd my_project
+          # Creates: pyproject.toml, .python-version, venv/
+
+          # 2. ADD/INSTALL PACKAGES (replaces: pip install)
+          # =================================================
+          # Install single package
+          uv pip install requests
+
+          # Install multiple packages
+          uv pip install requests flask numpy
+
+          # Install with specific version
+          uv pip install "requests==2.31.0"
+
+          # Install from requirements.txt
+          uv pip install -r requirements.txt
+
+          # Install in development mode (editable)
+          uv pip install -e .
+
+          # 3. SYNC DEPENDENCIES (like pip install from lock file)
+          # ========================================================
+          # Install all dependencies from uv.lock
+          uv sync
+
+          # Sync specific dependency group
+          uv sync --group dev
+
+          # 4. LOCK DEPENDENCIES (create reproducible lock file)
+          # ======================================================
+          # Generate uv.lock from pyproject.toml
+          uv lock
+
+          # Update lock file
+          uv lock --upgrade
+
+          # 5. LIST INSTALLED PACKAGES (replaces: pip list)
+          # =================================================
+          uv pip list
+
+          # 6. SHOW PACKAGE INFO (replaces: pip show)
+          # ==========================================
+          uv pip show requests
+
+          # 7. FREEZE DEPENDENCIES (replaces: pip freeze)
+          # ==============================================
+          uv pip freeze
+
+          # Export to requirements.txt
+          uv pip freeze > requirements.txt
+
+          # 8. RUN PYTHON SCRIPTS IN ISOLATED ENVIRONMENT
+          # ===============================================
+          # Run script with auto-installed dependencies
+          uv run script.py
+
+          # Run with specific dependencies
+          uv run --with requests --with flask script.py
+
+          # Run in temporary environment
+          uv run --with pandas python -c "import pandas; print(pandas.__version__)"
+
+          # 9. MANAGE PYTHON VERSIONS (replaces: pyenv)
+          # =============================================
+          # Install Python version
+          uv python install 3.12
+
+          # List available Python versions
+          uv python list
+
+          # Use specific Python version in project
+          echo "3.12" > .python-version
+
+          # 10. WORK WITH VIRTUAL ENVIRONMENTS
+          # ====================================
+          # Create virtual environment
+          uv venv
+
+          # Create with specific Python version
+          uv venv --python 3.11
+
+          # Activate venv (same as standard venv)
+          source .venv/bin/activate  # Linux/macOS
+          # or
+          .venv\Scripts\activate     # Windows
+
+          # 11. REMOVE/UNINSTALL PACKAGES (replaces: pip uninstall)
+          # =========================================================
+          uv pip uninstall requests
+
+          # Remove without confirmation
+          uv pip uninstall -y requests
+
+          # 12. UPGRADE PACKAGES
+          # ====================
+          # Upgrade single package
+          uv pip install --upgrade requests
+
+          # Upgrade all packages
+          uv pip install --upgrade
+
+          # 13. COMPILE REQUIREMENTS (like pip-compile)
+          # =============================================
+          # Compile requirements-in to uv.lock
+          uv pip compile pyproject.toml -o requirements.txt
+
+          # 14. SEARCH PACKAGE INFORMATION
+          # ===============================
+          # Note: uv doesn't have built-in search, use PyPI:
+          # https://pypi.org/
+
+          # But you can check what's available:
+          uv pip index --help
+      - sh: | #shell
+          #!/bin/bash
+          ################################################################################
+          ## DEPENDENCY MANAGEMENT IN pyproject.toml
+          ################################################################################
+
+          # Instead of requirements.txt, use pyproject.toml:
+          cat > pyproject.toml << 'EOF'
+          [project]
+          name = "my-app"
+          version = "0.1.0"
+          dependencies = [
+              "requests>=2.31.0",
+              "flask>=3.0.0",
+          ]
+
+          [project.optional-dependencies]
+          dev = [
+              "pytest>=7.0.0",
+              "black>=23.0.0",
+              "mypy>=1.0.0",
+          ]
+          EOF
+
+          # Install with dev dependencies
+          uv sync --group dev
+      - sh: | #shell
+          #!/bin/bash
+          ################################################################################
+          ## WORKFLOW COMPARISON: pip vs uv
+          ################################################################################
+
+          # OLD WAY (pip)
+          # $ python -m venv venv
+          # $ source venv/bin/activate
+          # $ pip install -r requirements.txt
+          # $ pip freeze > requirements.txt
+          # $ pip install package_name
+
+          # NEW WAY (uv)
+          # $ uv sync              # Does it all!
+          # $ uv pip install package_name
+          # $ uv lock              # Auto-generated lock file
+      - sh: | #shell
+          #!/bin/bash
+          ################################################################################
+          ## PRO TIPS
+          ################################################################################
+
+          # 1. Use uv.lock for reproducible builds (check into git)
+          # Keep uv.lock in version control!
+
+          # 2. Group dependencies by purpose
+          uv sync --group dev --group test
+
+          # 3. Run isolated scripts without polluting your venv
+          uv run --with httpx --with beautifulsoup4 myscript.py
+
+          # 4. Combine with uv run for CI/CD pipelines
+          uv run pytest
+          uv run black .
+          uv run mypy src/
+
+          # 5. Check what changed in dependencies
+          git diff uv.lock
+
+          # 6. Use pyproject.toml for all config (modern Python standard)
+          # Avoid requirements.txt once you migrate
+      - sh: | #shell
+          #!/bin/bash
+          ################################################################################
+          ## COMMON ISSUES & SOLUTIONS
+          ################################################################################
+
+          # Issue: "ModuleNotFoundError" after installing
+          # Solution: Make sure venv is activated or use `uv run`
+
+          # Issue: Package version conflicts
+          # Solution: Use `uv lock --upgrade` to resolve
+          # or: `uv pip install --upgrade package_name`
+
+          # Issue: Different Python versions
+          # Solution: Set .python-version file, then `uv sync`
+
+          # Issue: Slow first installation
+          # Normal! First run caches everything, subsequent runs are instant
+      - sh: | #shell
+          #!/bin/bash
+          ################################################################################
+          ## QUICK REFERENCE
+          ################################################################################
+
+          # uv init <dir>               Create new project
+          # uv sync                     Install all dependencies
+          # uv lock                     Create lock file
+          # uv pip install <pkg>        Install package
+          # uv pip list                 List packages
+          # uv run <script>             Run script with deps
+          # uv venv                     Create virtual environment
+          # uv python install <version> Install Python version
+
+          ################################################################################
+cheats:
+  Python's venv (virtual environment):
+    desc: Creates a virtual environment for a Python project (via flox)
+    tags: [ venv ]
+    notes:
+      - md: | #markdown
+          ## What is Python's venv (virtual environment)?
+
+          - A virtual environment is a self-contained directory that contains a specific Python installation and its dependencies.
+          - It allows you to isolate a project's dependencies from the global Python installation and other projects.
+      - sh: | #shell
+          #!/bin/bash
+
+          # 1. Navigate to your project
+          cd ~/home/foo/demo
+
+          # 2. Install Python (via flox)
+          flox install python313Full # or python313
+
+          # 3. Verify Python installation
+          command -v python3 >/dev/null 2>&1 && echo 'python exists!' || echo 'python does not exist'
+
+          # 4. Create virtual environment
+          python3 -m venv .venv
+
+          # 5. Activate venv
+          source .venv/bin/activate
+
+          # 6. Check active: which python (should show .venv/bin/python)
+          which python
+
+          # 7. Upgrade pip (recommended)
+          pip install --upgrade pip
+
+          # 8. Install dependencies
+          pip install -r requirements.txt  # if you have requirements.txt
+
+          # 9. Work on your project...
+
+          # 10. Deactivate when done
+          deactivate
+  Python's range(start, stop) function:
+    desc: Generates a sequence of numbers starting from start and stopping before stop, meaning the stop number is not included in the sequence.
+    tags: [ py, range ]
+    notes:
+      - md: |
+          
+          ## Python uses range function for loops, which generates a sequence.
+
+          ### Notice that 5 is not included in the output.
+
+          ```python
+          for i in range(1, 5):
+              print(i)
+
+          # Output: 1, 2, 3, 4
+          ```
+  Python's zip() function:
+    desc: Combines two or more iterables into a single iterable.
+    tags: [ py ]
+    notes:
+      - md: |
+          ## Pairing Elements of Two Lists
+
+          ```python
+          names = ['Alice', 'Bob', 'Charlie']
+          ages = [25, 30, 35]
+
+          paired = list(zip(names, ages))
+          print(paired)
+
+          # Output: [('Alice', 25), ('Bob', 30), ('Charlie', 35)]
+          ```
+      - md: |
+          ## Unzipping a List of Tuples
+
+          ```python
+          paired = [('Alice', 25), ('Bob', 30), ('Charlie', 35)]
+          names, ages = zip(*paired)
+
+          print(list(names))  # Output: ['Alice', 'Bob', 'Charlie']
+          print(list(ages))  # Output: [25, 30, 35]
+          ```
+      - md: |
+          ## Using zip with More Than Two Lists
+
+          The resulting tuples will have as many elements as there are iterables.
+
+          ```python
+          names = ['Alice', 'Bob', 'Charlie']
+          ages = [25, 30, 35]
+          cities = ['New York', 'Los Angeles', 'Chicago']
+
+          info = list(zip(names, ages, cities))
+          print(info)
+
+          # Output: [
+          #  ('Alice', 25, 'New York'),
+          #  ('Bob', 30, 'Los Angeles'),
+          #  ('Charlie', 35, 'Chicago')
+          # ]
+          ```
+      - md: |
+          ## Handling Iterables of Different Lengths
+
+          If the iterables are of different lengths, zip stops when the shortest iterable is exhausted.
+
+          Use `itertools.zip_longest` to handle iterables of different lengths without truncating to the shortest one.
+
+          ```python
+          from itertools import zip_longest
+
+          names = ['Alice', 'Bob', 'Charlie', 'David']
+          ages = [25, 30, 35]  # David's age is missing
+
+          paired = list(zip_longest(names, ages, fillvalue='Unknown'))
+          print(paired)
+
+          # Output: [
+          #  ('Alice', 25),
+          #  ('Bob', 30),
+          #  ('Charlie', 35),
+          #  ('David', 'Unknown')
+          # ]
+          ```
+      - md: |
+          ## Looping Over Two Lists at Once
+
+          ```python
+          names = ['Alice', 'Bob', 'Charlie']
+          ages = [25, 30, 35]
+
+          for name, age in zip(names, ages):
+              print(f'{name} is {age} years old')
+
+          # Output:
+          # Alice is 25 years old
+          # Bob is 30 years old
+          # Charlie is 35 years old
+          ```
+  ~/.modular/pkg/packages.modular.com_mojo/venv:
+    desc: Mojo's Python virtual environment (Mac M1)
+    tags: [ py, mojo ]
+commands:
+  brew install uv:
+    desc: Install the Astral package manager for Python.
+    tags: [ uv ]
+  echo 'eval "$(uv generate-shell-completion zsh)"' >> ~/.zshrc:
+    desc: Enable shell completion for uv commands in Zsh
+    tags: [ py ]
+  echo 'eval "$(uvx --generate-shell-completion zsh)"' >> ~/.zshrc:
+    desc: Enable shell completion for uvx commands in Zsh
+    tags: [ py ]
+  uv init:
+    desc: Create a new Python project
+    tags: [ uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/projects
+      - https://docs.astral.sh/uv/getting-started/features/#projects
+  uv add:
+    desc: Add a dependency to the project.
+    tags: [ uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/projects
+      - https://docs.astral.sh/uv/getting-started/features/#projects
+  uv build:
+    desc: Build the project into distribution archives.
+    tags: [ uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/projects
+      - https://docs.astral.sh/uv/getting-started/features/#projects
+  uv lock:
+    desc: Create a lockfile for the project's dependencies.
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/projects
+      - https://docs.astral.sh/uv/getting-started/features/#projects
+  uv publish:
+    desc: Publish the project to a package index.
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/projects
+      - https://docs.astral.sh/uv/getting-started/features/#projects
+  uv remove:
+    desc: Remove a dependency from the project.
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/projects
+      - https://docs.astral.sh/uv/getting-started/features/#projects
+  uv sync:
+    desc: Sync the project's dependencies with the environment.
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/projects
+      - https://docs.astral.sh/uv/getting-started/features/#projects
+  uv tree:
+    desc: View the dependency tree for the project.
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/projects
+      - https://docs.astral.sh/uv/getting-started/features/#projects
+  uv tool install:
+    desc: Install a tool user-wide.
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/tools
+      - https://docs.astral.sh/uv/getting-started/features/#tools
+  uv tool list:
+    desc: List installed tools.
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/tools
+      - https://docs.astral.sh/uv/getting-started/features/#tools
+  uv tool uninstall:
+    desc: Uninstall a tool.
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/tools
+      - https://docs.astral.sh/uv/getting-started/features/#tools
+  uv tool update-shell:
+    desc: Update the shell to include tool executables.
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/tools
+      - https://docs.astral.sh/uv/getting-started/features/#tools
+  uvx / uv tool run:
+    desc: Run a tool in a temporary environment.
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/tools
+      - https://docs.astral.sh/uv/getting-started/features/#tools
+  uv cache clean:
+    desc: Remove cache entries.
+    tags: [ py, uv ]
+    links: [ https://docs.astral.sh/uv/getting-started/features/#utility ]
+  uv cache dir:
+    desc: Show the uv cache directory path.
+    tags: [ py ]
+    links: [ https://docs.astral.sh/uv/getting-started/features/#utility ]
+  uv cache prune:
+    desc: Remove outdated cache entries.
+    tags: [ py, uv ]
+    links: [ https://docs.astral.sh/uv/getting-started/features/#utility ]
+  uv tool dir:
+    desc: Show the uv tool directory path.
+    tags: [ py ]
+    links: [ https://docs.astral.sh/uv/getting-started/features/#utility ]
+  uv self update:
+    desc: Update uv to the latest version.
+    tags: [ py ]
+    links: [ https://docs.astral.sh/uv/getting-started/features/#utility ]
+  uv venv:
+    desc: Create a new virtual environment
+    tags: [ py ]
+    links:
+      - https://docs.astral.sh/uv/pip/environments
+      - https://docs.astral.sh/uv/getting-started/features/#the-pip-interface
+  uv run:
+    desc: Run a script.
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/scripts
+      - https://docs.astral.sh/uv/getting-started/features/#scripts
+  uv add --script:
+    desc: Add a dependency to a script
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/scripts
+      - https://docs.astral.sh/uv/getting-started/features/#scripts
+  uv remove --script:
+    desc: Remove a dependency from a script
+    tags: [ py, uv ]
+    links:
+      - https://docs.astral.sh/uv/guides/scripts
+      - https://docs.astral.sh/uv/getting-started/features/#scripts
+  uv python install:
+    desc: Install the latest Python version
+    tags: [ uv ]
+    links:
+      - Install Python versions: https://docs.astral.sh/uv/guides/install-python
+      - Python versions: https://docs.astral.sh/uv/getting-started/features/#python-versions
+  uv python install 3.12:
+    desc: Install a specific Python version
+    tags: [ uv ]
+    links:
+      - Install Python versions: https://docs.astral.sh/uv/guides/install-python
+      - Python versions: https://docs.astral.sh/uv/getting-started/features/#python-versions
+  uv python list:
+    desc: View available Python versions
+    tags: [ uv ]
+    links:
+      - Install Python versions: https://docs.astral.sh/uv/guides/install-python
+      - Python versions: https://docs.astral.sh/uv/getting-started/features/#python-versions
+  uv python find:
+    desc: Find an installed Python version
+    tags: [ uv ]
+    links:
+      - Install Python versions: https://docs.astral.sh/uv/guides/install-python
+      - Python versions: https://docs.astral.sh/uv/getting-started/features/#python-versions
+  uv python pin:
+    desc: Pin the current project to use a specific Python version
+    tags: [ uv ]
+    links:
+      - Install Python versions: https://docs.astral.sh/uv/guides/install-python
+      - Python versions: https://docs.astral.sh/uv/getting-started/features/#python-versions
+  uv python uninstall:
+    desc: Uninstall a Python version
+    tags: [ uv ]
+    links:
+      - Install Python versions: https://docs.astral.sh/uv/guides/install-python
+      - Python versions: https://docs.astral.sh/uv/getting-started/features/#python-versions
+  uv python dir:
+    desc: Show the uv installed Python versions path.
+    tags: [ uv, py ]
+    links: [ https://docs.astral.sh/uv/getting-started/features/#utility ]
+  uv pip check:
+    desc: Check that the current environment has compatible packages
+    tags: [ py ]
+    links: [ https://docs.astral.sh/uv/pip/packages ]
+  uv pip freeze:
+    desc: List installed packages and their versions
+    tags: [ py ]
+    links: [ https://docs.astral.sh/uv/pip/packages ]
+  uv pip install:
+    desc: Install packages into the current environment
+    tags: [ py, uv ]
+    links: [ https://docs.astral.sh/uv/pip/packages ]
+  uv pip list:
+    desc: List installed packages
+    tags: [ py, uv ]
+    links: [ https://docs.astral.sh/uv/pip/packages ]
+  uv pip show:
+    desc: Show details about an installed package
+    tags: [ py, uv ]
+    links: [ https://docs.astral.sh/uv/pip/packages ]
+  uv pip tree:
+    desc: View the dependency tree for the environment
+    tags: [ py, uv ]
+    links: [ https://docs.astral.sh/uv/pip/packages ]
+  uv pip uninstall:
+    desc: Uninstall packages
+    tags: [ py, uv ]
+    links: [ https://docs.astral.sh/uv/pip/packages ]
+  uv pip sync:
+    desc: Sync an environment with a lockfile
+    tags: [ py, uv ]
+    links: [ https://docs.astral.sh/uv/pip/compile ]
+  uv pip compile:
+    desc: Compile requirements into a lockfile
+    tags: [ py, uv ]
+    links: [ https://docs.astral.sh/uv/pip/compile ]
+  pip search <package>:
+    desc: To search for a package
+    tags: [ py ]
+  pip install <package>:
+    desc: To install packages
+    tags: [ py ]
+  pip install --user <package>:
+    desc: To install a package in user space
+    tags: [ py ]
+  pip install --upgrade <package>:
+    desc: To upgrade a package
+    tags: [ pip ]
+  pip freeze > requirements.txt:
+    desc: To output and install packages in a requirement file
+    tags: [ py ]
+  pip install -r requirements.txt:
+    desc: Install packages from requirements.txt
+    tags: [ py ]
+  pip show <package>:
+    desc: To show details of a package
+    tags: [ py ]
+  pip list --outdated:
+    desc: To list outdated packages
+    tags: [ py ]
+  pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U:
+    desc: To upgrade all outdated packages
+    tags: [ py ]
+  pip list --outdated --format=freeze | cut -d = -f 1 | xargs -n1 pip install -U:
+    desc: To upgrade outdated packages on latest version of pip
+    tags: [ py ]
+  pip install -I SomePackage1==1.1.0 'SomePackage2>=1.0.4':
+    desc: To install specific version of a package
+    tags: [ py ]

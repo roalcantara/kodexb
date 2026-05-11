@@ -34,6 +34,7 @@ function row(id: number, key = `k${id}`): RpcKnowledge {
     source: 'fixtures/t.yaml',
     desc: '',
     tags: [],
+    doc: '',
     createdAt: 0,
     updatedAt: 0
   }

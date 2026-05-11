@@ -1,0 +1,84 @@
+commands:
+  gh auth login:
+    desc: Login to GitHub
+    tags: [git, gh]
+  gh extension install github/gh-copilot:
+    desc: Install GitHub Copilot
+    tags: [git, gh]
+  gh extension upgrade gh-copilot:
+    desc: Upgrade GitHub Copilot
+    tags: [git, gh]
+  gh copilot explain "sudo apt-get":
+    desc: Explain a command
+    tags: [git, gh]
+  gh copilot suggest "Install git":
+    desc: Suggest a command
+    tags: [git, gh]
+  gh alias list:
+    desc: List aliases
+    tags: [git, gh]
+  gh repo view --web:
+    desc: Open current repo in browser
+    tags: [git, gh]
+  gh repo view roalcantara/dots --web:
+    desc: Open repo in browser
+    tags: [git, gh]
+  gh repo clone roalcantara/dots:
+    desc: Clone repo
+    tags: [git, gh]
+  gh repo create <NAME>:
+    desc: Create repo
+    tags: [git, gh]
+  gh repo create <NAME> --description='A simple app' --license=mit --gitignore=Node --private:
+    desc: Create repo with description, MIT license, Node gitignore, private
+    tags: [git, gh]
+  gh secret list:
+    desc: List secrets for current repo
+    tags: [git, gh]
+  gh secret list -r"<OWNER>/<NAME>":
+    desc: List secrets for a repo
+    tags: [git, gh]
+  gh secret set SECRET_NAME -b"SECRET_VALUE":
+    desc: Set secret for current repo
+    tags: [git, gh]
+  gh pr list:
+    desc: List Opened Pull Requests
+    tags: [git, gh]
+  gh pr list --author roalcantara:
+    desc: List Opened Pull Requests from roalcantara
+    tags: [git, gh]
+  gh pr create --title "My PR" --body "This is a PR" --base main:
+    desc: Create a PR
+    tags: [git, gh]
+  gh pr close <NUMBER>:
+    desc: Close a PR
+    tags: [git, gh]
+  gh codespace list:
+    desc: List codespaces
+    tags: [git, gh]
+  gh codespace create --name <NAME> -R roalcantara/dots:
+    desc: Create codespace
+    tags: [git, gh]
+  gh auth refresh -h github.com -s codespace:
+    desc: Refresh codespace token
+    tags: [git, gh]
+  gh cs code -c $(gh cs list -json "name" | jq -r ".[].name" | grep -i "$1" -m 1):
+    desc: Open codespace
+    tags: [git, gh]
+  gh cs stop -c $(gh cs list -json "name" | jq -r ".[].name" | grep -i "$1" -m 1):
+    desc: Stop codespace
+    tags: [git, gh]
+  gh cs ssh -c $(gh cs list -json "name" | jq -r ".[].name" | grep -i "$1" -m 1):
+    desc: SSH into codespace
+    tags: [git, gh]
+  gh release verify RELEASE-TAG:
+    desc: Verify a release exists and is immutable
+    tags: [git, gh]
+    links: [https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/verifying-the-integrity-of-a-release#verifying-immutable-releases-and-local-artifacts]
+  gh release verify-asset RELEASE-TAG ARTIFACT-PATH:
+    desc: Verify a local artifact is an exact match for a release asset
+    tags: [git, gh]
+    links: [https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/verifying-the-integrity-of-a-release#verifying-immutable-releases-and-local-artifacts]
+    notes:
+      - md: | #markdown
+          > **NOTE:** This command cannot be used to verify the source code zip file or tarball for a release, since these assets are only created when a download is requested

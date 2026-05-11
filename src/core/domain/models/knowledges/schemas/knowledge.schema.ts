@@ -10,6 +10,7 @@ import {
 
 export const persistFieldsSchema = Type.Object({
   id: Type.Integer(),
+  doc: Type.String(),
   createdAt: Type.Number(),
   updatedAt: Type.Number()
 })

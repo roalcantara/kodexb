@@ -19,6 +19,7 @@ const bookmark: RpcKnowledge = {
   tags: ['bun', 'js'],
   links: ['https://bun.sh/docs'],
   notes: [{ md: 'Fast JS runtime.' }],
+  doc: '> Bun JavaScript runtime\n\nFast JS runtime.',
   createdAt: 0,
   updatedAt: 0
 }
@@ -32,6 +33,7 @@ const task: RpcKnowledge = {
   tags: [],
   priority: 'high',
   status: 'doing',
+  doc: '> Fix the login redirect',
   createdAt: 0,
   updatedAt: 0
 }

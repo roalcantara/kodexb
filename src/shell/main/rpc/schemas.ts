@@ -1,6 +1,5 @@
-import { ENTRY_TYPE_VALUES } from '@core/domain/constants'
-import { type Static, type TSchema, Type } from '@sinclair/typebox'
-import { Value } from '@sinclair/typebox/value'
+import { Type } from '@sinclair/typebox'
+import { ENTRY_TYPE_VALUES } from '../../../core/domain/constants'
 
 const PAGE_SIZE_SMALL = 25
 const PAGE_SIZE_MEDIUM = 50
@@ -78,10 +77,55 @@ export const taskUpdateSchema = Type.Object(
 export const dirSchema = Type.Union([Type.Literal('forward'), Type.Literal('backward')])
 export const reorderDirSchema = Type.Union([Type.Literal('up'), Type.Literal('down')])
 
-export function parseRpcPayload<T extends TSchema>(schema: T, raw: unknown, label: string): Static<T> {
-  if (!Value.Check(schema, raw)) {
-    const msg = [...Value.Errors(schema, raw)].map(issue => `${issue.path || '(root)'}: ${issue.message}`).join('; ')
-    throw new Error(`${label}: ${msg}`)
-  }
-  return raw as Static<T>
-}
+export const emptyBodySchema = Type.Object({}, { additionalProperties: false })
+
+export const openExternalSchema = Type.Object({ url: Type.String({ minLength: 1 }) }, { additionalProperties: false })
+export const pasteInTerminalSchema = Type.Object(
+  { cmd: Type.String({ minLength: 1 }) },
+  { additionalProperties: false }
+)
+export const openInEditorSchema = Type.Object(
+  { filePath: Type.String({ minLength: 1 }) },
+  { additionalProperties: false }
+)
+export const suggestTagsSchema = Type.Object({ entryId: Type.Integer() }, { additionalProperties: false })
+export const resizeWindowSchema = Type.Object(
+  {
+    width: Type.Integer({ minimum: 1 }),
+    height: Type.Integer({ minimum: 1 })
+  },
+  { additionalProperties: false }
+)
+
+export const idWithDirSchema = Type.Object(
+  {
+    id: Type.Integer(),
+    dir: dirSchema
+  },
+  { additionalProperties: false }
+)
+
+export const idWithReorderDirSchema = Type.Object(
+  {
+    id: Type.Integer(),
+    dir: reorderDirSchema
+  },
+  { additionalProperties: false }
+)
+
+/** POST body for `showOpenDialog` accepts `{}` or `{ opts?: {...} }`. */
+export const showOpenDialogSchema = Type.Object(
+  {
+    opts: Type.Optional(
+      Type.Object(
+        {
+          title: Type.Optional(Type.String()),
+          defaultPath: Type.Optional(Type.String()),
+          properties: Type.Optional(Type.Array(Type.Union([Type.Literal('openFile'), Type.Literal('openDirectory')])))
+        },
+        { additionalProperties: false }
+      )
+    )
+  },
+  { additionalProperties: false }
+)

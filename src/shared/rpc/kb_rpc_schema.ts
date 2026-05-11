@@ -1,5 +1,5 @@
-import type { Knowledge } from '@core'
 import type { ElectrobunRPCSchema, RPCSchema } from 'electrobun/bun'
+import type { Knowledge } from '../../core'
 
 /** Stable id + source row shape returned from SQLite (discriminated `Knowledge`). */
 export type RpcKnowledge = Knowledge
@@ -77,40 +77,39 @@ export type PreviewImageResult = {
 export type TaskCreateInput = { key: string; desc?: string }
 export type TaskUpdateInput = { desc?: string }
 
-/** Empty RPC params object (Electrobun requires a `params` property per method). */
-export type RpcEmptyParams = Record<string, never>
+/**
+ * Single Electrobun bridge method — the renderer's Eden Treaty client forwards
+ * every `/api/*` call through `rpcCall`. `RpcApp.handle` interprets the
+ * payload as a real HTTP `Request` and returns its serialised `Response`.
+ */
+export type RpcCallParams = {
+  path: string
+  method?: string
+  body?: string
+  headers?: Record<string, string>
+}
+
+export type RpcCallResponse = {
+  status: number
+  body: string
+}
 
 /**
- * Electrobun combined RPC schema for kb.
+ * Electrobun combined RPC schema for kb (post-Phase 5).
  *
- * - `bun.requests` — webview calls main (async, return value).
- * - `webview.messages` — main pushes to webview (fire-and-forget).
+ * - `bun.requests.rpcCall` — single Eden bridge method. Every renderer
+ *   `/api/*` call funnels here so the main process can dispatch through the
+ *   Elysia `RpcApp` (`createRpcServer`). There are no other request methods:
+ *   per-route typing now comes from `RpcApp` via Eden Treaty.
+ * - `webview.messages` — main pushes to renderer (fire-and-forget). Used for
+ *   hybrid sync progress / completion alongside the Eden bridge.
  *
  * See `assets/guides/ELECTROBUN.md` for the official mapping.
  */
 export type KbDesktopRpcSchema = ElectrobunRPCSchema & {
   bun: RPCSchema<{
     requests: {
-      list: { params: ListOpts; response: RpcKnowledge[] }
-      getEntry: { params: { id: number }; response: RpcKnowledge | null }
-      getListStats: { params: RpcEmptyParams; response: ListStats }
-      sync: { params: { sourcesDir?: string }; response: RpcImportResult }
-      getStats: { params: RpcEmptyParams; response: RpcDbStats }
-      getConfig: { params: RpcEmptyParams; response: RpcGetConfigPayload }
-      saveConfig: { params: ConfigPatch; response: RpcGetConfigPayload }
-      createTask: { params: TaskCreateInput; response: RpcKnowledge }
-      updateTask: { params: { id: number; patch: TaskUpdateInput }; response: RpcKnowledge }
-      deleteTask: { params: { id: number }; response: undefined }
-      cycleStatus: { params: { id: number; dir: 'forward' | 'backward' }; response: RpcKnowledge }
-      cyclePriority: { params: { id: number; dir: 'forward' | 'backward' }; response: RpcKnowledge }
-      reorderTask: { params: { id: number; dir: 'up' | 'down' }; response: undefined }
-      openExternal: { params: { url: string }; response: undefined }
-      pasteInTerminal: { params: { cmd: string }; response: undefined }
-      openInEditor: { params: { filePath: string }; response: undefined }
-      showOpenDialog: { params: { opts?: OpenDialogOpts }; response: string | null }
-      fetchPreviewImage: { params: { url: string }; response: PreviewImageResult | null }
-      suggestTags: { params: { entryId: number }; response: string[] }
-      resizeWindow: { params: { width: number; height: number }; response: undefined }
+      rpcCall: { params: RpcCallParams; response: RpcCallResponse }
     }
     messages: Record<string, never>
   }>

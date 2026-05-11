@@ -15,6 +15,7 @@ const overdueTask: RpcKnowledge = {
   tags: [],
   status: 'todo',
   priority: 'high',
+  doc: '',
   createdAt: 0,
   updatedAt: 0,
   meta: { due: '1999-06-15' }
@@ -35,6 +36,7 @@ test('BadgeAccessory shows bookmark URL pill when key is https', () => {
     source: 'f.yaml',
     desc: 'Ex',
     tags: [],
+    doc: '',
     createdAt: 0,
     updatedAt: 0
   }

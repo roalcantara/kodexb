@@ -29,6 +29,7 @@ const bookmarkFactory = Factory.define<BookmarkKnowledge>(({ sequence }) => ({
   source: minimalEntriesYml,
   desc: 'Example bookmark',
   tags: ['example'],
+  doc: `# Example bookmark ${sequence}\n\nFactory-generated bookmark content.`,
   createdAt: 1_700_000_000_000,
   updatedAt: 1_700_000_000_000
 }))
@@ -40,6 +41,7 @@ const commandFactory = Factory.define<CommandKnowledge>(({ sequence }) => ({
   source: minimalEntriesYml,
   desc: 'Show working tree status',
   tags: ['git'],
+  doc: `# Command ${sequence}\n\n\`\`\`sh\ngit status ${sequence}\n\`\`\``,
   createdAt: 1_700_000_000_000,
   updatedAt: 1_700_000_000_000
 }))
@@ -51,6 +53,7 @@ const cheatFactory = Factory.define<CheatKnowledge>(({ sequence }) => ({
   source: minimalEntriesYml,
   desc: 'Math cheat',
   tags: ['math'],
+  doc: `# Cheat ${sequence}\n\nSome notes.`,
   createdAt: 1_700_000_000_000,
   updatedAt: 1_700_000_000_000
 }))
@@ -64,6 +67,7 @@ const taskFactory = Factory.define<TaskKnowledge>(({ sequence }) => ({
   tags: ['dev', 'kb'],
   priority: 'high',
   status: 'doing',
+  doc: `# Task ${sequence}\n\n> Build kb`,
   createdAt: 1_700_000_000_000,
   updatedAt: 1_700_000_000_000
 }))

@@ -1,9 +1,9 @@
 import type { Database } from 'bun:sqlite'
 import fs from 'node:fs/promises'
-import type { Entry, Knowledge } from '@core'
-import { isValidSourceRowMin, parseSourceFile, toKnowledge } from '@core'
-import { createLogger } from '@shared/logging'
 import glob from 'fast-glob'
+import type { Entry, Knowledge } from '../../../core'
+import { isValidSourceRowMin, parseSourceFile, toKnowledge } from '../../../core'
+import { createLogger } from '../../../shared/logging'
 import { openDatabase } from './client'
 import { rebuildFts, upsert } from './entry.repository'
 

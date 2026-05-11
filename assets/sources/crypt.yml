@@ -1,0 +1,131 @@
+cheats:
+  What is symmetric cryptography and how does it differ from asymmetric cryptography?:
+    desc: While asymmetric cryptography eliminates the key sharing problem, symmetric algorithms offer compact key sizes (128-256 bits), high performance, and quantum resistance
+    tags: [bp]
+    links: [https://blog.gitguardian.com/symmetric-cryptography-key-management]
+    notes:
+      - md: |
+          ### What is symmetric cryptography and how does it differ from asymmetric cryptography?
+
+          - **Symmetric cryptography** (or **secret key cryptography**):
+            - Uses a single shared key between all parties for encryption and decryption.
+            - This is like sending mail in a locked box where both sender and recipient need identical copies of the key.
+
+          - **Asymmetric cryptography**:
+            - Uses key pairs consisting of a public key (freely shareable) and a private key (kept secret)
+            - Resembling wax-sealing envelopes where only you need the seal while anyone can verify it.
+
+          ### Summary
+
+          - While asymmetric cryptography eliminates the key sharing problem, symmetric algorithms offer compact key sizes (128-256 bits), high performance, and quantum resistance.
+  What are the three main use cases for symmetric cryptography in practice?:
+    desc: Ephemeral Session Keys, Self-Use Keys, and Pre-Shared Keys (PSKs)
+    tags: [bp, crypt]
+    links: [https://blog.gitguardian.com/symmetric-cryptography-key-management]
+    notes:
+      - md: |
+          ### What are the three main use cases for symmetric cryptography in practice?
+
+          The three essential use cases are:
+
+          1. **Ephemeral Session Keys**:
+            - Temporary keys used in protocols like TLS that are automatically exchanged, used, and destroyed (like in HTTPS connections);
+
+          2. **Self-Use Keys**:
+            - Keys used by applications to protect their own data, such as JWT signing keys or Laravel's APP\_KEY for internal encryption; and
+
+          3. **Pre-Shared Keys (PSKs)**:
+            - Keys manually distributed between parties before communication, typically used in hardware-constrained environments like smart card systems where dynamic key exchange is impractical.
+  What is the biggest security risk when working with session keys?:
+    desc: Accidentally logging session keys, which enables "store now, decrypt later" attacks
+    tags: [bp]
+    links: [https://blog.gitguardian.com/symmetric-cryptography-key-management]
+    notes:
+      - md: |
+          ### What is the biggest security risk when working with session keys?
+
+          - The primary risk is **accidentally logging session keys**, which enables `"store now, decrypt later"` attacks
+            - Where adversaries capture encrypted traffic and decrypt it later using leaked keys.
+
+          - Applications should **never log session keys** in debug output or application logs.
+            - When using proven cryptographic libraries and protocols like TLS, the protocol handles key generation, exchange, rotation, and destruction automatically.
+            - So developers mainly need to ensure keys aren't inadvertently exposed through logging mechanisms.
+  What is the ephemeral key strategy for self-use keys?:
+    desc: Generating symmetric keys dynamically at application startup; This provides the best security posture by ensuring keys never exist in persistent form
+    tags: [bp]
+    links: [https://blog.gitguardian.com/symmetric-cryptography-key-management]
+    notes:
+      - md: |
+          ### What is the ephemeral key strategy for self-use keys?
+
+          - **The ephemeral key strategy involves:**
+            1. Generating symmetric keys dynamically at application startup rather than storing them persistently
+            2. Keys are created fresh each time the application starts and only exist in memory during runtime
+            3. When the application stops or restarts, keys are discarded and regenerated
+
+          - **Summary:**
+            - This approach provides the best security posture by ensuring keys never exist in persistent form
+            - It reduces the risk of exposure through system compromise, debug logs, or misconfiguration.
+
+
+commands:
+  How can applications implement graceful key rotation without breaking functionality?:
+    desc: Limiting fallback keys to a low number, time-bounding their usage, and cleaning all keys when compromise is suspected
+    tags: [bp, crypt]
+    links: [https://blog.gitguardian.com/symmetric-cryptography-key-management]
+    notes:
+      - md: |
+          ### How can applications implement graceful key rotation without breaking functionality?
+
+          - Applications can use a fallback mechanism that accepts older keys for verification while using new keys for fresh data protection.
+            - Django's `SECRET_KEY_FALLBACKS` is a good example:
+              - The main `SECRET_KEY` signs new data, while `SECRET_KEY_FALLBACKS` contains rotated keys used only for verification.
+              - This ensures continuity (preventing user session invalidation) while enabling frequent rotation.
+
+          ### Key Points
+
+          - Limiting fallback keys to a low number
+          - Time-bounding their usage
+          - Cleaning all keys when compromise is suspected
+  When should pre-shared keys (PSKs) be used and what are their security requirements?:
+    desc: Use pre-shared keys only as a last resort with enhanced security measures due to rotation limitations
+    tags: [bp, crypt]
+    links: [https://blog.gitguardian.com/symmetric-cryptography-key-management]
+    notes:
+      - md: |
+          ### When should pre-shared keys (PSKs) be used and what are their security requirements?
+
+          - **Last Resort Usage:**
+            - PSKs should only be used as a last resort in disconnected infrastructure
+            - Or when parties lack computational power for asymmetric algorithms (like RFID smart cards)
+
+          - **Enhanced Security Requirements:**
+            - They require enhanced security measures
+              - Secure storage using Hardware Security Modules (HSMs)
+              - Strong cryptographically secure key generation with high entropy
+              - Future-proof algorithms like AES-256 for encryption and HMAC-SHA-512 for authentication
+
+          - **Rotation Challenge:**
+            - PSKs are typically long-lived and cannot be rotated due to connectivity limitations
+  What are the universal best practices for symmetric key management?:
+    desc: Secure symmetric key management through proper generation, isolation, rotation, storage, and detection
+    tags: [bp, crypt]
+    links: [https://blog.gitguardian.com/symmetric-cryptography-key-management]
+    notes:
+      - md: |
+          ### What are the universal best practices for symmetric key management?
+
+          - **Use Secure Cryptographically Secure Key Generation:**
+            - Like Linux's `/dev/urandom`
+
+          - **Use Single Purpose Keys _(one key per function)_:**
+            - Prevents complex side effects
+
+          - **Aggressive Key Rotation _(as often as possible)_:**
+            - Machines handle new secrets easily
+
+          - **Use Secure Storage Solutions _(rather than plain files)_:**
+            - Like secret vaults, cloud key management services, HSMs
+
+          - **Comprehensive Secret Detection _(with entropy-based analysis)_:**
+            - Symmetric keys don't follow recognizable patterns like API keys

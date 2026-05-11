@@ -9,6 +9,7 @@ const cmd: CommandKnowledge = {
   source: '/f.yml',
   desc: 'Show working tree status',
   tags: ['git'],
+  doc: '',
   createdAt: 0,
   updatedAt: 0
 }

@@ -6,23 +6,8 @@ import { PreviewImage } from '../shared/preview_image.component'
 import { DependencyGraph } from './dependency_graph.component'
 import { MetadataSidebar } from './metadata_sidebar.component'
 
-type NoteBlock = NonNullable<RpcKnowledge['notes']>[number]
 type LinkItem = NonNullable<RpcKnowledge['links']>[number]
 type LinkDisplay = { title: string; url: string }
-
-function notesToMarkdown(notes: RpcKnowledge['notes']): string {
-  if (!notes || notes.length === 0) return ''
-  return notes
-    .map((block: NoteBlock) => {
-      const entry = Object.entries(block)[0]
-      if (!entry) return ''
-      const [lang, content] = entry
-      if (lang === 'md') return content
-      return `\`\`\`${lang}\n${content}\n\`\`\``
-    })
-    .filter(Boolean)
-    .join('\n\n')
-}
 
 function safeHostname(url: string): string {
   try {
@@ -64,13 +49,6 @@ function primaryUrl(entry: RpcKnowledge): string | null {
   return firstLink ?? null
 }
 
-function notesToDoc(entry: RpcKnowledge): string {
-  const noteMd = notesToMarkdown(entry.notes)
-  const desc = entry.desc ? `> ${entry.desc}` : ''
-  if (desc && noteMd) return `${desc}\n\n${noteMd}`
-  return desc || noteMd
-}
-
 export type DetailPageViewProps = {
   entry: RpcKnowledge | null
   loading?: boolean
@@ -109,7 +87,7 @@ export function DetailPageView({
     )
   }
 
-  const md = notesToDoc(entry)
+  const md = entry.doc ?? ''
   const links = linksToDisplay(entry.links)
   const url = primaryUrl(entry)
 

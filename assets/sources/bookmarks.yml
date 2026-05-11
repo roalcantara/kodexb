@@ -1,0 +1,2715 @@
+bookmarks:
+  https://eza.rocks:
+    desc: A modern, maintained replacement for ls
+    tags: [blog, tech]
+    links:
+      - Github: https://github.com/eza-community/eza
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+          ## Installation
+          brew install eza
+          eza --help
+  https://vitormv.github.io/fzf-themes:
+    tags: [coding]
+    desc: FZF Themes
+  https://latenightcommits.com:
+    desc: When the pressures of being 10x just overwhelm you
+    tags: [blog, tech]
+  https://linear.app:
+    tags: [coding]
+    desc: Issue tracking and project management tool for software teams
+  https://svgrepo.com:
+    tags: [coding]
+    desc: Free SVG Vectors and Icons
+  https://gravatar.com:
+    desc: Globally Recognized Avatar
+    tags: [social]
+  https://codepen.io:
+    desc: Social development environment to build, test, and discover front-end code.
+    tags: [repl, playground]
+    links:
+      - Top JavaScript Playgrounds every developer should try: https://geeksforgeeks.org/top-javascript-playgrounds-every-developer-should-try
+  https://jsfiddle.net:
+    desc: Playground for web developers
+    tags: [repl]
+    links:
+      - Top JavaScript Playgrounds every developer should try: https://geeksforgeeks.org/top-javascript-playgrounds-every-developer-should-try
+  https://codesandbox.io:
+    desc: Cloud development platform that empowers anyone to code, collaborate, and ship projects of any size from any device in record time
+    tags: [repl]
+    links:
+      - Top JavaScript Playgrounds every developer should try: https://geeksforgeeks.org/top-javascript-playgrounds-every-developer-should-try
+  https://replit.com:
+    desc: The best online coding platform
+    tags: [repl, playground]
+    links:
+      - Top JavaScript Playgrounds every developer should try: https://geeksforgeeks.org/top-javascript-playgrounds-every-developer-should-try
+  https://vscode.dev:
+    desc: Open source code editor developed by Microsoft
+    tags: [repl, playground]
+    links:
+      - Top JavaScript Playgrounds every developer should try: https://geeksforgeeks.org/top-javascript-playgrounds-every-developer-should-try
+  https://koding.com:
+    desc: Create and share fully automated dev environments on any infrastructure for modern distributed applications, micro-services and containers
+    tags: [repl, playground]
+    links:
+      - Top JavaScript Playgrounds every developer should try: https://geeksforgeeks.org/top-javascript-playgrounds-every-developer-should-try
+  https://stackblitz.com:
+    desc: Online IDE for web applications powered by Visual Studio Code
+    tags: [repl, playground]
+    links:
+      - Top JavaScript Playgrounds every developer should try: https://geeksforgeeks.org/top-javascript-playgrounds-every-developer-should-try
+  https://cloud9.gg:
+    desc: Cloud9 is a free, cloud-based IDE supporting application development with popular technologies, including Node.js, PHP, Python, C++, Meteor and more
+    tags: [repl, playground]
+    links:
+      - Top JavaScript Playgrounds every developer should try: https://geeksforgeeks.org/top-javascript-playgrounds-every-developer-should-try
+  https://glitch.com:
+    desc: The friendly community where everyone can discover & create the best stuff on the web
+    tags: [repl, playground]
+    links:
+      - Top JavaScript Playgrounds every developer should try: https://geeksforgeeks.org/top-javascript-playgrounds-every-developer-should-try
+  https://jsbin.com:
+    desc: Collaborative JavaScript Debugging App
+    tags: [repl, playground]
+    links:
+      - Top JavaScript Playgrounds every developer should try: https://geeksforgeeks.org/top-javascript-playgrounds-every-developer-should-try
+  https://hyperskill.org:
+    desc: Third-party platform that hosts JetBrains Academy
+    tags: [xp]
+  https://vercel.com:
+    tags: [coding]
+    desc: Cloud platform for frontend frameworks and static sites, built to integrate with your headless content, commerce, or database
+    links:
+      - Dashboard: https://vercel.com/dashboard
+  https://fosstodon.org:
+    desc: Mastodon instance for Free and Open Source Software (FOSS) developers and users
+    tags: [social]
+  https://hashnode.com:
+    desc: The friendly and inclusive dev community
+    tags: [social]
+  https://app.daily.dev:
+    desc: The easiest way to stay updated on the latest programming news
+    tags: [social]
+  https://stackoverflow.com:
+    desc: Q&A for professional and enthusiast programmers
+    tags: [social]
+  https://instagram.com:
+    tags: [bookmark]
+    desc: Photo and video-sharing social networking service
+  https://linkedin.com:
+    desc: The world's largest professional network
+    tags: [job]
+  https://medium.com:
+    desc: Open platform where readers find dynamic thinking, and where expert and undiscovered voices can share their writing on any topic
+    tags: [social]
+  https://stackshare.io:
+    desc: Community of developers, engineers, CTOs, and VPEs who want to share their technology stacks and experiences with the community
+    tags: [social]
+  https://reddit.com:
+    desc: Network of communities based on people's interests
+    tags: [social]
+  https://twitter.com:
+    desc: Where people go to discover something new and see what's happening in the world
+    tags: [social]
+  https://calendar.google.com:
+    desc: A time-management and scheduling calendar service
+    tags: [google]
+  https://hub.docker.com:
+    desc: The world's largest library and community for container images
+    tags: [docker]
+  https://hub.docker.com/search?q={Query}:
+    desc: The world's easiest way to create, manage, and deliver your teams' container applications
+    tags: [docker]
+  https://facebook.com:
+    desc: Connects people with friends and others who work, study and live around them
+    tags: [social]
+  https://gitpod.io:
+    desc: One-click ready-to-code development environments for GitHub
+    tags: [devenv]
+  https://freecodecamp.org:
+    desc: To code at home
+    tags: [xp]
+  https://bytebytego.com:
+    desc: Everything you need to take your system design skill to the next level
+    tags: [xp]
+  https://app.clickup.com:
+    desc: One app to replace them all
+    tags: [management]
+    links: [https://clickup.com]
+  https://learn.microsoft.com:
+    desc: Microsoft Learn
+    tags: [xp]
+  https://codechef.com:
+    desc: Global programming community
+    tags: [xp]
+  https://levels.fyi:
+    desc: Compare career levels across companies
+    tags: [job]
+  https://levels.fyi/?compare=Google,Facebook,Microsoft&track=Software%20Engineer:
+    desc: Compare career levels across companies
+    tags: [job]
+  https://glassdoor.com:
+    tags: [coding]
+    desc: Job search, company reviews, salaries, interviews, and more
+  https://indeed.com:
+    tags: [coding]
+    desc: Job search engine
+  https://geeksforgeeks.org:
+    desc: A Computer Science Portal for Geeks
+    tags: [xp, algorithm]
+  https://coderpad.io:
+    desc: Online tool for conducting interviews
+    tags: [xp]
+  https://fullstack.cafe:
+    desc: Interview questions for full-stack developer/javascript
+    tags: [xp]
+  https://fullstack.cafe/interview-questions/javascript:
+    desc: Interview questions for full-stack developer/javascript
+    tags: [xp]
+  https://algodaily.com:
+    desc: Coding Interview Preparation
+    tags: [xp, algorithm]
+  https://algo.monster:
+    desc: Coding Interview Preparation
+    tags: [xp, algorithm]
+  https://programiz.pro:
+    desc: Learn to code the right way - solving challenges and building projects - to improve your job profile. Trusted by 400K+ programmers
+    tags: [xp]
+  https://hackr.io:
+    desc: Find the best online courses & tutorials recommended by the programming community
+    tags: [xp]
+  https://leetcode.com:
+    tags: [coding]
+    desc: The best platform to help you enhance your skills, expand your knowledge and prepare for technical interviews
+  https://codewars.com:
+    desc: Where developers achieve code mastery through challenge
+    tags: [xp]
+  https://hackerrank.com:
+    desc: The largest technology hiring platform
+    tags: [xp]
+  https://codecademy.com:
+    desc: The easiest way to learn how to code
+    tags: [xp]
+  https://codility.com:
+    desc: Helps tech recruiters and hiring managers assess their candidates' skills by testing their code online
+    tags: [xp]
+  https://exercism.org:
+    desc: Free platform for code practice and mentorship
+    tags: [xp]
+  https://libhunt.com:
+    desc: A project explorer for open-source software
+    tags: [lib]
+  https://libhunt.com/topic/go:
+    desc: GO | A project explorer for open-source software
+    tags: [go, lib]
+  https://libhunt.com/topic/javascript:
+    desc: A project explorer for open-source software
+    tags: [js, lib]
+  https://libhunt.com/topic/kotlin:
+    desc: A project explorer for open-source software
+    tags: [kotlin, lib]
+  https://libhunt.com/topic/ruby:
+    desc: A project explorer for open-source software
+    tags: [lib, rb]
+  https://libhunt.com/topic/neovim:
+    desc: A project explorer for open-source software
+    tags: [lib, neovim]
+  https://cambridgeenglish.org/exams-and-tests/advanced:
+    desc: Cambridge English (CAE)
+    tags: [lang]
+    meta:
+      profile: https://candidates.cambridgeenglish.org/Members/Login.aspx
+      username: BOU188288
+      Date of birth: 1982/05/04
+      Statement of Results number: 153AU0325015
+    links:
+      - Cambridge English certificates on LinkedIn: https://cambridgeenglish.org/cambridge-english-certificates-on-linkedin
+  https://cambridgeenglish.org/exams-and-tests/first:
+    tags: [lang]
+    desc: Cambridge English (FCE)
+    meta:
+      profile: https://candidates.cambridgeenglish.org/Members/Login.aspx
+      username: IPE933470
+      Date of birth: 1982/05/04
+      Statement of Results number: 14CAU0320064
+    links:
+      - Cambridge English certificates on LinkedIn: https://cambridgeenglish.org/cambridge-english-certificates-on-linkedin
+  https://pkgs.alpinelinux.org/packages?branch=edge&name={Query}:
+    tags: [bookmark, linux]
+    desc: Search Alpine Packages
+  https://antonym.com/antonyms/{Query}:
+    tags: [bookmark]
+    desc: Best resource for English antonyms
+  https://coolors.co:
+    tags: [bookmark]
+    desc: Super fast color schemes generator (palette)
+  https://materialpalette.com:
+    desc: Palette generator for material design
+    tags: [color]
+  https://pokepalettes.com/#charmander:
+    tags: [bookmark]
+    desc: Generates color palettes from Pokémon sprites
+  https://nerdfonts.com/cheat-sheet:
+    tags: [bookmark]
+    desc: Project that patches developer targeted fonts with a high number of glyphs
+  https://search.nixos.org/packages?query={Query}:
+    desc: Searches Nix Packages
+    tags: [devop]
+  https://duckduckgo.com/?q={Query}:
+    tags: [bookmark, go]
+    desc: Search engine that does not track you
+  https://google.com/search?q={Query}:
+    tags: [bookmark, go]
+    desc: Web search engine
+  https://synonym.com/synonyms/{Query}:
+    desc: The best place for synonyms
+    tags: [english]
+  https://tableconvert.com/html-to-markdown:
+    tags: [bookmark, yaml]
+    desc: Free online converter that converts your table data to markdown table, JSON table, YAML table, and CSV table
+  https://taskwarrior.org/docs:
+    desc: Docs for the Taskwarrior task management utility
+    tags: [tw]
+  https://cloud.google.com/sdk/gcloud/reference/storage/rsync:
+    desc: High-performance, parallelized tool to copy files to and from Google Cloud Storage
+    tags: [gcloud]
+  https://cloud.google.com/sdk/gcloud/reference/storage/cp:
+    desc: High-performance, parallelized tool to copy files to and from Google Cloud Storage
+    tags: [gcloud, doc]
+  https://github.com/MyHoneyBadger/awesome-github-wiki:
+    tags: [bookmark, git]
+    desc: Awesome list GitHub Wikis
+  https://blog.logrocket.com/product-management/what-is-jtbd-framework-examples:
+    desc: What is the jtbd framework? Examples and overview
+    tags: [agile]
+  https://farmasesi.com.br:
+    desc: Farmácia SESI (delivery 7h30 às 16:00)
+    address: Rua Joaquim Francisco de Paula, 353, Bairro Chico de Paulo, 89254-710 (1.9 km)
+    phone: 47 3371-9998
+    phone2: 47 3055-2498
+    email: fm511@farmasesi.com.br
+    tags: [farmacia]
+  https://neetcode.io:
+    desc: to code with real-world projects
+    tags: [xp, algorithm]
+  https://andela.com:
+    desc: Build remote engineering teams
+    tags: [job]
+  https://mirajobs.com:
+    tags: [bookmark]
+    desc: Job search platform that uses AI to match tech talent with the right opportunities
+  https://x-team.com:
+    desc: High-Performing Teams Of Software Engineers For Leading Brands
+    tags: [job]
+  https://writethedocs.org/guide/docs-as-code:
+    tags: [bookmark, doc]
+    desc: Documentation as Code (Docs as Code) refers to a philosophy that you should be writing documentation with the same tools as code
+  https://crossover.com:
+    tags: [bookmark]
+    desc: The world's best full time remote jobs
+  https://turing.com/remote-developer-jobs:
+    desc: The world's leading distributed workforce platform for remote engineers
+    tags: [job]
+  https://toptal.com/talent/apply:
+    desc: Hire the top 3% of freelance talent
+    tags: [job]
+  https://remoteok.io:
+    tags: [bookmark, git]
+    desc: Remote jobs for digital working nomads
+  https://jobs.bairesdev.com:
+    desc: Always hiring the Top 1% of tech talent
+    tags: [job]
+  https://codingjobboard.com:
+    tags: [bookmark]
+    desc: Find your next coding job
+  https://flexjobs.com:
+    tags: [bookmark]
+    desc: Find the best remote and flexible full-time, part-time, & freelance jobs
+  https://weworkremotely.com:
+    desc: Find the most qualified people in the most unexpected places
+    tags: [job]
+  https://freshworks.com/freshdesk/integrations:
+    tags: [bookmark]
+    desc: Freshdesk | Integrations
+  https://freshworks.com/freshdesk/helpdesk-management/knowledge-base:
+    tags: [bookmark]
+    desc: Freshdesk | Knowledge Base
+  https://support.freshdesk.com/en/support/solutions/articles/50000001161-how-to-use-the-approval-workflow-to-collaborate-with-your-team:
+    desc: How to use the approval workflow to collaborate with your team
+    tags: [freshdesk]
+  https://freshworks.com/freshdesk/knowledge-base-software/faq-pages:
+    tags: [bookmark]
+    desc: Freshdesk | FAQ Pages > Bridge the gap between your customers and your knowledge base
+  https://benchmarksgame-team.pages.debian.net/benchmarksgame:
+    tags: [bookmark, debian]
+    desc: The Computer Language Benchmarks Game
+  https://parabol.co:
+    tags: [bookmark]
+    desc: Parabol | Agile Retrospective Software
+  https://parabol.co/agile/online-standup-tool:
+    desc: Parabol | Online Standup Tool
+    tags: [agile]
+  https://parabol.co/resources/retrospective-questions:
+    desc: Parabol | Retrospective Questions
+    tags: [agile]
+  https://parabol.co/resources/how-to-run-an-online-sprint-retrospective:
+    desc: Parabol | How to Run an Online Sprint Retrospective
+    tags: [agile]
+  https://parabol.co/resources/daily-scrum:
+    desc: Parabol | Daily Scrum
+    tags: [agile]
+  https://parabol.co/resources/sprint-planning:
+    desc: Parabol | Sprint Planning
+    tags: [agile]
+  https://parabol.co/blog/tag/agile-retrospectives:
+    tags: [bookmark]
+    desc: Parabol | Agile Retrospectives
+  https://parabol.co/blog/tag/backlog-refinement:
+    desc: Parabol | Backlog Refinement
+    tags: [agile]
+  https://mikro-orm.io:
+    desc: TypeScript ORM for Node.js based on Data Mapper, Unit of Work and Identity Map patterns
+    tags: [node]
+  https://produto.mercadolivre.com.br/MLB-2059662037-placa-l-de-rocha-dens-32kgs-50mm-isolamento-p-apartamento-_JM:
+    desc: Como fiz o isolamento acústico do Estúdio / Quarto Gamer / Home Office
+    tags: [soundproof]
+  https://piliapp.com/actual-size/cm-ruler/:
+    tags: [bookmark]
+    desc: Actual size of Online Ruler (cm/mm)
+  https://nx.dev:
+    desc: Extensible Dev Tools for Monorepos
+    tags: [nx]
+  https://nx.dev/recipes/tips-n-tricks/define-environment-variables:
+    desc: Define Environment Variables
+    tags: [nx]
+  https://nx.dev/recipes/tips-n-tricks/advanced-update#advanced-update-process:
+    desc: Advanced Update Process
+    tags: [nx]
+  https://nektosact.com:
+    tags: [bookmark, git]
+    desc: Nektos Act | GitHub Actions for everyone
+  https://wezfurlong.org/wezterm:
+    desc: GPU-accelerated cross-platform terminal emulator and multiplexer in Rust
+    tags: [wezterm]
+  https://wezfurlong.org/wezterm/config/files.html#configuration-files:
+    desc: WezTerm Configuration Files
+    tags: [terminal]
+  https://danger.systems/js:
+    desc: Danger runs during your CI process, and gives teams the chance to automate common code review chores
+    tags: [code_review, devop]
+  https://useblackbox.io:
+    tags: [bookmark, doc]
+    desc: AI coding assistant that helps developers by providing real-time code completion, documentation, and debugging suggestions. BLACKBOX AI is also integrated with a variety of developer making it easy to use within your existing workflow.
+  https://radio.x-team.com:
+    tags: [bookmark]
+    desc: X-Team Radio | Music for developers
+  https://gitness.com:
+    desc: Open-source code hosting & pipeline engine
+    tags: [git]
+  https://docs.gitness.com:
+    desc: Documentation
+    tags: [git]
+  https://codescene.com:
+    desc: Actionable insights into your codebase
+    tags: [code_review, git]
+  https://runkit.com:
+    desc: Node Playground in the browser
+    tags: [repl, node]
+  https://xinyustudio.medium.com/different-ways-to-try-javascript-code-you-may-not-be-aware-of-repl-tools-for-js-f7eb4ac64997:
+    desc: Different ways to try JavaScript code you may not be aware of - REPL tools for JS
+    tags: [node]
+  https://cap.cloud.sap:
+    desc: Building Cloud-native Applications with Maximized Productivity at Minimized Costs, based on Proven Best Practices Served Out of the Box
+    tags: [sap]
+  https://playcode.io:
+    desc: JavaScript playground and sandbox to write, run and repl it.
+    tags: [js]
+  https://scapy.net:
+    desc: Powerful interactive packet manipulation library written in Python
+    tags: [repl]
+  https://runjs.app:
+    desc: The JavaScript playground for your desktop
+    tags: [repl, js]
+  https://codeium.com:
+    tags: [coding]
+    desc: AI-powered coding assistant that can write you code, answer your questions, and level up your productivity. Available for free in VSCode, JetBrains, and Eclipse extensions.
+    links:
+      - docs: https://codeium.com/docs
+      - bloc: https://codeium.com/blog
+      - playground: https://codeium.com/playground
+  https://noteable.io:
+    desc: EDA & ETL made easy with Code, No-code & AI. Stop hopping between data struggling with reproducibility, or taking screenshots.
+    tags: [data_science]
+    links:
+      - docs: https://docs.noteable.io
+      - bloc: https://noteable.io/blog
+  https://cloud.google.com/appengine:
+    desc: Google Cloud Platform | App Engine
+    tags: [gcp]
+  https://cloud.google.com/run/docs:
+    desc: Google Cloud Platform | Cloud Run
+    tags: [gcp, doc]
+  https://cloud.google.com/functions/docs#docs:
+    desc: Google Cloud Platform | Cloud Functions
+    tags: [gcp, doc]
+  https://cloud.google.com/pubsub/docs/overview:
+    desc: Google Cloud Platform | Pub/Sub
+    tags: [gcp, doc]
+  https://cloud.google.com/tasks:
+    desc: Google Cloud Platform | Cloud Tasks
+    tags: [gcp, doc]
+  https://cloud.google.com/datastore/docs#docs:
+    desc: Google Cloud Platform | Datastore
+    tags: [gcp, doc]
+  https://cloud.google.com/sql/docs/introduction:
+    desc: Google Cloud Platform | Cloud SQL
+    tags: [gcp, doc]
+  https://cloud.google.com/bigquery/docs/introduction:
+    desc: Docs | BigQuery is Google's fully managed, NoOps, low cost analytics database
+    tags: [gcp]
+  https://cloud.google.com/scheduler/docs/overview:
+    desc: Google Cloud Platform | Cloud Scheduler
+    tags: [gcp]
+  https://cloud.google.com/storage/docs/introduction:
+    desc: Google Cloud Platform | Cloud Storage
+    tags: [gcp, doc]
+  https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-overview:
+    desc: Google Cloud Platform | Kubernetes Engine
+    tags: [gcp, doc]
+  https://andela.com/blog-posts/a-brief-look-into-net-interactive-in-visual-studio-code:
+    desc: A Brief Look into .NET Interactive in Visual Studio Code
+    tags: [dotnet, vscode]
+  https://theverge.com/23811032/google-reading-mode-android-how-to:
+    tags: [bookmark, go]
+    desc: How to use Google`s new Reading Mode on Android
+  https://naturalreaders.com:
+    desc: Text to Speech (TTS) Reader
+    tags: [text_to_speech]
+  https://code.visualstudio.com/docs/datascience/jupyter-notebooks:
+    desc: Jupyter Notebooks in Visual Studio Code
+    tags: [vscode]
+  https://theresanaiforthat.com:
+    tags: [coding]
+    desc: There's an AI for That | A curated list of AI tools and resources
+  https://deviceinfo.me:
+    desc: Web browser security testing, privacy testing, and troubleshooting tool to get information about your device
+    tags: [security]
+  https://music.youtube.com/playlist?list=PLVcm7qlHBizEMF9c7tQfR5DwvX_gwKUag:
+    tags: [coding]
+    desc: Take Me Out @ Youtube Music
+  https://youtube.com/playlist?list=PLot-Xpze53lcBX3BPCUoqlt4-KL-3XFHz&si=sb1fGUIIrLe-lkCd:
+    desc: Interview Prep (Playlist)
+    tags: [xp]
+  https://youtube.com/results?search_query={Query}:
+    tags: [coding]
+    desc: Search on Youtube
+  https://youtube.com/feed/history?query={Query}:
+    tags: [coding]
+    desc: Search on Youtube History
+  https://youtu.be/Oj5lA7FfUkI:
+    desc: I Watch Your Videos But Never Change My Life | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          💪 Personal transformation often occurs when individuals reach a breaking point and make a firm decision to change their behavior permanently.
+          🤔 Challenging assumptions and understanding one's own thought process is key to initiating change in one's life.
+          🕒 Resolving ambivalence is the first step towards taking action and making a change in one's life.
+          🤔 Watching videos alone doesn't lead to change; learning and incorporating the concepts from the videos is what brings about real transformation.
+          💡 Mastery is achieved through experimentation, suggesting that actively applying and testing the knowledge gained from videos can lead to deeper understanding and skill development.
+          🧠 The more we actively recall and engage with information, the more it solidifies into learning and leads to personal transformation.
+          🤔 The role of a coach is to guide individuals in challenging their assumptions and exploring new possibilities, ultimately leading to personal growth and transformation.
+          🤝 Impatience can lead to failure and decreased hope, so it's important to be patient with yourself and take the necessary time and energy to achieve your goals.
+  https://youtu.be/oWf_v_sSPuw:
+    desc: Let's Talk About Anxiety in Today's World | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Understanding and Addressing the Root Causes of Anxiety
+
+          😰 Anxiety is becoming increasingly worse at an alarming rate, highlighting the urgent need for understanding and addressing this issue.
+          😱 Recent research shows that anxiety is not localized to the mind, but can be influenced by what's going on in our brain and body, which may explain why anxiety is getting worse despite increased investment in research and therapy.
+          🧠 Inflammation in the gut can trigger a holistic response from the body, similar to how it responds to infections like the flu, leading to widespread inflammation and potential mental health effects.
+          🧠 Exposure therapy, where individuals are placed in anxiety-inducing situations without being able to control or escape them, can help build tolerance for anxiety and promote emotional resilience.
+          🧠 Understanding and acknowledging our anxiety can help us sit with it and navigate through it.
+          😬 Learning to tolerate negative emotions can help reduce anxiety and allow for engagement with the world around us.
+          🧘 Meditative and spiritual practices can aid in developing detachment and reducing anxiety.
+
+          ## The Impact of Childhood Experiences on Anxiety
+
+          🧠 Most people with anxiety have negative experiences in childhood that teach them to be worried, making anxiety a survival strategy or adaptation.
+          🧠 Anxiety is confusing because it stems from strategies that our brains developed when we were young and lacked the power and abilities to handle situations effectively.
+          🧠 The anxious brain tends to focus on perceived threats and overthink problems, leading to a cycle of anxiety and inaction.
+          🧠 Understanding the wiring of our brains and the emotional energy from our past can help us identify and address the root causes of anxiety.
+          🧠 Traumatic experiences in childhood can shape our brains and influence our behaviors and fears in the present day.
+          😰 Anxiety often stems from the fear of not being liked or accepted by others, leading to a constant need to shape and control their perceptions of us, which can result in becoming a doormat and tolerating abusive behavior.
+  https://youtu.be/YNOQzE1XTdU:
+    desc: This is Why You're Indecisive | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          💪 Decisive people are confident and live life without struggling with indecision.
+          😰 Indecisiveness stems from the fear of making the wrong decision, which prevents us from taking action and living life to the fullest.
+          💡 Decisions are not permanent, so even if we make the wrong choice, we have the ability to make a different decision in the future.
+          😕 People who are more decisive seem to have fewer regrets and make fewer mistakes in their lives, which raises the question of how they are able to make decisions without extensive research.
+          💪 It's not the initial decision that determines success or failure, but rather what you do after the decision that truly impacts the outcome.
+          💡 Embracing inefficiency and being open to making mistakes can actually lead to more decisive and successful decision-making.
+          🤔 The paradox of decision-making is that it's not about making the right choice, but rather committing to a choice and being willing to pivot if necessary.
+          🤔 Recognize that the source of your indecisiveness is not the choice itself, but rather your mindset and perception of the outcome.
+  https://youtu.be/mVhdgZMLOjg:
+    desc: Why Time is Always Your Enemy | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key Ideas:
+
+          > Time perception can be our enemy when we get stuck dwelling on past regrets or future anxieties, leading to depression and mental health issues, but we can combat this through behavioral activation and present-focused action rather than waiting for hope to motivate us.
+
+          🧠 **The Time Paradox**
+          - Humans' unique ability to conceptualize time helped us dominate as a species (like developing agriculture vs. squirrels just instinctively burying nuts)
+          - But this same ability can trap us in negative thought patterns about past regrets or future anxieties
+
+          💭 **The Burden of Past and Future:**
+          - Depressed people tend to either fixate on past regrets ("I peaked in high school") or project hopelessness into the future
+          - Unlike animals, humans can become suicidal because we can imagine a hopeless future
+          - Technology addiction often serves as an escape by pulling us into the present moment
+
+          🔄 **Escaping the Trap - Action Before Hope:**
+          - Traditional thinking suggests we need hope before taking action
+          - Research shows the opposite: taking action generates hope
+          - Behavioral activation therapy focuses on getting people to do something, anything, regardless of how they feel
+
+          📝 **Mindfulness and Self-Awareness Practices:**
+          - Understanding our relationship with time and where our thoughts typically reside (past, present, or future)
+          - Recognizing how dwelling in past/future affects our mood
+          - Taking action in the present moment, even small steps, while being prepared for negative thoughts that might arise
+          - Focus on the present action rather than getting overwhelmed by past regrets or future worries
+
+          The core message emphasizes that action in the present moment, rather than waiting for hope or dwelling in past/future thoughts, is key to breaking out of negative mental patterns.
+  https://youtu.be/tJCXwNrK700:
+    desc: How To Rewire Your Brain Away From Negativity | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          😔 Struggling with overwhelming emotions can be a prolonged and intense experience, making it difficult to shake off.
+          🤝 Building a supportive and friendly relationship with others can create a safe space for open communication and sharing of personal experiences.
+          🗣️ Sharing how you feel with others can be difficult, but it can lead to positive outcomes and a sense of relief.
+          😔 Sometimes emotions can feel overwhelming and it's important to find healthy ways to express and process them.
+          🗣️ Sharing negative emotions with others, even in a work setting, can lead to positive outcomes and encouragement.
+          💭 Taking the time to write out your feelings can help you understand them better.
+          💬 Talking to other people about our emotions can not only help us feel better, but also improve our relationships at work, friendships, and romantic relationships.
+          📚 Understanding and expressing our emotions can help in rewiring our brain from negative thoughts and emotions.
+  https://youtu.be/FQ1d5rC062c:
+    desc: How To Love Yourself with Meditation | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🌱 Cultivating a capacity for kindness through loving kindness meditation is important for combating feelings of loneliness and desperation.
+          🧠 Developing kindness towards ourselves is important for personal growth and self-improvement.
+          🌱 Developing empathy and compassion for others creates room for healthy relationships and reduces the feeling of being an object.
+          🧘 Traditional meditation involves repeating phrases like "may you be happy" directed towards a particular group of people or person, moving away from determinism.
+          🌱 Cultivating positivity should not lead to denial of negativity, but rather a hopeful and accepting mindset towards positivity.
+          🧠 The goal is to authentically cultivate compassion towards objects and formulate that compassion in a powerful and specific phrasing.
+          🙏 Sending positive and compassionate thoughts to someone can bring happiness, freedom, and peace to that person.
+          🧘 Cultivating self-love through meditation can have a positive impact on your well-being and relationships.
+  https://youtu.be/tpfBu-PnWJ4:
+    desc: Why You Are Always Unhappy | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          😔 The pursuit of being a top performer can lead to discontent with anything less than perfection, causing self-sabotage and unhappiness.
+          🏆 The motivation for many people is driven by a sense of progress, improvement, and comparison to others, leading to a constant desire to be at the top.
+          🔄 The key to breaking out of the cycle of self-sabotage is to have awareness of the curve and ask yourself why effort does not equal reward at a certain point.
+          🤔 If your goal is to be a top performer, that means that what you do is determined by the crappiness of the other performers, it has nothing to do with objective skill in a thing.
+          🧠 Understanding happiness is not just logical, it's a subjective experience that can be achieved through meditation.
+          🧠 Happiness, knowledge, and freedom are not on the same scale, but moksha is where all three of these things meet.
+          😔 The human body and mind are not designed for happiness, but for survival, leading to the constant search for contentment.
+          🐇 With practice, you can begin to distinguish between the voice of ego and the good voice in your head.
+  https://youtu.be/ZR6nZwW7AAk:
+    desc: Why You Are Powerless In Changing Your Life | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Mind Control and Willpower
+
+          🧠 Our mind doesn't always work for us, making life really hard when our goals and desires don't align with our mind's goals and desires.
+          🧠 Our mind values particular things and tells us to stay away from particular things, and it does all kinds of stuff that isn't necessarily under our control.
+          🧠 Instead of trying to fix the delusion inside the mind, train them to get control of the mind as a whole.
+          🧠 Moving from thomas to rajas and rajas to saatvas is the key to gaining control of your mind and changing your life.
+          🧠 The only cost of changing your life is your mind rebelling against the change.
+          🎭 We can command our mind to do what we want, even if it feels a particular way.
+          Lifestyle Changes and Mental Health
+
+          📉 The availability of healthy food and good sleep can instantly alter dietary habits and improve willpower.
+          🍪 The willpower was lower with the cookie group than it was with the beat group, showing the impact of resisting temptation on willpower resources.
+          😴 Start with sleep, it's the number one priority for a more balanced mind and less thomasic mentality.
+          🌱 A real plan to help someone stop smoking involves targeting all aspects of the addiction, not just the chemical dependency.
+  https://youtu.be/3QWIxElEnc8:
+    desc: What People Don't Get About Motivation | HealthyGamerGG
+    tags: [psy]
+    notes:
+      - md: |
+          ## Understanding the true nature of motivation
+
+          🤔 Most people define motivation by looking at someone they perceive as motivated, but it's important to understand what it truly means for yourself.
+          💭 Motivation is not about behavior, it's about the mind, and that's why it's a huge challenge.
+          🧠 "Motivation is purely mental, it is within the mind, not just external behavior."
+          🧠 Motivation is simply the ability to hold a thought steady in your mind for a prolonged period of time.
+          🧠 The mind of someone who is depressed and suicidal is dominated by one thought, leading to a high amount of motivation in the wrong direction.
+          🧠 "All that motivation is the ability to hold a thought steady in your mind for a prolonged period of time."
+          🌱 People don't understand the root of what motivation is and once you understand what it is on the inside and you start to cultivate it, then long-term goals will start to get achieved.
+
+          ## Misconceptions about motivation
+
+          🧠 "The biggest mistake we make is trying to duplicate the behavior instead of understanding what is in the mind of a motivated person."
+          🤯 The idea that success is solely based on wanting it more is not true, as seen in addiction and loneliness.
+          🧠 The biggest mistake about motivation is looking outside for behavior instead of understanding what's going on inside the mind.
+  https://youtu.be/Skn4ddl5o64:
+    desc: I've Fallen Too Far Behind | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Overcoming Negative Thought Patterns and Comparison to Others
+
+          🏃 Life sometimes feels like a race, but it's never too late to start and catch up.
+          🛣️ It's important to go at your own pace and take the scenic route in life, rather than focusing solely on reaching the finish line.
+          🏃 Working on yourself is more important than professional success in the long term: "There's no time for self-awareness" for those who only focus on grinding for success.
+          🛑 Sometimes taking a pit stop to work on yourself is necessary, even if it means falling further behind in the short term, in order to ultimately become more competitive.
+          🧠 The speaker shares a neuroscience principle that can help those who feel like it's too late for them to overcome their addiction or negative thoughts.
+          🤔 Feeling like you're falling behind doesn't necessarily mean that you're actually behind, as the mind can convince you otherwise.
+          🧠 It's important to be aware of our flawed cognitive thought processes when comparing ourselves to others and feeling like we've fallen behind.
+          🧠 Comparison is activated by our ego, which is our identity, and it leads to suffering even as it protects us from negative emotions.
+          🧠 Understanding the source of negative emotions can help overcome the ego's protective behavior and move forward towards success.
+          The Importance of Soft Skills and Compassion in Life and Work
+
+          💼 The importance of soft skills in professional settings: "One of them...had a very poor board score but were actually like a pleasure to work with and we're compassionate human beings and we're humble and dedicated to the work that they were doing."
+          💼 Life is not just about skill, but also about interpersonal skills and being a compassionate human being, which can be a huge part of the competition of life.
+  https://youtu.be/rGUsOt5K_uk:
+    desc: You Need To Start Ignoring Yourself | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+            😔 "Why on Earth should I live if life is suffering?" - a thought-provoking question about the purpose of life and dealing with suffering.
+            😓 The reason life is suffering is because you suck at living it.
+            🍔 Obesity causes more death than starvation, showing that we have essentially won the game of surviving life and won the trophy of suffering as a result.
+            🧠 Our educational system needs to focus on understanding how to live, not just on being successful, and spirituality can play a key role in this.
+            🧠 Spirituality is the study of the self, regardless of religious beliefs, and is essential for understanding and finding motivation in life.
+            😔 Your suffering comes from your reaction to circumstances, not the circumstances themselves.
+            😌 The essence of spirituality is reconnecting with yourself, not disconnecting from the outside world.
+            🧠 Cognitive reframing is the most successful coping mechanism, changing the way you think about problems.
+  https://youtu.be/icjtRyavHsE:
+    desc: Why People Say Meditation Can Change Your Life | Dharana and Focus Explained
+    tags: [psy, motivation]
+    notes:
+      - md: |
+          ## The Power of Concentration and Focus
+
+          🧠 The practice of meditation is about developing a one pointed mind, which can lead to significant change in one's life.
+          🔦 A light bulb offers illumination, but a laser beam can literally cut through things, showing the power of focus and concentration.
+          🧠 The difference between success and failure is not intelligence or willpower, but the ability to concentrate on one point.
+          🧠 The power of your mind in that moment is actually really high, and your commitment is real and authentic.
+          😌 A flow state is a state of mind where your mind is concentrated on one thing and people find the experience to be pleasant and enjoyable.
+          😌 Enjoyment comes from the concentration of the mind, not just external things like movies or food.
+
+          ## Positive Transformations through Meditation
+
+          🧠 The biggest change in people's lives comes from meditating and focusing the mind, leading to positive transformations.
+          🧠 Meditation can facilitate a revelation and understanding that leads to behavior change in people's lives.
+          🌟 The practice of meditation can result in positive changes such as increased happiness, improved self-care, and overall well-being.
+          🧠 Meditation creates a focus mind, not artificially, but through training our mind to do so automatically.
+  https://youtu.be/NnTLJtBr1zo:
+    desc: I Meditated, Now I Don't Care Anymore | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## The transformative power of meditation
+
+          😌 As we meditate and get in touch with our inner selves, we start to recognize that our wants and desires start to go away, which is one of the benefits of meditation.
+          🧘 Meditation helps us to feel emotions like guilt and shame, but it allows us to be less controlled by them.
+          😌 Finding contentment within yourself shrinks the opportunity cost and allows you to make choices without being influenced by desire.
+          🕹️ Moving towards enlightenment, life transforms into something called "lila," where everything becomes play and joyous, and you can freely choose based on the internal rules of the game.
+          😌 The realization that the inner self doesn't care about external desires can lead to a sense of enlightenment and freedom.
+          🌌 Now you can live life to the fullest because you're not constrained by a desire.
+          🧠 The biggest requirement of meditation is not based on where you want to go, but where you are currently.
+          🤔 It is our desire to escape that traps us the most. It is the avoidance of problems that creates problems.
+
+          ## Challenging traditional beliefs and definitions
+
+          🧘 Enlightenment is often associated with bliss and freedom, rather than just knowledge, challenging traditional definitions of the concept.
+          🌌 The laws of physics stop working at the quantum level, challenging the logical understanding of the world.
+          🧘 Chanting the shanti mantra can have scientifically validated benefits on the mind, regardless of its religious connotation.
+  https://youtu.be/RUePwWspKHI:
+    desc: How To Make Life Easy | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🌀 The concept of Guna in yoga teaches that balance is the key to making life easy, not motivation or willpower.
+          😌 Cultivating a balanced mind involves doing things that will make you more satvic tomorrow, even on days when you are passionate and have an overabundance of rajas.
+          🍎 What we put into our body and mind will determine its function, so it's important to be mindful of what we consume.
+          🧠 Mind-body practices like yoga induce the focusing of the mind, training it to listen and become more balanced and supple.
+          🥦 Eating light, nutritious food with high fiber and avoiding processed foods is essential for a healthy lifestyle.
+          🚫 Caffeine doesn't actually give you energy, it just blunts your ability to detect tiredness, leading to a crash later.
+          🌱 Balancing your body and mind is the key to making life easier.
+          🌟 Embracing difficulty today leads to an easier life tomorrow, creating a well-trained body and mind that doesn't need motivation or willpower.
+
+          ## Take Aways
+
+          1. Balance your body. As your body and mind are balanced life will suddenly become easy.
+          2. Balance takes time and the main thing to do is you should invest whatever you can today that will make your mind more savic tomorrow
+          3. If your mind is more savic, it is easier to do things
+          4. In order to make a life easy tomorrow, you must embrace difficulty today.
+  https://youtu.be/xkd36cJ6Z78:
+    desc: This Is Why You're Not Disciplined | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          💡 The key to discipline is having a competing interest, as shown by research on addiction.
+          💪 Developing a competing interest is key to becoming disciplined, as it gives you a reason to want something more than the pain of achieving it.
+          💪 Your desire for discipline should come from within, not from societal expectations or external pressures.
+          💭 If you don't know what you want, it's a sign that external desires have clouded your mind and you've been influenced by advertising and personalized cookies.
+          💭 Most of our goals and desires are not actually our own, but rather influenced by external factors such as advertising, parental expectations, and societal expectations.
+          🧠 Focus on becoming the person you want to be, not the person society wants you to be.
+          🧠 The mind tricks us into thinking it has to be all or nothing, but in reality, small changes like two push-ups a day or walking 15 minutes a day can make a difference.
+          💭 Your desire to change should come from within, not from external influences like social media or magazines.
+  https://youtu.be/0hePvDEOZYs:
+    desc: The Real Reason You Never Follow Through (And How to Fix It) | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🧠 We engage in a war with our mind that we may win on some days, but eventually we'll get bored of the task and start to use willpower to overcome it.
+          💡 The resources out there aren't actually that good at helping people create sustainable change, which is why coaching can be helpful.
+          🧠 We try to overcome our mind with willpower, but instead we should learn the natural tendencies of the mind and use them to follow through.
+          🧠 Our tendency to get bored with something can actually be used to help us follow through on tasks we want to complete.
+          🧠 Using the technique of urge surfing can help people withstand cravings and addictions by allowing the mind to develop a tolerance to its own cravings over time.
+          🧠 The real challenge with following through is managing cravings for other things, and the way to do that is through urge surfing.
+          🌊 Urge surfing is about noticing the craving for dopamine and just surfing on top of it, rather than giving in to it and procrastinating.
+          💭 Your mind will resist trying new techniques to overcome cravings, even if they could work.
+  https://youtu.be/DvuVhCIQgfQ:
+    desc: Why Having ADHD Makes You Better At Meditating | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🧘 ADHD and meditation can be a powerful combination, challenging the misconception that ADHD is not good at meditation.
+          🧘 The most advanced forms of meditation, practiced by people in the Himalayas, may be more accessible to those with ADHD.
+          🌟 Highly distractable individuals may have a unique sensitivity to small things, making them better at meditation.
+          🧘 In hardcore meditation, the weaknesses of ADHD, such as distractibility, can actually become strengths.
+          🌌 Exploring the internal universe within yourself can lead to endless exploration and discovery.
+          🚀 Exploring the internal Universe through meditation is like boarding a spaceship and flying towards the ends of the universe.
+          🧠 The goal of meditation is to pay attention to the subtle and profound vibration within us, not just to chant a certain number of times.
+          🧠 Practicing meditation is about noticing subtler and subtler things happening within oneself, similar to what wine tasters and people in the Himalayas do.
+          🧐 The mystical and esoteric nature of meditation may be hard to explain, but it can lead to profound discoveries.
+  https://youtu.be/pj8AEjNE6VY:
+    desc: How to Deal with Unwanted Thoughts | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🧠 The mind is a thought-generating machine, and sometimes it generates thoughts that we don't like, leading to feelings of moral deficiency.
+          🧠 Recognizing and resisting unwanted thoughts can earn respect and show moral strength.
+          🧠 We're not responsible for what our mind generates, but how we act in response to the thoughts.
+          😔 Intrusive thoughts can lead to intense feelings of shame and guilt, but it's important to work through that guilt and be free of it.
+          🧠 Thoughts in your mind can come from both inside and outside, and can be influenced by the environment you cultivate.
+          🤔 Negative thoughts, including inappropriate sexual thoughts, are not a diagnosis but a symptom that requires appropriate treatment and understanding from a licensed professional.
+          🧠 Intrusive thoughts are not isolated experiences and seeking help from a licensed professional can make a difference.
+  https://youtu.be/dgRSfhoHE4g:
+    desc: The Science Of Self Control | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          💡 Evidence-based techniques can help boost self-control and improve habits like eating healthier, exercising more, and managing screen time.
+          🤔 It's difficult to understand and not talked about because it completely changes our perspective on self-control.
+          🤔 The analogy of numbing the mouth to explain loss of control is actually incorrect and the concept of awareness and control goes much deeper.
+          🧠 Self-control is not a fixed aspect of who you are as a person, but a diminishing resource.
+          🧠 Self-control is like a "Mana bar" that can be depleted over time, leading to impulsive decisions and actions.
+          🧠 Our capacity for self-control is linked to the anterior singulate cortex, which monitors internal conflict, suggesting that self-control is not a separate entity but rather the ability to monitor and manage internal conflicts.
+          💡 As an addiction psychiatrist, the speaker highlights the challenge of relapse and the need for effective self-control strategies.
+          🤔 The idea that awareness precedes control is incorrect; awareness is control.
+  https://youtu.be/or6A1Pl04ss:
+    desc: Stop Being A Low Value Man | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🤔 The belief in alphas and betas in social structures persisted even after it was disproven, highlighting the power of misinformation and the difficulty of changing people's beliefs.
+          🌍 The rise of the "red pill" movement is concerning as it leads to increased misogyny and condescension towards women.
+          💔 Society's response to men's struggles often dismisses their hardships and invalidates their emotions, leading to feelings of shame.
+          💪 The red pill manosphere's strategy of self-improvement, including going to the gym, setting boundaries, and seeking therapy, can lead to increased confidence and a better life.
+          🧠 The concept of high value and low value men is often driven by cognitive biases induced by shame, and working on confidence is key to stop being a low value man.
+          😱 The algorithms prey on users' negative emotions by serving them more emotionally engaging content, creating a chain of validation and engagement.
+          💔 Believing that you are a low value man can sabotage romantic attempts, not because you're not in the top one percent, but because you lack confidence and self-acceptance.
+          😔 The shame and lack of confidence that low value men carry around is the main factor sabotaging their efforts at relationships.
+  https://youtu.be/IAW494zhWGI:
+    desc: Why You Are Physically Exhausted All The Time… | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Sleep and Circadian Rhythm
+
+          ⏰ Circadian tiredness is not necessarily related to energy levels or metabolism, but rather influenced by sleep patterns and cycles.
+          ⏰ Circadian rhythm disorders can contribute to feeling physically exhausted all the time, affecting the activity level throughout the day.
+          ⏰ Having a circadian rhythm disorder doesn't mean you have less energy than others, but rather that your body's internal clock is out of sync with societal norms, causing you to feel jet-lagged and exhausted.
+          🏥 Medical care, such as using continuous positive airway pressure (CPAP) machines, can be a solution for sleep apnea.
+          🌙 There are specific times of the day when you are naturally better at certain tasks due to your circadian rhythm.
+          🌍 Many religious traditions have a practice of waking up early in the morning, suggesting that cognitive activity during the early hours can be highly productive.
+          ⏰ Sleep cycles are an important factor to consider when discussing circadian rhythm and its impact on our energy levels.
+          ⏰ The longer you sleep, the more your brain changes and cycles through the different stages of sleep.
+          ⏰ Waking up in the middle of a sleep cycle and not getting enough sleep progression throughout the night can contribute to feeling tired from a circadian standpoint.
+
+          ## Physiological and Metabolic Influences
+
+          😴 Tiredness is not just a mental feeling, but also a physiological response related to energy levels.
+          💤 The key to managing tiredness and energy levels is not just about sleep, but also about what you put into your body and how it responds to it.
+          💤 People with sleep apnea can experience multiple apnic episodes per night, resulting in a physically ragged body upon waking up.
+          🧠 High levels of adenosine indicate high energy levels in our cells.
+          😴 People with sleep apnea may feel tired in the morning and rely on caffeine to wake up, which can further deplete their energy levels.
+          💪 Exercise affects insulin and sugar metabolism in a positive way, helping to fix cravings and increase energy levels.
+          😴 Feeling tired is a complex combination of mental and physiological signals, including insulin, leptin, ghrelin, inflammation, glycogen stores, fat stores, circadian rhythm, and brain activity.
+
+          ## Factors Affecting Energy Levels
+
+          🤔 When working with individuals, it is important to consider a variety of solutions and factors such as eliminating gluten, dairy, or eggs, practicing different forms of exercise, and incorporating specific supplements into one's diet to address fatigue.
+  https://youtu.be/6CWq8wyS90o:
+    desc: The Secret Behind Resisting Dopamine | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Brain Regions and Dopamine Control
+
+          🧠 Instead of trying to directly control the nucleus accumbent, we need to utilize other parts of our brain to reduce its power and influence on our motivational drive.
+          🍺 Once the nucleus accumbens gets a taste of that alcohol, you lose all control.
+          🧠 The analogy of squeezing a lemon dry to explain the need for powerful activities to extract remaining dopamine is quite insightful.
+          🧠 Dopamine basically shuts off negative emotion and induces cravings for dopamine because we feel bad when we have negative emotions.
+          🧠 Negative emotions increase vulnerability to dopamine signals, leading to addiction and lack of motivation.
+          🧠 The prefrontal cortex is responsible for generating willpower and controlling emotional impulses, making it crucial for resisting dopamine.
+
+          ## Behavioral Strategies for Resisting Dopamine
+
+          🎮 The key to resisting dopamine and generating motivation earlier lies in doing a conscious value assessment.
+          🧠 "Play the tape through to the end" - a powerful tool in psychiatry to consider the consequences of actions before taking them.
+          🎮 Playing the tape through to the end can help overcome the urge to procrastinate and make better decisions.
+          🧠 The hippocampus values novelty, so adding new experiences or activities can increase motivation and trigger a positive dopamine response.
+          🏋️ Embracing the "burn" in the last painful part of a workout positively reinforces our behavior and makes us feel really good at the end.
+          💪 Using pain to increase motivation, as seen in David Goggins' lifestyle, can be a powerful tool for achieving goals.
+  https://youtu.be/ZKNRXuZWYYg:
+    desc: Why It's So Hard To Be Consistent | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🧘 The source of suffering and problems in our life has to do with ignorance of our true selves, and we fluctuate quite a bit in our identity.
+          📉 Inconsistency in life can lead to significant disadvantages in the mid and late game, similar to not developing good study habits in the early game.
+          👤 If you want consistency, understand that you don't exist beyond today, your life is a multiplayer game where random people are waking up in your life and get to live life one day at a time.
+          🔄 The you actually f U Ates quite a bit and this runs deeper than the mind.
+          🔄 The struggle with consistency comes from trying to live as the same person every day, when in reality, we change constantly.
+          🧠 Our brains are wired to value immediate rewards more than distant ones, leading to procrastination.
+          🎮 When things are not going well, approach it as a game and focus on improving things for the next person.
+          🤔 If you don't love yourself, it can become very hard to make sacrifices today for a better tomorrow because we don't care about the person who's inheriting tomorrow.
+  https://youtu.be/s7fjjhZuhms:
+    desc: Overthinking Won't Solve Your Problems - Here's Why | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🧠 Society's belief that IQ and thinking lead to success may be a scam, as sometimes thinking actually makes things harder for us.
+          💭 Overthinking is not the best way to find solutions and can actually be a problem in itself, which explains why we still make mistakes despite excessive thinking.
+          🤔 Overthinking doesn't necessarily improve performance, as seen in situations like social anxiety where excessive thinking can actually negatively impact performance.
+          🧠 Overthinking is a substitute for learning and experience, hindering problem-solving abilities.
+          🤔 Exposure therapy and experiencing different things can be effective in treating social anxiety, as it activates various parts of our brain and helps us overcome challenges.
+          💡 In order to be good at something, like the game of go, there is no substitute for actually playing and learning from your mistakes.
+          🎮 Endless theory crafting and arguments won't make you better at a video game, it's through practice and learning from more experienced players that you can improve.
+  https://youtu.be/kwCp41BqbzQ:
+    desc: Why It's Hard To Focus (And What To Do About It) | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🤯 Efficiency may actually be a cause of feeling overwhelmed, rather than a solution.
+          🤔 The pursuit of efficiency can sometimes lead to sacrificing quality time for ourselves and our loved ones.
+          🤯 Trying to be too efficient can actually lead to feeling overwhelmed and scattered, ultimately hindering productivity.
+          💼 We often try to accomplish everything at once, but fail to prioritize, resulting in an inability to achieve our goals.
+          🔄 Instead of trying to do everything at once, we need to prioritize and be willing to give things up in order to focus on what's truly important.
+          💡 Efficiency is not always the answer, sometimes prioritization and focusing on one thing can lead to greater productivity and success.
+          🤯 Prioritizing over efficiency can lead to better performance and flow state, as a greedy mind unwilling to give things up becomes scattered.
+          🔥 Focusing on one thing at a time can reduce burnout caused by a scattered mind.
+  https://youtu.be/Pgm1fQJtS-M:
+    desc: I Am Always Stuck in My Own Head | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          😣 Emotions play a significant role in hindering consistent work, as different emotional states can affect motivation and focus on a day-to-day basis.
+          😫 The speaker discusses the constant struggle with emotional restraints such as anxiety, demotivation, and cravings, highlighting the complexity of the human mind.
+          🧠 Fixing emotions is not possible, but addressing and reducing the energy of emotions can lead to positive changes in behavior.
+          😔 Accepting negative emotions is the key to freeing yourself from them, rather than trying to fix or reject them.
+          😔 Our internal struggles and insecurities can manifest in various ways, such as anxiety, despair, and self-destructive behaviors.
+          😳 Recognizing the difference between cognitive work and emotional work is crucial in overcoming analysis paralysis and truly processing emotions.
+          🧠 Emotions are not felt in our heads, but rather in our bodies, so it's crucial to move deeper and ask ourselves important questions.
+          😰 The thoughts in our head are actually trying to protect us from uncomfortable emotions, even if we get frustrated with them.
+  https://youtu.be/hYK6Y9kkPrg:
+    desc: This is How You Can Counteract Negative Thoughts (Morning Routine) | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🧠 The first thing to understand is that early morning Awakening and a very very high amount of negative thoughts first thing in the morning are the most specific signs for a mood disorder and especially a depressive episode.
+          🧠 Our brain warns us about negative thoughts, but we tend to distract ourselves from them instead of solving the problem.
+          🧘 Starting the day with a positive mindset and healthy habits can set the tone for a productive day.
+          🚫 Avoid using technology, trying to fix negative thoughts, and using substances in the morning to prevent spiraling into a negative frame of mind.
+          🚶 Going for a walk or cleaning something can help calm the mind and let thoughts fizzle out without pushing them away.
+          🧘 Half of the advantage of therapy is learning how to compartmentalize and approach problems in a calm way.
+          🚶 Going for a walk in the morning instead of engaging with negative thoughts can lead to fewer negative thoughts over time.
+          🤒 Early morning awakening can be a sign of a clinical illness, get evaluated if you fall into that category.
+  https://youtu.be/BZPRX9X5V5I:
+    desc: Dr. K, How Do I Focus? | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🤯 Human performance does not always correlate with knowledge or expertise, challenging our assumptions about productivity.
+          🧠 Strengthening the frontal lobes can help with impulse control, delayed gratification, and directing attention.
+          🧘 Meditation is sitting there doing nothing with a no mind state, and it's actually wonderful.
+          🧘 "Sit there and look at yourself, close your eyes, the next time you need to work and look at what does 'I don't feel like working' actually mean."
+          🤯 The concept of a "pure self" separate from the mind is controversial and thought-provoking.
+          📚 Dr. K's guide to ADHD and doing stuff explores the different components of neuroscience, psy, and spirituality involved in getting things done.
+          🧠 "Ultimately doing stuff is about controlling your attention."
+          💪 Motivation is heavily influenced by our perception of our own success potential, and building self-worth and confidence can increase motivation.
+          🧠 Altering one's perception of their chance of success can revolutionize the way they live their life, and it all comes down to neuroscience.
+  https://youtu.be/svD71EJWOBU:
+    desc: Why Does Your ADHD Make Things So Hard? | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          😂 People with ADHD can experience extreme focus and productivity when they are passionate about a task, but struggle with mundane tasks like washing dishes.
+          🧠 ADHD is not just about being easily distracted, but also about getting stuck on a particular thought or idea when it's not beneficial to do so.
+          🧠 People with ADHD may have advantages in divergent thinking, creativity, and cognitive dynamism.
+          🌈 ADHD is a spectrum, and there are components of the attentional spectrum that can be beneficial to human beings.
+          📚 While there may be short-term benefits, the overall impact of untreated bipolar disorder can be detrimental, leading to periods of deep depression and negatively affecting academic performance.
+          😌 Just because ADHD negatively impacts your life doesn't mean you can't learn to live with it and even extract positives from your illness experience.
+          🎨 Treating bipolar disorder may require artists to find their creative process again, as it can initially feel like they can't create anymore, but it's about re-accessing that part of themselves.
+          🩺 Treating mental illness, such as bipolar disorder or ADHD, may require learning new skills, but it is worth it as it can lead to increased happiness and overall well-being.
+  https://youtu.be/yWLCto4p_yM:
+    desc: Why Meditation Makes You Healthier | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          ⏱️ The effectiveness of meditation depends on the type of technique, not just the duration of practice.
+          🧠 Our minds are different, and to calm the mind requires a different technique for a different kind of mind.
+          🌬️ The Darth Vader breathing technique, called ujjayi pranayama, involves throat contraction to produce a specific sound, which can be beneficial for meditation and relaxation.
+          🧘 Meditation can help with inflammation and simple behavioral changes to optimize health.
+  https://youtu.be/Ynew5KSbAQQ:
+    desc: Why Your Perfectionism Keeps You From Doing Anything | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          💯 The pursuit of perfection can be overwhelming and prevent us from taking action towards our goals.
+          💯 Perfectionism can be paralyzing because the fear of not achieving perfection prevents people from even trying.
+          💔 Perfectionism can be paralyzing, but letting go of it requires learning the skill of grieving.
+          🤯 Striving for perfection is overwhelming and paralyzing, making it difficult to achieve anything.
+          💔 Grief is a process of taking a negative event, internalizing it, and reshaping the future in a hopeful way.
+          💔 Letting go of perfectionism requires embracing uncertainty and grieving the loss of the guarantee of success.
+          💭 Perfectionism can lead to a vicious cycle of self-criticism and self-doubt, ultimately hindering productivity and progress.
+          💯 Perfectionism can lead to a fear of failure and prevent us from learning from our mistakes.
+  https://youtu.be/3y5p7V05xls:
+    desc: How To Be Awesome At Anything | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🧠 The desire to be the best can hinder learning and growth, as it creates unrealistic expectations and prevents the application of the right learnings.
+          👣 Starting from a low point and gradually improving is more effective than aiming for perfection from the beginning.
+          🏆 Abandon the pursuit of being the best, as it is rooted in insecurity and shame, and instead focus on learning and doing better to truly become awesome.
+          🧠 Your brain will convince you that something is not worth pursuing if it's too difficult, but pushing through the initial discomfort can lead to mastery.
+          💡 Instead of relying on emotions, it is more important to focus on values, which are the things that we truly care about as human beings.
+          💪 Despite the intense pain of withdrawal, some people are able to stick with quitting heroin and overcome their addiction.
+          💡 The first step to getting good at something is to ask yourself what about it is important to you and spend time introspecting or writing it out.
+          🤔 The number one thing that holds you back from being awesome is actually yourself.
+  https://youtu.be/bmvBTDPzzaY:
+    desc: The Secret To Always Staying Motivated | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🧠 The problem with motivation is multidisciplinary, weaving together aspects of Neuroscience, clinical practice, and Eastern perspective to unlock motivation.
+          🧠 Understanding and cultivating the right emotions is key to staying motivated and putting forth 100% effort.
+          🤔 It's not about the objectivity of whether you have the skill or not, it's about your sense of identity and the emotion that creates in response to that task.
+          🔋 The level of energy for a task fluctuates depending on our opinion of the task.
+          🧠 It's our perception of self that tells us if something is too much for us to handle, but having faith in ourselves can help us rise to the challenge.
+          🧠 Identity is fluid and can be altered through subjective practices like yoga and meditation, challenging the idea of a fixed and unchangeable self.
+          🧘 Sit up straight, imagine a string pulling up on your head, and chant "Om" for a centering practice to stay focused and motivated.
+          🧠 You might note thoughts, but thoughts are not real thing, if I think of a Unicorn doesn't make it real. A thought is a construction of the mind.
+          🧠 Changing your sense of identity and focusing on learning allowed me to rise to the top, not just accomplishing things beyond my wildest dreams.
+  https://youtu.be/zBgCRJluWTc:
+    desc: Why Don't You Want To Do Anything After Binging 4 Hours of YouTube Videos | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          🤯 The impact of chronic technology usage on the brain is still not fully understood, but the findings so far are "terrifying."
+          🧠 The anterior insula, heavily involved with insight and consciousness, may be responsible for regulating our behavior and causing us to waste time on the internet.
+          🧠 The engagement level of a YouTube video is in how much it allows us to forget, making us less aware and more likely to engage in the internet attention marketplace.
+          😔 The more negative emotions we feel about ourselves, the more likely we are to turn to technology as a coping mechanism.
+          🧠 Our engagement with technology is not just about laziness or discipline, but also about our internal emotional and fatigue states, which can lead us to use technology to self-soothe and shut down negative emotions.
+          😔 Procrastination is often a result of incorrect emotional processing and self-loathing, leading to a cycle of failure.
+          🧠 Black and white thinking is a sign of emotional activity in the amygdala and hippocampus, which means you're not thinking logically but emotionally.
+          🧠 The reason we get sucked into technology is often due to emotional suppression and the attention marketplace, not just laziness or lack of discipline.
+  https://youtu.be/Cv3bj1M96fQ:
+    desc: You Need To Break The Cycle Of Depression | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Cognitive Biases and Depression
+
+          😔 Depression creates cognitive biases that make our life worse, leading to a vicious cycle.
+          🧠 Cognitive bias shapes the way we see the world, leading us to perceive things in a negative manner even when they are objectively better than we think they are.
+          🧠 Depression can lead to a negative interpretation of ambiguous events, causing the mind to make up information when it doesn't have it.
+          😔 Your mind may fill in situations with the depressive character of your mind, creating a bias towards negativity.
+          😔 The way you see the world is the most important part for propagating the cycle of depression.
+          🧠 It's important to break the cycle of depression by recognizing and challenging these self-centered thoughts.
+
+          ## Perception and Interpretation in Depression
+
+          🔑 The way we interpret events is crucial in breaking the cycle of depression and building resilience.
+          🔍 Our perception of an object is often influenced by our personal experiences and emotions, rather than just its physical attributes.
+          🧠 99% of your perception doesn't actually come from the outside world, it actually comes from you.
+          🧠 "The hardest thing to do in the world is to see things as they are." - Dalai Lama
+  https://youtu.be/tRWX21lW_bU:
+    desc: 3 Motivation Styles determined by Personality | HealthyGamerGG
+    tags: [psy]
+    notes:
+      - md: |
+          ## Personalized Approaches to Motivation and Wellness
+
+          🌍 Western science and medicine often rely on one-size-fits-all solutions, ignoring the fact that individuals have different needs and metabolic styles.
+          🌿 Ayurveda recognizes that individuals have different metabolic styles and dietary preferences, highlighting the importance of personalized approaches to health and wellness.
+          🌬️ "There are different cognitive styles called `doshas`, which relate to elements like `wind`, `fire`, and `earth`, and some minds are highly dynamic like the wind."
+          🧠 Your strategy should be based on your own strengths and abilities, rather than following the hype or trends.
+          🌙 `Kaphas` may have their most productive hours late at night or in the middle of the afternoon, highlighting the importance of understanding and working with their natural energy rhythms.
+
+          ## Challenging Traditional Motivational Assumptions
+
+          🌬️ The western style of motivation, characterized by ambition and drive, is often prioritized and valued, but there are other motivational styles, such as the slow and steady `kapha` style, that can be equally effective.
+          💨 The speaker challenges the assumption that all motivation has to be driven and ambitious, emphasizing that different individuals have different motivational styles that can lead to success.
+          💡 The speaker discovered that they can work 10 hours a day as long as they give their mind different things to work on, challenging the idea that hyper-focus on one thing is the only path to success.
+          🔥 The `pitta` motivational style is characterized by a steady and constant drive towards a particular goal, making individuals highly motivated and successful in society.
+          🧙 Trying to motivate oneself in a way that doesn't align with their strengths is like a mage using a two-handed sword, so it's important to recognize and play to one's motivational strengths to achieve surprising accomplishments.
+  https://youtu.be/0N0LV0mqTYQ:
+    desc: Discipline Is Actually An Emotion | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          😮 Discipline is actually an emotion, which challenges the traditional understanding of discipline as a behavior or skill.
+          😺 The story of the cat and the bucket teaches the importance of discipline and following rituals, even if their original purpose is no longer relevant.
+          💡 The opposite of doubt is **resolve**, which is essential for maintaining discipline and staying committed to one's goals.
+          😌 Cultivating resolve is more effective than trying to cultivate discipline, as resolve leads to disciplined behavior.
+          🤔 The concept of resolve as an emotion challenges traditional notions of emotions and opens up new possibilities for understanding human behavior.
+          💪 Cultivating discipline requires cultivating **resolve**, not just willpower or habit, and resolve fuels our willpower to overcome doubts and distractions.
+          ⏰ Developing discipline can be achieved by committing to a daily practice, even if it's challenging, within the first hour or hour and a half of our day.
+          💪 Discipline is not just about willpower or habit, but it is actually an emotion that can be cultivated.
+  https://youtu.be/2zOe9Kd2n-w:
+    desc: How To Change Your Personality | HealthyGamerGG
+    tags: [motivation, psy]
+    notes:
+      - md: |
+          ## What is Personality?
+
+          1. The way we interpret the world and our experiences.
+          2. The way we react to circumstances and events.
+          3. The way we behave in response to our thoughts and emotions.
+
+          ## Metacognition
+
+          The way we think about our thoughts
+
+          ## Meta-emotion
+
+          The way we feel about our emotions
+
+          ## The problem
+
+          The way we react to thoughts, emotions and circumstances that determine our destiny
+
+          ## Key insights
+
+          💡 Evidence-based techniques exist that can help individuals change their personality and become a different person, offering the possibility of a transformed life.
+          🤝 HG groups provide a space for individuals to authentically connect with others, cultivate vulnerability, and develop competence and confidence to move forward in life.
+          🤔 Instead of trying to control the circumstances of your life, focus on understanding and changing your reactions to thoughts, emotions, and circumstances to shape your destiny.
+          😔 Our focus on external events and outcomes often leads us to neglect the impact they have on our internal thoughts and beliefs, which ultimately shape our personality and determine our destiny.
+          💭 We have control over the conclusions we form from our experiences, and no one else gets to determine our perception of our own lives and experiences.
+          💡 By observing and being careful about the conclusions you draw from your experiences, you can prevent automatic emotional reactions from transforming into harmful conclusions that shape your personality.
+          🧘 The yogis focused on metacognition rather than fixing specific problems, realizing that transcending the mind through practices like meditation can solve whatever is in your mind.
+          🧠 The real tragedy of life is spending energy trying to fix things involving other people, which are partially out of our control, while ignoring the conclusions we draw about ourselves.
+  https://youtu.be/i5BE-AK4FKM:
+    desc: Shame Isn't Something to Overcome Alone
+    tags: [healthygamergg, motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          💭 The ideal self we strive for is based on the things we know we are capable of achieving, not just a fantasy.
+          🧠 Understanding why things happen can help you be more non-judgmental towards yourself and others.
+          🌱 Coaching is really outcome-oriented and action-oriented, helping to rewrite the history of shame and reinterpret past events.
+          😌 Building a sense of purpose can lead to a 58% increase in life purpose and a 25-35% reduction in depression and anxiety.
+          🌟 Having a sense of purpose makes all other problems easier to deal with, and helps to put your life together.
+          🧠 Understanding the impact of shame on the brain can lead to tailored strategies for emotional regulation and self-understanding.
+          📊 Data analytics and feedback are crucial in refining curriculum and improving outcomes in coaching programs.
+  https://youtu.be/4i2j8x3SCMY:
+    desc: Shame For Not Being Successful
+    tags: [healthygamergg, motivation, psy]
+    notes:
+      - md: |
+          ## Key insights
+
+          😳 Shame operates in different levels within ourselves, including emotional shame that can lead to acute feelings of embarrassment and inadequacy.
+          😔 The gap between the ideal self and the current self is where the shame comes from, reinforcing the idea that achievement is the answer.
+          😔 The antidote to shame is not achievement, but acknowledging and having compassion for yourself.
+          😔 The gap between the ideal self and the current self is not the only path to success, it starts with acceptance.
+          🧠 The concept of an ideal self starts from somewhere, where along the way you learned the lesson that being you is not good enough fundamentally.
+          😔 Shame comes from the idea that being yourself is not good enough, leading to a constant pursuit of achievement to alleviate that feeling.
+          🤔 The shame is born out of the ideal self, creating a gap between where we want to be and where we are, keeping the shame alive.
+          😔 Coaching can help you understand your thought process and not let shame get in the way of your goals.
+  https://youtu.be/3-25kY3kE2g:
+    desc: 5 dicas para iluminar o seu Home Office
+    tags: [setup]
+  https://youtu.be/TXOan4uJdS8:
+    desc: Como fazer a iluminação do seu home office?
+    tags: [setup]
+  https://youtu.be/VupOWCVQwR8:
+    tags: [backend]
+    desc: Rinha de Backend - Edição 2023 Q3
+    links:
+      - Instruções e Regras - 2023 Q3: https://github.com/zanfranceschi/rinha-de-backend-2023-q3/blob/main/INSTRUCOES.md
+  https://youtu.be/XImly72tLw0:
+    desc: How I Automate My Finances
+    tags: [diy]
+  https://manim.community:
+    tags: [coding]
+    desc: A community maintained Python library for creating mathematical animations
+    links:
+      - Quickstart: https://docs.manim.community/en/stable/tutorials/quickstart.html
+    notes:
+      - md: |
+          ## Installation
+
+          ```sh
+          # Dependencies
+          brew install py3cairo ffmpeg
+
+          # Apple Silicon dependencies
+          brew install pango pkg-config scipy
+
+          # LaTeX dependencies (optional)
+          brew install --cask mactex-no-gui
+
+          pip3 install manim
+          ```
+
+          ## Usage
+
+          ```sh
+          manim example_scenes.py SquareToCircle -pl
+          ```
+  https://youtu.be/G7aWxK4395Y:
+    tags: [bookmark, shell]
+    desc: Starship | Your shell prompt, ON STEROIDS
+  https://youtu.be/XXEvDAnYMq0:
+    tags: [bookmark, go]
+    desc: Named Functions in Google Sheets | New in 2022
+  https://youtu.be/u0MBXgW8KWA:
+    tags: [bookmark]
+    desc: How to set up your Knowledge Base using Freshdesk
+  https://youtu.be/pZZWDHsGFrU:
+    desc: Everything You Need to Know About a Knowledge Base
+    tags: [freshdesk]
+  https://youtu.be/-nXc1ZnySEE:
+    tags: [bookmark, tutorial]
+    desc: How to Manage a Knowledge Base | Freshdesk Tutorial for Knowledge Base Management
+  https://youtu.be/U0_6R8oVbGM:
+    tags: [bookmark, tutorial]
+    desc: How to create a knowledge base article | Freshdesk Tutorial
+  https://youtu.be/vylm9B4pShg:
+    tags: [bookmark]
+    desc: How to set up approval process for your knowledge base on Freshdesk
+  https://youtu.be/8jN-b68C3Cw:
+    desc: Introducing Connected Sheets @ Google Workspace
+    tags: [bigquery]
+  https://youtu.be/jgQjes7MgTM:
+    desc: The BEST Coding Interview Roadmap in 2023
+    tags: [xp, neetcode, leetcode]
+  https://youtu.be/i-ladOjo1QA:
+    tags: [bookmark]
+    desc: Complexity Theory Overview
+  https://youtu.be/vp8v2Udd_PM:
+    desc: What is a Complex System?
+    tags: [complexity]
+  https://youtu.be/kDiyxJmcCx4:
+    desc: How to get started with Jobs to be Done
+    tags: [agile, jtbd]
+  https://youtu.be/E-rsERu7_pM:
+    desc: How to Get a Job at the Big 4 - Amazon, Facebook, Google & Microsoft
+    tags: [xp, interview]
+  https://youtu.be/J3TfAxz1bik:
+    desc: Create a Coding Playground for VS Code
+    tags: [node]
+  https://youtu.be/xT8oP0wy-A0:
+    tags: [bookmark]
+    desc: Kotlin in 100 Seconds by Fireship
+  https://youtu.be/1qezCNVWpHc:
+    tags: [bookmark]
+    desc: Loom - The Kotlin Coroutines Killer? | Talking Kotlin 120
+  https://youtu.be/1f6N2UrCK6o:
+    desc: Colin Galen | Unlocking Your Intuition - How to Solve Hard Problems Easily
+    tags: [xp, interview]
+  https://youtu.be/h_oIgdWjqmE:
+    tags: [bookmark]
+    desc: CHEAPEST Budget way For SOUNDPROOFING a Room
+  https://youtu.be/VAyZBphPxoo:
+    tags: [bookmark]
+    desc: How to Soundproof a Room | DIY
+  https://youtu.be/1uY3tTo93Bk:
+    tags: [bookmark]
+    desc: Soundproof an Apartment Door - 4 Ways That Works!
+  https://youtu.be/KCFFF9-M9OE:
+    desc: Cortina Acústica funciona mesmo? Diminui o barulho? Minha experiência!
+    tags: [soundproof]
+  https://youtu.be/GF8Rfc5Rp_M:
+    desc: Cortina Acústica funciona mesmo? Diminui o barulho? Minha experiência!
+    tags: [soundproof]
+  https://youtu.be/W1nGgJbK2u0:
+    desc: Como fiz o isolamento acústico do Estúdio / Quarto Gamer / Home Office
+    tags: [soundproof]
+  https://youtu.be/EBXWVbMPC-M:
+    desc: Como fiz o isolamento acústico do Estúdio / Quarto Gamer / Home Office
+    tags: [soundproof]
+  https://youtu.be/BW2ce3H-sAo:
+    desc: Como fiz o isolamento acústico do Estúdio / Quarto Gamer / Home Office
+    tags: [soundproof]
+  https://youtu.be/oOSDg391EQM:
+    desc: Como Fazer Um Painel Acústico De Lã De Rocha eficiente e econômico | Passo a passo feito em casa
+    tags: [soundproof]
+  https://youtu.be/MCtIyTpCKlg:
+    desc: Como fiz o isolamento acústico do Estúdio / Quarto Gamer / Home Office
+    tags: [soundproof]
+  https://youtu.be/4Utchs-ZA6I:
+    tags: [bookmark]
+    desc: DIY Soundproofing walls from noisy neighbours
+  https://youtu.be/B5d7Vy8rYU0:
+    tags: [bookmark]
+    desc: The Most SOUNDPROOF Window YOU Can Build! But HOW?
+  https://youtu.be/4Uwq0xB30JE:
+    desc: How to use WebSockets with React and Node | Ably Realtime
+    tags: [react]
+  https://youtu.be/4CpR-_Nyd00:
+    tags: [bookmark, tutorial]
+    desc: Npm workspaces tutorial
+  https://youtu.be/tVUE_JiPU-k:
+    tags: [bookmark, socket]
+    desc: What is Socket.IO? How to use it?
+  https://youtu.be/-8W0E_X8Qg0:
+    desc: How to Replace Sony 1000XM3 Headphones Earpads Cushions
+    tags: [gadget]
+  https://youtu.be/k1OF_Uqb0Ho:
+    desc: Sony WH-1000xm3 | How to do Everything (Must Watch Before You Buy!)
+    tags: [gadget]
+  https://youtu.be/wNy5gQ3Wo4s:
+    desc: Sony XM4 vs Sony XM3 | HEADPHONES VS. HEADPHONES
+    tags: [gadget]
+  https://youtu.be/PuQ0Av2jZ_U:
+    desc: Sony WH-1000XM4 vs WH-1000XM3 - ALL THE DIFFERENCES!
+    tags: [gadget]
+  https://youtu.be/LvGmVmHv69s:
+    desc: Gemini | Excelling at competitive programming
+    tags: [ai]
+  https://youtu.be/qQphYb1r0wU:
+    desc: 10 Reasons Why Azure DevOps is AWESOME
+    tags: [azure_devop]
+  https://youtu.be/mfRV1A6axjE:
+    desc: Modern Requirements revolutionizing product development with Azure DevOps and Azure OpenAI Service
+    tags: [azure_devop]
+  https://youtu.be/TEJTg5kdYE4:
+    desc: Loving Azure Boards with Delivery Plans 2.0
+    tags: [azure_devop]
+  https://youtu.be/gqUFAAByPfU:
+    desc: Create Azure DevOps Management Reports
+    tags: [azure_devop]
+  https://youtu.be/Ft1JESBVFX8:
+    desc: Azure Boards | Plan, Track, and Discuss Work
+    tags: [azure_devop]
+  https://youtu.be/a5QXsFwQlCo:
+    desc: Google Cloud Applied AI Summit - Generative AI | The next frontier for developers
+    tags: [gemini]
+  https://youtu.be/JDJSURqkAqg:
+    desc: The New Web Animation API that changes The Game!
+    tags: [transition]
+  https://youtu.be/q_2irZO4SS8:
+    desc: Simple Page Transitions Using The View Transitions API With SvelteKit
+    tags: [web]
+  https://stylar.ai:
+    desc: Make 2D Graphics Look 3D in Seconds, for Free
+    tags: [ai]
+    links:
+      - Make 2D Graphics Look 3D in Seconds, for Free: https://youtu.be/4dckcXl3eZg
+  https://ably.com:
+    tags: [bookmark]
+    desc: Cloud hosted realtime messaging service for web and mobile apps
+  https://ably.com/blog/websockets-react-tutorial:
+    desc: The complete guide to WebSockets with React
+    tags: [react]
+  https://ably.com/spaces:
+    tags: [bookmark]
+    desc: Spaces - Seamlessly add collaborative features into your product, with our in-app collaboration SDK | Ably Realtime
+  https://ably.com/topic/websockets:
+    tags: [bookmark, socket]
+    desc: WebSockets | Ably Realtime
+  https://pages.ably.com/hubfs/the-websocket-handbook.pdf:
+    tags: [bookmark, socket]
+    desc: The WebSocket Handbook | Ably Realtime
+  https://engineering.specprotected.com/posts/self-documenting-interactive-make:
+    tags: [bookmark]
+    desc: Self-documenting fzf interactive Make
+  https://containers.dev:
+    desc: Containers.dev | The easiest way to run containers
+    tags: [docker]
+  https://containers.dev/guide/dockerfile:
+    desc: Containers.dev | Using Images, Dockerfiles, and Docker Compose
+    tags: [docker]
+  https://github.com/dmytrostriletskyi/diagrams-as-code:
+    tags: [charts, git]
+    desc: Diagrams as Code | A curated list of diagrams as code resources
+  https://pipedream.com:
+    desc: Serverless Integration Platform
+    tags: [requestbin]
+  https://requestbin.com/docs/#create-an-endpoint:
+    desc: RequestBin | Create an endpoint
+    tags: [doc]
+  https://techdevguide.withgoogle.com/paths/interview:
+    desc: Google | Interview Practice
+    tags: [job]
+  https://techdevguide.withgoogle.com/resources/?topics=interview-prep:
+    desc: Google | Interview Practice
+    tags: [job]
+  https://techdevguide.withgoogle.com/resources/?topics=algorithms&topics=data-structures:
+    desc: Google | Interview Practice
+    tags: [job, algorithm]
+  https://techdevguide.withgoogle.com/resources/?topics=data-structures:
+    desc: Google | Interview Practice
+    tags: [data_structure, job]
+  https://learnprompt.org:
+    desc: LearnPrompt | Chat GPT Prompts for Data Science
+    tags: [ai]
+  https://learnprompt.org/chat-gpt-prompts-for-data-science:
+    desc: Chat GPT Prompts for Data Science
+    tags: [ai]
+  https://learnprompting.org/docs/intro:
+    desc: Prompt Engineering Guide | Learn Prompting | Your Guide to Communicating with AI
+    tags: [doc]
+  https://tipseason.com/chatgpt-prompts-for-data-science:
+    desc: Chat GPT Prompts for Data Science
+    tags: [ai]
+  https://dock.io/post/web3-identity:
+    tags: [coding]
+    desc: Web3 Identity | Beginner's Guide 2023
+    notes:
+      - md: |
+          # TL;DR
+
+          - Web3 is a decentralized web that gives users more control over their data and is the third generation of the internet
+
+          - Web3 identity is a system that allows users to manage their online identities in a more secure and efficient way without relying on a central authority
+
+          - Decentralized identifiers (DIDs) are globally unique identifiers that can be stored on a blockchain and play an essential role in creating users' Web3 identity
+
+          - Web3 identity provides many benefits to organizations and individuals over traditional identity management systems
+
+          - There are a growing number of Web3 identity use cases including age verification for entertainment sites and proof of ownership without revealing a crypto wallet's details
+  https://dock.io/post/web3-authentication:
+    desc: Web3 Authentication | Complete Guide 2023
+    tags: [auth]
+    notes:
+      - md: |
+          # TL;DR
+
+          - Current authentication systems have several problems including the risk of data breaches and users have little to no control over how their information is collected, used, and shared with other parties
+
+          - Web3 authentication is a login process that verifies the identity of a website and app user with their public key
+
+          - Benefits for organizations: Web3 authentication verifies users securely, helps them stay compliant with data regulations, and speeds up the customer onboarding process
+
+          - Benefits for individuals: Web3 authentication enhances the user experience, privacy, and security
+
+          - Developers and organizations can integrate Dock's Web3 ID on their sites or apps to provide passwordless user authentication, prevent user tracking and avoid data collection
+  https://dock.io/post/blockchain-identity-management:
+    desc: Blockchain Identity Management | Complete Guide 2023
+    tags: [web3]
+    notes:
+      - md: |
+          # TL;DR
+
+          - Identity management encompasses the processes, policies, and technologies to ensure that only authorized people have access to the technology resources.
+
+          - Many of the current digital identity management systems have downsides, including the risk of data breaches, a bad user experience with people having to manage so many accounts, and lack of control of user data.
+
+          - Benefits of blockchain identity management include faster verification processes, reduced verification costs, and enhanced data privacy and security.
+
+          - Blockchain identity management can be applied to a growing number of use cases across a variety of industries and sectors including financial services, education, and workforce.
+
+          - No personal identifiable information (PII) is stored on the blockchain.
+  https://youtu.be/gCWbmy_icRo:
+    desc: Polyglot Notebooks in 7 minutes
+    tags: [vscode, jupyter]
+  https://doctrine-project.org/projects/doctrine-orm/en/2.17/reference/yaml-mapping.html:
+    desc: Doctrine ORM | YAML Mapping
+    tags: [php]
+  https://yaml.org/spec/1.2.2:
+    desc: YAML | Specification
+    tags: [doc]
+    notes:
+      - md: |
+          ## YAML Ain't Markup Language (YAML™) version 1.2
+          > Revision 1.2.2 (2021-10-01)
+
+          This is the YAML specification v1.2.2.
+          It defines the YAML 1.2 data language.
+          There are no normative changes from the YAML specification v1.2.
+          The primary objectives of this revision are to correct errors and add clarity
+  https://flexform.com.br/cadeira-gamer-flexform-delta-black-n-wht:
+    tags: [coding]
+    desc: Cadeira Gamer Flexform Delta Black N Wht
+  https://editsvg.online/editor.html:
+    tags: [coding]
+    desc: Edit SVG Online
+  https://npmjs.com/package/json2md:
+    desc: Convert JSON to Markdown
+    tags: [json2md]
+    notes:
+      js: |
+        const json2md = require("json2md");
+
+        const input = [
+          { h1: "JSON To Markdown" },
+          { blockquote: "A JSON to Markdown converter." },
+          { img: [
+            { title: "Some image", source: "https://example.com/some-image.png" }
+          ]},
+          { h2: "Features" },
+          { ul: [
+            "Easy to use",
+            "You can programmatically generate Markdown content"
+          ]},
+          { h2: "How to contribute" },
+          { ol: [
+            "Fork the project",
+            "Create your branch",
+            "Raise a pull request"
+          ]},
+          { h2: "Code blocks" },
+          { p: "Below you can see a code block example." },
+          { "code": {
+            language: "js",
+            content: [
+              "function sum (a, b) {",
+              "   return a + b",
+              "}",
+              "sum(1, 2)"
+            ]
+          }}
+        ];
+
+        json2md(input));
+  https://pokeapi.co:
+    desc: The RESTful Pokémon API
+    tags: [api, pokemon]
+  https://unprompt.ai:
+    tags: [coding]
+    desc: Search 35+ Million AI Art Prompts
+  https://relume.io:
+    desc: Over 1,000 Webflow components, enabling designers to build on Webflow with more speed whilst still ensuring quality
+    tags: [ai]
+  https://youtube.com/@SoftwareInterviewsPrep:
+    tags: [tutorial]
+    desc: Comprehensive resources to help you ace your technical interviews. Variety of video tutorials, coding challenges, and interview tips from experienced software engineers.
+  https://youtube.com/@ByteByteGo:
+    desc: Covering topics and trends in large-scale system design, from the authors of the best-selling System Design Interview book series
+    tags: [system_design]
+  https://keep.google.com:
+    desc: Keep | Save your thoughts, wherever you are
+    tags: [google, note]
+  https://bitly.com:
+    desc: Bitly | Shorten, share, and track your links
+    tags: [url, shortener]
+    links:
+      - API: https://app.bitly.com/settings/api
+      - Profile: https://app.bitly.com/settings/profile
+  https://biomejs.dev:
+    desc: Format, lint, and more in a fraction of a second.
+    tags: [js, random]
+    links:
+      - Getting Started: https://biomejs.dev/guides/getting-started
+    notes:
+      sh: |
+        # install
+        brew install biome
+
+        # create config file (biome.json)
+        biome init
+
+        # lint
+        biome lint <DIRECTORY_OR_FILE_NAME>
+
+        # format
+        biome format <DIRECTORY_OR_FILE_NAME> --write
+
+        # format, lint and organize imports
+        biome check --apply <DIRECTORY_OR_FILE_NAME>
+  https://biomejs.dev/playground:
+    desc: Biome Playground
+    tags: [formatter]
+    links:
+      - Getting Started: https://biomejs.dev/guides/getting-started
+  https://youtu.be/uAbmWBe1LBY:
+    tags: [bookmark]
+    desc: How to ACTUALLY Get a Developer Job In This Economy (2024)
+  https://fonts.google.com:
+    tags: [coding]
+    desc: Google Fonts
+  https://chromewebstore.google.com:
+    desc: Chrome Web Store
+    tags: [extension]
+  https://app.diagrams.net:
+    tags: [coding]
+    desc: Diagrams | Draw.io
+  https://wakapi.dev:
+    desc: Wakapi | A minimalist, self-hosted WakaTime-compatible backend for coding statistics
+    tags: [api]
+    links:
+      - Wakapi code: https://github.com/muety/wakapi
+  https://kroki.io:
+    tags: [coding]
+    desc: Kroki | Creates diagrams from textual descriptions
+  https://huggingface.co:
+    desc: Hugging Face | We're on a journey to solve and democratize artificial intelligence through natural language
+    tags: [ai, nlp]
+    links:
+      - Tokens: https://huggingface.co/settings/tokens
+      - Hugging Face Hub: https://huggingface.co/docs/hub/overview
+    notes:
+      - md: |
+          ### Hugging Face
+
+          You can create a repository from the CLI (skip if you created a repo from the website)
+
+          ```sh
+          pip install huggingface_hub
+          brew install huggingface-cli
+          You already have it if you installed transformers or datasets
+
+          huggingface-cli login
+          Log in using a token from huggingface.co/settings/tokens
+          Create a model or dataset repo from the CLI if needed
+          huggingface-cli repo create repo_name --type {model, dataset, space}
+          ```
+
+          Clone your model, dataset or Space locally
+
+          ```sh
+          Make sure you have git-lfs installed
+          (https://git-lfs.github.com)
+          git lfs install
+          git clone https://huggingface.co/username/repo_name
+          ```
+
+          Then add, commit and push any file you want, including larges files
+
+          ```sh
+          save files via `.save_pretrained()` or move them here
+          git add .
+          git commit -m "commit from $USER"
+          git push
+          ````
+
+          In most cases, if you're using one of the compatible libraries, your repo will then be accessible from code, through its identifier: username/repo_name
+          For example for a transformers model, anyone can load it with:
+
+          ```python
+          from transformers import AutoModel
+          tokenizer = AutoTokenizer.from_pretrained("username/repo_name")
+          model = AutoModel.from_pretrained("username/repo_name")
+          ```
+  https://youtu.be/dZwbb42pdtg:
+    tags: [coding]
+    desc: 3 Levels of WiFi Hacking
+  https://youtu.be/TZcgvi_KRvY:
+    tags: [coding]
+    desc: WiFi hacking like Mr Robot (with OTW)
+  https://bubble.io:
+    desc: The world's only full-stack, no-code platform
+    tags: [no_code]
+    links:
+      - Bubble Academy - your guide to building on Bubble: https://bubble.io/academy
+      - Getting Started With Bubble - Key Concepts: https://youtu.be/4_R8aIxGLyY
+  https://pdf.ai:
+    desc: Chat with any PDF document - From legal agreements to financial reports. Ask questions, get summaries, find information, and more.
+    tags: [ai]
+  https://cohesive.so:
+    tags: [bookmark]
+    desc: Create magical content with AI editor. End ChatGPT prompt struggles. Create, refine, edit, and publish seamlessly with Cohesive.
+  https://saurabhmisra.dev/setup-react-pwa-using-vite:
+    desc: Setup React PWA using Vite
+    tags: [react]
+  https://github.com/nrwl/nx-examples:
+    desc: Example repo for Nx workspace
+    tags: [monorepo]
+  https://monorepo.tools:
+    desc: Everything you need to know about monorepos, and the tools to build them.
+    tags: [nx]
+  https://youtu.be/bJgw4qoDXyc:
+    desc: BEST Software to Fix Blurry Photos? Top 6 Compared!
+    tags: [ai]
+  https://app.artflow.ai:
+    tags: [coding]
+    desc: Artflow | AI-powered photo editing
+    links:
+      - AI Actors are Here! What Comes Next?: https://youtu.be/N5n4W4mGlNo
+      - AI Images of YOU (New FREE & Easy Method): https://youtu.be/u5I41tUm5RQ
+      - My Creations: https://app.artflow.ai/my-creations/5f5f9604464545668e29e877d1102e5e
+      - My Creations: https://app.artflow.ai/my-creations/e5bc795d026b4647ab7d1410e9eae6fa
+      - My Creations: https://app.artflow.ai/my-creations/aacf2205462f4976a7c40fedd4ce38d7
+  https://perplexity.ai:
+    desc: Perplexity AI unlocks the power of knowledge with information discovery and sharing
+    tags: [search]
+    links:
+      - NVIDIA and Jeff Bezos JOIN FORCES to take the Industry by STORM | Rabbit R1 SECRET Revealed: https://youtu.be/DokBXC_GRsI
+  https://en.wikipedia.org/wiki/SOLID:
+    desc: SOLID | Wikipedia
+    tags: [design_pattern]
+  https://sustainablewebdesign.org:
+    desc: Sustainable Web Design
+    tags: [bp]
+    links:
+      - Sustainable Web Manifesto: https://sustainablewebmanifesto.com
+  https://sustainablewebmanifesto.com:
+    desc: Sustainable Web Manifesto | "If the Internet was a country, it would be the 4th largest polluter"
+    tags: [bp]
+    links:
+      - Sustainable Web Design: https://sustainablewebmanifesto.com
+    notes:
+      - md: |
+          ### We need a sustainable internet
+
+          > We all share and use the web, just as we all share and live on this planet. This manifesto is a public declaration of a shared commitment to create a sustainable internet.
+          >
+          > The planet is experiencing unprecedented climate change and the Internet is both part of the problem and the solution. From websites to cryptocurrencies, the Internet consumes large amounts of electricity in data centres, telecoms networks, and end user devices. If the Internet was a country, it would be the 4th largest polluter in the world and is expected to grow considerably by 2030.
+          >
+          > If we embrace sustainability in our work, we can create a web that is good for people and planet. By signing this manifesto you declare your commitment to create a greener web.
+
+          #### 1. Clean
+          The services we provide and services we use will be powered by renewable energy.
+
+          #### 2. Efficient
+          The products and services we provide will use the least amount of energy and material resources possible.
+
+          #### 3. Open
+          The products and services we provide will be accessible, allow for the open exchange of information, and allow users to control their data.
+
+          #### 4. Honest
+          The products and services we provide will not mislead or exploit users in their design or content.
+
+          #### 5. Regenerative
+          The products and services we provide will support an economy that nourishes people and planet.
+
+          #### 6. Resilient
+          The products and services we provide will function in the times and places where people need them most.
+
+  https://svtplay.se:
+    desc: SVT Play | Sveriges Television
+    tags: [tv, sweden]
+  https://immi.homeaffairs.gov.au:
+    desc: Immigration and citizenship Website
+    tags: [au, visa]
+    links:
+      - Points calculator to Skilled Independent visa (subclass 189): https://immi.homeaffairs.gov.au/help-support/tools/points-calculator
+      - Australia PR Points Calculator (unofficial): https://visaenvoy.com/australia-pr-points-calculator-from-16-november-2019
+      - Qual país devo trabalhar e estudar - Irlanda ou Austrália?: https://egali.com.br/blog/paises-para-trabalhar-e-estudar
+  https://immi.homeaffairs.gov.au/help-support/tools/points-calculator:
+    desc: Points calculator to Skilled Independent visa (subclass 189) | Immigration and citizenship Website
+    tags: [au]
+    links:
+      - Immigration and citizenship Website: https://immi.homeaffairs.gov.au
+      - Australia PR Points Calculator (unofficial): https://visaenvoy.com/australia-pr-points-calculator-from-16-november-2019
+      - Qual país devo trabalhar e estudar - Irlanda ou Austrália?: https://egali.com.br/blog/paises-para-trabalhar-e-estudar
+  https://visaenvoy.com/australia-pr-points-calculator-from-16-november-2019:
+    desc: Australia PR Points Calculator (unofficial)
+    tags: [visa]
+    links:
+      - Immigration and citizenship Website: https://immi.homeaffairs.gov.au
+      - Points calculator to Skilled Independent visa (subclass 189): https://immi.homeaffairs.gov.au/help-support/tools/points-calculator
+      - Qual país devo trabalhar e estudar - Irlanda ou Austrália?: https://egali.com.br/blog/paises-para-trabalhar-e-estudar
+  https://mixpanel.com:
+    desc: Mixpanel | Product analytics for mobile, web, and beyond
+    tags: [customer_succes]
+  https://hotjar.com:
+    desc: Hotjar | Heatmaps, Visitor Recordings, Conversion Funnels, Form Analytics, Feedback Polls and Surveys in One Platform
+    tags: [customer_succes]
+  https://datadoghq.com:
+    desc: Datadog | Cloud Monitoring as a Service
+    tags: [observability, open_telemetry]
+    notes:
+      - md: |
+          # Datadog Application Performance Monitoring
+
+          > Detect, troubleshoot, and resolve issues faster with end-to-end distributed tracing and service-centric observability at scale, correlated to all telemetry types.
+
+          ## WHY DATADOG?
+
+          ### End-to-End Distributed Tracing
+          Set up in minutes, and instantly visualize your traces with full control over ingestion, retention, and costs
+
+          ### Code Hotspots And Method Level Insights
+          Optimize the most resource consuming lines of production code with our low-overhead Continuous Profiler
+
+          ### Automatic Deployment Tracking
+          Requests, errors, and latency metrics for every code deploy including out-of-the-box code version comparisons
+
+          ### Superior Granularity & Retention
+          0-second OOTB high resolution, 1-second availability for critical metrics, 15-month retention, and no roll-up, ever
+
+          ## PRODUCT BENEFITS
+
+          ### Resolve App Issues Faster with Unified Observability
+          - Easily identify bottlenecks with full-stack distributed tracing, continuous profiling, and real user monitoring - no complex query language required
+          - Spot issues faster with built-in correlation of traces with user sessions, infrastructure metrics, loglines, method timings, and network performance
+          - Automatically detect unanticipated outliers and resolve incidents faster with instant root cause analyses powered by Watchdog AI
+          - Gain full stack observability by ingesting both Datadog and OpenTelemetry data with the same agent
+
+          ### Visualize App Metrics with Full Context and Insight
+          - Automatically collect, monitor, and visualize high-granularity data and custom metrics in real time
+          - Seamlessly correlate health metrics with distributed traces, logs, browser sessions, code profiles, synthetics, and network performance data
+          - Collect, view, and store metrics with superior granularity and retention: up to 1 second resolution and 15-month storage with no rollups
+          - Understand the business impact by correlating key indicators with application health metrics
+
+          ### Optimize Code-Level Performance & Confidently Ship Code
+          - Continuously analyze and compare code performance in any environment, including production
+          - Confidently release code under any deployment strategy with automatic version tagging and deployment tracking
+          - Find the root cause down to the method or line of code, including slow I/O and lock contention and inefficient garbage collection
+          - Quickly discover code vulnerabilities and attack attempts in your Java, .NET, PHP, Node.js, Ruby, Python, Go, and C++ applications
+
+          ### Centralize Service Knowledge and Operations
+          - Automatically discover, catalog, and monitor every service- no code changes necessary- with Universal Service Monitoring
+          - Reduce mean time to detection through effortless dependency mapping, powered by eBPF technology
+          - Enhance service performance and resource utilization by monitoring all your application telemetry and cloud resources in a single view
+          - Simplify service governance at scale by unifying dispersed service-related knowledge and real-time observability and security data with Service Catalog
+
+          ### Receive Alerts Only for the Issues that Matter and Eliminate False-Positives
+          - Set up alerts for anomalies and outliers that account for daily, weekly, and seasonal fluctuations
+          - Proactively prevent outages and errors by alerting on metric forecasts
+          - Create composite alerts, based on boolean logic, to reduce your time spent responding to spurious alerts
+
+          ### Live Visibility, Complete Control
+          - Search and Analyze your ingested traces live over the last 15 minutes
+          - Retain errors and high latency traces automatically for 15 days
+          - Control cost-visibility tradeoffs with fine-grained ingestion controls and tag-based retention filters
+          - Seamlessly correlate distributed traces with metrics, logs, browser sessions, code profiles, synthetics, and network performance data
+  https://youtu.be/6zEIvZqs0:
+    desc: Top 10 Beautiful Places to Visit in Sweden
+    tags: [sv]
+  https://youtu.be/Q7RDyIJfqsI:
+    desc: Support Driven Development - Podcast | Mastercard Gateway Unlocked
+    tags: [bug, report]
+  https://linkedin.com/advice/0/how-do-you-track-bugs-agile-web-development-skills-computer-science-alkhc:
+    desc: How do you track bugs in agile web development?
+    tags: [tracking]
+  https://vazco.eu/blog/ticket-development-trap:
+    desc: Ticket Development Trap
+    tags: [tracking]
+  https://protonvpn.com:
+    tags: [coding]
+    desc: ProtonVPN | Secure and Free VPN service for protecting your privacy
+    links:
+      - Download for macOS: https://protonvpn.com/download-macos
+  https://youtu.be/pj8SoTZbCTE:
+    desc: TS vs JSDoc | Prime Reacts
+    tags: [ts]
+    links:
+      - CREATOR OF SVELTE From TS TO JSDoc??: https://youtu.be/zPOHY-cZ1wE
+      - TypeScript vs. JSDoc JavaScript for static type checking: https://blog.logrocket.com/typescript-vs-jsdoc-javascript
+      - TypeScript or JSDoc?: https://medium.com/@joziasmartini/typescript-or-jsdoc-31dd60a071ab
+      - LogRocket TypeScript Meetup | TypeScript Alternatives | JSDoc JavaScript: https://youtu.be/5MZoAcheyE4
+      - Can't use TypeScript? Use JSDoc / TSDoc for JavaScript: https://youtu.be/ytWbqnppzyc
+      - Should I use TypeScript, JSDoc, or Both?: https://youtu.be/JTYhDiJiiFI
+      - Step-by-Step Guide to JSDoc and TypeScript in Modern JavaScript Projects in 15 Minutes!: https://youtu.be/oH_-6TyxVhI
+  https://blog.logrocket.com/typescript-vs-jsdoc-javascript:
+    desc: TypeScript vs. JSDoc JavaScript for static type checking
+    tags: [ts]
+    links:
+      - TS vs JSDoc | Prime Reacts: https://youtu.be/pj8SoTZbCTE
+      - LogRocket TypeScript Meetup | TypeScript Alternatives | JSDoc JavaScript: https://youtu.be/5MZoAcheyE4
+      - TypeScript or JSDoc?: https://medium.com/@joziasmartini/typescript-or-jsdoc-31dd60a071ab
+      - Can't use TypeScript? Use JSDoc / TSDoc for JavaScript: https://youtu.be/ytWbqnppzyc
+      - Should I use TypeScript, JSDoc, or Both?: https://youtu.be/JTYhDiJiiFI
+      - Step-by-Step Guide to JSDoc and TypeScript in Modern JavaScript Projects in 15 Minutes!: https://youtu.be/oH_-6TyxVhI
+  https://medium.com/@joziasmartini/typescript-or-jsdoc-31dd60a071ab:
+    desc: TypeScript or JSDoc?
+    tags: [ts]
+    links:
+      - TS vs JSDoc | Prime Reacts: https://youtu.be/pj8SoTZbCTE
+      - TypeScript vs. JSDoc JavaScript for static type checking: https://blog.logrocket.com/typescript-vs-jsdoc-javascript
+      - LogRocket TypeScript Meetup | TypeScript Alternatives | JSDoc JavaScript: https://youtu.be/5MZoAcheyE4
+      - Can't use TypeScript? Use JSDoc / TSDoc for JavaScript: https://youtu.be/ytWbqnppzyc
+      - Should I use TypeScript, JSDoc, or Both?: https://youtu.be/JTYhDiJiiFI
+      - Step-by-Step Guide to JSDoc and TypeScript in Modern JavaScript Projects in 15 Minutes!: https://youtu.be/oH_-6TyxVhI
+  https://youtu.be/5MZoAcheyE4:
+    desc: LogRocket TypeScript Meetup | TypeScript Alternatives | JSDoc JavaScript
+    tags: [ts]
+    links:
+      - TS vs JSDoc | Prime Reacts: https://youtu.be/pj8SoTZbCTE
+      - TypeScript vs. JSDoc JavaScript for static type checking: https://blog.logrocket.com/typescript-vs-jsdoc-javascript
+      - TypeScript or JSDoc?: https://medium.com/@joziasmartini/typescript-or-jsdoc-31dd60a071ab
+      - Can't use TypeScript? Use JSDoc / TSDoc for JavaScript: https://youtu.be/ytWbqnppzyc
+      - Should I use TypeScript, JSDoc, or Both?: https://youtu.be/JTYhDiJiiFI
+      - Step-by-Step Guide to JSDoc and TypeScript in Modern JavaScript Projects in 15 Minutes!: https://youtu.be/oH_-6TyxVhI
+  https://youtu.be/ytWbqnppzyc:
+    desc: Can't use TypeScript? Use JSDoc / TSDoc for JavaScript
+    tags: [ts]
+    links:
+      - TypeScript vs. JSDoc JavaScript for static type checking: https://blog.logrocket.com/typescript-vs-jsdoc-javascript
+      - TypeScript or JSDoc?: https://medium.com/@joziasmartini/typescript-or-jsdoc-31dd60a071ab
+      - LogRocket TypeScript Meetup | TypeScript Alternatives | JSDoc JavaScript: https://youtu.be/5MZoAcheyE4
+      - Should I use TypeScript, JSDoc, or Both?: https://youtu.be/JTYhDiJiiFI
+      - Step-by-Step Guide to JSDoc and TypeScript in Modern JavaScript Projects in 15 Minutes!: https://youtu.be/oH_-6TyxVhI
+  https://youtu.be/JTYhDiJiiFI:
+    desc: Should I use TypeScript, JSDoc, or Both?
+    tags: [ts]
+    links:
+      - TypeScript vs. JSDoc JavaScript for static type checking: https://blog.logrocket.com/typescript-vs-jsdoc-javascript
+      - TypeScript or JSDoc?: https://medium.com/@joziasmartini/typescript-or-jsdoc-31dd60a071ab
+      - LogRocket TypeScript Meetup | TypeScript Alternatives | JSDoc JavaScript: https://youtu.be/5MZoAcheyE4
+      - Can't use TypeScript? Use JSDoc / TSDoc for JavaScript: https://youtu.be/ytWbqnppzyc
+      - Step-by-Step Guide to JSDoc and TypeScript in Modern JavaScript Projects in 15 Minutes!: https://youtu.be/oH_-6TyxVhI
+  https://youtu.be/oH_-6TyxVhI:
+    desc: Step-by-Step Guide to JSDoc and TypeScript in Modern JavaScript Projects in 15 Minutes!
+    tags: [ts]
+    links:
+      - TypeScript vs. JSDoc JavaScript for static type checking: https://blog.logrocket.com/typescript-vs-jsdoc-javascript
+      - TypeScript or JSDoc?: https://medium.com/@joziasmartini/typescript-or-jsdoc-31dd60a071ab
+      - LogRocket TypeScript Meetup | TypeScript Alternatives | JSDoc JavaScript: https://youtu.be/5MZoAcheyE4
+      - Can't use TypeScript? Use JSDoc / TSDoc for JavaScript: https://youtu.be/ytWbqnppzyc
+      - Should I use TypeScript, JSDoc, or Both?: https://youtu.be/JTYhDiJiiFI
+  https://youtu.be/kEfXPTm1aCI:
+    desc: Improving the development experience with language servers by Vinicius Stock | RubyConf 2022
+    tags: [lsp, rb]
+    links: [https://remoteruby.com]
+  https://university.atlassian.com:
+    tags: [tutorial]
+    desc: Atlassian University | Learn Atlassian products
+    links:
+      - Jira Software Fundamentals: https://university.atlassian.com/student/path/815443-jira-fundamentals
+      - Confluence Fundamentals: https://university.atlassian.com/student/collection/850385/path/1083904
+      - Jira Service Management Fundamentals: https://university.atlassian.com/student/collection/850385/path/1277309
+  https://algorithm-visualizer.org:
+    tags: [coding]
+    desc: Algorithm Visualizer | Interactive Online Platform that visualizes algorithms from code
+    links:
+      - Algorithm Visualizer Makes Learning Algorithms Easier: https://medium.com/@april-4/algorithm-visualizer-makes-learning-algorithms-easier-6a51f381210a
+      - Algorithm Visualizer: https://devpost.com/software/algorithm-visualizer
+  https://cs.usfca.edu/~galles/visualization/Algorithms.html:
+    desc: Data Structure and Algorithm Visualization | University of San Francisco
+    tags: [visualizer]
+  https://github.com/public-apis/public-apis:
+    desc: Public APIs | A collective list of free APIs for use in software and web development
+    tags: [api]
+  https://github.com/piotrmurach/awesome-ruby-cli-apps:
+    desc: Awesome Ruby CLI Apps | A collection of awesome command-line applications written in Ruby
+    tags: [rb]
+  https://youtu.be/ybyjhWDr6w4:
+    desc: How to Prepare FAST for Coding Interviews | Leetcode & System Design
+    tags: [leetcode]
+  https://youtu.be/9FBrIRVPYMA:
+    desc: How I cracked my Google interviews - Leetcode tips, 5 strategies for success
+    tags: [leetcode]
+  https://youtu.be/3nWpNBBkyu0:
+    desc: I Am Not Actually Living a Life | HealthyGamerGG
+    tags: [philosophy, awe]
+  https://youtu.be/8TL-K-dc4n4:
+    desc: What's the Point in Dating? | HealthyGamerGG
+    tags: [philosophy, awe]
+  https://developer.mozilla.org:
+    tags: [tutorial]
+    desc: MDN Web Docs | The best place to learn web development
+    links:
+      - JavaScript: https://developer.mozilla.org/en-US/docs/Web/JavaScript
+      - CSS: https://developer.mozilla.org/en-US/docs/Web/CSS
+      - HTML: https://developer.mozilla.org/en-US/docs/Web/HTML
+      - Web APIs: https://developer.mozilla.org/en-US/docs/Web/API
+      - Web Development: https://developer.mozilla.org/en-US/docs/Web/Development
+      - Web Technologies: https://developer.mozilla.org/en-US/docs/Web/Technologies
+  https://w3schools.com:
+    tags: [coding]
+    desc: W3Schools | The world's largest web developer site
+    links:
+      - JavaScript: https://w3schools.com/js
+      - CSS: https://w3schools.com/css
+      - HTML: https://w3schools.com/html
+      - Web Development: https://w3schools.com/w3css
+      - Web Technologies: https://w3schools.com/w3tech
+  https://pathfinder.w3schools.com:
+    tags: [tutorial]
+    desc: W3Schools Pathfinder | A learning path for web development
+    links:
+      - HTML Certification Exam: https://campus.w3schools.com/collections/certifications/products/html-certificate
+      - CSS Certification Exam: https://campus.w3schools.com/collections/certifications/products/css-certificate
+      - JavaScript Certification Exam: https://campus.w3schools.com/collections/certifications/products/javascript-certificate
+      - Python Certification Exam: https://campus.w3schools.com/collections/certifications/products/python-certificate
+      - SQL Certification Exam: https://campus.w3schools.com/collections/certifications/products/sql-certificate
+  https://pinterest.github.io/ktlint:
+    tags: [coding]
+    desc: Ktlint | An anti-bikeshedding Kotlin linter with built-in formatter
+    links:
+      - Recommended setup: https://pinterest.github.io/ktlint/latest/install/setup
+      - Installation: https://pinterest.github.io/ktlint/latest/install/cli/#command-line-usage
+  https://megalinter.io/latest:
+    desc: Mega-Linter | One linter to rule them all
+    tags: [megalinter]
+    links:
+      - Configuration: https://megalinter.io/latest/configuration
+      - Rules: https://megalinter.io/latest/rules
+      - Languages: https://megalinter.io/latest/languages
+      - Integrations: https://megalinter.io/latest/integrations
+      - Supported Linters: https://megalinter.io/latest/supported-linters
+  https://youtu.be/vs41JrnGaxc:
+    desc: The moral roots of liberals and conservatives | Jonathan Haidt @ TED
+    tags: [psy]
+    notes:
+      - md: |
+          ### The moral roots of liberals and conservatives | Jonathan Haidt @ TED
+
+          > Psychologist Jonathan Haidt studies the five moral values that form the basis of our political choices, whether we're left, right or center.
+          > In this eye-opening talk, he pinpoints the moral values that liberals and conservatives tend to honor most.
+  https://cloud.google.com/storage/docs:
+    desc: Google Cloud Storage Documentation | Google Cloud
+    tags: [gcp]
+    links:
+      - Getting Started: https://cloud.google.com/storage/docs/quickstart
+      - Product overview of Cloud Storage: https://cloud.google.com/storage/docs/introduction
+      - Options for controlling data lifecycles: https://cloud.google.com/storage/docs/control-data-lifecycles
+      - Delete objects: https://cloud.google.com/storage/docs/deleting-objects
+      - Monitoring: https://cloud.google.com/storage/docs/monitoring
+      - Usage logs & storage logs: https://cloud.google.com/storage/docs/access-logs
+      - Object holds: https://cloud.google.com/storage/docs/object-holds
+      - Bucket Lock: https://cloud.google.com/storage/docs/bucket-lock
+      - Object Retention Lock: https://cloud.google.com/storage/docs/object-lock
+      - Caching: https://cloud.google.com/storage/docs/caching
+      - Storage Insights inventory reports: https://cloud.google.com/storage/docs/insights/inventory-reports
+  https://youtu.be/ET04pDj-RvM:
+    desc: Goolgle IA predict Flood Forecasts up to 7 days in advance
+    tags: [gcp, ai]
+  https://docs.google.com/spreadsheets:
+    tags: [coding]
+    desc: Google Sheets | Create and edit spreadsheets online
+  https://github.com/cosmiconfig/cosmiconfig:
+    tags: [coding]
+    desc: Cosmiconfig | Find and load configuration from a package.json property, rc file, or CommonJS module
+    links:
+      - Getting Started: https://github.com/cosmiconfig/cosmiconfig?tab=readme-ov-file#installation
+  https://whatpwacando.today:
+    tags: [coding]
+    desc: What PWA Can Do Today | Progressive Web Apps
+    links:
+      - Features: https://whatpwacando.today/features
+      - Case Studies: https://whatpwacando.today/case-studies
+      - links: https://whatpwacando.today/resources
+  https://googlecloudcheatsheet.withgoogle.com:
+    desc: Google Cloud Cheat Sheet | Google Cloud
+    tags: [gcp]
+  https://digital.ai/learn/devsecops-periodic-table/:
+    desc: DevSecOps Periodic Table | Digital.ai
+    tags: [cheat]
+  https://aragon.ai:
+    desc: AI-powered knowledge base for developers | Aragon AI
+    tags: [photo]
+    links:
+      - Collection: https://dashboard.aragon.ai/collection/b8fb676f-9d78-4549-a9f8-52cc0b0bb420
+  https://yesviz.com:
+    desc: A significant list of screen sizes, viewport sizes, css media queries and resolution for all kind of devices including phones, tablets, smart watches and laptops. | Yesviz
+    tags: [data, visualization]
+  https://youtu.be/gA-uNj2FgdM:
+    desc: Mocking Asynchronous Functions with Jest
+    tags: [perf, test]
+  https://dev.to/vantanev/make-your-jest-tests-up-to-20-faster-by-changing-a-single-setting-i36:
+    desc: Make your Jest tests up to 20% faster by changing a single setting
+    tags: [perf]
+  https://blog.developer.adobe.com/improve-jest-runner-performance-a8f56708ba94:
+    desc: Improve Jest Runner Performance
+    tags: [test]
+  https://inextenso.dev/speed-up-nestjs-test-executions-with-jest:
+    desc: Speed up NestJS test executions with Jest
+    tags: [perf]
+  https://webbylab.com/blog/pijet-parallel-isolated-jest-enhanced-testing-part-i-ideology:
+    desc: Pijet | Parallel Isolated Jest Enhanced Testing
+    tags: [perf]
+  https://elysiajs.com:
+    desc: Elysia | A modern, fast, and lightweight JavaScript testing framework
+    tags: [bun]
+  https://betterstack.com/community/guides/logging/how-to-install-setup-and-use-pino-to-log-node-js-applications:
+    desc: How to install, setup, and use Pino to log Node.js applications
+    tags: [node, guide]
+  https://youtu.be/n1IrNe5MmZg:
+    desc: Backstage.io - An Open Source Portal for Taming Developer Chaos
+    tags: [devop, arch, diagram]
+  https://youtu.be/1XtJ5FAOjPk:
+    desc: Introduction to Backstage (at Spotify) (Demo)
+    tags: [devop, arch, diagram]
+  https://hasura.io/jwt-config:
+    tags: [coding]
+    desc: Hasura | JWT Configuration
+  https://youtu.be/g7eDmKChZgo:
+    tags: [full_stack]
+    desc: A workshop on how to build fullstack GraphQL apps using NestJS, TypeScript, and Hasura
+  https://hasura.io/docs/latest/migrations-metadata-seeds/manage-seeds:
+    tags: [coding]
+    desc: Hasura | Manage Seeds
+    notes:
+      - sh: |
+          # Create a Hasura Seed file
+          hasura seed create crate_authors_seed --from-table authors
+
+          # Apply a Hasura Seed file
+          hasura seed apply --file 1718916648431_add_authors_seed.sql --database-name default
+  https://hasura.io/events/webinar/get-started-with-hasura:
+    desc: Get started with Hasura
+    tags: [webinar]
+    notes:
+      - md: |
+          ## Get started with Hasura
+
+          Learn how to get started with Hasura in this webinar.
+
+          - **Date:** 15th March 2022
+          - **Time:** 10:00 AM (PST)
+          - **Duration:** 1 hour
+
+          Register [here](https://hasura.io/events/webinar/get-started-with-hasura)
+      - md: |
+          ## To make access to data "selfe-serve"
+
+          Hasura collapses 3 layers of the traditional stack into one, making app development faster and more efficient.
+
+          ### Before
+
+          ```mermaid
+            graph LR
+                A[Databases] --> B[ORM]
+                B --> C[App Server]
+                C --> D[API Gateway]
+                D --> E[Consumers]
+
+                subgraph Backend
+                    B
+                    C
+                    D
+                end
+          ````
+
+          ### After
+
+          ```mermaid
+            graph LR
+              A[Databases] -->|Event driven stateless business logic| B[Hasura]
+
+              B --> C[Consumers]
+
+              subgraph Backend
+                  D[Hasura ORM]
+                  E[Hasura App Server]
+                  F[Hasura API Gateway]
+                  B --> D
+                  B --> E
+                  B --> F
+              end
+
+              subgraph Hasura ORM
+                  D1[N+1 query compilation]
+                  D2[Connection pooling]
+                  D3[Failover / HA database connections]
+                  D --> D1
+                  D --> D2
+                  D --> D3
+              end
+
+              subgraph Hasura App Server
+                  E1[Authorization]
+                  E2[Caching]
+                  E3[Business logic sent to event handlers]
+                  E --> E1
+                  E --> E2
+                  E --> E3
+              end
+
+              subgraph Hasura API Gateway
+                  F1[Load-balancing]
+                  F2[Security]
+                  F3[Rate-limiting]
+                  F --> F1
+                  F --> F2
+                  F --> F3
+              end
+          ````
+      - md: |
+          # API Reference
+
+          > The Hasura GraphQL Engine is essentially an HTTP service that exposes multiple APIs with which you can use to interact with it.
+          > The Hasura Console and Hasura CLI and any other tool which interacts with the Hasura Engine will use these APIs to query data and manage it's setup.
+
+          Let's go through some of the APIs which are exposed.
+
+          - The GraphQL API: the endpoint you will use for your day-to-day client GraphQL queries, mutations and subscriptions.
+          - The Metadata API: the endpoint that allows you to configure the Hasura engine set up via its metadata.
+          - The Schema API: allows direct execution of SQL on the underlying database.
+          - The REST API: grants access to the saved GraphQL operations, which have been configured as RESTified endpoints.
+
+          Then there are also the Version, Health Check, PG dump, Config, and Explain APIs, which you can read more about in this section of documentation.
+  https://jwt.io:
+    tags: [coding]
+    desc: JWT.IO | Decode, verify and generate JWT | JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.
+  https://jwt.io/libraries:
+    tags: [coding]
+    desc: JWT Libraries for Token Signing/Verification | JSON Web Tokens
+  https://encode-decode.com/aes-256-ctr-encrypt-online:
+    tags: [coding]
+    desc: AES-256-CTR Encrypt Online | Encode Decode
+  https://bundlephobia.com:
+    desc: Find out the cost of adding a new frontend dependency to your project
+    tags: [node, size]
+  https://automock.dev:
+    desc: Automock | Automatically mock your dependencies
+    tags: [angular, node, jest]
+    links:
+      - Getting Started: https://automock.dev/docs/getting-started
+      - Dependency Injection and Automock: https://automock.dev/docs/getting-started/depdency-injection-and-automock
+      - Step-by-Step Example: https://automock.dev/docs/getting-started/examples
+  https://spyhunter.com/shm/uninstall-vs-code-mac:
+    desc: How to Completely Uninstall VS Code on Mac (Ultimate Guide) | SpyHunter
+    tags: [vscode]
+  https://youtu.be/gdlTFPebzAU:
+    desc: Overview storybook.js em 100 segundos
+    tags: [js]
+  https://storybook.js.org:
+    desc: Simplifies the creation, maintenance, standardization, and documentation of interactive UI components in Design Systems. It allows you to visualize, test, and fine-tune components in various states and configurations, ensuring consistency and efficiency in interface development and upkeep.
+    tags: [js]
+    links:
+      - Getting Started: https://storybook.js.org/docs/react/get-started/introduction
+      - Addons: https://storybook.js.org/addons
+      - Controls: https://storybook.js.org/docs/react/essentials/controls
+      - Actions: https://storybook.js.org/docs/react/essentials/actions
+      - Docs: https://storybook.js.org/docs/react/writing-docs/introduction
+      - Accessibility: https://storybook.js.org/docs/react/workflows/accessibility
+      - Testing: https://storybook.js.org/docs/react/workflows/testing
+      - Design Systems: https://storybook.js.org/docs/react/workflows/design-systems
+      - Performance: https://storybook.js.org/docs/react/workflows/performance
+      - Composition: https://storybook.js.org/docs/react/workflows/composition
+      - Controls: https://storybook.js.org/docs/react/essentials/controls
+      - Actions: https://storybook.js.org/docs/react/essentials/actions
+      - Docs: https://storybook.js.org/docs/react/writing-docs/introduction
+      - Accessibility: https://storybook.js.org/docs/react/workflows/accessibility
+      - Testing: https://storybook.js.org/docs/react/workflows/testing
+      - Design Systems: https://storybook.js.org/docs/react/workflows/design-systems
+      - Performance: https://storybook.js.org/docs/react/workflows/performance
+      - Composition: https://storybook.js.org/docs/react/workflows/composition
+  https://react-table-library.com/?path=/docs/compact-table--base:
+    desc: React Table Library | A lightweight, fast, and extendable datagrid for React
+    tags: [storybook, js, react]
+  https://developer.chrome.com/blog/improvements-to-content-filtering-in-manifest-v3:
+    tags: [coding]
+    desc: Improvements to Content Filtering in Manifest V3 | Chrome
+    notes:
+      - md: |
+          ## Summary
+          - Active discussions with content blocking extension vendors to improve the MV3 extensions platform.
+          - Increased the limit of static rulesets: from 10 to 50 simultaneously enabled, and from 50 to 100 total rulesets in Chrome 120.
+          - Dynamic rules limit increased for safer actions (block, allow, etc.) from 5,000 to 30,000 in Chrome 121, while maintaining the original limit for other rules.
+          - Reduced ruleset size in Chrome 118 by changing the default for URL case sensitivity.
+          - Ongoing commitment to improving the declarativeNetRequest API and collaborating with the Web Extensions Community Group (WECG).
+          - Future plans include sharing data collected during this work and adding new capabilities like matching against response headers.
+    links:
+      - Google`s transition to Manifest V3 has been criticized for its potential impact on ad blockers: https://theverge.com/2024/5/30/24168057/google-chrome-extension-change-manifest-v3-ad-blockers
+      - Chrome extensions no longer supported warning explained: https://techissuestoday.com/chrome-extensions-no-longer-supported-warning-explained
+  https://pisquare.fr/serverless-event-driven-architecture-with-sqs-sns-and-lambda:
+    desc: Serverless Event Driven Architecture with SQS, SNS and Lambda
+    tags: [aws, aws_lambda]
+  https://keycloak.org:
+    desc: Keycloak | Open Source Identity and Access Management
+    tags: [iam]
+  https://us-east-1.console.aws.amazon.com/sqs:
+    desc: Amazon SQS | Simple Queue Service
+    tags: [aws]
+    links:
+      - Getting Started: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-getting-started.html
+      - Features: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-features.html
+      - Pricing: https://aws.amazon.com/sqs/pricing
+      - Limits: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-limits.html
+      - FAQ: https://aws.amazon.com/sqs/faqs
+  https://atuin.sh:
+    tags: [coding]
+    desc: Sync, fuzzy search and backup shell history
+    links:
+      - https://docs.atuin.sh
+      - https://github.com/atuinsh/atuin
+    notes:
+      - md: |
+          ## Installation
+          > brew install atuin
+
+          ### Installing the shell plugin
+
+          ```sh
+          echo 'eval "$(atuin init zsh --disable-up-arrow)"' >> ~/.zshrc
+          ```
+
+          ### Installing the shell plugin (sheldon)
+
+          ```toml
+          # Improved shell history for zsh, bash, fish and nushell
+          # https://docs.atuin.sh/configuration/key-binding/#disable-up-arrow
+          [plugins.atuin]
+            inline='smartcache eval atuin init zsh --disable-up-arrow'
+          ```
+
+          ## Import existing history
+
+          ```sh
+          atuin import zsh # etc
+          ```
+
+          ## Shell completions
+
+          ```sh
+          # https://docs.atuin.sh/reference/gen-completions
+          atuin gen-completions --shell zsh --out-dir $HOME/.config/zsh/opt/completions
+          ```
+
+          ## Config
+
+          Atuin maintains two configuration files, stored in `~/.config/atuin/`
+          We store data in `~/.local/share/atuin` (unless overridden by XDG_*).
+          The full path to the config file would be `~/.config/atuin/config.toml`
+          The config location can be overridden with `ATUIN_CONFIG_DIR`
+          Example:
+
+            ```toml
+              # Improved shell history for zsh, bash, fish and nushell
+              # https://docs.atuin.sh/configuration/config/
+              style = "compact"
+            ```
+
+          ## Usage
+
+          1. ctrl-r
+          2. ArrowUp to navigate up
+          3. ArrowDown to navigate down
+          4. TAB to paste the selected command into the shell
+          5. ENTER to execute the command
+          6. ctrl-c to cancel the search
+      - md: |
+          ## Shortcuts
+
+          | Shortcut                                      | Action                                                                    |
+          |-----------------------------------------------|-------------------------------------------------------------------------- |
+          | enter                                         | Execute selected item                                                     |
+          | tab                                           | Select item and edit                                                      |
+          | ctrl + r                                      | Cycle through filter modes                                                |
+          | ctrl + s                                      | Cycle through search modes                                                |
+          | alt + 1 to alt + 9                            | Select item by the number located near it                                 |
+          | ctrl + c / ctrl + d / ctrl + g / esc          | Return original                                                           |
+          | ctrl + y                                      | Copy selected item to clipboard                                           |
+          | ctrl + ⬅ / alt + b                           | Move the cursor to the previous word                                      |
+          | ctrl + ➡️ / alt + f                            | Move the cursor to the next word                                          |
+          | ctrl + b / ⬅                                 | Move the cursor to the left                                               |
+          | ctrl + f / ➡️                                  | Move the cursor to the right                                              |
+          | ctrl + a / home                               | Move the cursor to the start of the line                                  |
+          | ctrl + e / end                                | Move the cursor to the end of the line                                    |
+          | ctrl + backspace / ctrl + alt + backspace     | Remove the previous word / remove the word just before the cursor         |
+          | ctrl + delete / ctrl + alt + delete           | Remove the next word or the word just after the cursor                    |
+          | ctrl + w                                      | Remove the word before the cursor even if it spans across word boundaries |
+          | ctrl + u                                      | Clear the current line                                                    |
+          | ctrl + n / ctrl + j / ⬇                      | Select the next item on the list                                           |
+          | ctrl + p / ctrl + k / ⬆                      | Select the previous item on the list                                       |
+          | ctrl + o                                      | Open the inspector                                                         |
+          | page down                                     | Scroll search results one page down                                        |
+          | page up                                       | Scroll search results one page up                                          |
+          | ⬇ (with no entry selected)                   | Return original or return query depending on settings                      |
+          | ⬆                                            | Select the next item on the list                                           |
+  https://explore.skillbuilder.aws/learn/course/external/view/elearning/19315/amazon-q-introduction:
+    desc: Amazon Q | Introduction
+    tags: [aws, ai, xp]
+    notes:
+      - md: |
+          # Amazon Q Introduction (ID: E-0WERO3)
+
+          > This course gives a high-level overview of Amazon Q, a generative artificial intelligence (AI) powered assistant.
+          > You'll learn about the use cases and the benefits of linking Amazon Q to your company information, code, and systems.
+          > You'll also find additional information to advance your learning journey based on your interest in a particular use case.
+          > Both technical and non-technical learners will learn how Amazon Q can increase their productivity in a safe and secure manner.
+
+          - **Course level:** Fundamental
+          - **Duration:** 15 minutes
+
+          ### Activities
+
+          - This course includes a video presentation.
+
+          ### Course objectives
+
+          - Identify the family of products that constitute Amazon Q.
+          - Identify the common uses for Amazon Q.
+          - Recognize the benefits of using Amazon Q.
+
+          ### Intended Audience:
+
+          - This course is intended for:
+          - Anyone interested in learning about Amazon Q.
+
+          ### Prerequisites
+
+          - Curiosity about generative AI
+
+          ### Course outline
+
+          - Course objectives
+          - Amazon Q introduction
+          - Amazon Q customer stories
+          - Knowledge check
+          - How do I learn more about Amazon Q?
+          - Feedback
+
+          ### Keywords
+          - Gen AI
+          - Generative AI
+  https://stripe.com/en-br/guides/payment-methods-guide:
+    desc: A guide to types of payment methods
+    tags: [stripe]
+    links: [https://docs.stripe.com/api/payment_methods]
+  https://docs.stripe.com/billing/subscriptions/overview:
+    desc: Learn how subscriptions work within Stripe
+    tags: [billing]
+    links:
+      - https://docs.stripe.com/billing/subscriptions/overview
+      - https://docs.stripe.com/saas
+  https://docs.stripe.com/billing/invoices/subscription:
+    desc: Learn how to manage subscription invoices
+    tags: [billing]
+    links:
+      - https://docs.stripe.com/billing/invoices/subscription
+      - https://docs.stripe.com/billing/invoices/subscription#upcoming-invoice
+  https://docs.stripe.com/products-prices/pricing-models:
+    desc: Learn how to manage subscription invoices
+    tags: [stripe, billing]
+  https://docs.stripe.com/billing/subscriptions/coupons:
+    desc: Flexible coupons and promotion codes - Add discounts to subscriptions and subscription items using coupons and promotion codes
+    tags: [stripe, billing]
+  https://docs.stripe.com/payments/checkout/discounts:
+    desc: Add discounts for one-time payments
+    tags: [stripe]
+  https://github.com/BuilderIO/ai-shell:
+    desc: AI Shell | AI-powered shell for developers
+    tags: [gpt]
+  https://github.com/TheR1D/shell_gpt:
+    tags: [bookmark, git]
+    desc: Shell GPT | A command-line productivity tool powered by AI large language models like GPT-4, will help you accomplish your tasks faster and more efficiently.
+  https://platform.openai.com/api-keys:
+    desc: OpenAI API Keys | Get your OpenAI API keys
+    tags: [gpt]
+  https://commands.dev:
+    desc: Commands.dev | A search engine for developers
+    tags: [cmd]
+  https://claritydev.net/blog/typescript-type-literals-practical-use-cases-code-quality:
+    desc: TypeScript Type Literals | Practical Use Cases for Code Quality
+    tags: [ts]
+  https://split.io:
+    desc: Split combines feature flags with testing and observability. Product development teams can ship more often, instantly detecting every feature`s impact as they go.
+    tags: [devop]
+  https://bcb.gov.br/meubc/registrar_reclamacao:
+    desc: Reclamação contra bancos e outras instituições Financeira
+    tags: [gov, bcb, reclamacao]
+  https://www3.bcb.gov.br/faleconosco/#/login/registrar?natureza=1&tipo=1:
+    desc: BANCO CENTRAL | Reclamação contra Instituição Financeira
+    tags: [gov, bcb, acompanhamento]
+  https://www3.bcb.gov.br/acompanhamento/#/login/consultar:
+    desc: BANCO CENTRAL | Acompanhe sua demanda > CONSULTAR
+    tags: [gov, bcb, acompanhamento]
+  https://haveibeenpwned.com:
+    desc: Have I Been Pwned | Check if you have an account that has been compromised in a data breach
+    tags: [security]
+  https://ast-grep.github.io:
+    desc: ast-grep(sg) is a fast and polyglot tool for code structural search, lint, rewriting at large scale.
+    tags: [cli]
+  https://samedwardes.com/2022/10/23/best-jupyter-lab-install:
+    tags: [coding]
+    desc: The Best Way to Install Jupyter Lab (it's Pipx)
+    notes:
+      - sh: |
+          # install pipx
+          brew install pipx
+          pipx ensurepath
+
+          # install jupyterlab
+          pipx install jupyterlab --include-deps
+          pipx ensurepath
+
+          # add common dependencies
+          pipx inject jupyterlab pandas
+          pipx ensurepath
+
+          # start jupyterlab
+          jupyter-lab
+  https://cheatsheetfactory.geekyhacker.com:
+    desc: Cheat Sheet Factory | A collection of cheat sheets for developers
+    tags: [cheatsheet]
+  https://cheatsheetfactory.geekyhacker.com/others/keyboard-symbols:
+    desc: List of keyboard unicode symbols
+    tags: [cheatsheet]
+  https://cheatsheetfactory.geekyhacker.com/version_control/git:
+    desc: Git Cheat Sheet | A collection of git commands
+    tags: [cheatsheet, git]
+  https://cheatsheetfactory.geekyhacker.com/container/docker:
+    desc: Docker Cheat Sheet | A collection of docker commands
+    tags: [cheatsheet, docker]
+  https://cheatsheetfactory.geekyhacker.com/kotlin/kotlin:
+    desc: Kotlin Cheat Sheet | A collection of kotlin commands
+    tags: [cheatsheet]
+  https://cheatsheetfactory.geekyhacker.com/linux/grep:
+    desc: Grep Cheat Sheet | A collection of grep commands
+    tags: [cheatsheet]
+  https://cheatsheetfactory.geekyhacker.com/linux/shell:
+    desc: Shell Cheat Sheet | A collection of shell commands
+    tags: [cheatsheet]
+  https://cheatsheetfactory.geekyhacker.com/macOS/macos-shortcuts:
+    desc: macOS Shortcuts | A collection of macOS shortcuts
+    tags: [cheatsheet]
+  https://cheatsheetfactory.geekyhacker.com/database/postgresql:
+    desc: PostgreSQL Cheat Sheet | A collection of postgresql commands
+    tags: [cheatsheet]
+  https://en.wikipedia.org/wiki/ISO/IEC_9995:
+    tags: [bookmark]
+    desc: ISO/IEC 9995 | Information technology - Keyboard layouts for text and office systems
+  https://cheatsheetfactory.geekyhacker.com/linux/openssl:
+    desc: OpenSSL Cheat Sheet | A collection of openssl commands
+    tags: [cheatsheet]
+  https://en.wikipedia.org/wiki/Compose_key:
+    tags: [coding]
+    desc: Compose key | A key on a computer keyboard that indicates that the following (usually 2 or more) keystrokes trigger the insertion of an alternate character
+  https://en.wikipedia.org/wiki/Modifier_key:
+    tags: [coding]
+    desc: Modifier key | A special key on a computer keyboard that modifies the normal action of another key when the two are pressed in combination
+  https://unicode-table.com:
+    tags: [coding]
+    desc: Unicode Table | A website that provides a list of Unicode characters
+  https://code.visualstudio.com/docs/getstarted/keybindings#_keyboard-shortcuts-reference:
+    desc: Visual Studio Code | Keyboard shortcuts for Visual Studio Code
+    tags: [vscode]
+  https://hpjansson.org/chafa:
+    desc: Chafa | A command-line utility that converts all kinds of images, including animated GIFs, into ANSI/Unicode character output that can be displayed in a terminal
+    tags: [shell]
+  https://github.com/skim-rs/skim:
+    desc: sk | A fuzzy finder in pure rust
+    tags: [shell]
+  https://github.com/talwat/pokeget-rs:
+    desc: pokeget | A command-line utility to get Pokémon information
+    tags: [terminal, shell]
+    notes:
+      - sh: | #shell
+          !/bin/bash
+
+          ## INSTALLATION
+          cargo install pokeget
+
+          ## USAGE
+          pokeget pikachu --hide-name               # Prints a pikachu hiding its name
+          pokeget bulbasaur pikachu random          # Prints multiple pokemon
+          pokeget 1 2 3                             # Using pokedex ID's
+          pokeget raichu sandslash meowth --alolan  # Using alternative forms
+  https://changelog.com:
+    tags: [bookmark]
+    desc: Changelog | News and podcasts for developers
+  https://junegunn.github.io/fzf:
+    desc: fzf | A command-line fuzzy finder
+    tags: [terminal, shell]
+
+cheats:
+  chrome://flags:
+    tags: [coding]
+    desc: Chrome | Flags
+  chrome://whats-new:
+    desc: Chrome | What's new in Chrome
+    tags: [update]
+  chrome://history:
+    tags: [coding]
+    desc: Chrome | History
+  chrome://history/?q=new:
+    tags: [coding]
+    desc: Chrome | History | Search for new
+  chrome://flags/#tab-hover-card-image-settings:
+    desc: Chrome | Tab Hover Card Images
+    tags: [flag]
+  chrome://flags/#read-anything:
+    desc: Chrome | Read Anything
+    tags: [flag]
+  Yarn Workspaces:
+    desc: Workspaces are a new way to set up your package architecture
+    tags: [yarn]
+    links:
+      - Docs: https://yarnpkg.com/features/workspaces
+      - Using Yarn Workspaces to Create a Monorepo: https://medium.com/tribalscale/using-yarn-workspaces-to-create-a-monorepo-33203152d0c6
+      - How to use yarn workspaces with Create React App and Create React Native App (Expo) to share common code across: https://medium.com/viewstools/how-to-use-yarn-workspaces-with-create-react-app-and-create-react-native-app-expo-to-share-common-ea27bc4bad62
+    notes:
+      - json: |
+          # root/package.json
+          {
+            "private": true,
+            "workspaces": ["workspace-a", "workspace-b"]
+          }
+      - json: |
+          # root/workspace-a/package.json
+          {
+            "name": "workspace-a",
+            "version": "1.0.0",
+
+            "dependencies": {
+              "cross-env": "5.0.5"
+            }
+          }
+      - json: |
+          # root/workspace-b/package.json
+          {
+            "name": "workspace-b",
+            "version": "1.0.0",
+
+            "dependencies": {
+              "cross-env": "5.0.5",
+              "workspace-a": "1.0.0"
+            }
+          }
+      - sh: |
+          # Finally, run yarn install somewhere, ideally inside the workspace root. If everything works well, you should now have a similar file hierarchy:
+
+          /package.json
+          /yarn.lock
+
+          /node_modules
+          /node_modules/cross-env
+          /node_modules/workspace-a -> /workspace-a
+
+          /workspace-a/package.json
+          /workspace-b/package.json
+  GitHub Actions - Skipping Workflow runs with [skip ci]:
+    desc: Skip pull request and push workflows
+    tags: [github, action]
+    links:
+      - Skipping Workflow runs: https://docs.github.com/en/actions/managing-workflow-runs/skipping-workflow-runs
+      - Skip pull request and push workflows with [skip ci]: https://github.blog/changelog/2021-02-08-github-actions-skip-pull-request-and-push-workflows-with-skip-ci
+    notes:
+      - md: |
+          ### Skip pull request and push workflows with [skip ci]
+
+          If any commit message in your push or the HEAD commit of your PR contains the strings [skip ci], [ci skip], [no ci], [skip actions], or [actions skip] workflows triggered on the push or pull_request events will be skipped.
+  motivation and clear mind:
+    desc: Motivation and clear mind
+    tags: [motivation]
+    links:
+      - What People Don't Get About Motivation: https://youtu.be/3QWIxElEnc8
+      - This Is Why You're Not Disciplined: https://youtu.be/xkd36cJ6Z78
+      - https://youtu.be/RUePwWspKHI
+      - https://youtu.be/xkd36cJ6Z78
+      - https://youtu.be/zBgCRJluWTc
+      - https://youtu.be/Ynew5KSbAQQ
+      - https://youtu.be/tRWX21lW_bU
+      - https://youtu.be/0N0LV0mqTYQ
+  How to Completely Uninstall VS Code on Mac:
+    desc: How to Completely Uninstall VS Code on Mac (Ultimate Guide) | SpyHunter
+    tags: [vscode]
+    links: [https://spyhunter.com/shm/uninstall-vs-code-mac]
+    notes:
+      - sh: |
+          brew cask uninstall visual-studio-code
+          rm -rf '~/Library/{Application\ Support/Code,Preferences/com.microsoft.VSCode.helper.plist,Preferences/com.microsoft.VSCode.(*|N),Saved\ Application\ State/com.microsoft.VSCode.(*|N),Logs/Code,Caches/Code,Cookies/com.microsoft.VSCode.(*|N)}'
+
+          brew autoremove && brew update && brew upgrade && brew upgrade --cask && brew cleanup && brew doctor
+
+commands:
+  robots.txt | Disallow crawling of the entire site:
+    desc: Disallow crawling of the entire site
+    tags: [seo, robot]
+    links: [https://developers.google.com/search/docs/advanced/robots/create-robots-txt#disallow-crawling-of-the-entire-site]
+    notes:
+      - sh: |
+          User-agent: *
+          Disallow: /
+  robots.txt | Disallow crawling of a directory and its contents:
+    desc: Append a forward slash to the directory name to disallow crawling of a whole directory
+    tags: [seo, robot]
+    links: [https://developers.google.com/search/docs/advanced/robots/create-robots-txt#disallow-crawling-of-a-directory-and-its-contents]
+    notes:
+      - sh: |
+          User-agent: *
+          Disallow: /calendar/
+          Disallow: /junk/
+          Disallow: /books/fiction/contemporary/
+  robots.txt | Allow access to a single crawler:
+    desc: Only googlebot-news may crawl the whole site
+    tags: [seo, robot]
+    links: [https://developers.google.com/search/docs/advanced/robots/create-robots-txt#allow-access-to-a-single-crawler]
+    notes:
+      - sh: |
+          User-agent: Googlebot-news
+          Allow: /
+
+          User-agent: *
+          Disallow: /
+  robots.txt | Disallow crawling of a single web page:
+    desc: Disallow the useless_file.html page located at https://example.com/useless_file.html, and other_useless_file.html in the junk directory.
+    tags: [seo, robot]
+    links: [https://developers.google.com/search/docs/advanced/robots/create-robots-txt#disallow-crawling-of-a-single-web-page]
+    notes:
+      - sh: |
+          User-agent: *
+          Disallow: /useless_file.html
+          Disallow: /junk/other_useless_file.html

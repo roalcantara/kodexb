@@ -1,178 +1,918 @@
 {
-  "/Users/roalcantara/Work/bun/kb/electrobun.config.ts": {
-    "mtime": 1778247525.8405564,
-    "hash": "8fbe478ac2b0207902584e98269e14fb"
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/index.html": {
+    "mtime": 1778268828.7668316,
+    "hash": "bd3f5e1277cf5f84fb6f9f03cc7f4d95"
   },
-  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/app.tsx": {
-    "mtime": 1778176586.450381,
-    "hash": "231f43b44507c6cd4d09294f8b055748"
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/fixtures/config.invalid.yaml": {
+    "mtime": 1778522981.511392,
+    "hash": "c741d54facb512f90659ce6cde38f6bf"
   },
-  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/index.ts": {
-    "mtime": 1778176586.451397,
-    "hash": "9ff8468827efbaff4004b71bae9ab56f"
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/fixtures/minimal/entries.yml": {
+    "mtime": 1778522981.5114818,
+    "hash": "7b7a655d82a123f67e15c812a5a06087"
   },
-  "/Users/roalcantara/Work/bun/kb/src/shell/main/main.ts": {
-    "mtime": 1778176586.4499793,
-    "hash": "6a7a8fff85f2d8ce8008b33e81d25f09"
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/fixtures/sample/cheats.yml": {
+    "mtime": 1778522981.5124466,
+    "hash": "d2b1ebf52cc9a61c9dae978de56b6e2a"
   },
-  "/Users/roalcantara/Work/bun/kb/src/shell/main/index.ts": {
-    "mtime": 1778176586.4495847,
-    "hash": "0537f2d65c98a250ba046af7c3828907"
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/fixtures/sample/bookmarks.yml": {
+    "mtime": 1778522981.5123625,
+    "hash": "4205678fe8c5ffc966b9242e9b486e1e"
   },
-  "/Users/roalcantara/Work/bun/kb/CHANGELOG.md": {
-    "mtime": 1778247601.6438282,
-    "hash": "19a35147d10c43e131237e6ce9369b56"
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/fixtures/sample/mixed_invalid.yml": {
+    "mtime": 1778522981.5125992,
+    "hash": "8b64544b013d2052373e13fe31c30132"
   },
-  "/Users/roalcantara/Work/bun/kb/README.md": {
-    "mtime": 1778176632.1089487,
-    "hash": "85db8ddc155f6d892fab515dfab8a01a"
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/fixtures/sample/commands.yml": {
+    "mtime": 1778522981.51252,
+    "hash": "61686bd4e03395493173a2f0fce36444"
   },
-  "/Users/roalcantara/Work/bun/kb/sgconfig.yml": {
-    "mtime": 1778176632.1100438,
-    "hash": "9446eb9585709ade457b00aa586884e0"
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/fixtures/sample/tasks.yml": {
+    "mtime": 1778522981.5126712,
+    "hash": "f9230cb0b367f078af2043934288da93"
   },
-  "/Users/roalcantara/Work/bun/kb/DESIGN.md": {
-    "mtime": 1778176632.0795627,
-    "hash": "869f006983380e0c3d9b7495fb6f8516"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/app-service-rpc/requirements.md": {
+    "mtime": 1778524312.8567183,
+    "hash": "ddd0e298746f987a414e32b5d590e76e"
   },
-  "/Users/roalcantara/Work/bun/kb/AGENTS.md": {
-    "mtime": 1778176632.0791812,
-    "hash": "d0a86f28000328e1761537ff73112eb2"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/app-service-rpc/tasks.md": {
+    "mtime": 1778524312.856717,
+    "hash": "6b08d4b3cc1beb57f40afedda9765db3"
   },
-  "/Users/roalcantara/Work/bun/kb/CLAUDE.md": {
-    "mtime": 1778176632.0792897,
-    "hash": "fd3908f368fb7cc8f56eba1327df44bf"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/app-service-rpc/implementation-plan.md": {
+    "mtime": 1778523724.8845074,
+    "hash": "74fa3dea0749a5add120698719d93a66"
   },
-  "/Users/roalcantara/Work/bun/kb/tools/rules/no-renderer-app-import.yml": {
-    "mtime": 1778176632.1114635,
-    "hash": "c45ddba73608822154ea650f6c566b01"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/app-service-rpc/design.md": {
+    "mtime": 1778524312.90548,
+    "hash": "3c6492332f87fcd5fc536eea44d345b6"
   },
-  "/Users/roalcantara/Work/bun/kb/tools/rules/no-await-in-promise-all.yml": {
-    "mtime": 1778176632.1102467,
-    "hash": "ad420162f590af7a288019bb09de0825"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/core-domain/tasks.md": {
+    "mtime": 1778288859.0168705,
+    "hash": "940cf8672f25094658f9fc7580e5e2b8"
   },
-  "/Users/roalcantara/Work/bun/kb/tools/rules/no-fishery-import.yml": {
-    "mtime": 1778176632.1109107,
-    "hash": "c182df7a382804e8a15109f8da93f444"
-  },
-  "/Users/roalcantara/Work/bun/kb/tools/rules/no-zod-in-routes.yml": {
-    "mtime": 1778176632.1115825,
-    "hash": "1bd95a32967a87c66776facaad437f32"
-  },
-  "/Users/roalcantara/Work/bun/kb/tools/rules/no-bun-in-core.yml": {
-    "mtime": 1778176632.1105342,
-    "hash": "3a4c2bdc8a623a33da2e9de7a4c04de3"
-  },
-  "/Users/roalcantara/Work/bun/kb/tools/rules/no-console-in-src.yml": {
-    "mtime": 1778176632.1107202,
-    "hash": "04c5f178b9b55b4d0a62ef3cf591c5c6"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/core-domain/design.md": {
+    "mtime": 1778288859.0166028,
+    "hash": "1a81923fa94ac2dfb460f4d1b92652b7"
   },
   "/Users/roalcantara/Work/bun/kb/assets/docs/specs/foundation/requirements.md": {
-    "mtime": 1778176632.0918376,
-    "hash": "fbf03bf6e0097c4cbad3a230abb7d3ba"
+    "mtime": 1778522981.387271,
+    "hash": "1bf9175a9709e630d24b0030c898f556"
   },
   "/Users/roalcantara/Work/bun/kb/assets/docs/specs/foundation/roadmap.md": {
-    "mtime": 1778176632.092115,
-    "hash": "3efc7e1baaaae2a5813055e623969d3e"
+    "mtime": 1778536873.9726856,
+    "hash": "b7fbb962d00d92ae356f994953b344af"
   },
   "/Users/roalcantara/Work/bun/kb/assets/docs/specs/foundation/design.md": {
-    "mtime": 1778176632.0910769,
-    "hash": "ab205f22fb4a3308b45ef274a5052daa"
+    "mtime": 1778522981.387084,
+    "hash": "561177e043cfa89dfd32a509d7b83a8c"
   },
   "/Users/roalcantara/Work/bun/kb/assets/docs/specs/ci-build-packaging/tasks.md": {
-    "mtime": 1778182305.611591,
+    "mtime": 1778268828.7221792,
     "hash": "e58e2b66b42315c0d6c9a8a386f18814"
   },
   "/Users/roalcantara/Work/bun/kb/assets/docs/specs/ci-build-packaging/design.md": {
-    "mtime": 1778179882.1468592,
+    "mtime": 1778268828.721587,
     "hash": "0574d96193320d7db81a43b2b64a7082"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/guides/MISE_GUIDE.md": {
-    "mtime": 1778176632.0940416,
-    "hash": "30488e75682d98774ca1d8052796e796"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/phase-7-detail-view/requirements.md": {
+    "mtime": 1778535751.8301058,
+    "hash": "7c5c02cf01a492d2a09240a8edff4241"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/guides/FISHERY_GUIDE.md": {
-    "mtime": 1778176632.093372,
-    "hash": "da6ce5e771c5ba555184371d7fc34187"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/phase-7-detail-view/tasks.md": {
+    "mtime": 1778535751.8303134,
+    "hash": "fa0538360d337befc997cd0f61f70c8f"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/guides/FCIS.guide.md": {
-    "mtime": 1778176632.0932326,
-    "hash": "149e623fed5820ec9b586635ef1fd289"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/phase-7-detail-view/design.md": {
+    "mtime": 1778535751.8296766,
+    "hash": "97ae9496cdbcd9f7fc63ad37abedf81d"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/guides/CODESTYLE_GUIDE.md": {
-    "mtime": 1778176632.0926106,
-    "hash": "4b7cae99d496226f87c402ea68c86cd6"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/validators/requirements.md": {
+    "mtime": 1778288859.0186965,
+    "hash": "51ccca87d8c4cd388f4c026a438d0872"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/guides/BUN_RUNTIME.md": {
-    "mtime": 1778176632.0923645,
-    "hash": "9fff0a769c0c6672268de6d9c01fa2b4"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/validators/tasks.md": {
+    "mtime": 1778288859.0189145,
+    "hash": "ebfa5b094fc8d990872589d58b854dc9"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/guides/GIT_COMMITS_GUIDE.md": {
-    "mtime": 1778176632.0935876,
-    "hash": "4c6bcefcba5ecbd31153642d34a8e16d"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/validators/design.md": {
+    "mtime": 1778288859.0184567,
+    "hash": "6eeb5abfe2f86e75020b815a6d653425"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/guides/ELECTROBUN.md": {
-    "mtime": 1778176632.093017,
-    "hash": "a50d2ef6987e9a01130b8e91e3d59da3"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/data-layer/tasks.md": {
+    "mtime": 1778522981.3866754,
+    "hash": "a681691440a6cf201be0e3b0f73fa678"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/guides/TESTING_GUIDE.md": {
-    "mtime": 1778176632.0943158,
-    "hash": "824329d0aa4b876eaa363a7578995d02"
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/data-layer/design.md": {
+    "mtime": 1778522981.3862658,
+    "hash": "6dbfc6f72cb04a120b79232fae3ac9d7"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/guides/GIT_GUIDE.md": {
-    "mtime": 1778176632.0938962,
-    "hash": "2c3ea18231f55fcbc4cd5a858656414c"
+  "/Users/roalcantara/Work/bun/kb/src/core/index.ts": {
+    "mtime": 1778288859.032517,
+    "hash": "ff954115d409be88994a7e7c35294a39"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/guides/DoD.md": {
-    "mtime": 1778176632.0928237,
-    "hash": "27f391eb24df225c74617a8064f6f6e0"
+  "/Users/roalcantara/Work/bun/kb/src/core/constants/defaults.const.ts": {
+    "mtime": 1778522981.513502,
+    "hash": "b7b92aaad32db0f52a1ccb38fb7d7989"
   },
-  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/index.html": {
-    "mtime": 1778176586.4507823,
-    "hash": "bd3f5e1277cf5f84fb6f9f03cc7f4d95"
+  "/Users/roalcantara/Work/bun/kb/src/core/constants/lang.const.ts": {
+    "mtime": 1778288859.0212047,
+    "hash": "41a2b87f9b6baa4a2c47eca4ff80cbc8"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.svg": {
-    "mtime": 1778176586.4471183,
-    "hash": "19ad4e66149ef50fc5e6f689d2114b31"
+  "/Users/roalcantara/Work/bun/kb/src/core/constants/index.ts": {
+    "mtime": 1778288859.0210624,
+    "hash": "d7ae4d99efd215b193be2a8be4e792fb"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_32x32@2x.png": {
-    "mtime": 1778176586.443344,
-    "hash": "2cf5793a81afb8280a4c4d3b1e31c78f"
+  "/Users/roalcantara/Work/bun/kb/src/core/constants/app.const.ts": {
+    "mtime": 1778288859.0204332,
+    "hash": "ace4be83bc570b8f3f4cdb4c72ac5bbb"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_128x128.png": {
-    "mtime": 1778176586.4408875,
-    "hash": "9d253b1deadb02be8d895d666da085ac"
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/index.ts": {
+    "mtime": 1778288859.0235746,
+    "hash": "0db267601ff1abace1d6af742db27701"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_256x256@2x.png": {
-    "mtime": 1778176586.4429612,
-    "hash": "685e02f7b89a84e4e405fa47dd42e13c"
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/types/entry.types.ts": {
+    "mtime": 1778288859.0319514,
+    "hash": "fdb2a871afff8eb5462f8c90f04b91a8"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_32x32.png": {
-    "mtime": 1778176586.4431152,
-    "hash": "0081920c568c50f15c554bca04768a28"
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/types/index.ts": {
+    "mtime": 1778288859.0320392,
+    "hash": "9577b2ca2d125ef0d7c10902200ff4b8"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_512x512.png": {
-    "mtime": 1778176586.4441223,
-    "hash": "685e02f7b89a84e4e405fa47dd42e13c"
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/types/note_fragments.types.ts": {
+    "mtime": 1778288859.03213,
+    "hash": "7639c67422bd409fd81a0ee10339be56"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_16x16.png": {
-    "mtime": 1778176586.4416893,
-    "hash": "7f4f85b50df8c12cddbc9dbf250b707e"
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/constants/entry.const.ts": {
+    "mtime": 1778303329.7008667,
+    "hash": "f2d21424cb91bdaeb126c9305d70b03c"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_16x16@2x.png": {
-    "mtime": 1778176586.4418628,
-    "hash": "0081920c568c50f15c554bca04768a28"
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/constants/index.ts": {
+    "mtime": 1778288859.0217223,
+    "hash": "20feed429ff62225ac1052ad422148c0"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_128x128@2x.png": {
-    "mtime": 1778176586.4414873,
-    "hash": "e0dc1b4c4574735bba15b9bd7b12a267"
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/index.ts": {
+    "mtime": 1778288859.027757,
+    "hash": "7e1bbba3273a738e029bb1ab42993a6e"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_512x512@2x.png": {
-    "mtime": 1778176586.4468763,
-    "hash": "8471c8b874f72dbc8b683d9712c25b71"
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/index.ts": {
+    "mtime": 1778288859.0242746,
+    "hash": "76fbd08a0fd736c78c6bdc4cc174521c"
   },
-  "/Users/roalcantara/Work/bun/kb/assets/icons/kb-logo.iconset/icon_256x256.png": {
-    "mtime": 1778176586.4421098,
-    "hash": "e0dc1b4c4574735bba15b9bd7b12a267"
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/parsers/meta.parser.spec.ts": {
+    "mtime": 1778288859.0257242,
+    "hash": "23f04f235807ed2d149e6bc47f8aa3f3"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/parsers/meta.parser.ts": {
+    "mtime": 1778288859.025943,
+    "hash": "af27244489e76f6fe9bbe51b3c3dee19"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/parsers/base_fields.parser.ts": {
+    "mtime": 1778303411.908064,
+    "hash": "f37ccb7fafff59a13b925f4201580298"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/parsers/base_fields.parser.spec.ts": {
+    "mtime": 1778288859.024516,
+    "hash": "e09339df63c61bfbed3fcd697b986512"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/parsers/link.parser.spec.ts": {
+    "mtime": 1778288859.0250077,
+    "hash": "6daa3959790a1c1cfcbe319ae4a315ca"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/parsers/source_document.parser.ts": {
+    "mtime": 1778303469.2083933,
+    "hash": "c0ab9b0b0f74a8e930457632fd46122e"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/parsers/link.parser.ts": {
+    "mtime": 1778288859.0251644,
+    "hash": "f5ebe5746e11f843f8c1333e2171468c"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/parsers/notes.parser.spec.ts": {
+    "mtime": 1778288859.0260408,
+    "hash": "4e8b98dd914a3d5f7edd2089987f2fcb"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/parsers/source_document.parser.spec.ts": {
+    "mtime": 1778303439.1340208,
+    "hash": "b84cb19b787a50287fa40dac135429d4"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/parsers/notes.parser.ts": {
+    "mtime": 1778288859.0262115,
+    "hash": "16c936dee5242c14927ce44a6f91e0a6"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/parsers/tags.parser.ts": {
+    "mtime": 1778288859.0267317,
+    "hash": "44d8f9550ac69838ea7a5e01d606cb11"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/parsers/tags.parser.spec.ts": {
+    "mtime": 1778288859.026632,
+    "hash": "3afa51d5ed8466fd4eee9d2c01299da5"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/schemas/source_row_min.schema.ts": {
+    "mtime": 1778303977.395244,
+    "hash": "b8742ce57ff00ccea508f1efbdc9cba5"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/schemas/meta.schema.ts": {
+    "mtime": 1778522981.5137863,
+    "hash": "4816a71f0f112f6290d1f9910c0484c0"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/schemas/base.schema.ts": {
+    "mtime": 1778522981.5136218,
+    "hash": "3d35ab6b390dbd584f9181b71512331b"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/schemas/tags.schema.ts": {
+    "mtime": 1778516532.4845161,
+    "hash": "02e0152c896f9b852b56a56f87852bb9"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/schemas/notes.schema.ts": {
+    "mtime": 1778522981.5138671,
+    "hash": "e1db9a8be095f2c377c5da17ee553176"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/schemas/tags.schema.spec.ts": {
+    "mtime": 1778522981.513943,
+    "hash": "a913e97fc8e8d3e7274045c36989b0fc"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/schemas/link.schema.ts": {
+    "mtime": 1778516532.4842234,
+    "hash": "f4af68ca646129d27d4b43fbd519133d"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/schemas/index.ts": {
+    "mtime": 1778522981.5137165,
+    "hash": "8fdcf51e55b13560437fd1b85f26060d"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/schemas/entry.schema.ts": {
+    "mtime": 1778303816.385728,
+    "hash": "cbc16d84866e4986d15bfdb567678dad"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/schemas/task.schema.ts": {
+    "mtime": 1778516532.4846203,
+    "hash": "2635f5dea8fdfd9b5579c19533042c97"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/factories/entry.factory.spec.ts": {
+    "mtime": 1778288859.0238528,
+    "hash": "586b90eb491ae9dfd0eb13b1e5d1ceb2"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/entries/factories/entry.factory.ts": {
+    "mtime": 1778303388.4506767,
+    "hash": "c9b14e6c256298d44dd5ddd8c405adcc"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/index.ts": {
+    "mtime": 1778288859.0310605,
+    "hash": "21166c9a7a9925d8da6d1d1b3082db16"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/schemas/knowledge.schema.ts": {
+    "mtime": 1778535752.0512102,
+    "hash": "9ecebf85198a2fbe25000636237a3a02"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/schemas/index.ts": {
+    "mtime": 1778288859.0311725,
+    "hash": "8dfd3ac92000de8eee546b1ee36bc895"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/doc.command.parser.spec.ts": {
+    "mtime": 1778536873.97357,
+    "hash": "a24d6e4ecacf8722fe161873359086c4"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/doc.task.parser.spec.ts": {
+    "mtime": 1778536873.973668,
+    "hash": "d92bda0a6ec78dc44297bf60871b8265"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/doc.cheat.parser.ts": {
+    "mtime": 1778288859.0288177,
+    "hash": "f0e5db7abe7d814402ef70a638e1a93d"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/doc.assembler.spec.ts": {
+    "mtime": 1778536873.9728868,
+    "hash": "2109499cdb63fe0af634265024d0c78a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/doc.bookmark.parser.ts": {
+    "mtime": 1778288859.0285175,
+    "hash": "c9c74d491934cb482bca00ff25ec3d88"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/doc.assembler.ts": {
+    "mtime": 1778288859.0281749,
+    "hash": "97423b50c80ad8a6458a46ce7e9433ac"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/doc.task.parser.ts": {
+    "mtime": 1778288859.0294302,
+    "hash": "81284c8a3501ac09498fc0ddb411734b"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/doc.cheat.parser.spec.ts": {
+    "mtime": 1778536873.9734578,
+    "hash": "3ac952fbdf58594f9b8bc0b4399b98d2"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/doc.command.parser.ts": {
+    "mtime": 1778288859.0291507,
+    "hash": "f5f2a6ef2fb8d39cc2a4f83c6b7d5981"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/doc.bookmark.parser.spec.ts": {
+    "mtime": 1778536873.9731808,
+    "hash": "504d236e7450b021a6caba40c72f3074"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/youtube.parser.spec.ts": {
+    "mtime": 1778288859.0305583,
+    "hash": "cce8a873451fd2253f1514fbd0c03b39"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/index.ts": {
+    "mtime": 1778288859.0296173,
+    "hash": "19c444d7614b37385d2f7083bfb67296"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/youtube.parser.ts": {
+    "mtime": 1778288859.0306554,
+    "hash": "85a87b36e7aa5cba8b4bb1319d5b8d79"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/notes.parser.spec.ts": {
+    "mtime": 1778288859.0303748,
+    "hash": "5682b6c0ff4c7670b4dac24316e9488f"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/detail/notes.parser.ts": {
+    "mtime": 1778288859.0304677,
+    "hash": "77a2de6c2d6ce129954eda172686c03d"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/factories/knowledge.factory.ts": {
+    "mtime": 1778538977.0491552,
+    "hash": "e7b4ebaecdedeb8a449f2db70bef52e5"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/knowledges/factories/knowledge.factory.spec.ts": {
+    "mtime": 1778288859.0308793,
+    "hash": "3f608cda4899ec884ff3b5daa83c6f29"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/sources/index.ts": {
+    "mtime": 1778288859.0314615,
+    "hash": "03af96b64cf9e7f414d9e5d4798e3734"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/sources/parsers/source_location.parser.ts": {
+    "mtime": 1778288859.0318193,
+    "hash": "d3e72981c33601cbb2d2b8433facbd9f"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/models/sources/parsers/source_location.parser.spec.ts": {
+    "mtime": 1778288859.0317218,
+    "hash": "ef87d1072e4c8bcafc9cf4507b53b512"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/guards/entry.guard.ts": {
+    "mtime": 1778288859.0221562,
+    "hash": "78d0e7c0e5b75d7f6f99f4189d618d20"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/guards/entry_section.guard.spec.ts": {
+    "mtime": 1778288859.0223913,
+    "hash": "d6add1ae803e9cce9d5371cbc1d135f0"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/guards/index.ts": {
+    "mtime": 1778288859.0227287,
+    "hash": "e472627262d8859d605be3d8bbd5d49b"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/guards/lang.guard.ts": {
+    "mtime": 1778288859.0233696,
+    "hash": "ff093cae9bad318dd59227879a46706c"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/guards/lang.guard.spec.ts": {
+    "mtime": 1778288859.0230546,
+    "hash": "360bd9cd04d08de153eace490c9a484b"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/guards/entry_section.guard.ts": {
+    "mtime": 1778288859.0225823,
+    "hash": "5c3d4062b6ca03ff10970c62248dc1eb"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/domain/guards/entry.guard.spec.ts": {
+    "mtime": 1778288859.0219545,
+    "hash": "f57c99ebbe1254199f69bb6c6e790a4a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/helpers/path.helper.spec.ts": {
+    "mtime": 1778288859.0323436,
+    "hash": "f0e9822c87429b8fac570f4e9331c1b6"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/helpers/path.helper.ts": {
+    "mtime": 1778288859.0324328,
+    "hash": "ce29cf255729343e5b5c667cae988100"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/helpers/index.ts": {
+    "mtime": 1778288859.0322595,
+    "hash": "cc198ea0c383c86438821aae4605248e"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/validation/typebox.helper.spec.ts": {
+    "mtime": 1778288859.0328064,
+    "hash": "968b4a7068879a0ade76a1a12a9f83af"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/validation/typebox.helper.ts": {
+    "mtime": 1778288859.0328968,
+    "hash": "12b0adfd5ec3a99cb70f6bdda758d030"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/core/validation/index.ts": {
+    "mtime": 1778288859.0326347,
+    "hash": "d5b35a8a220ba2dc12d2ae71c7ea0bbd"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/app.tsx": {
+    "mtime": 1778522981.5165493,
+    "hash": "5ab9ef2fbc2a4be7ef73a54fcf4f69ce"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/app.spec.tsx": {
+    "mtime": 1778522981.5164518,
+    "hash": "a9e8840d81aef7fd2ba89a3b48c81109"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/index.ts": {
+    "mtime": 1778268828.7671676,
+    "hash": "9ff8468827efbaff4004b71bae9ab56f"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/constants/ui.const.ts": {
+    "mtime": 1778522981.5185912,
+    "hash": "85c32275e64a8868106f5514b261a112"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/constants/layout.const.ts": {
+    "mtime": 1778522981.5184627,
+    "hash": "480dcacb55af76a07a39b9cab1c606db"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/constants/tag_brand_svg_map.const.ts": {
+    "mtime": 1778522981.518527,
+    "hash": "391c919416ffda8e148584bbcbc46fb4"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/constants/icons.const.ts": {
+    "mtime": 1778522981.5184004,
+    "hash": "c6978fba96e5f77d6829114c79306264"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/constants/window_layout.const.ts": {
+    "mtime": 1778522981.5186648,
+    "hash": "25f1fe8a6ded1b1d5e1b8f4af78e763f"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/constants/filter_labels.const.ts": {
+    "mtime": 1778522981.518337,
+    "hash": "c198e9bc560d1df6c3a6488a6ea62678"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/shared/get_icon.util.spec.tsx": {
+    "mtime": 1778522981.522333,
+    "hash": "ef44cb4c11472e0506a3a07acc673821"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/shared/brand_icon_url.util.ts": {
+    "mtime": 1778522981.5222476,
+    "hash": "3b5a834b20ce6aac39e8bf8d3635202f"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/shared/get_icon.util.tsx": {
+    "mtime": 1778522981.522415,
+    "hash": "fd41bb138e05f9ad906d98d3b5c3b862"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/shared/task_state.util.ts": {
+    "mtime": 1778522981.5224981,
+    "hash": "78be775765553ebda1f6e795261121c9"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/list_surface_focus.util.spec.ts": {
+    "mtime": 1778522981.5217714,
+    "hash": "1767443c45dee25b4533699dd832af15"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/list_filter_summary.util.ts": {
+    "mtime": 1778522981.521383,
+    "hash": "83d124cd92d329d6ce1ca15f052490ad"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/list_surface_focus.util.ts": {
+    "mtime": 1778522981.5218532,
+    "hash": "a563fb85e7c6bd7be879468ef37c85d2"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/list_search_typeahead.util.ts": {
+    "mtime": 1778522981.5217075,
+    "hash": "0db9b57ea1c41cf991de2b4f18b90bdf"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/virtual_list_window.util.spec.ts": {
+    "mtime": 1778522981.522059,
+    "hash": "e685497f0bb9934e7a30e45057cf6bd6"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/virtual_list_window.util.ts": {
+    "mtime": 1778522981.522129,
+    "hash": "da40421afe283e27bfe88b81f70b5332"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/list_page_tab_ring.util.ts": {
+    "mtime": 1778522981.5215752,
+    "hash": "c3583e8cb7e4c4b5332a506d4d454c70"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/list_viewport_page_size.util.ts": {
+    "mtime": 1778522981.5219913,
+    "hash": "f0aa7ed5522d2463d731b30230b7d553"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/list_page_tab_ring.util.spec.ts": {
+    "mtime": 1778522981.5215073,
+    "hash": "5867a8aed82f0c3b50f2c6360486c27a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/list_filter_summary.util.spec.ts": {
+    "mtime": 1778522981.5213208,
+    "hash": "029010d38eb68d189379dfc54b36322c"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/list_page_empty_flags.util.ts": {
+    "mtime": 1778522981.521443,
+    "hash": "4680357b96041db301b819cd67b74594"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/list_search_typeahead.util.spec.ts": {
+    "mtime": 1778522981.5216439,
+    "hash": "a42318743b9e7ee15e962aa935319238"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/list_viewport_page_size.util.spec.ts": {
+    "mtime": 1778522981.5219226,
+    "hash": "aa5a566fd26e113a58837447e8b8d2fc"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/utils/list/list_entries_query.util.ts": {
+    "mtime": 1778522981.5212572,
+    "hash": "769e6468112e93364b41f63a972c28bd"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/preview_image.component.tsx": {
+    "mtime": 1778522981.5182452,
+    "hash": "fdcc98dc67faf780e59b44c15269cd76"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/badge_accessory.component.tsx": {
+    "mtime": 1778522981.517921,
+    "hash": "349deadab059a5c5163654930fc8f534"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/md_view.component.tsx": {
+    "mtime": 1778522981.5181136,
+    "hash": "980d773b452d014c4c8ff3d1969904c1"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/brand_icon_or_glyph.component.tsx": {
+    "mtime": 1778522981.5179818,
+    "hash": "dfeec9f41cb714324f6347c77adeef0a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/badge_accessory.component.spec.tsx": {
+    "mtime": 1778536873.9747584,
+    "hash": "495e1d3d8712c09f068fdd431d4ce5a0"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/md_view.component.spec.tsx": {
+    "mtime": 1778522981.5180469,
+    "hash": "e4e57466968dffa3a12278037d4a92ac"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/preview_image.component.spec.tsx": {
+    "mtime": 1778522981.5181804,
+    "hash": "13405662e43b2608840b5b52aabb5844"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/detail/dependency_graph.component.spec.tsx": {
+    "mtime": 1778536873.9739175,
+    "hash": "bfea5b5296c6b8626677400972f34220"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/detail/detail_view.component.spec.tsx": {
+    "mtime": 1778536873.9742212,
+    "hash": "68b0404d08e70148919f41f611c39e4a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/detail/metadata_sidebar.component.tsx": {
+    "mtime": 1778522981.5169847,
+    "hash": "306d6cfec14c328e87c74234e75211b6"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/detail/detail_view.component.tsx": {
+    "mtime": 1778535752.0529585,
+    "hash": "95ff4f70585db47fc6bca72d80feb455"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/detail/metadata_sidebar.component.spec.tsx": {
+    "mtime": 1778536873.9743226,
+    "hash": "f3245b31584b2d3e7c31a922269b7760"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/detail/dependency_graph.component.tsx": {
+    "mtime": 1778522981.516759,
+    "hash": "a46846dec1bfc63805e07be293db3939"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/filter_dropdown.component.spec.tsx": {
+    "mtime": 1778522981.5173404,
+    "hash": "e90cda3baeb4a926c6874af7926b3c20"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/list_main.component.tsx": {
+    "mtime": 1778522981.5176322,
+    "hash": "0ab56c10ecd6aa9267f96c5addf8078a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/list_area.component.tsx": {
+    "mtime": 1778522981.5175629,
+    "hash": "840fe567567bcf6fd2bac21aebd9c047"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/entry_row.component.spec.tsx": {
+    "mtime": 1778536873.9745302,
+    "hash": "a7b342ea93dbf15fd4aed347b3094363"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/detail_panel.component.spec.tsx": {
+    "mtime": 1778536873.97444,
+    "hash": "09fb5396d7a791381e8496e762b35380"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/entry_row.component.tsx": {
+    "mtime": 1778522981.517274,
+    "hash": "aec5aaf2685c5c87e6911a7c850eadb7"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/filter_dropdown_tags.component.tsx": {
+    "mtime": 1778522981.517491,
+    "hash": "57a9e459bbf7540a78f1d8a9cd81a067"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/toolbar.component.spec.tsx": {
+    "mtime": 1778522981.517698,
+    "hash": "23ac7d6cf614de988be3dc353e69ca07"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/toolbar.component.tsx": {
+    "mtime": 1778522981.5177617,
+    "hash": "e9e3a966198b96c5184442b3e10a01bf"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/filter_dropdown.component.tsx": {
+    "mtime": 1778522981.517421,
+    "hash": "3691b3f6ce2b6826b17e687812855a04"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/detail_panel.component.tsx": {
+    "mtime": 1778522981.5171459,
+    "hash": "7fea863dcbbde3f0d84111587de15571"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/settings/use_settings_page.hook.ts": {
+    "mtime": 1778522981.5201528,
+    "hash": "61608e3383e9990d11c7e9b3df4021ff"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/shared/use_debounced_value.hook.spec.tsx": {
+    "mtime": 1778522981.5202441,
+    "hash": "937b9dc8af2e7496e777b5e608cded2d"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/shared/use_debounced_value.hook.ts": {
+    "mtime": 1778522981.5203075,
+    "hash": "000757dc3b02859b15a2614eb7998eb8"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_surface_keydown.hook.ts": {
+    "mtime": 1778522981.5197818,
+    "hash": "5f467dc968ba54b7ce7a3e5c894875a5"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_page_shell.hook.ts": {
+    "mtime": 1778522981.5193503,
+    "hash": "fa5b5c9ba5eeb48a63a720b2f0d1b146"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_selection.hook.spec.tsx": {
+    "mtime": 1778536873.976887,
+    "hash": "b0528a824c5ba8bc158fb77dcc340d33"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_page_filters.hook.ts": {
+    "mtime": 1778522981.519039,
+    "hash": "e8782567750950bdd32d183090d137f7"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_virtual_list_window.hook.ts": {
+    "mtime": 1778522981.5200388,
+    "hash": "cb9a1305bef9739dabcef0431ca3e676"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_page_focus_ring.hook.spec.tsx": {
+    "mtime": 1778522981.5191061,
+    "hash": "3449a3cc03bf6879ecc3daf1c9c3f9da"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_page_data.hook.ts": {
+    "mtime": 1778522981.518974,
+    "hash": "0776b7896c8c586708a60582d1c20122"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_selection.hook.ts": {
+    "mtime": 1778522981.5196497,
+    "hash": "8cdc26f156f045486c915305bb473a98"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_sentinel_pagination.hook.ts": {
+    "mtime": 1778522981.5197158,
+    "hash": "02381998f21edce1848c7debf79fa5aa"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_filter_overlay.hook.ts": {
+    "mtime": 1778522981.518851,
+    "hash": "53ead96f3079c3fbebafd8e3e8d144e1"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_page_cmd_key_stub.hook.ts": {
+    "mtime": 1778522981.5189128,
+    "hash": "d0f5eb4b5e73faf94ce8ee5515ebaad3"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_page_stats_sync.hook.spec.tsx": {
+    "mtime": 1778522981.5194201,
+    "hash": "36f01c0e0932021f9b663a1d194069ad"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_detail_resize.hook.ts": {
+    "mtime": 1778522981.5187829,
+    "hash": "bded6177c0b61555e0aeccb63fd9379b"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_page_rows.hook.ts": {
+    "mtime": 1778522981.5192792,
+    "hash": "10cf24b4b618600de73e14ea06ac5204"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_viewport_page_size.hook.ts": {
+    "mtime": 1778522981.5199585,
+    "hash": "1c23fc9a05373309d4d9396a4e73fad8"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_page_focus_ring.hook.ts": {
+    "mtime": 1778522981.5191944,
+    "hash": "7827aa0f1acb9b4acb408c0e74e5fb9a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_page_stats_sync.hook.ts": {
+    "mtime": 1778522981.5194874,
+    "hash": "f69e56150ce704d413029be60b13ca90"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_surface_scroll_restore.hook.ts": {
+    "mtime": 1778522981.5198705,
+    "hash": "7957f8c3a1668840bd11ca0f045e27d0"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/rpc/client.spec.tsx": {
+    "mtime": 1778525837.5861254,
+    "hash": "828de5237f0a8f8e5afbc7152dad5cd1"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/rpc/client.ts": {
+    "mtime": 1778527165.8402557,
+    "hash": "30c3ca4464f3540cafb15c01a58bf8c3"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/rpc/rpc_app.types.ts": {
+    "mtime": 1778525837.7314615,
+    "hash": "085b756e7946c8f972172b1875fc227f"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/pages/settings/settings.types.ts": {
+    "mtime": 1778522981.5208733,
+    "hash": "6131e49a58a845ca145c79f495b8d1e3"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/pages/settings/settings.page.tsx": {
+    "mtime": 1778522981.520814,
+    "hash": "acdf0a2dcbfa995260bde2f7f695c977"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/pages/settings/settings.page.spec.tsx": {
+    "mtime": 1778522981.5207336,
+    "hash": "a367ba4b94603e299b622b000ac8bdfc"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/pages/detail/detail.page.tsx": {
+    "mtime": 1778522981.5205412,
+    "hash": "b672b8d19027448cf65917745ca983a9"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/pages/detail/detail.page.spec.tsx": {
+    "mtime": 1778535752.0531409,
+    "hash": "c7f95dbc911eccfb137fffa2dd20d1d6"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/pages/list/list.page.tsx": {
+    "mtime": 1778522981.5206292,
+    "hash": "843128182eb00b6cfd73c281750ca82f"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/app/app.spec.ts": {
+    "mtime": 1778522981.514669,
+    "hash": "94d26bfc4cd195716c8aafbd664bd6d9"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/app/app.ts": {
+    "mtime": 1778538977.0497754,
+    "hash": "e4c6b8b2c1094fb1b58f3662cd719bf0"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/app/config/config.schema.ts": {
+    "mtime": 1778522981.5150182,
+    "hash": "b9648ac5e6cd293866e376288d4848a3"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/app/config/config.loader.ts": {
+    "mtime": 1778538977.0501704,
+    "hash": "703edec871005f9bb2afc71978a30ba6"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/app/config/config.loader.spec.ts": {
+    "mtime": 1778522981.514869,
+    "hash": "ff8ec9898fe5d561967f842a315d496a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/app/lib/task_views.util.ts": {
+    "mtime": 1778538977.0510418,
+    "hash": "f3f93d641a42d4338a8ffc1c80db68c4"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/app/db/schema.ts": {
+    "mtime": 1778522981.5155184,
+    "hash": "225ec8fe220dd2e2a2a35fedd0e9de4c"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/app/db/import.service.spec.ts": {
+    "mtime": 1778522981.515359,
+    "hash": "9dd460dc2691054c9b0ea8cac6d8bb18"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/app/db/entry.repository.ts": {
+    "mtime": 1778538977.0506258,
+    "hash": "cdcc91b1607cf28c87fff45cc284c42a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/app/db/entry.repository.spec.ts": {
+    "mtime": 1778522981.5151947,
+    "hash": "6f13e931cc09c0f0f83233b0225f533c"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/app/db/client.ts": {
+    "mtime": 1778522981.5151176,
+    "hash": "e85d90d66cd31a07e8e19e84a4410e94"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/app/db/import.service.ts": {
+    "mtime": 1778538977.0508747,
+    "hash": "0e0fd539ed32ff0686326c7c8a18ab99"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/main.ts": {
+    "mtime": 1778538977.0514421,
+    "hash": "fa70a787ea99156743a85c2ae3efb17c"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/index.ts": {
+    "mtime": 1778268828.7655597,
+    "hash": "0537f2d65c98a250ba046af7c3828907"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/main.spec.ts": {
+    "mtime": 1778522981.515883,
+    "hash": "511f008e6e5200bb5ad9921a2f10f8c5"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/window/state.ts": {
+    "mtime": 1778522981.5163298,
+    "hash": "05b5ab7fb932f6eb8e26c85ca436699c"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/window/state.spec.ts": {
+    "mtime": 1778522981.5162547,
+    "hash": "ae4ae2f2735855fc3c22ee2029f80c16"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/rpc/host.spec.ts": {
+    "mtime": 1778526301.0911992,
+    "hash": "02855fe2b3894347d8356c952105cbe2"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/rpc/schemas.ts": {
+    "mtime": 1778538977.0520167,
+    "hash": "e25845d93a64149654026a672dae324a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/rpc/host.ts": {
+    "mtime": 1778538977.0517292,
+    "hash": "a7ccdb2b0197e4a354f59c3c57d19b34"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/rpc/server.ts": {
+    "mtime": 1778526301.0912142,
+    "hash": "b429991d4e100ba09d2982eb8fcadcda"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/rpc/server.spec.ts": {
+    "mtime": 1778526301.0946503,
+    "hash": "2d7b2b830f90af5fd4d88844ee6f6888"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/helpers/error.helper.ts": {
+    "mtime": 1778522981.515803,
+    "hash": "251b28a093f0c59294689a7842f256e6"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/main/helpers/error.helper.spec.ts": {
+    "mtime": 1778522981.5157292,
+    "hash": "a55a56d71e0af987bcf8474d1a7617d5"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shared/types/logger.types.ts": {
+    "mtime": 1778522981.5145397,
+    "hash": "86aa6137a1c7c317b44a86e5c82c805c"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shared/types/env.types.ts": {
+    "mtime": 1778288859.0331156,
+    "hash": "e1e77a76354d91c1f9961edebb9b82a1"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shared/types/index.ts": {
+    "mtime": 1778522981.5144777,
+    "hash": "56d6d117baf3ca24499ea5c25b31eed6"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shared/utils/crc32.spec.ts": {
+    "mtime": 1778288859.0334609,
+    "hash": "c01c1b9fe3b25327deb135eb5a460d2a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shared/utils/crc32.ts": {
+    "mtime": 1778288859.033667,
+    "hash": "a45287e5efad0da367678fcd9469b028"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shared/utils/index.ts": {
+    "mtime": 1778288859.0340676,
+    "hash": "0b68b590b8ecdbf8c9081e48c0eeb8e4"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shared/rpc/index.ts": {
+    "mtime": 1778526300.9930825,
+    "hash": "e3f81f35dfee0c6e606526c6636cf7ad"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shared/rpc/kb_rpc_schema.ts": {
+    "mtime": 1778538977.0494895,
+    "hash": "b7229eb538a8ea66687a3ca785822dfc"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shared/logging/console.logger.ts": {
+    "mtime": 1778522981.514068,
+    "hash": "6bdcec5333c130d2237185d94adc812f"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shared/logging/logtape.adapter.ts": {
+    "mtime": 1778522981.5142093,
+    "hash": "f765de811ab70d73e033bf3bd14bb987"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shared/logging/index.ts": {
+    "mtime": 1778522981.514143,
+    "hash": "0b3f971cceb5952c59519c46ee65050b"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/index.ts": {
+    "mtime": 1778526301.1007411,
+    "hash": "8b3fe7a7bfdd99a94570d027cb11971a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/paths.ts": {
+    "mtime": 1778522981.5133815,
+    "hash": "df12d07e36a68161c8af26d2ef9b0fdb"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/paths.spec.ts": {
+    "mtime": 1778522981.513319,
+    "hash": "3b94b6772ce071efb373d8b3b31784b3"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/factories/factories.builder.spec.ts": {
+    "mtime": 1778535752.048493,
+    "hash": "4606c43cafa2f58a546785a89820afb2"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/factories/factories.builder.ts": {
+    "mtime": 1778535752.0489142,
+    "hash": "7747253dbffbc0ce2785750e833a59ba"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/helpers/testing.react.helper.ts": {
+    "mtime": 1778522981.5128942,
+    "hash": "042bb9a69d9ed6305b57dd44386e248a"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/helpers/testing.factory.ts": {
+    "mtime": 1778522981.5128326,
+    "hash": "d619cd6fb39a1c54af6768d75482962b"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/helpers/testing.tmp.ts": {
+    "mtime": 1778522981.5131383,
+    "hash": "9ea33df649af8509c8e343eb1b6c0dbd"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/helpers/testing.tmp.spec.ts": {
+    "mtime": 1778522981.5130756,
+    "hash": "165591518e0f727b273488192d0d08f8"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/helpers/testing.seed.ts": {
+    "mtime": 1778522981.5130153,
+    "hash": "c65e57fc98414ee1b048a1e4db400ac6"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/helpers/testing.types.ts": {
+    "mtime": 1778522981.5132017,
+    "hash": "a6edeb3830e80a8272e34308bcef0879"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/helpers/testing.seed.spec.ts": {
+    "mtime": 1778522981.512953,
+    "hash": "b3e3d79a046ce867f28b04086331558b"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/__tests__/helpers/testing.factory.spec.ts": {
+    "mtime": 1778522981.5127676,
+    "hash": "c5ef5e8b513b505b63f275440cfa32c6"
   }
 }

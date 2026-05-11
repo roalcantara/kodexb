@@ -1,0 +1,839 @@
+# order
+# ⌃ ⌥ ⇧ ⌘ A..
+# ~/.config/cheat/pv/local/shortcuts/shortcuts-general
+# ~/.config/cheat/yml/macos.yml
+# ~/Work/raycast/symbl/assets/unicodes.yaml
+
+cheats:
+  Common Shortcuts:
+    desc: Common Shortcuts
+    tags: [ shortcuts, general ]
+    notes:
+      - md: | #markdown
+          # COMMON SHORTCUTS
+
+          ## ZSH
+
+          ```yaml
+          shortcuts:
+            ⌥ c:
+              desc: Fuzzy find directory
+              tags: [ search, file, fzf ]
+            ⌃ r:
+              desc: Reverse search history
+              tags: [ search, history, fzf ]
+            ⌃ t:
+              desc: Fuzzy find file
+              tags: [ search, file, fzf ]
+            ⌥ f:
+              desc: Move cursor to next word (forward)
+              tags: [ navigation ]
+            ⌥ b:
+              desc: Move cursor to previous word (backwards)
+              tags: [ navigation ]
+            ⌃ xx:
+              desc: Toggle between the start of the line and the current cursor position
+              tags: [ navigation ]
+            ⌃ x,e:
+              desc: Open the current command line in your default editor
+              tags: [ editing, command ]
+            ⌃ k:
+              desc: Cut (delete) text from the current cursor position until the end of the line
+              tags: [ editing, delete ]
+            ⌃ u:
+              desc: delete whole line
+              tags: [ editing, delete ]
+            ⌥ w:
+              desc: Delete text from the current cursor position to the beginning of the word
+              tags: [ editing, delete ]
+            ⌥ l:
+              desc: Lowercase word
+              tags: [ editing, transform ]
+            ⌥ u:
+              desc: Uppercase word
+              tags: [ editing, transform ]
+            ⌃ w:
+              desc: Cut the previous word, starting from the current cursor position
+              tags: [ editing, delete ]
+            ⌥ ⌫:
+              desc: Delete previous word, preceding the current cursor position
+              tags: [ editing, delete ]
+            ⌥ d:
+              desc: delete next word, following the current cursor position
+              tags: [ editing, delete ]
+            ⌥ .:
+              desc: Previous command's last argument
+              tags: [ history, command, terminal ]
+            \!$:
+              desc: retrieves the last argument from the previous command
+              tags: [ history, command, terminal ]
+            \!*:
+              desc: retrieves all arguments from the previous command
+              tags: [ history, command, terminal ]
+            ⌥ t:
+              desc: Swap the last two characters before the cursor (typo)
+              tags: [ editing, text ]
+            ⌥ r:
+              desc: Undo all changes made to the current command line
+              tags: [ editing, undo, terminal ]
+            ⌃ l:
+              desc: Clear screen
+              tags: [ terminal, ui ]
+            ⌃ c:
+              desc: Send an Interrupt/Kill signal to the currently running command
+              tags: [ process, terminal, control ]
+            ⌃ d:
+              desc: Close Current Shell
+              tags: [ terminal, process, control ]
+            ⌃ z:
+              desc: Suspends the currently running foreground job and moves it to the background
+              tags: [ process, terminal, control ]
+            fg:
+              desc: Bring the most recent background job to the foreground
+              tags: [ process, terminal, control ]
+            ⌃ s:
+              desc: Retrieves the next most recent command from your history
+              tags: [ history, command, terminal ]
+            ^abc^def:
+              desc: Replaces the first occurrence of "abc" in the previous command with "def"
+              tags: [ history, command, substitution ]
+            ⌃ x,v:
+              desc: Switch to vi mode in Zsh
+              tags: [ vi-mode, terminal ]
+            set -o vi:
+              desc: Enables the vi mode for the current session
+              tags: [ vi-mode, terminal ]
+            cd ↵:
+              desc: Go to HOME
+              tags: [ navigation, directory ]
+            cd ⇥:
+              desc: Fuzzy find directory
+              tags: [ search, directory, fzf ]        
+          ```
+
+          ## NVIM
+
+          ```yaml
+          shortcuts:
+            ⌘ p:
+              desc: Search files by name
+              tags: [ search, file, navigation ]
+            ⇧ ⌘ p:
+              desc: Show command palette
+              tags: [ command, ui, palette ]
+            ⌘ \:
+              desc: Toggle left side bar
+              tags: [ ui, view, sidebar ]
+            ⌥ ⌘ ←:
+              desc: Move to buffer at left
+              tags: [ navigation, buffer, window ]
+            ⌥ ⌘ →:
+              desc: Move to buffer at right
+              tags: [ navigation, buffer, window ]
+            ⌘ a:
+              desc: Select All
+              tags: [ selection, text ]
+            ⌘ n:
+              desc: New File
+              tags: [ file, create ]
+            ⌘ ↑:
+              desc: Go to the top of the file
+              tags: [ navigation, file ]
+            ⌘ ↓:
+              desc: Go to the bottom of the file
+              tags: [ navigation, file ]
+            ⌃ a:
+              desc: Move to beginning of line
+              tags: [ navigation ]
+            ⌃ e:
+              desc: Move to end of line
+              tags: [ navigation ]
+            ⌘ x:
+              desc: Cut selection to clipboard
+              tags: [ editing, clipboard, text ]
+            ⌘ c:
+              desc: Copy selection to clipboard
+              tags: [ editing, clipboard, text ]
+            ⌘ v:
+              desc: Paste the contents from Clipboard
+              tags: [ editing, clipboard, text ]
+            ⌘ z:
+              desc: Undo the previous command
+              tags: [ editing, undo ]
+            ⌘ y:
+              desc: Redo the previous command
+              tags: [ editing, redo ]
+            ⌥ ↓:
+              desc: Move Line Down
+              tags: [ editing, move ]
+            ⌥ ↑:
+              desc: Move Line Up
+              tags: [ editing, move ]
+            ⌘ ←:
+              desc: Move to BOL
+              tags: [ navigation ]
+            ⌘ →:
+              desc: Move to EOL
+              tags: [ navigation ]
+            ⌘ f:
+              desc: Find in files
+              tags: [ search, file ]
+            ⌘ ⇧ f:
+              desc: Find in project
+              tags: [ search, project ]
+            ⌘ .:
+              desc: Code actions
+              tags: [ lsp, code, action ]
+            ⌘ d:
+              desc: Toggle Diagnostics
+              tags: [ lsp, diagnostics, ui ]
+            ⇧ ⌘ e:
+              desc: Toggle Errors
+              tags: [ lsp, diagnostics, ui ]
+            ⌘ i:
+              desc: Go to Definition
+              tags: [ lsp, navigation, code ]
+            ⌘ ⌥ i:
+              desc: Go to Implementation
+              tags: [ lsp, navigation, code ]
+            ⌘ ⌥ d:
+              desc: Go to Declaration
+              tags: [ lsp, navigation, code ]
+            ⌘ ⌥ t:
+              desc: Go to Type Definition
+              tags: [ lsp, navigation, code ]
+            ⌘ ⌥ w:
+              desc: Go to Workspace Symbols
+              tags: [ lsp, navigation, symbol ]
+            ⌘ T:
+              desc: Go to Symbol in File
+              tags: [ lsp, navigation, symbol ]
+            ⌘ ⇧ K:
+              desc: Show Hover Information
+              tags: [ lsp, info, ui ]
+            ⌘ ⇧ ␣:
+              desc: Trigger Parameter Hints
+              tags: [ lsp, hint, ui ]
+            ⌘ ⌥ r:
+              desc: Find References
+              tags: [ lsp, search, code ]
+            ⌘ ⌥ ↵:
+              desc: Rename Symbol
+              tags: [ lsp, editing, code ]
+            ⌘ ⌃ f:
+              desc: Format Document
+              tags: [ editing, format, code ]
+            ⌘ ⇧ ]:
+              desc: Next Diagnostic
+              tags: [ lsp, navigation, diagnostics ]
+            ⌘ ⇧ [:
+              desc: Previous Diagnostic
+              tags: [ lsp, navigation, diagnostics ]
+            ⌘ [:
+              desc: Fold
+              tags: [ view, folding, code ]
+            ⌥ ⌘ [:
+              desc: Fold All
+              tags: [ view, folding, code ]
+            ⌘ ]:
+              desc: Unfold
+              tags: [ view, folding, code ]
+            ⌥ ⌘ ]:
+              desc: Unfold All
+              tags: [ view, folding, code ]
+            ⌘ /:
+              desc: Toggle comment line
+              tags: [ editing, comment, code ]
+            ⌘ w:
+              desc: Close Editor
+              tags: [ window, ui ]
+          ```
+
+          ## VSCODE / CURSOR
+
+          ```yaml
+          shortcuts:
+            ⌥ m:
+              desc: Toggle Main Menu
+              tags: [ ui, menu ]
+            ⇧ ⌘ p:
+              desc: Show command palette
+              tags: [ command, ui, palette ]
+            ⌘ \:
+              desc: Toggle left side bar
+              tags: [ ui, view, sidebar ]
+            ⌥ ⌘ ←:
+              desc: Go to tab at left
+              tags: [ navigation, tab, window ]
+            ⌥ ⌘ →:
+              desc: Go to tab at right
+              tags: [ navigation, tab, window ]
+            ⌘ p:
+              desc: Search files by name
+              tags: [ search, file, navigation ]
+            ⌘ a:
+              desc: Select all
+              tags: [ selection, text ]
+            ⌘ n:
+              desc: New File
+              tags: [ file, create ]
+            ⌘ ↑:
+              desc: Go to the top of the file
+              tags: [ navigation, file ]
+            ⌘ ↓:
+              desc: Go to the bottom of the file
+              tags: [ navigation, file ]
+            ⌃ a:
+              desc: Move to beginning of line
+              tags: [ navigation ]
+            ⌃ e:
+              desc: Move to end of line
+              tags: [ navigation ]
+            ⌘ x:
+              desc: Cut selection to clipboard
+              tags: [ editing, clipboard, text ]
+            ⌘ c:
+              desc: Copy selection to clipboard
+              tags: [ editing, clipboard, text ]
+            ⌘ v:
+              desc: Paste
+              tags: [ editing, clipboard, text ]
+            ⌘ z:
+              desc: Undo
+              tags: [ editing, undo ]
+            ⌘ y:
+              desc: Redo
+              tags: [ editing, redo ]
+            ⌥ ↓:
+              desc: Move Line Down
+              tags: [ editing, move ]
+            ⌥ ↑:
+              desc: Move Line Up
+              tags: [ editing, move ]
+            ⌘ ←:
+              desc: Move to BOL
+              tags: [ navigation ]
+            ⌘ →:
+              desc: Move to EOL
+              tags: [ navigation ]
+            ⌘ f:
+              desc: Find in files
+              tags: [ search, file ]
+            ⌘ ⇧ f:
+              desc: Search in files
+              tags: [ search, file ]
+            ⌘ .:
+              desc: Code actions
+              tags: [ lsp, code, action ]
+            ⌘ d:
+              desc: Toggle Problems
+              tags: [ lsp, diagnostics, ui ]
+            ⌘ i:
+              desc: Go to Definition
+              tags: [ lsp, navigation, code ]
+            ⌘ ⌥ i:
+              desc: Go to Implementation
+              tags: [ lsp, navigation, code ]
+            ⌘ ⌥ d:
+              desc: Go to Declaration
+              tags: [ lsp, navigation, code ]
+            ⌘ ⌥ t:
+              desc: Go to Type Definition
+              tags: [ lsp, navigation, code ]
+            ⌘ ⌥ w:
+              desc: Go to Workspace Symbols
+              tags: [ lsp, navigation, symbol ]
+            ⌘ T:
+              desc: Go to Symbol in File
+              tags: [ lsp, navigation, symbol ]
+            ⌘ ⇧ K:
+              desc: Show Hover Information
+              tags: [ lsp, info, ui ]
+            ⌘ ⇧ ␣:
+              desc: Trigger Parameter Hints
+              tags: [ lsp, hint, ui ]
+            ⌘ ⌥ r:
+              desc: Find References
+              tags: [ lsp, search, code ]
+            ⌘ ⌥ ↵:
+              desc: Rename Symbol
+              tags: [ lsp, editing, code ]
+            ⌘ ⌃ f:
+              desc: Format Document
+              tags: [ editing, format, code ]
+            ⌘ ⇧ ]:
+              desc: Next Diagnostic Problem
+              tags: [ lsp, navigation, diagnostics ]
+            ⌘ ⇧ [:
+              desc: Previous Diagnostic Problem
+              tags: [ lsp, navigation, diagnostics ]
+            ⌘ [:
+              desc: Fold
+              tags: [ view, folding, code ]
+            ⌥ ⌘ [:
+              desc: Fold All
+              tags: [ view, folding, code ]
+            ⌘ ]:
+              desc: Unfold
+              tags: [ view, folding, code ]
+            ⌥ ⌘ ]:
+              desc: Unfold All
+              tags: [ view, folding, code ]
+            ⌘ ⌃ g:
+              desc: Replace All Occurrences
+              tags: [ editing, search, text ]
+            ⌘ ⌃ i:
+              desc: Copilot | Inline Chat
+              tags: [ ai, assistant, code ]
+            ⌘ ⌃ z:
+              desc: Toggle Zen Mode
+              tags: [ view, ui, zen ]
+            ⌘ /:
+              desc: Toggle comment line
+              tags: [ editing, comment, code ]
+            ⌘ w:
+              desc: Close Editor
+              tags: [ window, ui ]
+          ```
+
+          ## WEZTERM
+
+          ```yaml
+          shortcuts:
+            ⌥ m:
+              desc: Toggle Main Menu
+              tags: [ ui, menu ]
+            ⌘ w:
+              desc: Close Tab
+              tags: [ window, tab ]
+            ✦ r_⌘ ⌥ 1:
+              desc: Switch to Tab 1
+              tags: [ navigation, tab ]
+            ✦ r_⌘ ⌥ 2:
+              desc: Switch to Tab 2
+              tags: [ navigation, tab ]
+            ✦ r_⌘ ⌥ T:
+              desc: New Tab
+              tags: [ tab, create ]
+            ✦ r_⌘ ⌥ →:
+              desc: Next Tab
+              tags: [ navigation, tab ]
+            ✦ r_⌘ ⌥ ←:
+              desc: Previous Tab
+              tags: [ navigation, tab ]
+            ✦ r_⌘ ↑:
+              desc: Split Panel Up
+              tags: [ panel, layout ]
+            ✦ r_⌘ ↓:
+              desc: Split Panel Down
+              tags: [ panel, layout ]
+            ✦ r_⌘ →:
+              desc: Split Panel Right
+              tags: [ panel, layout ]
+            ✦ r_⌘ ←:
+              desc: Split Panel Left
+              tags: [ panel, layout ]
+            ✦ p:
+              desc: Open Command Palette
+              tags: [ command, palette, ui ]
+          ```
+
+          ## GENERAL
+
+          ```yaml
+          shortcuts:
+            ^ r:  fzf pick_cmd_from_history_and_paste_on_prompt
+            ^ t:  fzf pick_files_and_paste_on_prompt
+            ^ l:  scroll-and-clear-screen
+            ⌥ c:   fzf pick_and_cd_into_dir
+            ^ ⌥ .:  fzf_pick_bin
+            ^ ⌥ /:  fzf_pick_pet_snippet
+            ^ ⌥ / ⇧:  fzf_pick_pet_snippet_and_copy_it
+            ^ ⌥ a:  fzf_pick_alias
+            ^ ⌥ m:  fzf_pick_make_task
+            ^ ⌥ e:  fzf_pick_and_explain_cmd
+            ↑:  history-substring-search-up
+            ↓:  history-substring-search-down
+            ⇧ ←:  backward-word
+            ⇧ →:  forward-word
+            ⌘ 1: 🐱 goto_tab(1)
+            ⌘ 2: 🐱 goto_tab(2)
+            ⌘ 3: 🐱 goto_tab(3)
+            ⌘ 4: 🐱 goto_tab(4)
+            ⌘ 5: 🐱 goto_tab(5)
+            ⌘ 6: 🐱 goto_tab(6)
+            ⌘ 7: 🐱 goto_tab(7)
+            ⌘ 8: 🐱 goto_tab(8)
+            ⌘ 9: 🐱 goto_tab(9)
+            ⌘ ⌥ end: 🐱 scroll_end
+            ⌘ ⌥ home: 🐱 scroll_home
+            ⌘ ⌥ k: 🐱 clear_terminal to_cursor active
+            ⌘ ⌥ 0: 🐱 change_font_size all 0
+            ⌘ equal: 🐱 change_font_size all +2.0
+            ⌘ minus: 🐱 change_font_size all -2.0
+            ⌘ t: 🐱 new_tab_with_cwd
+            ⌘ ⌥ page_down: 🐱 scroll_page_down
+            ⌘ ⌥ page_up: 🐱 scroll_page_up
+            ⌘ space: 󰮤 show
+            ⌘ space ⇧: 󰀶 show
+            ⌥ space:  show
+            ⌘ \\: Toggle Explorer Panel
+            ^ ←:  move_space_backward
+            ^ →:  move_space_forward
+            fn:  pick_emoji
+            ⌘ . ⇧:  Show hidden files
+            ⌘ m:  Minimize Window
+            ⌘ q:  Quit Application
+            ⌘ tab:  switch_focused_window_forward
+            ⌘ tab ⇧:  switch_focused_window_backward
+            ⌘ c:  Copy to clipboard
+            ⌘ v:  Paste from clipboard (If file with same na exists then ask if replace if yes replace otherwise paste the item with original name _copy and allow to rename the copied item)
+            ⌘ w:  Close current window/tab/file
+            ⌘ x:  Cut to clipboard
+            ⌘ y:  Redo
+            ⌘ z:  Undo
+            ⌘ ⎇ t:  Open Kitty
+            ⌘ ⎇ ←:  Move to Left Space
+            ⌘ ⎇ →:  Move to Right Space
+            ⌘ ⎇ ^ →:  Move to focused window to right
+            ⌘ ⎇ ^ ←:  Move to focused window to left
+            ⌘ ⌥ ←:  󰅱 󰝨 Swap focus with previous tab
+            ⌘ ⌥ →:  󰅱 󰝨 Swap focus with next tab
+            ^ ⌥ ⌘ ←:   focus_window_cclockwise
+            ^ ⌥ ⌘ →:   focus_window_clockwise
+            ^ ⌥ ⌘ ↑:   focus_window_top
+            ^ ⌥ ⌘ ↓:   focus_window_bottom
+            caps ↑:   focus external display
+            caps ↓:   focus builtin display
+            caps →:   warp_window_clockwise
+            caps ←:   warp_window_cclockwise
+            caps =:   increase-current-windows
+            caps -:   = decrease-current-windows
+            caps r:   reevaluate-windows
+            fn ↑:   flip-x-axis
+            fn ↓:   flip-x-axis
+            fn →:   swap_window_clockwise
+            fn ←:   swap_window_cclockwise
+            opt l-m-click:   move the window
+            opt r-m-click:   resize the window
+            m-click:   drag to center to swap
+            ^ F4:  Move focus to the active or next window
+            ^ F6:  Move focus to the floating window
+            ^ F7:  Move focus to the next window
+          ```
+
+          ## BACKUP
+
+          ```yaml
+          shortcuts:
+            "[D-r]": Locate all occurrences of `<f-args>`
+            "[D-C-f]": List all functions and their arguments
+            "[D-h]": Show Recent opened files
+            "[D-S-b]": Show git branches
+            "[D-S-C-r]": Auto reload functions at ease
+            "[D-S-c]": Show commands
+            "[D-S-p]": Show git files
+            "[D-S-q]": Show Quickfix List
+            "[D-S-r]": Reload the current file
+            "[D-S-t]": Show filetypes
+            "[D-C-c]": Show commits
+            "[D-C-p]": Reveal the project root
+            "[A-S-p]": Reveal the current file path
+          ```
+
+          ## EDITOR
+
+          ```yaml
+          shortcuts:
+            # Selection
+            "⌘ a": ▤ Select all
+            "⌘ l": ▤ Select the whole current line
+            "⌘ r": ▤ Select all occurrences of the term under the cursor in the file
+            "⇧ ←": ▤ Shirnk or Expand selection 1 character to the left
+            "⇧ ↓": ▤ Shirnk or Expand selection down one line on the same column
+            "⇧ →": ▤ Shirnk or Expand selection 1 character to the right
+            "⇧ ↑": ▤ Shirnk or Expand selection up one line on the same column
+            "⌘ ⇧ ←": ▤ Shirnk or Expand selection to start of the first word on the left
+            "⌘ ⇧ →": ▤ Shirnk or Expand selection to end of the last word on the right
+            "⇧ ^ ←": ▤ Expand selection and move the cursor to end of next word on the left
+            "⇧ ^ →": ▤ Expand selection and move the cursor to end of next word on the right
+            "⇧ ⎇ ←": ▤ Shirnk selection to start of 1 word on the left
+            "⇧ ⎇ →": ▤ Expand selection to end of 1 word on the right
+            "⌘ ⎇ ↑": ▤ Duplicate current line up
+            "⌘ ⎇ ↓": ▤ Duplicate current line down
+            "⇧ ⇥": ▤ Move backwards 2 spaces (tab) the selection or the cursor
+            "⇥": ▤ Move forward 2 spaces (tab) the selection or the cursor
+            # Edit/MultiCursors
+            "⇧ ^ ↑": ▤ Start multi-cursor selection up
+            "⇧ ^ ↓": ▤ Start multi-cursor selection down
+            # Folding
+            "⌘ ⎇ [": ▤ Fold
+            "⌘ ⇧ ⎇ [": ▤ Fold All
+            "⌘ ⎇ ]": ▤ Unfold
+            "⌘ ⇧ ⎇ ]": ▤ Unfold All
+            # Files
+            "⌘ n": ▤ Create new file/folder
+            "⌘ s": ▤ Save current file
+            "⌘ ⇧ s": ▤ Save File as..
+            "⌘ ⇧ ⎇ s": ▤ Save without formatting
+            "⌘ ⎇ f": ▤ Format document
+            # Find and open files
+            "⌘ p": ▤ Find and open project files by name
+            "⌘ f": ▤ Find/highlight the term in current file
+            "⌘ ⇧ t": ▤ Open last visited file
+            "⌘ ⇧ f": ▤ Find in all files
+            "⌘ ⇧ r": ▤ Find and Replace in current file
+            "⌘ ⇧ ^ r": ▤ Find/Replace (Rg) in all project files
+            "^ g": ▤ Go to line
+            # Edit/Movements
+            "⌘ ←": ▤ Move cursor to the start of the first word in the line
+            "⌘ →": ▤ Move cursor to the end of the last word in the line
+            "⌘ ↑": ▤ Move cursor to the top of the file
+            "⌘ ↓": ▤ Move cursor to the bottom of the file
+            "^ ←": ▤ Move cursor to the end of the next word
+            "^ →": ▤ Move cursor to the beginning of the previous word
+            "⎇ ←": ▤ Move cursor to end of the previous word
+            "⎇ →": ▤ Move cursor to the beginning of the next word
+            "⎇ ↑": ▤ Move current line/selection up
+            "⎇ ↓": ▤ Move current line/selection down
+            # Windows/Split/Tabs/Buffers
+            "⌘ ⎇ v": ▤ Split new editor vertically
+            "⌘ ⎇ h": ▤ Split new editor horizontally
+            "⌘ ^ →": ▤ Move focused window/file to right
+            "⌘ ^ ←": ▤ Move focused window/file to left
+            "⌘ b": ▤ Pick tabs/buffers
+            "^ ⇥": ▤ Cycle tabs/buffers clockwise
+            "⇧ ^ ⇥": ▤ Cycle tabs/buffers counterclockwise
+            # Edit/Actions
+            "⌘ .": ▤ Show Quick Fixes
+            "⌘ /": ▤ Toggle Comment
+            "⇧ ⎇ ↑": ▤ Duplicate Line Up
+            "⇧ ⎇ ↓": ▤ Duplicate Line Down
+            "⌘ ^ s": ▤ Pick Snippet from list for the current file
+            "⌘ ^ t": ▤ Run last task
+            "⌘ ⇧ .": ▤ Auto fix
+            "⌘ ⎇ ⏎": ▤ Apply Quick Fix
+            "⌘ ⇧ p": ▤ Run Command
+            "⌘ ⇧ o": ▤ Go To Symbol
+            "⇧ ^ r": ▤ Refactor
+            "⌘ ^ r": ▤ Show references
+            "⌘ h": ▤ Toggle Hover Docs for the current symbol
+            # Terminal
+            "^ l": ⊜ Clear
+            "⌘ t": ⊜ Toggle
+            # Treeview
+            "⌦": ┇ Delete selected item
+            "⏎": ┇ Open selected item
+            "←": ┇ Expand selected item
+            "→": ┇ Collapse selected item
+          ```
+
+          ## VIVALDI
+
+          ```yaml
+          shortcuts:
+            "⌘ l": "@ Focus the address bar"
+            "⌘ ^ →": "@ Cycle tabs clockwise"
+            "⌘ ^ ←": "@ Cycle tabs ounterclockwise"
+            "⌘ ⎇ P": "@ Toggle left between panel"
+            "⌘ ⇧ b": "@ Toggle Bookmarks"
+            "⌘ ⇧ i": "@ Toggle Inspect"
+            "⌘ /": "@ Toggle bottom status bar"
+            "^ ⌘ f": "@ Toggle full screen"
+          ```
+
+          ## GHOSTTY
+
+          ```yaml
+          shortcuts:            
+            # Ghostty Hyper2 layer (Karabiner): hold F3
+            "F3 ←": "Change focus to pane left"
+            "F3 →": "Change focus to pane right"
+            "F3 ↑": "Change focus to pane up"
+            "F3 ↓": "Change focus to pane down"
+            "F3 ⇧ ←": "Split pane to left"
+            "F3 ⇧ →": "Split pane to right"
+            "F3 ⇧ ↑": "Split pane to up"
+            "F3 ⇧ ↓": "Split pane to down"
+            "F3 [": "Change focus to pane previous"
+            "F3 ]": "Change focus to pane next"
+            "F3 w": "Close current pane"
+            "F3 q": "Quit Ghostty (all windows)"
+            "F3 ,": "Reload Ghostty config"
+            "F3 i": "Toggle inspector"
+            "F3 t": "Toggle quick terminal"
+            "F3 p": "Toggle command palette"
+            "F3 n": "New window"
+            "F3 ⏎": "Toggle fullscreen"
+          ```
+
+          ## AMETHYST
+
+          ```yaml
+          shortcuts:
+            # Raycast Hyper on Right Command: ⌘⌃⌥
+            "R⌘ ←": "Focus next window (clockwise)"
+            "R⌘ →": "Focus previous window (counter-clockwise)"
+            "R⌘ ↑": "Focus previous screen"
+            "R⌘ ↓": "Focus next screen"
+            "R⌘ [": "Cycle layout backward"
+            "R⌘ ]": "Cycle layout forward"
+            "R⌘ ⏎": "Swap focused window with main"
+            "R⌘ ⇧ ←": "Swap with previous window"
+            "R⌘ ⇧ →": "Swap with next window"
+            "R⌘ ⇧ ↑": "Focus main window"
+            "R⌘ ⇧ ↓": "Reevaluate windows"
+            "R⌘ ⇧ ,": "Throw focused window to space left"
+            "R⌘ ⇧ .": "Throw focused window to space right"
+            "R⌘ ⇧ [": "Move focused window to previous screen"
+            "R⌘ ⇧ ]": "Move focused window to next screen"
+          ```
+  Ghostty Keybinds > `unconsumed:` and `global:`:
+    desc: How `unconsumed:` and `global:` works?
+    tags: [ shortcuts, ghostty ]
+    links:
+      - Trigger Prefixes: https://ghostty.org/docs/config/keybind
+    notes:
+      - md: |
+          # Ghostty Keybinds
+
+          ## HOW THEY WORK
+
+          ### unconsumed:
+
+          - Ghostty runs the action and still forwards the keypress (its encoded input, if any) to the program running in the terminal. 
+          - Use it when you want a "terminal feature" without breaking the app's own key handling.
+
+          #### WHEN TO USE `unconsumed`
+
+          - When Ghostty is focused and you want "do X" while still letting the terminal app also get the keypress (or not interfering with text input).
+
+          #### WHAT `UNCONSUMED:` DOES (AND WHAT IT DOESN'T)
+
+          - `unconsumed:` only affects whether Ghostty consumes the key event when it has a keybind match. 
+          - It does not prevent the terminal app from seeing injected text: bytes, because those bytes are already "typed input".
+
+          ### PRACTICAL EXAMPLES
+
+          #### 1. `unconsumed`: _(good use)_
+
+          - **WHEN:** You want Reload config but also want the app to still receive the chord (so you don't "steal" it from a TUI that uses it):
+
+              ```yaml
+              keybind = unconsumed:super+ctrl+alt+comma=reload_config
+              ```
+
+          - **WHAT HAPPENS:** Ghostty reloads config, and if the keypress has an encoding that would normally reach the app, it can still be forwarded.
+
+          #### 2. `unconsumed`: _(good use)_
+
+          - **WHEN:** You want Toggle Inspector but don't want to break apps that might use that chord:
+
+              ```yaml
+              keybind = unconsumed:super+ctrl+alt+i=inspector:toggle
+              ```
+
+          - **WHAT HAPPENS:** Inspector toggles, and the keypress is not swallowed by Ghostty.
+
+          ### global:unconsumed:
+
+          - global: makes the keybind work even when Ghostty is not focused and implies all:. 
+          - Per Ghostty docs, global: keybinds always consume input regardless of unconsumed:, because they're not tied to a specific surface to encode/send input.
+          - So in practice: global:unconsumed: behaves like global: (system-wide hotkey), and the unconsumed: part is effectively ignored.
+
+          ### WHEN TO USE `global`
+
+          - Use global: when you want a system-wide hotkey to control Ghostty from anywhere. Don't rely on unconsumed: with it—assume it will be consumed.
+
+          ### WHEN YOU PROBABLY WANT `global` REMOVED ("unexpected behavior"):
+
+          - **System-wide hotkey:** triggers even when Ghostty isn't focused (macOS Accessibility).
+          - **It implies `all:`:** targets all Ghostty surfaces when applicable.
+          - **`unconsumed:`** is ignored for `global:` binds (Ghostty docs), so `global:unconsumed:` is misleading.
+          - **Conflicts:** can steal chords from other apps (browsers, IDEs, window managers), and can behave differently depending on focus/accessibility state.
+
+          ### PRACTICAL EXAMPLES
+
+          #### 1. `global:unconsumed`: _(what it really does)_
+
+          - **WHEN:** You want a system-wide key to toggle Ghostty's quick terminal from any app:
+
+              ```yaml
+              keybind = global:unconsumed:super+ctrl+alt+t=toggle_quick_terminal
+              ```
+
+          - **WHAT HAPPENS:** Effective behavior: same as global:super+ctrl+alt+t=toggle_quick_terminal. It will be global and consumed.
+
+          #### 2. `global:unconsumed`: _(what it really does)_
+
+          - **WHEN:** You want a system-wide key to create a new Ghostty window:
+
+              ```yaml
+              keybind = global:unconsumed:super+ctrl+alt+n=new_window
+              ```
+
+          - **WHAT HAPPENS:** Effective behavior: same as global:super+ctrl+alt+n=new_window. Global + consumed.
+  Ghostty and Amethyst Shortcuts (and Mental Model):
+    desc: How to manage your terminal and windows
+    tags: [ shortcuts, ghostty, amethyst, twm ]
+    notes:
+      - md: |
+          ## TABLE OF SHORTCUTS
+
+          ### GHOSTTY
+
+          | Keys | Action | Focused | Ghostty action | Notes |
+          | :--: | ------ | :-----: | ------------- | ----- |
+          | `F3 ←` | Focus pane left | Pane left | `goto_split:left` | F3 is a Karabiner layer key; Ghostty actually receives `ctrl+alt+←`. |
+          | `F3 →` | Focus pane right | Pane right | `goto_split:right` |  |
+          | `F3 ↑` | Focus pane up | Pane up | `goto_split:up` |  |
+          | `F3 ↓` | Focus pane down | Pane down | `goto_split:down` |  |
+          | `F3 ⇧ ←` | Split pane left | Pane left | `new_split:left` |  |
+          | `F3 ⇧ →` | Split pane right | Pane right | `new_split:right` |  |
+          | `F3 ⇧ ↑` | Split pane up | Pane up | `new_split:up` |  |
+          | `F3 ⇧ ↓` | Split pane down | Pane down | `new_split:down` |  |
+          | `F3 [` | Focus previous pane | Pane prev | `goto_split:previous` | Cycles in Ghostty's split order. |
+          | `F3 ]` | Focus next pane | Pane next | `goto_split:next` |  |
+          | `F3 w` | Close current pane | Previous pane | `close_surface` |  |
+          | `F3 n` | New window | New window | `new_window` |  |
+          | `F3 ⏎` | Toggle fullscreen | — | `toggle_fullscreen` |  |
+          | `F3 i` | Toggle inspector | — | `inspector:toggle` |  |
+          | `F3 ,` | Reload config | — | `reload_config` |  |
+          | `F3 t` | Toggle quick terminal | — | `toggle_quick_terminal` |  |
+          | `F3 p` | Toggle command palette | — | `toggle_command_palette` |  |
+          | `F3 q` | Quit Ghostty (all windows) | — | `quit` | This replaces `⌘Q` so it stays inside the F3 layer. |
+
+          ### AMETHYST
+
+          #### CONCEPTS
+
+            | **CONCEPT** | **DESCRIPTION** | **NOTES** |
+            | :--: | :--: | :--: |
+            | **MAC** | may have 1-N SCREENS. | |
+            | **SCREEN** | may have 1-N `SPACES` | Each screen has its own space set |
+            | **WINDOW** | is an app window (App) assigned to a Space. | It may be TILED or FLOATING |
+            | **SPACE** | has 0-N WINDOWS | Each Space spans all screens |
+            | **LAYOUT** | arranges tiled windows on a screen/space | Tall/Wide/Fullscreen/Column/etc |
+            | **FOCUS** | receives keyboard input | Commands act on the focused window |
+            | **SWAP** | when two windows are swapped inside the current layout's window list | not "move left/right" in physical screen coordinates |
+            | **THROW** | when focused window is moved to another Space | Relocates the window |
+
+          #### SHORTCUTS
+
+              | Keys | Action (short) | Object | Amethyst command | What it actually does |
+              | :--: | -------------- | ------ | --------------- | ---------------------- |
+              | `R⌘ ←` | Focus next window (clockwise in list) | `WINDOW` | `focus-cw` | Focus moves "forward" along Amethyst's window order (depends on layout/window list). |
+              | `R⌘ →` | Focus previous window (counter-clockwise) | `WINDOW` | `focus-ccw` | Focus moves "backward" along that order. |
+              | `R⌘ ↑` | Focus previous screen | `SCREEN` | `focus-screen-ccw` | Focus jumps to the previous screen (wraps in screen order). |
+              | `R⌘ ↓` | Focus next screen | `SCREEN` | `focus-screen-cw` | Focus jumps to the next screen. |
+              | `R⌘ [` | Previous layout | `LAYOUT` | `cycle-layout-backward` | Switches to the previous layout in your configured `layouts` list. |
+              | `R⌘ ]` | Next layout | `LAYOUT` | `cycle-layout` | Switches to the next layout in your configured `layouts` list. |
+              | `R⌘ ⏎` | Swap with main | `WINDOW` | `swap-main` | Swaps the focused window with the main window in the layout's ordering. |
+              | `R⌘ ⇧ ←` | Swap with previous window in list | `WINDOW` | `swap-ccw` | Swaps with the previous window in the layout's ordering (counter-clockwise). |
+              | `R⌘ ⇧ →` | Swap with next window in list | `WINDOW` | `swap-cw` | Swaps with the next window in the layout's ordering (clockwise). |
+              | `R⌘ ⇧ ↑` | Focus main window | `WINDOW` | `focus-main` | Focuses the "main" window for the current layout (where that concept exists). |
+              | `R⌘ ⇧ ↓` | Reevaluate windows | `LAYOUT` | `reevaluate-windows` | Reruns the current layout algorithm to re-tile/recompute frames. |
+              | `R⌘ ⇧ ,` | Throw window to space left | `WINDOW` | `throw-space-left` | Moves the focused window to the space on the left. |
+              | `R⌘ ⇧ .` | Throw window to space right | `WINDOW` | `throw-space-right` | Moves the focused window to the space on the right. |
+              | `R⌘ ⇧ [` | Move window to previous screen | `WINDOW+SCREEN` | `swap-screen-ccw` | Moves the focused window onto the previous screen. |
+              | `R⌘ ⇧ ]` | Move window to next screen | `WINDOW+SCREEN` | `swap-screen-cw` | Moves the focused window onto the next screen. |

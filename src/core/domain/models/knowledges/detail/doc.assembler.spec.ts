@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'bun:test'
+import { parseSourceFile } from '../../entries/parsers/source_document.parser'
+import { toKnowledge } from '../factories/knowledge.factory'
 import type { Knowledge } from '../schemas/knowledge.schema'
 import { assembleDoc, assembleNotesDoc } from './doc.assembler'
 
@@ -97,6 +99,55 @@ describe('assembleDoc()', () => {
     const knowledge = makeCommand({ notes: [{ mermaid: 'graph LR; A-->B' }] })
     const result = assembleDoc(knowledge, { now: NOW })
     expect(result._unsafeUnwrap()).toContain('mermaid.ink')
+  })
+})
+
+describe('toKnowledge() with assembleDoc integration', () => {
+  const NOW_MS = 1_700_000_000_000
+  const SOURCE = '/tmp/test.yaml'
+
+  it('produces non-empty doc for a bookmark entry', () => {
+    const content = 'bookmarks:\n  https://www.youtube.com/watch?v=dQw4w9WgXcQ:\n    desc: Test\n    tags: [test]'
+    const entries = parseSourceFile(SOURCE, content)
+    const entry = entries[0]
+    if (!entry) throw new Error('Expected at least one entry')
+    const knowledge = toKnowledge(entry, NOW_MS)
+
+    expect(knowledge.doc.length).toBeGreaterThan(0)
+    expect(knowledge.doc).toContain('embed/dQw4w9WgXcQ')
+  })
+
+  it('produces non-empty doc for a command entry', () => {
+    const content = 'commands:\n  git status:\n    desc: Show status\n    tags: [git]'
+    const entries = parseSourceFile(SOURCE, content)
+    const entry = entries[0]
+    if (!entry) throw new Error('Expected at least one entry')
+    const knowledge = toKnowledge(entry, NOW_MS)
+
+    expect(knowledge.doc.length).toBeGreaterThan(0)
+    expect(knowledge.doc).toContain('git status')
+  })
+
+  it('produces non-empty doc for a cheat entry', () => {
+    const content = 'cheats:\n  Math:\n    desc: Formulas\n    tags: [math]\n    notes:\n      - md: Formulas'
+    const entries = parseSourceFile(SOURCE, content)
+    const entry = entries[0]
+    if (!entry) throw new Error('Expected at least one entry')
+    const knowledge = toKnowledge(entry, NOW_MS)
+
+    expect(knowledge.doc.length).toBeGreaterThan(0)
+    expect(knowledge.doc).toContain('Formulas')
+  })
+
+  it('produces non-empty doc for a task entry', () => {
+    const content = 'tasks:\n  Build app:\n    desc: Do it\n    tags: [dev]\n    status: todo'
+    const entries = parseSourceFile(SOURCE, content)
+    const entry = entries[0]
+    if (!entry) throw new Error('Expected at least one entry')
+    const knowledge = toKnowledge(entry, NOW_MS)
+
+    expect(knowledge.doc.length).toBeGreaterThan(0)
+    expect(knowledge.doc).toContain('Build app')
   })
 })
 

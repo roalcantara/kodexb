@@ -1,0 +1,2354 @@
+bookmarks:
+  https://catalog.workshops.aws/workshops/731e4034-4681-4277-9bc4-46fafa1199d1/en-US:
+    desc: Step-by-step workshop to deploy a sample application on Amazon EKS
+    tags: [kubernete, aws]
+  https://catalog.workshops.aws/workshops/1f91e1d4-5587-40ff-8d5d-54fc86e0ddc1/en-US:
+    desc: This workshop shows you how to configure and run EMR on EKS and trying out various features and use cases
+    tags: [kubernete, aws, rds]
+  https://catalog.workshops.aws/workshops/aadbd25d-43fa-4ac3-ae88-32d729af8ed4/en-US:
+    desc: This Workshop guides you through the features of EKS Auto Mode and how it simplify app deployment into your Amazon EKS cluster. Participants will learn to enable EKS Auto Mode, deploy applications that uses the different capabilities of EKS Auto Mode
+    tags: [kubernete, aws, fargate]
+  # Tools
+  https://docs.kubelinter.io:
+    tags: [yaml]
+    desc: Kubelinter Documentation - A tool for linting Kubernetes YAML files to ensure best practices and compliance.
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+
+          # Install via homebrew
+          brew install kube-linter
+
+          # Install via flox
+          flox install kube-linter
+  https://k3d.io:
+    tags: [coding]
+    desc: k3d - Run k3s in Docker - A lightweight wrapper to run k3s (Rancher's minimal Kubernetes distribution) in Docker containers.
+    links:
+      - https://medium.com/@ddcmaia/k3d-uma-abordagem-simples-de-k8s-acd15cc4c38a
+      - https://marketplace.visualstudio.com/items?itemName=inercia.vscode-k3d
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+
+          # Install via homebrew
+          brew install k3d
+
+          # Install via flox
+          flox install kube3d
+      - md: | #markdown
+          ## OVERVIEW
+
+          - **To learn:** Kubernetes can feel heavy at first. k3d lowers the entry barrier by wrapping k3s in Docker.
+          - **To experiment:** you can quickly create clusters with multiple servers and test different versions.
+          - **To simplify IoT/Edge work:** since k3s is optimized for small environments, it even runs on devices like Raspberry Pi.
+          - **To save time:** setup is faster than most tutorials you'll read.
+
+          ## HOW IT WORKS
+
+          - k3d runs a full k3s cluster inside Docker containers.
+          - After installation, it automatically updates your kubeconfig, so you can use kubectl right away.
+      - sh: | #shell
+          #!/bin/bas
+          ## USAGE
+          # Create a cluster with 2 servers
+          k3d cluster create test-cluster --servers 2
+          # Alternatively, Get the new cluster's connection details merged into your default kubeconfig
+          # (usually specified using the KUBECONFIG environment variable or the default path $HOME/.kube/config) and directly switch to the new context
+          k3d kubeconfig merge mycluster --kubeconfig-switch-context
+          # List clusters and nodes
+          k3d cluster list
+          # List nodes
+          k3d node list
+          # Now you can see all resources up and running as if you were on any standard Kubernetes cluster
+          kubectl get pods --all-namespaces
+  https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/:
+    desc: Official Kubernetes guide for debugging running pods and examining pod lifecycle
+    tags: [log, troubleshooting]
+commands:
+  kubectl config view -o jsonpath='{.users[?(@.name == "<USER>")].user.password}':
+    desc: Get the password for the <USER> user
+    tags: [kube]
+  kubectl config use-context <CLUSTER_NAME>:
+    desc: Set the default context to <CLUSTER_NAME>
+    tags: [kube]
+  kubectl config set-cluster <CLUSTER_NAME>:
+    desc: Set a cluster entry in the kubeconfig
+    tags: [kube]
+  kubectl config set-cluster <CLUSTER_NAME> --proxy-url=<PROXY_URL>:
+    desc: Configure the URL to a proxy server to use for requests made by this client in the kubeconfig
+    tags: [kube]
+  kubectl config set-context --current --namespace=<NAMESPACE>:
+    desc: Permanently save the namespace for all subsequent kubectl commands in that context
+    tags: [kube]
+  kubectl config set-context gce --user=<USER> --namespace=<NAMESPACE> kubectl config use-context gce:
+    desc: Set a context utilizing a specific <USER> and <NAMESPACE>
+    tags: [kube]
+  kubectl config unset users.<USER>:
+    desc: Delete user <USER>
+    tags: [kube]
+  kubectl apply -f <path/to/manifest.yaml>:
+    desc: Create resource(s)
+    tags: [kube]
+  kubectl apply -f <path/to/my1.yaml> -f <path/to/my2.yaml>:
+    desc: Create from multiple files
+    tags: [kube]
+  kubectl apply -f <path/to/dir>:
+    desc: Create resource(s) in all manifest files in dir
+    tags: [kube]
+  kubectl apply -f <https://git.io/vPieo>:
+    desc: Create resource(s) from url
+    tags: [kube]
+  kubectl get pod <POD> -o yaml:
+    desc: Get a pod's YAML
+    tags: [kube]
+  kubectl get deployment <DEPLOYMENT>:
+    desc: List a particular <DEPLOYMENT>
+    tags: [kube]
+  kubectl describe nodes <NODE>:
+    desc: Describe commands with verbose output
+    tags: [kube]
+  kubectl get pods --sort-by='.status.containerStatuses[0].restartCount':
+    desc: List pods Sorted by Restart Count
+    tags: [kube]
+  kubectl get pods --selector=<app=cassandra> -o jsonpath='{.items[*].metadata.labels.version}':
+    desc: Get the version label of all pods with label <app=cassandra>
+    tags: [kube]
+  kubectl get secret <SECRET> --template='{{index .data "<KEY-NAME-WITH-DASHES>"}}':
+    desc: Retrieve a base64 encoded value with dashes instead of underscores.
+    tags: [kube]
+  kubectl get node --selector='!<NODE-ROLE.KUBERNETES.IO/CONTROL-PLANE>':
+    desc: Get all worker nodes (use a selector to exclude results that have a label named '<NODE-ROLE.KUBERNETES.IO/CONTROL-PLANE>')
+    tags: [kube]
+  kubectl get pods --field-selector=status.phase=<Running>:
+    desc: Get all <Running> pods in the namespace
+    tags: [kube]
+  kubectl get nodes -o jsonpath='{.items[*].status.addresses[?(@.type=="<ExternalIP>")].address}':
+    desc: Get <ExternalIPs> of all nodes
+    tags: [kube]
+  kubectl get pods --show-labels:
+    desc: Show labels for all pods (or any other Kubernetes object that supports labelling)
+    tags: [kube]
+  JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}' && kubectl get nodes -o jsonpath="$JSONPATH" | grep 'Ready=True'``:
+    desc: Check which nodes are ready
+    tags: [kube]
+  kubectl diff -f <path/to/manifest.yaml>:
+    desc: Compares the current state of the cluster against the state that the cluster would be in if the manifest was applied
+    tags: [kube]
+  kubectl get nodes -o json:
+    desc: Produce a period-delimited tree of all keys returned for nodes
+    tags: [kube]
+  kubectl get deployment <DEPLOYMENT> --subresource=status:
+    desc: Get a deployment's status subresource
+    tags: [kube]
+  kubectl set image <DEPLOYMENT/FRONTEND> <www>=image:v2:
+    desc: Rolling update <www> containers of <DEPLOYMENT/FRONTEND>, updating the image
+    tags: [kube]
+  kubectl rollout history <DEPLOYMENT/FRONTEND>:
+    desc: Check the history of deployments including the revision
+    tags: [kube]
+  kubectl rollout undo <DEPLOYMENT/FRONTEND>:
+    desc: Rollback to the previous deployment
+    tags: [kube]
+  kubectl rollout undo <DEPLOYMENT/FRONTEND> --to-revision=<2>:
+    desc: Rollback to a specific revision
+    tags: [kube]
+  kubectl rollout status -w <DEPLOYMENT/FRONTEND>:
+    desc: Watch rolling update status of <DEPLOYMENT/FRONTEND> until completion
+    tags: [kube]
+  kubectl rollout restart <DEPLOYMENT/FRONTEND>:
+    desc: Rolling restart of the <DEPLOYMENT/FRONTEND>
+    tags: [kube]
+  cat <PATH/TO/pod.json> | kubectl replace -f -:
+    desc: Replace a pod based on the JSON passed into stdin
+    tags: [kube]
+  kubectl replace --force -f <PATH/TO/pod.json>:
+    desc: Force replace, delete and then re-create the resource. Will cause a service outage.
+    tags: [kube]
+  kubectl expose rc <NGINX> --port=<80> --target-port=<8000>:
+    desc: Create a service for a replicated <NGINX>, which serves on port <80> and connects to the containers on port <8000>
+    tags: [kube]
+  'kubectl get pod <PODNAME> -o yaml | sed ''s/\(image: <IMAGE_NAME>\):.*$/\1:<v4>/'' | kubectl replace -f -':
+    desc: Update a single-container pod's image version (tag) to <v4>
+    tags: [kube]
+  kubectl label pods <PODNAME> new-label=<LABEL>:
+    desc: Add a Label `new-label=<LABEL>`
+    tags: [kube]
+  kubectl annotate pods <PODNAME> <icon-url>=<http://goo.gl/XXBTWq>:
+    desc: Add an annotation `<icon-url>=<http://goo.gl/XXBTWq>`
+    tags: [kube]
+  kubectl autoscale deployment <foo> --min=<2> --max=<10>:
+    desc: Auto scale a deployment `<foo>`
+    tags: [kube]
+  kubectl edit svc/<DOCKER-REGISTRY>:
+    desc: Edit the service named <DOCKER-REGISTRY>
+    tags: [kube]
+  kubectl scale --replicas=<3> rs/<FOO>:
+    desc: Scale a replicaset named <FOO> to <3>
+    tags: [kube]
+  kubectl scale --replicas=<3> -f <PATH/TO/FOO.YAML>:
+    desc: Scale a resource specified in <PATH/TO/FOO.YAML> to <3>
+    tags: [kube]
+  kubectl scale --current-replicas=<2> --replicas=<3> <deployment/mysql>:
+    desc: If the <deployment/mysql>'s current size is <2>, scale it to <3>
+    tags: [kube]
+  kubectl scale --replicas=<5> <rc/FOO> <rc/BAR> <rc/BAZ>:
+    desc: Scale multiple replication controllers
+    tags: [kube]
+  kubectl delete -f <PATH/TO/POD.JSON>:
+    desc: Delete a pod using the type and name specified in <PATH/TO/pod.json>
+    tags: [kube]
+  kubectl delete pod,service <BAZ> <FOO>:
+    desc: Delete pods and services with same names <BAZ> and <FOO>
+    tags: [kube]
+  kubectl delete pods,services -l <name>=<LABEL>:
+    desc: Delete pods and services with label <name>=<LABEL>
+    tags: [kube]
+  kubectl -n <NAMESPACE> delete pod,svc --all:
+    desc: Delete all pods and services in namespace <NAMESPACE>
+    tags: [kube]
+  kubectl get pods -n <NAMESPACE> --no-headers=true | awk '/<PATTERN1>|<PATTERN2>/{print $1}' | xargs  kubectl delete -n <NAMESPACE> pod:
+    desc: Delete all pods matching the awk <PATTERN1> or <PATTERN2>
+    tags: [kube]
+  kubectl logs <PODNAME>:
+    desc: Dump pod logs (stdout)
+    tags: [kube]
+  kubectl logs -l name=<LABEL>:
+    desc: Dump pod logs, with label name=<LABEL> (stdout)
+    tags: [kube]
+  kubectl logs <PODNAME> --previous:
+    desc: Dump pod logs (stdout) for a previous instantiation of a container
+    tags: [kube]
+  kubectl logs <PODNAME> -c <CONTAINER>:
+    desc: Dump pod container logs (stdout, multi-container case)
+    tags: [kube]
+  kubectl logs -f <PODNAME>:
+    desc: Stream pod logs (stdout)
+    tags: [kube]
+  kubectl logs -f <PODNAME> -c <CONTAINER>:
+    desc: Stream pod container logs (stdout, multi-container case)
+    tags: [kube]
+  kubectl logs -f -l name=<LABEL> --all-containers:
+    desc: Stream all pods logs with label `name=<LABEL>` (stdout)
+    tags: [kube]
+  kubectl run -i --tty busybox --image=busybox:1.28 -- sh:
+    desc: Run pod as interactive shell
+    tags: [kube]
+  kubectl run <NGINX> --image=<NGINX> -n <NAMESPACE>:
+    desc: Start a single instance of <NGINX> pod in the namespace of <NAMESPACE>
+    tags: [kube]
+  kubectl run <NGINX> --image=<NGINX> --dry-run=client -o yaml > <PATH/TO/POD.YAML>:
+    desc: Generate spec for running pod <NGINX> and write it into file `<PATH/TO/POD.YAML>`
+    tags: [kube]
+  kubectl attach <PODNAME> -i:
+    desc: Attach to Running Container
+    tags: [kube]
+  kubectl port-forward <PODNAME> <5000>:<6000>:
+    desc: Listen on port `<5000>` on the local machine and forward to port `<6000>` on `<PODNAME>`
+    tags: [kube]
+  kubectl exec <PODNAME> -- ls /:
+    desc: Run cmd in existing pod (1 container case)
+    tags: [kube]
+  kubectl exec --stdin --tty <PODNAME> -- /bin/sh:
+    desc: Interactive shell access to a running pod (1 container case)
+    tags: [kube]
+  kubectl exec <PODNAME> -c <CONTAINER> -- ls /:
+    desc: Run cmd in existing pod (multi-container case)
+    tags: [kube]
+  kubectl top pod <PODNAME> --containers:
+    desc: Show metrics of pod and its containers
+    tags: [kube]
+  kubectl top pod <PODNAME> --sort-by=<CPU>:
+    desc: Show metrics of pod and sort it by <CPU>
+    tags: [kube]
+  kubectl top pod <PODNAME> --sort-by=<MEMORY>:
+    desc: Show metrics of pod and sort it by <MEMORY>
+    tags: [kube]
+  kubectl cp </TMP/FOO_DIR> <PODNAME>:</TMP/BAR_DIR>:
+    desc: Copy `</TMP/FOO_DIR>` local directory to `</TMP/BAR_DIR>` in a remote pod in the current namespace
+    tags: [kube]
+  kubectl cp </TMP/FOO> <PODNAME>:</TMP/BAR> -c <CONTAINER>:
+    desc: Copy `</TMP/FOO>` local file to </TMP/BAR> in a remote pod in a specific container
+    tags: [kube]
+  kubectl cp </TMP/FOO> <NAMESPACE>/<PODNAME>:</TMP/BAR>:
+    desc: Copy `</TMP/FOO>` local file to </TMP/BAR> in a remote pod in namespace <NAMESPACE>
+    tags: [kube]
+  kubectl cp <NAMESPACE>/<PODNAME>:</TMP/FOO> </TMP/BAR>:
+    desc: Copy </TMP/FOO> from a remote pod to </TMP/BAR> locally
+    tags: [kube]
+  tar cf - </TMP/FOO> | kubectl exec -i -n <NAMESPACE> <PODNAME> -- tar xf - -C </TMP/BAR>:
+    desc: Copy `</TMP/FOO>` local file to </TMP/BAR> in a remote pod in namespace `<NAMESPACE>`
+    tags: [kube]
+  kubectl exec -n <NAMESPACE> <PODNAME> -- tar cf - </TMP/FOO> | tar xf - -C </TMP/BAR>:
+    desc: Copy `</TMP/FOO>` from a remote pod to </TMP/BAR> locally
+    tags: [kube]
+  kubectl logs deploy/<DEPLOYMENT>:
+    desc: Dump Pod logs for a Deployment (single-container case)
+    tags: [kube]
+  kubectl logs deploy/<DEPLOYMENT> -c <CONTAINER>:
+    desc: Dump Pod logs for a Deployment (multi-container case)
+    tags: [kube]
+  kubectl port-forward svc/<SERVICE> <5000>:
+    desc: Listen on local port <5000> and forward to port <5000> on Service backend
+    tags: [kube]
+  kubectl port-forward svc/<SERVICE> <5000>:<SERVICE-PORT>:
+    desc: Listen on local port <5000> and forward to Service target port with name <SERVICE-PORT>
+    tags: [kube]
+  kubectl port-forward deploy/<DEPLOYMENT> <5000>:<6000>:
+    desc: Listen on local port <5000> and forward to port <6000> on a Pod created by <DEPLOYMENT>
+    tags: [kube]
+  kubectl exec deploy/<DEPLOYMENT> -- ls:
+    desc: Run cmd in first Pod and first container in Deployment (single- Or multi-container cases)
+    tags: [kube]
+  kubectl cordon <NODE_NAME>:
+    desc: Mark <NODE_NAME> as unschedulable
+    tags: [kube]
+  kubectl drain <NODE_NAME>:
+    desc: Drain <NODE_NAME> in preparation for maintenance
+    tags: [kube]
+  kubectl uncordon <NODE_NAME>:
+    desc: Mark <NODE_NAME> as schedulable
+    tags: [kube]
+  kubectl top node <NODE_NAME>:
+    desc: Show metrics of node
+    tags: [kube]
+  kubectl cluster-info dump --output-directory=</PATH/TO/CLUSTER-STATE>:
+    desc: Dump current cluster state to </PATH/TO/CLUSTER-STATE>
+    tags: [kube]
+  kubectl get nodes -o='custom-columns=NodeName:.metadata.name,TaintKey:.spec.taints[*].key,TaintValue:.spec.taints[*].value,TaintEffect:.spec.taints[*].effect':
+    desc: View existing taints on which exist on current nodes
+    tags: [kube]
+  kubectl taint nodes foo dedicated=special-user:NoSchedule:
+    desc: If a taint with that key and effect already exists, its value is replaced as specified
+    tags: [kube]
+  kubectl api-resources --namespaced=false:
+    desc: All non-namespaced resources
+    tags: [kube]
+  kubectl api-resources -o <name>:
+    desc: All resources with simple output (only the resource <name>)
+    tags: [kube]
+  kubectl api-resources -o <wide>:
+    desc: All resources with expanded (aka <wide>) output
+    tags: [kube]
+  kubectl api-resources --api-group=<EXTENSIONS>:
+    desc: All resources in the <EXTENSIONS> API group
+    tags: [kube]
+  kubectl -o=custom-columns=<spec>:
+    desc: Print a table using a comma separated list of custom columns
+    tags: [kube]
+  kubectl get pods -A -o=custom-columns='DATA:spec.containers[*].image':
+    desc: All images running in a cluster
+    tags: [kube]
+  kubectl get pods --namespace default --output=custom-columns="NAME:.metadata.name,IMAGE:.spec.containers[*].image":
+    desc: "All images running in namespace: 'default', grouped by 'Pod'"
+    tags: [kube]
+  kubectl get pods -A -o=custom-columns='DATA:spec.containers[?(@.image!="registry.k8s.io/coredns:1.6.2")].image':
+    desc: All images excluding 'registry.k8s.io/coredns:1.6.2'
+    tags: [kube]
+  kubectl get pods -A -o=custom-columns='DATA:metadata.*':
+    desc: All fields under 'metadata' regardless of name
+    tags: [kube]
+  kubectl -o=custom-columns=<SPEC>:
+    desc: Print a table using a comma separated list of custom columns
+    tags: [kube]
+  kubectl -o=custom-columns-file=<FILENAME>:
+    desc: Print a table using the custom columns template in the <FILENAME> file
+    tags: [kube]
+  kubectl -o=jsonpath=<TEMPLATE>:
+    desc: Print the fields defined in a jsonpath expression
+    tags: [kube]
+  kubectl -o=jsonpath-file=<FILENAME>:
+    desc: Print the fields defined by the jsonpath expression in the <FILENAME> file
+    tags: [kube]
+
+  kubectl config view:
+    desc: Show Merged kubeconfig settings
+    tags: [kube]
+  kubectl config view -o jsonpath='{.users[].name}':
+    desc: Display the first user
+    tags: [kube]
+  kubectl config view -o jsonpath='{.users[*].name}':
+    desc: Get a list of users
+    tags: [kube]
+  kubectl config get-contexts:
+    desc: Display list of contexts
+    tags: [kube]
+  kubectl config current-context:
+    desc: Display the current-context
+    tags: [kube]
+  kubectl apply:
+    desc: The recommended way of managing Kubernetes applications on production
+    tags: [kube]
+  kubectl create deployment nginx --image=nginx:
+    desc: Start a single instance of nginx
+    tags: [kube]
+  kubectl create job hello --image=busybox:1.28 -- echo 'Hello World':
+    desc: Create a Job which prints "Hello World"
+    tags: [kube]
+  kubectl create cronjob hello --image=busybox:1.28 --schedule="*/1 * * * *" -- echo 'Hello World':
+    desc: Create a CronJob that prints "Hello World" every minute
+    tags: [kube]
+  kubectl explain pods:
+    desc: Get the documentation for pod manifests
+    tags: [kube]
+  kubectl get services:
+    desc: List all services in the namespace
+    tags: [kube]
+  kubectl get pods:
+    desc: List all pods in the namespace
+    tags: [kube]
+  kubectl get pods --all-namespaces:
+    desc: List all pods in all namespaces
+    tags: [kube]
+  kubectl get pods -o wide:
+    desc: List all pods in the current namespace, with more details
+    tags: [kube]
+  kubectl get services --sort-by=.metadata.name:
+    desc: List Services Sorted by Name
+    tags: [kube]
+  kubectl get pv --sort-by=.spec.capacity.storage:
+    desc: List PersistentVolumes sorted by capacity
+    tags: [kube]
+  kubectl get events --sort-by=.metadata.creationTimestamp:
+    desc: List Events sorted by timestamp
+    tags: [kube]
+  kubectl get pods -o json:
+    desc: Produce a period-delimited tree of all keys returned for pods, etc
+    tags: [kube]
+  kubectl delete pod unwanted --now:
+    desc: Delete a pod with no grace period
+    tags: [kube]
+  kubectl cluster-info:
+    desc: Display addresses of the master and services
+    tags: [kube]
+  kubectl cluster-info dump:
+    desc: Dump current cluster state to stdout
+    tags: [kube]
+  kubectl api-links:
+    desc: List all supported resource types along with their shortnames API group whether they [are namespaced and Kin
+    tags: [kube]
+  kubectl api-resources --namespaced=true:
+    desc: All namespaced resources
+    tags: [kube]
+  kubectl api-resources --verbs=list,get:
+    desc: All resources that support the 'list' and 'get' request verbs
+    tags: [kube]
+  kubectl -o=json:
+    desc: Output a JSON formatted API object
+    tags: [kube]
+  kubectl -o=name:
+    desc: Print only the resource name and nothing else
+    tags: [kube]
+  kubectl -o=wide:
+    desc: Output in the plain-text format with any additional information, and for pods, the node name is included
+    tags: [kube]
+  kubectl -o=yaml:
+    desc: Output a YAML formatted API object
+    tags: [kube]
+  kubectl get pods -A --v=0:
+    desc: Generally useful for this to *always* be visible to a cluster operator use '--v=0'
+    tags: [kube]
+  kubectl get pods -A --v=1:
+    desc: A reasonable default log level if you don't want verbosity use '--v=1'
+    tags: [kube]
+  kubectl get pods -A --v=2:
+    desc: Useful steady state information about the service and important log messages that may correlate to significant changes in the system use '--v=2'. This is the recommended default log level for most systems
+    tags: [kube]
+  kubectl get pods -A --v=3:
+    desc: Extended information about changes use '--v=3'
+    tags: [kube]
+  kubectl get pods -A --v=4:
+    desc: Debug level verbosity use '--v=4'
+    tags: [kube]
+  kubectl get pods -A --v=5:
+    desc: Trace level verbosity use '--v=5'
+    tags: [kube]
+  kubectl get pods -A --v=6:
+    desc: Display requested resources use '--v=6'
+    tags: [kube]
+  kubectl get pods -A --v=7:
+    desc: Display HTTP request headers use '--v=7'
+    tags: [kube]
+  kubectl get pods -A --v=8:
+    desc: Display HTTP request contents use '--v=8'
+    tags: [kube]
+  kubectl get pods -A --v=9:
+    desc: Display HTTP request contents without truncation of contents use '--v=9'
+    tags: [kube]
+cheats:
+  Kubernetes + Novo Serviço no RDS on AWS - Complete Setup Script:
+    desc: Kubernetes + Novo Serviço no RDS on AWS - Complete Setup Script
+    tags: [aws]
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+
+          # ============================================================================
+          # Validação de Endpoint - Users API
+          # ============================================================================
+
+          API_NAMESPACE="api"
+          REGION="us-east-1"
+
+          # ============================================================================
+          # 1. Get LoadBalancer URL
+          # ============================================================================
+          echo "🔧 [1/5] Obtendo LoadBalancer URL..."
+
+          LB_HOSTNAME=$(kubectl get svc users-api-service -n $API_NAMESPACE \
+            --query 'status.loadBalancer.ingress[0].hostname' --output text)
+
+          LB_IP=$(kubectl get svc users-api-service -n $API_NAMESPACE \
+            --query 'status.loadBalancer.ingress[0].ip' --output text)
+
+          if [ "$LB_HOSTNAME" != "None" ] && [ -n "$LB_HOSTNAME" ]; then
+            API_URL="http://$LB_HOSTNAME"
+          elif [ "$LB_IP" != "None" ] && [ -n "$LB_IP" ]; then
+            API_URL="http://$LB_IP"
+          else
+            echo "❌ LoadBalancer ainda não tem IP/Hostname!"
+            echo "ℹ️ Aguarde alguns minutos e execute novamente"
+            echo "kubectl get svc -n $API_NAMESPACE"
+            exit 1
+          fi
+
+          echo "✅ API URL: $API_URL"
+
+          # ============================================================================
+          # 2. Health Check Básico
+          # ============================================================================
+          echo ""
+          echo "🔧 [2/5] Health Check..."
+
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "$API_URL/" 2>/dev/null)
+
+          if [ "$RESPONSE" == "200" ] || [ "$RESPONSE" == "404" ]; then
+            echo "✅ API respondendo (HTTP $RESPONSE)"
+          else
+            echo "⚠️ API respondeu com status $RESPONSE"
+          fi
+
+          # ============================================================================
+          # 3. GET /users - Sem Filtros
+          # ============================================================================
+          echo ""
+          echo "🔧 [3/5] GET /users - Listar todos os usuários..."
+
+          echo ""
+          echo "--- Comando ---"
+          echo "curl -X GET \"$API_URL/users\" \\"
+          echo "  -H 'Content-Type: application/json' \\"
+          echo "  -w '\nStatus: %{http_code}\n'"
+          echo ""
+
+          echo "--- Response ---"
+          curl -X GET "$API_URL/users" \
+            -H 'Content-Type: application/json' \
+            -w '\nStatus: %{http_code}\n' 2>/dev/null | jq '.' 2>/dev/null || curl -X GET "$API_URL/users" -H 'Content-Type: application/json' -w '\nStatus: %{http_code}\n'
+
+          # ============================================================================
+          # 4. GET /users?page=1&limit=10 - Com Paginação
+          # ============================================================================
+          echo ""
+          echo "🔧 [4/5] GET /users?page=1&limit=10 - Com paginação..."
+
+          echo ""
+          echo "--- Comando ---"
+          echo "curl -X GET \"$API_URL/users?page=1&limit=10\" \\"
+          echo "  -H 'Content-Type: application/json' \\"
+          echo "  -w '\nStatus: %{http_code}\n'"
+          echo ""
+
+          echo "--- Response ---"
+          curl -X GET "$API_URL/users?page=1&limit=10" \
+            -H 'Content-Type: application/json' \
+            -w '\nStatus: %{http_code}\n' 2>/dev/null | jq '.' 2>/dev/null || curl -X GET "$API_URL/users?page=1&limit=10" -H 'Content-Type: application/json' -w '\nStatus: %{http_code}\n'
+
+          # ============================================================================
+          # 5. Testes Adicionais (se implementado)
+          # ============================================================================
+          echo ""
+          echo "🔧 [5/5] Testes Adicionais..."
+
+          echo ""
+          echo "--- GET /users/{id} ---"
+          echo "curl -X GET \"$API_URL/users/1\" \\"
+          echo "  -H 'Content-Type: application/json' \\"
+          echo "  -w '\nStatus: %{http_code}\n'"
+          echo ""
+
+          echo "--- POST /users (Criar novo usuário) ---"
+          echo "curl -X POST \"$API_URL/users\" \\"
+          echo "  -H 'Content-Type: application/json' \\"
+          echo "  -d '{\"name\": \"João Silva\", \"email\": \"joao@example.com\"}' \\"
+          echo "  -w '\nStatus: %{http_code}\n'"
+          echo ""
+
+          # ============================================================================
+          # Debug Info
+          # ============================================================================
+          echo ""
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║                  📊 Debug Information                       ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          echo ""
+
+          echo "Pod Status:"
+          kubectl get pods -n $API_NAMESPACE -l app=users-api
+
+          echo ""
+          echo "Pod Logs:"
+          kubectl logs -n $API_NAMESPACE -l app=users-api --tail=20
+
+          echo ""
+          echo "Service Status:"
+          kubectl get svc -n $API_NAMESPACE
+
+          echo ""
+          echo "RDS Connection Test (dentro do pod):"
+          echo "kubectl exec -it -n $API_NAMESPACE \$(kubectl get pod -n $API_NAMESPACE -l app=users-api -o jsonpath='{.items[0].metadata.name}') -- sh -c 'echo \"RDS_HOST: \$DB_HOST, RDS_USER: \$DB_USER\"'"
+
+          echo ""
+  The Easiest Approach - Amazon EKS with eksctl:
+    desc: The Easiest Approach - Amazon EKS with eksctl
+    tags: [kubernete, aws, rds]
+    notes:
+      - md: | #markdown
+          ## The Easiest Way to Setup Kubernetes on AWS
+
+          1. Create the EKS Cluster
+
+          - The simplest way is to use eksctl, a command-line utility that automates the creation of Amazon EKS clusters:
+
+          ```sh
+          # Install eksctl, kubectl, and AWS CLI first
+          # Then create your cluster
+          eksctl create cluster --name my-api-cluster --region us-west-2 --nodegroup-name standard-workers --node-type m5.large --nodes 2
+          ```
+
+          This single command creates:
+
+          The EKS cluster with managed control plane
+          Worker nodes (EC2 instances)
+          All necessary networking (VPC, subnets, security groups)
+          IAM roles and policies
+          2. Database Options For your database, you have several AWS-managed options:
+
+          Amazon RDS (PostgreSQL, MySQL, etc.) - Traditional relational database
+          Amazon Aurora - High-performance, cloud-native database
+          Amazon DynamoDB - NoSQL option for simpler use cases
+          3. Database Connectivity The easiest approach is to deploy both your EKS cluster and database in the same VPC. This allows direct connectivity between your Kubernetes pods and the database. You'll need to:
+
+          Configure security groups to allow traffic from EKS worker nodes to the database
+          Use database connection pooling (like Amazon RDS Proxy) for better performance
+          Store database credentials in AWS Secrets Manager and access them from your pods
+          4. Sample API Application Architecture Your Kubernetes deployment would include:
+
+          A Deployment with your API application (e.g., Node.js, Python Flask, or Java Spring Boot)
+          A Service to expose your API within the cluster
+          An Ingress or LoadBalancer service to expose your API externally
+          ConfigMaps and Secrets for configuration and database credentials
+          5. Simple Example Structure
+
+          # Your API pod connects to RDS/Aurora
+          # API endpoint: GET /api/data
+          # Logic: SELECT TOP 100 * FROM your_table
+          # Returns: JSON response with the data
+
+          Key Benefits of This Approach:
+
+          Fully managed: AWS handles the Kubernetes control plane
+          Automated setup: eksctl creates everything you need
+          Scalable: Can easily scale both the cluster and database
+          Secure: Built-in security features and IAM integration
+          Cost-effective: Pay only for what you use
+          Next Steps:
+
+          Set up your AWS CLI and install eksctl
+          Create the EKS cluster using the command above
+          Set up your database (RDS or Aurora)
+          Deploy your API application to the cluster
+          Configure networking and security groups for database access
+          This approach gives you a production-ready Kubernetes environment on AWS with minimal manual configuration, making it the easiest path to get your API and database solution running.
+  Kubernetes + Serviço existente no RDS on AWS - Complete Setup Script:
+    desc: Kubernetes + Serviço existente no RDS on AWS - Complete Setup Script
+    tags: [aws]
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+          # ============================================================================
+          # SETUP INICIAL - Configure essas variáveis
+          # ============================================================================
+
+          # 🔴 CUSTOMIZE COM SEUS DADOS
+          export RDS_ENDPOINT="cs-dev.cluster-ro-czcr94cvltso.us-east-1.rds.amazonaws.com"
+          export DB_USER="admin"
+          export DB_PASSWORD="SuaSenha123!"
+          export DB_NAME="postgres"
+          export REGION="us-east-1"
+          export CLUSTER_NAME="my-cluster"
+          export API_IMAGE="seu-registry/users-api:latest"
+
+          # ============================================================================
+          # PASSO 1: Validar Conectividade AWS
+          # ============================================================================
+          # Por que? Confirma que você tem credenciais AWS válidas e pode executar comandos
+          # O que esperamos? Seu usuário/role AWS será exibido
+
+          echo "=== PASSO 1: Validar Credenciais AWS ==="
+          aws sts get-caller-identity
+          # Esperado output:
+          # {
+          #     "UserId": "AIDAI...",
+          #     "Account": "123456789012",
+          #     "Arn": "arn:aws:iam::123456789012:user/seu-user"
+          # }
+
+          # ============================================================================
+          # PASSO 2: Validar que RDS Existe e é Acessível
+          # ============================================================================
+          # Por que? Confirma que seu banco de dados RDS já existe e está disponível
+          # O que esperamos? Informações sobre a instância RDS
+
+          echo "=== PASSO 2: Validar RDS Existente ==="
+          aws rds describe-db-instances \
+            --region $REGION \
+            --query "DBInstances[?Endpoint.Address=='$RDS_ENDPOINT'].[DBInstanceIdentifier,Engine,DBInstanceStatus,Endpoint.Address]" \
+            --output table
+            --profile consorciei-dev
+          # Esperado output:
+          # |  DBInstanceIdentifier  |  Engine  |  DBInstanceStatus  |  Endpoint.Address  |
+          # |  my-postgres           |  postgres|  available         |  seu-db.c9...     |
+
+          # ============================================================================
+          # PASSO 3: Pegar VPC Subnets
+          # ============================================================================
+          # Por que? Kubernetes precisa saber em quais subnets criar seus recursos
+          # O que esperamos? IDs de subnets (pelo menos 2)
+
+          echo "=== PASSO 3: Pegar VPC Subnets ==="
+          export SUBNETS=$(aws ec2 describe-subnets \
+            --region $REGION \
+            --query 'Subnets[0:2].SubnetId' \
+            --output text)
+          echo "Subnets selecionadas: $SUBNETS"
+          # Esperado output:
+          # Subnets selecionadas: subnet-12345abc subnet-67890def
+
+          # ============================================================================
+          # PASSO 4: Criar IAM Role para EKS Service
+          # ============================================================================
+          # Por que? EKS precisa de permissões para criar e gerenciar o cluster
+          # O que esperamos? ARN da role criada
+
+          echo "=== PASSO 4: Criar EKS Service Role ==="
+          TRUST_POLICY='{
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Principal": {"Service": "eks.amazonaws.com"},
+              "Action": "sts:AssumeRole"
+            }]
+          }'
+
+          export EKS_ROLE_ARN=$(aws iam create-role \
+            --role-name eks-service-role-$(date +%s) \
+            --assume-role-policy-document "$TRUST_POLICY" \
+            --region $REGION \
+            --query 'Role.Arn' \
+            --output text 2>/dev/null || echo "Role pode já existir")
+
+          echo "EKS Service Role: $EKS_ROLE_ARN"
+          # Esperado output:
+          # EKS Service Role: arn:aws:iam::123456789012:role/eks-service-role-1702345678
+
+          # ============================================================================
+          # PASSO 5: Anexar Policy ao EKS Service Role
+          # ============================================================================
+          # Por que? A role precisa de permissões específicas para gerenciar EKS
+          # O que esperamos? Sem erro, a policy foi anexada
+
+          echo "=== PASSO 5: Anexar Policy ao EKS Service Role ==="
+          EKS_ROLE_NAME=$(echo $EKS_ROLE_ARN | rev | cut -d'/' -f1 | rev)
+          aws iam attach-role-policy \
+            --role-name $EKS_ROLE_NAME \
+            --policy-arn arn:aws:iam::aws:policy/AmazonEKSServiceRolePolicy \
+            --region $REGION
+          echo "✅ Policy anexada"
+
+          # ============================================================================
+          # PASSO 6: Criar EKS Cluster
+          # ============================================================================
+          # Por que? O cluster EKS é a base para rodar Kubernetes na AWS
+          # O que é? É um managed Kubernetes - a AWS cuida do control plane
+          # O que esperamos? Cluster em estado "CREATING" → "ACTIVE" (leva ~10-15 min)
+
+          echo "=== PASSO 6: Criar EKS Cluster ==="
+          aws eks create-cluster \
+            --name $CLUSTER_NAME \
+            --version 1.28 \
+            --role-arn $EKS_ROLE_ARN \
+            --resources-vpc-config subnetIds="$SUBNETS" \
+            --region $REGION
+          echo "⏳ Cluster em criação... aguarde ~15 minutos"
+
+          # ============================================================================
+          # PASSO 7: Aguardar Cluster Ficar Ativo
+          # ============================================================================
+          # Por que? Não podemos criar node groups até o cluster estar pronto
+          # O que esperamos? Comando termina quando cluster = ACTIVE
+
+          echo "=== PASSO 7: Aguardar Cluster Ficar Ativo ==="
+          aws eks wait cluster-active \
+            --name $CLUSTER_NAME \
+            --region $REGION
+          echo "✅ Cluster ativo!"
+
+          # ============================================================================
+          # PASSO 8: Obter Kubeconfig
+          # ============================================================================
+          # Por que? Kubeconfig permite que kubectl se conecte ao seu cluster
+          # O que é? É um arquivo de configuração que autentica você com o cluster
+          # O que esperamos? Arquivo ~/.kube/config atualizado
+
+          echo "=== PASSO 8: Obter Kubeconfig ==="
+          aws eks update-kubeconfig \
+            --name $CLUSTER_NAME \
+            --region $REGION
+          echo "✅ Kubeconfig atualizado em ~/.kube/config"
+
+          # ============================================================================
+          # PASSO 9: Validar Conectividade com Cluster
+          # ============================================================================
+          # Por que? Confirma que kubectl consegue se comunicar com o cluster
+          # O que esperamos? Lista de nós (ainda vazia porque não criamos node group)
+
+          echo "=== PASSO 9: Validar Conectividade com Cluster ==="
+          kubectl get nodes
+          # Esperado output:
+          # NAME                                       STATUS   ROLES    AGE   VERSION
+          # (vazio no começo)
+
+          # ============================================================================
+          # PASSO 10: Criar IAM Role para Node Group
+          # ============================================================================
+          # Por que? Os nodes (máquinas EC2) precisam de permissões para funcionar
+          # O que é? Nodes são máquinas EC2 que rodam os containers
+
+          echo "=== PASSO 10: Criar Node IAM Role ==="
+          NODE_TRUST_POLICY='{
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Principal": {"Service": "ec2.amazonaws.com"},
+              "Action": "sts:AssumeRole"
+            }]
+          }'
+
+          export NODE_ROLE_ARN=$(aws iam create-role \
+            --role-name eks-node-role-$(date +%s) \
+            --assume-role-policy-document "$NODE_TRUST_POLICY" \
+            --region $REGION \
+            --query 'Role.Arn' \
+            --output text 2>/dev/null || echo "Role pode já existir")
+
+          echo "Node Role: $NODE_ROLE_ARN"
+
+          # ============================================================================
+          # PASSO 11: Anexar Policies ao Node Role
+          # ============================================================================
+          # Por que? Nodes precisam de permissões específicas para CNI (networking) e worker
+
+          echo "=== PASSO 11: Anexar Policies ao Node Role ==="
+          NODE_ROLE_NAME=$(echo $NODE_ROLE_ARN | rev | cut -d'/' -f1 | rev)
+          aws iam attach-role-policy \
+            --role-name $NODE_ROLE_NAME \
+            --policy-arn arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy \
+            --region $REGION
+
+          aws iam attach-role-policy \
+            --role-name $NODE_ROLE_NAME \
+            --policy-arn arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy \
+            --region $REGION
+          echo "✅ Policies anexadas"
+
+          # ============================================================================
+          # PASSO 12: Criar Node Group
+          # ============================================================================
+          # Por que? Node Group são os workers que rodam seus containers
+          # O que é? Você especifica: quantos nodes, qual tipo (t3.medium, etc), autoscaling
+          # O que esperamos? Node group em estado "CREATING" → "ACTIVE" (leva ~5-10 min)
+
+          echo "=== PASSO 12: Criar Node Group ==="
+          aws eks create-nodegroup \
+            --cluster-name $CLUSTER_NAME \
+            --nodegroup-name "$CLUSTER_NAME-nodes" \
+            --node-role $NODE_ROLE_ARN \
+            --subnets $SUBNETS \
+            --scaling-config minSize=2,maxSize=4,desiredSize=2 \
+            --instance-types t3.medium \
+            --region $REGION
+          echo "⏳ Node Group em criação... aguarde ~10 minutos"
+
+          # ============================================================================
+          # PASSO 13: Aguardar Node Group Ficar Ativo
+          # ============================================================================
+          # Por que? Não podemos fazer deploy até nodes estarem prontos
+
+          echo "=== PASSO 13: Aguardar Node Group Ativo ==="
+          aws eks wait nodegroup-active \
+            --cluster-name $CLUSTER_NAME \
+            --nodegroup-name "$CLUSTER_NAME-nodes" \
+            --region $REGION
+          echo "✅ Nodes prontos!"
+
+          # ============================================================================
+          # PASSO 14: Validar Nodes
+          # ============================================================================
+          # Por que? Confirma que nodes estão prontos para receber pods
+          # O que esperamos? 2 nós em estado "Ready"
+
+          echo "=== PASSO 14: Validar Nodes ==="
+          kubectl get nodes
+          # Esperado output:
+          # NAME                                       STATUS   ROLES    AGE   VERSION
+          # ip-172-31-12-34.ec2.internal               Ready    <none>   5m    v1.28.1
+          # ip-172-31-12-35.ec2.internal               Ready    <none>   5m    v1.28.1
+
+          # ============================================================================
+          # PASSO 15: Pegar Security Group do RDS
+          # ============================================================================
+          # Por que? Precisamos permitir que os nodes (EC2) se conectem ao RDS
+          # O que é? SG = firewall da AWS, controla tráfego de entrada/saída
+
+          echo "=== PASSO 15: Pegar Security Group do RDS ==="
+          export RDS_SG=$(aws rds describe-db-instances \
+            --region $REGION \
+            --query "DBInstances[?Endpoint.Address=='$RDS_ENDPOINT'].VpcSecurityGroups[0].VpcSecurityGroupId" \
+            --output text)
+          echo "RDS Security Group: $RDS_SG"
+          # Esperado output:
+          # RDS Security Group: sg-12345abc
+
+          # ============================================================================
+          # PASSO 16: Pegar Security Group dos Nodes
+          # ============================================================================
+          # Por que? Vamos usar isso para liberar acesso ao RDS
+
+          echo "=== PASSO 16: Pegar Security Group dos Nodes ==="
+          export NODE_SG=$(aws ec2 describe-security-groups \
+            --region $REGION \
+            --filters "Name=group-name,Values=eks-cluster-sg-*" \
+            --query 'SecurityGroups[0].GroupId' \
+            --output text 2>/dev/null || echo "sg-12345def")
+          echo "Node Security Group: $NODE_SG"
+
+          # ============================================================================
+          # PASSO 17: Liberar Acesso do Nodes ao RDS (Port 5432)
+          # ============================================================================
+          # Por que? Sem isso, os containers NÃO conseguem se conectar ao banco RDS
+          # O que faz? Permite tráfego TCP na porta 5432 (PostgreSQL)
+
+          echo "=== PASSO 17: Liberar Acesso ao RDS ==="
+          aws ec2 authorize-security-group-ingress \
+            --group-id $RDS_SG \
+            --protocol tcp \
+            --port 5432 \
+            --source-security-group-id $NODE_SG \
+            --region $REGION 2>/dev/null || echo "ℹ️ Rule já existe ou erro menor"
+          echo "✅ Security Group rule adicionada"
+
+          # ============================================================================
+          # PASSO 18: Criar Namespace no Kubernetes
+          # ============================================================================
+          # Por que? Namespace isola recursos e facilita gerenciamento
+          # O que é? É como um "pasta" no Kubernetes para organizar deployments
+
+          echo "=== PASSO 18: Criar Namespace ==="
+          kubectl create namespace api
+          # Esperado output:
+          # namespace/api created
+          # (ou já existe)
+
+          # ============================================================================
+          # PASSO 19: Criar Secret com Credenciais RDS
+          # ============================================================================
+          # Por que? Containers precisam das credenciais para conectar ao RDS
+          # O que é? Secret = dados sensíveis criptografados no Kubernetes
+          # Vantagem? Credenciais não ficam hardcoded no código
+
+          echo "=== PASSO 19: Criar Secret RDS ==="
+          kubectl create secret generic rds-credentials \
+            --from-literal=host=$RDS_ENDPOINT \
+            --from-literal=user=$DB_USER \
+            --from-literal=password=$DB_PASSWORD \
+            --from-literal=database=$DB_NAME \
+            -n api \
+            --dry-run=client -o yaml | kubectl apply -f -
+          echo "✅ Secret criado"
+
+          # ============================================================================
+          # PASSO 20: Validar Secret
+          # ============================================================================
+          # Por que? Confirma que secret foi criado corretamente
+
+          echo "=== PASSO 20: Validar Secret ==="
+          kubectl get secrets -n api
+          # Esperado output:
+          # NAME               TYPE     DATA   AGE
+          # rds-credentials    Opaque   4      10s
+
+          # ============================================================================
+          # PASSO 21: Fazer Deploy da API
+          # ============================================================================
+          # Por que? Fazer o deploy do seu aplicativo no Kubernetes
+          # O que é? Deployment = arquivo YAML que define como rodar sua app
+
+          echo "=== PASSO 21: Deploy API ==="
+
+          # kube.yaml file content:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: users-api
+            namespace: api
+          spec:
+            replicas: 2
+            selector:
+              matchLabels:
+                app: users-api
+            template:
+              metadata:
+                labels:
+                  app: users-api
+              spec:
+                containers:
+                - name: api
+                  image: $API_IMAGE
+                  imagePullPolicy: IfNotPresent
+                  ports:
+                  - containerPort: 3000
+                  env:
+                  - name: DB_HOST
+                    valueFrom:
+                      secretKeyRef:
+                        name: rds-credentials
+                        key: host
+                  - name: DB_USER
+                    valueFrom:
+                      secretKeyRef:
+                        name: rds-credentials
+                        key: user
+                  - name: DB_PASSWORD
+                    valueFrom:
+                      secretKeyRef:
+                        name: rds-credentials
+                        key: password
+                  - name: DB_NAME
+                    valueFrom:
+                      secretKeyRef:
+                        name: rds-credentials
+                        key: database
+                  - name: DB_PORT
+                    value: "5432"
+          ---
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: users-api-service
+            namespace: api
+          spec:
+            type: LoadBalancer
+            selector:
+              app: users-api
+            ports:
+            - protocol: TCP
+              port: 80
+              targetPort: 3000
+
+          kubectl apply -f kube.yaml
+          echo "✅ Deployment criado"
+
+          # ============================================================================
+          # PASSO 22: Validar Deployment
+          # ============================================================================
+          # Por que? Ver status dos pods, se estão rodando ou falhando
+          # O que esperamos? 2 pods em estado "Running"
+
+          echo "=== PASSO 22: Validar Deployment ==="
+          kubectl get deployments -n api
+          # Esperado output:
+          # NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+          # users-api   2/2     2            2           30s
+
+          # ============================================================================
+          # PASSO 23: Ver Pods
+          # ============================================================================
+          # Por que? Cada Deployment cria 1+ Pods (instâncias de container)
+
+          echo "=== PASSO 23: Ver Pods ==="
+          kubectl get pods -n api
+          # Esperado output:
+          # NAME                        READY   STATUS    RESTARTS   AGE
+          # users-api-5f7d9b6c8-abc12   1/1     Running   0          45s
+          # users-api-5f7d9b6c8-def45   1/1     Running   0          45s
+
+          # ============================================================================
+          # PASSO 24: Ver Logs de um Pod
+          # ============================================================================
+          # Por que? Debugar se a app não inicia, erros de conexão com RDS, etc
+          # O que faz? Mostra stdout/stderr do container
+
+          echo "=== PASSO 24: Ver Logs ==="
+          kubectl logs -n api -l app=users-api --tail=50
+          # Esperado output (se conectou ao RDS):
+          # 2024-01-15 10:30:45 INFO: Connected to database
+          # 2024-01-15 10:30:45 INFO: Server running on port 3000
+
+          # ============================================================================
+          # PASSO 25: Aguardar LoadBalancer
+          # ============================================================================
+          # Por que? LoadBalancer gera uma URL pública para acessar a API
+          # O que é? AWS provisiona um ELB (Elastic Load Balancer) automaticamente
+          # Pode levar? 2-3 minutos
+
+          echo "=== PASSO 25: Aguardar LoadBalancer URL ==="
+          echo "⏳ Aguardando 30 segundos para LoadBalancer provisionar..."
+          sleep 30
+
+          # ============================================================================
+          # PASSO 26: Obter LoadBalancer URL
+          # ============================================================================
+          # Por que? Essa é a URL pública onde podemos acessar a API
+          # O que é? AWS fornece um hostname (ou IP) para acessar a app
+
+          echo "=== PASSO 26: Obter LoadBalancer URL ==="
+          kubectl get svc users-api-service -n api
+          # Esperado output:
+          # NAME                 TYPE          CLUSTER-IP     EXTERNAL-IP
+          # users-api-service    LoadBalancer  10.100.0.123   a12b3c45-123456.elb.us-east-1.amazonaws.com
+
+          export LB_URL=$(kubectl get svc users-api-service -n api \
+            --query 'status.loadBalancer.ingress[0].hostname' \
+            --output text)
+
+          echo "✅ LoadBalancer URL: $LB_URL"
+
+          # ============================================================================
+          # PASSO 27: Teste Básico - Health Check
+          # ============================================================================
+          # Por que? Confirma que a API está respondendo
+          # O que faz? Faz um GET na raiz para ver se está alive
+
+          echo "=== PASSO 27: Health Check ==="
+          echo "Testando: curl http://$LB_URL/"
+          curl -s http://$LB_URL/ -w "\nStatus: %{http_code}\n"
+          # Esperado output:
+          # Status: 200
+          # (ou conteúdo HTML/JSON dependendo da app)
+
+          # ============================================================================
+          # PASSO 28: Teste GET /users - Listar Todos
+          # ============================================================================
+          # Por que? Validar que API consegue acessar RDS e retornar dados
+          # O que faz? GET request para /users que deve queryar a tabela users do RDS
+
+          echo "=== PASSO 28: GET /users (Listar Usuários) ==="
+          echo "Testando: curl -X GET http://$LB_URL/users -H 'Content-Type: application/json'"
+          curl -X GET "http://$LB_URL/users" \
+            -H "Content-Type: application/json" \
+            -w "\nStatus: %{http_code}\n" | jq '.' 2>/dev/null || echo "(Resposta pode não ser JSON)"
+          # Esperado output (exemplo):
+          # [
+          #   {"id": 1, "name": "João Silva", "email": "joao@example.com"},
+          #   {"id": 2, "name": "Maria Santos", "email": "maria@example.com"}
+          # ]
+          # Status: 200
+
+          # ============================================================================
+          # PASSO 29: Teste GET /users?page=1&limit=10 - Com Paginação
+          # ============================================================================
+          # Por que? Validar que query parameters funcionam
+
+          echo "=== PASSO 29: GET /users?page=1&limit=10 ==="
+          echo "Testando: curl -X GET 'http://$LB_URL/users?page=1&limit=10' ..."
+          curl -X GET "http://$LB_URL/users?page=1&limit=10" \
+            -H "Content-Type: application/json" \
+            -w "\nStatus: %{http_code}\n"
+
+          # ============================================================================
+          # PASSO 30: Teste GET /users/{id} - Usuário Específico
+          # ============================================================================
+          # Por que? Validar acesso a dados específicos
+
+          echo "=== PASSO 30: GET /users/1 (Usuário específico) ==="
+          echo "Testando: curl -X GET http://$LB_URL/users/1 ..."
+          curl -X GET "http://$LB_URL/users/1" \
+            -H "Content-Type: application/json" \
+            -w "\nStatus: %{http_code}\n"
+
+          # ============================================================================
+          # PASSO 31: Teste POST - Criar Novo Usuário
+          # ============================================================================
+          # Por que? Validar que a app consegue ESCREVER no RDS
+
+          echo "=== PASSO 31: POST /users (Criar Novo) ==="
+          echo "Testando: curl -X POST http://$LB_URL/users ..."
+          curl -X POST "http://$LB_URL/users" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "Teste User",
+              "email": "teste@example.com"
+            }' \
+            -w "\nStatus: %{http_code}\n"
+          # Esperado output:
+          # {"id": 3, "name": "Teste User", "email": "teste@example.com"}
+          # Status: 201
+
+          # ============================================================================
+          # PASSO 32: Verificar Novo Usuário
+          # ============================================================================
+          # Por que? Confirmar que dado foi persisted no RDS
+
+          echo "=== PASSO 32: Verificar dados salvos ==="
+          echo "Testando: curl -X GET http://$LB_URL/users ..."
+          curl -X GET "http://$LB_URL/users" \
+            -H "Content-Type: application/json" -s | jq '.[] | {id, name}'
+
+          # ============================================================================
+          # PASSO 33: Dashboard Final - Status Completo
+          # ============================================================================
+          # Por que? Resumo de tudo que foi provisionado
+
+          echo ""
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║              ✅ SETUP COMPLETO - RESUMO                    ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          echo ""
+          echo "📋 AWS EKS Cluster:"
+          echo "   Name: $CLUSTER_NAME"
+          echo "   Region: $REGION"
+          echo "   API Endpoint: https://$(kubectl cluster-info | grep -oP '(?<=server: ).*')"
+          echo ""
+          echo "📊 RDS Database (Existente):"
+          echo "   Endpoint: $RDS_ENDPOINT"
+          echo "   User: $DB_USER"
+          echo "   Database: $DB_NAME"
+          echo ""
+          echo "🌐 API Service:"
+          echo "   URL: http://$LB_URL"
+          echo "   Users Endpoint: http://$LB_URL/users"
+          echo ""
+          echo "⚙️ Kubernetes Resources:"
+          kubectl get deployments,pods,svc -n api
+          echo ""
+          echo "🎯 Comandos Úteis:"
+          echo "   Ver logs:       kubectl logs -n api -l app=users-api -f"
+          echo "   Exec no pod:    kubectl exec -it -n api -l app=users-api -- /bin/bash"
+          echo "   Port-forward:   kubectl port-forward -n api svc/users-api-service 8080:80"
+          echo "   Delete tudo:    kubectl delete namespace api"
+          echo ""
+          echo "✅ Tudo está funcionando!"
+  Kubernetes + RDS Existente on AWS - Complete Setup Script Usando eksctl:
+    desc: eksctl abstrai a complexidade do AWS CLI, mas exige controle total sobre segurança (Security Groups) e deployment
+    tags: [kubernete, aws, rds]
+    links: [https://docs.aws.amazon.com/eks/latest/eksctl/installation.html]
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+          # ============================================================================
+          # SETUP INICIAL - Configure essas variáveis
+          # ============================================================================
+
+          # 🔴 CUSTOMIZE COM SEUS DADOS
+          export RDS_ENDPOINT="seu-db.c9akciq32.us-east-1.rds.amazonaws.com"
+          export DB_USER="admin"
+          export DB_PASSWORD="SuaSenha123!"
+          export DB_NAME="postgres"
+          export REGION="us-east-1"
+          export CLUSTER_NAME="my-cluster"
+          export API_IMAGE="seu-registry/users-api:latest"
+
+          # ============================================================================
+          # PASSO 1: Validar Conectividade AWS
+          # ============================================================================
+          # Por que? Confirma que você tem credenciais AWS válidas
+          # O que faz? Mostra qual usuário/role está executando os comandos
+          # Recurso: AWS STS (Security Token Service)
+
+          echo "=== PASSO 1: Validar Credenciais AWS ==="
+          aws sts get-caller-identity
+          # Esperado output:
+          # {
+          #     "UserId": "AIDAI...",
+          #     "Account": "123456789012",
+          #     "Arn": "arn:aws:iam::123456789012:user/seu-user"
+          # }
+
+          # ============================================================================
+          # PASSO 2: Validar que RDS Existe
+          # ============================================================================
+          # Por que? Confirma que seu banco de dados RDS já está disponível
+          # O que faz? Query na AWS a instância RDS pelo endpoint
+          # Recurso: AWS RDS (Relational Database Service)
+
+          echo "=== PASSO 2: Validar RDS Existente ==="
+          aws rds describe-db-instances \
+            --region $REGION \
+            --query "DBInstances[?Endpoint.Address=='$RDS_ENDPOINT'].[DBInstanceIdentifier,Engine,DBInstanceStatus,Endpoint.Address]" \
+            --output table
+          # Esperado output:
+          # |  DBInstanceIdentifier  |  Engine  |  DBInstanceStatus  |  Endpoint.Address  |
+          # |  my-postgres           |  postgres|  available         |  seu-db.c9...     |
+
+          # ============================================================================
+          # PASSO 3: Instalar eksctl (se ainda não instalado)
+          # ============================================================================
+          # Por que? eksctl é a ferramenta mais simples para provisionar EKS
+          # O que é? Wrapper da AWS que abstrai complexidade de IAM, VPC, Auto Scaling
+          # Por que usamos? Reduz 30 passos para ~3, mas mantém controle
+
+          echo "=== PASSO 3: Verificar eksctl ==="
+          if ! command -v eksctl &> /dev/null; then
+            echo "eksctl não encontrado. Instalando..."
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+            echo "✅ eksctl instalado"
+          else
+            eksctl version
+            echo "✅ eksctl já está instalado"
+          fi
+
+          # ============================================================================
+          # PASSO 4: Criar EKS Cluster com eksctl (TUDO EM 1 COMANDO!)
+          # ============================================================================
+          # Por que? Creates: VPC, Subnets, IAM roles, Control plane, Node group
+          # O que é? EKS = Elastic Kubernetes Service (managed Kubernetes da AWS)
+          # O que faz eksctl? Cria automaticamente:
+          #   - IAM roles para service e nodes
+          #   - Security groups com regras corretas
+          #   - VPC e subnets (ou usa existentes)
+          #   - Auto Scaling group para nodes
+          #   - Configura kubeconfig automaticamente
+          # Tempo? ~15 minutos
+
+          echo "=== PASSO 4: Criar EKS Cluster com eksctl ==="
+          eksctl create cluster \
+            --name $CLUSTER_NAME \
+            --region $REGION \
+            --nodes 2 \
+            --node-type t3.medium \
+            --managed \
+            --with-oidc
+          # Flags explicadas:
+          #   --name: Nome do cluster (deve ser único por região)
+          #   --region: Região AWS
+          #   --nodes: Quantidade inicial de nodes (máquinas EC2)
+          #   --node-type: Tipo de EC2 (t3.medium = 1 vCPU, 1GB RAM, barato)
+          #   --managed: AWS gerencia auto-scaling (recomendado)
+          #   --with-oidc: Habilita IRSA (IAM roles para service accounts)
+
+          # Esperado output (primeiros 30 seg):
+          # [ℹ]  eksctl version 0.168.0
+          # [ℹ]  using region us-east-1
+          # [ℹ]  subnets and nodes will be created in us-east-1...
+          # ...
+          # [✔]  EKS cluster "my-cluster" in "us-east-1" is ready
+
+          # ============================================================================
+          # PASSO 5: Validar Cluster e Nodes
+          # ============================================================================
+          # Por que? Confirma que cluster e nodes estão prontos para receber workloads
+          # O que faz? List nodes - se estão em estado "Ready"
+          # Recurso: kubectl (CLI do Kubernetes)
+
+          echo "=== PASSO 5: Validar Cluster e Nodes ==="
+          kubectl get nodes -o wide
+          # Esperado output:
+          # NAME                                       STATUS   ROLES    AGE   VERSION
+          # ip-172-31-12-34.ec2.internal               Ready    <none>   5m    v1.28.1
+          # ip-172-31-12-35.ec2.internal               Ready    <none>   5m    v1.28.1
+
+          # ============================================================================
+          # PASSO 6: Pegar VPC Subnets (necessário para Security Group)
+          # ============================================================================
+          # Por que? Vamos usar essas subnets para encontrar os security groups dos nodes
+          # O que é? Subnet = divisão lógica da VPC onde EC2s são lançados
+          # Para quê? Precisamos saber qual SG usar para liberar acesso ao RDS
+
+          echo "=== PASSO 6: Pegar VPC Subnets ==="
+          export SUBNETS=$(aws ec2 describe-subnets \
+            --region $REGION \
+            --query 'Subnets[0:2].SubnetId' \
+            --output text)
+          echo "Subnets: $SUBNETS"
+
+          # ============================================================================
+          # PASSO 7: Pegar Security Group do RDS
+          # ============================================================================
+          # Por que? Precisa saber qual SG controla acesso ao banco
+          # O que é? SG = firewall virtual da AWS (permite/bloqueia tráfego)
+          # Para quê? Vamos adicionar regra de entrada para os nodes
+
+          echo "=== PASSO 7: Pegar Security Group do RDS ==="
+          export RDS_SG=$(aws rds describe-db-instances \
+            --region $REGION \
+            --query "DBInstances[?Endpoint.Address=='$RDS_ENDPOINT'].VpcSecurityGroups[0].VpcSecurityGroupId" \
+            --output text)
+          echo "RDS Security Group: $RDS_SG"
+          # Esperado output:
+          # RDS Security Group: sg-12345abc
+
+          # ============================================================================
+          # PASSO 8: Pegar Security Group dos Nodes
+          # ============================================================================
+          # Por que? Esse SG é aplicado a todos os nodes do cluster
+          # Para quê? Vamos liberar saída desse SG para a porta 5432 do RDS SG
+          # Como eksctl nomeou? Pattern: eks-<cluster-name>-nodegroup-sg
+
+          echo "=== PASSO 8: Pegar Security Group dos Nodes ==="
+          export NODE_SG=$(aws ec2 describe-security-groups \
+            --region $REGION \
+            --filters "Name=tag:aws:cloudformation:logical-id,Values=NodeSecurityGroup" \
+            --query 'SecurityGroups[0].GroupId' \
+            --output text 2>/dev/null)
+
+          if [ -z "$NODE_SG" ] || [ "$NODE_SG" == "None" ]; then
+            # Tenta padrão alternativo
+            export NODE_SG=$(aws ec2 describe-security-groups \
+              --region $REGION \
+              --filters "Name=group-name,Values=eks-*-nodegroup-sg" \
+              --query 'SecurityGroups[0].GroupId' \
+              --output text 2>/dev/null)
+          fi
+
+          echo "Node Security Group: $NODE_SG"
+          # Esperado output:
+          # Node Security Group: sg-67890def
+
+          # ============================================================================
+          # PASSO 9: Liberar Acesso do Nodes ao RDS (Port 5432)
+          # ============================================================================
+          # Por que? Sem isso, containers NÃO conseguem conectar ao banco RDS
+          # O que faz? Adiciona regra de ingress no RDS SG:
+          #   - Protocolo: TCP
+          #   - Porta: 5432 (PostgreSQL)
+          #   - Origem: Security group dos nodes
+          # Resultado? Tráfego de nodes → RDS é permitido
+
+          echo "=== PASSO 9: Liberar Acesso ao RDS ==="
+          aws ec2 authorize-security-group-ingress \
+            --group-id $RDS_SG \
+            --protocol tcp \
+            --port 5432 \
+            --source-security-group-id $NODE_SG \
+            --region $REGION 2>/dev/null || echo "✅ Rule já existe"
+          echo "✅ Security Group rule adicionada"
+
+          # ============================================================================
+          # PASSO 10: Criar Namespace no Kubernetes
+          # ============================================================================
+          # Por que? Namespace isola recursos - melhor que colocar tudo em "default"
+          # O que é? Namespace = folder virtual no K8s para organizar deploys
+          # Benefício? Você pode ter "api", "monitoring", "ingress" sem conflitar
+
+          echo "=== PASSO 10: Criar Namespace ==="
+          kubectl create namespace api 2>/dev/null || echo "✅ Namespace já existe"
+          # Esperado output:
+          # namespace/api created
+          # ou: ✅ Namespace já existe
+
+          # ============================================================================
+          # PASSO 11: Criar Secret com Credenciais RDS
+          # ============================================================================
+          # Por que? Containers precisam de credenciais para conectar ao banco
+          # O que é? Secret = dados sensíveis criptografados no etcd do K8s
+          # Como funciona? Você faz reference no Deployment, K8s injeta via env vars
+          # Benefício? Credenciais não ficam hardcoded no git/Docker image
+
+          echo "=== PASSO 11: Criar Secret RDS ==="
+          kubectl create secret generic rds-credentials \
+            --from-literal=host=$RDS_ENDPOINT \
+            --from-literal=user=$DB_USER \
+            --from-literal=password=$DB_PASSWORD \
+            --from-literal=database=$DB_NAME \
+            -n api \
+            --dry-run=client -o yaml | kubectl apply -f -
+          echo "✅ Secret criado/atualizado"
+
+          # ============================================================================
+          # PASSO 12: Validar Secret
+          # ============================================================================
+          # Por que? Confirma que secret foi criado com as 4 chaves corretas
+          # O que faz? List secrets - mostra tipo (Opaque) e quantidade de chaves (4)
+
+          echo "=== PASSO 12: Validar Secret ==="
+          kubectl get secrets -n api rds-credentials -o wide
+          # Esperado output:
+          # NAME               TYPE     DATA   AGE
+          # rds-credentials    Opaque   4      10s
+
+          # ============================================================================
+          # PASSO 13: Fazer Deploy da API no Kubernetes
+          # ============================================================================
+          # Por que? Isso executa sua aplicação Node.js nos nodes
+          # O que é Deployment? Arquivo YAML que define:
+          #   - Quantos replicas (2 pods)
+          #   - Qual imagem Docker
+          #   - Quais env vars
+          #   - Port mapeado (3000 → container)
+          # O que é Service? Expõe deployment:
+          #   - type: LoadBalancer = AWS cria ELB automaticamente
+          #   - Porta 80 (entrada) → 3000 (container)
+          # Resultado? ELB com URL pública acessível
+
+          echo "=== PASSO 13: Deploy API ==="
+
+          # kube.yaml file content:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: users-api
+            namespace: api
+            labels:
+              app: users-api
+          spec:
+            replicas: 2
+            strategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxSurge: 1
+                maxUnavailable: 0
+            selector:
+              matchLabels:
+                app: users-api
+            template:
+              metadata:
+                labels:
+                  app: users-api
+              spec:
+                # Affinity: distribui pods em diferentes nodes
+                affinity:
+                  podAntiAffinity:
+                    preferredDuringSchedulingIgnoredDuringExecution:
+                    - weight: 100
+                      podAffinityTerm:
+                        labelSelector:
+                          matchExpressions:
+                          - key: app
+                            operator: In
+                            values:
+                            - users-api
+                        topologyKey: kubernetes.io/hostname
+                containers:
+                - name: api
+                  image: $API_IMAGE
+                  imagePullPolicy: IfNotPresent
+                  ports:
+                  - containerPort: 3000
+                    name: http
+                  # Env vars injetadas do Secret
+                  env:
+                  - name: DB_HOST
+                    valueFrom:
+                      secretKeyRef:
+                        name: rds-credentials
+                        key: host
+                  - name: DB_USER
+                    valueFrom:
+                      secretKeyRef:
+                        name: rds-credentials
+                        key: user
+                  - name: DB_PASSWORD
+                    valueFrom:
+                      secretKeyRef:
+                        name: rds-credentials
+                        key: password
+                  - name: DB_NAME
+                    valueFrom:
+                      secretKeyRef:
+                        name: rds-credentials
+                        key: database
+                  - name: DB_PORT
+                    value: "5432"
+                  - name: NODE_ENV
+                    value: "production"
+                  # Health checks
+                  livenessProbe:
+                    httpGet:
+                      path: /health
+                      port: 3000
+                    initialDelaySeconds: 30
+                    periodSeconds: 10
+                  readinessProbe:
+                    httpGet:
+                      path: /health
+                      port: 3000
+                    initialDelaySeconds: 10
+                    periodSeconds: 5
+                  # Recursos solicitados
+                  resources:
+                    requests:
+                      cpu: 100m
+                      memory: 128Mi
+                    limits:
+                      cpu: 500m
+                      memory: 512Mi
+          ---
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: users-api-service
+            namespace: api
+            labels:
+              app: users-api
+          spec:
+            type: LoadBalancer
+            selector:
+              app: users-api
+            ports:
+            - protocol: TCP
+              port: 80
+              targetPort: 3000
+              name: http
+            # Opção: usar Network Load Balancer em vez de Classic LB
+            # externalTrafficPolicy: Local
+
+          kubectl apply -f kube.yaml
+          echo "✅ Deployment e Service criados"
+
+          # ============================================================================
+          # PASSO 14: Validar Deployment
+          # ============================================================================
+          # Por que? Ver status - quantos replicas estão rodando?
+          # O que faz? Show Deployment - target: 2, atual: ?
+
+          echo "=== PASSO 14: Validar Deployment ==="
+          kubectl get deployments -n api
+          # Esperado output:
+          # NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+          # users-api   2/2     2            2           45s
+
+          # ============================================================================
+          # PASSO 15: Ver Pods em Detalhe
+          # ============================================================================
+          # Por que? Pods são as instâncias reais do container rodando
+          # O que faz? List pods - mostra nome, status (Running/Pending), IPs
+
+          echo "=== PASSO 15: Ver Pods ==="
+          kubectl get pods -n api -o wide
+          # Esperado output:
+          # NAME                        READY   STATUS    RESTARTS   AGE   IP
+          # users-api-5f7d9b6c8-abc12   1/1     Running   0          45s   10.0.1.45
+          # users-api-5f7d9b6c8-def45   1/1     Running   0          45s   10.0.2.78
+
+          # ============================================================================
+          # PASSO 16: Ver Logs de um Pod (Debug)
+          # ============================================================================
+          # Por que? Debugar erros de startup, conexão com RDS, etc
+          # O que faz? Mostra stdout/stderr do container
+          # Dica? Se pod está em CrashLoopBackOff, logs mostram o porquê
+
+          echo "=== PASSO 16: Ver Logs de um Pod ==="
+          kubectl logs -n api -l app=users-api --tail=50 --all-containers=true
+          # Esperado output (exemplo):
+          # 2024-01-15 10:30:45 INFO: Connecting to RDS...
+          # 2024-01-15 10:30:46 INFO: Connected to database
+          # 2024-01-15 10:30:46 INFO: Server running on port 3000
+
+          # ============================================================================
+          # PASSO 17: Aguardar LoadBalancer URL
+          # ============================================================================
+          # Por que? ELB leva tempo para provisionar (AWS precisa alocar IP/hostname)
+          # O que é LoadBalancer? Serviço AWS que distribui tráfego entre múltiplos targets
+          # Tempo? 2-5 minutos
+
+          echo "=== PASSO 17: Aguardar LoadBalancer URL ==="
+          echo "⏳ Aguardando 40 segundos para ELB provisionar..."
+          sleep 40
+
+          # ============================================================================
+          # PASSO 18: Obter LoadBalancer URL
+          # ============================================================================
+          # Por que? Essa é a URL pública para acessar sua API
+          # O que é? AWS fornece hostname do ELB (ou IP em alguns casos)
+          # Formato? Algo como: a1b2c3d4-123456.elb.us-east-1.amazonaws.com
+
+          echo "=== PASSO 18: Obter LoadBalancer URL ==="
+          kubectl get svc users-api-service -n api
+          # Esperado output:
+          # NAME                 TYPE          CLUSTER-IP     EXTERNAL-IP
+          # users-api-service    LoadBalancer  10.100.0.123   a12b3c45-123456.elb.us-east-1.amazonaws.com
+
+          export LB_URL=$(kubectl get svc users-api-service -n api \
+            --query 'status.loadBalancer.ingress[0].hostname' \
+            --output text)
+
+          echo "✅ LoadBalancer URL: $LB_URL"
+
+          # ============================================================================
+          # PASSO 19: Health Check Básico
+          # ============================================================================
+          # Por que? Validar que a app está respondendo antes de testes mais complexos
+          # O que faz? GET para / ou /health - se retorna 200 OK, está vivo
+          # Esperado? HTTP 200
+
+          echo "=== PASSO 19: Health Check ==="
+          curl -s -I http://$LB_URL/ -w "Status: %{http_code}\n" | head -5
+          # Esperado output:
+          # HTTP/1.1 200 OK
+          # ...
+          # Status: 200
+
+          # ============================================================================
+          # PASSO 20: GET /users - Listar Todos os Usuários
+          # ============================================================================
+          # Por que? Validar que API consegue conectar ao RDS e retornar dados
+          # O que faz? Query na tabela users do RDS via sua aplicação
+          # Resultado? Array JSON com todos os usuários
+          # Esperado? HTTP 200 + JSON com data
+
+          echo "=== PASSO 20: GET /users (Listar Usuários) ==="
+          echo "Comando: curl -X GET http://$LB_URL/users -H 'Content-Type: application/json'"
+          curl -X GET "http://$LB_URL/users" \
+            -H "Content-Type: application/json" \
+            -w "\nStatus: %{http_code}\n" 2>/dev/null | jq '.' 2>/dev/null || echo "(Resposta pode não ser JSON)"
+          # Esperado output (exemplo):
+          # [
+          #   {"id": 1, "name": "João Silva", "email": "joao@example.com"},
+          #   {"id": 2, "name": "Maria Santos", "email": "maria@example.com"}
+          # ]
+          # Status: 200
+
+          # ============================================================================
+          # PASSO 21: GET /users?page=1&limit=10 - Com Paginação
+          # ============================================================================
+          # Por que? Testar query parameters - importante para grande volume de dados
+          # O que faz? Retorna página 1 com 10 resultados por página
+          # Caso de uso? Quando tabela tem milhões de registros
+
+          echo "=== PASSO 21: GET /users?page=1&limit=10 (Com Paginação) ==="
+          echo "Comando: curl -X GET 'http://$LB_URL/users?page=1&limit=10' ..."
+          curl -X GET "http://$LB_URL/users?page=1&limit=10" \
+            -H "Content-Type: application/json" \
+            -w "\nStatus: %{http_code}\n" 2>/dev/null | jq '.' 2>/dev/null || echo "(Resposta pode não ser JSON)"
+
+          # ============================================================================
+          # PASSO 22: GET /users/{id} - Usuário Específico
+          # ============================================================================
+          # Por que? Validar que pode buscar um registro específico
+          # O que faz? Query WHERE id=1
+
+          echo "=== PASSO 22: GET /users/1 (Usuário Específico) ==="
+          echo "Comando: curl -X GET http://$LB_URL/users/1 ..."
+          curl -X GET "http://$LB_URL/users/1" \
+            -H "Content-Type: application/json" \
+            -w "\nStatus: %{http_code}\n" 2>/dev/null | jq '.' 2>/dev/null || echo "(ID pode não existir)"
+
+          # ============================================================================
+          # PASSO 23: POST /users - Criar Novo Usuário
+          # ============================================================================
+          # Por que? Validar que a app consegue ESCREVER no RDS (INSERT)
+          # O que faz? Cria novo registro na tabela users
+          # Esperado? HTTP 201 Created + dados do novo usuário com ID gerado
+
+          echo "=== PASSO 23: POST /users (Criar Novo Usuário) ==="
+          echo "Comando: curl -X POST http://$LB_URL/users ..."
+          curl -X POST "http://$LB_URL/users" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "Teste ExternalLB",
+              "email": "teste.eks@example.com"
+            }' \
+            -w "\nStatus: %{http_code}\n" 2>/dev/null | jq '.' 2>/dev/null || echo "(Erro ou resposta não-JSON)"
+          # Esperado output:
+          # {"id": 3, "name": "Teste ExternalLB", "email": "teste.eks@example.com", "createdAt": "2024-01-15T10:45:30Z"}
+          # Status: 201
+
+          # ============================================================================
+          # PASSO 24: Validar Persistência - Listar Novamente
+          # ============================================================================
+          # Por que? Confirmar que dados foram persisted no RDS (não perdido ao restart)
+          # O que faz? GET /users novamente - novo registro deve aparecer
+
+          echo "=== PASSO 24: Validar Persistência (Listar Novamente) ==="
+          echo "Comando: curl -X GET http://$LB_URL/users ..."
+          curl -X GET "http://$LB_URL/users" \
+            -H "Content-Type: application/json" \
+            -s 2>/dev/null | jq '.[] | {id, name, email}' 2>/dev/null || echo "(Erro)"
+
+          # ============================================================================
+          # PASSO 25: Dashboard Final - Status Completo
+          # ============================================================================
+          # Por que? Resumo de tudo que foi provisionado e como acessar
+
+          echo ""
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║              ✅ SETUP COMPLETO - RESUMO                    ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          echo ""
+          echo "📋 AWS EKS Cluster:"
+          echo "   Name: $CLUSTER_NAME"
+          echo "   Region: $REGION"
+          kubectl cluster-info | grep 'Kubernetes master'
+          echo ""
+          echo "📊 RDS Database (Existente):"
+          echo "   Endpoint: $RDS_ENDPOINT"
+          echo "   User: $DB_USER"
+          echo "   Database: $DB_NAME"
+          echo ""
+          echo "🌐 API Service:"
+          echo "   URL: http://$LB_URL"
+          echo "   Users Endpoint: http://$LB_URL/users"
+          echo ""
+          echo "⚙️ Kubernetes Resources:"
+          kubectl get all -n api
+          echo ""
+          echo "🎯 Comandos Úteis:"
+          echo "   Ver logs (real-time):   kubectl logs -n api -l app=users-api -f"
+          echo "   Exec no pod:            kubectl exec -it -n api \$(kubectl get pod -n api -l app=users-api -o jsonpath='{.items[0].metadata.name}') -- /bin/bash"
+          echo "   Port-forward local:     kubectl port-forward -n api svc/users-api-service 8080:80"
+          echo "   Descrever deployment:   kubectl describe deployment users-api -n api"
+          echo "   Deletar tudo:           kubectl delete namespace api"
+          echo ""
+          echo "📝 Informações do Cluster:"
+          echo "   Nodes: $(kubectl get nodes --no-headers | wc -l)"
+          echo "   Pods rodando: $(kubectl get pods -n api --no-headers | wc -l)"
+          kubectl get nodes -o wide
+          echo ""
+          echo "✅ Tudo está funcionando! 🚀"
+  Kubernetes Local com Kind + PostgreSQL - Manual Step-by-Step:
+    desc: Guia passo-a-passo para configurar desenvolvimento local
+    tags: [kubernete, kind, postgresql]
+    notes:
+      - sql: | #sql
+          -- /path/to/file.sql
+          CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );
+
+          INSERT INTO users (name, email) VALUES
+            ('João Silva', 'joao@example.com'),
+            ('Maria Santos', 'maria@example.com'),
+            ('Pedro Oliveira', 'pedro@example.com')
+          ON CONFLICT (email) DO NOTHING;
+
+          SELECT * FROM users;
+      - yaml: | #yaml
+
+          # /path/to/kube.yaml
+          #   - Imagem: $API_IMAGE"
+          #   - Replicas: 2 pods"
+          #   - Porta: 8080 (localhost) → 3000 (container)"
+          #   - Credenciais: do Secret postgres-credentials"
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: users-api
+            namespace: api
+            labels:
+              app: users-api
+          spec:
+            replicas: 2
+            strategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxSurge: 1
+                maxUnavailable: 0
+            selector:
+              matchLabels:
+                app: users-api
+            template:
+              metadata:
+                labels:
+                  app: users-api
+              spec:
+                affinity:
+                  podAntiAffinity:
+                    preferredDuringSchedulingIgnoredDuringExecution:
+                    - weight: 100
+                      podAffinityTerm:
+                        labelSelector:
+                          matchExpressions:
+                          - key: app
+                            operator: In
+                            values:
+                            - users-api
+                        topologyKey: kubernetes.io/hostname
+                containers:
+                - name: api
+                  image: seu-registry/users-api:latest
+                  imagePullPolicy: Never
+                  ports:
+                  - containerPort: 3000
+                    name: http
+                  env:
+                  - name: DB_HOST
+                    valueFrom:
+                      secretKeyRef:
+                        name: postgres-credentials
+                        key: host
+                  - name: DB_PORT
+                    valueFrom:
+                      secretKeyRef:
+                        name: postgres-credentials
+                        key: port
+                  - name: DB_USER
+                    valueFrom:
+                      secretKeyRef:
+                        name: postgres-credentials
+                        key: user
+                  - name: DB_PASSWORD
+                    valueFrom:
+                      secretKeyRef:
+                        name: postgres-credentials
+                        key: password
+                  - name: DB_NAME
+                    valueFrom:
+                      secretKeyRef:
+                        name: postgres-credentials
+                        key: database
+                  - name: NODE_ENV
+                    value: "development"
+                  livenessProbe:
+                    httpGet:
+                      path: /health
+                      port: 3000
+                    initialDelaySeconds: 30
+                    periodSeconds: 10
+                  readinessProbe:
+                    httpGet:
+                      path: /health
+                      port: 3000
+                    initialDelaySeconds: 10
+                    periodSeconds: 5
+                  resources:
+                    requests:
+                      cpu: 50m
+                      memory: 64Mi
+                    limits:
+                      cpu: 200m
+                      memory: 256Mi
+          ---
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: users-api-service
+            namespace: api
+            labels:
+              app: users-api
+          spec:
+            type: LoadBalancer
+            selector:
+              app: users-api
+            ports:
+            - protocol: TCP
+              port: 8080
+              targetPort: 3000
+              name: http
+      - sh: | #shell
+          #!/bin/bash
+          ## ===================================================================
+          ## 🔖  SETUP - Configure these variables once
+          export CLUSTER_NAME="local-dev"
+          export POSTGRES_PASSWORD="dev-password-123"
+          export POSTGRES_DB="users_db"
+          export POSTGRES_USER="postgres"
+          export API_IMAGE="seu-registry/users-api:latest"
+          export API_NAMESPACE="api"
+          export LOCAL_PORT_API=8080
+          export LOCAL_PORT_POSTGRES=5432
+
+          echo "Variáveis configuradas:"
+          echo "  Cluster: $CLUSTER_NAME"
+          echo "  API Port: $LOCAL_PORT_API"
+          echo "  PostgreSQL Port: $LOCAL_PORT_POSTGRES"
+
+          ## ===================================================================
+          ## 🔖  STEP 1: INSTALL DOCKER
+          ## WHY? Docker is the runtime that executes containers
+          ## WHAT IS? Platform to containerize applications
+          ## HOW TO CHECK IF INSTALLED? Docker --version
+          ## IF NOT INSTALLED?
+          #   - https://docs.docker.com/get-docker/
+          #   - macOS: brew install docker
+          #   - Linux: curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
+
+          # COMMAND TO CHECK IF DOCKER IS INSTALLED
+          docker --version
+          # => Docker version 24.0.0, build ...
+
+          ## ===================================================================
+          ## 🔖  STEP 2: Instalar Kind
+          ## WHY? Kind creates a Kubernetes cluster running in Docker
+          ## WHAT IS? "Kubernetes in Docker" - cluster K8s fake but functional
+          ## BENEFIT? Fast (30 sec), lightweight (~500MB), perfect for dev
+          ## IF NOT INSTALLED?
+          #   - https://kind.sigs.k8s.io/docs/user/quick-start/
+          #   - macOS: brew install kind"
+          #   - Linux: curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64 && chmod +x ./kind && sudo mv ./kind /usr/local/bin/"
+
+          # COMMAND TO CHECK IF KIND IS INSTALLED
+          kind --version
+          # => kind version 0.20.0
+
+          ## ===================================================================
+          ## 🔖  STEP 3: INSTALL KUBECTL
+          ## WHY? kubectl is the CLI to communicate with Kubernetes
+          ## WHAT DOES? Allows you to deploy, view logs, etc
+          ## IF NOT INSTALLED? Install it using the following commands:
+          #   - https://kubernetes.io/docs/tasks/tools/
+          #   - macOS: brew install kubectl
+          #   - Linux: curl -LO "https://dl.k8s.io/release/\$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && chmod +x kubectl && sudo mv kubectl /usr/local/bin/"
+
+          # COMMAND TO CHECK IF KUBECTL IS INSTALLED
+          kubectl version --client --short
+          # => Client Version: v1.28.0
+
+          ## ===================================================================
+          ## 🔖  STEP 4: CREATE KIND CLUSTER
+          ## WHY? You need a local Kubernetes cluster to run your app
+          ## WHAT DOES? Creates a Docker container that simulates a complete K8s cluster
+          ## TIME? ~30 seconds
+          ## RESULT? A cluster with 1 node (the container itself)
+
+          # COMMAND TO CREATE KIND CLUSTER
+          kind create cluster --name $CLUSTER_NAME
+          # => Creating cluster "local-dev" ...
+          # =>  ✓ Ensuring node image (kindest/node:v1.28.0) ...
+          # =>  ✓ Preparing nodes ready.
+          # =>  ✓ Writing configuration ...
+          # =>  ✓ Starting control-plane ...
+          # =>  ✓ Installing CNI ...
+          # =>  ✓ Installing StorageClass ...
+          # => Set kubectl context to "kind-local-dev"
+          # => Thanks for using kind! 😊
+
+          ## ===================================================================
+          ## 🔖  STEP 5: CONFIGURE KUBECTL TO USE KIND CLUSTER
+          ## WHY? kubectl needs to know which cluster to use when you execute commands
+          ## WHAT DOES? Define the context in the ~/.kube/config file
+          ## RESULT? kubectl now points to the local Kind cluster
+          kubectl config use-context kind-$CLUSTER_NAME
+          # => Switched to context "kind-local-dev".
+
+          ## ===================================================================
+          ## 🔖  STEP 6: VALIDATE CLUSTER
+          ## WHY? Confirm that the cluster was created and is ready
+          ## WHAT SHOWS? Nodes (machines) in the cluster and their status
+          ## EXPECTED? 1 node called "local-dev-control-plane" in "Ready" state
+
+          # COMMAND TO VALIDATE CLUSTER
+          kubectl get nodes -o wide
+          # => NAME                       STATUS   ROLES           AGE   VERSION
+          # => local-dev-control-plane    Ready    control-plane   1m    v1.28.0
+
+          ## ===================================================================
+          ## 🔖  STEP 7: CLUSTER INFORMATION
+          ## WHY? Understand your cluster configuration
+          ## WHAT SHOWS? API server, storage, Kubernetes version
+
+          # COMMAND TO GET CLUSTER INFORMATION
+          kubectl cluster-info
+          # => Kubernetes control plane is running at https://127.0.0.1:XXXXX
+          # => CoreDNS is running at https://127.0.0.1:XXXXX/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+          ## ===================================================================
+          ## 🔖  STEP 8: GET HOST IP
+          ## WHY? Containers inside Kind need to access PostgreSQL running on the HOST
+          ## WHAT IS? IP of the machine where you are running Docker
+          ## IMPORTANT? localhost (127.0.0.1) DOES NOT WORK from inside a container
+          ## SOLUTION? Depends on the OS:
+          ##   - macOS/Linux: real IP or host.docker.internal
+          ##   - Windows: host.docker.internal
+
+          # If macOS export HOST_IP=host.docker.internal
+          export HOST_IP="host.docker.internal"
+          # If Linux export HOST_IP=$(hostname -I | awk '{print $1}')
+          export HOST_IP=$(hostname -I | awk '{print $1}')
+          # If Windows export HOST_IP=host.docker.internal
+          export HOST_IP="host.docker.internal"
+          echo "✅ HOST_IP defined as: $HOST_IP"
+
+          ## ===================================================================
+          ## 🔖  STEP 9: START POSTGRESQL CONTAINER
+          ## WHY? Your API needs a database to store data
+          ## WHAT IS? PostgreSQL running in a Docker container (not in K8s)
+          ## IMPORTANT? The container runs ON THE HOST, not inside Kind
+          ## PORT? 5432 (default PostgreSQL)
+          ## VOLUMES? postgres-data for persistence
+
+          # Why separated? PostgreSQL local is easier to debug
+          docker run \
+            --name postgres-dev \
+            -d \
+            -p $LOCAL_PORT_POSTGRES:5432 \
+            -e POSTGRES_USER=$POSTGRES_USER \
+            -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+            -e POSTGRES_DB=$POSTGRES_DB \
+            -v postgres-data:/var/lib/postgresql/data \
+            postgres:15-alpine
+          # => a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6
+
+          # ============================================================================
+          ## 🔖  10: Aguardar PostgreSQL Iniciar
+          ## WHY? It takes a few seconds for PostgreSQL to be ready for connections
+          ## WHAT DOES? Waits 5 seconds (more secure)
+
+          # ⏳ Aguardando PostgreSQL iniciar... (5 segundos)
+          sleep 5
+          # => ✅ PostgreSQL should be ready
+
+          ## ===================================================================
+          ## 🔖  STEP 11: Verificar Container PostgreSQL
+          ## WHY? Confirmar que container está rodando
+          ## WHAT IS? docker ps | grep postgres-dev
+          ## TOOL? docker (container runtime)
+          ## IF NO DOCKER? Install or skip this step
+          docker ps | grep postgres-dev
+          # => a1b2c3d4e5f6  postgres:15-alpine  "docker-entrypoint..."  30s ago  Up 25s  0.0.0.0:5432->5432/tcp  postgres-dev
+
+          ## ===================================================================
+          ## 🔖  STEP 12: CREATE TABLE FOR USERS
+          ## WHY? Your API needs a table to store users
+          ## WHAT IS? SQL CREATE TABLE + some test data
+          ## TOOL? psql (PostgreSQL client)
+          ## IF NO PSQL? Install or skip this step
+
+          # 1. Check if psql is installed
+          #  MACOS: brew install postgresql
+          #  Linux: apt-get install postgresql-client
+          psql --version
+          # => psql (PostgreSQL) 15.0
+
+          # 2. COMMAND TO CREATE TABLE
+          PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U $POSTGRES_USER -d $POSTGRES_DB -f /path/to/file.sql
+          # =>  id |       name       |         email          |         created_at
+          # => ----+------------------+------------------------+----------------------------
+          # =>   1 | João Silva       | joao@example.com       | 2024-01-15 10:30:46.123456
+          # =>   2 | Maria Santos     | maria@example.com      | 2024-01-15 10:30:46.123456
+          # =>   3 | Pedro Oliveira   | pedro@example.com      | 2024-01-15 10:30:46.123456
+
+          ## ===================================================================
+          ## 🔖  STEP 13: CREATE NAMESPACES IN KUBERNETES
+          ## WHY? Separate API in own namespace (better organization)
+          ## WHAT IS? Namespace = isolamento lógico de recursos em K8s
+          ## BENEFIT? You can delete namespace "api" without affecting the cluster
+          kubectl create namespace $API_NAMESPACE
+          # => namespace/api created
+
+          ## ===================================================================
+          ## 🔖  STEP 14: CREATE SECRET WITH POSTGRESQL CREDENTIALS
+          ## WHY? Containers precisam saber como conectar ao banco
+          ## WHAT IS? Secret = dados sensíveis criptografados no etcd do K8s
+          ## IMPORTANT? HOST_IP needs to be the host IP, not localhost
+          ## REASON? Containers in K8s can't access localhost of the host
+          ## IMPORTANT: using HOST_IP=$HOST_IP
+          kubectl create secret generic postgres-credentials \
+            --from-literal=host=$HOST_IP \
+            --from-literal=user=$POSTGRES_USER \
+            --from-literal=password=$POSTGRES_PASSWORD \
+            --from-literal=database=$POSTGRES_DB \
+            --from-literal=port=5432 \
+            -n $API_NAMESPACE
+          # => secret/postgres-credentials created
+
+          ## ===================================================================
+          ## 🔖  STEP 15: VALIDATE SECRET
+          ## WHY? Confirmar que secret foi criado com as 5 chaves
+          kubectl get secrets -n $API_NAMESPACE
+          # => NAME                    TYPE     DATA   AGE
+          # => postgres-credentials    Opaque   5      10s
+
+          ## ===================================================================
+          ## 🔖  STEP 16: DEPLOY API NO KIND
+          ## WHY? Executar sua aplicação Node.js no cluster K8s
+          ##
+          ## WHAT IS DEPLOYMENT? Define como rodar sua app:
+          ##   - Qual imagem Docker
+          ##   - Quantas replicas (2 pods)
+          ##   - Quais env vars (do SECRET)
+          ##   - Health checks (livenessProbe, readinessProbe)
+          ##
+          ## WHAT IS SERVICE? Expose the app:
+          ##   - type: LoadBalancer = external access (localhost in Kind)
+          ##   - Port 8080 → 3000 (container)
+          ##
+          ## imagePullPolicy: Never = don't try to download image (uses locally)
+          ## IMPORTANT: you need to have the Docker image ready BEFORE this step
+          ##   - Run `docker images | grep '$API_IMAGE'` to check if the image is ready
+          ##   - Run `docker build -t $API_IMAGE .` to build the image
+
+          # Deploy with the following configuration:
+          #   - Image: $API_IMAGE"
+          #   - Replicas: 2 pods"
+          #   - Port: 8080 (localhost) → 3000 (container)"
+          #   - Credentials: from the Secret postgres-credentials"
+          kubectl apply -f /path/to/kube.yaml
+          # => deployment.apps/users-api created
+          # => service/users-api-service created
+
+          ## ===================================================================
+          ## 🔖  STEP 17: VALIDAR DEPLOYMENT
+          ## WHY? Verify the status of the pods
+          kubectl get deployments -n $API_NAMESPACE
+          # => NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+          # => users-api   2/2     2            2           45s
+
+          ## ===================================================================
+          ## 🔖  STEP 18: VER PODS EM DETALHE
+          ## WHY? Verify each pod individually
+          kubectl get pods -n $API_NAMESPACE -o wide
+          # => NAME                        READY   STATUS    RESTARTS   AGE   IP
+          # => users-api-5f7d9b6c8-abc12   1/1     Running   0          30s   10.244.0.5
+          # => users-api-5f7d9b6c8-def45   1/1     Running   0          30s   10.244.0.6
+
+          ## ===================================================================
+          ## 🔖  STEP 19: VER LOGS DE UM POD
+          ## WHY? Debug if the app started correctly
+          ## WHAT SHOWS? stdout/stderr of the container (last 50 lines)
+          kubectl logs -n $API_NAMESPACE -l app=users-api --tail=50
+          # => 2024-01-15 10:30:45 INFO: Connecting to database...
+          # => 2024-01-15 10:30:46 INFO: Connected! (host=host.docker.internal)
+          # => 2024-01-15 10:30:46 INFO: Server running on port 3000
+
+          ## ===================================================================
+          ## 🔖  STEP 20: VER SERVICE
+          ## WHY? Confirm that the Service was created
+          ## ⚠️ EXTERNAL-IP shows <pending> in Kind (expected)
+          ## ✅ We will use kubectl port-forward to access it
+          kubectl get svc -n $API_NAMESPACE
+          # => NAME                 TYPE          CLUSTER-IP      EXTERNAL-IP   PORT(S)
+          # => users-api-service    LoadBalancer  10.103.12.34    <pending>     8080:31234/TCP
+
+          ## ===================================================================
+          ## 🔖  STEP 21: PORT-FORWARD PARA A API
+          ## WHY? Kind doesn't provision real IPs - we use port-forward
+          ## WHAT DOES? Maps localhost:8080 → service:8080 → pods:3000
+          ## IMPORTANT? This command keeps running, use in another terminal
+          ## start port-forward in background... kill previous port-forward if exists
+          pkill -f "kubectl port-forward" 2>/dev/null || true
+          sleep 1
+          # start new port-forward in background
+          kubectl port-forward -n $API_NAMESPACE svc/users-api-service 8080:8080 &
+          PF_PID=$!
+          echo "✅ Port-forward started (PID: $PF_PID)"
+          echo "   Access: http://localhost:8080"
+          sleep 3
+
+          ## ===================================================================
+          ## 🔖  STEP 22: HEALTH CHECK
+          # WHY? Confirm that the app is responding
+          curl -s http://localhost:8080/ -w "Status: %{http_code}\n" -I | head -5
+          # => 200: OK
+
+          ## ===================================================================
+          ## 🔖  STEP 23: GET /users - LISTAR TODOS
+          # WHY? Validate that the app can connect to PostgreSQL and return data
+          # WHAT DOES? SELECT * FROM users via your API
+          curl -X GET "http://localhost:8080/users" -H "Content-Type: application/json" -w "\nStatus: %{http_code}\n" 2>/dev/null | jq '.' 2>/dev/null || echo "(JSON parse failed - app may not be ready)"
+          # => 200: [ {"id": 1, "name": "João Silva", "email": "joao@example.com"}, ..]
+
+          ## ===================================================================
+          ## 🔖  STEP 24: GET /users?page=1&limit=2 - WITH PAGINATION
+          # WHY? Test pagination parameters
+          curl -X GET "http://localhost:8080/users?page=1&limit=2" -H "Content-Type: application/json" -w "\nStatus: %{http_code}\n" 2>/dev/null | jq '.' 2>/dev/null || echo "(JSON parse failed - app may not be ready)"
+          # => 200: [ {"id": 1, "name": "João Silva", "email": "joao@example.com"}, ..]
+
+          ## ===================================================================
+          ## 🔖  STEP 25: GET /users/{id} - Search Specific
+          # WHY? Test access to individual resource
+          curl -X GET "http://localhost:8080/users/1" -H "Content-Type: application/json" -w "\nStatus: %{http_code}\n" 2>/dev/null | jq '.' 2>/dev/null || echo "(JSON parse failed - app may not be ready)"
+          # => 200: {"id": 1, "name": "João Silva", "email": "joao@example.com"}
+
+          ## ===================================================================
+          ## 🔖  STEP 26: POST /users - CREATE NEW
+          # WHY? Test INSERT into PostgreSQL
+          curl -X POST "http://localhost:8080/users" -H "Content-Type: application/json" -d '{ "name": "Dev Tester", "email": "dev@localhost.local" }' -w "\nStatus: %{http_code}\n" 2>/dev/null | jq '.' 2>/dev/null || echo "(Erro)"
+          # => 201: {"id": 4, "name": "Dev Tester", "email": "dev@localhost.local", ...}
+
+          ## ===================================================================
+          ## 🔖  STEP 27: VALIDATE PERSISTENCE
+          # WHY? Confirm that data was saved to PostgreSQL
+          curl -X GET "http://localhost:8080/users" -H "Content-Type: application/json" -s 2>/dev/null | jq '.[] | {id, name, email}' 2>/dev/null || echo "(JSON parse failed - app may not be ready)"
+          # => 200: [ {"id": 1, "name": "João Silva", "email": "joao@example.com"}, ..]
+
+          ## ===================================================================
+          ## 🔖  STEP 28: ACCESS DATABASE DIRECTLY
+          # WHY? Verify data in PostgreSQL via SQL
+          PGPASSWORD=$POSTGRES_PASSWORD psql -h localhost -U $POSTGRES_USER -d $POSTGRES_DB -c "SELECT id, name, email FROM users ORDER BY id DESC LIMIT 5;"
+          # => id |       name       |         email
+          # => ----+------------------+------------------------
+          # =>   4 | Dev Tester       | dev@localhost.local
+          # =>   3 | Pedro Oliveira   | pedro@example.com
+          # =>   2 | Maria Santos     | maria@example.com
+          # =>   1 | João Silva       | joao@example.com
+
+          ## ===================================================================
+          ## 🔖  STEP 29: MONITOR LOGS IN REAL-TIME
+          # WHY? Monitor the app's logs in real-time
+          kubectl logs -n $API_NAMESPACE -l app=users-api -f
+          # => 2024-01-15 10:30:45 INFO: Connecting to database...
+          # => 2024-01-15 10:30:46 INFO: Connected! (host=host.docker.internal)
+          # => 2024-01-15 10:30:46 INFO: Server running on port 3000
+
+          ## ===================================================================
+          ## 🔖  STEP 30: PRINTS DOCKER & KIND
+          echo -n " 🐳 Docker & Kind"
+          echo "  - Cluster: $CLUSTER_NAME"
+          echo "  - Context: $(kubectl config current-context)"
+          echo "  - Nodes: $(kubectl get nodes --no-headers | wc -l)"
+
+          ## ===================================================================
+          ## 🔖  STEP 31: PRINTS POSTGRESQL (DOCKER CONTAINER)
+          echo -n " 🗄️  PostgreSQL (Docker Container)"
+          echo "  - Host: localhost:5432"
+          echo "  - User: $POSTGRES_USER"
+          echo "  - Database: $POSTGRES_DB"
+          echo "  - Container: postgres-dev"
+
+          ## ===================================================================
+          ## 🔖  STEP 32: PRINTS API SERVICE (KUBERNETES)
+          echo -n " 🌐 API Service (Kubernetes)"
+          echo "  - URL: http://localhost:8080"
+          echo "  - Endpoint: http://localhost:8080/users"
+          echo "  - Port-forward PID: $PF_PID"
+
+          ## ===================================================================
+          ## 🔖  STEP 33: PRINTS KUBERNETES RESOURCES
+          echo -n " 📊 Kubernetes Resources"
+          kubectl get all -n $API_NAMESPACE
+  Debugging Kubernetes Pod States and Transitions:
+    desc: A systematic approach to troubleshooting pod lifecycle issues and understanding pod phases
+    tags: [debug, kubernete, state]
+    notes:
+      - md: | #markdown
+          ## OVERVIEW
+
+          - Pod lifecycle states indicate the current status of pods
+          - Understanding transitions helps debug deployment issues
+          - Container states are distinct from pod phases
+
+          ### Key Concepts
+
+          - A pod is like a small apartment building where containers live
+          - Pod phases (Pending, Running, Succeeded, Failed) are like the building's overall status
+          - Container states (Waiting, Running, Terminated) are like the status of each apartment
+          - Pod conditions help us understand why a pod might be stuck
+
+          ### Common Debugging Patterns
+
+          - Check pod status first: `kubectl describe pod <pod-name>`
+          - Look at container logs: `kubectl logs <pod-name> -c <container-name>`
+          - Examine events: `kubectl get events --sort-by='.lastTimestamp'`
+
+          ## Summary
+
+          - Always check pod conditions before diving into container logs
+          - Use `-o json` or `-o yaml` for detailed debugging information
+          - Container restarts often indicate application issues
+          - Events provide chronological troubleshooting context
+          - Pod phases are high-level, container states provide details

@@ -9,6 +9,7 @@ const cheatEntry: CheatKnowledge = {
   source: '/f.yml',
   desc: 'A cheat',
   tags: ['math'],
+  doc: '',
   createdAt: 0,
   updatedAt: 0
 }

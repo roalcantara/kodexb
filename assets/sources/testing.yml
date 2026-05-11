@@ -1,0 +1,472 @@
+bookmarks:
+  https://serenity-js.org:
+    desc: Framework for acceptance testing and living documentation
+    tags: [bdd, testing]
+  https://serenity-js.org/handbook/design/screenplay-pattern:
+    desc: The Screenplay Pattern is an innovative, user-centred approach to writing high-quality automated acceptance tests
+    tags: [bdd, testing]
+  https://pact.io:
+    desc: Pact | A code-first tool for testing HTTP and message integrations using contract tests
+    tags: [bdd, api]
+    links: [https://docs.pact.io, https://youtube.com/playlist?list=PLwy9Bnco-IpfZ72VQ7hce8GicVZs7nm0i, https://share.google/aimode/HkXPmxEQxI8AVwu0c]
+  https://specmatic.io:
+    desc: Specmatic | Contract Testing and Service Virtualization made easy
+    tags: [bdd, api]
+    links: [https://specmatic.io/docs/getting-started/overview]
+    notes:
+      - md: | #markdown
+          ### OVERVIEW
+
+          - An open-source tool for contract testing that uses Gherkin syntax (the same language as Cucumber/BDD frameworks) to define API contracts.
+          - It bridges the gap between business-readable specs and automated testing.
+
+          #### KEY FEATURES
+
+          **Gherkin-based contracts:**
+
+            - Write contracts in plain English using Given-When-Then syntax, which makes them readable to non-technical stakeholders:
+
+              ```gherkin
+              Scenario: Get user by ID
+                Given a user exists with id 123
+                When I GET /users/123
+                Then the response status is 200
+                And the response body has a user with name "John"
+              ```
+
+          **Provider and Consumer testing:**
+
+            - Like Pact, it tests both sides—providers ensure they implement the contract, consumers verify they use it correctly.
+
+          **OpenAPI support:**
+
+            - Can work with OpenAPI specs in addition to Gherkin, giving flexibility in how you define contracts.
+
+          **Multiple protocols:**
+
+            - Supports HTTP/REST APIs, not limited to one approach.
+
+          **Language agnostic:**
+
+            - Works across different tech stacks.
+
+          **Advantages over Pact:**
+
+            - Gherkin syntax is more human-readable and business-friendly
+            - No need to learn a specific DSL (like Pact's JSON format)
+            - Can bridge technical and non-technical stakeholders
+            - Simpler learning curve if your team already uses Cucumber/BDD
+
+          **Disadvantages:**
+
+            - Smaller community and ecosystem than Pact
+            - Less mature tooling
+            - Fewer integrations and extensions
+            - Less battle-tested in large-scale production systems
+
+          **Best for:**
+
+            - Teams already using BDD/Cucumber
+            - Organizations where business stakeholders need to understand/validate contracts alongside engineers.
+  https://cucumber.io:
+    desc: Cucumber | The world's most popular tool for Behaviour-Driven Development
+    tags: [bdd, cucumber]
+  https://github.com/cucumber/cucumber-expressions#readme:
+    desc: Cucumber Expressions
+    tags: [bdd, cucumber]
+  https://cucumber.io/blog/bdd/understanding-screenplay-part-1:
+    desc: Understanding Screenplay (Part 1) | Myths & Fundamentals
+    tags: [bdd, cucumber, screenplay]
+  https://cucumber.io/blog/bdd/understanding-screenplay-part-2:
+    desc: Understanding Screenplay (Part 2) | Help! Maybe my helpers aren't so helpful after all?
+    tags: [bdd, cucumber, screenplay]
+  https://cucumber.io/blog/bdd/understanding-screenplay-part-3:
+    desc: Understanding Screenplay (Part 3) | Refactoring to Screenplay
+    tags: [bdd, cucumber, screenplay]
+  https://cucumber.io/blog/bdd/understanding-screenplay-part-4:
+    desc: Understanding Screenplay (Part 4) | Composing Tasks from Interactions
+    tags: [bdd, cucumber, screenplay]
+  https://school.cucumber.io:
+    desc: Cucumber School Online | Learn from the Cucumber experts at your own pace with our free online courses
+    tags: [bdd, cucumber]
+  https://cucumber.io/tools/cucumber-for-jira:
+    tags: [bdd, cucumber]
+    desc: Cucumber for Jira | Capture the value of BDD natively in Jira
+  https://share.google/aimode/HkXPmxEQxI8AVwu0c:
+    desc: Consumer-Driven Contract Testing | CDC
+    tags: [cdc, testing, api]
+    links: [https://pact.io]
+    notes:
+      - md: | #markdown
+          ### Consumer-Driven Contract Testing (CDC)
+
+          - Consumers (clients) define contracts that specify what they expect from providers (services).
+          - Tests verify both sides honor the contract, preventing integration failures.
+
+          **Usage:**
+            - Instead of providers defining APIs unilaterally, consumers explicitly state their requirements.
+            - These contracts become the source of truth for testing both consumer and provider in isolation.
+
+          **Key use cases:**
+            - Microservices that need independent deployment without breaking each other
+            - Teams working on different services that need confidence in integrations
+            - Catching breaking changes early before they reach production
+            - Enabling parallel development across teams
+
+          **Best for:**
+            - Systems with multiple independent consumers of the same service
+            - Organizations practicing continuous deployment
+            - Preventing the "integration testing nightmare" where you discover incompatibilities late
+            - Teams wanting fast feedback on API compatibility without spinning up full integration environments
+
+          **Main benefit:**
+            - Catches breaking changes at development time, not production time.
+            - Consumers and providers can deploy independently without coordination overhead or downtime.
+
+          **Popular tool:**
+            - **Pact** - the de facto standard for CDC, available for multiple languages.
+
+          **Trade-off:**
+
+            - Requires discipline and maintenance of contracts
+            - Adds some development overhead upfront
+            - But saves significant pain later.
+  https://share.google/aimode/LdtqmwARZ4Xh6xUct:
+    desc: Kafka Schema Registry
+    tags: [cdc, testing, api]
+    notes:
+      - md: | #markdown
+          ### OVERVIEW
+
+          - Centralized repository for managing data schemas (like Avro, JSON Schema, Protobuf) used with Apache Kafka
+          - Acting as a data contract between loosely coupled producers and consumers to ensure data quality, consistency, and compatibility as schemas evolve.
+          - Producers register schemas, get unique IDs, serialize data with the schema, and send the ID + data to Kafka;
+          - Consumers use the ID from Kafka to fetch the correct schema from the Registry to deserialize the message, preventing downstream applications from breaking due to unexpected data changes.
+
+          #### Key Functions
+
+          - **Centralized Schema Management:**
+
+            Stores and manages data blueprints (schemas) in one place.
+
+          - **Data Contract Enforcement:**
+
+            Ensures producers and consumers agree on data structure.
+
+          - **Schema Evolution:**
+
+            Supports rules (backward, forward, full compatibility) to manage schema changes without breaking existing applications.
+
+          - **Serialization/Deserialization:**
+
+            Producers serialize data using the schema, and consumers deserialize using the schema ID from the registry.
+
+          - **Data Governance:**
+
+            Provides visibility, lineage, and auditability for data formats.
+
+          #### HOW IT WORKS
+
+          1. **Producer:** Before sending data, the producer checks with the Schema Registry to register or retrieve the schema's unique ID.
+          2. **Serialization:** The producer serializes the message data (e.g., to Avro binary) and prepends the Schema ID.
+          3. **Kafka:** The ID and serialized data are sent to the Kafka topic.
+          4. **Consumer:** The consumer reads the message, extracts the Schema ID, and requests the corresponding schema from the Registry to deserialize the data.
+
+          #### BENEFITS
+
+          - **Decoupling:** Allows producers and consumers to evolve independently.
+          - **Robustness:** Prevents consumers from failing due to unexpected data format changes.
+          - **Scalability:** Centralizes schema logic, improving overall data pipeline efficiency.
+  https://rogerioalcantara.atlassian.net/jira/marketplace/discover/app/hiptest.jira-plugin:
+    desc: Atlassian Jira Marketplace > CucumberStudio - BDD & Test Management
+    tags: [consorciei, jira]
+    notes:
+      - md: | #markdown
+          ## CucumberStudio - BDD & Test Management
+
+          > BDD and agile test management platform integrated with Jira. Use BDD and test automation at scale
+  https://rogerioalcantara.atlassian.net/jira/projects?page=1&sortKey=recommendation&sortOrder=DESC&types=software%2Cbusiness:
+    desc: Atlassian Jira Projects
+    tags: [consorciei, jira]
+  https://rogerioalcantara.atlassian.net/jira/software/projects/SCRUM/boards/1:
+    desc: Atlassian Jira Scrum Board
+    tags: [consorciei, jira]
+  https://admin.atlassian.com/s/04057c99-c6e2-43af-a58f-b2ecdce69222/user-connected-apps/tab/installed:
+    desc: Atlassian Admin > User Connected Apps > Installed Apps
+    tags: [jira, apps]
+  https://admin.atlassian.com/s/04057c99-c6e2-43af-a58f-b2ecdce69222/user-connected-apps/connect/jira/hiptest.jira-plugin/details:
+    desc: Atlassian Admin > User Connected Apps > CucumberStudio - BDD & Test Management
+    tags: [jira, apps]
+  https://support.smartbear.com/cucumberstudio/docs/integrations/jira/index.html:
+    desc: CucumberStudio Documentation | CucumberStudio is a comprehensive software test management tool, which provides you with the ability to plan and organize all test cases, requirements, and defects associated with your release or user stories in a single place
+    tags: [jira, apps]
+    links: [https://support.smartbear.com/cucumberstudio/docs/general-info/about.html]
+cheats:
+  Decrease scenarios with Background and tables | Gherkin:
+    desc: Decrease scenarios with Background and tables in Gherkin
+    tags: [bdd, cucumber]
+    notes:
+      - md: |
+          ### Como reduzir quantidade de cenários utilizando Background e tabelas em Gherkin
+
+          Utilizar estas técnicas em Gherkin não só torna seus cenários mais concisos e fáceis de manter, mas também melhora a legibilidade e eficiência dos seus testes de aceitação.
+
+          ## Background
+
+          O Background é utilizado para definir um cenário comum a todos os cenários do arquivo. Ele é executado antes de cada cenário.
+
+          ## Tabelas
+
+          As tabelas são utilizadas para definir uma lista de valores que serão utilizados no cenário. Elas são muito úteis para reduzir a quantidade de cenários.
+
+          ## Exemplo
+
+          ### Sem otimização
+
+          ```gherkin
+            Feature: Login do usuário
+
+              Scenario: Login bem-sucedido com usuário admin
+                Given O usuário está na página de login
+                When O usuário insere o nome de usuário "admin"
+                And O usuário insere a senha "admin123"
+                Then O usuário deve ser redirecionado para a página inicial do administrador
+
+              Scenario: Login bem-sucedido com usuário padrão
+                Given O usuário está na página de login
+                When O usuário insere o nome de usuário "user"
+                And O usuário insere a senha "user123"
+                Then O usuário deve ser redirecionado para a página inicial do usuário
+          ```
+
+          ### Com otimização
+
+          ```gherkin
+            Feature: Login do usuário
+
+              Background: O usuário está na página de login
+                Given O usuário está na página de login
+
+              Scenario Outline: Login bem-sucedido com diferentes tipos de usuários
+                When O usuário insere o nome de usuário "<username>"
+                And O usuário insere a senha "<password>"
+                Then O usuário deve ser redirecionado para a página inicial "<page>"
+
+                Examples:
+                  | username | password  | page                      |
+                  | admin    | admin123  | página inicial do admin   |
+                  | user     | user123   | página inicial do usuário |
+          ```
+
+          #### Neste exemplo otimizado:
+
+          ##### Background
+          - Utilizado para definir que cada cenário começa com o usuário na página de login.
+          - Isso elimina a necessidade de repetir este passo em cada cenário.
+
+          ##### Scenario Outline & Examples
+          - Permite definir um "template" de cenário que é então executado para cada linha na tabela Examples.
+          - Isso permite testar múltiplos conjuntos de dados (combinações de usuário e senha) em um único cenário
+          - Reduzindo a quantidade de cenários escritos e mantendo o código **DRY** (Don't Repeat Yourself).
+  Describing scenarios in BDD | Gherkin:
+    desc: Describes scenarios
+    tags: [bdd, cucumber]
+    links:
+      - https://automationpanda.com/2017/01/30/bdd-101-writing-good-gherkin
+      - https://automationpanda.com/2018/02/03/are-gherkin-scenarios-with-multiple-when-then-pairs-okay
+    notes:
+      - md: |
+          ### Rules
+
+          1. Steps are written in third-person
+          2. Given is written in past tense
+          3. When/Then are written in present tense
+          4. One Scenario, One Behavior
+          5. Focus a feature on customer needs.
+          6. Limit one feature per feature file. This makes it easy to find features.
+          7. Limit the number of scenarios per feature. Nobody wants a thousand-line feature file. A good measure is a dozen scenarios per feature.
+          8. Limit the number of steps per scenario to less than ten.
+          9. Limit the character length of each step. Common limits are 80-120 characters.
+          10. Use proper spelling.
+          11. Use proper grammar.
+          12. Capitalize Gherkin keywords.
+          13. Capitalize the first word in titles.
+          14. Do not capitalize words in the step phrases unless they are proper nouns.
+          15. Do not use punctuation (specifically periods and commas) at the end of step phrases.
+          16. Use single spaces between words.
+          17. Indent the content beneath every section header.
+          18. Separate features and scenarios by two blank lines.
+          19. Separate examples tables by 1 blank line.
+          20. Do not separate steps within a scenario by blank lines.
+          21. Space table delimiter pipes ("|") evenly.
+          22. Adopt a standard set of tag names. Avoid duplicates.
+          23. Write all tag names in lowercase, and use hyphens ("-") to separate words.
+          24. Limit the length of tag names.
+      - gherkin: |
+          Feature: Google Searching
+
+            Scenario: Simple Google search
+              Given the Google home page is displayed
+              When the user enters "panda" into the search bar
+              Then links related to "panda" are shown on the results page
+  Screenplay Pattern:
+    desc: A user-centred approach to writing high-quality automated acceptance tests using domain language and layers of abstraction.
+    tags: [bdd, screenplay]
+    links: [https://serenity-js.org/handbook/design/screenplay-pattern]
+    notes:
+      - md: | #markdown
+          ### OVERVIEW
+
+          The Screenplay Pattern is an innovative approach to automated acceptance tests that:
+
+          - Steers teams towards effectively using **layers of abstraction**
+          - Helps capture the **business vocabulary** of your domain
+          - Encourages good testing and software engineering habits
+          - Improves **team collaboration** and **alignment** between technical and business stakeholders
+          - Enables independent deployment of microservices without breaking changes
+  Screenplay Pattern > Design Principle:
+    desc: Use domain language to express what activities actors need to perform to accomplish their goals
+    tags: [bdd, screenplay]
+    links: [https://serenity-js.org/handbook/design/screenplay-pattern]
+    notes:
+      - md: | #markdown
+          ### OVERVIEW
+
+          > Automated acceptance tests should use **your domain language** to clearly express what **activities** the **actors** interacting with **your system** need to perform in order to accomplish **their goals**.
+
+          **Benefits of this principle:**
+
+          - Expressing test scenarios in **your domain language** makes them easier to understand and accessible to wider audiences
+          - Focusing on **actors** and **their goals** correlates test failures with actual business impact
+          - Modelling workflows using **reusable, business-focused activities** reduces code duplication and improves flexibility
+          - Code based on shared language between requirements, developers, and domain experts (Domain-Driven Design)
+  Screenplay Pattern > Five Elements > Actors:
+    desc: Represents people and external systems interacting with the system under test and playing specific roles
+    tags: [bdd, screenplay]
+    links: [https://serenity-js.org/api/core/class/Actor/, https://serenity-js.org/handbook/design/screenplay-pattern]
+    notes:
+      - md: | #markdown
+          ### THE FIVE BUILDING BLOCKS: ACTORS
+
+          > Just like the five core elements of the Screenplay Pattern, the term "role" comes from the system metaphor of a **stage performance**.
+          > It should be interpreted as the role a given actor plays in the performance,
+          > the role they play in the system.
+          > Some good examples of roles include "a doctor", "a trader", or "a writer".
+
+          - Represent **people** and **external systems** interacting with the system under test
+          - Play specific **roles** in the test scenario
+          - Uniquely identified by their name
+  Screenplay Pattern > Five Elements > Abilities:
+    desc: Represents people and external systems interacting with the system under test and playing specific roles
+    tags: [bdd, screenplay]
+    links: [https://serenity-js.org/api/core/class/Ability/, https://serenity-js.org/handbook/design/screenplay-pattern]
+    notes:
+      - md: | #markdown
+          ### THE FIVE BUILDING BLOCKS: ABILITIES
+
+            - Act as **thin wrappers** around integration libraries (e.g., HTTP clients, browser drivers)
+            - Enable actors to interact with various interfaces of the system under test
+            - Provide a standardised API for portability across different integration tools
+            - Allow actors to hold state and remember retrieved information
+  Screenplay Pattern > Five Elements > Interactions:
+    desc: Command objects that instruct actors how to use their abilities
+    tags: [bdd, screenplay]
+    links: [https://serenity-js.org/api/core/class/Interaction/, https://serenity-js.org/handbook/design/screenplay-pattern]
+    notes:
+      - md: | #markdown
+          ### THE FIVE BUILDING BLOCKS: INTERACTIONS
+
+            - **Command objects** that instruct actors how to use their abilities
+            - Represent **low-level activities** an actor can perform using a given interface
+            - Can be chained together via `Actor.attemptsTo()` method
+            - Most needed interactions are pre-built by the framework
+  Screenplay Pattern > Five Elements > Tasks:
+    desc: Sequences of activities modelled as meaningful steps of a business workflow
+    tags: [bdd, screenplay]
+    links: [https://serenity-js.org/api/core/class/Task/, https://serenity-js.org/handbook/design/screenplay-pattern]
+    notes:
+      - md: | #markdown
+          ### THE FIVE BUILDING BLOCKS: Tasks
+
+            - **Sequences of activities** modelled as meaningful steps of a business workflow
+            - **Reusable building blocks** that associate business meaning with activities
+            - Composed from interactions and other tasks
+            - Capture domain language and improve test readability
+  Screenplay Pattern > Five Elements > Questions:
+    desc: Retrieve information from the system under test and test execution environment
+    tags: [bdd, screenplay]
+    links: [https://serenity-js.org/api/core/class/Question/, https://serenity-js.org/handbook/design/screenplay-pattern]
+    notes:
+      - md: | #markdown
+          ### THE FIVE BUILDING BLOCKS: Questions
+
+            - Retrieve **information** from the system under test and test execution environment
+            - Instruct actors how to use their abilities to **retrieve information when the activity is performed**
+            - Provide a way to **parameterise activities**
+            - Enable assertions, waiting/synchronisation, and data transformations
+  Screenplay Pattern > Multiple Levels of Abstraction:
+    desc: Actors demonstrate how to accomplish goals by performing activities at multiple levels of abstraction, from business-focused to implementation-specific.
+    tags: [bdd, screenplay]
+    links: [https://serenity-js.org/handbook/design/screenplay-pattern]
+    notes:
+      - md: | #markdown
+          ### ACTIVITY HIERARCHY
+
+          Activities can be composed of activities, which are composed of activities, creating a functional decomposition hierarchy.
+
+          **High-level abstraction** (Business domain vocabulary)
+          - Goal: Book a plane ticket
+          - Activities: Find flight, Choose flight class, Provide payment details, Receive confirmation
+          - Used in: Acceptance test scenarios, Cucumber features
+          - Focus: Expected business process, not implementation
+
+          **Mid-level abstraction**
+          - Goal: Find an appropriate flight connection
+          - Activities: Open search form, Enter origin airport, Enter destination airport, etc.
+          - Used in: Component tests, API tests
+          - Focus: Meaningful workflow steps
+
+          **Low-level abstraction** (Interface-specific vocabulary)
+          - Goal: Specify the origin airport
+          - Activities: Click widget, Enter city name, Pick from suggestions
+          - Used in: UI component tests, interaction tests
+          - Focus: Interface interaction details
+
+          **Key benefits:**
+          - Higher-level activities compose lower-level ones
+          - Code reuse through functional composition
+          - Activities primary component of code reuse, not step definitions
+          - Same mental model works across all abstraction levels
+          - Describes expected process, not existing implementation
+  Screenplay Pattern > Design Benefits:
+    desc: The pattern enables portable, maintainable, and business-aligned test automation code.
+    tags: [bdd, screenplay]
+    links: [https://serenity-js.org/handbook/design/screenplay-pattern]
+    notes:
+      - md: | #markdown
+          ### KEY ADVANTAGES
+
+          **Readability & Communication**
+          - Tests use domain language understood by business and technical stakeholders
+          - Easier to identify obstacles in user journeys
+          - Can highlight errors and hidden assumptions in business processes
+
+          **Maintainability**
+          - Lower code duplication through reusable tasks and interactions
+          - Consistent API across different test types (UI, API, mobile, component)
+          - Reduces maintenance costs through shared test code patterns
+
+          **Portability**
+          - Test code agnostic of underlying integration tools
+          - Same test scenarios work across different test runners and browsers
+          - Business process activities independent of interface implementation
+
+          **Composability**
+          - Actors can accomplish same goal through different interfaces
+          - Activities modeled as command objects enabling composition
+          - Encourages functional decomposition and reusability
+
+          **Team Alignment**
+          - Clear separation of concerns (actors, abilities, activities, goals)
+          - Focuses on "why" (goals) before "how" (implementation)
+          - Enables technical and business stakeholders to contribute effectively

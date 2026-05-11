@@ -1,0 +1,1603 @@
+cheats:
+  # DESIGN PATTERNS
+  Top Client Architecture Patterns:
+    desc: MVC x MVP x MVVM x MVVM-C
+    tags: [architecture, pattern]
+    links:
+      - Client Arch patterns: https://newsletter.techworld-with-milan.com/p/what-is-the-difference-between-mvc
+      - Everything You NEED to Know About Client Architecture Patterns: https://youtu.be/I5c7fBgvkNY
+    notes:
+      - md: |
+          ### MVC x MVP x MVVM x MVVM-C
+
+          | **PATTERN** | **USE CASE**                                                    |
+          | ----------- | --------------------------------------------------------------- |
+          | **MVC**     | Smaller projects, where simplicity is key                       |
+          | **MVP**     | When you need more testability                                  |
+          | **MVVM**    | Reactive programming and data-binding scenarios                 |
+          | **MVVM-C**  | Reactive programming and data-binding scenarios with complex UI |
+          | **VIPER**   | Larger Apps where clean separation and scalability are critical |
+
+          #### Common
+
+          All of these patterns are based on the same principles:
+
+          - **V**iew: Displays information
+          - **M**odel: Manages data and logic
+          - **C**ontroller/**P**resenter/**V**iewModel: (or Translators) Connects the Model and View, handling user input
+      - mermaid: |
+          graph TD
+            A[Project Size] -->|Small| B[MVC]
+            A -->|Medium| C[MVP]
+            A -->|Large| D[MVVM]
+            D -->|Complex UI| E[MVVM-C]
+            D -->|Complex Navigation| F[VIPER]
+  Top Software Architecture Patterns:
+    desc: Monolithic x Layered x Clean x Microservices x Event-Driven x Space-based x Microkernel x Peer-to-Peer x Cloud-native x CQRS x Hexagonal
+    tags: [pattern, architecture]
+    links:
+      - Top 5 Most Used Architecture Patterns: https://youtu.be/f6zXyq4VPP8
+      - Top 10 Architectural Patterns: https://newsletter.techworld-with-milan.com/p/top-10-architectural-patterns
+    notes:
+      - md: |
+          ### Top Architecture Patterns
+
+          | **ARCHITECTURE PATTERN**         | **USE CASE**                                                                                    |
+          | -------------------------------- | ----------------------------------------------------------------------------------------------- |
+          | **Monolithic**                   | Small, simple apps not expected to significantly scale in size or complexity                    |
+          | **Layered**                      | Traditional web apps with clear structure; good for scaling up                                  |
+          | **Clean**                        | Prioritizes long-term maintainability and independence from external agencies                   |
+          | **Microservices**                | Large, complex apps; offers scalability and flexibility in technology                           |
+          | **Event-Driven**                 | Systems requiring high levels of responsiveness and adaptability                                |
+          | **Space-based**                  | High-traffic apps and managing unpredictable loads                                              |
+          | **Microkernel/Plug-in**          | Systems requiring high extensibility, such as IDEs or media players                             |
+          | **Peer-to-Peer**                 | Decentralized apps and where a server-client model is impractical                               |
+          | **Cloud-native**                 | Apps intended to leverage cloud environments, focusing on scalability and resource optimization |
+          | **CQRS**                         | Complex systems where performance of read/write operations is critical                          |
+          | **Hexagonal/Ports and Adapters** | Complex apps requiring integration with multiple systems                                        |
+      - mermaid: |
+          graph TD
+            A[Project Scope] -->|Small & Simple| B[Monolithic Architecture]
+            A -->|Requires Scalability| C[Layered Architecture]
+            A -->|Large & Complex| D[Microservices Architecture]
+            A -->|High Responsiveness| E[Event-Driven Architecture]
+            A -->|Unpredictable Loads| F[Space-based Architecture]
+            A -->|High Extensibility| G[Microkernel Architecture]
+            A -->|Decentralized| H[Peer-to-Peer Architecture]
+            A -->|Cloud Environment| I[Cloud-native Architecture]
+            A -->|Complex Read/Write Ops| J[CQRS]
+            A -->|Integration with Multiple Systems| K[Hexagonal Architecture]
+            A -->|Long-term Maintainability| L[Clean Architecture]
+
+            B -->|Grows in Complexity| C
+            C -->|Further Scalability Needed| D
+            D -->|Reactive & Event-Based| E
+  Monolithic Architecture:
+    desc: Single-tiered where components are interconnected and interdependent
+    tags: [pattern, architecture]
+    notes:
+      md: |
+        # Monolithic Architecture
+
+        > Unified model where all software components (like the client-side user interface, server-side logic, and database operations) are tightly coupled and run as a single service
+
+        Single, large codebase where components are all interwoven
+        - Simplifies development, testing, and deployment processes
+        - Straightforward to develop, test, deploy, and scale as a single unit
+
+        ## Components
+
+        - **Client-side user interface:** The user interface is responsible for displaying information to the user and receiving user input.
+        - **Server-side logic:** The server-side logic is responsible for processing user requests and generating responses.
+        - **Database:** The database is responsible for storing and retrieving data.
+
+        ## Workflow
+
+        1. The client-side user interface sends a request to the server-side logic.
+        2. The server-side logic processes the request and sends a response to the client-side user interface.
+        3. The client-side user interface displays the response to the user.
+
+        ## Advantages
+        - Simple to develop and deploy initially
+        - Easier debugging and testing with a single codebase
+        - Straightforward architecture for smaller applications
+
+        ## Challenges
+        - Downtime during updates and maintenance
+        - Codebase can become unwieldy and complex
+        - Updates to one component can impact the entire system
+        - Scalability can be limited as the application grows
+
+        ## Usage
+        - **Ideal for small applications and simpler workflows**
+        - When a project is not expected to grow significantly in scope or size
+        - Suitable for applications with a limited life span or simple domain
+
+        ## Considerations
+        - While monolithic architecture is simple and straightforward, it may not suit complex, scalable applications.
+        - It's essential to evaluate the future scope and potential growth of the application before choosing this architecture.
+
+        ## Diagram
+      mermaid: |
+        graph TD
+          A[Client-side UI] -->|Interacts with| B[Server-side logic]
+          B -->|Interacts with| C[Database]
+          C -->|Interacts with| A
+    links:
+      - Top 5 Most Used Architecture Patterns: https://youtu.be/f6zXyq4VPP8
+      - Top 10 Architectural Patterns: https://newsletter.techworld-with-milan.com/p/top-10-architectural-patterns
+  Layered Architecture:
+    desc: Organizes code into layers with specific roles
+    tags: [pattern, architecture]
+    notes:
+      md: |
+        # Layered Architecture
+
+        > Organizes application into hierarchical layers
+
+        Typically divided into Presentation, Business, Persistence, and Database layers.
+        - Each layer has a specific role and responsibility
+        - Higher layers depend on lower layers
+
+        ## Advantages
+        - Simplifies maintenance and updates
+        - Promotes separation of concerns
+        - Facilitates scalability and security enhancements
+
+        ## Challenges
+        - Can lead to performance bottlenecks
+        - Tight coupling between layers
+
+        ## Usage
+        - **Ideal for traditional web applications**
+        - When starting small and scaling up
+        - For applications requiring clear structure and organization
+
+        ## OREILLY Pattern Analysis
+
+        | **Criteria** | **Rating** |
+        | --- | --- |
+        | Overall agility | Low |
+        | Ease of deployment | Low |
+        | Testability | High |
+        | Performance | Low |
+        | Scalability | Low |
+        | Ease of development | High |
+
+        ## Diagram
+      mermaid: |
+        graph TD
+          A[Presentation Layer] -->|Interacts with| B[Business Layer]
+          B -->|Interacts with| C[Persistence Layer]
+          C -->|Interacts with| D[Database Layer]
+    links:
+      - Top 5 Most Used Architecture Patterns: https://youtu.be/f6zXyq4VPP8
+      - Top 10 Architectural Patterns: https://newsletter.techworld-with-milan.com/p/top-10-architectural-patterns
+      - Layered Architecture: https://oreilly.com/library/view/software-architecture-patterns/9781491971437/ch01.html
+  Microservices Architecture:
+    desc: Independent, small, modular services
+    tags: [pattern, architecture]
+    notes:
+      md: |
+        # Microservices Architecture
+
+        > Small, autonomous services that work together
+
+        Each service runs in its process and communicates with lightweight mechanisms.
+        - Highly maintainable and testable
+        - Independently deployable
+        - Organized around business capabilities
+
+        ## Advantages
+        - Flexibility in technology and scalability
+        - Resilience - one service failure doesn't affect others
+
+        ## Challenges
+        - Complex communication patterns
+        - Difficult to manage with a growing number of services
+
+        ## Usage
+        - **For large, complex applications needing scalability**
+        - When different services require different technologies
+        - In continuous delivery/deployment environments
+
+        ## Diagram
+      mermaid: |
+        graph TD
+          A[Service 1] -->|Interacts with| B[Service 2]
+          A -->|Interacts with| C[Service 3]
+          B -->|Interacts with| C
+          C -->|Interacts with| A
+    links:
+      - Top 5 Most Used Architecture Patterns: https://youtu.be/f6zXyq4VPP8
+      - Top 10 Architectural Patterns: https://newsletter.techworld-with-milan.com/p/top-10-architectural-patterns
+  Microkernel Architecture (Plug-in Architecture):
+    desc: Core system with pluggable components/extensions
+    tags: [pattern, architecture]
+    notes:
+      md: |
+        # Microkernel Architecture (Plug-in Architecture)
+
+        > Core functionality in a microkernel, extended by plugins
+
+        Separates core system functionality from extended features via plugins or modules.
+        - Easy to extend and customize
+        - Simplifies updates and maintenance
+
+        ## Advantages
+        - Flexibility in adding or modifying functionality
+        - Core system remains lightweight and manageable
+
+        ## Challenges
+        - Potential for increased complexity in communication between core and plugins
+
+        ## Usage
+        - **For systems requiring high extensibility**
+        - Ideal for software like IDEs, media players, and OS shells
+        - When a system needs to be easily customizable
+
+        ## Diagram
+      mermaid: |
+        graph TD
+          A[Core System] -->|Interacts with| B[Plugin 1]
+          A -->|Interacts with| C[Plugin 2]
+          B -->|Interacts with| C
+          C -->|Interacts with| A
+    links:
+      - Top 5 Most Used Architecture Patterns: https://youtu.be/f6zXyq4VPP8
+      - Top 10 Architectural Patterns: https://newsletter.techworld-with-milan.com/p/top-10-architectural-patterns
+  Peer-to-Peer Architecture:
+    desc: Network of nodes sharing resources
+    tags: [pattern, architecture]
+    notes:
+      md: |
+        # Peer-to-Peer Architecture
+
+        > Each node (peer) acts as both client and server
+
+        Peers are equally privileged and operate in a decentralized manner.
+        - Resilient to node failures
+        - Scalable as more peers join
+
+        ## Advantages
+        - Distributed nature enhances resilience and load distribution
+        - Eliminates the need for centralized servers
+
+        ## Challenges
+        - Security risks due to decentralization
+        - Inconsistent performance depending on peer availability
+
+        ## Usage
+        - **For decentralized applications like file-sharing networks**
+        - In applications where server-client architecture is impractical
+        - When scalability and resilience are priorities
+
+        ## Diagram
+      mermaid: |
+        graph TD
+          A[Peer 1] -->|Interacts with| B[Peer 2]
+          A -->|Interacts with| C[Peer 3]
+          B -->|Interacts with| C
+          C -->|Interacts with| A
+    links:
+      - Top 5 Most Used Architecture Patterns: https://youtu.be/f6zXyq4VPP8
+      - Top 10 Architectural Patterns: https://newsletter.techworld-with-milan.com/p/top-10-architectural-patterns
+  Cloud-native Architecture:
+    desc: Designed for cloud scalability and flexibility
+    tags: [pattern, architecture]
+    notes:
+      md: |
+        # Cloud-native Architecture
+
+        > Optimized for cloud environments
+
+        Emphasizes scalable, flexible solutions that leverage the full potential of cloud computing.
+        - Designed for resilience, scalability, and continuous delivery
+        - Utilizes microservices, containers, and cloud services
+
+        ## Advantages
+        - High scalability and flexibility
+        - Faster development and deployment cycles
+
+        ## Challenges
+        - Complexity in managing cloud resources
+        - Requires expertise in cloud technologies
+
+        ## Usage
+        - **For applications intended to leverage cloud environments**
+        - When elasticity and resource optimization are priorities
+        - In situations where scalability is critical
+
+        ## Diagram
+      mermaid: |
+        graph TD
+          A[Component 1] -->|Interacts with| B[Component 2]
+          A -->|Interacts with| C[Component 3]
+          B -->|Interacts with| C
+          C -->|Interacts with| A
+    links:
+      - Top 5 Most Used Architecture Patterns: https://youtu.be/f6zXyq4VPP8
+      - Top 10 Architectural Patterns: https://newsletter.techworld-with-milan.com/p/top-10-architectural-patterns
+  Hexagonal Architecture (Ports and Adapters):
+    desc: Allows an application to be equally driven by users or programs
+    tags: [pattern, architecture]
+    notes:
+      md: |
+        # Hexagonal Architecture (Ports and Adapters)
+
+        > Connects application components through ports and adapters
+
+        Also known as Ports and Adapters Architecture, it allows an application to be driven both internally and externally.
+        - Promotes loose coupling and high maintainability
+        - Facilitates testing and flexibility
+
+        ## Advantages
+        - Simplifies integration with external systems
+        - Enhances adaptability and testability
+
+        ## Challenges
+        - Initial complexity in setup
+        - Requires careful planning and design
+
+        ## Usage
+        - **For complex applications requiring integration with multiple systems**
+        - In scenarios where business logic needs to be isolated from external concerns
+        - When flexibility and testability are priorities
+
+        ## Diagram
+      mermaid: |
+        graph TD
+          A[Component 1] -->|Interacts with| B[Component 2]
+          A -->|Interacts with| C[Component 3]
+          B -->|Interacts with| C
+          C -->|Interacts with| A
+    links:
+      - Top 5 Most Used Architecture Patterns: https://youtu.be/f6zXyq4VPP8
+      - Top 10 Architectural Patterns: https://newsletter.techworld-with-milan.com/p/top-10-architectural-patterns
+  Clean Architecture:
+    desc: Focuses on separation of concerns
+    tags: [pattern, architecture]
+    links:
+      - Top 5 Most Used Architecture Patterns: https://youtu.be/f6zXyq4VPP8
+      - Top 10 Architectural Patterns: https://newsletter.techworld-with-milan.com/p/top-10-architectural-patterns
+    notes:
+      md: |
+        # Clean Architecture
+
+        > Ensures independence of UI, business rules, and data sources
+
+        Organizes code into circles with clear boundaries.
+        - Inner circles are policies (higher-level business rules)
+        - Outer circles are mechanisms (UI, database, etc.)
+
+        ## Advantages
+        - Independent of frameworks and UI
+        - Testability and maintainability
+
+        ## Challenges
+        - Complexity in understanding and implementation
+        - Requires discipline to maintain structure
+
+        ## Usage
+        - **For applications that need to be independent of external agencies**
+        - When ensuring long-term maintainability is a priority
+        - In situations where testability is critical
+
+        ## Diagram
+      mermaid: |
+        graph TD
+          A[Entity] -->|Interacts with| B[Use Case]
+          A -->|Interacts with| C[Interface]
+          B -->|Interacts with| C
+          C -->|Interacts with| A
+
+  # AGILE
+  Conceitos Essenciais de SCRUM:
+    desc: Papéis, eventos e artefatos do SCRUM
+    tags: [pattern, agile]
+    links:
+      - Guia Scrum: https://scrumguides.org/scrum-guide.html
+      - Scrum em 10 minutos: https://www.youtube.com/watch?v=9TycLR0TqFA
+    notes:
+      md: | #markdown
+        > Referência rápida para entender a hierarquia e propósito de cada artefato ágil. Exemplo: E-commerce de Delivery.
+
+        ## 🎯 EPIC
+
+        **Propósito:** Agrupar múltiplas histórias em um objetivo estratégico maior
+
+        | Atributo | Descrição |
+        |----------|-----------|
+        | **Escopo** | Semanas a meses |
+        | **Atores** | Product Owner, Stakeholders |
+        | **Critério de Sucesso** | Alinhado com roadmap e valor de negócio |
+        | **Exemplo** | "Melhorar experiência de checkout e reduzir taxa de abandono de carrinho" |
+
+        ---
+
+        ## 🧩 FEATURE
+
+        **Propósito:** Agrupar tarefas relacionadas em um entregável coeso e testável
+
+        | Atributo | Descrição |
+        |----------|-----------|
+        | **Escopo** | Alguns dias a 2 sprints |
+        | **Atores** | Tech Lead, Dev Team, QA |
+        | **Critério de Sucesso** | DoD atendida para todas as tasks |
+        | **Exemplo** | "Pagamento com múltiplas formas de checkout (cartão, PIX, wallet)" |
+
+        ---
+
+        ## 👤 USER STORY
+
+        **Propósito:** Descrever uma funcionalidade do ponto de vista do usuário
+
+        | Atributo | Descrição |
+        |----------|-----------|
+        | **Escopo** | 2-5 dias (cabe em uma sprint) |
+        | **Atores** | Dev Team, QA, Product Owner |
+        | **Formato Padrão** | "Como [ator], quero [ação], para que [benefício]" |
+        | **Exemplo** | "Como cliente, quero pagar com PIX instantaneamente, para que meu pedido seja confirmado em segundos" |
+
+        ---
+
+        ## ✅ Definition of Ready (DoR)
+
+        **Propósito:** Garantir que a história está pronta para ser desenvolvida (entrada no sprint)
+
+        | Atributo | Descrição |
+        |----------|-----------|
+        | **Atores** | PO valida, Devs refinam dúvidas |
+        | **Timing** | Refinement/Grooming antes do sprint |
+        | **Checklist Típico** | • Critérios de aceitação definidos<br>• Mockups/designs prontos<br>• Dependências identificadas<br>• Story points estimado<br>• Perguntas respondidas |
+
+        ### Exemplo para User Story "Pagar com PIX":
+        - [x] Wireframe do fluxo PIX pronto
+        - [x] Integração com API do Banco X validada
+        - [x] Regras de timeout de transação definidas
+        - [x] Estimado em 8 story points
+
+        ---
+
+        ## 🔧 TASK
+
+        **Propósito:** Quebrar histórias em trabalho técnico tático
+
+        | Atributo | Descrição |
+        |----------|-----------|
+        | **Escopo** | Poucas horas até 1 dia |
+        | **Atores** | Desenvolvedores (criam durante sprint planning) |
+        | **Critério de Sucesso** | Código revisado, testes passando, pronto para merge |
+
+        ### Exemplos para User Story "Pagar com PIX":
+        1. **TASK:** Criar endpoint POST `/payments/pix` com validação de dados
+        2. **TASK:** Implementar polling para consultar status de transação PIX a cada 5s
+        3. **TASK:** Escrever testes unitários para lógica de timeout
+        4. **TASK:** Documentar fluxo no README
+
+        ---
+
+        ## ✔️ Definition of Done (DoD)
+
+        **Propósito:** Garantir qualidade e consistência antes de marcar como "pronto"
+
+        | Atributo | Descrição |
+        |----------|-----------|
+        | **Atores** | Dev Team, QA, Tech Lead |
+        | **Timing** | Antes de mover para "Pronto" no board |
+        | **Checklist Padrão** | • Código escrito e revisado (PR aprovado)<br>• Testes unitários com +80% cobertura<br>• Testes de integração passando<br>• Documentação atualizada<br>• Testado em staging<br>• Sem warnings de linter<br>• Pronto para deploy em produção |
+
+        ---
+
+        ## 🏗️ Hierarquia Visual
+
+        ```
+        EPIC: "Melhorar checkout e reduzir abandono"
+        │
+        ├─ FEATURE: "Múltiplas formas de pagamento"
+        │   ├─ USER STORY: "Pagar com PIX" [DoR ✓]
+        │   │   ├─ TASK: "Criar endpoint /payments/pix"
+        │   │   ├─ TASK: "Implementar polling de status"
+        │   │   └─ TASK: "Testes unitários"
+        │   │
+        │   ├─ USER STORY: "Pagar com cartão" [DoR ✓]
+        │   │   ├─ TASK: "Integrar SDK do gateway"
+        │   │   └─ TASK: "Validar dados do cartão"
+        │   │
+        │   └─ USER STORY: "Pagar com Google Pay" [DoR ✓]
+        │       └─ TASK: "Configurar wallet digital"
+        │
+        └─ FEATURE: "Recuperação de carrinho abandonado"
+            └─ USER STORY: "Receber email com carrinho salvo" [DoR ✓]
+                ├─ TASK: "Criar email template"
+                ├─ TASK: "Implementar job de envio"
+                └─ TASK: "Testes E2E"
+        ```
+
+        ---
+
+        ## 📊 Fluxo Típico de uma Sprint
+
+        ```
+        SPRINT PLANNING
+          ↓
+        Selecionar Stories com DoR atendida
+          ↓
+        Quebrar em Tasks
+          ↓
+        DESENVOLVIMENTO (Daily Standup)
+          ↓
+        CODE REVIEW + TESTES
+          ↓
+        Definition of Done atendida?
+          ├─ NÃO → Ajustar e voltar
+          └─ SIM ↓
+        SPRINT REVIEW (Demonstração)
+          ↓
+        SPRINT RETROSPECTIVE (Melhorias)
+        ```
+
+        ---
+
+        ## 🎓 Dicas Práticas
+
+        **Para Product Owner:**
+        - Mantenha EPICs e Features alinhadas com roadmap
+        - Garanta que Stories atendem DoR antes do refinement terminar
+        - Priorize por valor e dependências
+
+        **Para Dev Team:**
+        - Quebre Stories em Tasks durante planning, não durante desenvolvimento
+        - Use DoD como checklist antes de finalizar
+        - Pergunte se algo não está claro na DoR
+
+        **Para Scrum Master:**
+        - Monitore se DoR/DoD estão sendo respeitadas
+        - Facilite refinement para evitar surpresas no sprint
+        - Celebre quando o time entrega com qualidade
+
+        ---
+
+        ## 📚 Referência Rápida
+
+        | Artefato | Tamanho | Detalhamento | Quem Cria | Status Típico |
+        |----------|---------|--------------|-----------|---------------|
+        | EPIC | Meses | Alto nível | PO + Stakeholders | Roadmap |
+        | FEATURE | 1-2 sprints | Médio | PO + Tech Lead | Backlog |
+        | USER STORY | 2-5 dias | Detalhado | PO | Backlog / Sprint |
+        | TASK | <1 dia | Técnico | Dev | Sprint |
+
+commands:
+  Explaining Design Patterns | Template Structure:
+    desc: Template structure for explaining design patterns
+    tags: [dp, oop, structural]
+    notes:
+      - md: |
+          ## Explaining Design Patterns | Template Structure
+
+          1. **One-line description** (what it does)
+          2. **Problem** (why you need it)
+          3. **Solution** (how it works)
+          4. **When to use** (specific scenarios)
+          5. **Related patterns** (brief comparisons)
+          6. **Code example** (concrete implementation)
+  Adapter or Wrapper | Structural Patterns (with example):
+    desc: Convert the interface of a class into another interface clients expect
+    tags: [dp, oop, structural]
+    links:
+      - RefactoringGuru / Design Patterns / Structural Patterns / Adapter: https://refactoring.guru/design-patterns/adapter
+    notes:
+      - md: |
+          ## Adapter or Wrapper | Structural Patterns
+
+          > Converts incompatible interfaces so objects can work together
+
+          ### PROBLEM
+
+          - Existing code that can't talk to each other due to different interfaces
+
+          - **Example:**
+            - Your app uses XML data, but a new analytics library only accepts JSON
+
+          ### SOLUTION
+
+          - Create an adapter that translates the incompatible interfaces
+
+          ### WHEN
+
+          - Legacy code integration
+          - Third-party library compatibility
+          - Multiple data sources with different formats
+
+          ### RELATED PATTERNS
+
+          - **Decorator**: Both wrap objects, but Decorator enhances behavior while Adapter changes interface
+      - ts: |
+          // GIVEN an existing XML service
+          class XMLDataService {
+            getXMLData(): string { return "<data>stock info</data>"; }
+          }
+
+          // WHEN XMLDataService must be integrated with a service/library with different format, like JSON
+          class JSONAnalytics {
+            analyze(json: object) { /* processes JSON */ }
+          }
+
+          // THEN Adapters can make them work together by converting the XML to JSON
+          class XMLToJSONAdapter {
+            constructor(private xmlService: XMLDataService) {}
+
+            getJSONData(): object {
+              const xml = this.xmlService.getXMLData();
+              return { data: "converted to JSON" }; // conversion logic
+            }
+          }
+  Bridge | Structural Patterns (with example):
+    desc: Split a large class or a set of closely related classes into two separate hierarchies
+    tags: [dp, oop, structural]
+    links:
+      - RefactoringGuru / Design Patterns / Structural Patterns / Bridge: https://refactoring.guru/design-patterns/bridge
+    notes:
+      - md: |
+          ## Bridge | Structural Patterns
+
+          > Separates abstraction from implementation so both can vary independently
+
+          ### PROBLEM
+
+          - Classes that need to vary in multiple dimensions, leading to exponential class combinations
+
+          - **Example:**
+            - Shapes (Circle, Square) + Colors (Red, Blue) = 4 classes
+            - Add Triangle? Now 6 classes
+            - Add Green? Now 9 classes (and so on...)
+
+          ### SOLUTION
+
+          - Split into two hierarchies: one for abstraction, one for implementation
+          - Connect them with composition instead of inheritance
+
+          ### WHEN
+
+          - Classes with multiple varying dimensions
+          - Need to switch implementations at runtime
+          - Want to share implementation among multiple abstractions
+
+          ### RELATED PATTERNS
+
+          - **Adapter**: Changes interface, while Bridge separates interface from implementation
+          - **Strategy**: Similar structure, but Bridge is about structure while Strategy is about algorithms
+      - ts: |
+          // GIVEN an implementation hierarchy (colors)
+          interface Color {
+            fill(): string;
+          }
+
+          class Red implements Color {
+            fill() { return "filled with red"; }
+          }
+
+          class Blue implements Color {
+            fill() { return "filled with blue"; }
+          }
+
+          // AND an abstraction hierarchy (shapes)
+          abstract class Shape {
+            constructor(protected color: Color) {}
+            abstract draw(): string;
+          }
+
+          class Circle extends Shape {
+            draw() { return `Circle ${this.color.fill()}`; }
+          }
+
+          class Square extends Shape {
+            draw() { return `Square ${this.color.fill()}`; }
+          }
+
+          // WHEN we want to use any shape + any color
+          // THEN we can create a red circle and a blue square
+          const redCircle = new Circle(new Red());
+          const blueSquare = new Square(new Blue());
+  Facade | Structural Patterns (with example):
+    desc: Provides a simplified (but limited) interface to a complex system of classes, library or framework
+    tags: [dp, oop, structural]
+    links:
+      - RefactoringGuru | Facade: https://refactoring.guru/design-patterns/facade
+      - RefactoringGuru | Facade in TypeScript: https://refactoring.guru/design-patterns/facade/typescript/example
+    notes:
+      - md: |
+          ## Facade | Structural Patterns
+
+          > Provides a simplified interface to a complex subsystem
+
+          ### PROBLEM
+
+          - You need to work with a complex library/framework that requires initializing many objects, managing dependencies, and calling methods in the right order.
+
+          - **Example:**
+            - Video conversion requiring separate audio/video codecs, file handlers, compression algorithms, etc.
+
+          ### SOLUTION
+
+          - Create a single facade class that wraps the complex subsystem and exposes only the methods clients actually need.
+
+          ### WHEN
+
+          - Complex subsystems with many interdependent classes
+          - Need to hide implementation details from clients
+          - Want to create entry points for layered architecture
+
+          ### RELATED PATTERNS
+
+          - **Adapter**: Changes interface; Facade simplifies interface
+          - **Mediator**: Centralizes communication; Facade just simplifies access
+          - **Proxy**: Same interface as target; Facade provides different (simpler) interface
+      - ts: |
+          // GIVEN a complex process with many interdependent classes
+          class AudioCodec { decode() { /* complex logic */ } }
+          class VideoCodec { decode() { /* complex logic */ } }
+          class FileHandler { read() { /* complex logic */ } }
+          class Compressor { compress() { /* complex logic */ } }
+
+          // WHEN we need a way to simplify a complex process
+          // THEN a facade can be used to wrap the complexity
+          class VideoConverter {
+            private audio = new AudioCodec();
+            private video = new VideoCodec();
+            private file = new FileHandler();
+            private compressor = new Compressor();
+
+            convertVideo(filename: string, format: string): string {
+              // Handles all the complex orchestration internally
+              const file = this.file.read();
+              const audioData = this.audio.decode();
+              const videoData = this.video.decode();
+              const result = this.compressor.compress();
+              return `${filename}.${format}`;
+            }
+          }
+
+          // WHEN a video needs to be converted
+          // THEN the facade can be used, simplifying the process complexity
+          const converter = new VideoConverter();
+          converter.convertVideo("movie", "mp4");
+  Builder | Creational Patterns (with example):
+    desc: Construct complex objects step by step. Separate the construction of a complex object from its representation
+    tags: [dp, oop, creational]
+    links:
+      - RefactoringGuru | Builder: https://refactoring.guru/design-patterns/builder
+      - RefactoringGuru | Builder in TypeScript: https://refactoring.guru/design-patterns/builder/typescript/example
+    notes:
+      - md: |
+          ## Builder | Creational Patterns
+
+          > Constructs complex objects step by step using the same construction process
+
+          ### PROBLEM
+
+          - Complex objects need many constructor parameters or multi-step initialization, leading to unwieldy constructors or scattered setup code.
+
+          - **Example:**
+            - Creating a Car needs engine, seats, GPS, etc.
+            - Too many constructor params or messy setup.
+
+          ### SOLUTION
+
+          - Extract object construction into a separate builder class with fluent methods for each step
+
+          ### WHEN
+
+          - Objects with many optional parameters
+          - Multi-step construction process
+          - Need different representations of the same object
+
+          ### RELATED PATTERNS
+
+          - **Factory**: Creates objects in one step; Builder creates step-by-step
+          - **Composite**: Often built using Builder for complex tree structures
+      - ts: |
+          // GIVEN a complex object with many optional parameters and a multi-step construction process
+          class Car {
+            constructor(
+              public engine: string,
+              public seats: number,
+              public hasGPS: boolean = false,
+              public hasManual: boolean = false
+            ) {}
+          }
+
+          // WHEN we need a way to construct the object step by step
+          // THEN we can use a builder class with fluent interface for each step
+          class CarBuilder {
+            private engine: string = "";
+            private seats: number = 0;
+            private hasGPS: boolean = false;
+            private hasManual: boolean = false;
+
+            setEngine(engine: string) {
+              this.engine = engine;
+              return this;
+            }
+
+            setSeats(seats: number) {
+              this.seats = seats;
+              return this;
+            }
+
+            addGPS() {
+              this.hasGPS = true;
+              return this;
+            }
+
+            addManual() {
+              this.hasManual = true;
+              return this;
+            }
+
+            build(): Car {
+              return new Car(this.engine, this.seats, this.hasGPS, this.hasManual);
+            }
+          }
+
+          // WHEN we need a way to construct the object step by step
+          // THEN we can use a builder class with fluent interface for each step
+          const car = new CarBuilder() // The fluent interface makes the pattern's benefits immediately obvious
+            .setEngine("V8")
+            .setSeats(4)
+            .addGPS()
+            .build();
+
+    # SOLID
+  SOLID | The 5 Principles of Object-Oriented Design:
+    desc: Guidelines to create better software, making code easier to maintain, test, and extend
+    tags: [bp, oop, solid]
+    links:
+      - The S.O.L.I.D Principles in Pictures: https://medium.com/backticks-tildes/the-s-o-l-i-d-principles-in-pictures-b34ce2f1e898
+      - SOLID - The First 5 Principles of O.O. Design: https://digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design
+      - SOLID Principle in Programming - Understand With Real Life Examples: https://geeksforgeeks.org/solid-principle-in-programming-understand-with-real-life-examples
+    notes:
+      - md: | #markdown
+          ### S.O.L.I.D.
+
+          #### The 5 Principles of Object-Oriented Design
+
+          1. **[S]ingle Responsibility:** Classes should have only one job, which ensures only one reason to change.
+          2. **[O]pen-Closed:** Classes should be open for extension, but closed for modification.
+          3. **[L]iskov Substitution:** Subclasses should be replaceable with their parent class.
+          4. **[I]nterface Segregation:** Clients should not implement unecessary interfaces or depend on unused methods.
+          5. **[D]ependency Inversion:** High-level modules should depend on abstractions, not low-level modules (concrete implementations).
+      - md: | #markdown
+          ### Frequently Asked Questions (FAQs)
+
+          #### 1. What are the 5 SOLID principles in software engineering?
+
+          - **SOLID** is an acronym representing five fundamental object-oriented design principles formulated by Robert C. Martin, also known as Uncle Bob.
+          - These principles are:
+
+          - **Single-responsibility Principle (SRP)**: A class should have one and only one reason to change.
+          - **Open-closed Principle (OCP)**: Software entities (classes, modules, functions, etc.) should be open for extension, but closed for modification.
+          - **Liskov Substitution Principle (LSP)**: Objects in a program should be replaceable with instances of their subtypes without altering the correctness of that program.
+          - **Interface Segregation Principle (ISP)**: Clients should not be forced to depend on interfaces they do not use.
+          - **Dependency Inversion Principle (DIP)**: High-level modules should not depend on low-level modules; both should depend on abstractions. Also, abstractions should not depend on details; details should depend on abstractions.
+
+          Together, these principles establish a set of best practices for developing software that is robust, adaptable, and easy to maintain and extend as projects evolve.
+
+          #### 2. Why is SOLID important in object-oriented programming?
+
+          - **SOLID** principles are critically important in object-oriented programming because they directly address common challenges in software development, such as rigidity, fragility, immobility, and viscosity.
+          - By adhering to SOLID, developers can build systems that are:
+
+          - **More Maintainable**: Easier to understand and fix bugs.
+          - **More Flexible**: Can adapt to changing requirements without significant re-architecting.
+          - **More Extensible**: New features can be added with minimal impact on existing code.
+          - **Easier to Test**: Components can be isolated and tested independently, reducing the risk of side effects.
+          - **Less Prone to Code Smells**: They guide towards cleaner, more organized codebases, preventing the accumulation of bad design choices.
+
+          Ultimately, SOLID helps in creating high-quality software that is easier to evolve and has a longer lifespan.
+
+          #### 3. How do I apply the Single Responsibility Principle?
+
+          - Applying the Single Responsibility Principle (SRP) involves understanding the "responsibilities" of a class or module.
+          - If you can identify more than one distinct "reason to change" for a given class, it likely violates SRP.
+          - For instance, a class that both processes data and saves it to a database has two reasons to change:
+            - one if the data processing logic changes, and another if the database interaction method changes.
+
+          - To apply SRP, you should:
+            - **Identify distinct responsibilities**: Ask yourself, "What would cause this class to change?" If there are multiple, independent answers, those are separate responsibilities.
+            - **Extract responsibilities into separate classes/modules**: Create new, focused classes or modules for each identified responsibility.
+            - **Ensure each new entity has only one reason to change**: The goal is that a modification in requirements for one responsibility should only affect one class, not multiple.
+
+            This separation leads to smaller, more focused, and highly cohesive components that are easier to understand, test, and maintain.
+
+          #### 4. What is the difference between Open-Closed Principle (OCP) and the Dependency Inversion Principle (DIP)?
+
+          > While both the Open-Closed Principle (OCP) and the Dependency Inversion Principle (DIP) aim to reduce coupling and increase flexibility, they address different aspects of design:
+
+          - **Open-Closed Principle (OCP)** focuses on behavioral extension.
+            - It dictates that existing code should not be modified when new functionality is added.
+            - Instead, you should extend its behavior, typically by creating new classes that implement an interface or extend an abstract class, or by using composition.
+            - The emphasis is on adding features by adding new code, not by changing old code.
+
+          - **Dependency Inversion Principle (DIP)** focuses on dependency direction and abstraction.
+            - It states that high-level modules (which contain important business logic) should not depend on low-level modules (which handle details like database interaction or file I/O).
+            - Instead, both should depend on abstractions (interfaces or abstract classes).
+            - This "inverts" the typical top-down dependency flow, promoting a system where concrete details depend on abstract contracts.
+            - In essence, DIP is often a key enabler for OCP.
+            - By depending on abstractions (DIP), you can easily substitute different concrete implementations, allowing you to extend functionality (OCP) without altering the core logic that depends on those abstractions.
+            - OCP is a design goal, and DIP is a powerful pattern to achieve that goal.
+
+          #### 5. Are SOLID principles only for OOP?
+
+          > While the **SOLID principles** were originally articulated in the context of Object-Oriented Programming (OOP) and use terms like "class" and "interface," their underlying philosophies and benefits extend far beyond strict OOP.
+
+          - The core ideas of managing dependencies, isolating changes, promoting modularity, and enabling extensibility are universal to good software design.
+            - The **Single Responsibility Principle (SRP)** can be applied to functions, modules, microservices, or even entire teams.
+            - The idea of **open for extension, closed for modification (OCP)** is desirable in any architectural style.
+            - **Liskov Substitution (LSP)** applies whenever you have polymorphic relationships, regardless of the language's specific features.
+            - **Interface Segregation (ISP)** promotes breaking down large contracts into smaller, more client-specific ones, which is valuable even in functional programming or service design.
+            - **Dependency Inversion (DIP)** encourages decoupling through abstractions, a crucial concept in many architectural patterns like hexagonal architecture or clean architecture, which aren't exclusively OOP.
+
+          Therefore, while their origins are in OOP, the **SOLID principles** offer timeless wisdom for designing robust and maintainable software systems across various paradigms and scales.
+  SOLID | Single Responsibility Principle (with example):
+    desc: Classes should have only one job, which ensures only one reason to change
+    tags: [bp, oop, solid]
+    links:
+      - The S.O.L.I.D Principles in Pictures: https://medium.com/backticks-tildes/the-s-o-l-i-d-principles-in-pictures-b34ce2f1e898
+      - SOLID - The First 5 Principles of O.O. Design: https://digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design
+      - SOLID Principle in Programming - Understand With Real Life Examples: https://geeksforgeeks.org/solid-principle-in-programming-understand-with-real-life-examples
+    notes:
+      - ts: |
+          // bad
+          class UserSettings {
+            constructor(user) {
+              this.user = user;
+            }
+
+            changeSettings(settings) {
+              if (this.verifyCredentials()) {
+                // ...
+              }
+            }
+
+            verifyCredentials() {
+              // ...
+            }
+          }
+      - ts: |
+          // good
+          class UserAuth {
+            constructor(user) {
+              this.user = user;
+            }
+
+            verifyCredentials() {
+              // ...
+            }
+          }
+  SOLID | Open-Closed Principle (with example):
+    desc: Classes should be open for extension, but closed for modification
+    tags: [bp, oop, solid]
+    links:
+      - The S.O.L.I.D Principles in Pictures: https://medium.com/backticks-tildes/the-s-o-l-i-d-principles-in-pictures-b34ce2f1e898
+      - SOLID - The First 5 Principles of O.O. Design: https://digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design
+      - SOLID Principle in Programming - Understand With Real Life Examples: https://geeksforgeeks.org/solid-principle-in-programming-understand-with-real-life-examples
+    notes:
+      - ts: |
+          // BAD: To add a new feature, UserSettings must be modified
+          class UserSettings {
+            constructor(user) {
+              this.user = user;
+            }
+          }
+      - ts: |
+          // GOOD: To add a new features, Shape can be extended without modifying the existing code
+          class Shape {
+            area() {
+              throw "Not implemented";
+            }
+          }
+
+          // Extending Shape and adding a new features, without changing the existing code
+          class Rectangle extends Shape {
+            constructor(width, height) {
+              super();
+              this.width = width;
+              this.height = height;
+            }
+            area() {
+              return this.width * this.height;
+            }
+          }
+          class Circle extends Shape {
+            constructor(radius) {
+              super();
+              this.radius = radius;
+            }
+            area() {
+              return Math.PI * this.radius * this.radius;
+            }
+          }
+  SOLID | Liskov Substitution Principle (with example):
+    desc: Subclasses should be replaceable with their parent class
+    tags: [bp, oop, solid]
+    links:
+      - The S.O.L.I.D Principles in Pictures: https://medium.com/backticks-tildes/the-s-o-l-i-d-principles-in-pictures-b34ce2f1e898
+      - SOLID - The First 5 Principles of O.O. Design: https://digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design
+      - SOLID Principle in Programming - Understand With Real Life Examples: https://geeksforgeeks.org/solid-principle-in-programming-understand-with-real-life-examples
+    notes:
+      - ts: |
+          // Base class
+          abstract class Shape {
+            abstract area(): number;
+          }
+
+          // BAD: Violates LSP
+          class BadRectangle extends Shape {
+            constructor(private width: number, private height: number) { super(); }
+            area() { return this.width * this.height; }
+
+            // This method makes substitution problematic
+            setDimensions(w: number, h: number) {
+              if (w <= 0 || h <= 0) throw new Error("Invalid dimensions");
+            }
+          }
+
+          class BadSquare extends BadRectangle {
+            setDimensions(w: number, h: number) {
+              // Violates LSP - changes expected behavior
+              if (w !== h) throw new Error("Square must have equal sides");
+              super.setDimensions(w, h);
+            }
+          }
+
+          // GOOD: Follows LSP
+          class Rectangle extends Shape {
+            constructor(private width: number, private height: number) { super(); }
+            area() { return this.width * this.height; }
+          }
+
+          class Circle extends Shape {
+            constructor(private radius: number) { super(); }
+            area() { return Math.PI * this.radius * this.radius; }
+          }
+
+          // Both can be substituted without breaking functionality
+          const shapes: Shape[] = [new Rectangle(5, 3), new Circle(2)];
+          shapes.forEach(shape => console.log(shape.area())); // Works perfectly
+  SOLID | Interface Segregation Principle (with example):
+    desc: Clients should not be forced to depend on methods they do not use
+    tags: [bp, oop, solid]
+    links:
+      - The S.O.L.I.D Principles in Pictures: https://medium.com/backticks-tildes/the-s-o-l-i-d-principles-in-pictures-b34ce2f1e898
+      - SOLID - The First 5 Principles of O.O. Design: https://digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design
+      - SOLID Principle in Programming - Understand With Real Life Examples: https://geeksforgeeks.org/solid-principle-in-programming-understand-with-real-life-examples
+    notes:
+      - ts: |
+          // BAD: Fat interface forces unused methods
+          interface Worker {
+            work(): void;
+            eat(): void;
+            sleep(): void;
+          }
+
+          class Human implements Worker {
+            work() { console.log("Working..."); }
+            eat() { console.log("Eating..."); }
+            sleep() { console.log("Sleeping..."); }
+          }
+
+          class Robot implements Worker {
+            work() { console.log("Working..."); }
+            eat() { /* Robot doesn't eat! */ }
+            sleep() { /* Robot doesn't sleep! */ }
+          }
+
+          // GOOD: Segregated interfaces
+          interface Workable {
+            work(): void;
+          }
+
+          interface Biological {
+            eat(): void;
+            sleep(): void;
+          }
+
+          class Human implements Workable, Biological {
+            work() { console.log("Working..."); }
+            eat() { console.log("Eating..."); }
+            sleep() { console.log("Sleeping..."); }
+          }
+
+          class Robot implements Workable {
+            work() { console.log("Working..."); }
+            // Only implements what it needs!
+          }
+  SOLID | Dependency Inversion Principle (with example):
+    desc: Depend on interfaces/abstractions, not concrete implementations
+    tags: [bp, oop, solid]
+    links:
+      - The S.O.L.I.D Principles in Pictures: https://medium.com/backticks-tildes/the-s-o-l-i-d-principles-in-pictures-b34ce2f1e898
+      - SOLID - The First 5 Principles of O.O. Design: https://digitalocean.com/community/conceptual-articles/s-o-l-i-d-the-first-five-principles-of-object-oriented-design
+      - SOLID Principle in Programming - Understand With Real Life Examples: https://geeksforgeeks.org/solid-principle-in-programming-understand-with-real-life-examples
+    notes:
+      - ts: |
+          // BAD: High-level depends on low-level (concrete class)
+          class MySQLDatabase {
+            save(data: string) {
+              console.log("Saving to MySQL:", data);
+            }
+          }
+
+          class OrderService {
+            private db = new MySQLDatabase(); // Tightly coupled!
+
+            processOrder(order: string) {
+              this.db.save(order);
+            }
+          }
+
+          // GOOD: Both depend on abstraction
+          interface Database {
+            save(data: string): void;
+          }
+
+          class MySQLDatabase implements Database {
+            save(data: string) {
+              console.log("Saving to MySQL:", data);
+            }
+          }
+
+          class MongoDatabase implements Database {
+            save(data: string) {
+              console.log("Saving to MongoDB:", data);
+            }
+          }
+
+          class OrderService {
+            constructor(private db: Database) {} // Depends on abstraction!
+
+            processOrder(order: string) {
+              this.db.save(order);
+            }
+          }
+
+          // Can use any database implementation
+          const service1 = new OrderService(new MySQLDatabase());
+          const service2 = new OrderService(new MongoDatabase());
+
+    # CLIENT ARCHITECTURE PATTERNS
+  MVC | Model-View-Controller:
+    desc: Separates App logic into three interconnected components
+    tags: [architecture, pattern]
+    notes:
+      md: |
+        # MVC: Model-View-Controller
+
+        > Separates App logic into three interconnected components
+
+        One of the earliest (1979) and most adopted patterns
+        - **M**odel manages data and logic
+        - **V**iew displays the information
+        - **C**ontroller connects the Model and View, handling user input
+
+        ## Advantages
+        - Facilitates easier testing
+        - Simplifies code organization
+        - Promotes separation of concerns
+
+        ## Challenges
+        - Can lead to bloated controllers
+        - Separation between view & model can be tricky
+
+        ## Usage
+        - **Perfect for smaller projects, where simplicity is key**
+        - Traditional server-side rendered pages
+        - Clear separation between data handling and UI
+
+        ## Examples
+        Ruby on Rails, Django (Python), Laravel (PHP)
+
+        ## Flow
+      mermaid: |
+        sequenceDiagram
+            participant User
+            participant View
+            participant Controller
+            participant Model
+
+            User ->>+ View: interacts with
+            View ->>+ Controller: notify
+            Controller ->>+ Model: get data
+            Model -->>- View: update
+            View -->>- User: display
+    links:
+      - Martin Fowler's on UI Archs: https://martinfowler.com/eaaDev/uiArchs.html#ModelViewController
+      - Client Arch patterns: https://newsletter.techworld-with-milan.com/p/what-is-the-difference-between-mvc
+      - Everything You NEED to Know About Client Architecture Patterns: https://youtu.be/I5c7fBgvkNY
+  MVP | Model-View-Presenter:
+    desc: Enhances MVC by introducing a Presenter in event-driven environments
+    tags: [architecture, pattern]
+    notes:
+      md: |
+        # MVP | Model-View-Presenter
+
+        > Enhances MVC by introducing a presenter to handle UI logic
+
+        Decouples View from Model using Presenter as middleman
+        - **M**odel manages data
+        - **V**iews display data, and sends user commands to Presenter
+        - **Presenter** Handle UI logic & user inputs, transforms the Model, coordinates Model and View Updates
+
+        ## Advantages
+        - Improved testability of UI logic
+        - Clearer separation of concerns than MVC
+
+        ## Challenges
+        - More complex than MVC
+        - Requires careful management to avoid complex presenters
+
+        ## Usage
+        - **When you need more testability**
+        - When view's code needs extensive unit testing
+        - When logic needs to be decoupled from the view
+
+        ## Examples
+        Android apps with complex interactions & UI logic
+
+        ## Flow
+      mermaid: |
+        sequenceDiagram
+            participant User
+            participant View
+            participant Presenter
+            participant Model
+
+            User ->>+ View: interacts with
+            View ->>+ Presenter: notify
+            Presenter ->>+ Model: update
+            Model -->>- Presenter: get data
+            Presenter -->>- View: update
+            View -->>- User: display
+    links:
+      - Client Arch patterns: https://newsletter.techworld-with-milan.com/p/what-is-the-difference-between-mvc
+      - Everything You NEED to Know About Client Architecture Patterns: https://youtu.be/I5c7fBgvkNY
+  MVI | Model-View-Intent:
+    desc: Unidirectional data flow, ensuring that, given a state, the UI remains consistent
+    tags: [architecture, pattern]
+    notes:
+      md: |
+        # MVI | Model-View-Intent
+
+        > Reactive Architecture embracing Unidirectional data flow
+
+        Unidirectional data flow ensuring UI consistency given a state
+        - **M**odel represents the state
+        - **V**iews reflects the state
+        - **I**ntent represents user action that change the state
+
+        ## Advantages
+        - Unidirectional data flow
+        - Decouples view from model
+
+        ## Challenges
+        - More complex than MVC
+        - Requires a lot of boilerplate code
+
+        ## Usage
+        - Reactive apps with a focus on state consistency
+        - Reactive frameworks like RxJava
+
+        ## Examples
+        - Android apps with complex interactions & UI logic
+
+        ## Flow
+      mermaid: |
+        sequenceDiagram
+            participant User
+            participant View
+            participant Intent
+            participant Model
+
+            User ->>+ View: interacts with
+            View ->>+ Intent: notify
+            Intent ->>+ Model: update
+            Model -->>- Intent: get data
+            Intent -->>- View: update
+            View -->>- User: display
+    links:
+      - Client Arch patterns: https://newsletter.techworld-with-milan.com/p/what-is-the-difference-between-mvc
+  MVVM | Model-View-ViewModel:
+    desc: Binds data between the view and model, with the ViewModel mediating the interaction
+    tags: [architecture, pattern]
+    notes:
+      - md: |
+          # Model-View-ViewModel (MVVM)
+
+          > Binds data between the view and model, with the ViewModel mediating the interaction
+
+          Addresses complexities in UI development, promoting a decoupled approach
+          - **M**odel manages and displays data
+          - **V**iewModel holds and contains UI-related data without knowing the UI components
+
+          ## Advantages
+          - Strong separation of concerns
+          - Facilitates two-way data binding
+          - Enhances testability
+
+          ## Challenges
+          - Can have a steep learning curve
+          - Sometimes leads to overcomplicated code
+
+          ## Usage
+          - **Reactive programming and data-binding scenarios**
+          - Apps with complex UIs and dynamic data
+          - Platforms with data-binding
+          - WPF, Angular Apps, Android with LiveData
+
+          ## Examples
+          Microsoft's WPF, Silverlight, and Angular applications.
+
+          ## Flow
+      - mermaid: |
+          sequenceDiagram
+              participant User
+              participant View
+              participant ViewModel
+              participant Model
+
+              User ->>+ View: interacts with
+              View ->>+ ViewModel: data binding
+              ViewModel ->>+ Model: update
+              Model -->>- ViewModel: notify
+              ViewModel -->>- View: notify
+              View -->>- User: display
+    links:
+      - Client Arch patterns: https://newsletter.techworld-with-milan.com/p/what-is-the-difference-between-mvc
+      - Everything You NEED to Know About Client Architecture Patterns: https://youtu.be/I5c7fBgvkNY
+  MVVM-C | MVVM with Coordinators:
+    desc: Extends MVVM by adding coordinators for navigation and flow control.
+    tags: [architecture, pattern]
+    notes:
+      md: |
+        # MVVM-C (MVVM with Coordinators)
+
+        > Extends MVVM by adding coordinators for navigation and flow control
+
+        Decoupling Navigation from View and ViewModel
+        - **C**oordinator handles navigation
+
+        ## Advantages
+        - Better separation of navigation logic
+        - Improved scalability
+
+        ## Challenges
+        - Increased complexity
+        - Potential for over-engineering
+
+        ## Usage
+        - **Reactive programming and data-binding with complex UI**
+        - Large scale Apps where separation of navigation from view controllers is crucial
+
+        ## Examples
+        - When complex navigation is involved
+        - When complex navigation needs separation from view logic
+        - Larger applications, especially iOS
+
+        ## Flow
+      mermaid: |
+        sequenceDiagram
+            participant User
+            participant View
+            participant ViewModel
+            participant Model
+            participant Coordinator
+
+            User ->>+ View: interacts with
+            View ->>+ ViewModel: data binding
+            ViewModel ->>+ Model: update
+            Model -->>- ViewModel: notify
+            ViewModel ->>+ Coordinator: notify
+            Coordinator ->>+ View: navigate
+            View -->>- Coordinator: notify
+            Coordinator -->>- User: display
+    links:
+      - Client Arch patterns: https://newsletter.techworld-with-milan.com/p/what-is-the-difference-between-mvc
+      - Everything You NEED to Know About Client Architecture Patterns: https://youtu.be/I5c7fBgvkNY
+  VIPER | View-Interactor-Presenter-Entity-Router:
+    desc: Emphasizes testability and Single Responsibility Principle (like Clean Architecture)
+    tags: [pattern]
+    notes:
+      md: |
+        # VIPER
+
+        > Modular Architecture _(like Clean Architecture)_ that emphasizes testability and Single Responsibility Principle
+
+        By breaking down App logic into distinct components
+        - **V**iew displays what the Presenter sends
+        - **I**nteractor contains business logic per use case
+        - **P**resenter contains view logic for preparing content
+        - **E**ntity includes a primary model object
+        - **R**outer contains navigation logic
+
+        ## Advantages
+        - High level of modularity, improved testability
+        - Clear separation of concerns
+
+        ## Challenges
+        - Complexity is much higher
+        - Potentially overkill for smaller Apps
+
+        ## Usage
+        - **Larger Apps where clean separation and scalability are critical**
+        - When scalability, maintainability, & testability are priorities
+        - Especially iOS, need modularity, testability, and clarity
+
+        ## Examples
+        - Typically used in larger iOS Apps
+
+        ## Flow
+      mermaid: |
+        sequenceDiagram
+            participant User
+            participant View
+            participant Interactor
+            participant Presenter
+            participant Entity
+            participant Router
+
+            User ->>+ View: interacts with
+            View ->>+ Presenter: data binding
+            Presenter ->>+ Interactor: update
+            Interactor ->>+ Entity: manage
+            Entity -->>- Interactor: notify
+            Interactor -->>- Presenter: notify
+            Presenter ->>+ Router: notify
+            Router ->>+ View: navigate
+            View -->>- Router: notify
+            Router -->>- User: display
+    links:
+      - Objc.io's introduction to VIPER: https://objc.io/issues/13-architecture/viper
+      - Client Arch patterns: https://newsletter.techworld-with-milan.com/p/what-is-the-difference-between-mvc
+      - Everything You NEED to Know About Client Architecture Patterns: https://youtu.be/I5c7fBgvkNY
+
+    # SOFTWARE ARCHITECTURE PATTERNS
+  EDA | Event-Driven Architecture:
+    desc: System state changes are broadcasted as events
+    tags: [pattern, architecture]
+    notes:
+      md: |
+        # Event-Driven Architecture
+
+        > Significant benefits in terms of scalability, flexibility, and real-time processing, but it also comes with its own set of complexities and challenges, particularly in terms of design, debugging, and ensuring data consistency
+
+        The flow of the application is determined by events or changes in state.
+        - High level of scalability and reactivity
+        - Asynchronous communication
+
+        ## Components
+
+        - **Event Producers:** Generate events and send them to an event processing system.
+        - **Event Consumers:** Receive and react to events.
+        - **Event Channels:** Transport events from producers to consumers.
+        - **Event Processing:** Handles event routing, transformation, and reaction logic.
+
+        ## Workflow
+
+        1. An event is generated by an event producer (e.g., user action, system trigger).
+        2. The event is published to an event channel.
+        3. Event consumers subscribed to the channel receive the event.
+        4. Consumers process the event and take appropriate actions.
+
+        ## Advantages
+
+        - **Scalability:** EDA can efficiently handle high volumes of asynchronous events, making it highly scalable.
+        - **Flexibility and Agility:** Easy to add or modify components without impacting the entire system, facilitating agile development.
+        - **Loose Coupling:** Components communicate via events, reducing direct dependencies and making the system more modular.
+        - **Real-Time Processing:** Ideal for scenarios requiring immediate response to changes, such as monitoring systems or real-time analytics.
+        - **Resilience:** Failures in one component do not necessarily disrupt the entire system, enhancing fault tolerance.
+        - **Event Replay:** Events can be replayed to restore the system to a previous state, facilitating recovery from failures.
+        - **Event Sourcing:** Events can be stored and used as a source of truth for the system, facilitating auditing and debugging.
+
+        ## Challenges
+
+        - **Complexity:** EDA can be complex to implement and manage, especially in large-scale systems.
+        - **Event Consistency:** Ensuring consistency across events can be challenging, especially in distributed systems.
+        - **Debugging:** Debugging can be difficult due to the asynchronous nature of events and the distributed nature of the system.
+        - **Event Storming:** A large number of events can lead to a situation called "event storming," which can overwhelm the system or lead to performance bottlenecks.
+        - **Data Consistency:** Ensuring data consistency across different services or components can be challenging in an event-driven system.
+        - **Dependency on Messaging Infrastructure:** The system's reliability heavily depends on the robustness of the messaging infrastructure used for event communication.
+
+        ## Usage
+
+        - **For systems requiring high levels of responsiveness**
+        - In IoT and real-time data processing applications
+        - When building flexible and adaptable systems
+
+        ## Diagram
+      mermaid: |
+        graph TD
+          A[Component 1] -->|Interacts with| B[Component 2]
+          A -->|Interacts with| C[Component 3]
+          B -->|Interacts with| C
+          C -->|Interacts with| A
+    links:
+      - Top 5 Most Used Architecture Patterns: https://youtu.be/f6zXyq4VPP8
+      - Top 10 Architectural Patterns: https://newsletter.techworld-with-milan.com/p/top-10-architectural-patterns
+      - Event-Driven Architecture: https://en.wikipedia.org/wiki/Event-driven_architecture
+      - Event-Driven Architecture: https://ibm.com/cloud/learn/event-driven-architecture
+      - Event-Driven Architecture: https://redhat.com/en/topics/integration/what-is-event-driven-architecture
+      - Event-Driven Architecture: https://mulesoft.com/resources/api/what-is-event-driven-architecture
+      - Event-Driven Architecture: https://youtube.com/watch?v=STKCRSUsyP0
+  Space-based Architecture:
+    desc: Eliminates the need for a relational database
+    tags: [pattern, architecture]
+    notes:
+      md: |
+        # Space-based Architecture
+
+        > Scales out by using distributed in-memory data grids
+
+        Avoids database bottlenecks by keeping data in RAM and using replication and partitioning techniques.
+        - Highly scalable
+        - Good for handling unpredictable loads
+
+        ## Advantages
+        - Reduces database load
+        - Suitable for applications with unpredictable spikes
+
+        ## Challenges
+        - Complexity in data management and consistency
+        - Significant memory requirements
+
+        ## Usage
+        - **For high traffic applications like e-commerce sites**
+        - In situations where database performance is a bottleneck
+        - For real-time analytics and large-scale transactions
+
+        ## Diagram
+      mermaid: |
+        graph TD
+          A[Component 1] -->|Interacts with| B[Component 2]
+          A -->|Interacts with| C[Component 3]
+          B -->|Interacts with| C
+          C -->|Interacts with| A
+    links:
+      - Top 5 Most Used Architecture Patterns: https://youtu.be/f6zXyq4VPP8
+      - Top 10 Architectural Patterns: https://newsletter.techworld-with-milan.com/p/top-10-architectural-patterns
+  CQRS | Command-Query Responsibility Segregation Architecture:
+    desc: Separates read and write operations
+    tags: [pattern, architecture]
+    notes:
+      md: |
+        # Command-Query Responsibility Segregation Architecture (CQRS)
+
+        > Distinct separation of command (write) and query (read) responsibilities
+
+        This pattern divides the system into two parts - the command side and the query side.
+        - Improves performance, scalability, and security
+        - Allows for optimized data schemas on both sides
+
+        ## Advantages
+        - Scalability and performance optimization
+        - Separation can simplify complex domains
+
+        ## Challenges
+        - Complexity in synchronization
+        - Increased effort in maintenance
+
+        ## Usage
+        - **For complex systems where performance is critical**
+        - In systems where read/write operations have significantly different requirements
+        - When scalability is a priority
+
+        ## Diagram
+      mermaid: |
+        graph TD
+          A[Command Side] -->|Interacts with| B[Query Side]
+          A -->|Interacts with| C[Query Side]
+          B -->|Interacts with| C
+          C -->|Interacts with| A
+    links:
+      - Top 5 Most Used Architecture Patterns: https://youtu.be/f6zXyq4VPP8
+      - Top 10 Architectural Patterns: https://newsletter.techworld-with-milan.com/p/top-10-architectural-patterns
