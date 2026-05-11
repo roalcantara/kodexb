@@ -16,13 +16,20 @@ function formatTime(ms: number): string {
   return d.toLocaleString()
 }
 
+function formatDateString(ms: number | undefined | null): string {
+  if (ms === undefined || ms === null) return ''
+  const d = new Date(ms)
+  if (Number.isNaN(d.getTime())) return ''
+  return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(d)
+}
+
 export type MetadataSidebarProps = {
   entry: RpcKnowledge
 }
 
 export function MetadataSidebar({ entry }: MetadataSidebarProps) {
-  const due = entry.type === 'task' ? entry.meta?.due : undefined
-  const taskOrder = entry.type === 'task' ? (entry.meta?.task_order ?? entry.meta?.taskOrder) : undefined
+  const due = entry.type === 'task' ? formatDateString(entry.dueDate) : undefined
+  const taskOrder = entry.type === 'task' ? entry.taskOrder : undefined
 
   return (
     <aside className="kb-metadataSidebar" aria-label="Entry metadata">

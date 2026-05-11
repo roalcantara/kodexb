@@ -1,4 +1,5 @@
 /** biome-ignore-all lint/style/useNamingConvention: Factory definitions are not exported */
+import path from 'node:path'
 import type { BookmarkKnowledge, CheatKnowledge, CommandKnowledge, TaskKnowledge } from '@core'
 import type { Env } from '@shared/types'
 import type { LoadedConfig } from '@shell/app/config/config.loader'
@@ -19,7 +20,8 @@ const loadedConfigFactory = Factory.define<LoadedConfig>(() => ({
   configPath: '/tmp/kb-test/config.yaml',
   database: { path: ':memory:' },
   sources: { path: testingPaths.minimal },
-  display: { pageSize: '50' }
+  display: { pageSize: '50' },
+  writeTarget: path.join(testingPaths.minimal, 'tasks.yml')
 }))
 
 const bookmarkFactory = Factory.define<BookmarkKnowledge>(({ sequence }) => ({
@@ -67,6 +69,9 @@ const taskFactory = Factory.define<TaskKnowledge>(({ sequence }) => ({
   tags: ['dev', 'kb'],
   priority: 'high',
   status: 'doing',
+  dueDate: undefined,
+  taskOrder: sequence,
+  dependsOn: undefined,
   doc: `# Task ${sequence}\n\n> Build kb`,
   createdAt: 1_700_000_000_000,
   updatedAt: 1_700_000_000_000

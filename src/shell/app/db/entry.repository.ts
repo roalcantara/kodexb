@@ -71,7 +71,7 @@ function parseJson<T>(raw: string | null, fallback: T): T {
   }
 }
 
-function rowToKnowledge(row: KnowledgeRow): Knowledge {
+export function rowToKnowledge(row: KnowledgeRow): Knowledge {
   const base = {
     id: row.id,
     type: row.type as EntryType,
@@ -92,7 +92,10 @@ function rowToKnowledge(row: KnowledgeRow): Knowledge {
       ...base,
       type: 'task',
       priority: row.priority as Knowledge extends { priority?: infer P } ? P : never,
-      status: row.status as Knowledge extends { status?: infer S } ? S : never
+      status: row.status as Knowledge extends { status?: infer S } ? S : never,
+      dueDate: row.due_date ?? undefined,
+      taskOrder: row.task_order ?? undefined,
+      dependsOn: parseJson<number[]>(row.depends_on, [])
     }
   }
 
@@ -113,8 +116,8 @@ function rowToParams(
   string,
   string | null,
   string | null,
-  null,
-  null,
+  number | null,
+  number | null,
   string,
   string,
   number,
@@ -132,9 +135,9 @@ function rowToParams(
     row.doc,
     'priority' in row ? (row.priority ?? null) : null,
     'status' in row ? (row.status ?? null) : null,
-    null,
-    null,
-    JSON.stringify([]),
+    'dueDate' in row ? (row.dueDate ?? null) : null,
+    'taskOrder' in row ? (row.taskOrder ?? null) : null,
+    'dependsOn' in row ? JSON.stringify(row.dependsOn ?? []) : JSON.stringify([]),
     JSON.stringify(row.meta ?? {}),
     row.createdAt,
     row.updatedAt
@@ -222,4 +225,9 @@ export function getTagCounts(db: Database): Record<string, number> {
     if (row.tag) out[row.tag] = row.cnt
   }
   return out
+}
+
+export function deleteById(db: Database, id: number): boolean {
+  const result = db.query('DELETE FROM knowledges WHERE id = ?').run(id)
+  return result.changes > 0
 }

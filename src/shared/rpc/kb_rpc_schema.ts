@@ -73,9 +73,24 @@ export type PreviewImageResult = {
   title?: string
 }
 
-/** Placeholder task mutation payloads (full validation in Phase 7). */
-export type TaskCreateInput = { key: string; desc?: string }
-export type TaskUpdateInput = { desc?: string }
+/** Task mutation payloads (full CRUD in App layer). */
+export type TaskCreateInput = {
+  key: string
+  desc?: string
+  tags?: string[]
+  priority?: 'low' | 'mid' | 'high' | 'urgent'
+  dueDate?: number
+  dependsOn?: number[]
+}
+export type TaskUpdateInput = {
+  key?: string
+  desc?: string
+  tags?: string[]
+  status?: 'todo' | 'doing' | 'done'
+  priority?: 'low' | 'mid' | 'high' | 'urgent'
+  dueDate?: number
+  dependsOn?: number[]
+}
 
 /**
  * Single Electrobun bridge method — the renderer's Eden Treaty client forwards

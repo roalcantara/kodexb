@@ -11,7 +11,9 @@ import type {
   RpcDbStats,
   RpcGetConfigPayload,
   RpcImportResult,
-  RpcKnowledge
+  RpcKnowledge,
+  TaskCreateInput,
+  TaskUpdateInput
 } from '@shared/rpc'
 import { Electroview } from 'electrobun/view'
 
@@ -189,4 +191,28 @@ export function openExternal(url: string): Promise<void> {
 
 export function fetchPreviewImage(url: string): Promise<PreviewImageResult | null> {
   return rpc.api.fetchPreviewImage.post({ url }).then(unwrap) as Promise<PreviewImageResult | null>
+}
+
+export function createTask(input: TaskCreateInput): Promise<RpcKnowledge> {
+  return rpc.api.createTask.post(input).then(unwrap) as Promise<RpcKnowledge>
+}
+
+export function updateTask(id: number, patch: TaskUpdateInput): Promise<RpcKnowledge> {
+  return rpc.api.updateTask.post({ id, patch }).then(unwrap) as Promise<RpcKnowledge>
+}
+
+export function deleteTask(id: number): Promise<void> {
+  return rpc.api.deleteTask.post({ id }).then(unwrap) as Promise<void>
+}
+
+export function cycleStatus(id: number, dir: 'forward' | 'backward'): Promise<RpcKnowledge> {
+  return rpc.api.cycleStatus.post({ id, dir }).then(unwrap) as Promise<RpcKnowledge>
+}
+
+export function cyclePriority(id: number, dir: 'forward' | 'backward'): Promise<RpcKnowledge> {
+  return rpc.api.cyclePriority.post({ id, dir }).then(unwrap) as Promise<RpcKnowledge>
+}
+
+export function reorderTask(id: number, dir: 'up' | 'down'): Promise<RpcKnowledge[]> {
+  return rpc.api.reorderTask.post({ id, dir }).then(unwrap) as Promise<RpcKnowledge[]>
 }

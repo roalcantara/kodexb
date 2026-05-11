@@ -10,6 +10,7 @@ export type LoadedConfig = ResolvedConfig & {
   configPath: string
   database: { path: string }
   sources: { path: string }
+  writeTarget: string
 }
 
 function resolveConfig(raw: unknown, configPath: string, env: Env): Result<ResolvedConfig, string> {
@@ -55,7 +56,8 @@ export async function loadConfig(pathArg?: string): Promise<LoadedConfig> {
 
   const result = resolveConfig(raw, configPath, env)
   if (result.isErr()) throw new Error(result.error)
-  return { configPath, ...result.value }
+  const writeTarget = path.join(result.value.sources.path, 'tasks.yml')
+  return { configPath, writeTarget, ...result.value }
 }
 
 /**

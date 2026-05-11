@@ -64,12 +64,40 @@ export const configPatchSchema = Type.Object(
   { additionalProperties: false }
 )
 
-export const taskCreateSchema = Type.Object({ key: Type.String({ minLength: 1 }) }, { additionalProperties: false })
+const priorityUnionSchema = Type.Union([
+  Type.Literal('low'),
+  Type.Literal('mid'),
+  Type.Literal('high'),
+  Type.Literal('urgent')
+])
+
+export const taskCreateSchema = Type.Object(
+  {
+    key: Type.String({ minLength: 1 }),
+    desc: Type.Optional(Type.String()),
+    tags: Type.Optional(Type.Array(Type.String())),
+    priority: Type.Optional(priorityUnionSchema),
+    dueDate: Type.Optional(Type.Number()),
+    dependsOn: Type.Optional(Type.Array(Type.Integer()))
+  },
+  { additionalProperties: false }
+)
 
 export const taskUpdateSchema = Type.Object(
   {
     id: Type.Integer(),
-    patch: Type.Object({ desc: Type.Optional(Type.String()) }, { additionalProperties: false })
+    patch: Type.Object(
+      {
+        key: Type.Optional(Type.String({ minLength: 1 })),
+        desc: Type.Optional(Type.String()),
+        tags: Type.Optional(Type.Array(Type.String())),
+        priority: Type.Optional(priorityUnionSchema),
+        status: Type.Optional(Type.Union([Type.Literal('todo'), Type.Literal('doing'), Type.Literal('done')])),
+        dueDate: Type.Optional(Type.Number()),
+        dependsOn: Type.Optional(Type.Array(Type.Integer()))
+      },
+      { additionalProperties: false }
+    )
   },
   { additionalProperties: false }
 )
