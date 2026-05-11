@@ -15,6 +15,7 @@ const setup: RpcKnowledge = {
   desc: 'Setup',
   tags: ['kb'],
   status: 'done',
+  doc: '',
   createdAt: 0,
   updatedAt: 0
 }
@@ -29,6 +30,7 @@ const review: RpcKnowledge = {
   status: 'doing',
   priority: 'high',
   meta: { dependsOn: 'setup-project' },
+  doc: '',
   createdAt: 0,
   updatedAt: 0
 }

@@ -1,6 +1,6 @@
 import type { Database } from 'bun:sqlite'
-import type { EntryType, Knowledge } from '@core'
 import type { UnknownRecord } from 'type-fest'
+import type { EntryType, Knowledge } from '../../../core'
 import type { KnowledgeRow } from './schema'
 
 export type FindAllOpts = {
@@ -82,6 +82,7 @@ function rowToKnowledge(row: KnowledgeRow): Knowledge {
     links: parseJson(row.links, []),
     notes: parseJson(row.notes, []),
     meta: parseJson(row.meta, {}),
+    doc: row.doc,
     createdAt: row.created_at,
     updatedAt: row.updated_at
   }
@@ -128,7 +129,7 @@ function rowToParams(
     JSON.stringify(row.tags),
     JSON.stringify(row.links ?? []),
     JSON.stringify(row.notes ?? []),
-    '',
+    row.doc,
     'priority' in row ? (row.priority ?? null) : null,
     'status' in row ? (row.status ?? null) : null,
     null,

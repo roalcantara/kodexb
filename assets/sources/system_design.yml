@@ -1,0 +1,208 @@
+cheats:
+  10 examples of complex system designs in the market, including use cases and the real companies that utilize them:
+    desc: These systems exemplify the complexity and scale of system design solutions used by major companies to efficiently and reliably manage their operations and services
+    tags: [architecture, system_design, use_case]
+    notes:
+      - md: "## 1.\tNetflix Microservices Architecture\n  •\tUse Case: Video streaming.\n  •\tCompany: Netflix.\n  •\tDetails:\n    - Netflix uses a microservices architecture to manage the scalability and availability of its streaming service.\n    - Each functionality, such as movie recommendations, user management, and video streaming, is a separate service that communicates via APIs.\n\n## PayPal Payment System:\n  •\tUse Case: Online payment processing.\n  •\tCompany: PayPal.\n  •\tDetails:\n    - PayPal uses a microservices-based architecture to securely process billions of transactions every day.\n    - The system handles various payment methods, different currencies, and international regulations.\n\n## Facebook Advertising Platform\n  •\tUse Case: Targeted advertising.\n  •\tCompany: Meta (Facebook).\n  •\tDetails:\n    - Facebook`s advertising platform uses machine learning to personalize ads for billions of users.\n    - It processes vast amounts of data in real time to deliver the most relevant ads.\n\n## Amazon Recommendation System\n  •\tUse Case: Product recommendation.\n  •\tCompany: Amazon.\n  •\tDetails:\n    - Amazon utilizes a recommendation system that analyzes user purchase and browsing behavior to suggest relevant products.\n    - This involves large volumes of data and complex machine learning algorithms.\n\n## Google Cloud Infrastructure\n  •\tUse Case: Cloud computing and scalable services.\n  •\tCompany: Google.\n  •\tDetails:\n    - Google Cloud offers a wide range of cloud computing, storage, and data analysis services.\n    - The architecture is highly distributed and scalable, supporting mission-critical applications worldwide.\n\n## Walmart Supply Chain Management System\n  •\tUse Case: Inventory and logistics management.\n  •\tCompany: Walmart.\n  •\tDetails:\n    - Walmart uses a sophisticated supply chain management system to monitor and optimize inventory across thousands of stores globally.\n    - The system integrates sales, logistics, and inventory data in real time.\n\n## Airbnb Hosting Platform\n  •\tUse Case: Accommodation marketplace.\n  •\tCompany: Airbnb.\n  •\tDetails:\n    - Airbnb uses a microservices architecture to manage bookings, payments, reviews, and communication between hosts and guests.\n    - The system must be highly available and secure to support global transactions.\n\n## New York Stock Exchange (NYSE) Transaction System\n  •\tUse Case: Financial transaction processing.\n  •\tCompany: NYSE.\n  •\tDetails:\n    - The NYSE uses high-performance, low-latency systems to process millions of financial transactions in fractions of a second.\n    - Reliability and security are crucial to maintaining market integrity.\n\n## Zoom Video Conferencing Platform\n  •\tUse Case: Communication and video conferencing.\n  •\tCompany: Zoom.\n  •\tDetails:\n    - Zoom uses a distributed infrastructure to support high-definition video conferences with thousands of participants simultaneously.\n    - The system needs to ensure low latency and high availability.\n\n## FedEx Logistics System\n  •\tUse Case: Delivery and logistics management.\n  •\tCompany: FedEx.\n  •\tDetails:\n    - FedEx operates a complex logistics system that integrates package tracking, delivery routing, and fleet management.\n    - The system must be highly efficient to ensure fast and accurate deliveries on a global scale.\n"
+
+commands:
+  Latency numbers every programmer should know | Interview Prep:
+    desc: Latency numbers every programmer should know
+    tags: [prep, system_design]
+    links: [https://gist.github.com/hellerbarde/2843375]
+    notes:
+      - md: |
+          ## Numbers every programmer should know
+
+          ### Power of two
+
+          Although data volume can become enormous when dealing with distributed systems, calculation all boils down to the basics. To obtain correct calculations, it is critical to know the data volume unit using the power of 2. A byte is a sequence of 8 bits. An ASCII character uses one byte of memory (8 bits). Below is a table explaining the data volume unit (Table 1).
+
+          | **POWER** | **APPROXIMATE VALUE** | **FULL NAME** | **SHORT NAME** |
+          | :-------: | --------------------- | ------------- | :------------: |
+          |    10     | 1 Thousand            | 1 Kilobyte    |      1 KB      |
+          |    20     | 1 Million             | 1 Megabyte    |      1 MB      |
+          |    30     | 1 Billion             | 1 Gigabyte    |      1 GB      |
+          |    40     | 1 Trillion            | 1 Terabyte    |      1 TB      |
+          |    50     | 1 Quadrillion         | 1 Petabyte    |      1 PB      |
+
+          ### Time unit
+
+          | **TIME UNIT** | **DESCRIPTION** |
+          | :-----------: | --------------- |
+          |      ns       | nanosecond      |
+          |      µs       | microsecond     |
+          |      ms       | millisecond     |
+
+          | **TIME UNIT** | **DESCRIPTION** |  **ns**   | **µs** | **ms** |
+          | :-----------: | --------------- | :-------: | :----: | :----: |
+          |     1 ns      | 10^-9 seconds   |     1     |        |        |
+          |     1 µs      | 10^-6 seconds   |   1,000   |   1    |        |
+          |     1 ms      | 10^-3 seconds   | 1,000,000 | 1,000  |   1    |
+
+          ### Number every programmer should know
+
+          | **OPERATION NAME**                            | **ns**         | **µs** | **ms**  |
+          | --------------------------------------------- | -------------- | ------ | ------- |
+          | L1 cache reference                            | 0.5 ns         |        |         |
+          | Branch mispredict                             | 5 ns           |        |         |
+          | L2 cache reference                            | 7 ns           |        |         |
+          | Mutex lock/unlock                             | 100 ns         |        |         |
+          | Main memory reference                         | 100 ns         |        |         |
+          | Compress 1K bytes with Zippy                  | 10,000 ns      | 10 µs  |         |
+          | Send 2K bytes over 1 Gbps network             | 20,000 ns      | 20 µs  |         |
+          | Read 1 MB sequentially from memory            | 250,000 ns     | 250 µs |         |
+          | Round trip within the same datacenter         | 500,000 ns     | 500 µs |         |
+          | Disk seek                                     | 10,000,000 ns  |        | 10 ms   |
+          | Read 1 MB sequentially from the network       | 10,000,000 ns  |        | 10 ms   |
+          | Read 1 MB sequentially from disk              | 30,000,000 ns  |        | 30 ms   |
+          | Send packet CA (California) ->Netherlands->CA | 150,000,000 ns |        | 150 ms  |
+
+          ```mermaid
+          flowchart TD
+              %% Dummy invisible node to force top alignment
+              TOP[ ]:::invisible
+
+              subgraph Right["Memory/Storage/Sequential Operations"]
+                  B1["💾 100ns: Main memory reference"] --> B2["⏱️ 1μs: 1,000ns"]
+                  B2 --> B3["🗜️ 2μs: Compress 1KB with Zippy"]
+                  B3 --> B4["📊 10μs: Reference marker"]
+                  B4 --> B5["💿 49μs: Read 1MB from SSD sequentially"]
+                  B5 --> B6["🔍 2ms: Disk seek"]
+                  B6 --> B7["💽 825μs: Read 1MB from disk sequentially"]
+                  B7 --> B8["🌍 150ms: Packet CA to Netherlands"]
+              end
+
+              subgraph Left["CPU/Cache/Local Operations"]
+                  A1["⚡ 1ns: CPU cycle"] --> A2["🔲 1ns: L1 cache reference"]
+                  A2 --> A3["🔀 3ns: Branch mispredict"]
+                  A3 --> A4["📦 4ns: L2 cache reference"]
+                  A4 --> A5["🔒 17ns: Mutex lock/unlock"]
+                  A5 --> A6["📤 44ns: Send 2KB over network"]
+                  A6 --> A7["💿 16μs: SSD random read"]
+                  A7 --> A8["📖 3μs: Read 1MB from memory"]
+                  A8 --> A9["🌐 500μs: Round trip same datacenter"]
+              end
+
+              %% Connect dummy node to both subgraphs' first nodes to force top alignment
+              TOP -.-> A1
+              TOP -.-> B1
+
+              style A1 fill:#000,color:#fff
+              style A2 fill:#000,color:#fff
+              style A3 fill:#333,color:#fff
+              style A4 fill:#333,color:#fff
+              style A5 fill:#666,color:#fff
+              style A6 fill:#4CAF50,color:#fff
+              style A7 fill:#4CAF50,color:#fff
+              style A8 fill:#4CAF50,color:#fff
+              style A9 fill:#4CAF50,color:#fff
+
+              style B1 fill:#666,color:#fff
+              style B2 fill:#4CAF50,color:#fff
+              style B3 fill:#4CAF50,color:#fff
+              style B4 fill:#4CAF50,color:#fff
+              style B5 fill:#4CAF50,color:#fff
+              style B6 fill:#f44336,color:#fff
+              style B7 fill:#4CAF50,color:#fff
+              style B8 fill:#f44336,color:#fff
+
+              classDef invisible fill:#fff,stroke:#fff,color:#fff;
+          ```
+
+          ## Availability numbers
+
+          High availability is the ability of a system to be continuously operational for a desirably long period of time. High availability is measured as a percentage, with 100% means a service that has 0 downtime. Most services fall between 99% and 100%.
+
+          A service level agreement (SLA) is a commonly used term for service providers. This is an agreement between you (the service provider) and your customer, and this agreement formally defines the level of uptime your service will deliver. Cloud providers Amazon [4], Google [5] and Microsoft [6] set their SLAs at 99.9% or above. Uptime is traditionally measured in nines. The more the nines, the better. As shown in Table 3, the number of nines correlate to the expected system downtime.
+
+          | **AVAILABILITY %** | **DOWNTIME PER DAY** | **DOWNTIME PER WEEK** | **DOWNTIME PER MONTH** | **DOWNTIME PER YEAR** |
+          | ------------------ | -------------------- | --------------------- | ---------------------- | --------------------- |
+          | 99%                | 14.40 minutes        | 1.68 hours            | 7.31 hours             | 3.65 days             |
+          | 99.99%             | 8.64 seconds         | 1.01 minutes          | 4.38 minutes           | 52.60 minutes         |
+          | 99.999%            | 864.00 milliseconds  | 6.05 seconds          | 26.30 seconds          | 5.26 minutes          |
+          | 99.9999%           | 86.40 milliseconds   | 604.80                | 2.63 seconds           | 31.56 seconds         |
+  How to Answer a System Design Interview Question | Interview Prep:
+    desc: Structured Approach to System Design Interviews
+    tags: [arch, prep, system_design]
+    links:
+      - https://designgurus.io/blog/system-design-cheat-sheet
+      - https://designgurus.io/blog/how-to-approach-system-design-question
+      - https://designgurus.io/course-play/grokking-the-system-design-interview/doc/designing-twitter
+    notes:
+      - md: |
+          ## Introduction
+
+          System design is the process of designing the architecture, components, and interfaces for a system to meet specific needs.
+
+          **What?**
+            - Importance: Improves system performance, scalability, reliability, and security.
+            - Components: Client, Server, Database, etc.
+          **Why?**
+            - To evaluate the ability to:
+              - Break down large problems into smaller components
+              - Build scalable, efficient, and reliable systems
+              - Navigate trade-offs in technology choices
+          **Examples:**
+            > "Design a scalable and reliable system for a social media platform that can handle 100 million users and 1000 requests per second."
+            > "Design a scalable and reliable system for a e-commerce platform that can handle 100 million users and 1000 requests per second."
+            > "Design a scalable and reliable system for a streaming platform that can handle 100 million users and 1000 requests per second."
+            > "Design a scalable and reliable system for a gaming platform that can handle 100 million users and 1000 requests per second."
+            > "Design a scalable and reliable system for a messaging platform that can handle 100 million users and 1000 requests per second."
+            > "Design a scalable and reliable system for a video conferencing platform that can handle 100 million users and 1000 requests per second."
+            > "Design a scalable and reliable system for a file sharing platform that can handle 100 million users and 1000 requests per second."
+            > "Designing Twitter"
+
+          ### 1. Restate the Problem
+
+          **What?**
+            - Confirm you understand what is being asked.
+            - Summarize the requirements in your own words, making sure you capture key features
+          **Why?**
+            - Show that you listen and don't assume.
+          **Examples:**
+            > "Before I start, can I confirm my understanding?
+            > You want me to design **[REPEAT THE PROBLEM]**, which must handle **[MENTIONED SCALE/COMPLEXITY]**?"
+
+          2. Gather Requirements and Constraints
+          Ask questions to clarify functional (e.g., "Do we need user profiles with follower/following functionality?") and non-functional requirements (e.g., "What is the target user base? What are our latency expectations?").
+
+          Identify constraints such as storage limits, maximum throughput, or compliance requirements.
+
+          3. Propose a High-Level Architecture
+          Sketch the main components: front-end clients, application servers, databases, caching layers, load balancers, etc.
+
+          Briefly explain how data flows among these components.
+
+          4. Discuss Key Design Decisions
+          Data Storage: SQL vs. NoSQL, caching strategies.
+
+          Scalability: Horizontal vs. vertical scaling, sharding, replication.
+
+          Performance Optimizations: Caching, load balancing, content delivery networks.
+
+          Reliability: Redundancy, failover strategies, disaster recovery.
+
+          Security: Encryption, authentication, role-based access control.
+
+          5. Dive Into Specifics
+          Depending on the scenario, zoom in on critical parts:
+
+          How do you handle large file uploads?
+
+          How do you ensure real-time notifications?
+
+          How do you deal with read/write spikes?
+
+          6. Address Trade-Offs
+          For each choice (e.g., SQL vs. NoSQL), briefly mention why you chose it and what you might lose as a result. It's okay to make assumptions as long as you explain your reasoning.
+
+          7. Anticipate Bottlenecks & Future Growth
+          Point out possible bottlenecks (e.g., a single database node) and how you'd mitigate them (e.g., replication, partitioning).
+
+          Suggest how the system could evolve to handle 10x or 100x traffic in the future.
+
+          8. Summarize and Check for Gaps
+          End by recapping your solution, revisiting the requirements to confirm you've covered all necessary points.
+      - yaml: |
+          foo: bar

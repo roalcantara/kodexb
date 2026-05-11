@@ -1,0 +1,391 @@
+bookmarks:
+  # vi/vim/neovim
+  https://dotfyle.com/neovim/colorscheme/trending:
+    tags: [ide, vim]
+    desc: Neovim Trending Colorschemes
+  https://dotfyle.com/neovim/colorscheme/top:
+    tags: [ide, vim]
+    desc: Neovim Top Colorschemes
+  https://neovimcraft.com/?search={Query}:
+    tags: [ide, vim]
+    desc: Search engine for Neovim plugins
+  https://neovimcraft.com/?search=tag%3Acolorscheme:
+    tags: [ide, vim]
+    desc: Search engine for Neovim colorschemes
+  https://youtube.com/playlist?list=PLOe6AggsTaVsMfLjXeavVwzkmOfAZnfQb:
+    tags: [ide, vim]
+    desc: Neovim Telescope
+  https://neovim.io/doc/user/lua-guide.html:
+    desc: Lua guide for users
+    tags: [doc]
+  https://neovim.io/doc/user/options.html:
+    desc: List of all options
+    tags: [vi, doc]
+  https://this-week-in-neovim.org/latest:
+    tags: [ide, vim]
+    desc: Weekly newsletter about the development of Neovim
+  https://youtu.be/zHTeCSVAFNY:
+    desc: From 0 to IDE in NEOVIM from scratch | FREE COURSE // EP 1
+    tags: [colorscheme, telescope, treesitter]
+  https://youtu.be/4zyZ3sw_ulc:
+    tags: [ide, vim]
+    desc: A BEAUTIFUL neovim config with Lazy | FREE COURSE // EP 2
+  https://youtu.be/iXIwm4mCpuc:
+    tags: [ide, vim]
+    desc: Autocomplete and Snippets in Neovim | FREE COURSE // EP 5
+  https://youtu.be/fFHlfbKVi30:
+    desc: Effective Neovim setup for web development towards 2024
+    tags: [lsp]
+  https://cheatsheetfactory.geekyhacker.com/linux/vim:
+    desc: Vim Cheat Sheet | A collection of vim commands
+    tags: [cheatsheet]
+  https://vimcolorschemes.com:
+    tags: [ide, vim]
+    desc: Colorscheme gallery for vim
+  https://antigravity.google:
+    tags: [ide, vim]
+    desc: Antigravity IDE by Google | Evolving to agent-first, A more natural abstraction, Guidance to go from 90% to 100%
+    links:
+      - Why fullstack developers choose Google Antigravity: https://antigravity.google/use-cases/fullstack
+      - Blog: https://antigravity.google/blog
+      - Docs: https://antigravity.google/docs/get-started
+      - Changelog: https://antigravity.google/changelog
+      - Google Antigravity - From Beginner to Expert in 14 Minutes: https://youtu.be/mbxq88TOxp4
+    notes:
+      - md: | #markdown
+          # Antigravity IDE by Google
+
+          Antigravity IDE is a new way to build software. It is a more natural abstraction that allows you to build software faster and easier.
+
+          ## INSTALLATION
+
+          ```sh
+          brew install --cask antigravity
+          ```
+cheats:
+  Neovim Providers:
+    desc: Neovim Providers
+    tags: [vim]
+    notes:
+      - md: |
+          ## NEOVIM PROVIDERS
+
+          ### WHAT ARE PROVIDERS?
+
+          Providers allow Neovim to interface with external language runtimes (Python, Node.js, Ruby, Perl) to run plugins written in those languages.
+
+          ### BENEFITS OF SETTING UP PROVIDERS
+
+          - **Python Provider:**
+            - Required for plugins like: `deoplete`, `semshi`, `vim-markdown-composer`, some LSP/completion plugins
+            - Enables `:python3` and `:py3` commands in Neovim
+            - Many legacy Vim plugins depend on it
+
+          - **Node.js Provider:**
+            - Required for: `coc.nvim`, `markdown-preview.nvim`, many modern LSP/completion tools
+            - JavaScript/TypeScript-based plugins need it
+            - Growing ecosystem due to JS popularity
+
+          - **Ruby Provider:**
+            - Less common, but needed for some legacy Vim plugins
+            - Few modern Neovim plugins use it
+
+          ### DISABLING PROVIDERS
+
+          ```lua
+          vim.g.loaded_python3_provider = 0
+          vim.g.loaded_ruby_provider = 0
+          vim.g.loaded_node_provider = 0
+          vim.g.loaded_perl_provider = 0
+          ```
+
+          ### PROBLEMS
+
+          1. **Plugin breakage**: Plugins requiring disabled providers will fail silently or with errors
+          2. **Missing features**: Commands like `:py3` won't work
+          3. **Health check warnings**: `:checkhealth` will show warnings/errors
+          4. **Limited plugin ecosystem**: Can't use popular plugins (e.g., CoC requires Node.js)
+
+          ### BENEFITS
+
+          1. **Faster startup**: ~5-50ms faster (minimal unless you have many providers)
+          2. **Fewer dependencies**: Don't need Python/Node/Ruby installed
+          3. **Cleaner environment**: No need to manage `pynvim`, `neovim` npm package, etc.
+
+          ### BEST PRACTICE RECOMMENDATION
+
+          ### MODERN NEOVIM (0.5+) WITH NATIVE LSP
+
+          ```lua
+          -- Disable what you don't use
+          vim.g.loaded_ruby_provider = 0
+          vim.g.loaded_perl_provider = 0
+          -- Keep Python/Node if you use plugins that need them
+          -- Check with :checkhealth to see what's actually needed
+          ```
+
+          ### MINIMAL SETUP (Lua-only plugins)
+
+          - If using only Lua-based plugins (treesitter, telescope, LSP), you can **`safely disable all providers`**
+          - Modern Neovim trend is moving away from provider-dependent plugins
+
+    links:
+      - Neovim Providers: https://neovim.io/doc/user/providers.html
+  VSCODE Shortcuts:
+    desc: VSCode Shortcuts
+    tags: [vscode]
+    links: [https://code.visualstudio.com/shortcuts/keyboard-shortcuts-macos.pdf]
+    notes:
+      - md: | #markdown
+          ## vscode keybord shortcuts macos
+
+          ### General
+
+          | Shortcut | Action                     |
+          | -------- | -------------------------- |
+          | ⌘X       | Cut line (empty selection) |
+          | ⇧⌘P      | Show Command Palette       |
+          | ⌘P       | Quick Open, Go to File…    |
+          | ⇧⌘N      | New window/instance        |
+          | ⌘W       | Close window/instance      |
+          | ⌘,       | User Settings              |
+          | ⌘K ⌘S    | Keyboard Shortcuts         |
+
+          ### Basic Editing
+
+          | Shortcut         | Action                      |
+          | ---------------- | --------------------------- |
+          | ⌘X               | Cut line (empty selection)  |
+          | ⌘C               | Copy line (empty selection) |
+          | ⌥↓ / ⌥↑          | Move line down/up           |
+          | ⇧⌥↓ / ⇧⌥↑        | Copy line down/up           |
+          | ⇧⌘K              | Delete line                 |
+          | ⌘Enter / ⇧⌘Enter | Insert line below/above     |
+          | ⇧⌘\              | Jump to matching bracket    |
+          | ⌘] / ⌘[          | Indent/outdent line         |
+          | Home / End       | Go to beginning/end of line |
+          | ⌘↑ / ⌘↓          | Go to beginning/end of file |
+          | ⌃PgUp / ⌃PgDn    | Scroll line up/down         |
+          | ⌘PgUp /⌘PgDn     | Scroll page up/down         |
+          | ⌥⌘[ / ⌥⌘]        | Fold/unfold region          |
+          | ⌘K ⌘[ / ⌘K ⌘]    | Fold/unfold all subregions  |
+          | ⌘K ⌘0 / ⌘K ⌘J    | Fold/unfold all regions     |
+          | ⌘K ⌘C            | Add line comment            |
+          | ⌘K ⌘U            | Remove line comment         |
+          | ⌘/               | Toggle line comment         |
+          | ⇧⌥A              | Toggle block comment        |
+          | ⌥Z               | Toggle word wrap            |
+
+          ### Search and Replace
+
+          | Shortcut | Action                                 |
+          | -------- | -------------------------------------- |
+          | ⌘F       | Find                                   |
+          | ⌥⌘F      | Replace                                |
+          | ⌘G / ⇧⌘G | Find next/previous                     |
+          | ⌥Enter   | Select all occurrences of Find match   |
+          | ⌘D       | Add selection to next Find match       |
+          | ⌘K ⌘D    | Move last selection to next Find match |
+
+          ### Rich Languages Editing
+
+          | Shortcut   | Action                      |
+          | ---------- | --------------------------- |
+          | ⌃Space, ⌘I | Trigger suggestion          |
+          | ⇧⌘Space    | Trigger parameter hints     |
+          | ⇧⌥F        | Format document             |
+          | ⌘K ⌘F      | Format selection            |
+          | F12        | Go to Definition            |
+          | ⌥F12       | Peek Definition             |
+          | ⌘K F12     | Open Definition to the side |
+          | ⌘.         | Quick Fix                   |
+          | ⇧F12       | Show References             |
+          | F2         | Rename Symbol               |
+          | ⌘K ⌘X      | Trim trailing whitespace    |
+          | ⌘K M       | Change file language        |
+
+          ### Navigation
+
+          | Shortcut | Action                               |
+          | -------- | ------------------------------------ |
+          | ⌘T       | Show all Symbols                     |
+          | ⌃G       | Go to Line...                        |
+          | ⌘P       | Go to File...                        |
+          | ⇧⌘O      | Go to Symbol...                      |
+          | ⇧⌘M      | Show Problems panel                  |
+          | F8 / ⇧F8 | Go to next/previous error or warning |
+          | ⌃⇧Tab    | Navigate editor group history        |
+          | ⌃- / ⌃⇧- | Go back/forward                      |
+          | ⌃⇧M      | Toggle Tab moves focus               |
+
+          ### Editor Management
+
+          | Shortcut        | Action                                |
+          | --------------- | ------------------------------------- |
+          | ⌘W              | Close editor                          |
+          | ⌘K F            | Close folder                          |
+          | ⌘\:             | Split editor                          |
+          | ⌘1 / ⌘2 / ⌘3    | Focus into 1st, 2nd, 3rd editor group |
+          | ⌘K ⌘← / ⌘K ⌘→   | Focus into previous/next editor group |
+          | ⌘K ⇧⌘← / ⌘K ⇧⌘→ | Move editor left/right                |
+          | ⌘K ← / ⌘K →     | Move active editor group              |
+
+          ### File Management
+
+          | Shortcut     | Action                                  |
+          | ------------ | --------------------------------------- |
+          | ⌘N           | New File                                |
+          | ⌘O           | Open File...                            |
+          | ⌘S           | Save                                    |
+          | ⇧⌘S          | Save As...                              |
+          | ⌥⌘S          | Save All                                |
+          | ⌘W           | Close                                   |
+          | ⌘K ⌘W        | Close All                               |
+          | ⇧⌘T          | Reopen closed editor                    |
+          | ⌘K Enter     | Keep preview mode editor open           |
+          | ⌃Tab / ⌃⇧Tab | Open next / previous                    |
+          | ⌘K P         | Copy path of active file                |
+          | ⌘K R         | Reveal active file in Finder            |
+          | ⌘K O         | Show active file in new window/instance |
+
+          ### Display
+
+          | Shortcut | Action                                     |
+          | -------- | ------------------------------------------ |
+          | ⌃⌘F      | Toggle full screen                         |
+          | ⌥⌘0      | Toggle editor layout (horizontal/vertical) |
+          | ⌘= / ⇧⌘- | Zoom in/out                                |
+          | ⌘B       | Toggle Sidebar visibility                  |
+          | ⇧⌘E      | Show Explorer / Toggle focus               |
+          | ⇧⌘F      | Show Search                                |
+          | ⌃⇧G      | Show Source Control                        |
+          | ⇧⌘D      | Show Debug                                 |
+          | ⇧⌘X      | Show Extensions                            |
+          | ⇧⌘H      | Replace in files                           |
+          | ⇧⌘J      | Toggle Search details                      |
+          | ⇧⌘U      | Show Output panel                          |
+          | ⇧⌘V      | Open Markdown preview                      |
+          | ⌘K V     | Open Markdown preview to the side          |
+          | ⌘K Z     | Zen Mode (Esc Esc to exit)                 |
+
+          ### Integrated Terminal
+
+          | Shortcut    | Action                   |
+          | ----------- | ------------------------ |
+          | ⌃`          | Show integrated terminal |
+          | ⌃⇧`         | Create new terminal      |
+          | ⌘C          | Copy selection           |
+          | ⌘↑ / ↓      | Scroll up/down           |
+          | PgUp / PgDn | Scroll page up/down      |
+          | ⌘Home / End | Scroll to top/bottom     |
+commands:
+  code --list-extensions:
+    desc: Lists all installed extensions in VSCode
+    tags: [vscode]
+  code --install-extension <extension-id>:
+    desc: Installs a VSCode extension by its identifier
+    tags: [vscode]
+  code --uninstall-extension <extension-id>:
+    desc: Uninstalls a VSCode extension by its identifier
+    tags: [vscode]
+  code --disable-extension <extension-id>:
+    desc: Disables a VSCode extension by its identifier
+    tags: [vscode]
+  code --enable-extension <extension-id>:
+    desc: Enables a VSCode extension by its identifier
+    tags: [vscode]
+  User snippets variables | VSCode:
+    desc: User snippets variables in Visual Studio Code
+    tags: [vscode]
+    links:
+      - Snippets in Visual Studio Code: https://code.visualstudio.com/docs/editor/userdefinedsnippets
+      - Create your own snippets: https://code.visualstudio.com/docs/editor/userdefinedsnippets#_create-your-own-snippets
+    notes:
+      - md: | #markdown
+          # VSCODE snippets: Variables
+
+          ## Variables
+
+          - With `$name` or `${name:default}`, you can insert the value of a variable.
+          - When a variable isn't set, its **default** or the empty string is inserted.
+          - When a variable is unknown (that is, its name isn't defined) the name of the variable is inserted and it is transformed into a placeholder.
+
+          ### 1. The following variables can be used:
+
+            - `TM_SELECTED_TEXT` The currently selected text or the empty string
+            - `TM_CURRENT_LINE` The contents of the current line
+            - `TM_CURRENT_WORD` The contents of the word under cursor or the empty string
+            - `TM_LINE_INDEX` The zero-index based line number
+            - `TM_LINE_NUMBER` The one-index based line number
+            - `TM_FILENAME` The filename of the current document
+            - `TM_FILENAME_BASE` The filename of the current document without its extensions
+            - `TM_DIRECTORY` The directory of the current document
+            - `TM_FILEPATH` The full file path of the current document
+            - `RELATIVE_FILEPATH` The relative (to the opened workspace or folder) file path of the current document
+            - `CLIPBOARD` The contents of your clipboard
+            - `WORKSPACE_NAME` The name of the opened workspace or folder
+            - `WORKSPACE_FOLDER` The path of the opened workspace or folder
+
+          ### 2. For inserting the current date and time:
+
+            - `CURRENT_YEAR` The current year
+            - `CURRENT_YEAR_SHORT` The current year's last two digits
+            - `CURRENT_MONTH` The month as two digits (example '02')
+            - `CURRENT_MONTH_NAME` The full name of the month (example 'July')
+            - `CURRENT_MONTH_NAME_SHORT` The short name of the month (example 'Jul')
+            - `CURRENT_DATE` The day of the month
+            - `CURRENT_DAY_NAME` The name of day (example 'Monday')
+            - `CURRENT_DAY_NAME_SHORT` The short name of the day (example 'Mon')
+            - `CURRENT_HOUR` The current hour in 24-hour clock format
+            - `CURRENT_MINUTE` The current minute
+            - `CURRENT_SECOND` The current second
+            - `CURRENT_SECONDS_UNIX` The number of seconds since the Unix epoch
+
+          ### 3. For inserting random values:
+
+            - `RANDOM` 6 random Base-10 digits
+            - `RANDOM_HEX` 6 random Base-16 digits
+            - `UUID` A Version 4 UUID
+
+          ### 4. For inserting line or block comments, honoring the current language:
+
+            - `BLOCK_COMMENT_START` Example output: in PHP `/*` or in HTML `<!--`
+            - `BLOCK_COMMENT_END` Example output: in PHP `*/` or in HTML `-->`
+            - `LINE_COMMENT` Example output: in PHP `//`
+            - To inserts `/* Hello World */` in JavaScript files and `<!-- Hello World -->` in HTML files:
+
+              ```json
+              {
+                "hello": {
+                  "scope": "javascript,html",
+                  "prefix": "hello",
+                  "body": "$BLOCK_COMMENT_START Hello World $BLOCK_COMMENT_END"
+                }
+              }
+              ```
+
+          ### 5. Transform examples
+
+            - To get the current **folder name**
+
+              `"${TM_DIRECTORY/^.+[\\/\\\\]+(.*)$/$1/}}"`
+
+            - To replace the first `.` with `_` and generate `example-123_456-TEST.js`
+
+              `"${TM_FILENAME/[\\.]/_/}"`
+
+            - To replace each `.` or `-` with `_` and generate `example_123_456_TEST_js`
+
+              `"${TM_FILENAME/[\\.-]/_/g}"`
+
+            - To change to all `uppercase` and generate `EXAMPLE-123.456-TEST.JS`
+
+              `"${TM_FILENAME/(.*)/${1:/upcase}/}"`
+
+            - To remove `non-alphanumeric` characters and generate `example123456TESTjs`
+
+              `"${TM_FILENAME/[^0-9^a-z]//gi}"`
+  Keybord shortcuts macos | VSCode:
+    desc: Keyboard Shortcuts MacOs
+    tags: [vscode]
+    links: [https://code.visualstudio.com/shortcuts/keyboard-shortcuts-macos.pdf]

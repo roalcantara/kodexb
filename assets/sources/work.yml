@@ -1,0 +1,121 @@
+bookmarks:
+  https://gmail.com:
+    desc: Gmail
+    tags: [email, inbox]
+    notes:
+      - yaml: | #yaml
+          username: rogerio.alcantara@consorciei.com.br
+          password: $(gopass show -n --password websites/gmail.consorciei.com.br/rogerio.alcantara@consorciei.com.br)
+  https://app2-caixa-stg.consorciei.com.br:
+    desc: fastin.caixa staging
+    tags: [consorciei]
+  https://caas-caixa-stg.consorciei.com.br:
+    desc: caas.caixa staging
+    tags: [consorciei]
+  https://consorciei.atlassian.net/jira:
+    desc: Jira
+    tags: [consorciei]
+  https://consorciei.signin.aws.amazon.com/console:
+    desc: AWS Console
+    tags: [aws, consorciei]
+    notes:
+      - yaml: | #yaml
+          username: rogerio.alcantara
+          password: $(gopass show -n --password websites/consorciei.signin.aws.amazon.com/rogerio.alcantara)
+commands:
+  # GIT
+  git clone git@bitbucket.org:consorciei/coreservices.git ~/Work/consorciei/projects/coreservices:
+    desc: Clone the Core Services repository
+    tags: [consorciei, git, coreservices]
+  git clone git@bitbucket.org:consorciei/common.git ~/Work/consorciei/projects/common:
+    desc: Clone the Common repository
+    tags: [consorciei, git, common]
+  # SSH / RDS
+  mysql -h 127.0.0.1 -P $(gopass show --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara port) -u $(gopass show --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara username) -p:
+    desc: Connect to the RDS database through the SSH tunnel
+    tags: [consorciei, mysql]
+    notes:
+      - yaml: | #yaml
+          host: 127.0.0.1
+          port: $(gopass show --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara port)
+          db: $(gopass show --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara dbname)
+          user: $(gopass show --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara username)
+          password: $(gopass show -n --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara)
+cheats:
+  VPN:
+    desc: VPN
+    tags: [connection]
+    notes:
+      - yaml: | #yaml
+          Login: $(gopass show -n --password websites/vpn.consorciei.com.br/rralcantara username)
+          PIN: $(gopass show -n --password websites/vpn.consorciei.com.br/rralcantara)
+          MFA Key: $(gopass show -n --password websites/vpn.consorciei.com.br/rralcantara MFA)
+  Development Workflow:
+    desc: Development workflow
+    tags: [consorciei, devexp]
+    notes:
+      - sh: | #shell
+          ### Development Workflow Cheatsheet (Ubuntu)
+          sudo apt update && sudo apt upgrade -y && sudo apt install -y openvpn
+
+          # Setup SSH agent
+          eval "$(ssh-agent -s)"
+          # linux
+          ssh-add ~/.ssh/coreservices-bastion-dev.pem
+          ssh-add ~/.ssh/id_ed25519_bitbucket_work
+
+          # macOS
+          ssh-add --apple-use-keychain ~/.ssh/coreservices-bastion-dev.pem
+          ssh-add --apple-use-keychain ~/.ssh/id_ed25519_bitbucket_work
+
+          # Verify added keys
+          ssh-add -l
+
+          # Setup SSH tunnel to the RDS database
+          ssh -i ~/.ssh/coreservices-bastion-dev.pem -L $(gopass show -n --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara connection_string)
+
+          # Clone the repositories
+          git clone git@bitbucket.org:consorciei/coreservices.git ~/Work/consorciei/projects/coreservices
+          git clone git@bitbucket.org:consorciei/common.git ~/Work/consorciei/projects/common
+  SSH tunnel:
+    desc: SSH tunnel to the RDS database through the bastion host
+    tags: [consorciei, ssh, rds]
+    notes:
+      - yaml: | #yaml
+          host: $(gopass show -n --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara ssh_host)
+          port: $(gopass show -n --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara ssh_port)
+          user: $(gopass show -n --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara ssh_user)
+          remote host: $(gopass show -n --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara endpoint)
+          remote port: $(gopass show -n --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara port)
+          local port: $(gopass show -n --password aws-rds/consorciei.com.br/core_services_dev/us-east-1/rogerio.alcantara port)
+          key file: ~/.ssh/coreservices-bastion-dev.pem
+  Ubuntu:
+    desc: Ubuntu
+    tags: [consorciei, linux]
+    notes:
+      - yaml: | #yaml
+          username: $(gopass show -n --password websites/ubuntu.consorciei.com.br/rogerio.alcantara username)
+          password: $(gopass show -n --password websites/ubuntu.consorciei.com.br/rogerio.alcantara)
+  Bounded Contexts:
+    desc: Main Bounded Contexts
+    tags: [consorciei, ddd]
+    notes:
+      - yaml: | #yaml
+          Pricing:
+            Desc: Precificação de cotas mediante a payload
+            Services:
+              - cs_pricing
+              - cs_adm_auction
+          Shares:
+            Desc: Gestão de cotas e grupos de cotas
+            Services:
+              - cs_shares
+              - elegigilidade do cs_pricing
+          Contract:
+            Desc:
+            Services:
+              - cs_contract
+          CRM:
+            Desc: Gestão de clientes e leads
+            Services:
+              - cs_crm

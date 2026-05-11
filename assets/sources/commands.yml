@@ -1,0 +1,2476 @@
+commands:
+  flox install revea-md:
+    desc: Install revea-md
+    tags: [ revealj, presentation ]
+    links:
+      - Website: https://reveal-md.github.io
+      - Official Repository: https://github.com/webpro/reveal-md
+      - Reveal.js Documentation: https://revealjs.com
+      - Markdown Guide: https://markdownguide.org
+      - HTML Presentation Framework (1/6): https://youtu.be/a6ioNtv2H-E
+    notes:
+      - md: |
+          ## 🚀 QUICK START
+
+          ### STEP 1: Install reveal-md (via Flox)
+
+          ```bash
+          flox install reveal-md
+          ```
+
+          ### STEP 2: Create a Simple Presentation
+
+          ```bash
+          mkdir -p ~/presentations
+          cd ~/presentations
+
+          # Create a simple presentation file
+          cat > SIMPLE.md << 'EOF'
+          # My First Presentation
+
+          ---
+
+          ## Slide 2: Basic Content
+
+          This is a simple slide with text.
+
+          ---
+
+          ## Slide 3: Lists
+
+          - Point 1
+          - Point 2
+          - Point 3
+
+          ---
+
+          ## Slide 4: Code
+
+          ```javascript
+          console.log("Hello, Reveal.js!");
+          ```
+
+          ---
+
+          ## Thank You!
+
+          Questions?
+          EOF
+          ```
+
+          ### STEP 3: View the Presentation
+          ```bash
+          # Open in browser (auto-opens at http://localhost:1948)
+          reveal-md SIMPLE.md
+
+          # Or specify theme
+          reveal-md SIMPLE.md --theme black
+          ```
+
+          **Controls:**
+          - Arrow keys or Space: Navigate slides
+          - ESC: Overview mode
+          - S: Speaker notes
+          - B: Black screen
+
+          ---
+
+          ## 📋 CONFIGURATION FILE (Optional but Recommended)
+
+          ### Create Config Directory
+          ```bash
+          mkdir -p ~/.config/reveal-md
+          ```
+
+          ### Create Config File
+          ```bash
+          cat > ~/.config/reveal-md/config.yml << 'EOF'
+          # Reveal-MD Configuration
+
+          # Default theme (black, white, league, sky, beige, simple, serif, blood, night, moon, solarized)
+          theme: black
+
+          # Slide separator (horizontal line between slides)
+          separator: "---"
+
+          # Vertical separator (for nested/vertical slides)
+          verticalSeparator: "----"
+
+          # Highlight theme for code blocks
+          highlightTheme: zenburn
+
+          # Presentation title
+          title: "My Presentation"
+
+          # Use reveal.js scroll view
+          # view: scroll
+
+          # Auto-open browser
+          disableAutoOpen: false
+
+          # Default host and port
+          host: localhost
+          port: 1948
+
+          # Features to enable
+          features:
+            overview: true
+            notes: true
+            controls: true
+            progress: true
+            history: true
+          EOF
+          ```
+
+          ### Use Config File
+          ```bash
+          reveal-md SIMPLE.md --config ~/.config/reveal-md/config.yml
+          ```
+
+          ---
+
+          ## 📝 SIMPLE PRESENTATION (5 slides)
+
+          ### Create File
+          ```bash
+          cat > SIMPLE.md << 'EOF'
+          # Simple Presentation
+
+          Welcome to Reveal-MD!
+
+          ---
+
+          ## Slide 2: Key Points
+
+          - Point 1: Important information
+          - Point 2: Another key point
+          - Point 3: Final thought
+
+          ---
+
+          ## Slide 3: Code Example
+
+          ```javascript
+          function hello() {
+            console.log("Hello, World!");
+          }
+          ```
+
+          ---
+
+          ## Slide 4: Quote
+
+          > "The best way to predict the future is to invent it."
+          > - Alan Kay
+
+          ---
+
+          ## Thank You!
+
+          Questions?
+          EOF
+          ```
+
+          ### View It
+          ```bash
+          reveal-md SIMPLE.md
+          ```
+
+          ---
+
+          ## 🎨 COMPLETE PRESENTATION (All Features)
+
+          ### Create Comprehensive File
+          ```bash
+          cat > COMPLETE.md << 'EOF'
+          # Complete Reveal-MD Presentation
+
+          A comprehensive guide to all Reveal-MD features
+
+          ---
+
+          ## Slide 2: Text Formatting
+
+          You can use **bold**, *italic*, and `code` in your slides.
+
+          You can also use ~~strikethrough~~ text.
+
+          ---
+
+          ## Slide 3: Headings
+
+          # Large Heading (H1)
+
+          ## Medium Heading (H2)
+
+          ### Small Heading (H3)
+
+          ---
+
+          ## Slide 4: Unordered Lists
+
+          - First item
+          - Second item
+            - Nested item
+            - Another nested item
+          - Third item
+
+          ---
+
+          ## Slide 5: Ordered Lists
+
+          1. First step
+          2. Second step
+          3. Third step
+            1. Sub-step A
+            2. Sub-step B
+          4. Fourth step
+
+          ---
+
+          ## Slide 6: Images
+
+          ![Sample Image](https://via.placeholder.com/400x200)
+
+          Note: Use external URLs or local image paths
+
+          ---
+
+          ## Slide 7: Code Blocks (JavaScript)
+
+          ```javascript
+          function calculateSum(a, b) {
+            return a + b;
+          }
+
+          const result = calculateSum(5, 3);
+          console.log(result); // Output: 8
+          ```
+
+          ---
+
+          ## Slide 8: Code Blocks (Python)
+
+          ```python
+          def calculate_sum(a, b):
+              return a + b
+
+          result = calculate_sum(5, 3)
+          print(result)  # Output: 8
+          ```
+
+          ---
+
+          ## Slide 9: Code Blocks (Bash)
+
+          ```bash
+          #!/bin/bash
+
+          echo "Hello, World!"
+          cd ~/presentations
+          ls -la COMPLETE.md
+          ```
+
+          ---
+
+          ## Slide 10: Blockquotes
+
+          > "The only way to do great work is to love what you do."
+          > - Steve Jobs
+
+          ---
+
+          ## Slide 11: Horizontal Rule
+
+          This is a paragraph.
+
+          ---
+
+          This is after a horizontal rule (created by --- on its own line with blank lines around it).
+
+          ---
+
+          ## Slide 12: Tables
+
+          | Feature | Status | Priority |
+          |---------|--------|----------|
+          | Feature A | ✅ Done | High |
+          | Feature B | 🔄 In Progress | Medium |
+          | Feature C | ❌ Not Started | Low |
+
+          ---
+
+          ## Slide 13: Links
+
+          [Visit GitHub](https://github.com)
+
+          [View my portfolio](https://example.com)
+
+          ---
+
+          ## Slide 14: Mixed Content
+
+          ### Title
+
+          Some introductory text here.
+
+          ```javascript
+          const greeting = "Hello!";
+          ```
+
+          - List item 1
+          - List item 2
+
+          ---
+
+          ## Slide 15: Speaker Notes
+
+          This slide demonstrates speaker notes.
+
+          Note: These notes are only visible in speaker view (press 's' to toggle).
+          You can add private notes here that won't show to the audience.
+
+          ---
+
+          ## Slide 16: Vertical Slides (Nested)
+
+          This is a main slide.
+
+          Click down arrow to see nested slides →
+
+          ----
+
+          ### Vertical Slide 16.1
+
+          This is nested under the previous slide
+
+          ---
+
+          ## Slide 17: Highlight Syntax
+
+          ```javascript
+          // Line 1
+          const x = 10;  // Line 2
+          console.log(x); // Line 3
+          ```
+
+          ---
+
+          ## Slide 18: Special Characters
+
+          © 2024 | License: MIT | Version: 1.0
+
+          Symbols: → ← ↑ ↓ • ◦ ★ ✓ ✗ ⚠ ❌ ✅
+
+          ---
+
+          ## Slide 19: Emoji Support 🎉
+
+          🎬 Presentations
+          💻 Code
+          🚀 Deployment
+          ✨ Features
+          🎨 Design
+
+          ---
+
+          ## Slide 20: Thank You
+
+          # Thank You!
+
+          **Questions?**
+
+          Contact: your-email@example.com
+
+          ---
+
+          EOF
+          ```
+
+          ### View Complete Presentation
+          ```bash
+          reveal-md COMPLETE.md
+          ```
+
+          ---
+
+          ## 🎯 COMMON REVEAL-MD COMMANDS
+
+          ### View with Different Theme
+          ```bash
+          # Available themes: black, white, league, sky, beige, simple, serif, blood, night, moon, solarized
+
+          reveal-md SIMPLE.md --theme white
+          reveal-md SIMPLE.md --theme league
+          reveal-md SIMPLE.md --theme sky
+          ```
+
+          ### Watch for Changes (Auto-reload)
+          ```bash
+          # Watches for file changes and auto-reloads browser
+          reveal-md SIMPLE.md --watch
+          ```
+
+          ### Change Port
+          ```bash
+          # Default is 1948
+          reveal-md SIMPLE.md --port 3000
+          ```
+
+          ### Change Host
+          ```bash
+          # Useful for network presentation
+          reveal-md SIMPLE.md --host 0.0.0.0
+          ```
+
+          ### Export to Static HTML
+          ```bash
+          # Creates _static/ directory with HTML
+          reveal-md SIMPLE.md --static
+
+          # Specify output directory
+          reveal-md SIMPLE.md --static ./output
+          ```
+
+          ### Print to PDF
+          ```bash
+          # Requires Chromium (can be installed via Flox)
+          reveal-md SIMPLE.md --print presentation.pdf
+          ```
+
+          ### Add Custom CSS
+          ```bash
+          reveal-md SIMPLE.md --css custom.css
+          ```
+
+          ### Use Custom Template
+          ```bash
+          reveal-md SIMPLE.md --template my-template.html
+          ```
+
+          ---
+
+          ## 🔧 USEFUL SNIPPETS
+
+          ### Full Command with Common Options
+          ```bash
+          reveal-md SIMPLE.md \
+            --theme black \
+            --highlight-theme zenburn \
+            --port 1948 \
+            --host localhost \
+            --watch
+          ```
+
+          ### Puppeteer Options (For PDF Export)
+          ```bash
+          # Use system Chromium instead of downloading
+          reveal-md SIMPLE.md \
+            --print presentation.pdf \
+            --puppeteer-chromium-executable /usr/bin/chromium
+          ```
+
+          ### With Preprocessor (Advanced)
+          ```bash
+          reveal-md SIMPLE.md \
+            --preprocessor ./preprocess.js
+          ```
+
+          ---
+
+          ## 📊 SLIDE SEPARATORS GUIDE
+
+          ### Horizontal Slides (Sequential)
+          Use `---` with blank lines above and below:
+          ```markdown
+          # Slide 1
+
+          ---
+
+          # Slide 2
+
+          ---
+
+          # Slide 3
+          ```
+
+          ### Vertical Slides (Nested)
+          Use `----` with blank lines above and below:
+          ```markdown
+          # Main Slide
+
+          Click down to see nested slides →
+
+          ----
+
+          # Nested Slide 1
+
+          ----
+
+          # Nested Slide 2
+
+          ---
+
+          # Back to main level
+          ```
+
+          ---
+
+          ## 💡 PRO TIPS
+
+          ### Tip 1: Use Speaker Notes for Presenter View
+          ```markdown
+          ## My Slide
+
+          Visible content here
+
+          Note: This is only visible in speaker view (press 's')
+          ```
+
+          ### Tip 2: Create a Slides Directory
+          ```bash
+          mkdir -p ~/presentations/slides
+          cd ~/presentations/slides
+
+          # Organize presentations by project
+          mkdir flux-architecture
+          mkdir project-updates
+          ```
+
+          ### Tip 3: Use Reveal-MD with Version Control
+          ```bash
+          cd ~/presentations
+          git init
+          git add COMPLETE.md SIMPLE.md
+          git commit -m "Initial presentations"
+          ```
+
+          ### Tip 4: Create a Makefile for Quick Commands
+          ```bash
+          cat > Makefile << 'EOF'
+          .PHONY: simple complete watch pdf
+
+          simple:
+            reveal-md SIMPLE.md --theme black
+
+          complete:
+            reveal-md COMPLETE.md --theme black
+
+          watch:
+            reveal-md COMPLETE.md --theme black --watch
+
+          pdf:
+            reveal-md COMPLETE.md --print presentation.pdf
+
+          static:
+            reveal-md COMPLETE.md --static ./output
+
+          .PHONY: help
+          help:
+            @echo "make simple    - View simple presentation"
+            @echo "make complete  - View complete presentation"
+            @echo "make watch     - Watch for changes"
+            @echo "make pdf       - Export to PDF"
+            @echo "make static    - Export to static HTML"
+          EOF
+
+          # Now use with:
+          make complete
+          make watch
+          make pdf
+          ```
+
+          ### Tip 5: Copy Presentation Template
+          ```bash
+          # Save a template for future presentations
+          cp COMPLETE.md templates/template.md
+
+          # For new presentation:
+          cp templates/template.md new-presentation.md
+          reveal-md new-presentation.md
+          ```
+
+          ---
+
+          ## 🎨 THEME REFERENCE
+
+          ### Preview Themes
+          ```bash
+          # Test each theme
+          for theme in black white league sky beige simple serif blood night moon solarized; do
+            echo "Testing theme: $theme"
+            reveal-md SIMPLE.md --theme $theme
+          done
+          ```
+
+          ### Popular Combinations
+          ```bash
+          # Modern/Dark
+          reveal-md SIMPLE.md --theme black --highlight-theme zenburn
+
+          # Light/Professional
+          reveal-md SIMPLE.md --theme white --highlight-theme atom-one-light
+
+          # Creative
+          reveal-md SIMPLE.md --theme moon --highlight-theme monokai
+
+          # Minimal
+          reveal-md SIMPLE.md --theme simple --highlight-theme github
+          ```
+
+          ---
+
+          ## 📱 PRESENTATION MODE SHORTCUTS
+
+          | Key | Action |
+          |-----|--------|
+          | Space or → | Next slide |
+          | ← or Shift+Space | Previous slide |
+          | ↓ | Vertical slides (if available) |
+          | ↑ | Up one slide |
+          | ESC | Overview/slide sorter |
+          | S | Speaker notes |
+          | F | Full screen |
+          | B | Black screen |
+          | W | White screen |
+          | ? | Help/keyboard shortcuts |
+
+          ---
+
+          ## 🚀 QUICK WORKFLOW
+
+          ```bash
+          # 1. Create a new presentation
+          cd ~/presentations
+          cat > MY_TALK.md << 'EOF'
+          # My Talk
+
+          ---
+
+          ## Section 1
+
+          Content here
+
+          ---
+
+          ## Section 2
+
+          More content
+          EOF
+
+          # 2. View it with watch mode
+          reveal-md MY_TALK.md --watch
+
+          # 3. Edit in another terminal
+          vi MY_TALK.md
+
+          # 4. Browser auto-refreshes as you save
+
+          # 5. When ready, export
+          reveal-md MY_TALK.md --static ./output
+          # or
+          reveal-md MY_TALK.md --print MY_TALK.pdf
+          ```
+
+          ---
+
+          ## 🎯 FOR YOUR FLUX ARCHITECTURE PRESENTATION
+
+          ### Use reveal-md to present your slides!
+
+          ```bash
+          # Create presentation
+          cat > FLUX-ARCHITECTURE.md << 'EOF'
+          # Flux Architecture v3
+
+          Productive Microservices: Nx + DevContainers + Ephemeral Environments
+
+          ---
+
+          ## Problem
+
+          Currently sharing one AWS environment...
+
+          ---
+
+          ## Solution
+
+          Three pillars: Nx, DevContainers, PR Environments
+
+          ---
+
+          ## Thank You
+
+          Questions?
+          EOF
+
+          # Present it
+          reveal-md FLUX-ARCHITECTURE.md --theme black --watch
+
+          # Export for sharing
+          reveal-md FLUX-ARCHITECTURE.md --static ./flux-presentation
+          reveal-md FLUX-ARCHITECTURE.md --print FLUX-ARCHITECTURE.pdf
+          ```
+
+  harusa metadata apply:
+    desc: Applies the local metadata changes to the Hasura server to synchronize metadata changes (schemas, permissions, etc.) from your local project with the Hasura server.
+    tags: [ hasura ]
+  harusa migrate apply --database-name=default:
+    desc: Applies all pending migrations to the specified database (in this case, the default database) to ensure all database schema changes are applied as configured in migrations.
+    tags: [ hasura ]
+
+  jupyter lab:
+    desc: Run Jupyter Lab
+    tags: [ jupyter ]
+  jupyter notebook:
+    desc: Run Jupyter Notebook
+    tags: [ jupyter ]
+  jupyter notebook --no-browser:
+    desc: Run Jupyter Notebook
+    tags: [ jupyter ]
+  jupyter notebook --no-browser --port=8889:
+    desc: Run Jupyter Notebook
+    tags: [ jupyter ]
+
+  mas signout:
+    desc: Sign out of the Mac App Store
+    tags: [ mas ]
+    links:
+      - Usage: https://github.com/mas-cli/mas?tab=readme-ov-file#-sign-in
+      - Known Issues: https://github.com/mas-cli/mas?tab=readme-ov-file#%EF%B8%8F-known-issues
+      - When something doesn't work: https://github.com/mas-cli/mas?tab=readme-ov-file#-when-something-doesnt-work
+  mas list:
+    desc: List installed apps from the Mac App Store
+    tags: [ mas, maco ]
+    links:
+      - Usage: https://github.com/mas-cli/mas?tab=readme-ov-file#-sign-in
+      - Known Issues: https://github.com/mas-cli/mas?tab=readme-ov-file#%EF%B8%8F-known-issues
+      - When something doesn't work: https://github.com/mas-cli/mas?tab=readme-ov-file#-when-something-doesnt-work
+  mas search Xcode:
+    desc: Search for an app in the Mac App Store
+    tags: [ mas, maco ]
+    links:
+      - Usage: https://github.com/mas-cli/mas?tab=readme-ov-file#-sign-in
+      - Known Issues: https://github.com/mas-cli/mas?tab=readme-ov-file#%EF%B8%8F-known-issues
+      - When something doesn't work: https://github.com/mas-cli/mas?tab=readme-ov-file#-when-something-doesnt-work
+  mas install 497799835:
+    desc: Install an app from the Mac App Store
+    tags: [ mas, maco ]
+    links:
+      - Usage: https://github.com/mas-cli/mas?tab=readme-ov-file#-sign-in
+      - Known Issues: https://github.com/mas-cli/mas?tab=readme-ov-file#%EF%B8%8F-known-issues
+      - When something doesn't work: https://github.com/mas-cli/mas?tab=readme-ov-file#-when-something-doesnt-work
+  mas lucky twitter:
+    desc: Install the first search result from the Mac App Store
+    tags: [ mas, maco ]
+    links:
+      - Usage: https://github.com/mas-cli/mas?tab=readme-ov-file#-sign-in
+      - Known Issues: https://github.com/mas-cli/mas?tab=readme-ov-file#%EF%B8%8F-known-issues
+      - When something doesn't work: https://github.com/mas-cli/mas?tab=readme-ov-file#-when-something-doesnt-work
+  mas outdated:
+    desc: List outdated apps from the Mac App Store
+    tags: [ mas, maco ]
+    links:
+      - Usage: https://github.com/mas-cli/mas?tab=readme-ov-file#-sign-in
+      - Known Issues: https://github.com/mas-cli/mas?tab=readme-ov-file#%EF%B8%8F-known-issues
+      - When something doesn't work: https://github.com/mas-cli/mas?tab=readme-ov-file#-when-something-doesnt-work
+  mas upgrade:
+    desc: Upgrade outdated apps from the Mac App Store
+    tags: [ mas, maco ]
+    links:
+      - Usage: https://github.com/mas-cli/mas?tab=readme-ov-file#-sign-in
+      - Known Issues: https://github.com/mas-cli/mas?tab=readme-ov-file#%EF%B8%8F-known-issues
+      - When something doesn't work: https://github.com/mas-cli/mas?tab=readme-ov-file#-when-something-doesnt-work
+  mas reset:
+    desc: Reset the Mac App Store
+    tags: [ mas, maco ]
+    links:
+      - Usage: https://github.com/mas-cli/mas?tab=readme-ov-file#-sign-in
+      - Known Issues: https://github.com/mas-cli/mas?tab=readme-ov-file#%EF%B8%8F-known-issues
+      - When something doesn't work: https://github.com/mas-cli/mas?tab=readme-ov-file#-when-something-doesnt-work
+
+  airport -I:
+    desc: Check if you're connected to a 2.4 GHz or 5 GHz Wi-Fi network via the command line interface (CLI) on macOS
+    tags: [ wifi, wireles, airport ]
+    notes:
+      - md: |
+          The `airport` command, which is a tool for configuring and querying airport wireless devices
+
+          1. Can create a symbolic link to make the command more accessible
+
+          ```sh
+          sudo ln -s /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport /usr/local/bin/airport
+          ```
+
+          2. Run the command to get the wireless device information
+
+          ```sh
+          airport -I
+          ```
+
+          3. Check the Wi-Fi Details:
+
+          After running `airport -I`, look for the channel information in the output.
+
+          This will tell you which channel your Wi-Fi is connected to.
+
+            - Channels 1-14 indicate a **2.4 GHz** network.
+            - Channels above 14 indicate a **5 GHz** network.
+  softwareupdate --list:
+    desc: List available software updates on macOS
+    tags: [ softwareupdate ]
+    links: [ https://support.apple.com/en-us/HT201541 ]
+  softwareupdate --install -a:
+    desc: Install all available software updates on macOS
+    tags: [ softwareupdate ]
+    links: [ https://support.apple.com/en-us/HT201541 ]
+  kill -9 PID:
+    desc: Kill a process by PID
+    tags: [ port ]
+    links:
+      - https://cyberciti.biz/faq/what-process-has-open-linux-port
+      - https://cyberciti.biz/faq/unix-linux-check-if-port-is-in-use-command
+      - https://codinhood.com/nano/macos/find-kill-proccess-port-macos/
+  nettop:
+    desc: Display network usage
+    tags: [ network ]
+    links:
+      - https://support.apple.com/guide/mac-help/monitor-network-usage-mac-mh14127/mac
+      - https://www.howtogeek.com/356942/how-to-monitor-your-network-usage-in-macos
+
+  du -d1:
+    desc: list directories (folders)
+    tags: [ disk ]
+    links:
+      - Using Terminal to Find Large Files and Folders: https://macmost.com/using-terminal-to-find-large-files-and-folders.html
+  du -h -d1:
+    desc: use human-readable sizes
+    tags: [ disk ]
+    links:
+      - Using Terminal to Find Large Files and Folders: https://macmost.com/using-terminal-to-find-large-files-and-folders.html
+  du -h -d3 -t10G:
+    desc: look down 3 levels and only show folders above a threshold size
+    tags: [ disk ]
+    links:
+      - Using Terminal to Find Large Files and Folders: https://macmost.com/using-terminal-to-find-large-files-and-folders.html
+
+  task summary:
+    desc: Filtered project summary
+    tags: [ tw ]
+  task tags:
+    desc: Filtered list of tags
+    tags: [ tw ]
+  task timesheet:
+    desc: Weekly timesheet report
+    tags: [ tw ]
+  task udas:
+    desc: Details of all defined UDAs
+    tags: [ tw ]
+  task uuids:
+    desc: Filtered list of UUIDs
+    tags: [ tw ]
+  task list active:
+    desc: Started tasks
+    tags: [ tw ]
+  task list all:
+    desc: Pending, completed and deleted tasks
+    tags: [ tw ]
+  task list blocked:
+    desc: Tasks that are blocked by other tasks
+    tags: [ tw ]
+  task list blocking:
+    desc: Tasks that block other tasks
+    tags: [ tw ]
+  task list completed:
+    desc: Tasks that have been completed
+    tags: [ tw ]
+  task list list:
+    desc: Pending tasks
+    tags: [ tw ]
+  task list long:
+    desc: Pending tasks, long form
+    tags: [ tw ]
+  task list minimal:
+    desc: Pending tasks, minimal form
+    tags: [ tw ]
+  task list newest:
+    desc: Most recent pending tasks
+    tags: [ tw ]
+  task list next:
+    desc: Most urgent tasks
+    tags: [ tw ]
+  task list oldest:
+    desc: Oldest pending tasks
+    tags: [ tw ]
+  task list overdue:
+    desc: Overdue tasks
+    tags: [ tw ]
+  task list ready:
+    desc: Pending, unblocked, scheduled tasks
+    tags: [ tw ]
+  task list recurring:
+    desc: Pending recurring tasks
+    tags: [ tw ]
+  task list unblocked:
+    desc: Tasks that are not blocked
+    tags: [ tw ]
+  task list waiting:
+    desc: Hidden, waiting tasks
+    tags: [ tw ]
+  task list:
+    desc: List opened tasks
+    tags: [ tw ]
+  task list project:<PROJECT>:
+    desc: List opened tasks by project
+    tags: [ tw ]
+  task context list:
+    desc: List contexts
+    tags: [ tw ]
+  task context home:
+    desc: Activate context home
+    tags: [ tw ]
+  task context isolutions:
+    desc: Activate context isolutions
+    tags: [ tw ]
+  task context none:
+    desc: Deactivate the current context
+    tags: [ tw ]
+  'task project: list':
+    desc: List tasks with no project
+    tags: [ tw ]
+  task reports:
+    desc: List of available reports
+    tags: [ tw ]
+  task projects:
+    desc: Filtered list of projects, with task counts
+    tags: [ tw ]
+  task project:<PROJECT> completed:
+    desc: Show tasks completed by project
+    tags: [ tw ]
+  task news:
+    desc: Release major highlights
+    tags: [ tw ]
+  task burndown.daily:
+    desc: Burndown chart, by day
+    tags: [ tw ]
+  task burndown.monthly:
+    desc: Burndown chart, by month
+    tags: [ tw ]
+  task burndown.weekly:
+    desc: Burndown chart, by week
+    tags: [ tw ]
+  task calendar:
+    desc: Calendar and holidays
+    tags: [ tw ]
+  task colors:
+    desc: Demonstrates all supported colors
+    tags: [ tw ]
+  task columns:
+    desc: List of report columns and supported formats
+    tags: [ tw ]
+  task commands:
+    desc: List of commands, with their behaviors
+    tags: [ tw ]
+  task diagnostics:
+    desc: Show diagnostics, for troubleshooting
+    tags: [ tw ]
+  task ghistory.annual:
+    desc: History graph, by year
+    tags: [ tw ]
+  task ghistory.monthly:
+    desc: History graph, by month
+    tags: [ tw ]
+  task ghistory.weekly:
+    desc: History graph, by week
+    tags: [ tw ]
+  task ghistory.daily:
+    desc: History graph, by day
+    tags: [ tw ]
+  task history.annual:
+    desc: History report, by year
+    tags: [ tw ]
+  task history.monthly:
+    desc: History report, by month
+    tags: [ tw ]
+  task history.weekly:
+    desc: History report, by week
+    tags: [ tw ]
+  task history.daily:
+    desc: History report, by day
+    tags: [ tw ]
+  task ids:
+    desc: Filtered list of task IDs
+    tags: [ tw ]
+  task show:
+    desc: Filtered list of configuration settings
+    tags: [ tw ]
+  task show report.minimal:
+    desc: 'Show definitions of report: minimal'
+    tags: [ tw ]
+  task show context.home:
+    desc: 'Show definitions of context: home'
+    tags: [ tw ]
+  task show context.xp:
+    desc: 'Show definitions of context: xp'
+    tags: [ tw ]
+  task show context.job:
+    desc: 'Show definitions of context: job'
+    tags: [ tw ]
+  task show context.work:
+    desc: 'Show definitions of context: work'
+    tags: [ tw ]
+  task stats:
+    desc: Filtered statistics
+    tags: [ tw ]
+  task add <description>:
+    desc: Add task
+    tags: [ tw ]
+  task add <description> +<tag>:
+    desc: Add task w/ tag
+    tags: [ tw ]
+  task +<tag> count:
+    desc: Count tasks by tag
+    tags: [ tw ]
+  task project:<PROJECT> count:
+    desc: Count tasks by project
+    tags: [ tw ]
+  task project:<OLD> modify project:<NEW>:
+    desc: Rename project
+    tags: [ tw ]
+  task +<tag> completed:
+    desc: Show tasks completed by tag
+    tags: [ tw ]
+  task end.after:today-1wk completed:
+    desc: Show tasks completed in the last week
+    tags: [ tw ]
+  task entry:yesterday list:
+    desc: Show tasks added yesterday
+    tags: [ tw ]
+  task entry.after:now-1hour list:
+    desc: Show tasks added in the last hour
+    tags: [ tw ]
+  task add <description> project:<NAME>:
+    desc: Add task with project
+    tags: [ tw ]
+  task $(task uuids all +CHILD +COMPLETED) delete:
+    desc: Delete all tasks +CHILD +COMPLETED
+    tags: [ tw ]
+  task $(task uuids due.before:now) delete:
+    desc: Delete tasks due before now
+    tags: [ tw ]
+  task $(task uuids due.before:now +CHILD +COMPLETED) delete:
+    desc: Delete tasks due before now +CHILD +COMPLETED
+    tags: [ tw ]
+  task $(task uuids all +CHILD +COMPLETED) purge:
+    desc: Purge all tasks +CHILD +COMPLETED
+    tags: [ tw ]
+  task $(task uuids due.before:now) purge:
+    desc: Purge tasks due before now
+    tags: [ tw ]
+  task $(task uuids due.before:now +CHILD +COMPLETED) purge:
+    desc: Purge tasks due before now +CHILD +COMPLETED
+    tags: [ tw ]
+  task information:
+    desc: All attributes shown
+    tags: [ tw ]
+
+  touch .editorconfig:
+    desc: Generate .editorconfig
+    tags: [ editorconfig ]
+  curl -sL https://rb.gy/jl5vwa | grep name | cut -d \" -f4 | cut -c2-:
+    desc: Get latest LuaRocks version by default
+    tags: [ lua ]
+  launchctl list:
+    desc: List information about services
+    tags: [ launchd ]
+  env:
+    desc: List your environment variables (detailed)
+    tags: [ nu ]
+  $env:
+    desc: List your environment variables
+    tags: [ nu ]
+
+  pokeget raichu sandslash meowth --alolan:
+    desc: Display the alolan variant of the pokemon
+    tags: [ cli, pokemon ]
+  pokeget bulbasaur pikachu random:
+    desc: Display multiple pokemon
+    tags: [ cli, pokemon ]
+  pokeget charizard --gmax:
+    desc: Display the gigantamax variant of the pokemon
+    tags: [ cli, pokemon ]
+  pokeget decidueye --hisui:
+    desc: Display the hisui variant of the pokemon
+    tags: [ cli, pokemon ]
+  pokeget lilligant --hisui --noble:
+    desc: Display the noble variant of the pokemon, this option often times only works in tandom with --hisui
+    tags: [ cli, pokemon ]
+  pokeget zigzagoon linoone --galar:
+    desc: Display the galarian variant of the pokemon
+    tags: [ cli, pokemon ]
+  pokeget meowstic --female:
+    desc: Display the female variant of the pokemon if it exists. This doesn't apply to nidoran, for some reason.
+    tags: [ cli, pokemon ]
+  pokeget charizard --mega-x:
+    desc: Display the pokemon as it's mega X form
+    tags: [ cli, pokemon ]
+  pokeget charizard --mega-y:
+    desc: Display the pokemon as it's mega Y form
+    tags: [ cli, pokemon ]
+
+  chafa --scale max in.jpg:
+    desc: As big as will fit
+    tags: [ chafa, term ]
+  chafa --clear --align mid,mid -d 5 *.gif:
+    desc: Show current month and next 4 months
+    tags: [ cal ]
+    notes:
+      - sh: | #shell
+          # Install librsvg
+          brew install librsvg
+
+          # Convert PNG to SVG
+          for f in *.png; do convert "$f" "${f%.png}.svg"; done
+      - sh: | #shell
+          # Install librsvg
+          brew install librsvg
+
+          # Convert PNG to SVG
+          for f in *.png; do magick "$f" "${f%.png}.svg"; done
+      - sh: | #shell
+          # Encode a payload into a JWT Token with a secret key
+          $ jwt encode --secret "a-256-bit-secret-key" '{"user":"example"}'
+          # => eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzQwNTI5NzAsInVzZXIiOiJleGFtcGxlIn0.s7XzVxFdOc7oP9wiPkURglxaEREg177IorST-6S6EoA
+
+          # The output is a JWT token that can be used for authentication and authorization purposes.
+          # To decode the JWT token, use the following command:
+          $ jwt decode eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzQwNTI5NzAsInVzZXIiOiJleGFtcGxlIn0.s7XzVxFdOc7oP9wiPkURglxaEREg177IorST-6S6EoA
+          # => Token header
+          # => ------------
+          # => {
+          # =>   "typ": "JWT",
+          # =>   "alg": "HS256"
+          # => }
+          # =>
+          # => Token claims
+          # => ------------
+          # => {
+          # =>   "iat": 1719007185,
+          # =>   "user": "example"
+          # => }
+      - sh: | #shell
+          #!/bin/bash
+          # Encode a payload into a JWT Token with a secret key
+          $ jwt encode --secret "a-256-bit-secret-key" '{"user":"example"}'
+          # => eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzQwNTQ1NDAsInVzZXIiOiJleGFtcGxlIn0.3cIYisVMLghSzg0rzcVnSFROZYmy2ZgTuhHTpidxqdQ
+      - sh: | #shell
+          #!/bin/bash
+          # Verify the JWT Token
+          # If the token is invalid, you will see an error message:
+          $ jwt decode --secret "wringSecret" eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzQwNTQ1NDAsInVzZXIiOiJleGFtcGxlIn0.3cIYisVMLghSzg0rzcVnSFROZYmy2ZgTuhHTpidxqdQ
+          # => The JWT provided has an invalid signature
+      - sh: | #shell
+          #!/bin/bash
+          ## Decode a JWT Token
+          # If the token is valid, you will see the decoded token:
+          $ jwt decode eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzQwNTQ1NDAsInVzZXIiOiJleGFtcGxlIn0.3cIYisVMLghSzg0rzcVnSFROZYmy2ZgTuhHTpidxqdQ
+          # => Token header
+          # =>  ------------
+          # =>  {
+          # =>    "typ": "JWT",
+          # =>    "alg": "HS256"
+          # =>  }
+          # =>
+          # =>  Token claims
+          # =>  ------------
+          # =>  {
+          # =>    "iat": 1734054540,
+          # =>    "user": "example"
+          # =>  }
+      - sh: | #shell
+          #!/bin/bash
+          ## Example
+          $ jwt decode eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEb2UifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+          # => Token header
+          # => ------------
+          # => {
+          # =>   "typ": "JWT",
+          # =>   "alg": "HS256"
+          # => }
+          # =>
+          # => Token claims
+          # => ------------
+          # => {
+          # =>   "name": "John Doe"
+          # => }
+    links:
+      - Usage: https://github.com/mas-cli/mas?tab=readme-ov-file#-sign-in
+      - Known Issues: https://github.com/mas-cli/mas?tab=readme-ov-file#%EF%B8%8F-known-issues
+      - When something doesn't work: https://github.com/mas-cli/mas?tab=readme-ov-file#-when-something-doesnt-work
+      - Troubleshooting Fonts: https://wezfurlong.org/wezterm/config/fonts.html#troubleshooting-fonts
+      - Font Shaping: https://wezfurlong.org/wezterm/config/font-shaping.html
+      - Fonts: https://wezfurlong.org/wezterm/config/fonts.html
+
+  spring init --build gradle --group-id=io.dev --language kotlin --name spring-boot-app --version 0.0.1-SNAPSHOT ~/Work/kotlin/app:
+    desc: Create a spring boot project with web, jpa, h2 dependencies
+    tags: [ maven, kotlin ]
+
+  ktlint --android applyToIDEAProject -y:
+    desc: Enforces Android Code Style (from root)
+    tags: [ kotlin ]
+    links:
+      - Homebrew: https://docs.brew.sh/Manpage#list
+      - Homebrew: https://docs.brew.sh/Manpage#doctor
+      - Homebrew: https://docs.brew.sh/Manpage#deps---tree---installed
+      - Homebrew: https://docs.brew.sh/Manpage#zap
+
+  wc -l:
+    desc: Count only the number of lines
+    tags: [ wc ]
+  wc -w:
+    desc: Count only the number of words
+    tags: [ wc ]
+  wc -c:
+    desc: Count only the number of bytes
+    tags: [ wc ]
+    links:
+      - Using Terminal to Find Large Files and Folders: https://macmost.com/using-terminal-to-find-large-files-and-folders.html
+    notes:
+      - md: | #markdown
+          ### This command breaks down as follows:
+
+          - `find .` starts the search in the current directory.
+          - `-maxdepth 1` ensures that find only looks in the current directory and does not go into subdirectories.
+          - `-type f` filters the search to only include files.
+          - `-size 0` finds files that are exactly 0 bytes in size.
+      - md: | #markdown
+          ### This command breaks down as follows:
+
+          - `find .` starts the search in the current directory.
+          - `-maxdepth 1` ensures that find only looks in the current directory and does not go into subdirectories.
+          - `-type f` filters the search to only include files.
+          - `-size 0` finds files that are exactly 0 bytes in size.
+          - `| wc -l` counts the number of lines in the output, which corresponds to the number of empty files found.
+
+  fd:
+    desc: List all in current dir - RECURSIVELY
+    tags: [ find ]
+  fd . -t directory:
+    desc: Find directories
+    tags: [ find ]
+  fd'^<TERM>':
+    desc: List all whose name starts with term
+    tags: [ find ]
+  fd'^*.<TERM>$':
+    desc: List all whose name ends with term
+    tags: [ find ]
+
+  leave +0330:
+    desc: Remind to leave in 3 hours and 30 minutes
+    tags: [ unix ]
+  ./gradlew bootRun:
+    desc: Run Grails App @ http://localhost:<PORT=8080> - via gradle
+    tags: [ gradle ]
+  passwd:
+    desc: Change the password for the current logged account
+    tags: [ unix ]
+  security set-keychain-password:
+    desc: Update the login keychain password - usually after using the passwd cmd
+    tags: [ unix ]
+
+  diskutil list:
+    desc: List mounted volumes
+    tags: [ diskutil ]
+  diskutil apfs list:
+    desc: List apfs mounted volumes
+    tags: [ diskutil ]
+
+  uname --all:
+    desc: Print all information, in the following order except omit -p and -i if unknown
+    tags: [ unix ]
+  uname --kernel-name:
+    desc: Print the kernel name
+    tags: [ unix ]
+  uname --kernel-release:
+    desc: Print the kernel release
+    tags: [ unix ]
+  uname --kernel-version:
+    desc: Print the kernel version
+    tags: [ unix ]
+  uname --machine:
+    desc: Print the machine hardware name
+    tags: [ unix ]
+  uname --processor:
+    desc: Print the processor type - non-portable
+    tags: [ unix ]
+  uname --operating-system:
+    desc: Print the operating system
+    tags: [ unix ]
+
+  arch:
+    desc: Print the architecture of the current machine
+    tags: [ unix ]
+  chsh -s /usr/local/bin/bash:
+    desc: Change the default shell to /usr/local/bin/bash @ /etc/shells
+    tags: [ unix ]
+  chsh -s /usr/local/bin/zsh:
+    desc: Change the default shell to /usr/local/bin/zsh @ /etc/shells
+    tags: [ unix ]
+  chsh -s /bin/zsh:
+    desc: Change the default shell to /bin/zsh @ /etc/shells
+    tags: [ unix ]
+  uname -r:
+    desc: Display kernel version
+    tags: [ unix ]
+  df -h:
+    desc: Get disk usage
+    tags: [ unix, disk ]
+  timedatectl status:
+    desc: Get system time
+    tags: [ unix, time ]
+  timedatectl list-timezones:
+    desc: List system timezone
+    tags: [ unix, time ]
+  systemctl --state running:
+    desc: Get running services
+    tags: [ unix, system ]
+  chsh -s /bin/bash:
+    desc: Change the default shell to /bin/bash
+    tags: [ unix ]
+  asdf local java temurin-18.0.1+10:
+    desc: Add temurin-18.0.1+10 to .tool-versions
+    tags: [ asdf, java ]
+
+  speedtest-cli:
+    desc: Run bandwidth tests - https://speedtest.net
+    tags: [ cli, speedtest ]
+  glances:
+    desc: Alternative to top/htop
+    tags: [ cli, glances ]
+  top:
+    desc: Improved top - interactive process viewer
+    tags: [ cli, top ]
+
+  sheldon lock:
+    desc: Check plugins consistency and regenerate a lock file
+    tags: [ cli, prompt ]
+  sheldon lock --update:
+    desc: Update plugin sources
+    tags: [ cli, prompt ]
+  sheldon lock --reinstall:
+    desc: Force reinstall all plugin sources
+    tags: [ cli, prompt ]
+
+  pre-commit install --hook-type commit-msg:
+    desc: Install the pre-commit hook
+    tags: [ cli, pre_commit ]
+
+  gradle init:
+    desc: Initialize a GRADLE project
+    tags: [ gradle ]
+  ./gradlew wrapper --gradle-version=7.4.2:
+    desc: Upgrade gradle to 7.4.2
+    tags: [ gradle ]
+  ./gradlew wrapper --gradle-version=7.5:
+    desc: Upgrade gradle to 7.5
+    tags: [ gradle ]
+  gen pre-commit:
+    desc: Setup pre-commit to the current dir
+    tags: [ pre_commit ]
+  rname --append-size --remove-original:
+    desc: 'Rename files in current dir. e.g.: image.png -> image_1920x1080.png'
+    tags: [ cli, image ]
+  converts images/logo512.png -background white ( -clone 0 -resize 16x16 -extent 16x16 ) ( -clone 0 -resize 32x32 -extent 32x32 ) ( -clone 0 -resize 48x48 -extent 48x48 ) ( -clone 0 -resize 64x64 -extent 64x64 ) -delete 0 -alpha off -colors 256 favicon.ico:
+    desc: Create a favicon
+    tags: [ cli, image ]
+
+  hasura init .:
+    desc: Initialize a new Hasura project in the current directory - To create a new Hasura project in the current directory
+    tags: [ cli, hasura ]
+  hasura update-cli:
+    desc: Updates the Hasura CLI to the latest version - To ensure you are using the most up-to-date version of the Hasura CLI with all the latest bug fixes and features
+    tags: [ cli, hasura ]
+  hasura metadata ic diff:
+    desc: Shows the differences between the current metadata and the applied metadata - to review metadata changes before applying them.
+    tags: [ cli, hasura ]
+  hasura metadata ic list:
+    desc: Lists all pending metadata changes - to get an overview of metadata changes that have not yet been applied
+    tags: [ cli, hasura ]
+  hasura migrate create "migration_name" --from-server:
+    desc: Creates a new migration based on the current state of the server. To capture the current state of the database and create corresponding migrations.
+    tags: [ cli, hasura ]
+  hasura seed create crate_authors_seed --from-table authors:
+    desc: Creates a seed file based on the data in the author table. To generate a seed file that contains the data from the specified table.
+    tags: [ cli, hasura ]
+  hasura seed apply --database-name=default:
+    desc: Applies seed data to the specified database. To populate the database with initial or test data as configured in seed files.
+    tags: [ cli, hasura ]
+  hasura seed apply --file 1718916648431_add_authors_seed.sql --database-name=default:
+    desc: Applies seed data to the specified database. To populate the database with initial or test data as configured in seed files.
+    tags: [ cli, hasura ]
+  hasura metadata reload:
+    desc: Reloads metadata on the Hasura server from the current configuration (when you need to refresh or revert to the currently loaded metadata configuration on the server).
+    tags: [ cli, hasura ]
+  hasura console:
+    desc: Opens the Hasura Console web interface - useful for managing Hasura visually.
+    tags: [ cli, hasura ]
+  hasura console --no-browser:
+    desc: Starts the Hasura Console without automatically opening it in the browser. When you prefer to manually access the console through a specific URL
+    tags: [ cli, hasura ]
+  hasura metada export:
+    desc: Exports the current metadata configuration to a file - to save the current metadata configuration to a file for backup or version control.
+    tags: [ cli, hasura ]
+
+  openssl rand -hex 16 | openssl dgst -md5:
+    desc: Generate a random hash Using MD5 using 16 bytes
+    tags: [ cli, sha ]
+  openssl rand -hex 20 | openssl dgst -sha1:
+    desc: Generate a random hash Using SHA-1 using 20 bytes
+    tags: [ cli, sha ]
+  openssl rand -hex 32 | openssl dgst -sha256:
+    desc: Generate a random hash Using SHA-256 using 32 bytes
+    tags: [ cli, sha ]
+  openssl rand -hex 64 | openssl dgst -sha512:
+    desc: Generate a random hash Using SHA-512 using 64 bytes
+    tags: [ cli, sha ]
+
+  brew install elixir:
+    desc: Install elixir
+    tags: [ elixir ]
+  docker run -it --rm elixir:
+    desc: Enter bash within container with installed elixir
+    tags: [ elixir ]
+  docker run -it --rm elixir bash:
+    desc: Enter bash within container with installed elixir
+    tags: [ elixir ]
+
+  npx mega-linter-runner --install:
+    desc: Install Mega-Linter
+    tags: [ linter ]
+
+  task list ls:
+    desc: Pending tasks, short form
+    tags: [ cli, tw ]
+
+  shasum -a 256 <FILE>:
+    desc: Generate SHA-256 of file
+    tags: [ cli, sha ]
+  shasum -a 256 <FILE> | cut -d'' -f1:
+    desc: Generate SHA-256 of file
+    tags: [ cli, sha ]
+  shasum -a 512 <FILE>:
+    desc: Generate SHA-512 of file
+    tags: [ cli, sha ]
+  shasum -a 512 <FILE> | cut -d'' -f1:
+    desc: Generate SHA-512 of file
+    tags: [ cli, sha ]
+
+  chgrp -hR <group> <DIR>:
+    desc: Change the group of dir recursively
+    tags: [ unix ]
+  launchctl setenv <KEY> "<VALUE>":
+    desc: Set a launchd env var
+    tags: [ unix, launchd ]
+  launchctl getenv <KEY>:
+    desc: Get launchd env var KEY's value
+    tags: [ unix, launchd ]
+  launchctl unsetenv <KEY>:
+    desc: Unset the specified env vars for all services within the domain
+    tags: [ unix, launchd ]
+  launchctl runstats gui/$UID/<SERVICE>:
+    desc: Print performance statistics for a service
+    tags: [ unix, launchd ]
+  launchctl bootstrap gui/$UID/ /Library/LaunchAgents/<plist>:
+    desc: Bootstrap a domain/service into /Library/LaunchAgents/
+    tags: [ unix, launchd ]
+  launchctl bootout gui/$UID /Library/LaunchAgents/<plist>:
+    desc: Tear down a domain or removes a service from /Library/LaunchAgents/
+    tags: [ unix, launchd ]
+  launchctl enable gui/$UID/<NAME>:
+    desc: Enable an existing service
+    tags: [ unix, launchd ]
+  launchctl disable gui/$UID/<NAME>:
+    desc: Disable an existing service
+    tags: [ unix, launchd ]
+  launchctl start gui/$UID/<NAME>:
+    desc: Start specified service
+    tags: [ unix, launchd ]
+  launchctl stop gui/$UID/<NAME>:
+    desc: Stop the specified service
+    tags: [ unix, launchd ]
+  sudo launchctl bootstrap gui/$UID /Library/LaunchAgents/dev.dotfiles.setup.plist:
+    desc: Bootstrap the dev.dotfiles.setup service
+    tags: [ unix, launchd ]
+  sudo launchctl bootout gui/$UID /Library/LaunchAgents/dev.dotfiles.setup.plist:
+    desc: Tear down dev.dotfiles.setup service
+    tags: [ unix, launchd ]
+  sudo launchctl enable gui/$UID/dev.dotfiles.setup:
+    desc: Enable dev.dotfiles.setup service
+    tags: [ unix, launchd ]
+  sudo launchctl disable gui/$UID/dev.dotfiles.setup:
+    desc: Disable dev.dotfiles.setup service
+    tags: [ unix, launchd ]
+  sudo launchctl start gui/$UID/dev.dotfiles.setup:
+    desc: Start dev.dotfiles.setup service
+    tags: [ unix, launchd ]
+  sudo launchctl stop gui/$UID/dev.dotfiles.setup:
+    desc: Stop dev.dotfiles.setup service
+    tags: [ unix, launchd ]
+  sudo systemsetup -listtimezones:
+    desc: List Timezones
+    tags: [ unix, time ]
+  adb shell am kill <PACKAGE>:
+    desc: Kill a running App by PACKAGE
+    tags: [ android, adb ]
+
+  yes | sdkmanager --licenses && yes | sdkmanager --licenses:
+    desc: Accept all - and not previously accepted - licenses
+    tags: [ android ]
+
+  env | where name== <ENV_VAR>:
+    desc: Get a single <ENV_VAR>'s value
+    tags: [ cli, nu ]
+  help commands | where is_custom== false | first 10 | drop column:
+    desc: See all supported commands
+    tags: [ cli, nu ]
+  help <COMMAND>:
+    desc: Find more specific information on a <COMMAND>
+    tags: [ cli, nu ]
+  help <COMMAND> <SUBCOMMAND>:
+    desc: Specific information on a <COMMAND> <SUBCOMMAND>
+    tags: [ cli, nu ]
+
+  ls | where type== file:
+    desc: View all files in the current directory
+    tags: [ cli, nu ]
+  ls | where type== dir:
+    desc: View all directories in the current directory
+    tags: [ cli, nu ]
+  ps | where cpu > 0 | sort-by cpu | reverse:
+    desc: Find processes sorted by greatest cpu utilization
+    tags: [ cli, nu ]
+  ps | where name== Notepad2.exe:
+    desc: Use 'ps' to fairly easy find the pid of a process
+    tags: [ cli, nu ]
+  ps | where name== Notepad2.exe | get pid.0 | kill -9 $in:
+    desc: This process can be sent the kill signal in a one-liner
+    tags: [ cli, nu ]
+  'cargo search shells --limit 10 | lines | parse"{crate_name}= {version} #{description}" | str trim':
+    desc: Parse an arbitrary pattern from a string of text into a multi-column table
+    tags: [ cli, nu ]
+  sys | get mem | to json | pbcopy:
+    desc: Add the output of a pipeline to your clipboard - This currently needs to be string output
+    tags: [ cli, nu ]
+  open Cargo.toml | get package.version:
+    desc: Read the file's initial contents
+    tags: [ cli, nu ]
+  open Cargo.toml | inc version patch | save Cargo.toml:
+    desc: Editing a file and then saving the changes (a Cargo.toml, increasing the patch version of the crate using inc and then save it back to the file)
+    tags: [ cli, nu ]
+  open Cargo.toml | upsert package.version { |p| $p | get package.version | inc --patch } | save Cargo.toml:
+    desc: Edit the version number and save it
+    tags: [ cli, nu ]
+  open bands.txt | lines | split column":" Band Album Year | skip 1 | sort-by Year:
+    desc: Parsing a file in a non-standard format
+    tags: [ cli, nu ]
+  open bands.txt | lines | parse"{Band}:{Album}:{Year}" | skip 1 | sort-by Year:
+    desc: Parsing a file in a non-standard format using parse
+    tags: [ cli, nu ]
+  open bands.txt | lines | split column":" | headers | sort-by year:
+    desc: Parsing a file in a non-standard format using the first row as a header row
+    tags: [ cli, nu ]
+  rg -c Value | lines | split column":" file line_count | into int line_count | sort-by line_count | reverse:
+    desc: Count word occurrences with Ripgrep
+    tags: [ cli, nu ]
+  fetch <URL>:
+    desc: Fetch content from <URL>
+    tags: [ cli, nu ]
+  fetch <URL> | first 5:
+    desc: Fetch first 5 contents from <URL> (JSON)
+    tags: [ cli, nu ]
+  fetch <URL> | first 5 | to json:
+    desc: Fetch first 5 contents from <URL> as json
+    tags: [ cli, nu ]
+  fetch -u <USR> -p <PWD> <URL>:
+    desc: Fetch content from <URL>, with <USR> and <PWD>
+    tags: [ cli, nu ]
+  fetch -H[<HEADER_KEY> <HEADER_VALUE>] <URL>:
+    desc: Fetch content from <URL>, with custom header
+    tags: [ cli, nu ]
+
+  hyperfine --warmup 5 --runs 100 "$(asdf which direnv) stdlib" "asdf exec direnv stdlib":
+    desc: Run hyperfine benchmark to check which asdf-direnv loads faster
+    tags: [ benchmark ]
+  oha -n 100 http://localhost:3001:
+    desc: Sends some load to URL and show realtime tui
+    tags: [ benchmark ]
+  wrk -t2 -c100 -d30s http://localhost:3001 | grep "Requests/sec" | awk '{print $2}':
+    desc: Run wrk benchmark to check how fast is the server
+    tags: [ benchmark ]
+  parallel < commands.txt:
+    desc: Read the commands from the file `commands.txt`` and run them in parallel
+    tags: [ parallel ]
+  parallel -j 3 < commands.txt:
+    desc: Read the commands from the file `commands.txt`` and run them in parallel with 3 jobs
+    tags: [ parallel ]
+  'parallel -j 3 gzip {}::: *.txt':
+    desc: Compress all txt files in the current directory in parallel
+    tags: [ parallel ]
+  'parallel -j 3 echo {} ::: 1 2 3':
+    desc: Run the command echo {} on the inputs 1, 2, and 3 in parallel
+    tags: [ cli, parallel ]
+  'parallel -j 3 convert {} {}.jpg ::: *.png':
+    desc: Convert all of the images in a directory to JPEG format in parallel
+    tags: [ cli, parallel ]
+  cat urls.txt | parallel -j 3 wget {}:
+    desc: download all of the file `urls.txt` in a list of URLs in parallel
+    tags: [ cli, parallel ]
+
+  pokeget charmander:
+    desc: Display the pokemon charmander
+    tags: [ cli, pokemon ]
+  pokeget charmander --hide-name:
+    desc: Display the pokemon without it's name
+    tags: [ cli, pokemon ]
+  pokeget charmander --shiny:
+    desc: Display the pokemon as shiny
+    tags: [ cli, pokemon ]
+  chafa -f symbols --symbols ascii -c none in.png:
+    desc: Old-school ASCII art
+    tags: [ chafa, term ]
+
+  cat ./path/to/.env.local | awk -F= '/^[^#]/ {gsub(/"/, "\\\""); print $1 "=" $2 }':
+    desc: Converts .env file to .env.yaml
+    tags: [ yml ]
+
+  rsvg-convert -h 256 input.svg > output.png:
+    desc: Convert an SVG file to a PNG file with a height of 256 pixels
+    tags: [ svg, png ]
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+          # Install librsvg
+          brew install librsvg
+
+          # Convert SVG to PNG
+          rsvg-convert -h 256 input.svg > output.png
+  for f in *.svg; do rsvg-convert -h 256 "$f" > "${f%.svg}.png"; done:
+    desc: Convert multiple SVG files to PNG files with a height of 256 pixels
+    tags: [ svg, png ]
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+          # Install librsvg
+          brew install librsvg
+
+          # Convert SVG to PNG
+          for f in *.svg; do rsvg-convert -h 256 "$f" > "${f%.svg}.png"; done
+  for f in *.png; do convert "$f" "${f%.png}.svg"; done:
+    desc: Convert multiple PNG files to SVG (for older ImageMagick versions)
+    tags: [ svg, png ]
+  for f in *.png; do magick "$f" "${f%.png}.svg"; done:
+    desc: Convert multiple PNG files to SVG (for ImageMagick v7)
+    tags: [ svg, png ]
+  cat path/to/your/file.csv | while IFS= read -r line; do echo "$line"; done:
+    desc: Read a CSV file and print each line
+    tags: [ shell, term ]
+  cat path/to/your/file.csv | sort | uniq | pbcopy:
+    desc: Copy unique lines from a CSV file to the clipboard
+    tags: [ shell, term ]
+
+  awk -F, '{print $0}' path/to/your/file.csv | sort | uniq -d | pbcopy:
+    desc: Copy duplicate lines from a CSV file to the clipboard
+    tags: [ shell, term ]
+
+  jwt encode --secret "a-256-bit-secret-key" '{"user":"example"}':
+    desc: Encode and payload into JWT token with a secret key
+    tags: [ jwt ]
+  jwt decode --secret "your-256-bit-secret" <token>:
+    desc: Verify if the JWT provided has a valid signature
+    tags: [ jwt ]
+  jwt decode <token>:
+    desc: Decoding a JWT
+    tags: [ jwt ]
+
+  mas signin rogerio.alcantara@gmail.com:
+    desc: Sign in to the Mac App Store (not supported in macOS 10.13 High Sierra)
+    tags: [ mas ]
+  mas signin --dialog rogerio.alcantara@gmail.com:
+    desc: Sign in to the Mac App Store with a dialog when experience issues with the default sign-in method
+    tags: [ mas, maco ]
+  wezterm ls-fonts:
+    desc: List fonts
+    tags: [ wezterm ]
+  wezterm ls-fonts --list-system:
+    desc: List system fonts
+    tags: [ wezterm ]
+  rm -rf ~/Library/Application\ Support/Code/User/snippets && ln -s ~/.config/snippets/ ~/Library/Application\ Support/Code/User/snippets:
+    desc: Symlink snippets
+    tags: [ vscode ]
+  rm -rf ~/Library/Application\ Support/Code/{Cache,CachedConfigurations,CachedData,CachedExtensionVSIXs,CachedProfilesData,Code\ Cache}:
+    desc: Clear VSCode cache
+    tags: [ vscode ]
+
+  echo 'Hello, {{ .Env.USER }}' | gomplate:
+    desc: With environment variables
+    output: Hello, hairyhenderson
+    tags: [ gomplate ]
+  gomplate -i '{{ range seq 5 1 }}{{ . }} {{ if eq . 1 }}{{ "blastoff" | toUpper }}{{ end }}{{ end }}':
+    desc: With range and if
+    output: 5 4 3 2 1 BLASTOFF
+    tags: [ gomplate ]
+
+  act -s GITHUB_TOKEN="$(gh auth token)":
+    desc: Run GitHub Actions locally with GITHUB_TOKEN secret
+    tags: [ github-actions ]
+
+  sudo lsof -i -P | grep LISTEN:
+    desc: List all open ports
+    tags: [ lsof ]
+  sudo lsof -i -P -n | grep LISTEN:
+    desc: List all open ports
+    tags: [ lsof ]
+  sudo lsof -i:
+    desc: List all open ports
+    tags: [ lsof ]
+
+  git clone --branch <branchname> <remote-repo-url>:
+    desc: Clone a Specific Branch
+    tags: [ git ]
+    links: [ https://freecodecamp.org/news/git-clone-branch-how-to-clone-a-specific-branch ]
+
+  /usr/libexec/java_home:
+    desc: Print default JDK path
+    tags: [ java ]
+  /usr/libexec/java_home -V:
+    desc: List available JDKs
+    tags: [ java ]
+  /usr/libexec/java_home -<JDK>:
+    desc: Run a specified jdk
+    tags: [ java ]
+  export JAVA_HOME="$(/usr/libexec/java_home)":
+    desc: Export JAVA_HOME
+    tags: [ java ]
+  mvn package:
+    desc: Build project
+    tags: [ maven, kotlin ]
+  mvn clean install:
+    desc: Build project
+    tags: [ maven, java, kotlin ]
+  mvn spring-boot:run:
+    desc: Run spring boot project
+    tags: [ maven, springboot, java ]
+  brew install spring-io/tap/spring-boot:
+    desc: Install springboot
+    tags: [ maven, kotlin ]
+  spring init --format=project --build=gradle-project-kotlin --group-id=io.dev --language=kotlin --packaging=jar ~/Work/kotlin/app:
+    desc: Create a spring boot project
+    tags: [ maven, springboot, kotlin ]
+  spring init --format=project --dependencies=web,jpa,h2 --build=gradle-project-kotlin --group-id=io.dev --language=kotlin --packaging=jar ~/Work/kotlin/app:
+    desc: Create a spring boot project with web, jpa, h2 dependencies
+    tags: [ maven, springboot, kotlin ]
+  spring init --format=project --dependencies=web,jpa,h2 --build=gradle-project-java --group-id=io.dev --language=java --packaging=jar ~/Work/java/app:
+    desc: Create a spring boot project with web, jpa, h2 dependencies
+    tags: [ maven, springboot, java ]
+  sudo ln -sfn /opt/homebrew/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk:
+    desc: Link openjdk to /Library/Java/JavaVirtualMachines
+    tags: [ maven, springboot ]
+
+  brew list:
+    desc: List all installed formulae
+    tags: [ brew ]
+  brew doctor:
+    desc: Check your system for potential problems
+    tags: [ brew ]
+  brew --cache:
+    desc: Brew cache
+    tags: [ brew ]
+  brew --repository:
+    desc: Brew repository
+    tags: [ brew ]
+  brew config:
+    desc: Brew config
+    tags: [ brew ]
+  brew update-reset:
+    desc: Brew update reset
+    tags: [ brew ]
+  brew autoremove && brew update && brew upgrade && brew upgrade --cask && brew cleanup --prune=all && brew doctor:
+    desc: Brew update, upgrade, clean & doctor - full maintenance cycle
+    tags: [ brew, macos, maintenance ]
+    links:
+      - Homebrew Docs: https://docs.brew.sh
+      - brew cleanup ref: https://docs.brew.sh/Manpage#clean...
+    notes:
+      - md: | #markdown
+          ## Usage notes
+          Run this `periodically` to keep your Homebrew installation healthy.
+      - bash: | #shell
+          # What each part does:
+          brew autoremove           # Remove unused dependencies
+          brew update               # Fetch latest formulae metadata
+          brew upgrade              # Upgrade all formulae
+          brew upgrade --cask       # Upgrade all casks
+          brew cleanup --prune=all  # Clean up old versions of installed formulae
+          brew doctor               # Check for potential problems
+      - md: | #markdown
+          > ⚠ `brew doctor` may show warnings that are safe to ignore.
+          > Check each warning individually before acting on it.
+  brew deps --tree --installed:
+    desc: Show dependencies of installed formulae in a tree format
+    tags: [ brew ]
+  brew deps --tree <brewformula>:
+    desc: Show dependencies of a formula in a tree format
+    tags: [ brew ]
+  brew deps --tree -1 <brewformula>:
+    desc: Show dependencies of a formula in a tree format (1 level)
+    tags: [ brew ]
+  brew deps --include-build --tree $(brew leaves):
+    desc: Show dependencies of installed formulae in a tree format including build dependencies
+    tags: [ brew ]
+  brew bundle dump --file ~/.config/script/Brewfile:
+    desc: Write all installed casks/formulae/images/taps into ~/.config/script/Brewfile
+    tags: [ brew ]
+  brew bundle --file ~/.config/script/Brewfile:
+    desc: Brew bundle ~/.config/script/Brewfile
+    tags: [ brew ]
+  brew bundle --force cleanup --file ~/.config/script/Brewfile:
+    desc: If you want your current system configuration to match your Brewfile
+    tags: [ brew ]
+  brew bundle --force cleanup:
+    desc: If you want your current system configuration to match your Brewfile
+    tags: [ brew ]
+  brew bundle cleanup:
+    desc: Uninstall all dependencies not listed from the Brewfile
+    tags: [ brew ]
+  brew bundle check:
+    desc: Check if all dependencies are installed from the Brewfile (useful for scripting)
+    tags: [ brew ]
+  brew bundle list:
+    desc: List all dependencies present in the Brewfile (only Homebrew By default)
+    tags: [ brew ]
+  brew bundle exec command:
+    desc: Run an external command in an isolated build environment based on the Brewfile dependencies
+    tags: [ brew ]
+  bundle install && bundle exec rspec:
+    desc: Install gems and run tests
+    tags: [ brew ]
+  brew style homebrew/bundle:
+    desc: Syntax linting of Brewfile
+    tags: [ brew ]
+  brew cask zap <caskname>:
+    desc: Uninstall a cask and remove all its files
+    tags: [ brew ]
+  brew cask uninstall <caskname>:
+    desc: Uninstall a cask
+    tags: [ brew ]
+  brew list --formula | xargs -I {} brew info --formula --json=v1 {} | jq -r '.[] | "\(.name) | \(.desc) (\(.homepage))"':
+    desc: List all installed formulae with description and homepage
+    tags: [ brew ]
+  brew list --cask | xargs -I {} brew info --cask --json=v2 {} | jq -r '.casks[] | "\(.name[0]) | \(.desc) (\(.homepage))"':
+    desc: List all installed cask with description and homepage
+    tags: [ brew ]
+
+  find <PATH=.> -type file:
+    desc: Find files
+    tags: [ find ]
+  command -v zsh | sudo tee -a /etc/shells && sudo chsh -s "$(command -v zsh)" "${USER}":
+    desc: Change the default shell to zsh
+    tags: [ term ]
+
+  sha1sum <FILE>:
+    desc: Generate SHA1 hash for file
+    tags: [ sha1sum ]
+
+  ls | wc -l:
+    desc: Count the number of files in a directory
+    tags: [ wc ]
+
+  du -h | sort -hr:
+    desc: list directories and sort by size
+    tags: [ disk ]
+  du -h | sort -hr | head -n10:
+    desc: list top 10 directories and sort by size
+    tags: [ disk ]
+  du -h -d1 -t10G | sort -hr | head -n 10:
+    desc: list directories in current folder, threshold 10G, sort with human-readable sizes, top 10
+    tags: [ disk ]
+
+  find . -iname *test*:
+    desc: find files starting at current location and containing text in name
+    tags: [ find ]
+  find . -iname *test* -d 3:
+    desc: case insensitive
+    tags: [ find ]
+  find . -size +200M:
+    desc: find large files over a certain size
+    tags: [ find ]
+  find . -size +200M -exec ls -lh {} \;:
+    desc: find large files larger than a size, list with details
+    tags: [ find ]
+  find . -size +200M -exec du -hs {} \;:
+    desc: find large files and folders, list with details
+    tags: [ find ]
+  find . -size +200M -exec du -hs {} \; | sort -hr:
+    desc: find large files and folders, list with details, sort
+    tags: [ find ]
+  find . -size +200M -exec du -hs {} \; | sort -hr | head -n 10:
+    desc: find large files and folders, list with details, sort, top 10
+    tags: [ find ]
+  find . -maxdepth 1 -type f -size 0:
+    desc: Find empty files in the current directory
+    tags: [ find ]
+  find . -maxdepth 1 -type f -size 0 | wc -l:
+    desc: Count empty files in the current directory
+    tags: [ find ]
+  find <PATH=.> -daystart -mtime -7 -delete:
+    desc: Find and DELETES files modified in the last 7 days
+    tags: [ find ]
+  find <PATH=.> -type f -empty -delete:
+    desc: Find and DELETES empty - 0 byte - files
+    tags: [ find ]
+  find <PATH=.> -type d:
+    desc: Find dirs
+    tags: [ find ]
+  find <PATH=.> -name'/**/*.<EXT>':
+    desc: Find files with extension
+    tags: [ find ]
+  find <PATH=.> -name'*.<EXT>' -not -path'*/<TARGET>/*':
+    desc: Find files with extension excluding paths
+    tags: [ find ]
+  find <PATH=.> -t file -maxdepth <MAX>:
+    desc: Find files - W/ MAX RECURSIVE DEPTH
+    tags: [ find ]
+  find <PATH=.> -name'/**/*<TERM>*':
+    desc: Find files matching TERM - CASE-SENSITIVE
+    tags: [ find ]
+  find <PATH=.> -iname'/**/*<TERM>*':
+    desc: Find files matching TERM - CASE-INSENSITIVE
+    tags: [ find ]
+  find <PATH=.> -path'/**/*.<EXT>' -or -name'*<TERM>*':
+    desc: Find files matching extension or name name
+    tags: [ find ]
+  find <PATH=.> -maxdepth <MAX> -size +500k -size -10M:
+    desc: 'Find files which size ranges from +500k to 10M - RECURSIVE DEPTH: MAX'
+    tags: [ find ]
+  find <PATH=.> -type d -name'*<TERM>*':
+    desc: Find dirs matching *TERM* - CASE-SENSITIVE
+    tags: [ find ]
+  find <PATH=.> -type d -iname'*<TERM>*':
+    desc: Find dirs matching *TERM* - CASE-INSENSITIVE
+    tags: [ find ]
+  find <PATH=.> -mmin -<N> -type f:
+    desc: Find files modified in the last N mins
+    tags: [ find ]
+  find <PATH=.> -mmin -5 -type f:
+    desc: Find files modified in the last 5 minutes
+    tags: [ find ]
+  find <PATH=.> -name'<NAME>' -type d -prune:
+    desc: Find dirs at current dir
+    tags: [ find ]
+  find <PATH=.> -name'<DIR>' -type d -prune -exec rm -rf'{}' +;:
+    desc: Find and delete all matching dirs
+    tags: [ find ]
+  find <PATH=.> -name "*.<NAME>" -exec rename's/\.<NAME>$/.<EXT>/''{}' +;:
+    desc: Find files and change extensions
+    tags: [ find ]
+  find <PATH=.> -name'*<TERM>*' -exec <CMD=wc -l> {} \;:
+    desc: Find files and execute CMD
+    tags: [ find ]
+  find <PATH=.> -name'*.<EXT>' -exec <CMD=wc -l> {} \;:
+    desc: Execute a command for each file by extension
+    tags: [ find ]
+
+  find -L <PATH=/> -type l -exec rm -- {} +;:
+    desc: Find and DELETES broken symlinks links
+    tags: [ find ]
+  find <PATH=/> -prune -o -depth +<LEVELS=6> -print:
+    desc: Find all that are at least X levels deep
+    tags: [ find ]
+  find <PATH=/> -user <USER=$USER> -print:
+    desc: Find files owned by USER
+    tags: [ find ]
+  find <PATH=/> (-user <USER=$USER>) -print:
+    desc: Find all NOT owned by USER
+    tags: [ find ]
+  fd . <PATH>:
+    desc: List all
+    tags: [ find ]
+
+  fd <PATTERN> <PATH>:
+    desc: Find matching PATTERN
+    tags: [ find ]
+  fd --glob <PATTERN> <PATH>:
+    desc: Find by term - w/ --glob
+    tags: [ find ]
+  fd . -name'*.<TERM>':
+    desc: List all whose name matches term
+    tags: [ find ]
+
+  fd -H <NAME>:
+    desc: Find files or directories - including hiddens
+    tags: [ find ]
+  fd --extension <EXT>:
+    desc: Find files by extension
+    tags: [ find ]
+  fd --hidden --no-ignore <PATTERN>:
+    desc: Find files excluding .gitignore and hidden files
+    tags: [ find ]
+  fd . -t directory {'<PATH1>','<PATH2>'}:
+    desc: Find directories in multiple paths
+    tags: [ find ]
+  fd … -X ls -lhd --color=always:
+    desc: Find and show details like file permissions, owners, file sizes
+    tags: [ find ]
+  fd -e <EXT=moon> -x mv {} <DIR=yue>/{.}:
+    desc: Find and move all files by extension
+    tags: [ find ]
+  fd -e <EXT=moon> -x mv {} {.}.<DIR=yue> -j1:
+    desc: Find and rename files by extension - SINGULAR THREAD
+    tags: [ find ]
+  fd -g'<TERM=test_*.py>' -X <CMD=vi>:
+    desc: Find all matching terms and exec command for each one
+    tags: [ find ]
+  fd -e zip -x unzip:
+    desc: Find all zip archives and unpack them
+    tags: [ find ]
+  fd -g'<TERM=test_*.py>' -X vi:
+    desc: Find all matching TERM and open them in vi
+    tags: [ find ]
+  fd -pHIg'*<TERM>*':
+    desc: Find all whose name contains TERM
+    tags: [ find ]
+  zip -r <FILE> <DIR>:
+    desc: Compress files into dir
+    tags: [ zip ]
+
+  unzip <FILE>:
+    desc: Unpack file w/ unzip
+    tags: [ zip ]
+  tree -AC <DIR>:
+    desc: Run tree - w/ ANSI, COLORED by LS_COLORS or TREE_COLORS
+    tags: [ tree ]
+  tree -L <DIR>:
+    desc: Run tree - LONG FORMAT
+    tags: [ tree ]
+  tree -i <DIR>:
+    desc: Run tree  - NO IDENT
+    tags: [ tree ]
+  tree -f <DIR>:
+    desc: Run tree - ONLY FILES
+    tags: [ tree ]
+  tree -i -J <DIR>:
+    desc: Run tree without WHITESPACES
+    tags: [ tree ]
+  tree -S <DIR>:
+    desc: Run tree w/ GRAPHIC LINES
+    tags: [ tree ]
+  tree -n <DIR>:
+    desc: Run tree for dir
+    tags: [ tree ]
+  tar -czvf <FILE>.tar.gz folder:
+    desc: Compress dir into .tar.gz - w/ progress
+    tags: [ zip, archive ]
+
+  tar -xvf <NAME>.tar.gz:
+    desc: Decompress .tar.gz
+    tags: [ zip ]
+
+  gzip <FILE>:
+    desc: Compress single file w/ gzip
+    tags: [ zip ]
+  gunzip <FILE>:
+    desc: Decompress file w/ gunzip
+    tags: [ zip ]
+  gzip *.<EXT>:
+    desc: Compress files by extension w/ gzip
+    tags: [ zip ]
+  tar -xvzf <FILE>.tar.gz:
+    desc: Decompress tar.gz - like unzip
+    tags: [ zip ]
+  tar -tzf <FILE>.tar.gz:
+    desc: List contents of tar.gz
+    tags: [ zip ]
+  tar -xvzf <FILE>.tar.gz -C <TARGET>:
+    desc: Extract files from tar.gz
+    tags: [ zip ]
+  tar -xvf <FILE>.tar:
+    desc: Extract files from tar
+    tags: [ zip ]
+  tar -cvzf <FILE>.tar.gz <PATH>:
+    desc: Compress files into tar.gz
+    tags: [ zip ]
+  tar -cvf <FILE>.tar <PATH>:
+    desc: Compress files into tar.gz
+    tags: [ zip ]
+  echo | openssl s_client <domain>:<port=433> 2> /dev/null | openssl x509 -dates -noout:
+    desc: Show expiration date of SSL certificate
+    tags: [ expired ]
+  mkdir -p /<PATH>/{<dir1>,<dir2>}:
+    desc: Create two directories at once
+    tags: [ mkdir ]
+  ls -al:
+    desc: List files with permissions and dates
+    tags: [ ls ]
+  echo '<CONTENT>' > <FILE>:
+    desc: Create file with contents
+    tags: [ echo ]
+  echo '<CONTENT>' >> <FILE>:
+    desc: Appends to file
+    tags: [ echo ]
+  locate <TERM>:
+    desc: Quick locate files by term
+    tags: [ locate ]
+  grep <REGEX> <FILE>:
+    desc: Grep term in file
+    tags: [ grep ]
+  grep -Iris <REGEX> <DIR>:
+    desc: Grep term - RECURSIVELY
+    tags: [ grep ]
+  sed's/<REGEX>/<TERM>/g' <FILE>:
+    desc: Replace term in line at file
+    tags: [ sed ]
+  sed -i's/<REGEX>/<TERM>/g' <FILE>:
+    desc: Replace lines matching term from file - GLOBAL
+    tags: [ sed ]
+  echo 'It is <FROM>time' | sed's/<REGEX>/<TERM>/g':
+    desc: Replace term on STDIN - GLOBAL
+    tags: [ sed ]
+  sed'/<REGEX>/d' <FILE>:
+    desc: Delete lines matching term from file
+    tags: [ sed ]
+  sed'<FROM>,<TO>d' <FILE>:
+    desc: Delete lines from file
+    tags: [ sed ]
+  sed'<N>,$d' <FILE>:
+    desc: Delete from nth to last line from file
+    tags: [ sed ]
+  sed'<N>d' <FILE>:
+    desc: Delete lines from file
+    tags: [ sed ]
+  sed'$d' <FILE>:
+    desc: Delete last line from file
+    tags: [ sed ]
+  sed'<FROM>,<TO> s/<REGEX>/<TERM>/' <FILE>:
+    desc: Replace term from a range in file
+    tags: [ sed ]
+  sed's/<REGEX>/<TERM>/3,/g' <FILE>:
+    desc: Replace 3rd, 4th, 5th occurrence a term in file
+    tags: [ sed ]
+  sed's/<REGEX>/<TERM>/2' <FILE>:
+    desc: Replace 2nd occurrence of term in file
+    tags: [ sed ]
+  sed's/<REGEX>/<TERM>/' <FILE>:
+    desc: Replace term in file
+    tags: [ sed ]
+  sed's/<REGEX>/<TERM>/1' <FILE>:
+    desc: Replace 1st occurrence of term in file
+    tags: [ sed ]
+  sed -E's/(<w1>|<w2>|<w3>)/,/g':
+    desc: Replace multiple words at once
+    tags: [ sed ]
+  sed -E's/(<w1>|<w2>|<w3>)/,/gI':
+    desc: Replace multiple words at once (CASE INSENSITIVE)
+    tags: [ sed ]
+  sed's/<REGEX>.*/<TO>/g':
+    desc: Replace the whole line after matching term
+    tags: [ sed ]
+  sed'/^$/d' <FILE>:
+    desc: Remove empty lines and print results to stdout from file
+    tags: [ sed ]
+  cut -d'<SEPARATOR=''> -f<n=1> <FILE>:
+    desc: Cut nth separated by SEPARATOR from file
+    tags: [ cut ]
+  http -v <URL>:
+    desc: Show a request being sent to url
+    tags: [ http ]
+
+  gem update --system:
+    desc: Update rubygems
+    tags: [ rb ]
+  gem list:
+    desc: List all gems
+    tags: [ rb ]
+  gem install <GEM>:
+    desc: Install gem
+    tags: [ rb ]
+  gem install rails:
+    desc: Install rails
+    tags: [ gem ]
+  gem install bundler:
+    desc: Install bundler
+    tags: [ gem ]
+  gem install bundler rails:
+    desc: Install bundler and rails
+    tags: [ gem ]
+  sudo gem uninstall <gem-name>:
+    desc: NOTE | maybe you need sudo
+    tags: [ rb ]
+  gem info:
+    desc: Show information for the given gem
+    tags: [ rb ]
+  gem environment:
+    desc: Display information about the RubyGems environment
+    tags: [ rb ]
+  gem info --exact neovim:
+    desc: Name of gem(s) to query on matches the provided STRING
+    tags: [ rb ]
+  gem cleanup <gem-name>:
+    desc: remove all old versions of the gem
+    tags: [ rb ]
+  gem uninstall <gem-name>:
+    desc: choose which ones you want to remove
+    tags: [ rb ]
+  gem uninstall <gem-name> --version 1.1.9:
+    desc: remove version 1.1.9 only
+    tags: [ rb ]
+  gem uninstall <gem-name> --version '<1.3.4'`:
+    desc: remove all versions less than 1.3.4
+    tags: [ rb ]
+  gem uninstall -a:
+    desc: remove ALL INSTALLED Gems
+    tags: [ rb ]
+  gem uninstall -I:
+    desc: I ignores dependencies
+    tags: [ gem, rb ]
+  gem uninstall -x:
+    desc: x includes executables
+    tags: [ gem, rb ]
+  for x in $(gem list --no-versions); do gem uninstall $x -aIx; done:
+    desc: Rubgems < 2.1.0 remove ALL INSTALLED Gems (and starting over)
+    tags: [ rb ]
+  sudo gem list --no-version | xargs sudo gem uninstall -aIx --force:
+    desc: sudo remove ALL INSTALLED Gems (and starting over)
+    tags: [ rb ]
+  gem list --no-version | grep "aws-sdk-" | xargs gem uninstall -aIx:
+    desc: remove all gems with a certain prefix
+    tags: [ rb ]
+
+  rails new <APP>:
+    desc: Create Rails app /w SQLite3
+    tags: [ rails ]
+  rails new <APP> && cd <APP> && bundle install:
+    desc: Create Rails app /w SQLite3 with all deps
+    tags: [ rails ]
+  rails new <APP> --database=postgresql:
+    desc: Create Rails app /w Postgres
+    tags: [ rails ]
+  rails new <APP> --database=postgresql && cd <APP> && bundle install:
+    desc: Create Rails app /w Postgres with all deps
+    tags: [ rails ]
+  rails new <APP> --database=mysql:
+    desc: Create Rails app w/ MySQL
+    tags: [ rails ]
+  rails new <APP> --database=mysql && cd <APP> && bundle install:
+    desc: Create Rails app /w MySQL with all deps
+    tags: [ rails ]
+  bundle install:
+    desc: Install bundle dependencies
+    tags: [ rail ]
+  bundle exec rails server:
+    desc: Run Rails server
+    tags: [ rails ]
+  bundle exec rspec:
+    desc: Run Rails Rspec
+    tags: [ rails ]
+  bundle exec rails generate scaffold <MODEL=Post> <ATTR1=title:string> <ATTR2=notes:text>:
+    desc: Scaffold Rails model with attributes
+    tags: [ rails ]
+  bundle exec rails generate controller <CONTROLLER=Post> index --skip-routes:
+    desc: Generate Rails Controller (skipping routes)
+    tags: [ rails ]
+  bundle exec rails generate model <MODEL=Post> <ATTR1=title:string> <ATTR2=notes:text>:
+    desc: Genereate Rails model with attributes
+    tags: [ rails ]
+  bundle exec rails generate model <MODEL=Post> <ATTR1=title:string> <ATTR2=notes:text> <REF=author>:links:
+    desc: Generate Rails model with attributes and reference
+    tags: [ rails ]
+  bundle exec rails generate model <MODEL=Post> <ATTR1=title:string> <ATTR2=notes:text> <REF=author>:references{polymorphic}:
+    desc: Generate Rails model with attributes and reference by foreign key
+    tags: [ rails ]
+  grails list-profiles:
+    desc: List grails-app profiles are available
+    tags: [ grails ]
+  grails profile-info plugin:
+    desc: Get detailed information about a profile plugin use the profile-info command
+    tags: [ grails ]
+
+  grails create-app <PACK.AND.APP>:
+    desc: Create grails io.dev.demo
+    tags: [ grails ]
+  grails create-app helloworld --profile rest-api && cd helloworld && grails run-app -port=9500:
+    desc: Create grails an example with rest-api plugin named helloworld and starts it on port 9500
+    tags: [ grails ]
+  grails create-app <PACK.AND.APP> -profile org.grails.profiles:react:1.0.2:
+    desc: Create grails io.dev.demo with react profile
+    tags: [ grails ]
+  ./grailsw create-domain-class <PACK.AND.CLASS>:
+    desc: Generate a Domain class - io.dev.demo.model
+    tags: [ grails ]
+  grails run-app:
+    desc: Run Grails App @ http://localhost:8080
+    tags: [ grails ]
+  ./grailsw test-app -unit:
+    desc: Run Grails unit tests - via gradle
+    tags: [ grails ]
+  ./grailsw test-app -integration:
+    desc: Run Grails integration tests - via gradle
+    tags: [ grails ]
+  ./grailsw test-app:
+    desc: Run Grails unit and integration tests - via gradle
+    tags: [ grails ]
+  ./grailsw war:
+    desc: Build the finished project into a deployable WAR package - PROD
+    tags: [ grails ]
+  ./grailsw war -Dgrails.env=development:
+    desc: Build the finished project into a deployable WAR package - DEV
+    tags: [ grails ]
+  ./grailsw console:
+    desc: Launch the Grails Console
+    tags: [ grails ]
+
+  sudo diskutil apfs addVolume <DISK=disk1> APFS <NAME> -nomount:
+    desc: Create an unencrypted APFS volume on disk
+    tags: [ diskutil ]
+  sudo diskutil info <DISK=disk1>:
+    desc: Verify a mounted volume
+    tags: [ diskutil ]
+  security find-generic-password -wa "<WI-FI>":
+    desc: Reveal a password of a used Wi-fi
+    tags: [ diskutil ]
+  sudo diskutil mount <DISK=disk1>:
+    desc: Mount a volume
+    tags: [ diskutil ]
+  sudo diskutil unmount <DISK=disk1>:
+    desc: Unmount a volume
+    tags: [ diskutil ]
+
+  uname --nodename:
+    desc: Print the network node hostname
+    tags: [ uname ]
+  uname --hardware-platform:
+    desc: Print the hardware platform - non-portable
+    tags: [ uname ]
+
+  sysctl hw.cpu64bit_capable:
+    desc: Print system information
+    tags: [ arch ]
+  echo "You are on a "$(getconf LONG_BIT)"-bit architecture":
+    desc: Print configuration values
+    tags: [ getconf ]
+
+  sudo chown -R $USER:
+    desc: Change the ownership of files recursively to $USER
+    tags: [ chown ]
+  sudo chgrp -hR admin:
+    desc: Change the group of files recursively to admin
+    tags: [ chgrp ]
+  sudo chgrp -hR <group>:
+    desc: Change the group of files recursively to <group>
+    tags: [ chgrp ]
+  cat /etc/shells:
+    desc: Show list of included shells at /etc/shells
+    tags: [ shells ]
+  sudo vi /etc/shells:
+    desc: Edit a list of included shells in /etc/shells
+    tags: [ shells ]
+  echo '/usr/local/bin/zsh' | sudo tee -a /etc/shells && chsh -s /usr/local/bin/zsh:
+    desc: Add /usr/local/bin/zsh' /etc/shells and change it!
+    tags: [ shells ]
+  col<N> "<SEP>" <FILE>:
+    desc: Show nth column from file
+    tags: [ col ]
+  col2 "<SEP>" <FILE>:
+    desc: Show 2nd col from file separated by SEP
+    tags: [ col ]
+
+  less <FILE>:
+    desc: Paginate a file
+    tags: [ les ]
+
+  head -n <N> <FILE>:
+    desc: Display 1st nth lines from file
+    tags: [ head ]
+
+  tail -f <FILE>:
+    desc: Follow contents as it increases from file
+    tags: [ tail ]
+
+  tail -n <N> <FILE>:
+    desc: Display last nth lines from file
+    tags: [ tail ]
+
+  cat /proc/meminfo:
+    desc: Get memory usage
+    tags: [ meminfo ]
+  sudo timedatectl set-timezone <ZONE>:
+    desc: Set system timezone to ZONE
+    tags: [ timedatectl ]
+
+  service <SERVICE> start:
+    desc: Start service SERVICE
+    tags: [ service ]
+  service <SERVICE> stop:
+    desc: Stop service SERVICE
+    tags: [ service ]
+  journalctl -u <SERVICE> --since now -f:
+    desc: Monitor new logs for a service
+    tags: [ journalctl ]
+
+  echo '${<VAR>/<REGEX>/<TERM>}':
+    desc: Replace lines 1st occurrence of term in ENV VAR
+    tags: [ echo ]
+  echo '${<VAR>//<REGEX>/<TERM>}':
+    desc: Replace lines matching term with term in ENV VAR
+    tags: [ echo ]
+
+  sudo netstat -tulpn:
+    desc: List open ports and associated processes
+    tags: [ netstat ]
+
+  echo 'use asdf' > .envrc:
+    desc: Add .envrc to the current dir
+    tags: [ asdf ]
+  echo 'use java 18.0.1' > .envrc:
+    desc: Add 'use java 18.0.1' to .envrc
+    tags: [ asdf ]
+
+  sheldon completions --shell zsh > <PATH=$ZDOTDIR/opt/completions/_sheldon>:
+    desc: Generate completion to <PATH>
+    tags: [ sheldon ]
+
+  find . -name <.DS_Store> -print0 | xargs -0 git rm -f --ignore-unmatch:
+    desc: Remove files from a Git repository
+    tags: [ git ]
+  "git add . && git commit -am 'chore(bootstrap): A new hope...'":
+    desc: Add initial commit
+    tags: [ git ]
+  "echo '# tmp' >> README.md && git init && git commit -m 'chore(bootstrap): a new hope..'":
+    desc: Initilize a git repo w/ README & 1st commit
+    tags: [ git ]
+  yarn add <NAME> -DW:
+    desc: Add dependency globlay to yarn workspace
+    tags: [ yarn ]
+  bundle gem <NAME>:
+    desc: Create Ruby gem project <NAME>
+    tags: [ rails ]
+  bundle gem <NAME> --ci=github:
+    desc: Create Ruby gem project <NAME> (with github CI)
+    tags: [ rails ]
+
+  gen gitlint --precommit:
+    desc: Add gitlint, pre-commit hook to the current dir and commit
+    tags: [ pre_commit ]
+
+  cwebp -q 50 <FROM> -o <TO>.webp:
+    desc: Convert image .webp
+    tags: [ cwebp ]
+  for file in images/*; do cwebp -q 50'$file' -o'${file%.*}.webp'; done:
+    desc: Convert each images in current folder to to WebP
+    tags: [ cwebp ]
+
+  npm i @semantic-release/changelog @semantic-release/commit-analyzer @semantic-release/git @semantic-release/github @semantic-release/release-notes-generator semantic-release -D:
+    desc: Install semantic release dependencies
+    tags: [ semantic-release ]
+  npm install express cors body-parser && npm install --save-dev @types/node @types/body-parser @types/cookie-parser @types/cors @types/express:
+    desc: Add Express dependencies
+    tags: [ express ]

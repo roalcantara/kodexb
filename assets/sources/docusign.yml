@@ -1,0 +1,27 @@
+bookmarks:
+  https://account-d.docusign.com:
+    desc: DocuSign Developer Account
+    tags:
+      - docusign
+      - developer
+      - api
+    links:
+      - Apps and Keys: https://apps-d.docusign.com/admin/apps-and-keys
+      - JWT Grant authentication: https://developers.docusign.com/platform/auth/jwt
+      - User ID (impersonatedUserGuid) at Apps and Keys: https://admindemo.docusign.com/authenticate?goTo=apiIntegratorKey
+      - Integration key (dsClientId) at Apps and Keys: https://admindemo.docusign.com/authenticate?goTo=apiIntegratorKey
+      - Templates: https://apps-d.docusign.com/send/templates
+    notes:
+      - yaml: |-
+          - AccountId: 45642167
+            Company: roalcantara
+            UserId: a9e68d8c-099d-4767-840d-8969439d534e
+            ApiAccountId: 72907d92-de70-44fd-88fb-761d0b8b86c0
+            AccountBaseUrl: https://demo.docusign.net
+            IntegrationKey: 767d6700-3398-4691-8dfa-ffda14577c65
+            Template:
+              ID: 747edb4b-0869-4eb0-a64a-a864a4ee1442
+              Name: Example Signer and CC template v2
+              Envelopes:
+                - EnvelopeId: e5c320d3-5a4c-8e27-81ef-69304b23042e
+                - EnvelopeId: b7372234-97c9-8ff1-80f3-3951012204aa

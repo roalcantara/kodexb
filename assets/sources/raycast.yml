@@ -1,0 +1,487 @@
+bookmarks:
+  https://raycast.com:
+    desc: Supercharge your productivity with Alfred for Mac
+    tags: [raycast]
+    links:
+      - Extensions: https://raycast.com/extensions
+      - Utilities: https://raycast.com/utilities
+      - Docs: https://developers.raycast.com
+      - API: https://developers.raycast.com/api-reference
+      - SDK: https://developers.raycast.com/sdk
+      - Snippets: https://manual.raycast.com/snippets/how-to-import-snippets
+    notes:
+      - md: | #markdown
+          ## Raycast Snippets
+
+          - You can import snippets from a JSON file using Import Snippets command (available in Raycast 1.37.0+).
+
+          ### JSON Format
+          - **Root object** - Array of snippets
+          - **Snippet object**
+            - **name** - Snippet title. _Type: String (required)_
+            - **text** - Snippet content. _Type: String (required)_
+            - **keyword** - Auto-expansion keyword. _Type: String (optional)_
+
+          ### SCHEMA (Example)
+
+          ```json
+          [
+            {
+              "name": "Personal Email",
+              "text": "sherlock@gmail.com",
+              "keyword": "@@"
+            },
+            {
+              "name": "Home Address",
+              "text": "221B Baker St., London"
+            },
+            {
+              "name": "Catchphrase 1",
+              "text": "Elementary, my dear Watson",
+              "keyword": "!elementary"
+            }
+          ]
+          ```
+  https://github.com/raycast/extensions/tree/main/extensions/raycast-explorer:
+    tags: [raycast, git]
+    desc: Raycast Explorer | Raycast Extensions
+  https://youtu.be/c96IXGOo6E4:
+    desc: Quick Tip - Find Images by Text
+    tags: [raycast]
+  https://youtu.be/JsZpAXFj8vM:
+    tags: [coding]
+    desc: Getting started with Raycast by Paul Minors
+  https://youtu.be/lhJwEckGi4U:
+    tags: [coding]
+    desc: The Top 8 Ways I Use Raycast by Steve Dylan
+  https://youtu.be/xg2TQJyBEYc:
+    tags: [coding]
+    desc: The non-nerd's guide to Raycast
+  https://raycastapp.notion.site/Calculator-8bf30191faa24f43b4363cbf1d00c01b#b12e437d46584aca9adae604ba35cd33:
+    tags: [coding]
+    desc: Calculator | Raycast Extensions
+  https://raycast.com/extensions:
+    desc: Extensions
+    tags: [raycast]
+  https://developers.raycast.com/utilities/react-hooks/usefetch:
+    desc: Documentation > useFetch
+    tags: [raycast]
+
+cheats:
+  Personal Snippets:
+    desc: Personal Snippets
+    tags: [raycast]
+    notes:
+      - yaml: | #yaml
+          ::name:
+            name: PERSONAL/Full Name
+            text: Rogério Rodrigues de Alcântara
+          ::fname:
+            name: PERSONAL/First Name
+            text: Rogério
+          ::mname:
+            name: PERSONAL/Middle Name
+            text: Rodrigues
+          ::lname:
+            name: PERSONAL/Last Name
+            text: Alcântara
+          ::bday:
+            name: PERSONAL/Birthday
+            text: 04/05/1982
+          ::mom:
+            name: PERSONAL/Mother
+            text: Joara Rodrigues Borba
+          ::dad:
+            name: PERSONAL/Father
+            text: Uldario Santana de Alcântara
+          ::bank:
+            name: PERSONAL/Bank
+            text: Nubank, Bco:237, Ag:0001, Cc:86786278-6
+          # DOCUMENTS
+          ::rg:
+            name: PERSONAL/Document/RG
+            text: 35.509.221-9, 17/07/2018
+          ::cpf:
+            name: PERSONAL/Document/CPF
+            text: 218.570.058-80
+          ::pis:
+            name: PERSONAL/Document/PIS
+            text: 126.91630.77.5
+          ::cnh:
+            name: PERSONAL/Document/CNH
+            text: 4071263786, 04/04/2007
+          ::ctps:
+            name: PERSONAL/Document/CTPS
+            text: 9468, 00228-SSP, 24/10/1996
+          ::vott:
+            name: PERSONAL/Document/Voter Title
+            text: 2900.2062.0108, zona:005, seção:301, emissão:26/03/2003
+          ::pss:
+            name: PERSONAL/Document/Passport
+            text: fi241646, 26/06/2018
+
+            # CONTACT
+          ::phone:
+            name: PERSONAL/Contact/Phone
+            text: 11 91031-2681
+          ::cel:
+            name: PERSONAL/Contact/Mobile Phone (Vivo)
+            text: 11 91031-2681
+          ::gmail:
+            name: PERSONAL/Contact/Primary Email
+            text: rogerio.alcantara@gmail.com
+          ::skype:
+            name: PERSONAL/Contact/Skype
+            text: rogerio.rodrigues.alcantara
+          ::link:
+            name: PERSONAL/Contact/LinkedIn
+            text: linkedin.com/in/roalcantara
+          ::fb:
+            name: PERSONAL/Contact/Facebook
+            text: facebook.com/roalcantara
+          ::tw:
+            name: PERSONAL/Contact/Twitter
+            text: twitter.com/roalcantara
+          ::gh:
+            name: PERSONAL/Contact/GitHub
+            text: github.com/roalcantara
+          ::devto:
+            name: PERSONAL/Contact/Dev.to
+            text: dev.to/roalcantara
+          ::home:
+            name: PERSONAL/Contact/Address
+            text: Rua Machado Bitencourt, 29, AP 114, Vila Clementino, São Paulo/SP, 04044-000
+          ::addr:
+            name: PERSONAL/Contact/Home
+            text: Rua Machado Bitencourt, 29, AP 114, Vila Clementino, São Paulo/SP, 04044-000
+          ::mapaddr:
+            name: PERSONAL/Contact/Home Address Map
+            text: https://maps.app.goo.gl/DYZ6zP3wm1et2VHa8
+          ::zip:
+            name: PERSONAL/Contact/ZipCode
+            text: 04044-000
+          ::bra:
+            name: PERSONAL/Contact/Country
+            text: Brazil
+
+            # UTILITY (en)
+          ::att:
+            name: UTILITY/Att
+            text: |
+              Att.
+              Rogério
+
+            # UTILITY (pt-BR)
+          ::ats:
+            name: UTILITY/Ats (pt-BR)
+            text: |
+              Ats,
+              Rogério
+          ::atenc:
+            name: UTILITY/Atenciosamente (pt-BR)
+            text: |
+              Atenciosamente,
+              Rogério
+          ::reply:
+            name: UTILITY/Reply Contact (pt-BR)
+            text: |
+              Olá {name}, tudo bem? Espero que sim!
+
+              Agradeço pelo contato e pelo interesse.
+              Podemos falar sim, fico à disposição para alinhar os detalhes.
+
+              Atenciosamente,
+              Rogério
+          ::zap:
+            name: UTILITY/WhatsApp (pt-BR)
+            text: Meu WhatsApp é (11) 91031-2681.
+          ::upres:
+            name: UTILITY/Updated Resume (pt-BR)
+            text: Anexo está meu currículo atualizado com detalhes sobre minha experiência e contato.
+
+            # MSGS (pt-BR)
+          ::msgpt:
+            name: MSGS/Personal Message (pt-BR)
+            text: |
+              Olá {name}, tudo bem? Espero que sim!
+              Agradeço pelo contato e pelo interesse.
+              Podemos falar sim, fico à disposição para alinhar os detalhes.
+          ::msgfull:
+            name: MSGS/Generic Full-Stack Intro (pt-BR)
+            text: |
+              Olá!
+              Sou Rogério, profissional com mais de 15 anos de experiência em {área_principal}, atuando em projetos de {tecnologias_ou_contextos_relevantes}.
+              Tenho sólida experiência em {competências_chave}, incluindo {tecnologias_ferramentas}, e já liderei iniciativas que resultaram em {resultados_impactantes}.
+              Minha trajetória inclui atuação em {tipos_de_empresa/setores}, sempre priorizando qualidade, automação e melhoria contínua.
+              Estou entusiasmado para contribuir com minha experiência e ajudar a impulsionar os resultados da equipe/empresa.
+          ::msgdevops:
+            name: MSGS/Generic DevOps/Engenharia Intro (pt-BR)
+            text: |
+              Olá!
+              Sou Rogério, engenheiro(a) com sólida experiência em desenvolvimento e DevOps/SRE, atuando há mais de 15 anos em ambientes de alta escalabilidade e automação.
+              Tenho histórico em arquitetura de sistemas serverless, pipelines CI/CD, automação de infraestrutura e práticas de observabilidade, sempre focando em entregar ambientes confiáveis e produtivos para os times de engenharia.
+              Meu diferencial é unir visão de desenvolvimento com práticas modernas de infraestrutura, criando soluções que empoderam desenvolvedores e aceleram entregas.
+              Estou à disposição para contribuir com soluções escaláveis e inovadoras.
+          ::msglead:
+            name: MSGS/Generic Tech Lead/Liderança Intro (pt-BR)
+            text: |
+              Prezados,
+              Com mais de 15 anos de experiência em desenvolvimento de software e liderança técnica, tenho atuado como Tech Lead em projetos de tecnologia.
+              Minha trajetória inclui arquitetura de sistemas escaláveis, implementação de práticas ágeis, mentoria de equipes e entrega de soluções robustas alinhadas aos objetivos do negócio.
+              Busco sempre promover ambientes colaborativos, melhoria contínua e excelência técnica.
+              Estou animado para contribuir com minha experiência em liderança e tecnologia para impulsionar os resultados da equipe.
+          ::msgagil:
+            name: MSGS/Generic Agile/Scrum Master Intro (pt-BR)
+            text: |
+              Prezados,
+              Atuo há mais de {anos} anos com desenvolvimento ágil, facilitando cerimônias Scrum, implementando Kanban e promovendo cultura de melhoria contínua em equipes multidisciplinares.
+              Tenho experiência em automação de processos, CI/CD, testes automatizados e infraestrutura como código, apoiando times tanto na entrega técnica quanto na evolução dos processos.
+              Meu foco é alinhar tecnologia e estratégia de negócio, promovendo ambientes de alta performance e geração de valor.
+              Estou à disposição para contribuir com a evolução ágil da equipe e da empresa.
+
+            # PROMPT
+          ::pimp:
+            name: PROMPT/Improve Text
+            text: Improve/clariry/simplify/shorten this text
+          ::passes:
+            name: PROMPT/Resume Assessement
+            text: Given the attached resume, how would you assess the candidate's fit for the {clipboard} role?
+          ::pjob:
+            name: PROMPT/Job Description Analysis
+            text: 'Please analyse and provide your insights on how my resume aligns with the following Job Description:'
+          ::pcar:
+            name: PROMPT/Carta de Apresentação
+            text: |-
+              Dado o currículo anexado
+
+              Qual seria um rascunho bacana para uma Carta de Apresentação que responda a
+              pergunta de um recrutador: `The company wants to know more about you! Tell
+              us about yourself and your professional journey, explaining how you can help
+              the company with the challenge described in the job posting.` (Pt-BR, até
+              1400 caracteres) focado na seguinte oportunidade:
+          ::pcov:
+            name: PROMPT/Create a Professional Cover Letter
+            text: |-
+              # Create a Professional Cover Letter Based on My Resume and the Job
+              Description\n\n
+
+              I need you to create a personalized cover letter for a job application.
+              Please follow these specific guidelines:
+
+              ## Input Requirements
+
+              - Use my resume information (attached/pasted below) to highlight relevant
+              qualifications
+
+              - Reference the specific job description (attached/pasted below) to tailor
+              the content
+
+              - If any information is missing, please ask me for the specific details you
+              need
+
+              ## Cover Letter Format
+
+              1. **Header**: Include my contact information and date
+
+              2. **Greeting**: Address the hiring manager by name if available, otherwise
+              use an appropriate professional greeting
+
+              3. **Introduction**: Engaging opening paragraph stating the position I'm
+              applying for and how I discovered it
+
+              4. **Body Paragraphs**:
+                - Highlight 2-3 specific qualifications from my resume that directly match key requirements in the job description
+                - Include concrete examples of achievements with measurable results when possible
+                - Explain why I'm interested in this specific company and position
+              5. **Closing Paragraph**: Express enthusiasm, request an interview, and
+              thank them for their consideration
+
+              6. **Professional sign-off**: With my full name
+
+              ## Tone and Style
+
+              - Professional but conversational
+
+              - Confident without being arrogant
+
+              - Concise (keep to approximately 300-400 words)
+
+              - Free of clichés and generic statements
+
+              Please create a cover letter that showcases my unique qualifications for
+              this specific position while demonstrating my understanding of the company's
+              needs and values.
+          ::pboo:
+            name: PROMPT/Boost my thing
+            text: Is there a better way to improve this?
+          ::pmsgfull:
+            name: PROMPT/Generic Full-Stack Intro (pt-BR)
+            text: |
+              Dado a seguinte Job Opportunity:
+
+              ```
+              {clipoboard}
+              ```
+
+              Qual seria um rascunho bacana para uma mensagem de apresentação (curta, clara, que atenda os requisitos da oportunidade, e que tenha um tom alinhado ao tom presente na oportunidade) semelhante (mas melhor) ao exemplo a seguir:
+
+              ```
+              Olá!
+              Sou Rogério, profissional com mais de 15 anos de experiência em desenvolvimento de software, atuando em projetos de tecnologia.
+              Tenho sólida experiência em TypeScript/Node.js, React/Next.js, AWS, Docker, CI/CD, observabilidade, e já liderei iniciativas que resultaram em 1M+ usuários com 99,9% de disponibilidade.
+              Minha trajetória inclui atuação em startups, empresas de tecnologia, e empresas de consultoria, sempre priorizando qualidade, automação e melhoria contínua.
+              Estou entusiasmado para contribuir com minha experiência e ajudar a impulsionar os resultados da equipe/empresa.
+              Atenciosamente,
+              Rogério
+              ```
+commands:
+  time in nyc | Raycast:
+    desc: Show time in New York
+    tags: [raycast, calculator]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  time in nyc+6h | Raycast:
+    desc: Show time + 6 hours in New York
+    tags: [raycast, calculator]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  12% of $321 | Raycast:
+    desc: Calculate 12% of $321 (USD)
+    tags: [raycast, calculator, math]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  12% of $321 in BRL | Raycast:
+    desc: Calculate 12% of $321 (in BRL)
+    tags: [raycast, calculator]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  monday in 3 weeks | Raycast:
+    desc: What day is Monday in 3 weeks?
+    tags: [raycast, calculator]
+    links:
+      - Calculator: https://raycast.com/extensions/calculator
+  5pm ldn in sf | Raycast:
+    desc: What time is 5pm in London in San Francisco?
+    tags: [raycast, calculator]
+    links:
+      - Calculator: https://raycast.com/extensions/calculator
+  time in Dubai | Raycast:
+    desc: What time is it in Dubai?
+    tags: [raycast, calculator]
+    links:
+      - Calculator: https://raycast.com/extensions/calculator
+  days until 25 Dec | Raycast:
+    desc: How many days until Christmas?
+    tags: [raycast, calculator, time]
+    links:
+      - Calculator: https://raycast.com/extensions/calculator
+  workdays until 25 Dec | Raycast:
+    desc: How many workdays until Christmas?
+    tags: [raycast, calculator]
+    links:
+      - Calculator: https://raycast.com/extensions/calculator
+  35 days ago | Raycast:
+    desc: What day was it 35 days ago?
+    tags: [raycast, calculator]
+    links:
+      - Calculator: https://raycast.com/extensions/calculator
+  10 usd in gbp | Raycast:
+    desc: How much is 10 USD in GBP?
+    tags: [raycast, conversion]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  45 jpy to inr | Raycast:
+    desc: How much is 45 JPY in INR?
+    tags: [raycast, conversion]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  23C to F | Raycast:
+    desc: How much is 23 Celsius in Fahrenheit?
+    tags: [raycast, conversion]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  29 inches to cm | Raycast:
+    desc: How much is 29 inches in centimeters?
+    tags: [raycast, conversion]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  4 feet to cm | Raycast:
+    desc: How much is 4 feet in centimeters?
+    tags: [raycast, conversion]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  3 teaspoon in ml | Raycast:
+    desc: How much is 3 teaspoon in milliliters?
+    tags: [raycast, conversion]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  60 + 74 | Raycast:
+    desc: Sum of 60 and 74
+    tags: [raycast, math]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  4 power 6 | Raycast:
+    desc: 4 to the power of 6
+    tags: [raycast, math]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  32% of 5 | Raycast:
+    desc: 32 percent of 5
+    tags: [raycast, math]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  8 dollars/hour in gbp | Raycast:
+    desc: 8 dollars per hour in GBP
+    tags: [raycast, math]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  19m + 47% | Raycast:
+    desc: 19 meters plus 47 percent
+    tags: [raycast, math]
+    links:
+      - The non-nerd's guide to Raycast: https://youtu.be/xg2TQJyBEYc
+  10ft in m | Raycast:
+    desc: 10 feet in meters
+    tags: [raycast, math]
+    links:
+      - Calculator: https://raycastapp.notion.site/Calculator-8bf30191faa24f43b4363cbf1d00c01b#b12e437d46584aca9adae604ba35cd33
+  5 btc in gbp | Raycast:
+    desc: 5 bitcoins in GBP
+    tags: [raycast, math, crypto]
+    links:
+      - Calculator: https://raycastapp.notion.site/Calculator-8bf30191faa24f43b4363cbf1d00c01b#b12e437d46584aca9adae604ba35cd33
+  52% of 900 | Raycast:
+    desc: 52 percent of 900
+    tags: [raycast, math]
+    links:
+      - Calculator: https://raycastapp.notion.site/Calculator-8bf30191faa24f43b4363cbf1d00c01b#b12e437d46584aca9adae604ba35cd33
+  days until 31 Mar | Raycast:
+    desc: How many days until 31 March?
+    tags: [raycast, time]
+    links:
+      - Calculator: https://raycastapp.notion.site/Calculator-8bf30191faa24f43b4363cbf1d00c01b#b12e437d46584aca9adae604ba35cd33
+  square root of 625 | Raycast:
+    desc: Square root of 625
+    tags: [raycast, math]
+    links:
+      - Calculator: https://raycastapp.notion.site/Calculator-8bf30191faa24f43b4363cbf1d00c01b#b12e437d46584aca9adae604ba35cd33
+  2 power 10 | Raycast:
+    desc: 2 to the power of 10
+    tags: [raycast, math]
+    links:
+      - Calculator: https://raycastapp.notion.site/Calculator-8bf30191faa24f43b4363cbf1d00c01b#b12e437d46584aca9adae604ba35cd33
+
+# RAYCAST SNIPPETS
+# Used to insert the values at anything (Fild, Text Field, etc.)
+#
+# 💡 NOTE: Keywords must be unique; only the first match is triggered. Meaning:
+# ==> GIVEN two snippet keywords: ::pass and ::password
+# ==> WHEN typing ::pass
+# ==> THEN only the ::pass snippet is triggered, never ::password
+#
+# 💡 IMPORTATION
+# 1. Delete the current Raycast Snippets
+# 2. Run the Raycast Script Command: Extract Raycast Snippets
+# 3. Import ~/.config/raycast/snippets.json into Raycast
+snippets:
+  # PERSONAL

@@ -1,0 +1,877 @@
+bookmarks:
+  https://anthropic.com/learn:
+    desc: Get in the know with Anthropic resources. From API development guides to enterprise deployment best practices, the academy has you covered
+    tags: [ ai, claude-code, xp ]
+  https://anthropic.skilljar.com/claude-code-101:
+    desc: Claude Code 101 is designed for developers who are either new to software engineering or experienced engineers who haven't yet explored AI coding agents
+    tags: [ ai, claude-code, xp ]
+  https://anthropic.skilljar.com/introduction-to-agent-skills:
+    desc: Introduction to Agent Skills | Anthropic
+    tags: [ ai, claude-code, xp ]
+  https://anthropic.skilljar.com/introduction-to-subagents:
+    desc: Introduction to Subagents | Anthropic
+    tags: [ ai, claude-code, xp ]
+  https://anthropic.skilljar.com/mcp-in-claude-code:
+    desc: MCP in Claude Code | Anthropic
+    tags: [ ai, claude-code, xp ]
+  https://youtu.be/fl1DSmwQKKY&list=PLmWCw1CzcFilebjK89WLb5cAvM8K0cLB3:
+    desc: Claude Code 101 | YouTube Playlist
+    tags: [ ai, claude-code, xp ]
+  https://youtu.be/n5LoKZ8Oa-A&list=PLmWCw1CzcFilWIFAY4hapAgFtGB7UlvVQ:
+    desc: Claude Code Subagents | YouTube Playlist
+    tags: [ ai, claude-code, xp ]
+  https://youtu.be/bjdBVZa66oU&list=PLmWCw1CzcFim_hkruZSlABOUOAAQ5JMyo:
+    desc: Claude Code Skills | YouTube Playlist
+    tags: [ ai, claude-code, xp ]
+  https://platform.claude.com/docs/en/get-started:
+    desc: Get started with Claude | Anthropic
+    tags: [ ai, anthropic, claude, api ]
+  https://platform.claude.com/docs/en/api/overview:
+    desc: Claude API Overview | Anthropic
+    tags: [ ai, anthropic, claude, api ]
+    links:
+      - Account Settings > Generate API keys: https://platform.claude.com/settings/keys
+      - Agents API > Define reusable, versioned agent configurations for Claude Managed Agents: https://platform.claude.com/docs/en/managed-agents/agent-setup
+      - API versioning details: https://platform.claude.com/docs/en/api/versioning
+      - Batch API: https://platform.claude.com/docs/en/build-with-claude/batch-processing
+      - Beta headers: https://platform.claude.com/docs/en/api/beta-headers
+      - Claude Console account: https://platform.claude.com
+      - Claude in Amazon Bedrock: https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock
+      - Claude Managed Agents quickstart: https://platform.claude.com/docs/en/managed-agents/quickstart
+      - Claude Managed Agents reference > Agents, Sessions, and Environments endpoints: https://platform.claude.com/docs/en/managed-agents/sessions
+      - Claude on Azure AI: https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry
+      - Claude on Vertex AI: https://platform.claude.com/docs/en/build-with-claude/claude-on-vertex-ai
+      - Client SDKs > Python, TypeScript, Java, Go, C#, Ruby, and PHP: https://platform.claude.com/docs/en/api/client-sdks
+      - Console > Limits: https://platform.claude.com/settings/limits
+      - Console Web: https://platform.claude.com/
+      - Control spend > Usage tiers, spend limits, and token bucket algorithm: https://platform.claude.com/docs/en/api/rate-limits
+      - Environments API > Configure container templates for agent sessions: https://platform.claude.com/docs/en/managed-agents/environments
+      - Features Overview > Availability across platforms: https://platform.claude.com/docs/en/build-with-claude/overview
+      - Files API > Upload and manage files for use across multiple API calls: https://platform.claude.com/docs/en/api/files-create
+      - Get started: https://platform.claude.com/docs/en/get-started
+      - Message Batches API > Process large volumes of Messages requests asynchronously with 50% cost reduction: https://platform.claude.com/docs/en/api/creating-message-batches
+      - Messages API > Send messages to Claude for conversational interactions: https://platform.claude.com/docs/en/api/messages/create
+      - Messages API reference > Complete API specification for direct model interactions: https://platform.claude.com/docs/en/api/messages/create
+      - Models API > List available Claude models and their details: https://platform.claude.com/docs/en/api/models-list
+      - Rate limits > Usage tiers, spend limits, and token bucket algorithm: https://platform.claude.com/docs/en/api/rate-limits
+      - Sessions API > Run stateful agent sessions in managed cloud containers: https://platform.claude.com/docs/en/managed-agents/sessions
+      - Skills API > Create and manage custom agent skills: https://platform.claude.com/docs/en/api/skills/create-skill
+      - The Claude API is available in many countries and regions: https://platform.claude.com/docs/en/api/supported-regions
+      - Token Counting API > Count tokens in a message before sending to manage costs and rate limits: https://platform.claude.com/docs/en/api/messages-count-tokens
+      - Workbench Web > API in the browser: https://platform.claude.com/workbench
+      - Working with Messages > Conversational interactions: https://platform.claude.com/docs/en/build-with-claude/working-with-messages
+      - Workspaces > Segment your API keys and control spend by use case: https://platform.claude.com/settings/workspaces
+    notes:
+      - md: | #markdown
+          # CLAUDE API OVERVIEW
+
+          The Claude API is a RESTful API at `https://api.anthropic.com` that provides programmatic access to Claude models and Claude Managed Agents.
+
+          > **NOTE:** New to Claude?
+          > 
+          >   - For direct model access
+          >     - Start with [Get started](https://platform.claude.com/docs/en/get-started)  
+          >     - See [Working with Messages](https://platform.claude.com/docs/en/build-with-claude/working-with-messages)
+          >   - For managed agent infrastructure 
+          >     - See [Claude Managed Agents quickstart](https://platform.claude.com/docs/en/managed-agents/quickstart)
+
+          ### PRE-REQUISITES
+
+          You'll need:
+
+          - [Claude Console account](https://platform.claude.com)
+          - [API key](https://platform.claude.com/docs/en/get-started)
+
+          See [Get started](https://platform.claude.com/docs/en/get-started) for step-by-step setup instructions
+
+          ### AVAILABLE APIs
+
+          The Claude API includes the following APIs:
+
+          **GENERAL AVAILABILITY:**
+
+            - **[Messages API](https://platform.claude.com/docs/en/api/messages/create)**: 
+              Use `POST /v1/messages` to send messages to Claude for conversational interactions
+            - **[Message Batches API](https://platform.claude.com/docs/en/api/creating-message-batches)**: 
+              Use `POST /v1/messages/batches` to process large volumes of Messages requests asynchronously with 50% cost reduction
+            - **[Token Counting API](https://platform.claude.com/docs/en/api/messages-count-tokens)**: 
+              Use `POST /v1/messages/count_tokens` to count tokens in a message before sending to manage costs and rate limits
+            - **[Models API](https://platform.claude.com/docs/en/api/models-list)**: 
+              Use `GET /v1/models` to list available Claude models and their details
+
+          **BETA:**
+
+            - **[Files API](https://platform.claude.com/docs/en/api/files-create)**: 
+              Use `POST /v1/files` and `GET /v1/files` to upload and manage files for use across multiple API calls
+            - **[Skills API](https://platform.claude.com/docs/en/api/skills/create-skill)**: 
+              Use `POST /v1/skills` and `GET /v1/skills` to create and manage custom agent skills
+            - **[Agents API](https://platform.claude.com/docs/en/managed-agents/agent-setup)**: 
+              Use `POST /v1/agents` and `GET /v1/agents` to define reusable, versioned agent configurations for Claude Managed Agents
+            - **[Sessions API](https://platform.claude.com/docs/en/managed-agents/sessions)**: 
+              Use `POST /v1/sessions` and `GET /v1/sessions/{id}/stream` to run stateful agent sessions in managed cloud containers
+            - **[Environments API](https://platform.claude.com/docs/en/managed-agents/environments)**: 
+              Use `POST /v1/environments` and `GET /v1/environments` to configure container templates for agent sessions
+
+          - Explore the API reference pages listed in the navigation for the complete API reference with all endpoints, parameters, and response schemas
+          - See [Beta headers](https://platform.claude.com/docs/en/api/beta-headers) to access beta features
+
+          ### AUTHENTICATION
+
+          All requests to the Claude API must include these headers:
+
+          | Header              | Value                            | Required |
+          | ------------------- | -------------------------------- | -------- |
+          | `x-api-key`         | Your API key from Console        | Yes      |
+          | `anthropic-version` | API version (e.g., `2023-06-01`) | Yes      |
+          | `content-type`      | `application/json`               | Yes      |
+
+          - [Client SDKs > Python, TypeScript, Java, Go, C#, Ruby, and PHP](https://platform.claude.com/docs/en/api/client-sdks) automatically sends these headers
+          - See [API versioning > API versioning details](https://platform.claude.com/docs/en/api/versioning) for API versioning details
+
+          ### GETTING API KEYS
+
+          - Use [Console Web](https://platform.claude.com/) to access the API
+          - Use [Workbench](https://platform.claude.com/workbench) to try out the API in the browser
+          - Use [Account Settings > Generate API keys](https://platform.claude.com/settings/keys) to generate API keys
+          - Use [workspaces](https://platform.claude.com/settings/workspaces) to segment your API keys 
+          - Use [Rate limits](https://platform.claude.com/docs/en/api/rate-limits) to control spend by use case by your API key
+
+          ### CLIENT SDKS
+
+          Anthropic provides official SDKs that simplify API integration by handling authentication, request formatting, error handling, and more:
+
+          **BENEFITS**:
+
+          - Automatic header management `(x-api-key, anthropic-version, content-type)`
+          - Type-safe request and response handling
+          - Built-in retry logic and error handling
+          - Streaming support
+          - Request timeouts and connection management
+
+          See [CLIENT SDKS](https://platform.claude.com/docs/en/api/client-sdks) for a list of client SDKs and their respective installation instructions.
+
+          ### AVAILABILITY ON PARTNER PLATFORMS
+
+          - Claude is available through the direct [Claude API](https://platform.claude.com/docs/en/api/overview) and through partner platforms. 
+          - Choose based on your infrastructure, compliance requirements, and pricing preferences.
+
+          ### CLAUDE API
+
+          - **Direct access** to the latest models and features first
+          - **Anthropic billing and support**
+          - **Best for**: New integrations, full feature access, direct relationship with Anthropic
+
+          ### THIRD-PARTY PLATFORM APIs
+
+          Access Claude through AWS, Google Cloud, or Microsoft Azure:
+
+          - **Integrated** with cloud provider billing and IAM
+          - **May have feature delays** or differences from the direct API
+          - **Best for**: Existing cloud commitments, specific compliance requirements, consolidated cloud billing
+
+          | **PROVIDER**    | **DOCUMENTATION**                                                                                          |
+          | --------------- | ---------------------------------------------------------------------------------------------------------- |
+          | AWS             | [Claude in Amazon Bedrock](https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock) |
+          | Google Cloud    | [Claude on Vertex AI](https://platform.claude.com/docs/en/build-with-claude/claude-on-vertex-ai)           |
+          | Microsoft Azure | [Claude on Azure AI](https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry)    |
+
+          > 💡 **NOTE:** 
+          > 
+          >   [Claude Managed Agents](https://platform.claude.com/docs/en/managed-agents/overview) is available only through the direct [Claude API](https://platform.claude.com/docs/en/api/overview). 
+          >   See [Features overview](https://platform.claude.com/docs/en/build-with-claude/overview) for feature availability across platforms.
+
+          ### REQUEST AND RESPONSE FORMAT
+
+          ### REQUEST SIZE LIMITS
+
+          | **ENDPOINT**                                                                        | **MAXIMUM REQUEST SIZE** |
+          | ----------------------------------------------------------------------------------- | ------------------------ |
+          | Messages, Token Counting                                                            | 32 MB                    |
+          | [Batch API](https://platform.claude.com/docs/en/build-with-claude/batch-processing) | 256 MB                   |
+          | [Files API](https://platform.claude.com/docs/en/build-with-claude/files)            | 500 MB                   |
+          | Sessions, Agents, Environments                                                      | 32 MB                    |
+
+          If you exceed these limits, you'll receive a 413 `request_too_large` error.
+
+          > 💡 **NOTE:** 
+          > 
+          >   - Third-party platforms have their own request size limits: 
+          >     - Vertex AI limits requests to 30 MB
+          >     - Amazon Bedrock limits requests to 20 MB
+          >   - Consult your platform's documentation for current values.
+
+          ### RESPONSE HEADERS
+
+          The Claude API includes the following headers in every response:
+
+          - `request-id`: A globally unique identifier for the request
+          - `anthropic-organization-id`: The organization ID associated with the API key used in the request
+
+          ### RATE LIMITS AND AVAILABILITY
+
+          #### RATE LIMITS
+
+          - The API enforces rate limits and spend limits to prevent misuse and manage capacity. 
+          - Limits are organized into usage tiers that increase automatically as you use the API. 
+          - Each tier has:
+
+              - **Spend limits**: Maximum monthly cost for API usage
+              - **Rate limits**: Maximum number of requests per minute `(RPM)` and tokens per minute `(TPM)`
+              - **Higher limits or Priority Tier**: contact sales through the Console.
+
+          - Use [Console](https://platform.claude.com/settings/limits) to view your organization's current limits 
+          - Use [Rate limits](https://platform.claude.com/docs/en/api/rate-limits) for detailed information about limits, tiers, and the token bucket algorithm used for rate limiting.
+
+          ### AVAILABILITY
+
+          - Use [Supported Regions](https://platform.claude.com/docs/en/api/supported-regions) to confirm availability in your location.
+
+          ### NEXT STEPS
+
+          - Use [Messages API reference](https://platform.claude.com/docs/en/api/messages/create) to view the complete API specification for direct model interactions
+          - Use [Claude Managed Agents reference](https://platform.claude.com/docs/en/managed-agents/sessions) to view the Agents, Sessions, and Environments endpoints
+          - Use [Client SDKs](https://platform.claude.com/docs/en/api/client-sdks) to view the Python, TypeScript, Java, Go, C#, Ruby, and PHP SDKs
+          - Use [Rate limits](https://platform.claude.com/docs/en/api/rate-limits) to view the Usage tiers, spend limits, and token bucket algorithm        
+commands:
+  'curlie https://api.anthropic.com/v1/messages -H "Content-Type: application/json" -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" -d ''{ "model": "claude-haiku-4-5-20251001", "max_tokens": 10, "messages": [{"role": "user", "content": "Hi"}] }''':
+    desc: Send messages to Claude for conversational interactions
+    tags: [ ai, claude, api ]
+    links:
+      - Quickstart: https://docs.claude.com/en/docs/get-started
+      - Messages API reference: https://platform.claude.com/docs/en/api/messages/create
+      - Anthropic API Fundamentals: https://github.com/anthropics/courses/tree/master/anthropic_api_fundamentals
+  'curlie https://api.anthropic.com/v1/messages/batches -H "Content-Type: application/json" -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" -d ''{ "requests": [ { "custom_id": "my-custom-id-1", "params": { "model": "claude-haiku-4-5-20251001", "max_tokens": 10, "messages": [ { "role": "user", "content": "Hi" } ] } } ] }''':
+    desc: Batch Messages requests for async processing
+    tags: [ ai, claude, api ]
+    links:
+      - Message Batches API reference: https://platform.claude.com/docs/en/api/creating-message-batches
+      - Batch processing guide: https://docs.claude.com/en/docs/build-with-claude/batch-processing
+  'curlie https://api.anthropic.com/v1/messages/count_tokens -H "Content-Type: application/json" -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" -d ''{ "model": "claude-haiku-4-5-20251001", "messages": [ { "role": "user", "content": "Hi" } ] }''':
+    desc: Count tokens for a Messages payload preflight
+    tags: [ ai, claude, api ]
+    links:
+      - Token Counting API reference: https://platform.claude.com/docs/en/api/messages-count-tokens
+      - Token counting guide: https://docs.claude.com/en/docs/build-with-claude/token-counting
+  'curlie https://api.anthropic.com/v1/models -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01"':
+    desc: List available Claude models and capabilities
+    tags: [ ai, claude, api ]
+    links:
+      - Models API reference: https://platform.claude.com/docs/en/api/models-list
+  'curlie https://api.anthropic.com/v1/files -H "Content-Type: multipart/form-data" -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" -H "anthropic-beta: files-api-2025-04-14" -F "file=@/path/to/file"':
+    desc: Upload a file for reuse across API calls
+    tags: [ ai, claude, api, beta ]
+    links:
+      - Files API reference: https://platform.claude.com/docs/en/api/files-create
+  'curlie https://api.anthropic.com/v1/files -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" -H "anthropic-beta: files-api-2025-04-14"':
+    desc: List uploaded files
+    tags: [ ai, claude, api, beta ]
+    links:
+      - Files API reference: https://platform.claude.com/docs/en/api/files-create
+  'curlie https://api.anthropic.com/v1/skills -X POST -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" -H "anthropic-beta: skills-2025-10-02"':
+    desc: Create a custom agent skill
+    tags: [ ai, claude, api, beta ]
+    links:
+      - Skills API reference: https://platform.claude.com/docs/en/api/skills/create-skill
+  'curlie https://api.anthropic.com/v1/skills -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" -H "anthropic-beta: skills-2025-10-02"':
+    desc: List skills
+    tags: [ ai, claude, api, beta ]
+    links:
+      - Skills API reference: https://platform.claude.com/docs/en/api/skills/create-skill
+  'curlie https://api.anthropic.com/v1/agents -H "Content-Type: application/json" -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" -H "anthropic-beta: managed-agents-2026-04-01" -d ''{ "name": "Coding Assistant", "model": "claude-opus-4-7", "system": "You are a helpful coding agent.", "tools": [ { "type": "agent_toolset_20260401" } ] }''':
+    desc: Create a reusable managed agent configuration
+    tags: [ ai, claude, api, managed-agents, beta ]
+    links:
+      - Agents API reference: https://platform.claude.com/docs/en/managed-agents/agent-setup
+  'curlie https://api.anthropic.com/v1/sessions -H "Content-Type: application/json" -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" -H "anthropic-beta: managed-agents-2026-04-01" -d ''{ "agent": "$AGENT_ID", "environment_id": "$ENVIRONMENT_ID" }''':
+    desc: Start a managed agent session
+    tags: [ ai, claude, api, managed-agents, beta ]
+    links:
+      - Sessions API reference: https://platform.claude.com/docs/en/managed-agents/sessions
+  'curlie https://api.anthropic.com/v1/environments -H "Content-Type: application/json" -H "x-api-key: $ANTHROPIC_API_KEY" -H "anthropic-version: 2023-06-01" -H "anthropic-beta: managed-agents-2026-04-01" -d ''{ "name": "python-dev", "config": { "type": "cloud", "networking": { "type": "unrestricted" } } }''':
+    desc: Create a managed agents cloud environment
+    tags: [ ai, claude, api, managed-agents, beta ]
+    links:
+      - Environments API reference: https://platform.claude.com/docs/en/managed-agents/environments
+cheats:
+  Claude Code 101 | Anthropic (13 lessons):
+    desc: Designed for developers who are either new to software engineering or experienced engineers who haven't yet explored AI coding agents
+    tags: [ ai, claude-code, xp ]
+    links:
+      - https://anthropic.skilljar.com/claude-code-101
+      - What is Claude Code?: https://youtu.be/fl1DSmwQKKY
+      - How Claude Code Works: https://youtu.be/6bs5b4FltCU
+      - Installing Claude Code: https://youtu.be/0kILa02vKuI
+      - Your First Claude Code Prompt: https://youtu.be/gbetp6D7J_Q
+      - The Explore → Plan → Code → Commit Workflow: https://youtu.be/xJQuF02NAK8
+      - Context Management: https://youtu.be/eW3oTyfeWZ0
+      - Introduction to Code Reviews: https://youtu.be/RKsADl0ZC3Y
+      - The CLAUDE.md File: https://youtu.be/O0FGCxkHM-U
+      - What are subagents?: https://youtu.be/jKErNxuxPXg
+      - Introduction to subagents: https://anthropic.skilljar.com/introduction-to-subagents
+      - What are Skills?: https://youtu.be/bjdBVZa66oU
+      - Introduction to Agent Skills: https://anthropic.skilljar.com/introduction-to-agent-skills
+      - MCP in Claude Code: https://youtu.be/kkBFmwkDzdo
+      - Hooks in Claude Code: https://youtu.be/IkaPHiMDazM
+    notes:
+      - md: | #markdown
+          # Claude Code 101
+
+          ## Overview
+
+          A practical guide to installing, configuring, and using Claude Code—from basics to advanced customization—to boost your daily coding workflow.
+
+          ### Learning Objectives
+
+          - Understand what an AI coding agent is and how Claude Code differs from chat-based AI tools
+          - Learn how the agentic loop, context window, tools, and permissions work together
+          - Install and set up Claude Code in the terminal, VS Code, JetBrains, Claude Desktop, or on the web
+          - Write better prompts using approval, auto-accept, and plan modes
+          - Apply the Explore → Plan → Code → Commit workflow to any feature or task
+          - Manage context using `/compact`, `/clear`, and `/context` for productivity
+          - Use a `CLAUDE.md` file for persistent project memory
+          - Create subagents to delegate tasks and keep your main context clean
+          - Connect external tools and data sources using MCP servers
+          - Write hooks for automated formatting, command blocking, and notifications
+
+          ## [1](https://anthropic.skilljar.com/claude-code-101/469788) What is Claude Code?
+
+          AI coding agent in your repo: reads code, edits files, runs shell, ties into your toolchain.
+
+          **Key Takeaways**
+          - [Claude Code](https://anthropic.skilljar.com/claude-code-101/469788): agentic coding assistant—**not** chat-only
+            - `Capabilities`: read/edit files, run shell commands
+            - `Approvals`: asks before changes unless you change defaults
+            - `Context` (working memory): `/compact`, `/clear`, `/context`
+            - You review diffs; watch for mistakes
+
+          ## [2](https://anthropic.skilljar.com/claude-code-101/469789) How Claude Code Works
+
+          Agentic loop—gather context, act, verify—with tools and permissions for safer automation.
+
+          ```mermaid
+          %%{init: {
+            "theme": "dark",
+            "flowchart": { "curve": "basis", "padding": 14 },
+            "themeVariables": {
+              "background": "#0f172a",
+              "primaryTextColor": "#e2e8f0",
+              "lineColor": "#717486",
+              "clusterBkg": "#313549",
+              "clusterBorder": "#94a3b8"
+            }
+          }}%%
+          flowchart LR
+            classDef pillStart fill:#f8fafc,stroke:#64748b,color:#0f172a
+            classDef pillEnd fill:#86efac,stroke:#166534,color:#14532d
+            classDef step fill:#93c5fd,stroke:#1d4ed8,color:#0f172a
+            classDef interrupt fill:#fdba74,stroke:#c2410c,color:#0f172a
+            classDef iterate fill:#374151,stroke:#9ca3af,color:#f3f4f6
+
+            P(["''Your prompt''"]):::pillStart
+            I["''You interrupt, steer or add context''"]:::interrupt
+
+            subgraph AGENTIC["Agentic Loop"]
+              direction LR
+              GC["Gather context"]:::step
+              TA["Take action"]:::step
+              VR["Verify results"]:::step
+              IT[["iterate"]]:::iterate
+              GC --> TA
+              TA --> VR
+              VR -.-> IT
+              IT -.-> GC
+            end
+
+            D(["Done"]):::pillEnd
+
+            P --> AGENTIC
+            I --> AGENTIC
+            AGENTIC --> D
+          ```
+
+          **Key Takeaways**
+          - [How it works](https://anthropic.skilljar.com/claude-code-101/469789): loop = gather → act → verify → iterate until done
+            - `Context`: summarize/compact when the window fills
+            - `Tools`: edits, search, and other non-chat actions
+            - `Permissions`: gate risky work before it runs
+            - `Model`: code agent, not a passive chat UI
+
+          ## [3](https://anthropic.skilljar.com/claude-code-101/469791) Your First Claude Code Prompt
+
+          Choose a `mode` for how much you steer vs how much it runs on its own.
+
+          **Key Takeaways**
+          - `Shift + Tab`: switch modes anytime
+            - `Approval mode`: confirm **every** action
+            - `Auto-accept mode`: auto-approve **file edits**; commands still need approval
+            - `Plan mode`: plan first, then execute after you're happy
+          - Short, specific prompts → better results
+
+          ## [4](https://anthropic.skilljar.com/claude-code-101/469792) The Explore → Plan → Code → Commit Workflow
+
+          Repeatable pipeline: explore → plan → implement → ship—safer for you and reviewers.
+
+          **Key Takeaways**
+          - `Explore`: read code, search docs, clarify unknowns
+          - `Plan`: proposed steps for your review/revision
+          - `Code`: implement, run tests, explain changes
+          - `Commit`: review subagent → commit message → push
+            - `Skill`: `/commit-push-pr` → commit, push, open PR
+
+          ## [5](https://anthropic.skilljar.com/claude-code-101/469793) Context Management
+
+          The `context window` is finite—treat it like RAM for the session.
+
+          **Key Takeaways**
+          - `Prompts`: concise + specific to save tokens
+          - `Subagents`: parallel/research without bloating main context
+          - `Commands`:
+            - `/mcp`: MCP servers/tools; disable unused to save context
+            - `/compact`: summarize context, keep essentials
+            - `/clear`: reset for a new topic/session
+            - `/context`: usage breakdown
+
+          ## [6](https://anthropic.skilljar.com/claude-code-101/469794) Code Reviews
+
+          Subagents + PR workflow so review stays structured and resumable.
+
+          **Key Takeaways**
+          - `Subagent`: dedicated reviewer; save configs for the team
+          - `gh pr create`: link the session to a PR
+            - `Skill`: `/commit-push-pr` (commit, push, PR)
+            - `CLI`: `claude --from-pr <PR_NUMBER>` — resume PR-linked work
+
+          ## [7](https://anthropic.skilljar.com/claude-code-101/469795) The CLAUDE.md File
+
+          Long-lived instructions so the agent matches your repo's rules and stack.
+
+          **Key Takeaways**
+          - `Paths`:
+            - `CLAUDE.md`: project root (team/project memory)
+            - `~/CLAUDE.md`: personal defaults
+          - `Content`: commands, conventions, stack, doc pointers (`@filepath`)
+          - `Commands`:
+            - `/init`: scaffold a starter `CLAUDE.md`
+          - Revisit after big corrections or new non-negotiables
+
+          ## [8](https://anthropic.skilljar.com/claude-code-101/469796) What Are Subagents?
+
+          Parallel workers with **isolated** context—only the result returns to the main session.
+
+          **Key Takeaways**
+          - [Subagents](https://anthropic.skilljar.com/introduction-to-subagents): research, reviews, experiments off the hot path
+            - `/agents`: define agents (Markdown + YAML)
+            - `Memory` + preloaded `skills` per agent
+            - `Main context`: gets the **final** answer, not the full subagent trace
+
+          ## [9](https://anthropic.skilljar.com/claude-code-101/469848) What Are Skills?
+
+          Optional, load-when-relevant playbooks—usually cheaper than giant always-on `CLAUDE.md`.
+
+          **Key Takeaways**
+          - [Skills](https://anthropic.skilljar.com/introduction-to-agent-skills): Markdown + YAML instructions for repeatable tasks
+            - `Paths`:
+              - `~/.claude/skills`: personal
+              - `.claude/skills`: project
+            - `Invocation`: auto when the prompt matches the skill
+          - Prefer `skills` (+ CLI tools) over stuffing everything into always-on context
+
+          ## [10](https://anthropic.skilljar.com/claude-code-101/469797) MCP
+
+          Wire in external APIs and local processes as tools.
+
+          **Key Takeaways**
+          - [MCP](https://anthropic.skilljar.com/mcp-in-claude-code): extra tools/data beyond built-ins
+            - `MCP Types`:
+              - `HTTP` (cloud): remote/web APIs
+              - `STDIO`: local scripts / processes
+            - `MCP Scopes` (typical; confirm in product docs):
+              - `.mcp.json`: project (repo root, shareable)
+              - `~/.claude.json`: user + local overrides (precedence: local → project → user)
+          - `Commands`:
+            - `/mcp`: add/list/configure MCP servers and tools
+          - `CLI commands`:
+            - `claude mcp list`: what's registered and from which scope
+            - `claude mcp add <NAME>`: register a server
+            - `claude mcp disable <NAME>`: turn off unused MCPs (saves context)
+          - Default to `CLI tools` (e.g. `gh`, `aws`) + `skills` before adding MCP surface area
+
+          ## [11](https://anthropic.skilljar.com/claude-code-101/469798) Hooks
+
+          Lifecycle hooks: run commands or block actions automatically.
+
+          **Key Takeaways**
+          - [Hooks](https://anthropic.skilljar.com/claude-code-101/469798): always-on scripts on agent events
+            - `Config`: `.claude/settings.json` or `/hooks` UI
+            - `Triggers`: `PreToolUse`, `PostToolUse`, `UserPromptSubmit`, `Stop`, `Notification`
+            - `Uses`: format-after-edit, audit logs, block dangerous commands (e.g. `rm -rf`)
+            - `Exit codes`: `0` proceed · `2` block · `1` error (not blocked)
+            - `Teams`: commit project hooks; use `CLAUDE_PROJECT_DIR` for stable paths
+  What is Claude Code? (Lesson 01) | Claude Code 101:
+    desc: Agent in your repo—reads, edits, runs shell, uses your toolchain
+    tags: [ ai, claude-code, xp ]
+    links:
+      - Lesson 1 > What is Claude Code: https://anthropic.skilljar.com/claude-code-101/469788
+      - (Youtube) What is Claude Code?: https://youtu.be/fl1DSmwQKKY
+    notes:
+      - md: |
+          # What is Claude Code?
+
+          AI coding agent that understands your codebase, edits files, runs terminal commands, and connects to your development tools so you can ship faster—with explicit approval boundaries instead of a passive chat-only assistant.
+
+          ## KEY TAKEAWAYS
+
+          - **Role**:
+            - Works **in** the repository (not just answering in a chat pane)
+          - **Capabilities**:
+            - Reads and edits code, runs shell commands, uses configured tools
+          - **Approvals**:
+            - Seeks confirmation before changes unless you change defaults
+          - **Context**:
+            - Uses a finite context window as working memory
+
+          ## COMMANDS
+
+          - `/compact`: summarize context while keeping essentials
+          - `/clear`: reset for a new topic or session
+          - `/context`: inspect usage and breakdown
+
+          > 💡 **PROTIP**: Always review diffs and watch for mistakes—treat the agent as a fast collaborator, not an infallible author.
+  How Claude Code Works? (Lesson 02) | Claude Code 101:
+    desc: Gather → act → verify loop, plus tools and permissions
+    tags: [ ai, claude-code, xp ]
+    links:
+      - Lesson 2 > How Claude Code Works?: https://anthropic.skilljar.com/claude-code-101/469789
+      - (Youtube) How Claude Code Works?: https://youtu.be/6bs5b4FltCU
+    notes:
+      - md: |
+          # How Claude Code Works
+
+          The **agentic loop**: it gathers context about your repo and intent, takes actions through tools (edits, search, shell, and more), verifies outcomes, and iterates until the task is done—while **permissions** decide when it must pause for your approval.
+
+          ```mermaid
+          %%{init: {
+            "theme": "dark",
+            "flowchart": { "curve": "basis", "padding": 14 },
+            "themeVariables": {
+              "background": "#0f172a",
+              "primaryTextColor": "#e2e8f0",
+              "lineColor": "#717486",
+              "clusterBkg": "#313549",
+              "clusterBorder": "#94a3b8"
+            }
+          }}%%
+          flowchart LR
+            classDef pillStart fill:#f8fafc,stroke:#64748b,color:#0f172a
+            classDef pillEnd fill:#86efac,stroke:#166534,color:#14532d
+            classDef step fill:#93c5fd,stroke:#1d4ed8,color:#0f172a
+            classDef interrupt fill:#fdba74,stroke:#c2410c,color:#0f172a
+            classDef iterate fill:#374151,stroke:#9ca3af,color:#f3f4f6
+
+            P(["''Your prompt''"]):::pillStart
+            I["''You interrupt, steer or add context''"]:::interrupt
+
+            subgraph AGENTIC["Agentic Loop"]
+              direction LR
+              GC["Gather context"]:::step
+              TA["Take action"]:::step
+              VR["Verify results"]:::step
+              IT[["iterate"]]:::iterate
+              GC --> TA
+              TA --> VR
+              VR -.-> IT
+              IT -.-> GC
+            end
+
+            D(["Done"]):::pillEnd
+
+            P --> AGENTIC
+            I --> AGENTIC
+            AGENTIC --> D
+          ```
+
+          ## KEY TAKEAWAYS
+
+          - **Agentic Loop**:
+            - `Prompt` → `gather context` → `take action` → `verify` → `iterate` until done
+          - **Context**:
+            - Summarize or compact when the context window fills so the model keeps signal, not noise
+          - **Tools**:
+            - File edits, search, shell, and other actions beyond plain chat text
+          - **Permissions**:
+            - Gate risky or irreversible work before it runs
+          - **Model**:
+            - Behaves as a **code agent**, not a passive Q&A UI
+  Your First Claude Code Prompt (Lesson 03) | Claude Code 101:
+    desc: Modes balance your control vs execution speed
+    tags: [ ai, claude-code, xp ]
+    links:
+      - Lesson 3 > Your First Claude Code Prompt: https://anthropic.skilljar.com/claude-code-101/469791
+      - (Youtube) Your First Claude Code Prompt: https://youtu.be/gbetp6D7J_Q
+    notes:
+      - md: |
+          # Your First Claude Code Prompt
+
+          Your first sessions go smoother when you pick a **mode** that matches how closely you want to supervise the agent: full manual approval, faster edits with guardrails, or plan-first execution after you sign off on the steps.
+
+          ## KEY TAKEAWAYS
+
+          - **Prompting**:
+            - Short, specific instructions beat vague one-liners
+          - **Modes**:
+            - `Approval mode`: confirm **every** action
+            - `Auto-accept mode`: auto-approve **file edits**; shell/commands still need approval
+            - `Plan mode`: present a plan first, then implement after you accept it
+
+          ## SHORTCUTS
+
+          - `Shift + Tab`: switch modes anytime
+
+          > 💡 **PROTIP**: Start in **Approval** or **Plan** until you trust the workflow for your repo; tighten prompts once you see where it drifts.
+  Agentic Loop (Lesson 04) | Claude Code 101:
+    desc: Explore, plan, implement, then ship with review
+    tags: [ ai, claude-code, xp ]
+    links:
+      - Lesson 4 > The Explore → Plan → Code → Commit Workflow: https://anthropic.skilljar.com/claude-code-101/469792
+      - (Youtube) The Explore → Plan → Code → Commit Workflow: https://youtu.be/xJQuF02NAK8
+    notes:
+      - md: |
+          # The Explore → Plan → Code → Commit Workflow
+
+          This workflow is a deliberate cadence—**explore** the problem space, **plan** before expensive edits, **code** with tests and explanations, then **commit** through review—so changes stay reviewable, reversible, and team-friendly.
+
+          ## KEY TAKEAWAYS
+
+          - **Explore**:
+            - Read code, search docs, ask clarifying questions before big edits
+          - **Plan**:
+            - Propose steps; you revise before execution
+          - **Code**:
+            - Implement, run tests, explain what changed and why
+          - **Commit**:
+            - Use a review pass, craft the commit message, push when green
+
+          ## COMMANDS
+
+          - `/commit-push-pr`: automate commit, push, and PR creation (when you use that skill)
+
+          ## CLI COMMANDS
+
+          - `gh pr create`: link work on a branch to a pull request for review
+
+          > 💡 **PROTIP**: Do not skip **Plan** on unfamiliar codepaths—the cheap step is the outline; the expensive step is the wrong refactor.
+  Contexts (Lesson 05) | Claude Code 101:
+    desc: Keep the context window lean for accuracy
+    tags: [ ai, claude-code, xp ]
+    links:
+      - Lesson 5 > Context Management: https://anthropic.skilljar.com/claude-code-101/469793
+      - (Youtube) Context Management: https://youtu.be/eW3oTyfeWZ0
+    notes:
+      - md: |
+          # CONTEXTS: finite working memory
+
+          When packed with noise, answers get shallow or wrong; if you offload work and summarize deliberately, you keep high-signal context for the task at hand.
+
+          ## KEY TAKEAWAYS
+
+          - **Prompts**:
+            - Concise, specific requests save tokens for code and logs
+          - **Subagents**:
+            - Run parallel or research tasks in isolated contexts so the main thread stays clean
+          - **Tool surface**:
+            - Disable unused MCP servers/tools so descriptions do not eat the window (see Lesson 10)
+
+          ## COMMANDS
+
+          - `/mcp`: manage MCP servers and tools; disable what you do not need
+          - `/compact`: summarize context while retaining essentials
+          - `/clear`: reset for a fresh feature or session
+          - `/context`: inspect usage and breakdown
+
+          > 💡 **PROTIP**: When a task balloons, spawn a **subagent** for the deep read and paste back only conclusions + file pointers.
+  Code Reviews (Lesson 06) | Claude Code 101:
+    desc: Structured reviews and PR flow with subagents
+    tags: [ ai, claude-code, xp ]
+    links:
+      - Lesson 6 > Code Reviews: https://anthropic.skilljar.com/claude-code-101/469794
+      - (Youtube) Introduction to Code Reviews: https://youtu.be/RKsADl0ZC3Y
+    notes:
+      - md: |
+          # Code Reviews
+
+          Dedicated impartial subagent as a reviewer, wire sessions to **GitHub PRs**, and resume work from a PR number so review feedback and implementation stay in one thread of context.
+
+          ## KEY TAKEAWAYS
+
+          - **Review agent**:
+            - Configure a subagent for code review; reuse team presets for consistent bars
+          - **PR linking**:
+            - Associate the session with a PR so discussion maps to real diffs
+          - **Automation**:
+            - Combine review, commit message, push, and PR steps when your skill set allows
+
+          ## COMMANDS
+
+          - `/commit-push-pr`: commit, push, and open/update a PR (skill-backed workflow)
+
+          ## CLI COMMANDS
+
+          - `gh pr create`: create or attach work to a pull request
+          - `claude --from-pr <PR_NUMBER>`: resume work tied to a specific PR
+
+          > 💡 **PROTIP**: Store review agent instructions next to your linters/tests so the reviewer always checks the same non-negotiables.
+  CLAUDE.md (Lesson 07) | Claude Code 101:
+    desc: Persistent project memory for consistent behavior
+    tags: [ ai, claude-code, xp ]
+    links:
+      - Lesson 7 > The CLAUDE.md File: https://anthropic.skilljar.com/claude-code-101/469795
+      - (Youtube) The CLAUDE.md File: https://youtu.be/O0FGCxkHM-U
+    notes:
+      - md: |
+          # The CLAUDE.md File
+
+          Long-lived, plain-text guidance the agent loads for a repo: commands to run, style rules, stack facts, and pointers to canonical docs—so every session starts aligned without re-pasting the same lecture.
+
+          ## KEY TAKEAWAYS
+
+          - **Paths**:
+            - `CLAUDE.md`: project root (team- and repo-scoped memory)
+            - `~/CLAUDE.md`: personal defaults across projects
+          - **Content**:
+            - Commands, conventions, stack notes, critical links via `@<filepath>`
+          - **Maintenance**:
+            - Update after incidents, policy changes, or repeated corrections
+
+          ## COMMANDS
+
+          - `/init`: scaffold a starter `CLAUDE.md` from the current repository
+
+          > 💡 **PROTIP**: Keep it **short and enforced**—if it reads like a wiki, move detail into docs and link them instead.
+  Subagents (Lesson 08) | Claude Code 101:
+    desc: Parallel processes in isolated context that keep your main session uncluttered
+    tags: [ ai, claude-code, xp ]
+    links:
+      - Lesson 8 > What Are Subagents?: https://anthropic.skilljar.com/claude-code-101/469796
+      - (Youtube) What are subagents?: https://youtu.be/jKErNxuxPXg
+      - Introduction to Subagents: https://anthropic.skilljar.com/introduction-to-subagents
+    notes:
+      - md: |
+          # What Are Subagents?
+
+          Parallel workers with their own context budget: you delegate research, reviews, or spikes, and only the **final artifact** (summary, patch proposal, verdict) returns—keeping your main session uncluttered.
+
+          ## KEY TAKEAWAYS
+
+          - **Format**:
+            - Markdown + YAML specs describe role, tools, and preloaded `Skills`
+          - **Isolation**:
+            - Separate context per subagent so exploration does not flood the main thread
+          - **Memory**:
+            - Each agent can carry focused instructions and examples
+          - **Main session**:
+            - Receives condensed output, not the full scratch work
+
+          ## COMMANDS
+
+          - `/agents`: create and manage subagent definitions
+
+          > 💡 **PROTIP**: Give subagents a **narrow mission** (“diff these two modules”, “audit tests for flakiness”) to maximize signal returned to main.
+  Skills (Lesson 09) | Claude Code 101:
+    desc: On-demand playbooks (checklists, command recipes, review rubrics, or style gates) lighter than giant CLAUDE.md
+    tags: [ ai, claude-code, xp ]
+    links:
+      - Lesson 9 > What Are Skills?: https://anthropic.skilljar.com/claude-code-101/469848
+      - (Youtube) What are Skills?: https://youtu.be/bjdBVZa66oU
+      - Introduction to Agent Skills: https://anthropic.skilljar.com/introduction-to-agent-skills
+    notes:
+      - md: |
+          # What Are Skills?
+
+          Repeatable know-how that load **when relevant**, so you do not pay the token cost of pasting the same brief every session.
+
+          ## KEY TAKEAWAYS
+
+          - **Format**:
+            - Markdown + YAML instructions the product can match to intent
+          - **Storage**:
+            - `~/.claude/skills`: personal skills
+            - `.claude/skills`: project skills (share via git)
+          - **Invocation**:
+            - Automatic when a prompt matches the skill definition
+
+          > 💡 **PROTIP**: Prefer **Skills** and small CLI utilities over stuffing long policies into always-on context or adding MCP servers you only need rarely.
+  MCP (Lesson 10) | Claude Code 101:
+    desc: Extra tools and data beyond built-ins
+    tags: [ ai, claude-code, xp ]
+    links:
+      - Lesson 10 > MCP: https://anthropic.skilljar.com/claude-code-101/469797
+      - (Youtube) MCP in Claude Code: https://youtu.be/kkBFmwkDzdo
+      - MCP in Claude Code: https://anthropic.skilljar.com/mcp-in-claude-code
+    notes:
+      - md: |
+          # MCP
+
+          Connects to external tools (APIs, local scripts) to fetch data or automate more advanced workflows
+
+          ## KEY TAKEAWAYS
+
+          - **MCP Types**:
+            - `HTTP` (cloud) for web APIs
+            - `STDIO` for local scripts and processes
+          - **MCP Scopes**:
+            - `~/.claude.json` for local overrides
+            - `.mcp.json` at repo root (project)
+          - **Precedence**:
+            - local → project → user
+
+          ## COMMANDS
+
+          - `/mcp`: add, list, and configure MCP servers and tools
+
+          ## CLI COMMANDS
+
+          - `claude mcp list`: registered tools and scope
+          - `claude mcp add <NAME>`: register a server
+          - `claude mcp disable <NAME>`: turn off unused MCPs to save context
+
+          > 💡 **PROTIP**: Prefer CLI tools (for example `gh`, `aws`) and `skills` before expanding MCP surface area
+  Hooks (Lesson 11) | Claude Code 101:
+    desc: Lifecycle hooks for safety and automation
+    tags: [ ai, claude-code, xp ]
+    links:
+      - Lesson 11 > Hooks: https://anthropic.skilljar.com/claude-code-101/469798
+      - (Youtube) Hooks in Claude Code: https://youtu.be/IkaPHiMDazM
+    notes:
+      - md: |
+          # Hooks
+
+          Run scripts (or block actions) at predictable lifecycle points—before/after tool use, when you submit a prompt, on stop, or on notifications—so formatting, logging, and guardrails happen automatically.
+
+          ## KEY TAKEAWAYS
+
+          - **Config**:
+            - `.claude/settings.json` file 
+            - or configure through the `/hooks` UI
+          - **Triggers**:
+            - `PreToolUse`: runs before a tool call
+            - `PostToolUse`: runs after a tool call completes
+            - `UserPromptSubmit`: runs when you submit a prompt, before Claude processes it
+            - `Stop`: runs when Claude finishes responding
+            - `Notification`: runs when Claude sends a notification
+          - **Teams**:
+            - Commit project-level hooks; reference files via `CLAUDE_PROJECT_DIR` for stable paths
+
+          ## EXAMPLES
+
+          - **Auto-format**:
+            - Use `PostToolUse` hook to auto-format the code after edits
+          - **Structured logging**:
+            - Use `PostToolUse` hook to log the code changes
+          - **Block dangerous commands**:
+            - Use `PreToolUse` hook to block dangerous commands (for example `rm -rf`)
+
+          ## COMMANDS
+
+          - `/hooks`: configure and inspect hook entries in the product UI
+
+          > 💡 **PROTIP**: Keep hooks **fast and deterministic**—slow hooks train people to disable the safety net.

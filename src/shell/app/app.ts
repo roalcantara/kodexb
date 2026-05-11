@@ -1,5 +1,5 @@
-import type { Knowledge } from '@core'
-import { createLogger } from '@shared/logging'
+import type { Knowledge } from '../../core'
+import { createLogger } from '../../shared/logging'
 import type {
   ConfigPatch,
   ListOpts,
@@ -11,7 +11,7 @@ import type {
   RpcImportResult,
   TaskCreateInput,
   TaskUpdateInput
-} from '@shared/rpc'
+} from '../../shared/rpc'
 import type { LoadedConfig } from './config/config.loader'
 import { saveConfig } from './config/config.loader'
 import { openDatabase } from './db/client'

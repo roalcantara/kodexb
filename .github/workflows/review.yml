@@ -103,6 +103,8 @@ jobs:
           key: electrobun-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: |
             electrobun-${{ runner.os }}-
+      - name: Ensure ElectroBun home exists
+        run: mkdir -p ~/.electrobun
       - name: Smoke build (forced unsigned)
         env:
           ELECTROBUN_DEVELOPER_ID: ''
@@ -110,5 +112,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: build-smoke-linux-x64
-          path: dist/
+          path: build/
           retention-days: 3

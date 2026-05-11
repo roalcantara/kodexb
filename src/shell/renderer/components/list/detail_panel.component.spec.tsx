@@ -18,6 +18,7 @@ const entry: RpcKnowledge = {
   source: 'fixtures/test.yaml',
   desc: 'An example bookmark',
   tags: ['web'],
+  doc: '',
   createdAt: 0,
   updatedAt: 0
 }

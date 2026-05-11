@@ -1,0 +1,290 @@
+cheats:
+  Domain-Driven Design (DDD) with Nx monorepos:
+    desc: Here is a high-level overview of Domain-Driven Design (DDD) concepts and how they can be applied when working with Nx monorepos
+    tags: [pattern]
+    links: [https://khalilstemmler.com/articles/typescript-domain-driven-design/aggregate-design-persistence/#Takeaways]
+    notes:
+      - md: | #markdown
+          ### DDD in Nx monorepos
+
+          > Here is a high-level overview of Domain-Driven Design (DDD) concepts and how they can be applied when working with Nx monorepos
+
+          #### OVERVIEW
+
+          - Domain-Driven Design (DDD) is an approach to software development that focuses on understanding the business domain and modeling it in code.
+          - It emphasizes creating a shared understanding of the domain among developers, business stakeholders, and users.
+
+          #### KEY CONCEPTS
+
+          1. **Bounded Context**:
+            - A bounded context is a specific aspect or `"sub-domain"` within a larger system.
+            - It defines what aspects of the system are important to consider.
+
+          2. **Domain Model**:
+            - The domain model represents the core concepts and relationships within a bounded context.
+            - It is the central hub for all business logic.
+
+          3. **Value Objects**:
+            - Value objects represent immutable, distinct instances that have meaning in the domain (e.g., money, address).
+
+          4. **Entities**:
+            - Entities are objects that have their own identity, state, and behavior.
+            - They can be updated or modified independently.
+
+          5. **Aggregates**:
+              - A cluster of associated objects that we treat as a unit for the purpose of data changes, transactions or queries
+              - `Entities` and `Value Objects` are clustered together into aggregates
+              - The boundary is how far fully consistuted entities are in the aggregate.
+              - **DESIGN GOALS:**
+                - Provide enough info to enforce model invariants within a boundary
+                - Execute `Use Cases`
+                - Ensure decent database performance
+                - Provide enough info to transform a `Domain Entity` to a `DTO`
+              - **AGGREGATE ROOT:**
+                - The main `Entity` that acts as the entry point to the aggregate
+                - All access to the aggregate should go through the root
+                - Dispatching `Domain Events`
+                - With all fully consistuted entities inside of the aggregate, it's possible for the aggregate root to enforce all invariants within the aggregate when it's state changes.
+              - **PERSISTENCE:**
+                - `Repositories` are responsible for handling all of the complex aggregate persistence logic.
+                  - An aggregate must always be returned fully constited from persistance.
+                    - That constraint requires us to think hard about performance constraints and what's really necessary to fully pull from the database.
+                - `Mappers` are used to map aggregates to the format required for saving it in our persistence technology.
+              - **EXAMPLE:**
+                - `users/aggregates/user.aggregate.ts`
+                - `orders/aggregates/order.aggregate.ts`
+
+          #### HOW DDD RELATES TO Nx MONOREPOS
+
+          1. **Bounded Contexts as Subdirectories**:
+            - In an Nx monorepo, each bounded context can be represented as a separate subdirectory
+            - Example: `users`, `orders`
+
+          2. **Domain Models as Separate Modules**:
+            - Each domain model can be implemented as a separate module within the bounded context directory
+            - Example: `user.model.ts`, `order.model.ts`
+
+          3. **Value Objects and Entities as Separate Files**:
+            - Value objects and entities can be represented as separate files within the domain model module
+            - Example: `users/vo/user-id.vo.ts`, `users/entities/user.entity.ts`
+
+          4. **Aggregates as Container Modules**:
+
+
+          5. **Domain Services and Repositories**:
+            - Domain services and repositories can be used to encapsulate business logic and data access.
+            - Example: `users/services/user.service.ts`, `orders/services/order.service.ts`
+
+          #### BENEFITS OF USING DDD WITH Nx MONOREPOS
+
+          1. **Improved Modularity**:
+            - Each bounded context is a separate module
+            - This makes it easier to maintain, test, and evolve individual parts of the system.
+
+          2. **Better Separation of Concerns**:
+            - DDD concepts (entities, value objects, aggregates) help keep domain logic separate from infrastructure concerns (e.g., data access)
+            - This makes it easier to understand and maintain the code.
+
+          3. **Easier Collaboration**:
+            - Shared understanding of the domain, developers can work together more effectively on different parts of the system.
+            - This makes it easier to collaborate and understand the code.
+
+          4. **More Robust Code**:
+            - DDD concepts and Nx monorepos can lead to more robust code
+            - Each module is designed to be self-contained and reusable.
+
+          #### HUGH LEVEL STRUCTURE
+
+          > 💡 Example structure for a simple e-commerce application using DDD with Nx monorepos:
+          >
+          > - In this example, each bounded context (orders and users) is represented as a separate directory within the `domains` folder.
+          > - Each domain model has its own module, which contains value objects, entities, aggregates, services, and repositories related to that domain.
+          > - Keep in mind that this is just a high-level overview of DDD concepts applied to Nx monorepos.
+          > - The specifics will vary depending on your project's requirements and complexity.
+
+            ```tree
+            project/
+            |
+            |-- apps/
+            |   |-- services/
+            |   |   |-- auth/
+            |   |   |   |-- auth.service.ts
+            |   |   |-- users/
+            |   |       |-- user.service.ts
+            |   |
+            |   |-- web/
+            |       |-- admin/
+            |       |   |-- admin.controller.ts
+            |       |
+            |       |-- portal/
+            |           |-- portal.controller.ts
+            |
+            |-- packages/
+            |   |
+            |   |-- shared/
+            |   |   |-- ui/
+            |   |      |-- button.component.ts
+            |   |      |-- input.component.ts
+            |   |
+            |   |-- utils/
+            |   |   |-- jwt/
+            |   |      |-- jwt.util.ts
+            |   |
+            |   |-- domain/
+            |       |
+            |       |-- shared/
+            |       |    |-- types/
+            |       |      |-- auth.type.ts
+            |       |
+            |       |-- auth/
+            |       |    |-- auth.domain.ts
+            |       |-- orders/
+            |       |    |-- user.entity.ts
+            |       |-- users/
+            |       |    |-- user.entity.ts
+            ```
+      - md: | #markdown
+          ### VISÃO GERAL
+
+          Domain-Driven Design (DDD) é uma abordagem para desenvolvimento de software que foca em entender o domínio de negócio e modelá-lo no código.
+          Enfatiza a criação de um entendimento compartilhado do domínio entre desenvolvedores, stakeholders de negócio e usuários.
+
+          ### CONCEITOS-CHAVE
+
+          1. Bounded Context:
+
+            - É um aspecto específico ou "subdomínio" dentro de um sistema maior.
+            - Define quais aspectos do sistema são importantes de considerar.
+
+          2. Modelo de Domínio:
+
+            - O modelo de domínio representa os conceitos centrais e os relacionamentos dentro de um contexto delimitado.
+            - É o núcleo para toda a lógica de negócio.
+
+          3. Objetos de Valor (Value Objects):
+
+            - Objetos de valor representam instâncias imutáveis e distintas que têm significado no domínio (por exemplo, dinheiro, endereço).
+            - Example: `users/vo/user-id.vo.ts`, `users/entities/user.entity.ts`
+
+          4. Entidades:
+
+            - Entidades são objetos que possuem identidade, estado e comportamento.
+            - Podem ser atualizadas ou modificadas independentemente.
+
+          5. Agregados:
+
+            - Agregados são grupos de entidades e objetos de valor que podem ser tratados como uma unidade para transações ou consultas.
+
+          ### COMO O DDD SE RELACIONA COM MONOREPOS NX
+
+          1. Contextos delimitados como subdiretórios:
+            - Em um monorepo Nx, cada contexto delimitado pode ser representado como um subdiretório
+            - Exemplo: users, orders
+
+          2. Modelos de domínio como módulos separados:
+            - Cada modelo de domínio pode ser implementado como um módulo separado dentro do diretório do contexto delimitado
+            - Exemplo: user.model.ts, order.model.ts
+
+          3. Objetos de valor e entidades como arquivos separados:
+            - Objetos de valor e entidades podem ser representados como arquivos separados dentro do módulo de modelo de domínio
+            - Exemplo: users/vo/user-id.vo.ts, users/entities/user.entity.ts
+
+          4. Agregados como módulos contêineres:
+            - Agregados podem ser implementados como módulos contêineres que agrupam entidades relacionadas, objetos de valor e lógica de negócio.
+            - Exemplo: users/aggregates/user.aggregate.ts, orders/aggregates/order.aggregate.ts
+
+          5. Serviços de domínio e repositórios:
+            - Serviços de domínio e repositórios podem ser usados para encapsular lógica de negócio e acesso a dados.
+            - Exemplo: users/services/user.service.ts, orders/services/order.service.ts
+
+          ### BENEFÍCIOS DE USAR DDD COM MONOREPOS NX
+
+          1. Melhor modularidade:
+            - Cada contexto delimitado é um módulo separado
+            - Isso facilita manter, testar e evoluir partes individuais do sistema.
+
+          2. Melhor separação de responsabilidades:
+            - Os conceitos de DDD (entidades, objetos de valor, agregados) ajudam a manter a lógica de domínio separada de preocupações de infraestrutura (por exemplo, acesso a dados)
+            - Isso facilita entender e manter o código.
+
+          3. Colaboração facilitada:
+            - Com entendimento compartilhado do domínio, os desenvolvedores podem trabalhar de forma mais eficaz em diferentes partes do sistema.
+            - Isso torna mais fácil colaborar e compreender o código.
+
+          4. Código mais robusto:
+            - Os conceitos de DDD e monorepos Nx podem levar a um código mais robusto
+            - Cada módulo é projetado para ser autocontido e reutilizável.
+
+  Aggregates > DDD:
+    desc: Cluster of associated objects that we treat as a unit for the purpose of data changes - Eric Evans
+    tags: [pattern, ddd]
+    links: [https://oreilly.com/library/view/domain-driven-design-tackling/0321125215/, https://khalilstemmler.com/articles/typescript-domain-driven-design/aggregate-design-persistence, https://github.com/stemmlerjs/white-label]
+    notes:
+      - md: | #markdown
+          # AGGREGATES
+
+          - A cluster of associated objects treated as a unit for the purpose of data changes, transactions or queries
+          - `Entities` and `Value Objects` are clustered together into aggregates
+          - The boundary is how far fully consistuted entities are in the aggregate.
+
+          ## DESIGN GOALS
+
+          - Provide enough info to enforce model invariants within a boundary
+          - Execute `Use Cases`
+          - Ensure decent database performance
+          - Provide enough info to transform a `Domain Entity` to a `DTO`
+
+          ## PERSISTENCE
+
+          - `Repositories` are responsible for handling all of the complex aggregate persistence logic.
+            - An aggregate must always be returned fully constited from persistance.
+            - That constraint requires us to think hard about performance constraints and what's really necessary to fully pull from the database.
+
+          - `Mappers` are used to map aggregates to the format required for saving it in our persistence technology.
+
+          ## AGGREGATE ROOTS
+
+          - The main `Entity` that acts as the entry point to the aggregate
+          - All access to the aggregate should go through the root
+          - Dispaches `Domain Events`
+          - With all fully consistuted entities inside allows to enforce all invariants within it when changing states
+
+          ### EXAMPLE
+
+          Given a **Vinyl Aggregate** that has 3 different relationships to other entities:
+
+            - **Vinyl** `belongs to a` **Trader** _(1-1)_
+            - **Vinyl** `has a` **Artist** _(1-1)_
+            - **Vinyl** `belongs to an` **Album** _(1-1)_
+            - **Album** `has many` **Genres** _(1-m)_
+            - **Artist** `has many` **Genres** _(1-m)_
+
+          This relationship puts **Vinyl** in the middle and makes it the main entity in this clump: the **Aggregate Root**
+
+          ```mermaid
+            flowchart LR
+              subgraph "Vinyl Aggregate"
+                style Vinyl_Agg fill:#9ae6b4,stroke:#000,stroke-width:2
+                Vinyl[Vinyl]
+                Album[Album]
+                Artist[Artist]
+                TraderId[TraderId]
+                Genres[Genres]
+              end
+
+              %% Aggregate root
+              Vinyl -- "1" --> Album
+              Vinyl -- "1" --> Artist
+              Vinyl -- "1" --> TraderId
+
+              %% Relationships to Genres (one-to-many)
+              Album -- "1" -->|has| Genres
+              Album -- "m" --> Genres
+              Artist -- "1" -->|has| Genres
+              Artist -- "m" --> Genres
+
+              %% Visual hint: mark Vinyl as root
+              Vinyl:::root
+
+              classDef root fill:#6ee7b7,stroke:#000,stroke-width:2;
+          ```

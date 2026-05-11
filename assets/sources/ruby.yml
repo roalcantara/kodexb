@@ -1,0 +1,1396 @@
+cheats:
+  Learn Ruby in Y minutes:
+    desc: A quick overview of Ruby syntax
+    tags: [rb]
+    notes:
+      - md: | #markdown
+          ## Ruby in Y minutes
+
+          ### Comments
+
+          ```ruby
+          # This is a single-line comment
+
+          =begin
+          This is a multi-line comment
+          =end
+          ```
+
+          ### Variables
+
+          ```ruby
+          name = "John"
+          age = 30
+          ```
+
+          ### Strings
+
+          ```ruby
+          single_quoted = 'Hello, #{name}'
+          double_quoted = "Hello, #{name}"
+
+          # You can combine strings using `+`, but not with other types
+          'hello ' + 'world'  #=> "hello world"
+          'hello ' + 3 #=> TypeError: can't convert Fixnum into String
+          'hello ' + 3.to_s #=> "hello 3"
+          "hello #{3}" #=> "hello 3"
+
+          # ...or combine strings and operators
+          'hello ' * 3 #=> "hello hello hello "
+
+          # ...or append to string
+          'hello' << ' world' #=> "hello world"
+          ```
+
+          ### Symbols
+
+          Symbols are immutable, reusable constants represented internally by an
+          integer value. They're often used instead of strings to efficiently convey
+          specific, meaningful values.
+
+          ```ruby
+          :pending.class #=> Symbol
+
+          status = :pending
+
+          status == :pending #=> true
+
+          status == 'pending' #=> false
+
+          status == :approved #=> false
+
+          # Strings can be converted into symbols and vice versa.
+          status.to_s #=> "pending"
+          "argon".to_sym #=> :argon
+          ```
+
+          ### Numbers
+
+          ```ruby
+          integer = 42
+          float = 3.14
+          ```
+
+          #### Some basic arithmetic
+
+          ```ruby
+          1 + 1 #=> 2
+          8 - 1 #=> 7
+          10 * 2 #=> 20
+          35 / 5 #=> 7
+          2 ** 5 #=> 32
+          5 % 3 #=> 2
+
+          # Arithmetic is just syntactic sugar
+          # for calling a method on an object
+          1.+(3) #=> 4
+          10.* 5 #=> 50
+          100.methods.include?(:/) #=> true
+          ```
+
+          #### Comparison
+
+          ```ruby
+          # Equality
+          1 == 1 #=> true
+          2 == 1 #=> false
+
+          # Inequality
+          1 != 1 #=> false
+          2 != 1 #=> true
+
+          # Apart from false itself, nil is the only other 'falsey' value
+
+          !!nil   #=> false
+          !!false #=> false
+          !!0     #=> true
+          !!""    #=> true
+
+          # More comparisons
+          1 < 10 #=> true
+          1 > 10 #=> false
+          2 <= 2 #=> true
+          2 >= 2 #=> true
+
+          # Combined comparison operator (returns `1` when the first argument is greater,
+          # `-1` when the second argument is greater, and `0` otherwise)
+          1 <=> 10 #=> -1 (1 < 10)
+          10 <=> 1 #=> 1 (10 > 1)
+          1 <=> 1 #=> 0 (1 == 1)
+          ```
+
+          #### Bitwise operators
+
+          ```ruby
+          3 & 5 #=> 1
+          3 | 5 #=> 7
+          3 ^ 5 #=> 6
+          ```
+
+          ### Arrays
+
+          ```ruby
+          # This is an array.
+          array = [1, 2, 3, 4, 5] #=> [1, 2, 3, 4, 5]
+
+          # Arrays can contain different types of items.
+          [1, 'hello', false] #=> [1, "hello", false]
+
+          # You might prefer %w instead of quotes
+          %w[foo bar baz] #=> ["foo", "bar", "baz"]
+
+          # Arrays can be indexed.
+          # From the front...
+          array[0] #=> 1
+          array.first #=> 1
+          array[12] #=> nil
+
+          # ...or from the back...
+          array[-1] #=> 5
+          array.last #=> 5
+
+          # ...or with a start index and length...
+          array[2, 3] #=> [3, 4, 5]
+
+          # ...or with a range...
+          array[1..3] #=> [2, 3, 4]
+
+          # You can reverse an Array.
+          # Return a new array with reversed values
+          [1,2,3].reverse #=> [3,2,1]
+          # Reverse an array in place to update variable with reversed values
+          a = [1,2,3]
+          a.reverse! #=> a==[3,2,1] because of the bang ('!') call to reverse
+
+          # Like arithmetic, [var] access is just syntactic sugar
+          # for calling a method '[]' on an object.
+          array.[] 0 #=> 1
+          array.[] 12 #=> nil
+
+          # You can add to an array...
+          array << 6 #=> [1, 2, 3, 4, 5, 6]
+          # Or like this
+          array.push(6) #=> [1, 2, 3, 4, 5, 6]
+
+          # ...and check if an item exists in an array
+          array.include?(1) #=> true
+          ```
+
+          ### Hashes
+
+          Hashes are Ruby's primary dictionary with key/value pairs.
+
+          ```ruby
+          # Hashes are denoted with curly braces.
+          hash = { 'color' => 'green', 'number' => 5 }
+
+          hash.keys #=> ['color', 'number']
+
+          # Hashes can be quickly looked up by key.
+          hash['color'] #=> "green"
+          hash['number'] #=> 5
+
+          # Asking a hash for a key that doesn't exist returns nil.
+          hash['nothing here'] #=> nil
+
+          # When using symbols for keys in a hash, you can use an alternate syntax.
+
+          hash = { :defcon => 3, :action => true }
+          hash.keys #=> [:defcon, :action]
+
+          hash = { defcon: 3, action: true }
+          hash.keys #=> [:defcon, :action]
+
+          # Check existence of keys and values in hash
+          hash.key?(:defcon) #=> true
+          hash.value?(3) #=> true
+          ```
+
+          ### Control Structures
+
+          ```ruby
+          if condition
+            # code
+          elsif condition
+            # code
+          else
+            # code
+          end
+          ```
+
+          ### Case construct
+
+          ```ruby
+          grade = 'B'
+
+          case grade
+          when 'A'
+            puts 'Way to go kiddo'
+          when 'B'
+            puts 'Better luck next time'
+          when 'C'
+            puts 'You can do better'
+          when 'D'
+            puts 'Scraping through'
+          when 'F'
+            puts 'You failed!'
+          else
+            puts 'Alternative grading system, eh?'
+          end
+          #=> "Better luck next time"
+          ```
+
+          #### Cases can also use ranges
+
+          ```ruby
+          grade = 82
+          case grade
+          when 90..100
+            puts 'Hooray!'
+          when 80...90
+            puts 'OK job'
+          else
+            puts 'You failed!'
+          end
+          #=> "OK job"
+          ```
+
+          ### Loops
+
+          In Ruby, traditional `for` loops aren't very common.
+
+          ```ruby
+          # Instead, these basic loops are implemented using enumerable, which hinges on `each`.
+          (1..5).each do |counter|
+            puts "iteration #{counter}"
+          end
+
+          # Which is roughly equivalent to the following, which is unusual to see in Ruby.
+          for counter in 1..5
+            puts "iteration #{counter}"
+          end
+
+          # You can also surround blocks in curly brackets.
+          (1..5).each { |counter| puts "iteration #{counter}" }
+
+          # The contents of data structures can also be iterated using each.
+          array.each do |element|
+            puts "#{element} is part of the array"
+          end
+          hash.each do |key, value|
+            puts "#{key} is #{value}"
+          end
+
+          # If you still need an index you can use 'each_with_index' and define an index
+          # variable.
+          array.each_with_index do |element, index|
+            puts "#{element} is number #{index} in the array"
+          end
+
+          counter = 1
+          while counter <= 5 do
+            puts "iteration #{counter}"
+            counter += 1
+          end
+          #=> iteration 1
+          #=> iteration 2
+          #=> iteration 3
+          #=> iteration 4
+          #=> iteration 5
+          ```
+
+          ### Functions
+
+          ```ruby
+          def greet(name)
+            "Hello, #{name}"
+          end
+          ```
+
+          ### Classes
+
+          ```ruby
+          class Person
+            def initialize(name)
+              @name = name
+            end
+
+            def greet
+              "Hello, #{@name}"
+            end
+          end
+          ```
+
+          ### Modules
+
+          ```ruby
+          module MyModule
+            def my_method
+              # code
+            end
+          end
+          ```
+
+          ### Exception handling
+
+          ```ruby
+          begin
+            # Code here that might raise an exception
+            raise NoMemoryError, 'You ran out of memory.'
+          rescue NoMemoryError => exception_variable
+            puts 'NoMemoryError was raised', exception_variable
+          rescue RuntimeError => other_exception_variable
+            puts 'RuntimeError was raised now'
+          else
+            puts 'This runs if no exceptions were thrown at all'
+          ensure
+            puts 'This code always runs no matter what'
+          end
+          ```
+
+          ### Methods
+
+          ```ruby
+          def double(x)
+            x * 2
+          end
+
+          # Methods (and blocks) implicitly return the value of the last statement.
+          double(2) #=> 4
+
+          # Parentheses are optional where the interpretation is unambiguous.
+          double 3 #=> 6
+
+          double double 3 #=> 12
+
+          def sum(x, y)
+            x + y
+          end
+
+          # Method arguments are separated by a comma.
+          sum 3, 4 #=> 7
+
+          sum sum(3, 4), 5 #=> 12
+
+          # yield
+          # All methods have an implicit, optional block parameter.
+          # It can be called with the 'yield' keyword.
+          def surround
+            puts '{'
+            yield
+            puts '}'
+          end
+
+          surround { puts 'hello world' }
+
+          #=> {
+          #=> hello world
+          #=> }
+          ```
+
+          ### File I/O
+
+          ```ruby
+          File.open("file.txt", "w") do |file|
+            file.write("Hello, world!")
+          end
+          ```
+
+          ### Regular Expressions
+
+          ```ruby
+          /pattern/.match("string")
+          ```
+
+          ### RubyGems
+
+          ```ruby
+          gem install my_gem
+          require "my_gem"
+          ```
+
+          ### Ranges
+
+          ```ruby
+          (1..5).each do |i|
+            # code
+          end
+          ```
+  puts %x{ cmd }:
+    desc: Execute the command and returns stdout (but not stderr)
+    tags: [rb, shell]
+    notes:
+      rb: | #ruby
+        files = %x{ ls docs }
+
+        p files # "demo\ndocs\nimages\n"
+  system(cmd, args):
+    desc: Executes the command in a subshell. Returns true for zero exit code, false for non-zero exit code, nil if it fails
+    tags: [rb]
+    notes:
+      rb: | #ruby
+        result = system 'ls', '-l', '.'
+
+        # It doesn't prints the command output. You'll only know if the command succeeded or not.
+        puts "result: #{result}"
+
+        # result: true
+  test/unit:
+    desc: The test/unit framework in Ruby is a standard library for writing and executing unit tests
+    tags: [rb]
+    notes:
+      - md: | #markdown
+          > It provides a way to define test cases and various assertions to check for expected outcomes
+
+          ## Basic Test Case
+
+          ```ruby
+          require 'test/unit'
+
+          class MyTest < Test::Unit::TestCase
+            def test_addition
+              result = 2 + 2
+              assert_equal(4, result)
+            end
+          end
+          ```
+
+          ## Testing for Exceptions:
+
+          ```ruby
+          class ExceptionTest < Test::Unit::TestCase
+            def test_exception
+              assert_raise(RuntimeError) do
+                raise 'Error'
+              end
+            end
+          end
+          ```
+
+          ## Common Assertion Methods
+
+          ```ruby
+          assert(test, [msg]):
+          # Ensures the test is true. msg is the message to display if the assertion fails.
+
+          assert_equal(expected, actual, [msg]):
+          # Asserts that expected and actual are equal.
+
+          assert_not_equal(expected, actual, [msg]):
+          # Asserts that expected and actual are not equal.
+
+          assert_same(expected, actual, [msg]):
+          # Asserts that expected and actual are the same object.
+
+          assert_not_same(expected, actual, [msg]):
+          # Asserts that expected and actual are not the same object.
+
+          assert_nil(obj, [msg]):
+          # Asserts that obj is nil.
+
+          assert_not_nil(obj, [msg]):
+          # Asserts that obj is not nil.
+
+          assert_raise(exception1, exception2, ...) { block }:
+          # Asserts that the given block raises one of the specified exceptions.
+
+          assert_nothing_raised(exception1, exception2, ...) { block }:
+          # Asserts that the given block does not raise any of the specified exceptions.
+
+          assert_respond_to(obj, method, [msg]):
+          # Asserts that obj responds to method.
+          ```
+  str.chars.sort.join:
+    desc: Sort a string alphabetically
+    tags: [rb]
+    notes:
+      md: | #markdown
+        ## Sort a string alphabetically
+
+        ```ruby
+        str = "hello"
+        sorted = str.chars.sort.join
+
+        p sorted # "ehllo"
+        ```
+
+        ## Sorting Case-Insensitive
+
+        ```ruby
+        str = "HELLO"
+        sorted = str.chars.sort_by(&:downcase).join
+
+        p sorted # "ehllo"
+        ```
+  Set.new:
+    desc: A collection of unordered values with no duplicates
+    tags: [rb]
+    notes:
+      md: | #markdown
+        > A collection of unordered values with no duplicates.
+        > It's part of the standard library, so you need to require 'set' before using it.
+
+        ## Creating a New Set
+
+        Create a new set with an array of elements. The set will automatically remove duplicate elements.
+
+        ```ruby
+        require 'set'
+
+        my_set = Set.new([1, 2, 2, 3, 4])
+        puts my_set.inspect  # Output: #<Set: {1, 2, 3, 4}>
+        ```
+
+        ## Adding and Removing Elements
+
+        Add elements to a set using the add or << method
+
+        ```ruby
+        require 'set'
+
+        my_set = Set.new
+        my_set.add("apple")
+        my_set << "banana"
+        my_set << "apple"  # Duplicate, won't be added
+
+        puts my_set.inspect  # Output: #<Set: {"apple", "banana"}>
+        ```
+
+        ## Checking for an Element
+
+        Use the include? method to check if an element is present in the set
+
+        ```ruby
+        require 'set'
+
+        my_set = Set.new([1, 2, 3, 4])
+        puts my_set.include?(3)  # Output: true
+        puts my_set.include?(5)  # Output: false
+        ```
+
+        ## Advanced Features of Set
+
+        ### 1. Set Union, Intersection, and Difference
+
+        Sets support union `|`, intersection `&`, and difference `-` operations.
+
+        ```ruby
+        require 'set'
+
+        set1 = Set.new([1, 2, 3])
+        set2 = Set.new([3, 4, 5])
+
+        union = set1 | set2
+        intersection = set1 & set2
+        difference = set1 - set2
+
+        puts union.inspect         # Output: #<Set: {1, 2, 3, 4, 5}>
+        puts intersection.inspect  # Output: #<Set: {3}>
+        puts difference.inspect    # Output: #<Set: {1, 2}>
+        ````
+
+        ### 2. Subset and Superset Checking
+
+        Check if a set is a subset or superset of another set
+
+        ```ruby
+        require 'set'
+
+        set1 = Set.new([1, 2])
+        set2 = Set.new([1, 2, 3, 4])
+
+        puts set1.subset?(set2)    # Output: true
+        puts set2.superset?(set1)  # Output: true
+        ```
+
+        ### 3. Set Equality
+
+        Check if two sets are equal
+
+        ```ruby
+        require 'set'
+
+        set1 = Set.new([1, 2, 3])
+        set2 = Set.new([3, 2, 1])
+
+        puts set1 == set2  # Output: true
+        ```
+
+        ### 4. Set Iteration
+
+        Iterate over the elements of a set
+
+        ```ruby
+        require 'set'
+
+        my_set = Set.new([1, 2, 3])
+
+        my_set.each do |element|
+          puts element
+        end
+        ```
+
+        ### 5. Set Conversion
+
+        Convert a set to an array or vice versa
+
+        ```ruby
+        require 'set'
+
+        my_set = Set.new([1, 2, 3])
+
+        array = my_set.to_a
+        set = array.to_set
+        ```
+commands:
+  Installing Ruby On Rails on Apple Silicon:
+    desc: Install Ruby On Rails on macOS 14 Sonoma (Apple Silicon, M1, M2)
+    tags: [rb]
+    links: [https://gorails.com/setup/macos/14-sonoma]
+    notes:
+      - md: |
+          ## Install Ruby On Rails on macOS 14 Sonoma (Apple Silicon, M1, M2)
+
+          ### 1. Install Homebrew
+          ```bash
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          ```
+
+          ### 2. Install Ruby
+          ```bash
+          brew install rbenv
+          rbenv init
+          echo 'eval "$(rbenv init -)"' >> ~/.zshrc
+          source ~/.zshrc
+          rbenv install 3.1.0
+          rbenv global 3.1.0
+          ```
+
+          ### 3. Install Rails
+          ```bash
+          gem install rails
+          ```
+
+          ### 4. Verify Installation
+          ```bash
+          ruby -v
+          rails -v
+          ```
+
+          ### 5. Create a new Rails app
+          ```bash
+          rails new myapp
+          cd myapp
+          rails server
+          ```
+
+          ### 6. Open your browser and visit `http://localhost:3000` to see your new Rails app.
+
+          ### 7. You're all set! 🎉
+
+          ### 8. If you face any issues, please refer to the official [Ruby on Rails installation guide](https://guides.rubyonrails.org/getting_started.html).
+
+          ### 9. If you're using zsh, you might need to add the following to your `~/.zshrc` file:
+          ```bash
+          export PATH="$HOME/.rbenv/bin:$PATH"
+          eval "$(rbenv init - zsh)"
+          ```
+
+          ### 10. Restart your terminal and you're good to go!
+
+          ### 11. If you're using bash, you might need to add the following to your `~/.bash_profile` file:
+          ```bash
+          export PATH="$HOME/.rbenv/bin:$PATH"
+          eval "$(rbenv init -)"
+          ```
+
+          ### 12. Restart your terminal and you're good to go!
+
+          ### 13. That's it! You've successfully installed Ruby on Rails on macOS 14 Sonoma (Apple Silicon, M1, M2).
+
+          ### 14. Enjoy coding! 🚀
+  Ruby Strings and Symbols | Overview:
+    desc: A quick overview of Ruby's Strings and Symbols
+    tags: [rb]
+    links:
+      - Learn Ruby in Y Minutes: https://learnxinyminutes.com/docs/ruby
+    notes:
+      - md: |
+          ## Strings
+
+          ```ruby
+          single_quoted = 'Hello, #{name}'
+          double_quoted = "Hello, #{name}"
+
+          # You can combine strings using `+`, but not with other types
+          'hello ' + 'world'  #=> "hello world"
+          'hello ' + 3 #=> TypeError: can't convert Fixnum into String
+          'hello ' + 3.to_s #=> "hello 3"
+          "hello #{3}" #=> "hello 3"
+
+          # ...or combine strings and operators
+          'hello ' * 3 #=> "hello hello hello "
+
+          # ...or append to string
+          'hello' << ' world' #=> "hello world"
+          ```
+      - md: |
+
+          ## Symbols
+
+          Symbols are immutable, reusable constants represented internally by an
+          integer value. They're often used instead of strings to efficiently convey
+          specific, meaningful values.
+
+          ```ruby
+          :pending.class #=> Symbol
+
+          status = :pending
+
+          status == :pending #=> true
+
+          status == 'pending' #=> false
+
+          status == :approved #=> false
+
+          # Strings can be converted into symbols and vice versa.
+          status.to_s #=> "pending"
+          "argon".to_sym #=> :argon
+          ```
+  Ruby Classes | Overview:
+    desc: Ruby classes are the blueprints. In creating a custom class, you are creating a new data type
+    tags: [rb]
+    links:
+      - Learn Ruby in Y Minutes: https://learnxinyminutes.com/docs/ruby
+      - The Pragmatic Programmer's Guide: https://ruby-doc.com/docs/ProgrammingRuby/html/classes.html
+      - Ruby Classes, Objects & Methods: https://medium.com/codex/ruby-classes-objects-methods-4568b9f443d7
+    notes:
+      - ruby: |
+          class Human
+
+            # Class variable are shared by all class' instances
+            @@species = 'H. sapiens'
+
+            # Ctor
+            def initialize(name, age = 0)
+              # Assigns instance variable
+              @name = name
+              @age = age
+            end
+
+            # Basic setter method
+            def name=(name)
+              @name = name
+            end
+
+            # Basic getter method
+            def name
+              @name
+            end
+
+            # Which can be encapsulated as follows
+            attr_accessor :name
+
+            # Getter/setter as well
+            attr_reader :name
+            attr_writer :name
+
+            # Class methods cannot be called by instances
+            def self.say(msg)
+              puts msg
+            end
+
+            def species
+              @@species
+            end
+          end
+
+          # Instantiating of a class
+          jim = Human.new('Jim Halpert')
+          dwight = Human.new('Dwight K. Schrute')
+
+          # Calling object's methods
+          jim.species #=> "H. sapiens"
+          jim.name #=> "Jim Halpert"
+          jim.name = "Jim Halpert II" #=> "Jim Halpert II"
+          jim.name #=> "Jim Halpert II"
+          dwight.species #=> "H. sapiens"
+          dwight.name #=> "Dwight K. Schrute"
+
+          # Calling class's methods
+          Human.say('Hi') #=> "Hi"
+      - ruby: |
+          class Book
+            attr_accessor :title, :author, :description, :rating
+
+            #define change_author method to accept arguments:
+            def change_author(obj, new_author)
+              obj.author = new_author
+            end
+          end
+
+          #create new Book object and assign to first_book variable:
+          first_book = Book.new()
+          first_book.title = "Really Great Book"
+          first_book.author = "Denali Balser"
+          first_book.description "best book ever"
+          first_book.rating = 100
+
+          #call change_author method on first_book object with obj and new_author arguments:
+          first_book.change_author(first_book, "J. R. R. Tolkien")
+
+          #display the author of first_book object in console:
+          puts first_book.author #=> J. R. R. Tolkien
+  Ruby's (start..stop).each do |i|:
+    desc: creates a range that includes both start and stop values. It's an inclusive range.
+    tags: [rb]
+    notes:
+      - md: |
+          ## Ruby uses (start..stop) range object directly in loops and iterates over each value within the range, including both ends.
+
+          ```ruby
+          (1..5).each do |i|
+              puts i
+          end
+          # Output: 1, 2, 3, 4, 5
+          # Notice that 5 is included in the output.
+          ```
+  Setup bundle:
+    desc: Setup bundle
+    tags: [rb]
+    links: [https://bundler.io/guides/getting_started.html]
+    notes:
+      - sh: |
+
+          # Add the bundle gem
+          gem install bundle
+
+          # Create a new Ruby project
+          bundle init
+
+          # Install the gems
+          bundle install
+  puts `cmd`:
+    desc: Execute the command and returns stdout (but not stderr)
+    tags: [rb, shell]
+    notes:
+      ruby: |
+        files = `ls docs`
+
+        p files # "demo\ndocs\nimages\n"
+  Ruby Project Setup Guide (No Rails):
+    desc: A guide to setting up a Ruby project
+    tags: [rb]
+    notes:
+      - md: |
+          # Ruby Project Setup Guide (No Rails)
+
+          ## Prerequisites
+          - Mise installed (`curl https://mise.jdx.dev/install.sh | sh`)
+          - Git installed
+
+          ## Step-by-Step Setup
+
+          ### 1. Create and navigate to project directory
+          ```bash
+          mkdir -p ~/Work/ruby/demo && cd ~/Work/ruby/demo
+          ```
+
+          ### 2. Setup Ruby with Mise
+          ```bash
+          mise use ruby@latest
+          mise install
+          ```
+
+          ### 3. Initialize Git repository
+          ```bash
+          git init && git branch -M main
+          ```
+
+          ### 4. Create project structure
+          ```bash
+          mkdir -p lib/demo test bin
+          ```
+
+          ### 5. Create Gemfile
+          ```bash
+          cat > Gemfile << 'EOF'
+          # frozen_string_literal: true
+
+          source 'https://rubygems.org'
+
+          ruby '>= 3.3.0'
+
+          gem 'minitest', '~> 5.0'
+          gem 'minitest-reporters', '~> 1.6'
+
+          group :development do
+            gem 'rubocop', '~> 1.50', require: false
+            gem 'rubocop-minitest', '~> 0.30', require: false
+            gem 'rubocop-performance', '~> 1.15', require: false
+          end
+
+          group :test do
+            gem 'simplecov', '~> 0.21', require: false
+          end
+          EOF
+          ```
+
+          ### 6. Create .ruby-version file
+          ```bash
+          echo "3.3.0" > .ruby-version
+          ```
+
+          ### 7. Create .gitignore
+          ```bash
+          cat > .gitignore << 'EOF'
+          # Dependencies
+          vendor/
+          .bundle/
+          Gemfile.lock
+
+          # Coverage reports
+          coverage/
+
+          # Logs
+          *.log
+
+          # OS generated files
+          .DS_Store
+          .DS_Store?
+          ._*
+          .Spotlight-V100
+          .Trashes
+          ehthumbs.db
+          Thumbs.db
+
+          # IDE files
+          .vscode/
+          .idea/
+          *.swp
+          *.swo
+          *~
+
+          # Temporary files
+          tmp/
+          *.tmp
+          *.bak
+          EOF
+          ```
+
+          ### 8. Install gems
+          ```bash
+          bundle install
+          ```
+
+          ### 9. Create main library file
+          ```bash
+          cat > lib/demo.rb << 'EOF'
+          # frozen_string_literal: true
+
+          require_relative 'demo/version'
+
+          module Demo
+            class Error < StandardError; end
+
+            def self.hello(name = 'World')
+              "Hello, #{name}!"
+            end
+          end
+          EOF
+          ```
+
+          ### 10. Create version file
+          ```bash
+          cat > lib/demo/version.rb << 'EOF'
+          # frozen_string_literal: true
+
+          module Demo
+            VERSION = '0.1.0'
+          end
+          EOF
+          ```
+
+          ### 11. Create test helper
+          ```bash
+          cat > test/test_helper.rb << 'EOF'
+          # frozen_string_literal: true
+
+          require 'simplecov'
+          SimpleCov.start
+
+          $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
+          require 'demo'
+
+          require 'minitest/autorun'
+          require 'minitest/reporters'
+
+          Minitest::Reporters.use! [Minitest::Reporters::DefaultReporter.new(color: true)]
+          EOF
+          ```
+
+          ### 12. Create sample test
+          ```bash
+          cat > test/demo_test.rb << 'EOF'
+          # frozen_string_literal: true
+
+          require 'test_helper'
+
+          class DemoTest < Minitest::Test
+            def test_hello_with_default
+              assert_equal 'Hello, World!', Demo.hello
+            end
+
+            def test_hello_with_name
+              assert_equal 'Hello, Ruby!', Demo.hello('Ruby')
+            end
+
+            def test_version_exists
+              refute_nil Demo::VERSION
+            end
+          end
+          EOF
+          ```
+
+          ### 13. Create RuboCop configuration
+          ```bash
+          cat > .rubocop.yml << 'EOF'
+          require:
+            - rubocop-minitest
+            - rubocop-performance
+
+          AllCops:
+            TargetRubyVersion: 3.3
+            NewCops: enable
+            Exclude:
+              - 'vendor/**/*'
+              - 'tmp/**/*'
+
+          Style/Documentation:
+            Enabled: false
+
+          Style/FrozenStringLiteralComment:
+            Enabled: true
+
+          Layout/LineLength:
+            Max: 120
+
+          Metrics/MethodLength:
+            Max: 15
+
+          Metrics/BlockLength:
+            Exclude:
+              - 'test/**/*'
+          EOF
+          ```
+
+          ### 14. Create Rakefile for common tasks
+          ```bash
+          cat > Rakefile << 'EOF'
+          # frozen_string_literal: true
+
+          require 'rake/testtask'
+          require 'rubocop/rake_task'
+
+          Rake::TestTask.new(:test) do |t|
+            t.libs << 'test'
+            t.libs << 'lib'
+            t.test_files = FileList['test/**/*_test.rb']
+          end
+
+          RuboCop::RakeTask.new
+
+          task default: %i[test rubocop]
+          EOF
+          ```
+
+          ### 15. Create executable file (optional)
+          ```bash
+          cat > bin/demo << 'EOF'
+          #!/usr/bin/env ruby
+          # frozen_string_literal: true
+
+          require_relative '../lib/demo'
+
+          puts Demo.hello(ARGV[0])
+          EOF
+
+          chmod +x bin/demo
+          ```
+
+          ### 16. Run tests to verify setup
+          ```bash
+          bundle exec rake test
+          ```
+
+          ### 17. Run RuboCop to check code style
+          ```bash
+          bundle exec rubocop
+          ```
+
+          ### 18. Initial Git commit
+          ```bash
+          git add .
+          git commit -m "Initial commit: Ruby project setup with Mise, Minitest, and RuboCop"
+          ```
+
+          ## Usage Examples
+
+          ### Run tests
+          ```bash
+          bundle exec rake test
+          # or
+          bundle exec ruby -Ilib:test test/demo_test.rb
+          ```
+
+          ### Run RuboCop
+          ```bash
+          bundle exec rubocop
+          bundle exec rubocop -a  # Auto-correct
+          ```
+
+          ### Run all checks
+          ```bash
+          bundle exec rake  # Runs both tests and RuboCop
+          ```
+
+          ### Use the executable
+          ```bash
+          ./bin/demo
+          ./bin/demo "Ruby Developer"
+          ```
+
+          ## Project Structure
+          ```
+          demo/
+          ├── .mise.toml
+          ├── .ruby-version
+          ├── .gitignore
+          ├── .rubocop.yml
+          ├── Gemfile
+          ├── Gemfile.lock
+          ├── Rakefile
+          ├── bin/
+          │   └── demo
+          ├── lib/
+          │   ├── demo.rb
+          │   └── demo/
+          │       └── version.rb
+          └── test/
+              ├── test_helper.rb
+              └── demo_test.rb
+          ```
+  Ruby Project Setup with `bundle gem`:
+    desc: A guide to setting up a Ruby project with `bundle gem`
+    tags: [rb]
+    notes:
+      - md: |
+          # Ruby Project Setup with `bundle gem`
+
+          ## Prerequisites
+          - Mise installed (`curl https://mise.jdx.dev/install.sh | sh`)
+          - Ruby and Bundler installed
+
+          ## Step-by-Step Setup
+
+          ### 1. Navigate to your workspace
+          ```bash
+          cd ~/Work/ruby
+          ```
+
+          ### 2. Create project with bundle gem
+          ```bash
+          bundle gem demo --test=minitest --ci=github --linter=rubocop --changelog --mit
+          cd demo
+          ```
+
+          ### 3. Setup Ruby version with Mise
+          ```bash
+          mise use ruby@latest
+          mise install
+          ```
+
+          ### 4. Update .ruby-version file
+          ```bash
+          echo "3.4.6" > .ruby-version
+          ```
+
+          ### 5. Update Gemfile for better development experience
+          ```bash
+          cat > Gemfile << 'EOF'
+          # frozen_string_literal: true
+
+          source "https://rubygems.org"
+
+          # Specify your gem's dependencies in demo.gemspec
+          gemspec
+
+          group :development do
+            gem "irb"
+            gem "rake", "~> 13.0"
+            gem "rubocop", "~> 1.21"
+            gem 'minitest-reporters', '~> 1.6'
+          end
+
+          group :test do
+            gem "minitest", "~> 5.16"
+            gem 'simplecov', '~> 0.21', require: false
+          end
+          EOF
+          ```
+
+          ### 6. Update test helper for better output
+          ```bash
+          cat > test/test_helper.rb << 'EOF'
+          # frozen_string_literal: true
+
+          require 'simplecov'
+          SimpleCov.start
+
+          $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
+          require 'demo'
+
+          require 'minitest/autorun'
+          require 'minitest/reporters'
+
+          Minitest::Reporters.use! [Minitest::Reporters::DefaultReporter.new(color: true)]
+          EOF
+          ```
+
+          ### 7. Install dependencies
+          ```bash
+          bundle install
+          ```
+
+          ### 8. Update the main test file
+          ```bash
+          cat > test/test_demo.rb << 'EOF'
+          # frozen_string_literal: true
+
+          require 'test_helper'
+
+          class TestDemo < Minitest::Test
+            def test_that_it_has_a_version_number
+              refute_nil ::Demo::VERSION
+            end
+
+            def test_hello_method
+              assert_equal 'Hello, World!', Demo.hello
+            end
+
+            def test_hello_with_name
+              assert_equal 'Hello, Ruby!', Demo.hello('Ruby')
+            end
+          end
+          EOF
+          ```
+
+          ### 9. Add a simple method to the main module
+          ```bash
+          cat > lib/demo.rb << 'EOF'
+          # frozen_string_literal: true
+
+          require_relative 'demo/version'
+
+          module Demo
+            class Error < StandardError; end
+
+            def self.hello(name = 'World')
+              "Hello, #{name}!"
+            end
+          end
+          EOF
+          ```
+
+          ### 10. Update RuboCop configuration (optional)
+          ```bash
+          cat >> .rubocop.yml << 'EOF'
+
+          Layout/LineLength:
+            Max: 120
+
+          Metrics/MethodLength:
+            Max: 15
+
+          Style/Documentation:
+            Enabled: false
+          EOF
+          ```
+
+          ### 11. Run tests to verify setup
+          ```bash
+          bundle exec rake test
+          ```
+
+          ### 12. Run RuboCop to check code style
+          ```bash
+          bundle exec rubocop
+          ```
+
+          ### 13. Commit the initial setup
+          ```bash
+          git add .
+          git commit -m "Update project setup with Mise, enhanced testing, and sample code"
+          ```
+
+          ## Usage Examples
+
+          ### Run tests
+          ```bash
+          bundle exec rake test
+          bundle exec rake  # Runs all default tasks
+          ```
+
+          ### Run RuboCop with auto-fix
+          ```bash
+          bundle exec rubocop -a
+          ```
+
+          ### Build and install gem locally
+          ```bash
+          bundle exec rake build
+          bundle exec rake install
+          ```
+
+          ### Release gem (when ready)
+          ```bash
+          bundle exec rake release
+          ```
+
+          ## What `bundle gem` Created
+
+          ```
+          demo/
+          ├── .github/
+          │   └── workflows/
+          │       └── main.yml         # CI setup
+          ├── .gitignore              # Comprehensive gitignore
+          ├── .rubocop.yml           # RuboCop configuration
+          ├── .ruby-version          # Ruby version file
+          ├── CHANGELOG.md           # Changelog template
+          ├── CODE_OF_CONDUCT.md     # Code of conduct
+          ├── Gemfile                # Dependencies
+          ├── LICENSE.txt            # MIT license
+          ├── README.md              # Project documentation
+          ├── Rakefile               # Build tasks
+          ├── bin/
+          │   ├── console            # Interactive console
+          │   └── setup              # Setup script
+          ├── demo.gemspec           # Gem specification
+          ├── lib/
+          │   ├── demo.rb            # Main module
+          │   └── demo/
+          │       └── version.rb     # Version file
+          └── test/
+              ├── test_helper.rb     # Test configuration
+              └── test_demo.rb       # Sample tests
+          ```
+
+          ## Key Benefits of This Approach
+
+          - **Instant setup**: `bundle gem` creates everything you need
+          - **Best practices**: Follows Ruby gem conventions
+          - **CI ready**: GitHub Actions workflow included
+          - **Professional structure**: LICENSE, CODE_OF_CONDUCT, proper documentation
+          - **Gem distribution ready**: Can publish to RubyGems.org when ready
+          - **Version management**: Proper Ruby version pinning with Mise

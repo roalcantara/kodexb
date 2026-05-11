@@ -1,0 +1,519 @@
+bookmarks:
+  https://conventionalcommits.org:
+    desc: Conventional Commits
+    tags: [git]
+    links:
+      - https://conventionalcommits.org
+      - https://jorisroovers.com/gitlint
+      - https://pre-commit.com
+    notes:
+      - md: |
+          ### Commit Message Format
+
+          The commit message should be structured as follows:
+
+          ```
+          <type>[optional scope]: <description>
+
+          [optional body]
+
+          [optional footer]
+          ```
+
+          ### Commit Message Components
+
+          1. **Type**: The type of change being made. It can be one of the following:
+            - **feat**: A new feature
+            - **fix**: A bug fix
+            - **docs**: Documentation changes
+            - **style**: Changes that do not affect the meaning of the code (white-space, formatting, etc.)
+            - **refactor**: Code changes that neither fix a bug nor add a feature
+            - **test**: Adding missing tests or correcting existing tests
+            - **chore**: Changes
+
+          2. **Scope**: The scope of the change. It can be anything specifying the place of the commit change.
+          3. **Description**: A short description of the change.
+          4. **Body**: A more detailed description of the change.
+          5. **Footer**: Additional information about the change, such as breaking changes or issues fixed.
+  https://keepachangelog.com:
+    desc: Keep a Changelog | Don't let your friends dump git logs into changelogs
+    tags: [git]
+  https://learngitbranching.js.org:
+    desc: Learn Git Branching
+    tags: [git, xp]
+  https://cli.github.com/manual:
+    tags: [coding]
+    desc: GitHub CLI | Manual
+  https://semantic-release.gitbook.io:
+    desc: Fully automated version management and package publishing
+    tags: [doc, semantic_release]
+    links:
+      - Configuration: https://semantic-release.gitbook.io/semantic-release/usage/configuration#configuration
+      - Configuration:CI: https://semantic-release.gitbook.io/semantic-release/usage/ci-configuration
+      - Github Actions: https://semantic-release.gitbook.io/semantic-release/recipes/ci-configurations/github-actions
+    notes:
+      - md: |
+          | Commit message                                                                                                                                                                                   | Release type                                                                                                    |
+          | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+          | `fix(pencil): stop graphite breaking when too much pressure applied`                                                                                                                             | ~~Patch~~ Fix Release                                                                                           |
+          | `feat(pencil): add 'graphiteWidth' option`                                                                                                                                                       | ~~Minor~~ Feature Release                                                                                       |
+          | `perf(pencil): remove graphiteWidth option`<br><br>`BREAKING CHANGE: The graphiteWidth option has been removed.`<br>`The default graphite width of 10mm is always used for performance reasons.` | ~~Major~~ Breaking Release <br /> (Note that the `BREAKING CHANGE: ` token must be in the footer of the commit) |
+
+          ### Release steps
+
+          After running the tests, the command `semantic-release` will execute the following steps:
+
+          | Step              | Description                                                                                                                     |
+          | ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+          | Verify Conditions | Verify all the conditions to proceed with the release.                                                                          |
+          | Get last release  | Obtain the commit corresponding to the last release by analyzing [Git tags](https://git-scm.com/book/en/v2/Git-Basics-Tagging). |
+          | Analyze commits   | Determine the type of release based on the commits added since the last release.                                                |
+          | Verify release    | Verify the release conformity.                                                                                                  |
+          | Generate notes    | Generate release notes for the commits added since the last release.                                                            |
+          | Create Git tag    | Create a Git tag corresponding to the new release version.                                                                      |
+          | Prepare           | Prepare the release.                                                                                                            |
+          | Publish           | Publish the release.                                                                                                            |
+          | Notify            | Notify of new releases or errors.                                                                                               |
+
+          ### Configuration
+
+          ```yaml
+          # .releaserc.yml
+          ---
+          branches:
+            - '+([0-9])?(.{+([0-9]),x}).x'
+            - name: main
+              channel: stable
+            - name: next
+              prerelease: beta
+              channel: canary
+          plugins:
+            - '@semantic-release/commit-analyzer'
+            - '@semantic-release/release-notes-generator'
+            - '@semantic-release/changelog'
+            - - '@semantic-release/git'
+              - assets:
+                  - CHANGELOG.md
+                message: |-
+                  chore(release): ${nextRelease.version} [skip ci]
+                  ${nextRelease.notes}
+            - '@semantic-release/github'
+          ```
+  https://youtu.be/fqQOu2JVI1o:
+    tags: [coding]
+    desc: Streamlining setup with GitHub Codespaces
+  https://youtu.be/tSQJwGcHsGY:
+    tags: [coding]
+    desc: Instant Cloud Development Environments With GitHub Codespaces
+  https://alexhyett.com/git-flow-github-flow:
+    desc: Git Flow vs GitHub Flow
+    tags: [git]
+  https://youtu.be/vCwuZfK0VG4:
+    desc: Pull Requests, Code Review, and the GitHub Flow - GitHub Universe 2015
+    tags: [git]
+  https://youtu.be/cP0I9w2coGU:
+    desc: GitHub Actions - Supercharge your GitHub Flow
+    tags: [git]
+  https://youtu.be/hG_P6IRAjNQ:
+    desc: Git Flow vs GitHub Flow - What You Need to Know
+    tags: [git]
+    links:
+      - Git Flow vs GitHub Flow: https://alexhyett.com/git-flow-github-flow
+  https://youtu.be/juLIxo42A_s:
+    desc: The GitHub Flow - GitHub Universe 2016
+    tags: [git]
+  https://youtu.be/0chZFIZLR_0:
+    desc: Git MERGE vs REBASE - Everything You Need to Know
+    tags: [git]
+    links:
+      - Git Merge vs. Rebase: https://freecodecamp.org/news/an-introduction-to-git-merge-and-rebase-what-they-are-and-how-to-use-them-131b863785f
+  https://freecodecamp.org/news/an-introduction-to-git-merge-and-rebase-what-they-are-and-how-to-use-them-131b863785f:
+    desc: An introduction to Git Merge and Rebase | what they are, and how to use them
+    tags: [git]
+    links:
+      - Git MERGE vs REBASE - Everything You Need to Know: https://youtu.be/0chZFIZLR_0
+  https://initialcommit.com/blog/git-sim:
+    desc: Git Sim | Visually Simulate Git Operations In Your Own Repos
+    tags: [git]
+  https://github.com:
+    desc: Development platform inspired by the way you work
+    tags: [git, github]
+  https://github.com/roalcantara:
+    desc: Development platform inspired by the way you work
+    tags: [git, github]
+  https://github.com/roalcantara?tab=repositories&q={Query}:
+    desc: Search engine for Github repositories
+    tags: [git]
+  https://github.com/settings/profile:
+    desc: Manage Github Settings
+    tags: [git]
+  https://gitlab.com:
+    desc: Complete DevOps platform
+    tags: [git, gitlab]
+    links:
+      - Profile: https://gitlab.com/roalcantara
+  https://git-scm.com/docs/gitcredentials:
+    desc: Providing usernames and passwords to Git
+    tags: [git, auth]
+  https://git-scm.com/docs/git-credential-store:
+    desc: Helper to store credentials on disk
+    tags: [git, auth]
+  https://docs.github.com/en/enterprise-cloud@latest/get-started/getting-started-with-git/updating-credentials-from-the-macos-keychain:
+    desc: Use OS X Keychain
+    tags: [git, maco]
+  https://medium.com/codex/git-authentication-on-macos-setting-up-ssh-to-connect-to-your-github-account-d7f5df029320:
+    desc: How to set up SSH on your Github account and save credentials locally to enable git operations from terminal
+    tags: [git, auth]
+
+commands:
+  git config --local commit.gpgsign false:
+    desc: Disable GPG signing for current Git repository
+    tags: [git]
+  git show --stat HEAD:
+    desc: Displays a summary of changes in the most recent commit
+    tags: [git]
+  git init:
+    desc: Initializes a new Git repository in the current directory.
+    tags: [git]
+  git clone https://github.com/user/repo.git:
+    desc: Copies a remote repository to the local machine.
+    tags: [git]
+  git status:
+    desc: Displays the state of the working directory and staging area.
+    tags: [git]
+  git add file.txt:
+    desc: Adds changes to the staging area.
+    tags: [git]
+  git log:
+    desc: Shows the commit history.
+    tags: [git]
+  git show <commit-hash>:
+    desc: Displays detailed information about a specific commit.
+    tags: [git]
+  git diff:
+    desc: Shows changes between commits, the working directory, and the staging area.
+    tags: [git]
+  git pull --rebase --autostash:
+    desc: Pull changes from the remote repository, rebase the current branch on top of the upstream branch, and automatically stash any local changes before the rebase.
+    tags: [git]
+  git config --global user.name "Your Name":
+    desc: Configures user settings, such as name and email.
+    tags: [git]
+  git config --list | grep delta:
+    desc: List delta config
+    tags: [git]
+  git config --global commit.verbose true:
+    desc: Show diff in commit message
+    tags: [git]
+  git config pull.rebase true && git config rebase.autoStash true:
+    desc: Configure Git to use rebase when pulling and automatically stash changes before rebase instead of using `git pull --rebase --autostash` (current Git repository)
+    tags: [git]
+    links:
+      - https://git-scm.com/docs/git-pull#git-pull---autostash
+      - https://cscheng.info/2017/01/26/git-tip-autostash-with-git-pull-rebase.html
+  git config --global pull.rebase true && git config --global rebase.autoStash true:
+    desc: Configure Git to use rebase when pulling and automatically stash changes before rebase instead of using `git pull --rebase --autostash` (globally for every Git repository)
+    tags: [git]
+    links:
+      - https://git-scm.com/docs/git-pull#git-pull---autostash
+      - https://cscheng.info/2017/01/26/git-tip-autostash-with-git-pull-rebase.html
+  git config --global init.defaultBranch main:
+    desc: Set the default branch name to use when creating new repositories
+    tags: [git]
+  git config --global --unset gpg.format:
+    desc: Unset gpg.format so the default format of openpgp will be used
+    tags: [git]
+    links: [https://docs.github.com/en/authentication/managing-commit-signature-verification/telling-git-about-your-signing-key]
+  git config --global user.signingkey 3AA5C34371567BD2:
+    desc: Configure Git to set GPG Primary Key ID that matches your committer identity and your verified email address associated with your account on GitHub.com.
+    tags: [git]
+    links: [https://docs.github.com/en/authentication/managing-commit-signature-verification/telling-git-about-your-signing-key]
+  git config --global user.signingkey 4BB6D45482678BE3!:
+    desc: Configure Git to set GPG Subkey Key ID append an exclamation mark ! to the key. Sometimes is necessary to escape it with a back slash \!. It must match your committer identity and your verified email address associated with your account on GitHub.com.
+    tags: [git]
+    links: [https://docs.github.com/en/authentication/managing-commit-signature-verification/telling-git-about-your-signing-key]
+  git config --global commit.gpgsign true && git config --global tag.gpgSign true:
+    desc: Configure Git to sign all commits and tags by default
+    tags: [git]
+    links: [https://docs.github.com/en/authentication/managing-commit-signature-verification/telling-git-about-your-signing-key]
+  git config --global gpg.format ssh:
+    desc: Configure Git to use SSH to sign commits and tags
+    tags: [git]
+    links: [https://docs.github.com/en/authentication/managing-commit-signature-verification/telling-git-about-your-signing-key]
+  git config --global user.signingkey ~/.ssh/id_ed25519_github.pub:
+    desc: Configure Git to set SSH Public Key to sign commits and tags
+    tags: [git]
+    links: [https://docs.github.com/en/authentication/managing-commit-signature-verification/telling-git-about-your-signing-key]
+  git credential-osxkeychain:
+    desc: Use OS X Keychain
+    tags: [git, maco]
+  git credential-osxkeychain erase:
+    desc: Erase credentials from OS X Keychain
+    tags: [git, maco]
+  git credential-osxkeychain store:
+    desc: Store credentials in OS X Keychain
+    tags: [git, maco]
+  echo "protocol=https\nhost=github.com\nusername=your_username\npassword=your_token" | git credential-osxkeychain store:
+    desc: Store credentials in OS X Keychain manually
+    tags: [git, maco]
+  git config --local credential.helper osxkeychain:
+    desc: Use OS X local Keychain
+    tags: [git, maco]
+  git config --local credential.helper osxkeychain store:
+    desc: Store credentials locally in OS X Keychain
+    tags: [git, maco]
+  git config --global credential.helper osxkeychain:
+    desc: Use OS X global Keychain
+    tags: [git, maco]
+  git config --global credential.helper osxkeychain store:
+    desc: Store credentials globally in OS X Keychain
+    tags: [git, maco]
+  git commit -m "Initial commit":
+    desc: Records changes to the repository.
+    tags: [git]
+  git commit --verbose --amend --no-verify --no-edit:
+    desc: Amend last commit
+    tags: [git]
+  git commit --verbose --amend --no-verify:
+    desc: Amend last commit
+    tags: [git]
+  git commit --verbose --amend --no-edit:
+    desc: Amend last commit
+    tags: [git]
+  git commit -m "Initial commit" && git remote add origin git@github.com:roalcantara/foo.git && git branch -M main && git push -u origin main:
+    desc: Create a new repository on GitHub and push an initial commit
+    tags: [git]
+  git reset HEAD file.txt:
+    desc: Unstages changes or resets commits.
+    tags: [git]
+  git reset 'HEAD^' -- package.json:
+    desc: Remove package.json from last commit
+    tags: [git]
+  git reset 'HEAD^' -- package.json && git commit --amend --no-edit:
+    desc: Remove package.json from last commit and amend
+    tags: [git]
+  git branch feature-branch:
+    desc: Lists branches or creates a new branch.
+    tags: [git]
+  git branch -M <main> && git push -u origin <main>:
+    desc: Add and push to branch <main>
+    tags: [git]
+  git checkout feature-branch:
+    desc: Switches between branches or restores files.
+    tags: [git]
+  git checkout $(git main-branch):
+    desc: Checkout main branch
+    tags: [git]
+  git checkout -b <branch>:
+    desc: Create a new branch <branch>
+    tags: [git]
+  git switch feature-branch:
+    desc: Switches branches (modern alternative to git checkout).
+    tags: [git]
+  git cherry-pick <commit-hash>:
+    desc: Applies specific commits from one branch to another.
+    tags: [git]
+  git show :config/.env | head -5:
+    desc: Shows the first 5 lines of the config/.env file as it exists in Git's staging area; Useful for reviewing what changes you've staged before committing them
+    tags: [git]
+  git show HEAD:config/.env | head -5:
+    desc: Shows the first 5 lines of the config/.env file as it exists in the committed version; Useful for reviewing what changes you've committed before pushing them
+    tags: [git]
+  git remote -vvv:
+    desc: Lists remote repositories and their URLs.
+    tags: [git]
+  git remote add origin <origin> && git branch -M main && git push -u origin main:
+    desc: Add remote <origin> and push to branch main
+    tags: [git]
+  git fetch --all:
+    desc: Retrieves updates for all branches and tags from all remotes configured in your local repository, including those that have been deleted.
+    tags: [git]
+    notes: | #markdown
+      The git fetch --all command is used to fetch updates from all configured remote repositories.
+
+      ### Behavior
+
+      • When you run git fetch --all, Git retrieves updates for all branches and tags from all remotes configured in your local repository.
+      • It does not delete local branches that no longer exist on the remote; it only brings the latest updates to your local repository.
+      • This is useful in projects with multiple remotes, as it fetches information from all of them at once.
+  git fetch --all && git remote prune origin:
+    desc: Fetch all and prune origin
+    tags: [git]
+  git fetch --all && git remote prune origin && git checkout $(git main-branch):
+    desc: Fetch all and prune origin
+    tags: [git]
+  git fetch --prune:
+    desc: Fetch updates from all remotes and remove any remote-tracking references that no longer exist on the remote.
+    notes: "The git fetch --prune command is used to fetch updates from all configured remote repositories and remove any remote-tracking references that no longer exist on the remote.\n\n### Behavior\n\n  •\tWhen you run git fetch --prune, Git retrieves updates for all branches and tags from all remotes configured in your local repository.\n\n  •\tIt also removes any remote-tracking references that no longer exist on the remote, keeping your local repository in sync with the remote.\n\n  •\tThis is useful when you want to clean up your local repository and remove references to branches that have been deleted on the remote.\n"
+    tags: [git]
+  "git fetch --prune && git branch -vv | grep ': gone]' | awk '{print $1}' | xargs git branch -D":
+    desc: Remove local branches that no longer exist in the remote repository
+    tags: [git]
+  git merge feature-branch:
+    desc: Combines changes from one branch into another.
+    tags: [git]
+  git rebase main:
+    desc: Moves or combines commits from one branch onto another.
+    tags: [git]
+  git rebase -i --root:
+    desc: Rebase from root
+    tags: [git]
+  git push -v --set-upstream origin "$(git current-branch)":
+    desc: Push current branch
+    tags: [git]
+  git push --tags:
+    desc: Push tags
+    tags: [git]
+  git submodule add <URL> <PATH>:
+    desc: Add a submodule
+    tags: [git]
+  git submodule status:
+    desc: List submodules
+    tags: [git]
+  git submodule foreach -q git config remote.origin.url:
+    desc: List submodules origin urls
+    tags: [git]
+  git submodule deinit -- <SUBMODULE> && rm -rf .git/modules/<SUBMODULE> && git rm --cached <SUBMODULE>:
+    desc: Remove SUBMODULE
+    tags: [git]
+  git submodule deinit -f -- <SUBMODULE> && rm -rf .git/modules/<SUBMODULE> && git rm -f --cached <SUBMODULE>:
+    desc: Remove SUBMODULE - FORCED
+    tags: [git]
+  git submodule update --remote --merge:
+    desc: Update all submodules
+    tags: [git]
+  git config --file .gitmodules -l:
+    desc: List submodule configurations
+    tags: [git]
+  git grep pattern $(git rev-list --all):
+    desc: Search for a pattern among all committed files in a repository.
+    tags: [git]
+    links: [https://commands.dev/workflows/search_committed_files]
+  git clean -fd:
+    desc: Remove untracked files and directories from the working directory.
+    tags: [git]
+    links: [https://commands.dev/workflows/remove_untracked_files]
+  lazygit:
+    desc: Run lazygit
+    tags: [git]
+
+cheats:
+  Conventional Commits Examples:
+    desc: Conventional Commits Examples
+    tags: [git]
+    links:
+      - https://conventionalcommits.org
+      - https://jorisroovers.com/gitlint
+      - https://pre-commit.com
+    notes:
+      - md: |
+          ## Examples
+
+          ### Commit message with description and breaking change footer
+
+          ```plaintext
+          feat: Allow provided config object to extend other configs
+
+          BREAKING CHANGE: `extends` key in config file is now used for extending other config files
+          ```
+
+          ---
+
+          ### Commit message with `!` to draw attention to breaking change
+
+          ```plaintext
+          feat!: Send an email to the customer when a product is shipped
+          ```
+
+          ---
+
+          ### Commit message with scope and `!` to draw attention to breaking change
+
+          ```plaintext
+          feat(api)!: Send an email to the customer when a product is shipped
+          ```
+
+          ---
+
+          ### Commit message with both `!` and breaking change footer
+
+          ```plaintext
+          chore!: Drop support for Node 6
+
+          BREAKING CHANGE: use JavaScript features not available in Node 6.
+          ```
+
+          ---
+
+          ### Commit message with multi-paragraph body and multiple footers
+
+          ```plaintext
+          fix: Prevent racing of requests
+
+          Introduce a request id and a reference to latest request. Dismiss incoming responses other than from latest request.
+
+          Remove timeouts which were used to mitigate the racing issue but are obsolete now.
+
+          Reviewed-by: Z
+          Refs: #123
+          ```
+  Git Worktree:
+    desc: Git Worktree
+    tags: [git]
+    links:
+      - https://git-scm.com/docs/git-worktree
+    notes:
+      - md: |
+          ## Git Worktree
+
+          Git Worktree is a feature that allows you to create a new branch from a specific commit.
+          It is useful for creating a new branch from a specific commit without creating a new commit.
+          It is also useful for creating a new branch from a specific commit without creating a new commit.
+
+      - sh: | #shell
+          #!/bin/bash
+
+          # Assuming the "main" repo is at ~/Work/consorciei/projects/coreservices and you want to create the worktree at ~/Work/consorciei/projects/coreservices-wt/CONT-106.
+
+          # 1) Update the main repo and find out the name of the remote branch
+          cd ~/Work/consorciei/projects/coreservices
+          git fetch origin --prune
+          git branch -a | rg "CONT-106"
+
+          # You will probably see something like remotes/origin/cont/CONT-106 or remotes/origin/CONT-106 (depending on your team's naming convention).
+
+          # 2) Create the worktree (which will also create a local branch tracking the remote)
+          # Replace origin/<EXACT_REMOTE_BRANCH_NAME> with what showed up in the previous step:
+
+          git worktree add -b CONT-106 ../coreservices-wt/CONT-106 origin/<EXACT_REMOTE_BRANCH_NAME>
+          # Example (if the remote is origin/cont/CONT-106):
+
+          git worktree add -b CONT-106 ../coreservices-wt/CONT-106 origin/cont/CONT-106
+
+          # 3) "Enter" the worktree (access it)
+          cd ~/Work/consorciei/projects/coreservices-wt/CONT-106
+          git status -sb
+
+          # 4) Rebase the branch on top of master
+          # I recommend rebasing directly onto origin/master (so you don't depend on your local master being up to date):
+          git fetch origin --prune
+          git rebase origin/master
+
+          # 5) If there are conflicts (the usual flow)
+          git status
+
+          # edit/resolve files in conflict
+          git add <resolved_files>
+          git rebase --continue
+
+          # If you need to abort:
+          git rebase --abort
+
+          # 6) Push to remote after the rebase
+          # Since rebase rewrites history, the push generally needs to be forced:
+          git push --force-with-lease origin HEAD:<EXACT_REMOTE_BRANCH_NAME>
+
+          # Example:
+          git push --force-with-lease origin HEAD:cont/CONT-106
+
+          # If you tell me the exact name that showed up in git branch -a | rg "CONT-106" (the remotes/origin/... line), I can give you the ready-to-copy commands with the correct path/branch.

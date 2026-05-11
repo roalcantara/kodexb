@@ -1,0 +1,2206 @@
+bookmarks:
+  https://youtu.be/JWfNLF_g_V0:
+    desc: Turn ANY Website into LLM Knowledge in SECONDS
+    tags: [ cli, llm, scrap ]
+    links:
+      - Crawl4AI: https://github.com/unclecode/crawl4ai
+    notes:
+      - md: |
+          # Crawl4AI - Turn ANY Website into LLM Knowledge in SECONDS
+
+          - How to efficiently scrape website data to create knowledge bases for Retrieval-Augmented Generation (RAG) systems using an open-source tool called Crawl4AI. 
+          - It is a superior approach for helping LLMs (like the Pydantic AI framework) become experts on specific, up-to-date documentation.
+          - Highly recommended for its speed, intuitive setup, and memory efficiency.
+
+          ## USAGE
+
+          Unlike traditional, resource-intensive scrapers, this tool:
+
+            - Converts HTML to Markdown: It cleans raw, messy HTML into a clean, human- and LLM-readable markdown format, reducing the risk of model hallucinations (0:03:17).
+            - Handles Complexity: It manages sessions, proxies, and browser instances under the hood using Playwright (0:03:51).
+            - Filters Content: It automatically removes irrelevant script tags and noise (0:04:26).
+
+          ## WORKFLOW
+
+            - Basic Crawl: 
+              - After a simple pip install and setup extract markdown from any single URL with minimal code.
+
+            - Scalable Crawling (Sitemaps): 
+              - Using sitemap.xml to automatically discover all pages on a site rather than manually listing URLs.
+
+            - Parallel/Batch Processing: 
+              - To handle large sites efficiently, the tool supports parallel crawling. 
+              - By setting a batch size (e.g., 10 pages at a time), it maintains a low memory footprint while significantly increasing speed.
+
+          ## ETHICS
+
+          - The author emphasizes that scraping should be ethical. 
+          - Always check a website's robots.txt file before crawling to ensure you are following the site's rules and restrictions.
+
+          ## RAG INTEGRATION
+
+          - **Pydantic AI** 
+             - An expert agent built using this workflow to provide accurate answers from documentation
+             - It is integrated with a vector database (PGVector with Supabase) to store the knowledge base.
+  https://youtu.be/b4dqb_KV-_M:
+    desc: Viewing and scraping website content directly within a terminal
+    tags: [ cli, html, scrap, term ]
+    links:
+      - wget: https://www.gnu.org/software/wget/
+      - curl: https://curl.se/
+      - sed: https://www.gnu.org/software/sed/
+      - recode: https://github.com/rrthomas/recode
+      - w3m: https://w3m.sourceforge.net/
+      - html2text: https://github.com/aaroneiche/html2text
+      - HTMLView: https://github.com/MacPython/htmlview
+    notes:
+      - md: |
+          # HOW TO VIEW AND SCRAPE WEBSITE CONTENT DIRECTLY IN THE TERMINAL
+
+          The author demonstrates various methods to fetch, clean, and format HTML output, moving from raw source code to readable text.
+
+          ## TOOLS AND COMMANDS
+
+          ### 1. wget
+
+          - **PURPOSE:** Downloads the raw HTML of a webpage to the terminal.
+          - **USAGE:** Useful for basic retrieval, but the resulting output is messy and contains raw HTML tags.
+          - **EXAMPLE:**
+
+              ```bash
+              wget -qO- "http://filmsbykris.com/scripts"
+              # similar in functionality using curl
+              curl -s "http://filmsbykris.com/scripts"
+              ```
+
+          ### 2. sed
+
+          - **PURPOSE:** Used to strip HTML tags from the output.
+          - **USAGE:** Effective for removing tags, but can leave behind encoded special characters and often destroys the original formatting/spacing.
+          - **EXAMPLE:**
+
+              ```bash
+              # 1. remove HTML tags
+              wget -qO- "http://filmsbykris.com/scripts" | sed -e 's/<[^>]*>//g'
+
+              # 2. remove special characters
+              wget -qO- "http://filmsbykris.com/scripts" | sed -e 's/&[^;]*;/ /g'
+              ``` 
+
+          ### 3. recode
+
+          - **PURPOSE:** Converts HTML special characters (like &) into readable text.
+          - **USAGE:** Good for fixing encoding issues, though it may require specific configuration (e.g., avoiding forced ASCII conversion) depending on the environment.
+          - **EXAMPLE:**
+            
+            ```bash
+            # 0. Install recode in linux/debian
+            sudo apt-get install recode
+
+            # 0. Install recode in macos
+            brew install recode
+
+            # 1. remove HTML tags and convert HTML special characters (like &) into readable text (ASCII)
+            wget -qO- "http://filmsbykris.com/scripts" | sed -e 's/<[^>]*>//g' | recode html..ascii
+
+            # 2. remove HTML tags and convert HTML special characters (like &) into readable text (UTF-8)
+            wget -qO- "http://filmsbykris.com/scripts" | sed -e 's/<[^>]*>//g' | recode html..utf8
+
+            # 3. remove HTML tags and convert HTML special characters (like &) into readable text (HTML entities)
+            wget -qO- "http://filmsbykris.com/scripts" | sed -e 's/<[^>]*>//g' | recode html..html
+
+            # 4. remove HTML tags and convert HTML special characters (like &) into readable plain text
+            wget -qO- "http://filmsbykris.com/scripts" | sed -e 's/<[^>]*>//g' | recode html
+            ```
+
+          ### 4. w3m
+
+          - **PURPOSE:** A shell-based web browser used to display formatted, human-readable text from a URL or pipe input.
+          - **USAGE:** Highly recommended; it does a great job of converting visual elements (like directory icons) into readable text and preserving layout structure.
+          - **EXAMPLE:**
+            ```bash
+            # 0. Install w3m
+            sudo apt install w3m
+            brew install w3m
+            
+            # 1. display the HTML of a webpage
+            w3m -dump "http://filmsbykris.com/scripts"
+
+            # 2. display the HTML of a webpage and save it to a file
+            w3m -dump "http://filmsbykris.com/scripts" > output.
+            
+            # 3. Using along with wget
+            wget -qO- "http://filmsbykris.com/scripts" | w3m -dump -T text/html
+            ```
+
+          ### 5. html2text
+
+          - **PURPOSE:** Converts HTML into plain text with a specific formatting style.
+          - **USAGE:** A good, straightforward alternative to full browsers, though its formatting style (like using extra brackets) may vary.
+          - **EXAMPLE:**
+            
+              ```sh
+              # 0. Install html2text
+              sudo apt install html2text
+              brew install html2text
+              
+              # 1. convert the HTML of a webpage to plain text
+              html2text "http://filmsbykris.com/scripts"
+
+              # 2. convert the HTML of a webpage to plain text with forwarding links
+              wget -qO- "http://filmsbykris.com/scripts" | html2text
+              ```
+  https://htmlview.github.io:
+    desc: Render HTML files' actual preview (only in URL with ".html" extensions)
+    tags: [ cli, html, term ]
+    notes:
+      - md: |
+          # HTMLView | HTMLView.Github.io
+
+          - Used Bookmarklet for faster preview especially if your on Github and Bitbucket.
+          - Allow pop-up for this and set bookmarks bar to show, then drag HTMLView to your bookmarks bar.
+
+          ## TROUBLESHOOTING
+
+          If not working, manualy enter the URL's in the address bar: http://htmlview.github.io/? plus the HTML file to preview, example:
+
+          ```sh
+          open "https://htmlview.github.io/?https://github.com/twbs/bootstrap/blob/gh-pages/2.3.2/index.html"
+          ```
+  https://youtu.be/3fVAtaGhUyU:
+    desc: 10 Zsh hacks I wish I knew about sooner
+    tags: [ cli, zsh ]
+    links:
+      - gist: https://gist.github.com/elliottminns/09a598082d77f795c88e93f7f73dba61
+    notes:
+      - md: | #markdown
+          # 10 Zsh hacks I wish I knew about sooner
+
+          The author presents 10 Zsh hacks designed to streamline terminal workflows and improve efficiency
+
+          ## HACKS
+      - md: | #markdown
+          0. Bind `Ctrl+w` to delete the previous block of text 
+            - Deletes the previous block of text, preceding the current cursor position.
+            - **EXAMPLES**
+                - **EXAMPLE 0:** Setup `Ctrl+w` to delete the previous block of text
+
+                  ```zsh
+                  # .zshrc
+                  
+                  # Bind `Ctrl+w` to delete the previous block of text
+                  bindkey '^W' delete-backward-word
+                  ```
+
+                ```sh
+                # Delete the previous block of text, preceding the current cursor position
+                Ctrl + w
+                ```
+
+            - **NOTE:**
+              - This is a more powerful version of `Ctrl + w` that deletes the previous word, preceding the current cursor position.
+              - It is useful for deleting complex, multi-line long commands errors.
+      - md: | #markdown
+          1. Binding `Ctrl+X, e` to `edit-command-line` widget to edit the current command buffer in $EDITOR:
+            - Allows you to use `Ctrl+X, e` to open the current command in your configured text `$EDITOR` (like Neovim). 
+            - Ideal for fixing complex, multi-line long commands errors using familiar editor keybindings.
+            - **EXAMPLE:**
+                
+                - **EXAMPLE 0:** Setup `Ctrl+X, e` to `edit-command-line` widget to edit the current command buffer in $EDITOR
+
+                    ```zsh
+                    # .zshrc
+
+                    # Open buffer line in editor pressing `Ctrl + X` then `E`
+                    autoload -Uz edit-command-line
+                    zle -N edit-command-line
+                    bindkey '^Xe' edit-command-line
+                    ```
+              
+                - **EXAMPLE 1:** Use `Ctrl+X, e` to edit the current command buffer in $EDITOR
+                
+                  ```zsh
+                  # 1. Given a complex, multi-line long command error at the end of the first line
+                  $ transcriber transcribe
+                  --input 000-rough-cut-a-roll.mov.wav \
+                  --output transcript-000.md \
+                  --model whisper-large-v3.en \
+                  --high-accuracy
+
+                  # 2. Use `Ctrl+X, e` to edit the current command buffer in $EDITOR
+                  # use $EDITOR to edit the command buffer save it and exit the editor
+                  # the changes will be applied to the command buffer
+                  Ctrl + X, e
+                  ```
+      - md: | #markdown
+          2. Using `Ctrl + _` to undo the last action:
+            - Using `Ctrl + _` triggers an undo action. 
+            - This is necessary when accidental commands (like deleting too much text with `Ctrl + w`) cause mistakes in your input buffer.
+      - md: | #markdown
+          3. Binding `Space` to `magic-space` widget to expand the previous command: (instead of just `sudo !!`):
+            - Instead of `sudo !!`, using `magic-space`, allow to type `sudo <Space>` to expand the previous command and show exactly what will execute
+            - This prevents errors from executing hidden command histories.
+            - **EXAMPLE:**
+
+                ```zsh
+                # .zshrc
+
+                # Expand the previous command pressing `Space`
+                bindkey ' ' magic-space
+                ```
+
+           - `magic-space` widget can also expand commands by index:
+               
+                ```zsh
+                $ !5001 <Space>
+                ```
+
+            - `magic-space` widget can also expand arguments from a previous command:
+               
+                ```zsh
+                $ npm !* <Space>
+                ```
+
+            - `magic-space` widget can also allow to search the last command that contains a specific string:
+                
+                ```zsh
+                $ !?docker? <Space>
+                ```
+      - md: | #markdown
+          4. Using `chpwd` hook to execute specific commands whenever you change directories:
+            - It is useful for auto-loading Nix environments, Python virtual environments, or specific Node.js versions based on project files.
+            - **EXAMPLES:**
+            
+                ```zsh
+                # .zshrc
+                
+                # 1. List the contents of the current directory whenever you change directories
+                chpwd() {
+                  ls
+                }
+
+                # 2. Print the current directory whenever you change directories
+                chpwd() {
+                  pwd
+                }
+
+                # 3. Activate/deactivate Python virtual environment whenever you change directories
+                chpwd() {
+                  if [[ -d .venv ]]; then
+                    source. venv/bin/activate
+                  elif [[ -d venv ]]; then
+                    source venv/bin/activate
+                  elif [[ -n "$VIRTUAL_ENV" ]]; then
+                    deactivate
+                  fi
+                }
+
+                # 4. Setup node using nvm whenever you change directories
+                chpwd() {
+                  if [[ -f .nvmrc ]]; then
+                    nvm use
+                  fi
+                }
+
+                # 5. You must place all commands inside a single chpwd function, not multiple chpwd functions
+                chpwd() {
+                  hook_python
+                  hook_nix
+                  ls
+                }
+
+                # 6. Alternatively, use add-zsh-hook to add the hook to the chpwd function
+                autoload -Uz add-zsh-hook
+                add-zsh-hook chpwd hook_python
+                add-zsh-hook chpwd hook_nix
+                add-zsh-hook chpwd function() {
+                  ls
+                }
+                ```
+      - md: | #markdown
+          5. Using `Suffix Aliases` to automatically open files with specific extensions using a specific application:
+            - This removes the need to type out an application command before every filename.
+            - **1. SETUP:**
+
+                ```zsh
+                # .zshrc
+
+                ## Setup Suffix Aliases
+                alias -s json=jless                      # Open JSON files using jless
+                alias -s yaml=yq                         # Open YAML files using yq
+                alias -s go='$EDITOR'                    # Open GO files using $EDITOR
+                alias -s ts='$EDITOR'                    # Open TS files using $EDITOR
+                alias -s js='$EDITOR'                    # Open JS files using $EDITOR
+                alias -s md=bat                          # Open MD files using bat
+                alias -s aac="open"                      # Open AAC files using open
+                alias -s docx="open"                     # Open DOCX files using open
+                alias -s flac="open"                     # Open FLAC files using open
+                alias -s gif="open"                      # Open GIF files using open
+                alias -s jpeg="open"                     # Open JPEG files using open
+                alias -s jpg="open"                      # Open JPG files using open
+                alias -s m4a="open"                      # Open M4A files using open
+                alias -s m4v="open"                      # Open M4V files using open
+                alias -s mov="open"                      # Open MOV files using open
+                alias -s mp3="open"                      # Open MP3 files using open
+                alias -s mp4="open"                      # Open MP4 files using open
+                alias -s pdf="open"                      # Open PDF files using open
+                alias -s png="open"                      # Open PNG files using open
+                alias -s svg="open"                      # Open SVG files using open
+                alias -s wav="open"                      # Open WAV files using open
+                alias -s webp="open"                     # Open WEBP files using open
+                alias -s wma="open"                      # Open WMA files using open
+                ```
+
+            - **2. USAGE:**
+
+                ```zsh
+                # instead of typing `jless file.json` just type the filename
+                $ file.json
+
+                # instead of typing `yq file.yaml` just type the filename
+                $ file.yaml
+
+                # instead of typing `nvim file.go` just type the filename
+                $ file.go
+
+                # instead of typing `bat file.md` just type the filename
+                $ file.md
+                ```
+      - md: | #markdown
+          6. Using `Global Aliases` to drop into a larger command:
+            - Unlike standard aliases, these can be used anywhere in a command string. 
+            - They are perfect for common snippets like piping output to `/dev/null` using a short alias like `NE`.
+            - **EXAMPLE:**
+
+               - **1. SETUP**
+                ```zsh
+                # .zshrc
+
+                # Pipe output to /dev/null using a short alias like `NE`
+                alias -g NE='2> /dev/null'        # Redirect stderr to /dev/null
+                alias -g DN='> /dev/null'         # Redirect stdout to /dev/null
+                alias -g DE='2>&1'                # Redirect stderr to stdout
+                alias -g NULL='> /dev/null 2>&1'  # Redirect stdout and stderr to /dev/null
+                alias -g CP='| pbcopy'            # Pipe output to clipboard
+                alias -g S='| sort'                # Pipe output to sort
+                alias -g U='| uniq'                # Pipe output to uniq
+                alias -g H='| head'                # Pipe output to head
+                alias -g T='| tail'                # Pipe output to tail
+                alias -g L='| less'                # Pipe output to less
+                alias -g M='| more'                # Pipe output to more
+                alias -g X='| xargs'               # Pipe output to xargs
+                alias -g FZ='| fzf'                # Pipe output to fzf
+                alias -g RG='| rg'                 # Pipe output to ripgrep
+                alias -g GP='| grep'               # Pipe output to grep
+                alias -g EG='| egrep'              # Pipe output to egrep
+                alias -g PY='| python'             # Pipe output to python
+                alias -g JQ='| jq'                 # Pipe output to jq
+                alias -g YQ='| yq'                 # Pipe output to yq
+                ```
+
+               - **2. USAGE:**
+
+                ```zsh
+                # instead of typing `du -hd1 / 2> /dev/null` just
+                $ du -hd1 / NE
+                ```
+      - md: | #markdown
+          7. Using `zmv` to rename/move files in bulk:
+            - An advanced file renaming/moving tool. 
+            - It uses pattern matching and capture groups, enabling batch operations that are much faster and safer than writing custom loops.
+            - **EXAMPLES:**
+                
+                - **EXAMPLE 0:** Setup `zmv` plugin
+
+                  ```zsh
+                  # .zshrc
+
+                  # Load `zmv` plugin
+                  autoload -Uz zmv
+                  ```
+
+               - **EXAMPLE 1:** Use `zmv` to rename a bunch of .log files to .txt  
+                
+                  ```zsh
+                  $ ls
+                  # => file1.log file2.log file3.log
+
+                  $ autoload zmv
+
+                  $ zmv '(*).log' '$1.txt'
+
+                  $ ls
+                  # => file1.txt file2.txt file3.txt
+                  ```
+
+               - **EXAMPLE 2:** Use `zmv -W` to rename a bunch of .log files to .txt
+                
+                  ```zsh
+                  $ ls
+                  # => file1.log file2.log file3.log
+
+                  $ autoload zmv
+
+                  $ zmv -W '*.log' '*.txt'
+
+                  $ ls
+                  # => file1.txt file2.txt file3.txt
+                  ```
+
+               - **EXAMPLE 3:** Use `zmv -n -W` to DRY RUN the renaming of a bunch of .log files to .txt  
+                
+                  ```zsh
+                  $ ls
+                  # => file1.log file2.log file3.log
+
+                  $ autoload zmv
+
+                  $ zmv -n -W '*.log' '*.txt'
+                  # => file1.txt file2.txt file3.txt
+
+                  $ ls
+                  # => file1.log file2.log file3.log
+                  ```
+
+               - **EXAMPLE 4:** Use `zmv -i -W` to interactively rename a bunch of .log files to .txt  
+                
+                  ```zsh
+                  $ ls
+                  # => file1.log file2.log file3.log
+
+                  $ autoload zmv
+
+                  $ zmv -i -W '*.log' '*.txt'
+                  # => Execute? (y/n/a) y -- file1.log to file1.txt
+                  # => Execute? (y/n/a) n -- file2.log to file2.txt
+                  # => Execute? (y/n/a) y -- file3.log to file3.txt
+
+                  $ ls
+                  # => file1.txt file2.log file3.txt
+                  ```
+      - md: | #markdown
+          8. Using `Named Directories` to bookmark folders: 
+            - Allows you to bookmark folders (e.g., `~YT` for YouTube projects). 
+            - This simplifies navigation and referencing long directory paths in CLI commands.
+            - **EXAMPLES:**
+
+                - **EXAMPLE 0:** Setup `~YT` alias to bookmark the YouTube folder
+
+                  ```zsh
+                  # .zshrc
+                  
+                  # Bookmark the YouTube folder
+                  hash -d kb='~/Work/bun/kb'
+                  hash -d dots='~/Work/dots'
+                  ```
+
+                - **EXAMPLE 1:** Use `~kb` bookmark to navigate to the KB project folder
+                  ```zsh
+                  $ cd ~kb
+                  $ pwd
+                  # => ~/Work/bun/kb
+                  ```
+
+                - **EXAMPLE 2:** Use `~dots` bookmark list the contents of the dots project folder
+                  ```zsh
+                  $ ls ~dots
+                  # => README.md .env ..
+                  ```
+
+                - **EXAMPLE 3:** Use `~dots` bookmark open the dots project folder in the default file manager
+                  ```zsh
+                  $ open ~dots
+                  ```
+      - md: | #markdown
+          9. Using `Custom Widgets` to perform actions on the command line buffer: 
+            - These are essentially functions that perform actions on the command line buffer
+            - They can automate complex tasks, such as clearing history while keeping the current buffer or copying text to the system clipboard.
+            - **EXAMPLES:**
+
+                - **EXAMPLE 0:** Use `CTRL+X, L` to run the `clear-keep-buffer` Custom Widget to clear the zshell history keeping the current command buffer
+
+                  ```zsh
+                  # .zshrc
+                
+                  # `CTRL+X, L` runs `clear-screen` the Custom Widget to clear the zshell history keeping the current command buffer
+                  clear-keep-buffer() {
+                    zle clear-screen
+                  }
+                  zle -N clear-keep-buffer
+                  bindkey '^Xl' clear-keep-buffer
+
+                  # `CTRL+x, c` runs copy-command-buffer` Custom Widget to copy the current command buffer to the system clipboard
+                  copy-command-buffer() {
+                    echo -n $BUFFER | pbcopy
+                    zle -M "Command buffer copied to clipboard"
+                  }
+                  zle -N copy-command-buffer
+                  bindkey '^Xc' copy-command-buffer
+                  ```
+      - md: | #markdown
+          10. Using `Hotkey Insertions` to insert text into the command line buffer: 
+            - Allows you to bind key combinations to insert text into the buffer. 
+            - This is a massive time-saver for repetitive command boilerplate, such as inserting a `git commit -m ""` string with the cursor pre-positioned inside the quotes.
+            - **EXAMPLES:**
+
+                - **EXAMPLE 0:** Use `CTRL+X, gc` to insert a `git commit -m ""` string with the cursor pre-positioned inside the quotes
+                  ```zsh
+                  # .zshrc
+
+                  # Bind `CTRL+X, gc` to insert a `git commit -m ""` string with the cursor pre-positioned inside the quotes
+                  bindkey -s '^Xgc' 'git commit -m ""\C-b'              # `\C-b` (CTRL+B) moves the cursor back one position
+                  ```   
+  https://youtu.be/VGtxARciwDM:
+    desc: 10 useful CLI apps I'm guessing you've not heard of
+    tags: [ cli ]
+    links:
+      - cbonsai: https://gitlab.com/jallbrit/cbonsai
+      - asciinema: https://asciinema.org/
+      - croc: https://github.com/schollz/croc
+      - ttyd: https://github.com/tsl0922/ttyd
+      - jrnl: https://github.com/jrnl-org/jrnl
+      - newsboat: https://github.com/newsboat/newsboat
+      - lolcat: https://github.com/busyloop/lolcat
+      - faker: https://pypi.org/project/Faker/
+      - grex: https://github.com/pemistahl/grex
+  https://youtu.be/b5SUAuQ69jU:
+    desc: 11 Amazing Terminal Tools Worth Knowing About
+    tags: [ cli ]
+    links:
+      - atuin: https://github.com/ellie/atuin
+      - branchlet: https://github.com/raghavpillai/branchlet
+      - superfile: https://github.com/eth-p/superfile
+      - pastel: https://github.com/eth-p/pastel
+      - taproom: https://github.com/eth-p/taproom
+      - navi: https://github.com/eth-p/navi
+      - tealdee: https://github.com/tealdeer-dev/tealdeer
+      - cargoseek: https://github.com/eth-p/cargoseek
+      - stormy: https://github.com/charmbracelet/stormy
+      - hygg: https://github.com/nikitavoloboev/hygg
+      - smassh: https://github.com/charm-cli/smassh
+    notes:
+      - md: |
+          ## Overview
+
+          This video features a collection of 11 terminal CLI tools that enhance productivity and workflow. Here is a summary of the tools showcased:
+
+          1. **Atuin**: 
+            
+            - A robust tool for managing shell command history.
+            - Highly recommended for its searchable features and cross-machine syncing capabilities.
+
+          2. **Branchlet**:
+
+            - An NPM-based tool for managing Git work trees directly in the terminal.
+            - Extremely useful for Git-heavy workflows.
+
+          3. **Superfile**: 
+            - A terminal-based file manager.
+            - Appreciates its ease of use and clean UI, noting it as a passionate open-source project.
+
+          4. **Pastel**: 
+            - A versatile command-line tool for color manipulation (hex, RGB, HSL, gradients).
+            - Described as a "no-brainer" for terminal users working with colors.
+
+          5. **Taproom**: 
+            - A GUI-style Homebrew package manager for the terminal.
+            - It allows users to search, update, and manage packages visually.
+
+          6. **Na'vi**: 
+            - An interactive cheat sheet tool that lets you execute one-liners.
+            - Uses it to quickly run predefined scripts and commands.
+
+          7. **Tealdeer**: 
+            - A community-driven alternative to man pages.
+            - Quick, concise usage examples of complex commands.
+
+          8. **Cargo-seek**: 
+            - A manager for Cargo crates.
+            - Helps in browsing, installing, and managing Rust packages directly from the terminal.
+
+          9. **Stormy**: 
+            - Simple terminal-based weather utility that pulls data via an API.
+
+          10. **Hygg**: 
+            - Tool for reading PDFs and e-books in the terminal with support for Vim-like motions.
+
+          11. **Smassh**: 
+            - Terminal-based typing speed test tool, described as a "monkeytype clone" for your command line.
+  https://npmx.dev/package/branchlet:
+    desc: Manages Git work trees directly in the terminal - extremely useful for Git-heavy workflows
+    tags: [ cli, git ]
+    links:
+      - GitHub: https://github.com/raghavpillai/branchlet
+      - 11 Amazing Terminal Tools Worth Knowing About: https://youtu.be/b5SUAuQ69jU
+  https://infinitedigits.co/croc:
+    desc: croc | Easily and securely send things from one computer to another
+    tags: [ cli, sharing ]
+    links:
+      - GitHub: https://github.com/schollz/croc
+      - 10 useful CLI apps I'm guessing you've not heard of: https://youtu.be/VGtxARciwDM
+  https://tsl0922.github.io/ttyd:
+    desc: ttyd | Share your terminal over the web
+    tags: [ cli, sharing, term ]
+    links:
+      - GitHub: https://github.com/tsl0922/ttyd
+      - 10 useful CLI apps I'm guessing you've not heard of: https://youtu.be/VGtxARciwDM
+  https://jrnl.sh:
+    desc: jrnl | Collect your thoughts and notes without leaving the command lin
+    tags: [ cli, notes ]
+    links:
+      - GitHub: https://github.com/jrnl-org/jrnl
+      - 10 useful CLI apps I'm guessing you've not heard of: https://youtu.be/VGtxARciwDM
+  https://newsboat.org:
+    desc: newsboat | An RSS/Atom feed reader for text terminals
+    tags: [ cli, news ]
+    links:
+      - GitHub: https://github.com/newsboat/newsboat
+      - 10 useful CLI apps I'm guessing you've not heard of: https://youtu.be/VGtxARciwDM
+  https://github.com/busyloop/lolcat:
+    desc: lolcat | Rainbows and unicorns in your console
+    tags: [ cli, color ]
+    links:
+      - GitHub: https://github.com/busyloop/lolcat
+      - 10 useful CLI apps I'm guessing you've not heard of: https://youtu.be/VGtxARciwDM
+  https://pypi.org/project/Faker/:
+    desc: Faker | A Python library for generating fake data
+    tags: [ cli, fake ]
+    links:
+      - GitHub: https://github.com/joke2k/faker
+      - 10 useful CLI apps I'm guessing you've not heard of: https://youtu.be/VGtxARciwDM
+  https://github.com/pemistahl/grex:
+    desc: grex | A command-line tool and library for generating regular expressions from user-provided test cases
+    tags: [ cli, regex ]
+    links:
+      - GitHub: https://github.com/pemistahl/grex
+      - 10 useful CLI apps I'm guessing you've not heard of: https://youtu.be/VGtxARciwDM
+  https://gomplate.ca:
+    tags: [ coding ]
+    desc: Gomplate | A flexible commandline tool for template rendering
+  https://docs.gomplate.ca:
+    tags: [ coding ]
+    desc: Gomplate | Documentation
+  https://plantuml.com:
+    tags: [ coding ]
+    desc: PlantUML | Open-source tool that uses simple textual descriptions to draw UML diagrams.
+  https://mermaid.js.org:
+    tags: [ coding ]
+    desc: Mermaid | Markdownish syntax for generating flowcharts, sequence diagrams, class diagrams, gantt charts and git graphs.
+  https://mermaid.live:
+    desc: Mermaid Live Editor
+    tags: [ diagram ]
+  https://mermaid.ink:
+    tags: [ coding ]
+    desc: An open-source service that generates image URLs for diagrams based on the provided Mermaid code.
+    links:
+      - GitHub: https://github.com/jihchi/mermaid.ink
+  https://devdocs.io:
+    desc: DevDocs | The best API documentation on the web
+    tags: [ api ]
+    links:
+      - JavaScript: https://devdocs.io/javascript
+      - CSS: https://devdocs.io/css
+      - HTML: https://devdocs.io/html
+      - Web APIs: https://devdocs.io/web
+      - Web Development: https://devdocs.io/web_development
+      - Web Technologies: https://devdocs.io/web_technologies
+  https://devtoys.app:
+    desc: DevToys | The Swiss Army Knife for Developers
+    tags: [ devtool ]
+  # CLI Tools
+  https://github.com/lovesegfault/beautysh:
+    tags: [ coding ]
+    desc: Beautysh | A simple, configurable, and beautiful shell script formatter
+  https://futuretools.io:
+    desc: Future Tools | A curated list of tools for the software developers of tomorrow
+    tags: [ ai ]
+  https://backstage.io:
+    desc: Powered by a centralized software catalog, Backstage restores order to your infrastructure and enables your product teams to ship high-quality code quickly - without compromising autonomy | Backstage | An open platform for building
+      developer portals
+    tags: [ devexp ]
+  https://inkdrop.app:
+    tags: [ notes ]
+    desc: Inkdrop | Markdown note-taking app with 1:1 end-to-end encryption
+  https://analysis-tools.dev:
+    tags: [ linter ]
+    desc: List the best static analysis tools and linters for all programming languages
+  # DIAGRAM/DRAWING
+  https://tldraw.com:
+    tags: [ chart ]
+    desc: Draw, edit, and share diagrams in the browser
+  https://makereal.tldraw.com:
+    tags: [ chart ]
+    desc: Draw, edit, and share diagrams in the browser
+  https://excalidraw.com:
+    tags: [ chart ]
+    desc: Virtual whiteboard for sketching hand-drawn like diagrams
+  https://webhook.site:
+    tags: [ webhook ]
+    desc: Webhook.site | A simple tool for testing webhooks
+    links:
+      - GitHub: https://github.com/webhookdotsh/webhook.site
+      - Documentation: https://docs.webhook.site
+      - Custom Actions: https://docs.webhook.site/custom-actions.html
+      - Schedules: https://docs.webhook.site/schedules.html
+    notes:
+      - md: |
+          ## Overview
+          **FREEMIUM:** $0.00 - $99.00 p/m
+
+          - Webhook.site takes away the frustration of building software and solutions that interact with cloud services or connect via webhooks.
+          - Keep webhook history, share it or replay it.
+          - Make sure data does not get lost
+          - Save time and development costs by running workflows on our cloud.
+
+          ## Basic, Pro and Enterprise
+
+          |                                 | **FREE** | **BASIC**     | **PRO**        | **ENTERPRISE**|
+          | ------------------------------- | -------- | ------------- | -------------- | ------------- |
+          | URLs                            | n/a      | 1             | Unlimited      | Unlimited     |
+          | Schedules                       | n/a      | 1             | Unlimited      | Unlimited     |
+          | Max Requests per URL            | 50       | Unlimited     | Unlimited      | Unlimited     |
+          | Request History per URL         | 50       | 100002        | 10.0002        | 100.0002      |
+          | Custom Actions                  | x        | ✔             | ✔              | ✔             |
+          | Schedules                       | x        | ✔             | ✔              | ✔             |
+          | Custom Addresses                | x        | ✔             | ✔              | ✔             |
+          | Secure Data                     | x        | ✔             | ✔              | ✔             |
+          | Permanent URLs                  | x        | ✔             | ✔              | ✔             |
+          | CSV Export                      | x        | ✔             | ✔              | ✔             |
+          | Free Email Support              | x        | ✔             | ✔              | ✔             |
+          | Custom Domain                   | x        | x             | x              | ✔             |
+          | Multi-User Support & SAML SSO   | x        | x             | x              | ✔             |
+          | URL/Email Address expiry        | 7 days1  | Never expires | Never expires  | Never expires |
+          | Data storage duration           | 7 days1  | 365 days      | 365 days       | 365 days      |
+          | Pricing                         |          | $9/mo $90/yr  | $18/mo $180/yr | $69/m $699/y  |
+
+      - sh: | #shell
+          #!/bin/bash
+
+          # Install the Webhook.site CLI
+          npm install -g @webhooksite/cli
+
+          # Run the Webhook.site CLI
+          docker run -ti webhooksite/cli -- whcli help
+
+      - sh: | #shell
+          #!/bin/bash
+
+          ### USAGE
+
+          # Get all data sent to URL
+          curl 'https://webhook.site/token/00000000-0000-0000-0000-000000000000/requests?sorting=newest'
+
+          # Send a GET request to the URL
+          curl https://webhook.site/00000000-0000-0000-0000-000000000000
+
+          # Send a POST request to the URL
+          curl -X POST https://webhook.site/00000000-0000-0000-0000-000000000000
+
+          # Send a file to the URL
+          curl -F 'file=@example.png' https://webhook.site/00000000-0000-0000-0000-000000000000
+
+          # Send a form data to the URL
+          curl -F 'name=John' -F 'email=john@example.com' https://webhook.site/00000000-0000-0000-0000-000000000000
+
+          # Send a JSON payload to the URL
+          curl -H 'Content-Type: application/json' -d '{"name":"John","email":"john@example.com"}' https://webhook.site/00000000-0000-0000-0000-000000000000
+  https://pastebin.com:
+    desc: Store and share text online. Mainly used by programmers to store pieces of sources code or configuration information.
+    tags: [ pastebin ]
+    links:
+      - GitHub: https://github.com/pastebin/pastebin
+      - Docs: https://pastebin.com/doc
+      - API: https://pastebin.com/api
+      - API Docs: https://pastebin.com/api_docs
+      - API Examples: https://pastebin.com/api_examples
+      - API Paste Formats: https://pastebin.com/doc_api#5
+      - Profile: https://pastebin.com/u/roalcantara
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+
+          ## USAGE
+
+          ## Create an 'api_user_key' using the API Member Login System
+          curl -X POST -d "api_dev_key=$(gopass show --password tokens/pastebin.com)" -d 'api_user_name=roalcantara' -d "api_user_password=$(gopass show --password websites/pastebin.com/roalcantara)" "https://pastebin.com/api/api_login.php"
+
+          ## Get user details
+          curl -X POST -d "api_dev_key=$(gopass show --password tokens/pastebin.com)" -d 'api_user_key=YOUR API USER KEY' -d 'api_option=userdetails' "https://pastebin.com/api/api_post.php"
+
+          ## Create a new private paste
+          curl -X POST -d "api_dev_key=$(gopass show --password tokens/pastebin.com)" -d 'api_user_key=YOUR API USER KEY' -d 'api_paste_name=test' -d 'api_paste_private=2' -d 'api_paste_format=ruby' -d 'api_paste_code="puts "Hello, World!"' -d 'api_option=paste' "https://pastebin.com/api/api_post.php"
+
+          ## Delete a paste
+          curl -X POST -d "api_dev_key=$(gopass show --password tokens/pastebin.com)" -d 'api_user_key=YOUR API USER KEY' -d 'api_option=delete' -d 'api_paste_key=API PASTE KEY' "https://pastebin.com/api/api_post.php"
+  ## ATLASIAN
+  https://rovodevagents-beta.atlassian.net/wiki/external/Yzc2NzI4MTk3YTBhNDdiYjkzZDhhZTc3MjE0ZmE4Y2Q:
+    desc: Rovodev | Atlassian CLI Reference | How to Use
+    tags: [ atlassian, cli, jira ]
+    notes:
+      - md: | #markdown
+          ## Key features
+
+          Use AI to streamline your software development process with Rovo Dev CLI.
+
+          - Perform complex development tasks using natural language without leaving your terminal like
+           - generating, reviewing, and refactoring code
+           - analyzing your codebase
+           - writing documentation
+           - debugging issues
+           - and creating unit tests
+
+           Rovo Dev is integrated with your Atlassian apps,
+           so you can also use it to action your Jira work items or create new Confluence content.
+
+           By bringing all these capabilities to a command line interface,
+           you can speed up your workflow and reduce context-switching.
+      - sh: | #shell
+          #!/bin/bash
+
+          # Install the Atlassian CLI
+          brew tap atlassian/homebrew-acli
+          brew install atlassian/acli/acli
+
+          # Run the Atlassian CLI
+          acli --help
+
+          # Rovo Dev is accessed as an extension for Atlassian Command Line Interface (ACLI). To install Rovo Dev
+          acli rovodev auth login
+
+          # Open rovodev in interactive mode
+          acli rovodev run
+      - md: | #markdown
+          ## Example prompts
+
+          ### Explore your codebase
+          > Rovo Dev reads your codebase and answers questions in clear language,
+          > helping you quickly navigate familiar codebases and decipher new ones.
+
+          - Explain this repository to me
+          - Where is the authentication logic defined?
+          - What input validation happens during user registration?
+
+          ### Work with Atlassian apps
+
+          > Rovo Dev integrates with Jira and Confluence, so you can access your team`s knowledge
+          > and manage your work without switching contexts.
+          > Specify the URL of your site in the prompt.
+
+          - Which Jira work items in site vitafleet.atlassian.net are assigned to me and in To Do status?
+          - Implement code changes for Jira work item ABC-123 in site vitafleet.atlassian.net
+          - Create a list of changes needed to implement dark mode and publish to Confluence in site vitafleet.atlassian.net
+
+          ### Ideate and plan
+
+          > Rovo Dev analyzes your codebase to help you brainstorm and plan technical solutions.
+
+          - Suggest new features to add that would improve the user experience
+          - How can I improve performance of this app?
+          - Create a coding plan for adding international currencies to the shopping cart, don't implement any changes yet
+
+          ### Generate code
+
+          >Rovo Dev generates consistent, structured code to help you build and transform your applications.
+
+          - Review this modal component and add missing ARIA attributes
+          - Migrate code in this repository from C++ to Java
+          - Add search suggestions to search bar: trigger after 3 characters, include keyboard navigation (up/down/enter), filter on a predefined list of popular products
+
+          ### Analyze and iterate on code
+
+          > Rovo Dev analyzes code, both existing code and code it has generated,
+          > and refines it based on your feedback.
+
+          - Review this repository and make suggestions to improve readability and performance
+          - I'm getting a 500 error when fetching data from the backend API using Axios - find the issue and fix it
+          - The error handling you generated for this function is too simple - add more specific error cases and retry logic
+
+          ### Write code documentation
+
+          > Rovo Dev generates documentation based on the latest changes to your codebase.
+
+          - Write detailed documentation for this REST API, including available endpoints, parameters, and expected responses - publish to Confluence space "Vitafleet"
+          - Write JSDoc-style comments for this JavaScript function that handles form validation
+          - Write a README.md file for this project - include sections "Setup", "Features", and "Deployment information"
+
+          ### Test and deploy
+
+          > Rovo Dev helps you build comprehensive test suites and configure your deployment pipelines
+
+          - Generate 100 rows of synthetic user data with: name, email, age, location, and signup date - output it as a CSV
+          - Write a test using React Testing Library to verify if the form shows appropriate error messages when trying to submit with empty mandatory fields
+          - Modify bitbucket-pipelines.yml to add a step for running Jest tests before deploying
+
+          ## Tips for working with Rovo Dev
+
+          1. **Start small** - Rovo Dev works best with small changes, about 10 or 20 lines at a time.
+          2. **Break down your tasks** - break bigger changes into smaller steps for Rovo Dev to tackle one at a time.
+          3. **Review and iterate** - treat Rovo Dev like a teammate you`re collaborating with, give feedback on the code it generates with what to change and improve.
+          4. **Change gears** - use the /sessions command to start a new session if the current approach isn`t working and you need a fresh perspective from Rovo Dev.
+          5. **Save frequently** - regularly commit changes to track your progress and avoid losing work if something goes wrong.
+          6. **Check your work** - you can ask Rovo Dev to review its own changes, compare the changes against a parent commit for linting errors, and submit draft pull requests to verify CI/CD logs.
+
+          ## Commands
+
+          > While in **interactive mode**, you can enter `/` at any time to see the list of available commands.
+
+          - `/sessions`: Switch between sessions, and view session details.
+          - `/clear`: Clear the current session's message history.
+          - `/prune`: Reduce the token size of the current session's message history while retaining context.
+          - `/instructions`: Run saved instructions.
+          - `/memory`: Memory file management.memo
+          - `# <note>`: Add a note to Rovo Dev's local memory file.
+          - `#! <note>`: Remove a note from Rovo Dev's local memory file.
+          - `/feedback`: Provide feedback or report a bug on Rovo Dev CLI.
+          - `/usage`: Show your daily LLM token usage.
+          - `/exit`: Quit Rovo Dev.
+
+          ## Instructions
+
+          - Instructions are prompts you have saved to re-use later.
+          - In interactive mode, use `/instructions` to see your collection of saved tasks.
+          - Then, select any task from the list to run it.
+
+          ### Managing Instructions
+
+          To set up and manage your instructions, edit the file `~/.rovodev/instructions.yml`.
+          Here is the file format template:
+
+          ```yaml
+          instructions:
+            - name: <name of the instruction>
+              description: <description of the instruction>
+              content_file: <filename containing the actual instructions>
+            - name: <name of the instruction #2>
+              description: <description of the instruction #2>
+              content_file: <filename containing the actual instructions #2>
+            ```
+
+          ### Example
+
+          Creates a new instruction that will generate release note for the repo,
+          The actual instructions are stored in `~/.rovodev/release_note.md`
+
+          - .rovodev/instructions.yml:
+
+              ```yaml
+              instructions:
+                - name: Generate-release-note-since-version
+                  description: Generate release note since version
+                  content_file: release_note.md
+              ```
+
+          - .rovodev/release_note.md:
+
+              ```md
+              Generate release note since the given version for external audience.
+              Add "Why it matters" for each set of changes.
+              If available, extract what's the given version to generate release note since from the additional instructions below.
+              The instruction can then be called in Interactive Mode as /instructions Generate-release-note-since-version <starting version number>.
+              ```
+  https://id.atlassian.com/manage-profile/security/api-tokens:
+    desc: Atlassian API Tokens | Generate and manage API tokens for Atlassian products
+    tags: [ atlassian, api ]
+    links:
+      - VSCode/Cursor Extension: https://marketplace.cursorapi.com/items/?itemName=atlassian.atlascode
+      - Rovodev: https://developer.atlassian.com/cloud/acli/reference/commands
+  https://developer.atlassian.com/cloud/acli/guides/introduction:
+    desc: Atlassian CLI | A command-line interface for interacting with Atlassian products
+    tags: [ atlassian, cli, jira ]
+    notes:
+      sh: | #shell
+        #!/bin/bash
+
+        # Install the Atlassian CLI
+        brew tap atlassian/homebrew-acli
+        brew install atlassian/acli/acli
+
+        # Run the Atlassian CLI
+        acli --help
+  ## TASK RUNNERS
+  https://mise.jdx.dev/tasks:
+    desc: Define and run project tasks for building, testing, linting, deploying, and everyday development workflows
+    tags: [ task, runner, cli, mise ]
+    links:
+      - Task System Architecture: https://mise.jdx.dev/tasks/architecture.html
+      - Running Tasks: https://mise.jdx.dev/tasks/running-tasks.html
+      - TOML-based Tasks: https://mise.jdx.dev/tasks/toml-tasks.html
+      - File Tasks: https://mise.jdx.dev/tasks/file-tasks.html
+      - Tasks Arguments: https://mise.jdx.dev/tasks/task-arguments.html
+      - Tasks Arguments > Usage: https://mise.jdx.dev/tasks/task-arguments.html#complete-usage-specification-reference
+      - Task Configuration: https://mise.jdx.dev/tasks/task-configuration.html
+      - Task Templates: https://mise.jdx.dev/tasks/templates.html
+      - Monorepo Tasks: https://mise.jdx.dev/tasks/monorepo.html
+      - Sendingboxing: https://mise.jdx.dev/sandboxing.html
+    notes:
+      - md: |
+          ## Overview
+
+          You can define tasks in mise.toml files or as standalone shell scripts. 
+
+          ### FEATURES/EXAMPLES:
+
+          - Building dependencies in parallel—by default with no configuration required
+          - Last-modified checking to avoid rebuilding when there are no changes—requires minimal config
+          - Mise watch to automatically rebuild on changes—no configuration required, but it helps
+          - Ability to write tasks as actual script files
+          - Ability to use task templates to create reusable task definitions
+  https://spatie.be/docs/scotty:
+    desc: A beautiful SSH task runner
+    tags: [ task, runner, cli ]
+    notes:
+      - md: |
+          ## Overview
+
+          - Scotty is a tool that runs tasks on your remote servers over SSH.
+          - You write your tasks in a Scotty.sh file
+          - And Scotty takes care of connecting to your servers
+          - It runs each script, and shows you exactly what's happening.
+  ## HTTP REQUEST TOOLS
+  https://curl.se/docs/manpage.html:
+    desc: cURL Manual
+    tags: [ curl, http ]
+    links:
+      - cURL Manual: https://curl.se/docs/manpage.html
+  https://httpie.io/docs:
+    desc: HTTPie Documentation
+    tags: [ http, cli ]
+  https://github.com/ducaale/xh:
+    desc: xh is a friendly and fast tool for sending HTTP requests
+    tags: [ http, cli ]
+    links:
+      - GitHub: https://youtu.be/eyXxEBZMVQI
+commands:
+  # https://pastebin.com
+  curl -X POST -d 'api_dev_key=$(gopass show --password tokens/pastebin.com)' -d 'api_paste_name=hello' -d 'api_paste_format=ruby' -d 'api_paste_code="puts "Hello, World!"' -d 'api_option=paste' "https://pastebin.com/api/api_post.php":
+    desc: Create a new paste using the API
+    tags: [ pastebin ]
+    links:
+      - API Documentation: https://pastebin.com/api_docs
+      - API Examples: https://pastebin.com/api_examples
+  curl -X POST -d "api_dev_key=$(gopass show --password tokens/pastebin.com)" -d 'api_user_name=roalcantara' -d "api_user_password=$(gopass show --password websites/pastebin.com/roalcantara)" "https://pastebin.com/api/api_login.php":
+    desc: Creating An 'api_user_key' Using The API Member Login System
+    tags: [ pastebin ]
+    links:
+      - API Documentation: https://pastebin.com/api_docs
+      - API Examples: https://pastebin.com/api_examples
+  curl -X POST -d 'api_dev_key=$(gopass show --password tokens/pastebin.com)' -d 'api_user_key=YOUR API USER KEY' -d 'api_option=userdetails' "https://pastebin.com/api/api_post.php":
+    desc: Get user details using the API
+    tags: [ pastebin ]
+    links:
+      - API Documentation: https://pastebin.com/api_docs
+      - API Examples: https://pastebin.com/api_examples
+  curl -X POST -d 'api_dev_key=$(gopass show --password tokens/pastebin.com)' -d 'api_user_key=YOUR API USER KEY' -d 'api_option=delete' -d 'api_paste_key=API PASTE KEY' "https://pastebin.com/api/api_post.php":
+    desc: Delete a paste using the API
+    tags: [ pastebin ]
+    links:
+      - API Documentation: https://pastebin.com/api_docs
+      - API Examples: https://pastebin.com/api_examples
+  curl -X POST -d 'api_dev_key=$(gopass show --password tokens/pastebin.com)' -d 'api_user_key=YOUR API USER KEY' -d 'api_option=list' "https://pastebin.com/api/api_post.php":
+    desc: List all pastes using the API
+    tags: [ pastebin ]
+    links:
+      - API Documentation: https://pastebin.com/api_docs
+      - API Examples: https://pastebin.com/api_examples
+
+  cowsay:
+    desc: is a program that generates ASCII art of a cow with speech or thought bubbles
+    tags: [ cat ]
+    links:
+      - GitHub: https://github.com/piuccio/cowsay
+    notes:
+      - md: |
+          ## Overview
+
+          `cowsay` is a program that generates ASCII art of a cow with speech or thought bubbles.
+
+          ## Installation
+      - sh: |
+          # Installation
+          brew install cowsay
+      - sh: |
+          # Usage
+          cowsay "Hello, World!"
+      - sh: |
+          # Docker
+          docker run --rm -it cowsay "Hello, World!"
+  cowsay "Hello, World!":
+    desc: generates the ASCII art with the specified message.
+    tags: [ cat ]
+    notes:
+      - sh: | #shell
+          $ cowsay "Hello, World!"
+          # => cowsay "Hello, World!"
+  cowsay -f tux "I'm a penguin!":
+    desc: uses the "tux" cowfile to generate the ASCII art with the specified message.
+    tags: [ cat ]
+    notes:
+      - sh: | #shell
+          $ cowsay -f tux "I'm a penguin!"
+          # => cowsay -f tux "I'm a penguin!"
+  cowsay -l:
+    desc: lists all available cowfiles.
+    tags: [ cat ]
+    notes:
+      - sh: | #shell
+          $ cowsay -l
+          # => cowsay -l
+  cowsay -e ^^ "I'm excited!":
+    desc: uses the specified eyes ("-e") to generate the ASCII art with the specified message.
+    tags: [ cat ]
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+          # prints 'cowsay -e ^^ "I`m excited!"'
+          cowsay -e ^^ "I'm excited!"
+  cowsay -T "V" "I'm a custom cow!":
+    desc: uses a custom cowfile to generate the ASCII art with the specified message.
+    tags: [ cat ]
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+          # prints 'cowsay -T "V" "I`m a custom cow!"'
+          cowsay -T "V" "I'm a custom cow!"
+  cowsay -W 40 "This is a long message that wraps at 40 characters.":
+    desc: wraps the message at the specified width ("-W") to fit within 40 characters per line.
+    tags: [ cat ]
+    notes:
+      - sh: | #shell
+          # prints 'cowsay -W 40 "This is a long message that wraps at 40 characters."'
+          cowsay -W 40 "This is a long message that wraps at 40 characters."
+
+  # MVD (Markdown Viewer)
+  pip install mdv:
+    desc: Install terminal-markdown-viewer using pip
+    tags: [ mdv ]
+    links: [ https://github.com/axiros/terminal-markdown-viewer ]
+  echo "# Hello World" | mdv -:
+    desc: Display markdown from stdin
+    tags: [ mdv ]
+  echo "# Test" | mdv -:
+    desc: Preview markdown from stdin
+    tags: [ mdv ]
+  mdv -A README.md:
+    desc: Disable file-wide layout (useful for small files)
+    tags: [ mdv, markdown ]
+  mdv -i README.md:
+    desc: Interactive mode (allows scrolling)
+    tags: [ mdv, markdown ]
+  mdv README.md:
+    desc: View a markdown file with default theme
+    tags: [ mdv ]
+  mdv -c monokai README.md:
+    desc: Use a specific code block theme
+    tags: [ mdv ]
+  mdv --list-code-themes:
+    desc: List available code block themes
+    tags: [ mdv ]
+  mdv -x 2 README.md:
+    desc: Set tab width (default is 4)
+    tags: [ mdv, markdown ]
+  mdv --header-nesting=0 README.md:
+    desc: Hide header tags
+    tags: [ mdv, markdown ]
+  mdv -t 785.3224 README.md:
+    desc: 'View markdown file with a popular theme. AVAILABLE: 784.0134, 785.3184, 785.3224, 956.1146'
+    tags: [ mdv ]
+  mdv --list-themes:
+    desc: Display available themes
+    tags: [ mdv, markdown ]
+  mdv -c monokai -w 100 -n README.md:
+    desc: View markdown with monokai code highlighting, custom width, and line numbers
+    tags: [ mdv ]
+  mdv -w 100 README.md:
+    desc: Set custom width (default is your terminal width)
+    tags: [ mdv ]
+  mdv -n README.md:
+    desc: Display line numbers
+    tags: [ mdv, markdown ]
+  watch -n 1 mdv README.md:
+    desc: Live preview of markdown file, updates every second
+    tags: [ mdv ]
+
+  # Glow
+  brew install glow:
+    desc: Install glow using HomeBrew on macOS
+    tags: [ markdown ]
+    links: [ https://github.com/charmbracelet/glow ]
+  echo "# Hello World" | glow -:
+    desc: View markdown from stdin
+    tags: [ glow ]
+  glow README.md:
+    desc: Render a markdown file in the terminal with default settings
+    tags: [ glow ]
+  glow -p README.md:
+    desc: Enter pager mode (allows scrolling)
+    tags: [ glow ]
+  glow .:
+    desc: View all markdown files in current directory
+    tags: [ markdown ]
+  glow -s dark README.md:
+    desc: Use dark style theme for rendering
+    tags: [ markdown ]
+    notes:
+      - sh: |
+          # List available styles
+          glow -s list
+
+          # Use specific style
+          glow -s dark README.md
+
+          # Use custom style file
+          glow -s mystyle.json README.md
+  glow -w 80 README.md:
+    desc: Set custom width for rendering
+    tags: [ glow, markdown ]
+  glow -h 40 README.md:
+    desc: Set custom height
+    tags: [ glow, markdown ]
+  glow -w 80 -h 40 README.md:
+    desc: Set Both width and height
+    tags: [ glow, markdown ]
+  glow -m README.md:
+    desc: View markdown file in monochrome mode
+    tags: [ glow ]
+  GLOW_STYLE=dark glow README.md:
+    desc: Set style using environment variable
+    tags: [ glow, markdown ]
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+          # Set default style
+          export GLOW_STYLE=dark
+          # Set default width
+          export GLOW_WIDTH=80
+          # Set default pager
+          export GLOW_PAGER=true
+  glow serve:
+    desc: Start a local markdown server to browse and preview markdown files
+    tags: [ glow ]
+    notes:
+      - md: |
+          ## Server Mode Features
+      - sh: |
+          # Start server with default settings
+          glow serve
+
+          # Custom port and host
+          glow serve -p 8080 -h localhost
+
+          # Allow external connections
+          glow serve -h 0.0.0.0
+      - md: |
+          ## Security Note
+          When using `serve` mode, be cautious with external connections as it exposes your markdown files to the network.
+  glow config:
+    desc: Show glow configuration file location and create if it doesn't exist
+    tags: [ markdown ]
+    notes:
+      - sh: |
+          # ~/.config/glow/glow.yml
+          style: "dark"
+          # or "light", "dracula", etc.
+          pager: true
+          mouse: true
+          width: 80
+  glow stash add README.md:
+    desc: Add markdown file to stash for quick access
+    tags: [ glow ]
+    notes:
+      - md: |
+          ## Stash Features
+      - sh: |
+          # Add file to stash
+          glow stash add README.md
+
+          # List stashed files
+          glow stash list
+
+          # View stashed file
+          glow stash show README.md
+
+          # Remove from stash
+          glow stash rm README.md
+  glow -s list:
+    desc: List all available built-in styles
+    tags: [ glow, markdown ]
+  glow --style [style-name]:
+    desc: Apply a specific built-in style
+    tags: [ glow, markdown ]
+    notes:
+      - md: | #markdown
+          ## Using Built-in Styles
+      - sh: | #shell
+          # Use dark theme
+          glow --style dark README.md
+          # Use light theme
+          glow --style light README.md
+          # Use dracula theme
+          glow --style dracula README.md
+          # Use doom theme (great for code blocks)
+          glow --style doom README.md
+  glow -s custom-style.json README.md:
+    desc: Use a custom JSON style files for more portable styling
+    tags: [ glow, markdown ]
+    notes:
+      - jsonc: | #jsonc
+          // custom-style.json
+          {
+            "document": {
+              "block-quote": "italic #706c8c",
+              "code": "#f0f0f0",
+              "code-block": "#f0f0f0",
+              "heading": "#c792ea bold",
+              "list": "#89ddff",
+              "text": "#959dcb"
+            },
+            "block-quote": {
+              "border": "#706c8c",
+              "text": "#959dcb"
+            },
+            "code-block": {
+              "text": "#89ddff",
+              "background": "#292d3e"
+            }
+          }
+  GLOW_STYLE=dracula glow README.md:
+    desc: Set style using environment variable
+    tags: [ glow, markdown ]
+    notes:
+      - sh: | #shell
+          # Test different styles quickly using environment variable
+          GLOW_STYLE=dark glow README.md
+          GLOW_STYLE=light glow README.md
+          GLOW_STYLE=dracula glow README.md
+  glow -w 80 --style dracula README.md:
+    desc: Combine styling with width formatting
+    tags: [ glow, markdown ]
+  GLOW_STYLE_DOCUMENT_H1="red bold" GLOW_STYLE_DOCUMENT_H2="blue italic" GLOW_STYLE_DOCUMENT_H3="green underline" glow README.md:
+    desc: Use environment variables to style H1, H2 and H3 with color and attributes
+    tags: [ glow ]
+  GLOW_STYLE_DOCUMENT_TEXT="blue" GLOW_STYLE_DOCUMENT_CODE="#FF5F87" glow README.md:
+    desc: Combine text and code styling
+    tags: [ glow ]
+  cat ~/.config/glow/glow.yml:
+    desc: Default Glow configuration
+    tags: [ markdown ]
+    notes:
+      - yaml: |
+          # ~/.config/glow/glow.yml
+          style:
+            document:
+              block-quote: italic #706c8c
+              code: "#f0f0f0"
+              code-block: "#f0f0f0"
+              heading: "#c792ea bold"
+              h1: "#c792ea bold"
+              h2: "#c792ea bold"
+              h3: "#c792ea bold"
+              h4: "#c792ea bold"
+              h5: "#c792ea italic"
+              h6: "#c792ea italic"
+              list: "#89ddff"
+              strikethrough: crossed-out
+              text: "#959dcb"
+              underline: underline
+            block-quote:
+              border: "#706c8c"
+              text: "#959dcb"
+            code-block:
+              text: "#89ddff"
+              background: "#292d3e"
+            table:
+              text: "#89ddff"
+              border: "#706c8c"
+  echo "# Header\n\`\`\`python\nprint('hello')\n\`\`\`\n> Quote" | glow -s dracula -:
+    desc: Preview markdown from stdin with a specific style
+    tags: [ glow ]
+  echo "| Header | Value |\n|--------|--------|\n| Test | Data |" | glow -s dracula -:
+    desc: custom headers are sent with a GET request. This is often used for setting authorization tokens and specifying the desired content type
+    tags: [ curl ]
+    notes:
+      - sh: | #shell
+          #!/bin/bash
+          curlie https://api.openai.com/v1/chat/completions \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $(gopass show --password tokens/openai.com)" \
+            -d '{
+              "model": "gpt-3.5-turbo",
+              "messages": [ { "role": "system", "content": "You are a helpful assistant." }, { "role": "user", "content": "Hello!" } ]
+            }'
+      - sh: | #shell
+          #!/bin/bash
+          curlie https://api.openai.com/v1/chat/completions \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $(gopass show --password tokens/opencommit.openai.com)" \
+            -d '{
+              "model": "gpt-4",
+              "messages": [{ "role": "system", "content": "You are a helpful assistant." }, {"role": "user", "content": "Hello, how are you?"}],
+              "temperature": 0.7
+            }'
+
+  # sk - Fuzzy Finder
+  sk --ansi -i -c 'ack --color "{}"':
+    desc: works with ack | -i interactive mode
+    tags: [ fzf ]
+  sk --ansi -i -c 'ag --color "{}"':
+    desc: works with ag | -i interactive mode
+    tags: [ fzf ]
+  sk --ansi -i -c 'rg --color=always --line-number "{}"':
+    desc: works with rg | -i interactive mode
+    tags: [ fzf ]
+  sk --bind 'f1:execute(less -f {}),ctrl-y:execute-silent(echo {} | pbcopy)+abort':
+    desc: bind keys | F1 to open in less, ctrl-y to copy to clipboard
+    tags: [ fzf ]
+  sk --ansi -i -c 'ag --color "{}"' --preview "preview.sh {}":
+    desc: preview with preview.sh
+    tags: [ fzf ]
+    notes:
+      - sh: |
+          #!/usr/bin/env bash
+          # https://github.com/junegunn/fzf.vim/blob/master/bin/tagpreview.sh
+
+          REVERSE="\x1b[7m"
+          RESET="\x1b[m"
+
+          if [ -z "$1" ]; then
+            echo "usage: $0 FILENAME:TAGFILE:EXCMD"
+            exit 1
+          fi
+
+          IFS=':' read -r FILE TAGFILE EXCMD <<< "$*"
+
+          # Complete file paths which are relative to the given tag file
+          if [ "${FILE:0:1}" != "/" ]; then
+            FILE="$(dirname "${TAGFILE}")/${FILE}"
+          fi
+
+          if [ ! -r "$FILE" ]; then
+            echo "File not found ${FILE}"
+            exit 1
+          fi
+
+          # If users aren't using vim, they are probably using neovim
+          if command -v vim > /dev/null; then
+            VIMNAME="vim"
+          elif command -v nvim > /dev/null; then
+            VIMNAME="nvim"
+          else
+            echo "Cannot preview tag: vim or nvim unavailable"
+            exit 1
+          fi
+
+          CENTER="$("${VIMNAME}" -R -i NONE -u NONE -e -m -s "${FILE}" \
+                        -c "set nomagic" \
+                        -c "silent ${EXCMD}" \
+                        -c 'let l=line(".") | new | put =l | print | qa!')" || exit
+
+          START_LINE="$(( CENTER - FZF_PREVIEW_LINES / 2 ))"
+          if (( START_LINE <= 0 )); then
+              START_LINE=1
+          fi
+          END_LINE="$(( START_LINE + FZF_PREVIEW_LINES - 1 ))"
+
+          # Sometimes bat is installed as batcat.
+          if command -v batcat > /dev/null; then
+            BATNAME="batcat"
+          elif command -v bat > /dev/null; then
+            BATNAME="bat"
+          fi
+
+          if [ -z "$FZF_PREVIEW_COMMAND" ] && [ "${BATNAME:+x}" ]; then
+            ${BATNAME} --style="${BAT_STYLE:-numbers}" \
+                      --color=always \
+                      --pager=never \
+                      --wrap=never \
+                      --terminal-width="${FZF_PREVIEW_COLUMNS}" \
+                      --line-range="${START_LINE}:${END_LINE}" \
+                      --highlight-line="${CENTER}" \
+                      "$FILE"
+            exit $?
+          fi
+
+          DEFAULT_COMMAND="highlight -O ansi -l {} || coderay {} || rougify {} || cat {}"
+          CMD=${FZF_PREVIEW_COMMAND:-$DEFAULT_COMMAND}
+          CMD=${CMD//{\}/$(printf %q "$FILE")}
+
+          eval "$CMD" 2> /dev/null | awk "{ \
+              if (NR >= $START_LINE && NR <= $END_LINE) { \
+                  if (NR == $CENTER) \
+                      { gsub(/\x1b[[0-9;]*m/, \"&$REVERSE\"); printf(\"$REVERSE%s\n$RESET\", \$0); } \
+                  else printf(\"$RESET%s\n\", \$0); \
+                  } \
+              }"
+      - sh: |
+          #!/usr/bin/env bash
+          # https://github.com/junegunn/fzf.vim/blob/master/bin/preview.sh
+
+          REVERSE="\x1b[7m"
+          RESET="\x1b[m"
+
+          if [[ $# -lt 1 ]]; then
+            echo "usage: $0 [--tag] FILENAME[:LINENO][:IGNORED]"
+            exit 1
+          fi
+
+          if [[ $1 = --tag ]]; then
+            shift
+            "$(dirname "${BASH_SOURCE[0]}")/tagpreview.sh" "$@"
+            exit $?
+          fi
+
+          # Ignore if an empty path is given
+          [[ -z $1 ]] && exit
+
+          IFS=':' read -r -a INPUT <<< "$1"
+          FILE=${INPUT[0]}
+          CENTER=${INPUT[1]}
+
+          if [[ "$1" =~ ^[A-Za-z]:\\ ]]; then
+            FILE=$FILE:${INPUT[1]}
+            CENTER=${INPUT[2]}
+          fi
+
+          if [[ -n "$CENTER" && ! "$CENTER" =~ ^[0-9] ]]; then
+            exit 1
+          fi
+          CENTER=${CENTER/[^0-9]*/}
+
+          # MS Win support
+          if [[ "$FILE" =~ '\' ]]; then
+            if [ -z "$MSWINHOME" ]; then
+              MSWINHOME="$HOMEDRIVE$HOMEPATH"
+            fi
+            if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null ; then
+              MSWINHOME="${MSWINHOME//\\/\\\\}"
+              FILE="${FILE/#\~\\/$MSWINHOME\\}"
+              FILE=$(wslpath -u "$FILE")
+            elif [ -n "$MSWINHOME" ]; then
+              FILE="${FILE/#\~\\/$MSWINHOME\\}"
+            fi
+          fi
+
+          FILE="${FILE/#\~\//$HOME/}"
+          if [ ! -r "$FILE" ]; then
+            if [[ "${INPUT[0]}" != '[No Name]' ]]; then
+              echo "File not found ${FILE}"
+            fi
+            exit 1
+          fi
+
+          if [ -z "$CENTER" ]; then
+            CENTER=0
+          fi
+
+          # Sometimes bat is installed as batcat.
+          if [[ -z "$BATCAT" ]]; then
+            if command -v batcat > /dev/null; then
+              BATCAT="batcat"
+            elif command -v bat > /dev/null; then
+              BATCAT="bat"
+            fi
+          fi
+
+          if [ -z "$FZF_PREVIEW_COMMAND" ] && [ "${BATCAT:+x}" ]; then
+            ${BATCAT} --style="${BAT_STYLE:-numbers}" --color=always --pager=never \
+                --highlight-line=$CENTER -- "$FILE"
+            exit $?
+          fi
+
+          FILE_LENGTH=${#FILE}
+          MIME=$(file --dereference --mime -- "$FILE")
+          if [[ "${MIME:FILE_LENGTH}" =~ binary ]]; then
+            echo "$MIME"
+            exit 0
+          fi
+
+          DEFAULT_COMMAND="highlight -O ansi -l {} || coderay {} || rougify {} || cat {}"
+          CMD=${FZF_PREVIEW_COMMAND:-$DEFAULT_COMMAND}
+          CMD=${CMD//{\}/"$(printf %q "$FILE")"}
+
+          eval "$CMD" 2> /dev/null | awk "{ \
+              if (NR == $CENTER) \
+                  { gsub(/\x1b[[0-9;]*m/, \"&$REVERSE\"); printf(\"$REVERSE%s\n$RESET\", \$0); } \
+              else printf(\"$RESET%s\n\", \$0); \
+              }"
+  vi $(find . -name "*.rs" | sk -m):
+    desc: Open a Rust file in vi | ⇥ (TAB) select multiple items when -m
+    tags: [ fzf ]
+  sk --ansi -i -c 'grep -rI --color=always --line-number "{}" .':
+    desc: works with grep | -i interactive mode
+    tags: [ fzf ]
+
+  # zoxide
+  brew install zoxide:
+    desc: Install zoxide using homebrew | A smarter cd command for your terminal
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  z foo<SPACE><TAB>:
+    desc: show interactive completions (zoxide v0.8.0+, bash 4.4+/fish/zsh only)
+    tags: [ navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  zoxide add ~/Work/node/demo:
+    desc: Add or increment the rank of the directory "~/Work/node/demo"
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  z foo:
+    desc: cd into highest ranked directory matching foo
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  z foo bar:
+    desc: cd into highest ranked directory matching foo and bar
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  z foo /:
+    desc: cd into a subdirectory starting with foo
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  z ~/foo:
+    desc: z also works like a regular cd command
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  z foo/:
+    desc: cd into relative path
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  z ..:
+    desc: cd one level up
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  z -:
+    desc: cd into previous directory
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  zi foo:
+    desc: cd with interactive selection (using fzf)
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  zoxide edit:
+    desc: Edit the database
+    tags: [ navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  zoxide import:
+    desc: Import entries from another application
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  zoxide init:
+    desc: Generate shell configuration
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  zoxide query -s -l:
+    desc: List all directories in the database with their scores
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  zoxide query motion:
+    desc: Search the database for directory matching "motion"
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  zoxide query motion -s:
+    desc: Search the database for directory matching "motion" and shows its score
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+  zoxide remove:
+    desc: Remove a directory from the database
+    tags: [ zsh, navigation ]
+    links:
+      - https://github.com/ajeetdsouza/zoxide
+      - https://youtu.be/aghxkpyRVDY
+
+  # ripgrep (rg)
+  brew install ripgrep:
+    desc: Install ripgrep using HomeBrew
+    tags: [ rg ]
+  rg '^pattern$':
+    desc: Match pattern on line boundaries using regex
+    tags: [ rg, ripgrep ]
+  rg --vimgrep pattern:
+    desc: Show results in vim-compatible format
+    tags: [ rg, ripgrep ]
+  rg pattern -l | xargs sed -i 's/old/new/g':
+    desc: Find files with pattern and perform replacement using sed
+    tags: [ rg, ripgrep, complex ]
+  rg --json pattern | jq '.data.lines.text':
+    desc: Search with JSON output and process with jq
+    tags: [ rg, ripgrep, complex ]
+  rg '^function':
+    desc: Search for pattern '^function' recursively in current directory
+    tags: [ rg, ripgrep ]
+  rg '\bconst\b':
+    desc: Search for whole word 'const' using regex
+    tags: [ rg, ripgrep ]
+  rg '\b[a-z]{3}\b':
+    desc: Search for whole words with 3 lowercase letters
+    tags: [ rg, ripgrep ]
+  rg -i readne:
+    desc: Case-insensitive search for pattern 'readne' (e.g. README)
+    tags: [ rg ]
+  rg -w TODO:
+    desc: Match whole words only
+    tags: [ rg ]
+  rg -t py main:
+    desc: Search only Python files for pattern 'main'
+    tags: [ filter, rg ]
+  rg -T js pattern:
+    desc: Search all files except JavaScript
+    tags: [ filter, rg, ripgrep ]
+  rg -C 3 pattern:
+    desc: Show 3 lines before and after each match
+    tags: [ rg, ripgrep ]
+  rg -B 3 pattern:
+    desc: Show 3 lines before each match
+    tags: [ rg, ripgrep ]
+  rg -A 3 pattern:
+    desc: Show 3 lines after each match
+    tags: [ rg, ripgrep ]
+  rg --files-with-matches pattern:
+    desc: Only show files containing matches (useful for scripts)
+    tags: [ rg, ripgrep ]
+  rg --files-without-match pattern:
+    desc: Only show files that don't contain matches
+    tags: [ rg, ripgrep ]
+  rg --hidden pattern:
+    desc: Search hidden files and directories
+    tags: [ rg, ripgrep ]
+  rg -g 'tests/*' pattern:
+    desc: Only search in files under tests directory
+    tags: [ rg, ripgrep ]
+  rg -e pattern1 -e pattern2:
+    desc: Search for multiple patterns
+    tags: [ rg, ripgrep ]
+  rg --json pattern:
+    desc: Output results in JSON format
+    tags: [ rg, ripgrep ]
+  rg --pretty pattern:
+    desc: Show results with color and line numbers in a nice format
+    tags: [ rg, ripgrep ]
+  rg --threads 4 pattern:
+    desc: Use exactly 4 threads for searching
+    tags: [ rg, ripgrep ]
+  rg --no-ignore pattern:
+    desc: Don't respect ignore files (.gitignore, .ignore, etc)
+    tags: [ rg, ripgrep ]
+  rg -g '*.{js,ts}' -i 'function.*export':
+    desc: Search for exported functions in JavaScript/TypeScript files
+    tags: [ rg, ripgrep, complex ]
+  rg --type-add 'web:*.{html,css,js}' -t web pattern:
+    desc: Define and use custom file type for web files
+    tags: [ rg, ripgrep, complex ]
+  rg -l -g 'src/*.rs' '^pub struct':
+    desc: List Rust files in src containing public structs
+    tags: [ rg, ripgrep, complex ]
+  rg -U pattern:
+    desc: Search with multiline support (disable line-wise searching)
+    tags: [ rg, ripgrep ]
+  rg -F 'pattern[.*]':
+    desc: Search for literal string (disable regex interpretation)
+    tags: [ rg, ripgrep ]
+
+  # gum
+  gum input --placeholder "What's your name?":
+    desc: Create a simple text input prompt
+    tags: [ gum, interactive ]
+  gum input --password --placeholder "Enter password":
+    desc: Create a password input that masks the characters
+    tags: [ gum, security ]
+  gum write --placeholder "Enter description":
+    desc: Create a multi-line text input area
+    tags: [ gum, multiline ]
+    notes:
+      - sh: |
+          # With character limit
+          gum write --char-limit 500
+
+          # With specific dimensions
+          gum write --width 50 --height 10
+  gum choose "option1" "option2" "option3":
+    desc: Create a single-choice selection menu
+    tags: [ gum, choose ]
+    notes:
+      - sh: |
+          # Multiple selection
+          gum choose --multiple "opt1" "opt2" "opt3"
+
+          # With selection limit
+          gum choose --multiple --limit 2 "opt1" "opt2" "opt3"
+  gum style --foreground 212 "Colored text":
+    desc: Style text with colors and formatting
+    tags: [ text-formatting, color-coding ]
+    notes:
+      - sh: |
+          # Combined styles
+          gum style --foreground 212 --background 198 --bold "Text"
+
+          # With border
+          gum style --border double --margin "1" "Text"
+  gum style --foreground 212 --border-foreground 212 --border double --align center --width 50 --margin "1 2" --padding "2 2" --margin "1 2" --padding "2 4" 'Bubble Gum (1¢)' 'So sweet and so fresh!':
+    desc: Style text with colors, formatting and borders
+    tags: [ gum ]
+    notes:
+      - sh: |
+          # With border
+          gum style --border double --margin "1" "Text"
+  gum spin --spinner dot --title "Loading...":
+    desc: Display a loading spinner with custom message
+    tags: [ gum ]
+    notes:
+      - sh: |
+          # With timeout
+          gum spin --timeout 3s -- long_command
+
+          # Custom spinner type
+          gum spin --spinner points -- sleep 5
+  gum file .:
+    desc: Interactive file selection from current directory
+    tags: [ gum ]
+    notes:
+      - sh: |
+          # Directory selection
+          gum file --directory .
+
+          # With file type filter
+          gum file --glob "*.yaml"
+  gum table:
+    desc: Display data in table format
+    tags: [ gum ]
+    notes:
+      - sh: |
+          # CSV input
+          echo "Name,Age\nJohn,30" | gum table
+
+          # Custom separator
+          echo "ID|Status" | gum table --separator "|"
+  gum filter:
+    desc: Interactive text filtering and selection
+    tags: [ gum, search ]
+    notes:
+      - sh: |
+          # Filter git branches
+          git branch | gum filter
+
+          # Filter with limit
+          cat items.txt | gum filter --limit 3
+  gum join:
+    desc: Join text horizontally or vertically
+    tags: [ gum, layout ]
+    notes:
+      - sh: |
+          # Horizontal join
+          gum join "Left" "Right"
+
+          # Vertical join
+          gum join --vertical "Top" "Bottom"
+    links: [ https://github.com/charmbracelet/gum ]
+  gum confirm "Are you sure?":
+    desc: Create a yes/no confirmation prompt
+    tags: [ gum, interactive ]
+    notes:
+      - sh: |
+          # Custom buttons
+          gum confirm "Proceed?" --affirmative "YES" --negative "NO"
+
+          # Default selection
+          gum confirm "Continue?" --default=false
+  gum format -t progress:
+    desc: Create a progress bar display
+    tags: [ gum, ui ]
+    notes:
+      - sh: |
+          # Simple progress simulation
+          for i in $(seq 0 10); do
+            echo $i
+            sleep 0.1
+          done | gum format -t progress
+  gum table create interactive and formatted tables in the terminal:
+    desc: Create interactive and formatted tables in the terminal
+    tags: [ gum ]
+    notes:
+      - sh: |
+          # Basic CSV data with headers
+          echo "ID,Name,Status,LastSeen
+          1,Backend API,Running,2024-03-15
+          2,Frontend App,Failing,2024-03-14
+          3,Database,Running,2024-03-15" | gum table
+      - md: |
+          ## Output examples would look like:
+
+          | ID | Name         | Status  | LastSeen   |
+          |----|--------------|---------|------------|
+          | 1  | Backend API  | Running | 2024-03-15 |
+          | 2  | Frontend App | Failing | 2024-03-14 |
+          | 3  | Database     | Running | 2024-03-15 |
+      - sh: |
+          # Custom bordered table with specific separator and width
+          echo "Service | Status | Memory | CPU
+          API | ✅ | 256MB | 45%
+          Worker | ⚠️ | 512MB | 78%
+          Cache | ✅ | 128MB | 23%" | \
+          gum table \
+            --separator "|" \
+            --width 50 \
+            --border double
+      - md: |
+          ### Custom bordered table
+
+          ╔═══════════╦══════════╦══════════╦═══════╗
+          ║ Service   ║ Status   ║ Memory   ║ CPU   ║
+          ╠═══════════╬══════════╬══════════╬═══════╣
+          ║ API      ║ ✅       ║ 256MB    ║ 45%   ║
+          ║ Worker   ║ ⚠️       ║ 512MB    ║ 78%   ║
+          ║ Cache    ║ ✅       ║ 128MB    ║ 23%   ║
+          ╚═══════════╩══════════╩══════════╩═══════╝
+      - sh: |
+          # Combining with other commands for system monitoring
+          ps aux | \
+            awk 'NR<2{print $1,$2,$3,$4,$11;next}{print $1,$2,$3,$4,$11}' | \
+            tr ' ' ',' | \
+            gum table --width 80 --separator ","
+
+          # Using with JSON data via jq
+          echo '{"services": [
+            {"name": "auth", "status": "up", "latency": "45ms"},
+            {"name": "api", "status": "up", "latency": "62ms"},
+            {"name": "db", "status": "down", "latency": "---"}
+          ]}' | \
+          jq -r '.services[] | [.name, .status, .latency] | @csv' | \
+          gum table --separator "," --width 40
+      - md: |
+          ### JSON data converted to table
+
+          | name | status | latency |
+          |------|--------|---------|
+          | auth | up     | 45ms    |
+          | api  | up     | 62ms    |
+          | db   | down   | ---     |
+
+  # curl | In a Bash Script with Variables:
+  curl | In a Bash Script with Variables:
+    desc: a bash script uses variables to hold the URL and data payload. This approach makes the script more dynamic and easier to modify.
+    tags: [ curl ]
+    notes:
+      - sh: |
+          URL="http://example.com/api/data"
+          DATA='{
+                  "username": "user",
+                  "password": "pass"
+                }'
+
+          curl -X POST $URL \
+              -H "Content-Type: application/json" \
+              -d "$DATA"
+  curlie <URL>:
+    desc: Get content from URL
+    tags: [ curl ]
+  curlie -f POST <URL> <ARGS>:
+    desc: Submit to url - like FORM
+    tags: [ curl ]
+  curlie <URL> < <FILE>:
+    desc: Upload file to url - OFFLINE MODE
+    tags: [ curl ]
+  curlie <URL> > <FILE>:
+    desc: Download file from url - OFFLINE MODE
+    tags: [ curl ]
+  curlie --download <URL>:
+    desc: Download file from url - wget style
+    tags: [ curl ]
+  curlie -d <URL> | tar zxf -:
+    desc: Download file from url and extracs with 'tar zxf'
+    tags: [ curl ]
+  curlie <URL> | pup'<FIELD> text{}' --color --plain:
+    desc: Extract fields from url
+    tags: [ curl ]
+
+  # jwt | Encode and payload into JWT token with a secret key
+  jwt encode --secret "a-256-bit-secret-key" '{"user":"example"}':
+    desc: Encode and payload into JWT token with a secret key
+    tags: [ jwt ]
+    notes:
+      - md: | #markdown
+          ## EXAMPLE
+
+          ```sh
+          # Encode a payload into a JWT Token with a secret key
+          $ jwt encode --secret "a-256-bit-secret-key" '{"user":"example"}'
+          # => eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzQwNTI5NzAsInVzZXIiOiJleGFtcGxlIn0.s7XzVxFdOc7oP9wiPkURglxaEREg177IorST-6S6EoA
+          ```
+
+          > The output is a JWT token that can be used for authentication and authorization purposes.
+
+          ```sh
+          # To decode the JWT token, use the following command:
+          $ jwt decode eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3MzQwNTI5NzAsInVzZXIiOiJleGFtcGxlIn0.s7XzVxFdOc7oP9wiPkURglxaEREg177IorST-6S6EoA
+          ```
+
+          > Token header
+          > ------------
+          > {
+          >   "typ": "JWT",
+          >   "alg": "HS256"
+          > }
+          >
+          > Token claims
+          > ------------
+          > {
+          >   "iat": 1719007185,
+          >   "user": "example"
+          > }
+cheats:
+  GLOW_STYLE_DOCUMENT_LIST="yellow":
+    desc: Style list elements
+    tags: [ markdown ]
+    notes:
+      - sh: |
+          # Style lists
+          GLOW_STYLE_DOCUMENT_LIST="yellow" glow README.md
+
+          # Style lists and list markers differently
+          GLOW_STYLE_DOCUMENT_LIST="yellow" \
+          GLOW_STYLE_DOCUMENT_LIST_MARKER="red bold" \
+          glow README.md
+  GLOW_STYLE_CODE_BLOCK_BACKGROUND="#2E3440":
+    desc: Style code block backgrounds and text
+    tags: [ markdown ]
+    notes:
+      - sh: |
+          # Style code block background
+          GLOW_STYLE_CODE_BLOCK_BACKGROUND="#2E3440" \
+          GLOW_STYLE_CODE_BLOCK_TEXT="#88C0D0" \
+          glow README.md
+
+          # Full code block styling
+          GLOW_STYLE_CODE_BLOCK_BACKGROUND="#2E3440" \
+          GLOW_STYLE_CODE_BLOCK_TEXT="#88C0D0" \
+          GLOW_STYLE_CODE_BLOCK_MARGIN="2" \
+          GLOW_STYLE_CODE_BLOCK_PADDING="1" \
+          glow README.md
+  GLOW_STYLE_TABLE_TEXT="cyan":
+    desc: Style tables with colors and borders
+    tags: [ markdown ]
+    notes:
+      - sh: |
+          # Basic table styling
+          GLOW_STYLE_TABLE_TEXT="cyan" \
+          GLOW_STYLE_TABLE_BORDER="blue" \
+          glow README.md
+
+          # Advanced table styling
+          GLOW_STYLE_TABLE_TEXT="cyan" \
+          GLOW_STYLE_TABLE_BORDER="blue" \
+          GLOW_STYLE_TABLE_HEADER="yellow bold" \
+          GLOW_STYLE_TABLE_MARGIN="1" \
+          glow README.md
+  GLOW_STYLE_DOCUMENT_LINK="blue underline":
+    desc: Style links with colors and attributes
+    tags: [ glow, markdown ]
+    notes:
+      - md: |
+          ## Comprehensive Example
+          Here's how to combine multiple styles:
+      - sh: |
+          # Full document styling using environment variables
+          GLOW_STYLE_DOCUMENT_TEXT="#959dcb" \
+          GLOW_STYLE_DOCUMENT_H1="#c792ea bold" \
+          GLOW_STYLE_DOCUMENT_H2="#c792ea" \
+          GLOW_STYLE_DOCUMENT_CODE="#f0f0f0" \
+          GLOW_STYLE_DOCUMENT_LIST="#89ddff" \
+          GLOW_STYLE_DOCUMENT_LINK="blue underline" \
+          GLOW_STYLE_CODE_BLOCK_BACKGROUND="#292d3e" \
+          GLOW_STYLE_CODE_BLOCK_TEXT="#89ddff" \
+          GLOW_STYLE_BLOCK_QUOTE_TEXT="#959dcb italic" \
+          GLOW_STYLE_BLOCK_QUOTE_BORDER="#706c8c" \
+          GLOW_STYLE_TABLE_BORDER="#706c8c" \
+          GLOW_STYLE_TABLE_TEXT="#89ddff" \
+          glow README.md
+  GLOW_STYLE_ALL:
+    desc: Set global style attributes
+    tags: [ markdown ]
+    notes:
+      - md: |
+          ## Available Style Attributes
+
+          Colors can be specified as:
+          - Hex codes: `#FF5F87`
+          - Named colors: `red`, `blue`, `green`, etc.
+          - RGB values: `rgb(255,95,135)`
+
+          Text attributes can be:
+          - `bold`
+          - `italic`
+          - `underline`
+          - `crossed-out`
+          - `blink`
+
+          Multiple attributes can be combined:
+          `"blue bold italic"`
+      - sh: |
+          # Test different color formats
+          GLOW_STYLE_DOCUMENT_H1="#FF5F87 bold" glow README.md
+          GLOW_STYLE_DOCUMENT_H1="rgb(255,95,135) bold" glow README.md
+          GLOW_STYLE_DOCUMENT_H1="red bold" glow README.md
+  glow | Style Best Practices:
+    desc: Style Best Practices | Glow
+    tags: [ markdown ]
+    notes:
+      - md: |
+          ## Style Best Practices
+
+          1. Test your styles with different types of content:
+             - Headers of all levels
+             - Code blocks with syntax highlighting
+             - Tables
+             - Lists (nested)
+             - Blockquotes
+
+          2. Consider terminal compatibility:
+             - Not all terminals support all colors
+             - Some attributes might not work everywhere
+             - Test in both light and dark terminal themes
+  "GLOW_STYLE_BLOCK_QUOTE_TEXT='italic #706c8c'":
+    desc: Style blockquotes with text and borders
+    tags: [ markdown ]
+    notes:
+      - sh: |
+          # Style blockquotes
+          GLOW_STYLE_BLOCK_QUOTE_TEXT="italic #706c8c" \
+          GLOW_STYLE_BLOCK_QUOTE_BORDER="#706c8c" \
+          glow README.md
+
+          # With padding and margin
+          GLOW_STYLE_BLOCK_QUOTE_TEXT="italic #706c8c" \
+          GLOW_STYLE_BLOCK_QUOTE_BORDER="#706c8c" \
+          GLOW_STYLE_BLOCK_QUOTE_MARGIN="1" \
+          GLOW_STYLE_BLOCK_QUOTE_PADDING="1" \
+          glow README.md

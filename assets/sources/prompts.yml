@@ -1,0 +1,479 @@
+cheats:
+  How to fix the following error?:
+    desc: How to fix the following error prompt?
+    tags: [ia, gpt]
+  Suggestions to improve (simplify, beautify, clarify, shorten, make it less redundant) the following commit title and message?:
+    desc: Suggestions to improve the following commit title and message prompt.
+    tags: [ia, gpt]
+  Use few-shot prompting to structure outputs:
+    desc: Showing the model a few examples (also called "shots") of what you want it to do. Few shot prompts allows the AI to learn from these few examples.
+    tags: [ia, gpt]
+    notes: |
+      # Showing Examples
+
+      Few-shot prompting is an effective strategy that can guide the model to generate accurate and appropriately structured responses.
+
+      By providing multiple examples, few-shot prompting allows the model to understand the desired output format and respond accordingly, making it a preferred method over zero-shot and one-shot prompting in most scenariosc.
+
+      ## Zero-Shot Prompting
+      Add 2+2:
+
+      ## One-Shot Prompting
+      Add 3+3: 6
+      Add 2+2:
+
+      ## Few-Shot Prompting
+      Add 3+3: 6
+      Add 5+5: 10
+      Add 2+2:
+    links:
+      - Prompting With ChatGPT: https://learnprompting.org/docs/basics/prompting
+  Combining Role and Instruction Prompting:
+    desc: Role and instruction prompting can also be combined to create more complex prompts. For example, you could instruct the AI to assume the role of a historian and then provide instructions for a specific task.
+    notes: You are a historian specializing in the American Civil War. Write a brief summary of the key events and outcomes of the war.
+    tags: [gpt]
+    links:
+      - Combining Techniques: https://learnprompting.org/docs/basics/combining_techniques
+  Combining Context, Instruction, and Few Shot Prompting:
+    desc: |
+      Combining different prompting strategies can lead to more powerful and effective prompts. Almost all prompts you write will combine multiple strategies.
+    notes: |
+      Twitter is a social media platform where users can post short messages called "tweets".
+      Tweets can be positive or negative, and we would like to be able to classify tweets as positive or negative.
+      Here are some examples of positive and negative tweets.
+       Make sure to classify the last tweet correctly.
+
+      Q: Tweet: "What a beautiful day!"
+      Is this tweet positive or negative?
+
+      A: positive
+
+      Q: Tweet: "I hate this class"
+      Is this tweet positive or negative?
+
+      A: negative
+
+      Q: Tweet: "I love pockets on jeans"
+
+      A:
+    tags: [ia, gpt, prompt]
+    links:
+      - Combining Techniques: https://learnprompting.org/docs/basics/combining_techniques
+  Google Prompting Essential at Coursera:
+    desc: Google Prompting Essential at Coursera
+    tags: [ia, prompt, xp]
+    links:
+      - https://coursera.org/learn/google-prompting-essential
+      - https://coursera.org/learn/google-start-writing-prompts-like-a-pro/supplement/tn0VT/course-overview
+    notes:
+      - md: | #markdown
+          ### OVERVIEW
+
+          Google Prompting Essentials has four courses:
+
+          1. Start writing prompts like a pro
+          2. Design prompts for everyday work tasks
+          3. Speed up data analysis and presentation building
+          4. Use AI as a creative or expert partner
+      - md: | #markdown
+          ## USE THE 5-STEP PROMPT FRAMEWORK
+
+          ### 1. A good prompt follows a simple framework
+          - Task _(or Thoughtfully)_
+          - Context _(or Create)_
+          - References _(or Really)_
+          - Evaluate _(or Excellent)_
+          - Iterate _(or Inputs)_
+
+          - **Task**
+            **WHAT** Describe the task you want the AI to help you with.
+            **HOW**
+            - **Persona** are the roles you want the AI to play. IE: "a food critic" or "a detective" or "a journalist"
+            - **Format** are the output you want the AI to produce. IE: "a review" or "a report" or "an article"
+
+          - **Context**
+            **WHAT** is the background information you want the AI to use to complete the task. IE: "the user is a food critic" or "the user is a detective" or "the user is a journalist"
+            **HOW**
+            - **Background** What background information you want the AI to use to complete the task. IE: "the user is a food critic" or "the user is a detective" or "the user is a journalist"
+            - **Information** is the information you want the AI to use to complete the task. IE: "the user is a food critic" or "the user is a detective" or "the user is a journalist"
+          - **References**
+            **WHAT** What external information you want the AI to use to complete the task. IE: "the user is a food critic" or "the user is a detective" or "the user is a journalist"
+            **HOW**
+            - **Examples** Give some ideas of what the output should look like. Examples of what the output should look like or what you have done in the past would be helpful.
+          - **Evaluate**
+            **WHAT** Ask yourself if the input you provided gave you the output you needed.
+            **HOW**
+            - **Criteria** IE: "did the AI provide a review of the pizza place?" or "did the AI provide a report on the crime scene?" or "did the AI provide an article about the latest news?"
+          - **Iterate**
+            **WHAT** If you evaluate your output and determine that you're not getting what you need, you can try again by adding more information or tweaking your prompt.
+  Convert Inline Links to Reference-Style Links:
+    desc: Convert Inline Links to Reference-Style Links
+    tags: [ia, gpt, prompt]
+    notes:
+      - md: | #markdown
+          Convert all inline markdown links `[text](URL)` in the provided markdown file to reference-style links format.
+
+          REFERENCE-STYLE LINK FORMAT:
+          - In document body: Replace `[text](URL)` with `[text][N]` where N is a sequential number
+          - At end of file: Add reference definitions as `[N]: URL 'Title'` (one per line)
+
+          PROCESS:
+          1. Scan entire file for inline links `[text](URL)` or `[text](URL "title")` - EXCLUDE links in code blocks (```) or inline code (`)
+          2. For each unique URL, assign sequential reference number starting from 0 (or continue from existing if file already has reference-style links)
+          3. Replace `[text](URL)` with `[text][N]` throughout document body
+          4. Add reference definitions section at end: `[N]: URL 'Title'` (use existing title if present, else generate descriptive title from URL)
+          5. Preserve all original text, formatting, structure - ONLY change link syntax
+
+          RULES:
+          - Reuse same reference number for duplicate URLs
+          - Preserve original link text exactly (including capitalization and formatting)
+          - Generate descriptive titles from URL domain/path if title missing (e.g., "AWS SAM developer guide" from aws.amazon.com URL)
+          - Order references numerically (0, 1, 2, ...)
+          - Skip links already in reference format `[text][N]`
+          - Only convert http/https URLs (not relative file paths like `./file.md`)
+          - Place reference definitions at very end of file, after all content
+
+          OUTPUT: Complete transformed markdown file with all links converted to reference-style format.
+
+          ### Example Before the Transformation (inline links)
+
+          ```md
+          See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for more information.
+          Install [Docker Desktop](https://hub.docker.com/search/?type=edition&offering=community).
+          ```
+
+          ### Example After the Transformation (reference-style links)
+
+          ```md
+          See the [AWS SAM developer guide][0] for more information.
+          Install [Docker Desktop][1].
+
+          [0]: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html 'AWS SAM developer guide'
+          [1]: https://hub.docker.com/search/?type=edition&offering=community 'Docker Desktop'
+          ```
+
+prompts:
+  You are VocabularyGPT, a linguistics professor, poet, and world renowned writer:
+    desc: You are VocabularyGPT, a linguistics professor, poet, and world renowned writer. You have access to rich, expressive vocabulary and speak with clarity and precision. You recommend speaking in a sharp and succinct manner, and always avoid using language that is complex or sophisticated. I have the habit of overusing the word [insert workhorse word] in my speech when I'm talking about [insert workhorse word context]. I would like you to provide me with a list of suitable synonyms and articulate alternatives that I might use to enrich my vocabulary. Please provide your recommendation and a sample sentence that demonstrates how each word should be used.
+    tags: [ia]
+
+  You are ArticulateGPT, a world renowned linguist that specializes in the art of speaking precisely and profoundly:
+    desc: You are ArticulateGPT, a world renowned linguist that specializes in the art of speaking precisely and profoundly. You also have access to every novel, poem, and letter written in human history. I am attempting to improve my speaking and would like you to provide me with 10 sentences from novels where characters describe [insert workhorse word context]. Please include examples that provide rich, dynamic descriptions that illustrate the artistry and creativity of the English language.
+    tags: [vocabulary]
+
+  I want you to act as a coder..:
+    desc: Address Imbalance Data as a coder
+    notes: |
+      I want you to act as a coder. I have trained a machine learning model on an imbalanced dataset. The predictor variable is the column [Insert column name]. In python, how do I oversample and/or undersample my data?
+    tags: [ia, profile]
+    links:
+      - LearnPrompt: https://learnprompt.org
+  I want you to act as a data scientist..:
+    desc: Address Imbalance Data as a data scientist
+    notes: I want you to act as a data scientist and use SMOTE to oversample the minority class of [imbalanced dataset] for classification task
+    tags: [ia, gpt, profile]
+    links:
+      - LearnPrompt: https://learnprompt.org
+  I want you to act as a machine learning expert..:
+    desc: Address Imbalance Data as a machine learning
+    notes: I want you to act as a machine learning expert and use stratified sampling to balance the distribution of [target variable] in [dataset]
+    tags: [ia, gpt, profile]
+    links:
+      - LearnPrompt: https://learnprompt.org
+  I want you to act as a data engineer..:
+    desc: Address Imbalance Data as a data engineer
+    notes: I want you to act as a data engineer and apply random undersampling to address the class imbalance in [imbalanced dataset] for training a model
+    tags: [ia, gpt, profile]
+    links:
+      - LearnPrompt: https://learnprompt.org
+  Summarize this paragraph in a single sentence:
+    desc: Summarize this paragraph in a single sentence
+    tags: [ia, gpt]
+    links:
+      - Prompting With ChatGPT: https://learnprompting.org/docs/basics/prompting
+  Solve this math problem:
+    desc: If I have 20 apples, eat three of them, and sell three more, how many do I have left?
+    tags: [ia, gpt]
+    links:
+      - Prompting With ChatGPT: https://learnprompting.org/docs/basics/prompting
+  What is 923 * 99?:
+    desc: What is 923 * 99? Let's go step by step. Always write out the full number of 0s for each term.
+    tags: [ia, gpt]
+    links:
+      - Prompt Engineering: https://learnprompting.org/docs/basics/prompt_engineering
+  Write a tweet about ArchaeologistAI:
+    desc: Write a tweet about ArchaeologistAI. ArchaeologistAI tells stories about famous archaeologists. It's a fun way to learn about history.
+    tags: [ia, gpt]
+    links:
+      - Prompt Engineering: https://learnprompting.org/docs/basics/prompt_engineering
+  Essay evaluation on grammar, clarity, coherence, and argument quality:
+    desc: |
+      Read the following excerpt from an essay and provide feedback based on the following criteria: grammar, clarity, coherence, argument quality, and use of evidence. Provide a score from 1-10 for each attribute, along with reasoning for your score.
+    tags: [ia, gpt]
+    links:
+      - Giving Instructions: https://learnprompting.org/docs/basics/instructions
+  Use role prompts to style text and improve accuracy:
+    desc: |
+      Role promptinga is a technique that can be used to control the style of AI generated text. It often used to style text. Implementing role prompting is as simple as instructing the AI to "embody a food critic" or to "act like a detective"
+    tags: [ia, gpt]
+    notes: |
+      ## Examples
+      You are a food critic. Write a review of [random pizza place].
+      You are a food critic writing for the Michelin Guide. Write a review of [random pizza place].
+      You are a detective. Write a report on the crime scene.
+      You are a poet. Write a poem about the ocean.
+      You are a journalist. Write an article about the latest news.
+    links:
+      - Prompting With ChatGPT: https://learnprompting.org/docs/basics/prompting
+  Marketing expert to be more persuasion, positivity, and relationship building:
+    desc: |
+      You are a marketing expert. Draft an email to a client advising them about a delay in the delivery schedule due to logistical problems.
+    tags: [ia, gpt]
+    links:
+      - Prompting With ChatGPT: https://learnprompting.org/docs/basics/roles
+  Customer Service Representative gets more empathetic relational and solution-oriented output:
+    desc: You are a customer service representative. Draft an email to a client advising them about a delay in the delivery schedule due to logistical problems.
+    tags: [ia, gpt]
+    links:
+      - Prompting With ChatGPT: https://learnprompting.org/docs/basics/roles
+  A brilliant mathematician who can solve any problem in the world:
+    desc: You are a brilliant mathematician who can solve any problem in the world. Attempt to solve the following problem. What is 100*100/400*56?
+    tags: [gpt]
+    links:
+      - Prompting With ChatGPT: https://learnprompting.org/docs/basics/roles
+  A cinematic realism image:
+    desc: A cinematic realism image. A close-up of a woman standing on the street in golden hour backlighting. Warm color palette with natural light. Realistic with cinematic photography.
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  An analog candid photo of a young man lost in thought:
+    desc: An analog candid photo of a young man lost in thought. Urban photography with 90's film grain, taken with a DSLR at f1.8. Work of a great photographer.
+    tags: [ia, dall-e, realism]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  Selfie Photorealism of an average young man in the streets:
+    desc: A selfie photo of an average young man in the streets. Photorealism.
+    tags: [dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  Product photography of a whiskey bottle:
+    desc: Product photography of a whiskey bottle. Wood background. The image has musky undertones. Natural lighting with a bit of shadowplay.
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A piece of butter isolated on a white background:
+    desc: A piece of butter isolated on a white background. The image is hyperrealistic.
+    tags: [ia, dall-e, realism]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A close-up photo golden retriever looking up:
+    desc: A close-up photo of a golden retriever looking up at the camera.
+    tags: [ia, dall-e, realism]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A polaroid photo of a group of young women:
+    desc: A polaroid photo of a group of young women attending a concert.
+    tags: [ia, dall-e, realism]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A security camera footage of Bigfoot:
+    desc: A security camera footage of Bigfoot wandering campus halls.
+    tags: [ia, dall-e, realism]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A bustling Tokyo street scene at dusk:
+    desc: A bustling Tokyo street scene at dusk, neon lights reflecting off rain-slick pavement, creating a kaleidoscope of vibrant colors. The image must be photorealistic.
+    tags: [ia, dall-e, realism]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A panoramic view of the Grand Canyon at sunrise:
+    desc: A panoramic view of the Grand Canyon at sunrise, layers of rock bathed in vibrant hues of orange, red, and purple, the Colorado River snaking through the depths.
+    tags: [ia, dall-e, realism]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A pixelated art scene of a library at night:
+    desc: A pixelated art scene of a library at night. Windows showing the universe. The photo depicts a feeling of wisdom and wonder.
+    tags: [ia, dall-e, pixelart]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  Watercolor pixel art depicting a graceful marathon runner:
+    desc: Watercolor pixel art depicting a graceful marathon runner racing under a soft rain of pastel-colored petals.
+    tags: [ia, dall-e, pixelart]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A man who can control the nature 70s japanese anime style:
+    desc: a 70s japanese anime style, a man who can control the nature, glitch effect, static, ultradetailed anime, 4k, surrealist
+    tags: [ia, dall-e, digitalart]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  Dark Smokey 80's anime:
+    desc: Style of Yoshiyuki Sadamoto:"Angel's Egg, cell shading, dreamy vibrance, surreal, grainy, vintage anime, overlapping visual channels, interference, dystopian sky, tilted" Classic Anime; in the woods, the transformation of man to god, this is truly everlasting beauty. The very moment where the glorious light of godly power merges with man. Camera looking down. Very vibrant and surreal. Dark Smokey 80's anime.
+    tags: [dall-e, digitalart]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  Fantasy, girl looks at her reflection in water:
+    desc: Angel's Egg, La Cité interdite, cell shading, dreamy vibrance, surreal, grainy, vintage anime, overlapping visual channels, interference, dystopian sky, tilted. Fantasy, girl looks at her reflection in water, the reflection back is an angelic creature, looking back up at her, very vibrant and surreal.
+    tags: [dall-e, digitalart]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  Painting with a man creating the universe:
+    desc: Painting with a man creating the universe, in the style of psychedelic illustration, hyper-detailed illustrations, vivid colors, bold, colorful portraits, necronomicon illustrations, concert poster, tumblewave
+    tags: [ia, dall-e, digitalart]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  Painting of street in city in pop art:
+    desc: painting of street in city, in the style of pop art silkscreening, solarization effect, dark yellow and green, thai art, liquid emulsion printing, richly colored skies, woodblock prints
+    tags: [dall-e, popart]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  Young girl eating ramen noodles:
+    desc: Neon-line drawing of a young girl eating ramen noodles.
+    tags: [dall-e, digitalart]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  Young woman standing on a sandy beach in front of the ocean:
+    desc: A young woman standing on a sandy beach in front of the ocean, in the style of anime art, vray, romantic landscapes, traditional landscapes, painterly style
+    tags: [ia, dall-e, digitalart]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A logo for a basketball team:
+    desc: A logo for a basketball team called the "Goldtown Penguins". Two-tone gold and black.
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A minimalist logo for an art supplies store:
+    desc: A minimalist logo for an art supplies store called "Dallie's". The name "Dallie's" must be below the logo.
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A logo design of silhouette of a woman with hair flying:
+    desc: A logo design depicting a gradient silhouette of a woman with her hair flying in the air. The name "Florence's" is below the logo.
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A distinctive vector logo for a pottery shop:
+    desc: A distinctive vector logo for a pottery shop with the name "Clay's"
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A logo design depicting mountain silhouette:
+    desc: A logo design depicting a blue, red, white and black mountain silhouette. Wavy and strong linear elements.
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A sleek vector icon representing nature:
+    desc: A sleek vector icon representing nature.
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A logo design of a beach silhouetted by palm trees at sunset:
+    desc: A logo design depicting a beach silhouetted by palm trees at sunset with a sunset in the background, in the style of retrowave, graphic black outlines, cute and colorful, rounded.
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A simple Christmas tree logo:
+    desc: A simple Christmas tree logo design on a beige background. In the style of intricate minimalism, charming illustrations. Reminiscent of storybook illustrations.
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A flat vector logo design of a whale:
+    desc: A flat vector logo design of a whale, minimal, black and gold, by Paul Rand.
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  A vector logo design of a basketball shoe:
+    desc: A vector logo design of a basketball shoe. In the style of vintage minimalism, dark orange and light maroon. The image has a clever use of negative space.
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  Message to finantial institution:
+    desc: Ajude a melhorar a seguinte mensagem de apelo à instituição financeira
+    tags: [ia, gpt, prompt]
+  Convert task instructions to BDD using:
+    desc: Converter a seguinte descrição de atividade de desenvolvimento de software em Gherkin, priorizando clareza, simplicidade e conformidade com as boas práticas de BDD
+    tags: [ia, gpt, prompt]
+  Summarize Pull Request:
+    desc: Please summarize the key points of the following commits and suggest a concise, impactful title and description for the Pull Request. Focus on highlighting the main advantages and benefits of the changes, with a bullet-point list of fundamental changes. Ensure the output is formatted as a markdown code block
+    tags: [ia, gpt, prompt]
+  Generate commit title and message following the Conventional Commits:
+    desc: Generate a commit title and message following the Conventional Commits specification.
+    notes: |
+      You are a senior programmer in charge of generating high-quality Git commit messages that comply with 'conventional commits' standards. Your commits should be concise, informative, and clearly reflect the purpose of code changes.
+
+      # Guidelines
+      - Commit messages **must follow the format**:
+
+      <type>[optional scope]: <description>
+
+      [optional body]
+
+      [optional footer(s)]
+
+      - Use the following commit types:
+      - \`feat\`, \`fix\`, \`docs\`, \`style\`, \`refactor\`, \`perf\`, \`test\`, \`chore\`.
+      - Make sure the **scope** is used appropriately to provide context when needed.
+      - The **description** must be less than **50 characters** and clearly convey the change.
+      - The **body** is optional and should be used to provide additional details if necessary.
+      - You can add **emojis**, but in moderation.
+
+      # Language
+      - You must respond in {language}. Make sure all commit messages and descriptions are written in this language.
+
+      # Steps
+      1. Understand the exact change in the code.
+      2. Identify the appropriate **type** and **scope** according to the guidelines.
+      3. Write a **concise description** of the change.
+      4. If necessary, include a **body** to explain additional details.
+      5. Ensure commits are informative for future developers.
+      6. Provide **only the commit message** directly, without additional explanations.
+
+      # Output Format
+      The commit message must follow one of these formats:
+      - **Without body**:
+      \`\`\`
+      <type>(<scope>): <description>
+      \`\`\`
+      - **With body**:
+      \`\`\`
+      <type>(<scope>): <description>
+
+      <optional body>
+    tags: [ia, gpt, prompt]
+
+commands:
+  Formalizing Prompts:
+    desc: The key parts of a prompt include a role, an instruction or task, a question, context, and examples. Not all prompts will contain all these elements, and their order can vary. However, it's generally preferable to place the instruction last to ensure the model focuses on executing the task rather than extending the context.
+    tags: [ia, gpt]
+    notes: |
+      |  Formalizing Prompts |
+      | --- |
+      | **Role:** Set style text and improve accuracy |
+      | **Instruction:** Give a Gen AI some task or direction. |
+      | **Examples:** Show the model what you want it to do. |
+      | **Context:** Provide the model with some background information. |
+      | **Question:** Ask the model a question. |
+    links:
+      - Formalizing Prompts: https://learnprompting.org/docs/basics/formalizing
+  Based in Brasil, working as a software developer..:
+    desc: Personal Bio
+    notes: |
+      Based in Brasil, working as a software developer. I'm very keen on movies, comic books, tech, AI, software, typescript, ruby, rails, jobs, relocation, agile, gaming, pop culture, sci-fi, science, anime and the like. I wan't to improve in math and leet code exercices in order to relocate to Europe as a Software Developer in the near future. Casual, generally short, preferably in bullet points
+    tags: [ia, profile]
+    links:
+      - LearnPrompt: https://learnprompt.org
+  Role as Communications Specialist whose style might be clear, professional, and to the point:
+    desc: |
+      You are a communications specialist. Draft an email to your client advising them about a delay in the delivery schedule due to logistical problems.
+    tags: [ia, gpt]
+    links:
+      - Prompting With ChatGPT: https://learnprompting.org/docs/basics/roles
+  A book cover depicting a neutron star:
+    desc: A book cover depicting a neutron star. The book's title is "When Stars Die." It must capture the essence of both wonder and fear of the cosmos. Top view.
+    tags: [ia, dall-e]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts
+  Woman exploding in pixels and bubbles:
+    desc: A vintage animation in 50s style. Glitch effect. A woman exploding in pixels and bubbles. Rainbow static explodes on her face. Psychedelic shapes and colors in the distance.
+    tags: [ia, dall-e, digitalart]
+    links:
+      - 32 of the Coolest and Most Complex DALL-E 3 Prompts: https://goldpenguin.org/blog/the-coolest-and-most-complex-dalle-3-prompts

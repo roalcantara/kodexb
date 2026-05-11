@@ -10,6 +10,7 @@ const baseTask: TaskKnowledge = {
   desc: '',
   tags: ['work'],
   status: 'todo',
+  doc: '',
   createdAt: 0,
   updatedAt: 0
 }

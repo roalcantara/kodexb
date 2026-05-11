@@ -1,0 +1,112 @@
+bookmarks:
+  https://specifications.freedesktop.org/basedir/latest:
+    tags: [xdg]
+    desc: XDG Base Directory Specification
+    notes:
+      - md: | #markdown
+          ### XDG Base Directory Specification
+
+          > The XDG Base Directory Specification defines standard paths for storing configuration files, data files, cache files, and runtime files in Unix-like operating systems.
+
+          #### STANDARD DIRECTORIES
+
+          1. **XDG_CONFIG_HOME**:
+            - Default: `~/.config`
+            - Purpose: Directory for user-specific configuration files.
+            - Example: `~/.config/myapp/config.yaml`
+
+          2. **XDG_DATA_HOME**:
+            - Default: `~/.local/share`
+            - Purpose: Directory for user-specific data files.
+            - Example: `~/.local/share/myapp/data.db`
+
+          3. **XDG_CACHE_HOME**:
+            - Default: `~/.cache`
+            - Purpose: Directory for user-specific non-essential cache files.
+            - Example: `~/.cache/myapp/cache.tmp`
+
+          4. **XDG_RUNTIME_DIR**:
+            - Purpose: Directory for user-specific runtime files and sockets.
+            - Note: This directory is typically created at login and removed at logout.
+            - Permissions: `0700`
+            - Owner: User ID of the user
+            - Example: `/run/user/1000`
+
+          #### USAGE
+
+          - Applications should use these environment variables to determine where to read/write their configuration, data, cache, and runtime files.
+          - If the environment variables are not set, applications should fall back to the default paths.
+
+          #### BENEFITS
+
+          - Provides a standardized way to organize application files.
+          - Helps keep the user's home directory clean and organized.
+          - Facilitates easier backup and migration of user data and configurations.
+
+cheats:
+  Extended XDG Directories:
+    desc: Additional XDG directories for specific types of files, such as documents, downloads, music, pictures, and videos.
+    tags: [xdg]
+    links:
+      - XDG Base Directory Specification: https://specifications.freedesktop.org/basedir/latest
+      - xgd-spec @ gitlab: https://gitlab.freedesktop.org/xdg/xdg-specs/-/issues/14
+      - NixOs Environment Variables: https://wiki.nixos.org/wiki/Environment_variables
+      - directories-rs: https://github.com/dirs-rs/directories-rs
+      - Every usage of $XDG_BIN_HOME on GitHib: https://github.com/search?q=XDG_BIN_HOME&type=code
+      - MacOS Directories: 'https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html#//apple_ref/doc/uid/TP40010672-CH2-SW6'
+    notes:
+      - md: | #markdown
+          ### XDG - Base Directory Specification `[EXTENDED]`
+
+          #### Directories
+
+          ##### Base
+
+          The intended use-case for BaseDirectories is
+          to query the paths of user-invisible standard directories that have been defined according to
+          the conventions of the operating system the library is running on.
+
+          If you want to compute the location of cache, config or data folders for your own application or project,
+          use ProjectDirectories instead.
+
+          ##### User
+
+          The intended use-case for UserDirectories is
+          to query the paths of user-facing standard directories that have been defined according to
+          the conventions of the operating system the library is running on.
+
+          ##### Project
+
+          The intended use-case for ProjectDirectories is
+          to compute the location of cache, config or data folders for your own application or project,
+          which are derived from the standard directories.
+
+          ##### Correlations
+
+          | Type    | Purpose    | XDG Environment Variable         | Linux / BSD                                                             | MacOS                                            |
+          | ------- | ---------- | -------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------ |
+          | Base    | home       | HOME                             | $HOME                                                                   | $HOME                                            |
+          | Base    | cache      | XDG_CACHE_HOME                   | $XDG_CACHE_HOME or $HOME/.cache                                         | $HOME/Library/Caches                             |
+          | Base    | config     | XDG_CONFIG_HOME                  | $XDG_CONFIG_HOME or $HOME/.config                                       | $HOME/Library/Application Support                |
+          | Base    | data       | XDG_DATA_HOME                    | $XDG_DATA_HOME or $HOME/.local/share                                    | $HOME/Library/Application Support                |
+          | Base    | dataLocal  | XDG_DATA_HOME                    | $XDG_DATA_HOME or $HOME/.local/share                                    | $HOME/Library/Application Support                |
+          | Base    | executable | XDG_BIN_HOME                     | $XDG_BIN_HOME or $HOME/.local/bin                                       | null                                             |
+          | Base    | preference | XDG_CONFIG_HOME                  | $XDG_CONFIG_HOME or $HOME/.config                                       | $HOME/Library/Preferences                        |
+          | Base    | runtime    | XDG_RUNTIME_DIR                  | $XDG_RUNTIME_DIR or null                                                | null                                             |
+          | ------  | ---------- | -------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------ |
+          | User    | audio      | XDG_MUSIC_DIR                    | $XDG_MUSIC_DIR                                                          | $HOME/Music                                      |
+          | User    | desktop    | XDG_DESKTOP_DIR                  | $XDG_DESKTOP_DIR                                                        | $HOME/Desktop                                    |
+          | User    | document   | XDG_DOCUMENTS_DIR                | $XDG_DOCUMENTS_DIR                                                      | $HOME/Documents                                  |
+          | User    | download   | XDG_DOWNLOAD_DIR                 | $XDG_DOWNLOAD_DIR                                                       | $HOME/Downloads                                  |
+          | User    | font       | XDG_DATA_HOME                    | $XDG_DATA_HOME/fonts or $HOME/.local/share/fonts                        | $HOME/Library/Fonts                              |
+          | User    | picture    | XDG_PICTURES_DIR                 | $XDG_PICTURES_DIR                                                       | $HOME/Pictures                                   |
+          | User    | public     | XDG_PUBLICSHARE_DIR              | $XDG_PUBLICSHARE_DIR                                                    | $HOME/Public                                     |
+          | User    | template   | XDG_TEMPLATES_DIR                | $XDG_TEMPLATES_DIR                                                      | null                                             |
+          | User    | video      | XDG_VIDEOS_DIR                   | $XDG_VIDEOS_DIR                                                         | $HOME/Movies                                     |
+          | ------  | ---------- | -------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------ |
+          | Project | cache      | XDG_CACHE_HOME/<project_path>    | $XDG_CACHE_HOME or $HOME/.cache/<project_path>                          | $HOME/Library/Caches/<project_path>              |
+          | Project | config     | XDG_CONFIG_HOME/<project_path>   | $XDG_CONFIG_HOME or $HOME/.config/<project_path>                        | $HOME/Library/Preferences/<project_path>         |
+          | Project | data       | XDG_CONFIG_HOME/<project_path>   | $XDG_CONFIG_HOME or $HOME/.config/<project_path>                        | $HOME/Library/Application Support/<project_path> |
+          | Project | dataLocal  | XDG_DATA_HOME/<project_path>     | $XDG_DATA_HOME or $HOME/.local/share/<project_path>                     | $HOME/Library/Application Support/<project_path> |
+          | Project | preference | XDG_DATA_HOME/<project_path>     | $XDG_DATA_HOME or $HOME/.local/share/<project_path>                     | $HOME/Library/Application Support/<project_path> |
+          | Project | runtime    | XDG_RUNTIME_DIR/<project_path>   | $XDG_RUNTIME_DIR/<project_path>                                         | null                                             |

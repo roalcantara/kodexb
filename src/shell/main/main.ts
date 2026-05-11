@@ -1,5 +1,5 @@
-import { createLogger } from '@shared/logging'
 import { BrowserWindow, Utils } from 'electrobun/bun'
+import { createLogger } from '../../shared/logging'
 import { App, type AppShellHooks, type SyncEmitter } from '../app/app'
 import { loadConfig } from '../app/config/config.loader'
 import { reportConfigLoadErrorAndExit } from './helpers/error.helper'

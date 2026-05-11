@@ -1,0 +1,1145 @@
+bookmarks:
+  https://bun.com/docs/runtime/sqlite:
+    desc: Bun SQLite Documentation
+    tags: [bun, sql]
+    notes:
+      - ts: | #typescript
+          import { Database } from "bun:sqlite";
+
+          const db = new Database(":memory:");
+          const query = db.query("select 'Hello world' as message;");
+          query.get();
+      - ts: | #typescript
+          import { Database } from "bun:sqlite";
+
+          const db = new Database("test.db");
+
+          // Create a table
+          db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)");
+
+          // Insert a user
+          const insert = db.prepare("INSERT INTO users (name) VALUES (?)");
+          insert.run("Alice");
+
+          // Query users
+          const query = db.prepare("SELECT * FROM users");
+          for (const user of query.all()) {
+            console.log(`User ID: ${user.id}, Name: ${user.name}`);
+          }
+
+          // Close the database
+          db.close();
+
+  https://yamlscript.org:
+    desc: YAML Script - The Scripting Language for YAML
+    tags: [yaml]
+  https://thevalleyofcode.com:
+    desc: The place where you go learn quickly how to do X in your day-to-day life as a developer
+    tags: [xp]
+  https://learnxinyminutes.com:
+    desc: X in Y minutes
+    tags: [xp]
+  https://learnxinyminutes.com/docs/ruby:
+    desc: Ruby in Y minutes
+    tags: [xp, rb]
+  https://learnxinyminutes.com/docs/lua:
+    desc: Lua in Y minutes
+    tags: [xp]
+  https://learnxinyminutes.com/docs/typescript:
+    desc: Typescript in Y minutes
+    tags: [xp, ts]
+  https://learnxinyminutes.com/docs/python:
+    desc: Python in Y minutes
+    tags: [xp]
+  https://learnxinyminutes.com/docs/go:
+    desc: Go in Y minutes
+    tags: [xp, go]
+  https://learnxinyminutes.com/docs/sql:
+    desc: SQL in Y minutes
+    tags: [xp, sql]
+  https://learnxinyminutes.com/docs/bash:
+    desc: Bash in Y minutes
+    tags: [xp]
+  https://learnxinyminutes.com/docs/jq:
+    desc: JQ in Y minutes
+    tags: [xp]
+  https://learnxinyminutes.com/docs/groovy:
+    desc: Groovy in Y minutes
+    tags: [xp]
+  https://socket.io:
+    tags: [socket]
+    desc: Socket.IO | real-time, bidirectional and event-based communication
+  https://socket.io/docs/v4/tutorial:
+    tags: [socket]
+    desc: Socket.IO | Tutorial
+  https://socket.io/docs/v4/tutorial/api-overview:
+    tags: [socket]
+    desc: Socket.IO | API Overview
+  https://yuml.me:
+    tags: [coding]
+    desc: yUML | Draw UML diagrams
+  https://yuml.me/diagram/scruffy/class/draw:
+    tags: [coding]
+    desc: Playground | yUML | Draw UML diagrams
+  https://roadmap.sh/backend:
+    tags: [backend]
+    desc: Backend Developer Roadmap
+  https://roadmap.sh/full-stack:
+    desc: Full Stack Developer Roadmap
+    tags: [full_stack]
+  https://rubycademy.com:
+    desc: RubyCademy | Learn Ruby on Rails
+    tags: [rb]
+    links:
+      - Ruby on Rails Tutorial: https://rubycademy.com/ruby-on-rails-tutorial
+  https://css-tricks.com:
+    tags: [css]
+    desc: CSS-Tricks | Tips, Tricks, and Techniques on using Cascading Style Sheets
+    links:
+      - Flexbox: https://css-tricks.com/snippets/css/a-guide-to-flexbox
+      - Grid: https://css-tricks.com/snippets/css/complete-guide-grid
+      - Responsive Design: https://css-tricks.com/snippets/css/a-guide-to-responsive-design
+      - CSS: https://css-tricks.com/snippets/css
+  https://nodejs.org/docs/latest/api:
+    desc: Node.js Documentation | Node.js
+    tags: [node]
+    links:
+      - Getting Started: https://nodejs.org/docs/latest-v16.x/api
+      - Modules: https://nodejs.org/docs/latest-v16.x/api/modules
+      - File System: https://nodejs.org/docs/latest-v16.x/api/fs
+      - HTTP: https://nodejs.org/docs/latest-v16.x/api/http
+      - Events: https://nodejs.org/docs/latest-v16.x/api/events
+      - Streams: https://nodejs.org/docs/latest-v16.x/api/stream
+  https://elixir-lang.org:
+    tags: [elixir]
+    desc: Elixir | Dynamic, functional language designed for building scalable and maintainable applications
+    links:
+      - Installation: https://elixir-lang.org/install.html
+      - Getting Started: https://elixir-lang.org/getting-started/introduction.html
+      - Syntax: https://elixir-lang.org/getting-started/basic-types.html
+      - Modules: https://elixir-lang.org/getting-started/modules-and-functions.html
+      - Mix: https://elixir-lang.org/getting-started/mix-otp/introduction-to-mix.html
+      - OTP: https://elixir-lang.org/getting-started/mix-otp/introduction-to-otp.html
+    notes:
+      - md: |
+          ## Installation
+
+          > brew install elixir
+
+          ## Docker
+
+          > docker run -it --rm elixir
+
+          ### Enter bash within container with installed elixir
+
+          > docker run -it --rm elixir bash
+  https://cheatsheetfactory.geekyhacker.com/python/python:
+    desc: Python Cheat Sheet | A collection of python commands
+    tags: [cheatsheet]
+  # GLEAM | a friendly language for building type-safe systems that scale!
+  https://gleam.run:
+    tags: [gleam]
+    desc: Gleam | a friendly language for building type-safe systems that scale!
+    links:
+      - https://tour.gleam.run
+      - https://tour.gleam.run/functions/higher-order-functions
+      - https://exercism.org/tracks/gleam
+      - https://gleam.run/writing-gleam
+      - https://gleam.run/cheatsheets/gleam-for-python-users
+      - https://playground.gleam.run
+      - https://youtu.be/uvQL-xJWGwI
+    notes:
+      - md: |
+          ### Higher order functions
+
+          Here the function add_one is being passed as an argument to the twice function.
+
+          Notice the fn keyword is also used to describe the type of the function that twice takes as its second argument.
+
+          ```gleam
+          import gleam/io
+
+          pub fn main() {
+            // Call a function with another function
+            io.debug(twice(1, add_one))
+
+            // Functions can be assigned to variables
+            let my_function = add_one
+            io.debug(my_function(100))
+          }
+
+          fn twice(argument: Int, passed_function: fn(Int) -> Int) -> Int {
+            passed_function(passed_function(argument))
+          }
+
+          fn add_one(argument: Int) -> Int {
+            argument + 1
+          }
+          ```
+  https://gleam.run/writing-gleam:
+    desc: A guide that shows how to create and develop a Gleam project
+    tags: [lang]
+  https://playground.gleam.run:
+    desc: A playground for trying gleam and compiling it into Erlang or JavaScript
+    tags: [repl]
+  https://exercism.org/tracks/gleam:
+    desc: Exercism`s Gleam Track for access to 125 exercises grouped into 36 Gleam Concepts, with automatic analysis of your code and personal mentoring, all 100% free.
+    tags: [xp]
+  https://gleam.run/cheatsheets/gleam-for-python-users:
+    desc: Gleam for Python Users | A cheatsheet for Python developers learning Gleam
+    tags: [lang]
+  https://tour.gleam.run:
+    tags: [gleam]
+    desc: Gleam Tour | A guided tour of the Gleam programming language
+  # TypeScript
+  https://typescriptlang.org/play:
+    desc: The official TypeScript Playground
+    tags: [ts]
+  https://devblogs.microsoft.com/typescript:
+    desc: The official blog of the TypeScript team
+    tags: [ts]
+  https://colinhacks.com/essays/live-types-typescript-monorepo:
+    desc: Live Types in a TypeScript Monorepo
+    tags: [ts]
+    links: [https://github.com/colinhacks/live-typescript-monorepo]
+  https://typescriptlang.org/docs/handbook/release-notes:
+    desc: TypeScript Release Notes
+    tags: [ts]
+  https://typescriptlang.org/docs/handbook/utility-types.html:
+    desc: TypeScript Utility Types
+    tags: [ts]
+    notes:
+      - md: | #markdown
+          ## Utility Types in TypeScript
+
+          TypeScript provides several built-in utility types to facilitate common type transformations. Here are some of the most commonly used utility types:
+
+          1. **Partial<T>**: Constructs a type with all properties of T set to optional.
+          2. **Required<T>**: Constructs a type with all properties of T set to required.
+          3. **Readonly<T>**: Constructs a type with all properties of T set to readonly.
+          4. **Record<K, T>**: Constructs an object type whose property keys are K and property values are T.
+          5. **Pick<T, K>**: Constructs a type by picking a set of properties K from T.
+          6. **Omit<T, K>**: Constructs a type by omitting a set of properties K from T.
+          7. **Exclude<T, U>**: Constructs a type by excluding from T all union members that are assignable to U.
+          8. **Extract<T, U>**: Constructs a type by extracting from T all union members that are assignable to U.
+          9. **NonNullable<T>**: Constructs a type by excluding null and undefined from T.
+          10. **ReturnType<T>**: Constructs a type consisting of the return type of function T.
+          11. **InstanceType<T>**: Constructs a type consisting of the instance type of a constructor function T.
+
+          These utility types help in creating more flexible and reusable types in TypeScript, enhancing code maintainability and readability.
+  https://typescriptlang.org/docs/handbook/declaration-merging.html:
+    desc: TypeScript Declaration Merging
+    tags: [ts]
+    notes:
+      - md: | #markdown
+          ## Declaration Merging in TypeScript
+
+          - Declaration merging is a powerful feature in TypeScript that allows multiple declarations with the same name to be combined into a single definition.
+          - This is particularly useful for extending existing types, interfaces, or modules without modifying their original definitions.
+
+          ### Key Concepts of Declaration Merging:
+
+          1. **Interface Merging**: When two or more interfaces with the same name are declared, TypeScript merges their properties into a single interface.
+          2. **Namespace Merging**: Namespaces with the same name are merged, allowing you to add new members to an existing namespace.
+          3. **Function and Class Merging**: Functions and classes can also be merged with namespaces, allowing you to add static members to a class or function.
+          4. **Module Augmentation**: You can augment existing modules by declaring additional types or interfaces within the same module scope.
+  https://typescriptlang.org/docs/handbook/iterators-and-generators.html:
+    desc: TypeScript Iterators and Generators
+    tags: [ts]
+    notes:
+      - md: | #markdown
+          ## Iterators and Generators in TypeScript
+
+          - Iterators are objects that define a sequence and potentially a return value upon its termination. They implement the `Iterator` interface, which has a `next()` method that returns an object with `value` and `done` properties.
+          - Generators are special types of functions that can be paused and resumed, allowing them to produce a sequence of values over time. They are defined using the `function*` syntax and use the `yield` keyword to produce values.
+
+          ### Key Concepts:
+
+          1. **Iterator Interface**: An object that implements the `Iterator` interface must have a `next()` method that returns an object with `value` and `done` properties.
+          2. **Generator Functions**: Defined using the `function*` syntax, generator functions can yield multiple values over time and maintain their state between executions.
+          3. **Yielding Values**: The `yield` keyword is used within generator functions to produce a value and pause execution until the next value is requested.
+          4. **Iterating Over Generators**: Generators can be iterated using loops (like `for...of`) or by manually calling the `next()` method.
+
+          These features enable more complex data processing patterns, such as lazy evaluation and asynchronous programming, making TypeScript a powerful tool for handling sequences of data.
+  https://typescriptlang.org/docs/handbook/mixins.html:
+    desc: TypeScript Mixins - Quick Reference
+    tags: [ts]
+    notes:
+      - md: | #markdown
+          ### TypeScript Mixins - Quick Reference
+
+          > 💡 Mixins let you build classes by *combining behaviors*, instead of relying only on inheritance chains.
+          > TypeScript models mixins using **class expressions + generics**.
+
+          ---
+
+          #### TL;DR Mental Model
+
+          • A mixin is a *function* from class → extended class.
+          • Use `Constructor`/`GConstructor` to type-check base classes.
+          • Constrained mixins let you enforce required behaviors.
+          • Decorators ≠ mixins (types do not merge).
+          • For static generics, wrap classes in factory functions.
+
+          Mixins shine when you want small, orthogonal behaviors that snap together like LEGO pieces.
+      - md: | #markdown
+          #### 1. Basic Mixin Pattern
+
+          > 💡 A mixin is a function that takes a base class and returns a new class extending it.
+
+          ```ts
+          class Sprite {
+            constructor(public name: string, public x = 0, public y = 0) {}
+          }
+
+          type Constructor = new (...args: any[]) => {};
+
+          function Scale<TBase extends Constructor>(Base: TBase) {
+            return class extends Base {
+              #scale = 1; // private ES2020 field
+
+              setScale(n: number) { this.#scale = n; }
+              get scale() { return this.#scale; }
+            };
+          }
+
+          const EightBitSprite = Scale(Sprite);
+
+          const bird = new EightBitSprite("Bird");
+          bird.setScale(0.8);
+          console.log(bird.scale);
+          ```
+
+          ---
+
+          #### 2. Constrained Mixins
+
+          > 💡 Add constraints when your mixin *requires* the base to implement something.
+          > This ensures the mixin only applies to compatible classes.
+
+          ```ts
+          type GConstructor<T = {}> = new (...args: any[]) => T;
+
+          type Positionable = GConstructor<{ setPos(x: number, y: number): void }>;
+
+          function Jumpable<TBase extends Positionable>(Base: TBase) {
+            return class extends Base {
+              jump() {
+                this.setPos(0, 20); // guaranteed safe by constraint
+              }
+            };
+          }
+          ```
+
+          ---
+
+          #### 3. Older "Interface-merge" Pattern (Still Useful)
+
+          > 💡 This approach builds mixins as normal classes and merges their types afterward.
+
+          **Pros:** flexible at runtime.
+          **Cons:** compiler can't infer relationships automatically.
+
+          ```ts
+          class Jumpable { jump() {} }
+          class Duckable { duck() {} }
+
+          class Sprite {
+            x = 0;
+            y = 0;
+          }
+
+          interface Sprite extends Jumpable, Duckable {}
+          applyMixins(Sprite, [Jumpable, Duckable]);
+
+          function applyMixins(derived: any, bases: any[]) {
+            bases.forEach(base => {
+              Object.getOwnPropertyNames(base.prototype).forEach(name => {
+                Object.defineProperty(
+                  derived.prototype,
+                  name,
+                  Object.getOwnPropertyDescriptor(base.prototype, name) ?? Object.create(null)
+                );
+              });
+            });
+          }
+
+          const player = new Sprite();
+          player.jump();
+          ```
+
+          ---
+
+          #### 4. Decorators *Don't* Create Mixin Types
+
+          > 💡 Decorators modify runtime behavior but **don't merge types**.
+          > **Workaround:** cast or create an explicit intersection type.
+
+          ```ts
+          const Pausable = (Cls: typeof Player) =>
+            class extends Cls { shouldFreeze = false };
+
+          @Pausable
+          class Player { x = 0; y = 0; }
+
+          new Player().shouldFreeze; // ❌ Type error
+          ```
+
+          ---
+
+          #### 5. Static Property Gotcha
+
+          > 💡 Class-expression mixins generate singleton constructors, so static properties
+          >
+          > don't behave generically across mixins unless you wrap them in functions.
+
+          ```ts
+          function base<T>() {
+            return class { static prop: T; };
+          }
+
+          function derived<T>() {
+            return class extends base<T>() { static anotherProp: T; };
+          }
+
+          class Spec extends derived<string>() {}
+
+          Spec.prop;         // string
+          Spec.anotherProp;  // string
+          ```
+    https://typescriptlang.org/tsconfig:
+      desc: TSConfig Reference - This page covers all of the different options available inside a TSConfig file
+      tags: [ts]
+
+      notes:
+        - md: | #markdown
+            ### Intro
+
+            > A TSConfig file in a directory indicates that the directory is the root of a TypeScript or JavaScript project.
+            > The TSConfig file can be either a tsconfig.json or jsconfig.json, both have the same set of config variables.
+    https://typescriptlang.org/docs/handbook/2/functions.html:
+      desc: TypeScript Functions
+      tags: [ts]
+
+      notes:
+        - md: | #markdown
+            ## Functions in TypeScript
+
+            - Functions are a fundamental building block in TypeScript, allowing you to encapsulate reusable logic.
+            - TypeScript enhances JavaScript functions by adding static types, enabling better type checking and IntelliSense support.
+
+            ### Key Concepts:
+
+            1. **Function Types**: You can define the types of function parameters and return values to ensure type safety.
+            2. **Optional and Default Parameters**: TypeScript allows you to specify optional parameters using the `?` syntax and provide default values for parameters.
+            3. **Rest Parameters**: You can use rest parameters to represent an indefinite number of arguments as an array.
+            4. **Function Overloading**: TypeScript supports function overloading, allowing you to define multiple signatures for a single function implementation.
+            5. **Arrow Functions**: TypeScript fully supports arrow functions, which provide a concise syntax and lexical `this` binding.
+
+            These features make functions in TypeScript more robust and easier to work with, enhancing code quality and maintainability.
+    https://www.typescriptlang.org/docs/handbook/2/conditional-types.html:
+      desc: TypeScript Conditional Types
+      tags: [ts]
+
+      notes:
+        - md: | #markdown
+            ## Conditional Types in TypeScript
+
+            - Conditional types in TypeScript allow you to express types that depend on a condition, enabling more dynamic and flexible type definitions.
+            - They are defined using the syntax `T extends U ? X : Y`, where `T` is checked against `U`, and based on the result, either type `X` or type `Y` is selected.
+
+            ### Key Concepts:
+
+            1. **Type Relationships**: Conditional types can be used to create types that change based on the relationship between types.
+            2. **Distributive Conditional Types**: When applied to union types, conditional types distribute over each member of the union.
+            3. **Infer Keyword**: The `infer` keyword can be used within conditional types to extract and work with types from other types.
+            4. **Utility Types**: Many built-in utility types in TypeScript, such as `ReturnType` and `InstanceType`, are implemented using conditional types.
+
+            These features make conditional types a powerful tool for creating advanced type manipulations in TypeScript, enhancing type safety and expressiveness.
+        - md: | #markdown
+            ### Cheatsheet
+
+            Conditional types allow you to express non-uniform type mappings, where the resulting type depends on a condition.
+
+            ```ts
+            T extends U ? X : Y
+            ```
+
+            - If `T` is assignable to `U`, the type resolves to `X`; otherwise, it resolves to `Y`.
+
+            #### Example 1: Basic Conditional Type
+
+            ```ts
+            type IsString<T> = T extends string ? true : false;
+
+            type A = IsString<string>; // true
+            type B = IsString<number>; // false
+            ```
+
+            #### Example 2: Distributive Conditional Types
+
+            ```ts
+            type ToArray<T> = T extends any ? T[] : never;
+
+            type C = ToArray<string | number>; // string[] | number[]
+            ```
+
+            #### Example 3: Using `infer`
+
+            ```ts
+            type ReturnType<T> = T extends (...args: any[]) => infer R ? R : any;
+
+            type D = ReturnType<() => number>; // number
+            type E = ReturnType<(x: string) => void>; // void
+            ```
+
+            #### Example 4: Nested Conditional Types
+
+            ```ts
+            type Flatten<T> = T extends Array<infer U> ? U : T;
+
+            type F = Flatten<number[]>; // number
+            type G = Flatten<string>; // string
+            ```
+
+            These examples illustrate how conditional types can be used to create flexible and dynamic type definitions in TypeScript.
+    https://typescriptlang.org/docs/handbook/2/mapped-types.html:
+      desc: TypeScript Mapped Types
+      tags: [ts]
+
+      notes:
+        - md: | #markdown
+            ## Mapped Types in TypeScript
+
+            - Mapped types in TypeScript allow you to create new types by transforming existing types.
+            - They are defined using the syntax `{ [P in K]: T }`, where `K` is a set of keys and `T` is the type assigned to each key.
+
+            ### Key Concepts:
+
+            1. **Key Remapping**: You can remap keys from an existing type to create a new type with modified keys.
+            2. **Modifiers**: Mapped types support modifiers like `?` for optional properties and `readonly` for immutable properties.
+            3. **Template Literal Types**: You can use template literal types within mapped types to create dynamic property names.
+            4. **Combining with Other Types**: Mapped types can be combined with other type constructs, such as conditional types, to create complex type transformations.
+
+            These features make mapped types a powerful tool for creating flexible and reusable type definitions in TypeScript, enhancing code maintainability and readability.
+        - md: | #markdown
+            ### Cheatsheet
+
+            - Mapped types build on the syntax for index signatures, which are used to declare the types of properties which have not been declared ahead of time:
+
+              ```ts
+              type OnlyBoolsAndHorses = {
+                [key: string]: boolean | Horse;
+              };
+
+              const conforms: OnlyBoolsAndHorses = {
+                del: true,
+                rodney: false,
+              };
+              ```
+
+            - A mapped type is a generic type which uses a union of PropertyKeys (frequently created via a keyof) to iterate through keys to create a type:
+
+              ```ts
+              type OptionsFlags<Type> = {
+                [Property in keyof Type]: boolean;
+              };
+              ```
+
+            - In this example, OptionsFlags will take all the properties from the type Type and change their values to be a boolean.
+
+              ```ts
+              type Features = {
+                darkMode: () => void;
+                newUserProfile: () => void;
+              };
+
+              type FeatureOptions = OptionsFlags<Features>;
+
+              type FeatureOptions = {
+                  darkMode: boolean;
+                  newUserProfile: boolean;
+              }
+              ```
+  https://nx.dev/docs/technologies/typescript/guides/switch-to-workspaces-project-references#update-root-typescript-configuration:
+    desc: Guide to updating root TypeScript configuration for monorepos using Nx
+    tags: [ts]
+    notes:
+      - md: | #markdown
+          ## Updating Root TypeScript Configuration for Monorepos
+
+          - When working with monorepos, it's essential to have a well-structured TypeScript configuration to manage multiple projects effectively.
+          - Nx provides tools and guidelines to help you set up and maintain your TypeScript configurations across different projects within a monorepo.
+
+          ### Key Steps:
+
+          1. **Create a Base tsconfig.json**:
+            - Start by creating a base `tsconfig.json` file at the root of your monorepo.
+            - This file should contain common compiler options that apply to all projects.
+
+          2. **Project-Specific tsconfig Files**:
+            - Each project within the monorepo should have its own `tsconfig.json` file that extends the base configuration.
+            - This allows for project-specific settings while maintaining consistency.
+
+          3. **Use Project References**:
+            - Leverage TypeScript's project references feature to enable faster builds and better type-checking across projects.
+            - This involves setting up `references` in each project's `tsconfig.json`.
+
+          4. **Update Paths**:
+            - Ensure that the `paths` option in the base `tsconfig.json` is correctly configured to resolve module imports across different projects.
+
+          5. **Automate with Nx**:
+            - Utilize Nx's built-in commands and generators to automate the setup and maintenance of TypeScript configurations in your monorepo.
+
+          By following these steps, you can create a robust TypeScript configuration that supports efficient development and collaboration within a monorepo environment.
+  # DENO | A secure runtime for JavaScript and TypeScript
+  https://deno.com:
+    desc: A secure runtime for JavaScript and TypeScript
+    tags: [deno, js, ts]
+    links:
+      - Deno 1.37 - Modern JavaScript in Jupyter Notebooks: https://deno.com/blog/v1.37
+  # Google Apps Script (clasp)
+  https://github.com/google/clasp:
+    desc: Clasp is the command line tool for Google Apps Script.
+    tags: [apps_script]
+    links: [https://developers.google.com/apps-script/guides/clasp]
+    notes:
+      - sh: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          # ──────────────────────────────────────────────────────────────────────────────
+          # Apps Script CHEATSHEET (TypeScript + clasp)
+          # Requirements:
+          #   - Node 18+ (or 20/22)
+          #   - pnpm (or npm/yarn; replace commands accordingly)
+          #   - @types/google-apps-script installed locally
+          #   - tsconfig.json with outDir="build" and rootDir="src"
+          #   - .clasp.json with {"scriptId":"...","rootDir":"build"}
+          # Tips:
+          #   - Use `clasp login --no-localhost` if running headless/remote/devcontainer
+          #   - For pure TS unit tests, avoid GAS globals (e.g., Logger); or mock them
+          # ──────────────────────────────────────────────────────────────────────────────
+
+          ## 0) One-time setup (first time only)
+
+          # Install clasp globally
+          pnpm add -g @google/clasp
+
+          # Authenticate (opens browser). Use --no-localhost in containers/SSH
+          clasp login
+
+          # If you DON'T have a project yet, create one (standalone):
+          clasp create --type standalone --title "Google Apps Script Demo"
+
+          # If there is already a project, clone it
+          clasp clone '<YOUR_SCRIPT_ID>'
+
+          # Make sure .clasp.json points rootDir to compiled output (build/)
+          # cat .clasp.json
+          # {
+          #   "scriptId": "YOUR_SCRIPT_ID",
+          #   "rootDir": "build"
+          # }
+
+          # Install dev deps (run inside project folder with package.json)
+          pnpm i
+
+          ## 1) Build (TypeScript -> build/)
+          tsc
+
+          ## 2) Lint (optional but recommended)
+          pnpm eslint . --fix
+
+          ## 2.1) Format (optional but recommended)
+          pnpm prettier -w .
+
+          ## 3) Local test (pure TS only)
+          # Note: Functions that call GAS services (e.g., Logger, DriveApp) cannot run locally.
+          # For pure functions, add a tiny test or script. Example with ts-node/vitest (optional):
+          # pnpm vitest run
+          # OR quickly run a pure TS file:
+          # pnpm dlx ts-node src/some-pure-func.ts
+          #
+          # For your current sample (uses Logger), skip local run; test via remote run below.
+
+          ## 4) Push compiled code to Apps Script
+          clasp push
+
+          ## 5) Test remotely (execute a server function in GAS)
+          # Will run on Apps Script backend and print logs to your terminal.
+          # Use --nondev to target latest code, not last deployed version.
+          clasp run --nondev 'generateAll'
+
+          # View execution logs in browser (helpful for diagnostics):
+          clasp logs --watch
+          # (Ctrl+C to stop watching)
+
+          ## 6) Pull (if you edited code in the online editor and want it locally)
+          clasp pull
+
+          ## 7) Create a version (immutable snapshot - good practice before deploying)
+          clasp version "$(date +'%Y.%m.%d-%H%M%S')"
+
+          ## 8) Deploy (e.g., web app or library - first time will create a deployment and return the URL (for web apps))
+          clasp deploy -d "prod"
+
+          ## 9) Update loop (daily workflow)
+          #  - edit src/*.ts
+          #  - build -> push -> run (remote) -> (optional) version -> deploy
+          tsc && clasp push && clasp run --nondev 'generateAll'
+
+          # 10) Logout (if needed)
+          clasp logout
+  https://developers.google.com/apps-script/guides/clasp:
+    desc: Clasp is the command line tool for Google Apps Script.
+    tags: [apps_script]
+    links: [https://github.com/google/clasp]
+  # MOJO | The programming language for all AI developers
+  https://modular.com/max/mojo:
+    desc: The programming language for all AI developers.
+    tags: [mojo, playground, py]
+    links:
+      - Getting Started: https://docs.modular.com/mojo/manual/get-started
+      - Docs: https://docs.modular.com/mojo
+    notes:
+      - md: | #markdown
+          ## Installing the Mojo CLI
+
+          To install the Mojo CLI, run the following command:
+
+          ```sh
+          brew install modular/mojo/mojo
+          ```
+
+          ## Instaling the mojo package
+
+          To install the Mojo package, run the following command:
+
+          ```sh
+          modular mojo install
+          ```
+      - md: | #markdown
+          ## After installing the Mojo CLI, run the following commands:
+
+          Mojo's Python virtual environment created at /Users/rogerioalcantara/.modular/pkg/packages.modular.com_mojo/venv
+
+          If you are using ZSH (default on macOS), run the following commands:
+
+          echo 'export MODULAR_HOME="/Users/rogerioalcantara/.modular"' >> ~/.zshrc
+          echo 'export PATH="/Users/rogerioalcantara/.modular/pkg/packages.modular.com_mojo/bin:$PATH"' >> ~/.zshrc
+          source ~/.zshrc
+
+          If you are using bash, run the following commands:
+
+          BASHRC=$( [ -f "$HOME/.bash_profile" ] && echo "$HOME/.bash_profile" || echo "$HOME/.bashrc" )
+          echo 'export MODULAR_HOME="/Users/rogerioalcantara/.modular"' >> "$BASHRC"
+          echo 'export PATH="/Users/rogerioalcantara/.modular/pkg/packages.modular.com_mojo/bin:$PATH"' >> "$BASHRC"
+          source "$BASHRC"
+
+          For tool help, enter 'mojo --help'.
+          For more docs, see https://docs.modular.com/mojo.
+      - md: | #markdown
+          # Run code in the REPL
+
+          Then enter 'mojo' to start the Mojo REPL.
+
+          ```sh
+          $ mojo
+          Welcome to Mojo! 🔥
+
+          Expressions are delimited by a blank line.
+          Type `:quit` to exit the REPL and `:mojo help repl` for further assistance.
+
+          1> print("Hello, world!")
+          2.
+          Hello, world!
+          ```
+      - md: | #markdown
+          # Run a Mojo file
+
+          1. Create a file named hello.mojo (or hello.🔥) and add the following code:
+
+          ```sh
+          fn main():
+              print("Hello, world!")
+          ```
+
+          2. Run it with the mojo command:
+
+          ```sh
+          $ mojo hello.mojo
+          # => Hello, world!
+          ```
+  # GOOGLE DEVELOPER | Web Platform APIs
+  https://g.dev:
+    desc: Google Developer Profile
+    tags: [social]
+  https://developer.chrome.com/docs/web-platform:
+    desc: Documentation for Web Platform APIs, some of which are experimental in Chrome | Web Platform | Google Chrome
+    tags: [api]
+  https://developer.chrome.com/docs/web-platform/view-transitions:
+    desc: Smooth and simple transitions with the View Transitions API | Web Platform | Google Chrome
+    tags: [api]
+  https://developer.chrome.com/docs/web-platform/navigation-api:
+    desc: Standardizing client-side routing through a brand new Navigation API which completely overhauls building SPA's | Web Platform | Google Chrome
+    tags: [api, doc]
+  https://developer.chrome.com/docs/aurora:
+    desc: A collaboration between Chrome engineers and open-source web frameworks to improve user experience across the web, with a special emphasis on performance | Aurora | Google Developers
+    tags: [doc]
+  # WEB DEV | Resources for web developers
+  https://pagespeed.web.dev:
+    desc: PageSpeed Insights (PSI) reports on the user experience of a page on both mobile and desktop devices, and provides suggestions on how that page may be improved | PageSpeed Insights | Google Developers
+    tags: [web]
+  https://web.dev:
+    tags: [bookmark, tutorial]
+    desc: Web.dev is the ultimate resource for developers of all backgrounds to learn, create, and solve on the web | Web.dev
+  https://chromewebstore.google.com/detail/web-vitals/ahfhijdlegdabablpippeagghigmibma:
+    desc: Web Vitals Chrome Extension
+    tags: [perf]
+  https://web.dev/measure:
+    desc: Reports on the user experience of a page on both mobile and desktop devices, and provides suggestions on how that page may be improved | Measure | Web.dev
+    tags: [perf]
+  https://web.dev/explore/identity:
+    tags: [bookmark]
+    desc: Understand and build advanced authentication systems | Identity | Web.dev
+  https://web.dev/explore/fast:
+    tags: [bookmark]
+    desc: Techniques for improving site performance | Fast load times | Web.dev
+  https://web.dev/explore/learn-core-web-vitals:
+    desc: Essential metrics for a healthy site | Core Web Vitals | Web.dev
+    tags: [perf]
+  https://web.dev/explore/metrics:
+    tags: [bookmark]
+    desc: Measuring performance and user experience | Metrics | Web.dev
+  https://web.dev/explore/how-to-optimize-inp:
+    desc: Learn how to optimize for the Interaction to Next Paint metric | How to Optimize Interaction to Next Paint (INP) | Web.dev
+    tags: [perf]
+  https://web.dev/learn/pwa:
+    desc: A course that breaks down every aspect of modern progressive web app development | Progressive Web Apps | Web.dev
+    tags: [pwa]
+  https://web.dev/learn/performance:
+    desc: This course is designed for those new to web performance, a vital aspect of the user experience. It covers key web performance concepts and techniques for improving performance | Performance | Web.dev
+    tags: [learn]
+  https://web.dev/learn/privacy:
+    desc: A course to help you build more privacy-preserving websites | Privacy | Web.dev
+    tags: [learn]
+  https://web.dev/learn/accessibility:
+    desc: An evergreen accessibility course and reference to level up your web development | Accessibility | Web.dev
+    tags: [learn]
+  https://web.dev/learn/html:
+    desc: This HTML course for web developers provides a solid overview for developers, from novice to expert level HTML | HTML | Web.dev
+    tags: [learn]
+  https://web.dev/learn/images:
+    desc: An in-depth course on images for the web | Images | Web.dev
+    tags: [learn]
+  https://web.dev/learn/design:
+    tags: [bookmark, tutorial]
+    desc: A course exploring all aspects of responsive design. Learn how to make sites that look great and work well for everyone | Design | Web.dev
+  https://web.dev/learn/forms:
+    desc: A course about HTML forms to help you improve your web developer expertise | Forms | Web.dev
+    tags: [learn]
+  https://web.dev/learn/css:
+    desc: An evergreen CSS course and reference to level up your web styling expertise | CSS | Web.dev
+    tags: [learn]
+  # GOOGLE CODELABS
+  https://codelabs.developers.google.com/codelabs/cloud-starting-cloudfunctions-v2#2:
+    desc: GCP | Cloud Functions (2nd gen) Create a Cloud Function that responds to HTTP requests
+    tags: [codelab, gcp]
+  https://codelabs.developers.google.com/codelabs/cloud-starting-cloudfunctions-v2#3:
+    desc: GCP | Cloud Functions (2nd gen) Create a Python function triggered by a Pub/Sub message published to a specific topic
+    tags: [codelab, gcp]
+  https://codelabs.developers.google.com/codelabs/cloud-starting-cloudfunctions-v2#4:
+    desc: GCP | Cloud Functions (2nd gen) Create a Node.js function that responds to events from a Cloud Storage bucket
+    tags: [codelab, gcp]
+  https://codelabs.developers.google.com/codelabs/cloud-starting-cloudfunctions-v2#5:
+    desc: GCP | Cloud Functions (2nd gen) Create a Node.js function that receives a Cloud Audit Log event when a Compute Engine VM and adds a labels to it
+    tags: [codelab, gcp]
+  https://codelabs.developers.google.com/codelabs/cloud-starting-cloudfunctions-v2#6:
+    desc: GCP | Cloud Functions (2nd gen) Split the traffic 50-50 between two versions/revisions of a function
+    tags: [codelab, gcp]
+  https://codelabs.developers.google.com/codelabs/cloud-starting-cloudfunctions-v2#7:
+    desc: GCP | Cloud Functions (2nd gen) Limiting the number of cold starts - Specify a minimum number of function instances to be kept warm and ready to serve requests
+    tags: [codelab, gcp]
+  https://codelabs.developers.google.com/codelabs/cloud-starting-cloudfunctions-v2#8:
+    desc: GCP | Cloud Functions (2nd gen) Concurrency - Specify the number of concurrent requests that can be processed simultaneously by an instance
+    tags: [codelab, gcp]
+  https://codelabs.developers.google.com/codelabs/cloud-run-hello:
+    desc: Deploy and run a container with Cloud Run on Node.js
+    tags: [codelab, gcp]
+  https://codelabs.developers.google.com/codelabs/cloud-run-dev2prod:
+    desc: Dev to Prod in Three Easy Steps with Cloud Run
+    tags: [codelab, gcp]
+  https://codelabs.developers.google.com/codelabs/cloud-bigquery-nodejs:
+    desc: Qwik Start - Command Line
+    tags: [codelab, bigquery]
+  # GOOGLE DEVELOPER TOOLS AND RESOURCES
+  https://developer.chrome.com:
+    desc: Chrome for Developers
+    tags: [web, perf]
+  https://developers.google.com/speed:
+    desc: Analyze and optimize your website with PageSpeed tools | Google Developers
+    tags: [perf]
+  https://developer.chrome.com/docs/lighthouse:
+    desc: Audits for performance, accessibility, progressive web apps, SEO, and more | Lighthouse | Google Developers
+    tags: [doc]
+  https://googlechrome.github.io/lighthouse/scorecalc:
+    desc: Lighthouse Scoring Calculator
+    tags: [web]
+  https://thewebshowcase.withgoogle.com:
+    tags: [bookmark, go, tutorial]
+    desc: Learn how modern web technology can help you succeed | The Web Showcase
+  https://robotstxt.org/robotstxt.html:
+    desc: The Web Robots Pages
+    tags: [seo]
+  https://developers.google.com/search/docs/crawling-indexing/robots/create-robots-txt:
+    desc: How to write and submit a robots.txt file | Google Developers
+    tags: [seo, doc]
+commands:
+  # Bun
+  brew install oven-sh/bun/bun:
+    desc: Install bun
+    tags: [bun]
+  docker run --rm --init --ulimit memlock=-1:-1 oven/bun:
+    desc: Run a bun in a docker container
+    tags: [bun]
+  bun create hono myapp:
+    desc: Create a new bun project
+    tags: [bun]
+  bun init --yes bun-demo:
+    desc: Create a new bun project
+    tags: [bun]
+  bun init --yes --minimal bun-minimal-demo:
+    desc: Create a new bun project
+    tags: [bun]
+  bun init --yes --react bun-react-demo:
+    desc: Create a new bun project
+    tags: [bun]
+  bun init --yes --react=tailwind bun-react-tailwind-demo:
+    desc: Create a new bun project
+    tags: [bun]
+  bun init --yes --react=shadcn bun-react-shadcn-demo:
+    desc: Create a new bun project
+    tags: [bun]
+  echo "console.log('Hello')" | bun run -:
+    desc: Run a bun script
+    tags: [bun]
+  bun list:
+    desc: List installed packages
+    tags: [bun]
+
+  bun create ./MyComponent.jsx:
+    desc: Turns an existing React component into a complete dev environment with hot reload and production builds in one command
+    tags: [bun]
+    links: [https://bun.com/docs/runtime/templating/create#from-a-react-component]
+
+  # Dotnet
+  brew install --cask dotnet-sdk:
+    desc: Install dotnet sdk
+    tags: [dotnet]
+  dotnet new console -o <NAME>:
+    desc: Create a new console app
+    tags: [dotnet]
+
+  # Node.js
+  node --env-file=.env index.js:
+    desc: Node.js v20.6.0 supports .env files for configuring environment variables
+    tags: [node]
+
+  # Kotlin
+  ktlint:
+    desc: Default validation with standard ruleset
+    tags: [kotlin]
+    links: [https://ktlint.github.io]
+    notes:
+      - sh: | #shell
+          !/bin/bash
+          # Install ktlint
+          brew install ktlint
+
+          # Default validation with standard ruleset
+          ktlint
+
+          # Check all '.kt' files in 'src/' directory, but ignore 'generated' directory and its subdirectories:
+          ktlint 'src/**/*.kt' '!src/**/generated/**'
+
+          # Style violation grouped by file
+          ktlint --reporter=plain?group_by_file
+
+          # Style violations counted per rule
+          ktlint --reporter=plain-summary
+
+          # or
+          ktlint --ruleset=/path/to/custom-ruleset.jar generateEditorConfig android_studio
+
+          # Override '.editorconfig'
+          ktlint --editorconfig=/path/to/.editorconfig
+  ktlint --format:
+    desc: Autocorrect style violations
+    tags: [kotlin, ktlint, lint]
+    links: [https://ktlint.github.io]
+  ktlint 'src/**/*.kt' '!src/**/*Test.kt':
+    desc: Check all '.kt' files in 'src/' directory, but ignore files ending with 'Test.kt'
+    tags: [kotlin, ktlint, lint]
+    links: [https://ktlint.github.io]
+  ktlint generateEditorConfig ktlint_official:
+    desc: Specify the code style(ktlint_official, intellij_idea or android_studio) to be used when generating the .editorconfig
+    tags: [kotlin]
+    links: [https://ktlint.github.io]
+  ktlint installGitPreCommitHook:
+    desc: Install git pre-commit hook
+    tags: [kotlin, ktlint, lint]
+    links: [https://ktlint.github.io]
+  ktlint installGitPrePushHook:
+    desc: Install git pre-push hook
+    tags: [kotlin, ktlint, lint]
+    links: [https://ktlint.github.io]
+
+  # Elixir
+  iex:
+    desc: Start Interactive Elixir
+    tags: [elixir]
+  elixir:
+    desc: Run elixir script
+    tags: [elixir]
+  elixirc:
+    desc: Compile elixir script
+    tags: [elixir]
+cheats:
+  # Bun | A fast all-in-one JavaScript runtime
+  Open or create a SQLite3 database in Bun:
+    desc: Open or create a SQLite3 database in Bun
+    tags: [bun, sqlite]
+    links: [https://bun.com/docs/runtime/sqlite#database]
+    notes:
+      - ts: | #typescript
+          import { Database } from "bun:sqlite";
+          const db = new Database("/path/to/db.sqlite");
+  Open SQLite database in-memory in Bun:
+    desc: Open SQLite database in-memory in Bun
+    tags: [bun, sqlite]
+    links: [https://bun.com/docs/runtime/sqlite#database]
+    notes:
+      - ts: | #typescript
+          import { Database } from "bun:sqlite";
+          const db = new Database(":memory:");
+  Open SQLite database in readonly mode in Bun:
+    desc: Open in readonly mode a SQLite database in Bun
+    tags: [bun, sqlite]
+    links: [https://bun.com/docs/runtime/sqlite#database]
+    notes:
+      - ts: | #typescript
+          import { Database, OpenMode } from "bun:sqlite";
+          const db = new Database("mydb.sqlite", { readonly: true });
+  Creating SQLite database if it does not exist in Bun:
+    desc: Creating SQLite database if it does not exist
+    tags: [bun, sqlite]
+    links: [https://bun.com/docs/runtime/sqlite#database]
+    notes:
+      - ts: | #typescript
+          import { Database } from "bun:sqlite";
+          const db = new Database("mydb.sqlite", { create: true });
+  Load SQLite database via ES module import in Bun:
+    desc: Use ES module import to load a SQLite database
+    tags: [bun, esmodule]
+    links: [https://bun.com/docs/runtime/sqlite#database]
+    notes:
+      - ts: | #typescript
+          import db from "./path/to/db.sqlite" with { type: "sqlite" };
+
+          console.log(db.query("select * from users LIMIT 1").get());
+  Close a database connection, but allow existing queries to finish in Bun:
+    desc: Close a database connection, but allow existing queries to finish, call close()
+    tags: [bun, sqlite]
+    links: [https://bun.com/docs/runtime/sqlite#database]
+    notes:
+      - ts: | #typescript
+          import { Database } from "bun:sqlite";
+          const db = new Database("mydb.sqlite");
+          // ... perform database operations ...
+          db.close(false);
+  Close the database and throw an error if there are pending queries in Bun:
+    desc: To close the database and throw an error if there are any pending queries, call .close(true)
+    tags: [bun, sqlite]
+    links: [https://bun.com/docs/runtime/sqlite#database]
+    notes:
+      - ts: | #typescript
+          import { Database } from "bun:sqlite";
+          const db = new Database("mydb.sqlite");
+          // ... perform database operations ...
+          db.close(true);
+    Use `using` to auto-close database connection in bun:
+      desc: Use the using statement to ensure that a database connection is closed when the using block is exited in bun
+      tags: [bun, sqlite]
+      links: [https://bun.com/docs/runtime/sqlite#database]
+      notes:
+        - ts: | #typescript
+            import { Database } from "bun:sqlite";
+
+            {
+              using db = new Database("mydb.sqlite");
+              using query = db.query("select 'Hello world' as message;");
+              console.log(query.get());
+            }
+            // db is automatically closed here
+    Use .get() to run a query and get back the first result as an object in bun:
+      desc: Use .get() to run a query and get back the first result as an object in bun
+      tags: [bun, sqlite]
+      links: [https://bun.com/docs/runtime/sqlite#query]
+      notes:
+        - ts: | #typescript
+            import { Database } from "bun:sqlite";
+            const db = new Database("mydb.sqlite");
+            const user = db.query("SELECT * FROM users WHERE id = ?", [1]).get();
+            console.log(user);
+  Use MySQL in Bun:
+    desc: Use MySQL in Bun
+    tags: [bun, mysql]
+    links: [https://bun.com/docs/runtime/mysql]
+    notes:
+      - ts: | #typescript
+          import { createPool } from "bun:mysql";
+
+          const pool = createPool({
+            host: "localhost",
+            user: "root",
+            password: "password",
+            database: "testdb",
+            connectionLimit: 10,
+          });
+
+          const [rows] = await pool.query("SELECT * FROM users WHERE id = ?", [1]);
+          console.log(rows);
+    Built-in Redis Client in Bun:
+      desc: Built-in Redis Client in Bun
+      tags: [bun, redis]
+      links: [https://bun.com/docs/runtime/redis]
+      notes:
+        - ts: | #typescript
+            import { redis, RedisClient } from "bun";
+
+            // Connects to process.env.REDIS_URL or localhost:6379 if not set.
+            await redis.set("foo", "bar");
+            const value = await redis.get("foo");
+            console.log(value); // "bar"
+
+            console.log(await redis.ttl("foo")); // -1 (no expiration set)
+    Redis Pub/Sub messaging is fully supported in Bun:
+      desc: Redis Pub/Sub messaging is fully supported in Bun
+      tags: [bun, redis]
+      links: [https://bun.com/docs/runtime/redis#pubsub]
+      notes:
+        - ts: | #typescript
+            import { RedisClient } from "bun";
+
+            // You can create your own client instead of using `redis`.
+            const myRedis = new RedisClient("redis://localhost:6379");
+
+            // Subscribers can't publish, so duplicate the connection.
+            const publisher = await myRedis.duplicate();
+
+            await myRedis.subscribe("notifications", (message, channel) => {
+              console.log("Received:", message);
+            });
+
+            await publisher.publish("notifications", "Hello from Bun!");

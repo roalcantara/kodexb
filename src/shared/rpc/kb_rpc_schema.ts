@@ -1,5 +1,5 @@
-import type { Knowledge } from '@core'
 import type { ElectrobunRPCSchema, RPCSchema } from 'electrobun/bun'
+import type { Knowledge } from '../../core'
 
 /** Stable id + source row shape returned from SQLite (discriminated `Knowledge`). */
 export type RpcKnowledge = Knowledge
@@ -77,7 +77,7 @@ export type PreviewImageResult = {
 export type TaskCreateInput = { key: string; desc?: string }
 export type TaskUpdateInput = { desc?: string }
 
-**
+/**
  * Single Electrobun bridge method — the renderer's Eden Treaty client forwards
  * every `/api/*` call through `rpcCall`. `RpcApp.handle` interprets the
  * payload as a real HTTP `Request` and returns its serialised `Response`.

@@ -1,5 +1,5 @@
-import type { KbDesktopRpcSchema, RpcCallParams, RpcCallResponse, RpcImportResult } from '@shared/rpc'
 import { BrowserView } from 'electrobun/bun'
+import type { KbDesktopRpcSchema, RpcCallParams, RpcCallResponse, RpcImportResult } from '../../../shared/rpc'
 
 import type { SyncEmitter } from '../../app/app'
 import type { RpcApp } from './server'

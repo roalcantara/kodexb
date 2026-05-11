@@ -16,6 +16,7 @@ const task: RpcKnowledge = {
   status: 'todo',
   priority: 'mid',
   meta: { due: '2026-04-28', task_order: '7' },
+  doc: '',
   createdAt: 1_700_000_000_000,
   updatedAt: 1_700_000_100_000
 }

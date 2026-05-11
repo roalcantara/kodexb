@@ -17,6 +17,7 @@ const bookmarkGithub: RpcKnowledge = {
   source: 'fixtures/example.yaml',
   desc: 'Example repository',
   tags: ['github'],
+  doc: '',
   createdAt: 0,
   updatedAt: 0
 }

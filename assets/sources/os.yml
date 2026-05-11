@@ -1,0 +1,335 @@
+commands:
+  pwd:
+    desc: Print the current working directory
+    tags: [ linux, macos ]
+  touch:
+    desc: Create an empty file
+    tags: [ linux, macos ]
+  clear:
+    desc: Clear the terminal screen
+    tags: [ linux, macos ]
+  wc:
+    desc: Count lines, words, and characters in a file
+    tags: [ linux, macos ]
+  head:
+    desc: Display the first few lines of a file
+    tags: [ linux, macos ]
+  tail:
+    desc: Display the last few lines of a file
+    tags: [ linux, macos ]
+  sort:
+    desc: Sort the contents of a file
+    tags: [ linux, macos ]
+  uniq:
+    desc: Remove duplicate lines from a file
+    tags: [ linux, macos ]
+  diff:
+    desc: Compare two files line by line
+    tags: [ linux, macos ]
+  df:
+    desc: Display disk space usage
+    tags: [ linux, macos ]
+  du:
+    desc: Display directory size
+    tags: [ linux, macos ]
+  top:
+    desc: Monitor system processes in real time
+    tags: [ linux, macos ]
+  ps:
+    desc: Display active processes
+    tags: [ linux, macos ]
+  kill:
+    desc: Terminate a process by its PID
+    tags: [ linux, macos ]
+  ping:
+    desc: Check network connectivity
+    tags: [ linux, macos ]
+  cut:
+    desc: Remove sections from each line of a file
+    tags: [ linux, macos ]
+  tr:
+    desc: Translate or delete characters
+    tags: [ linux, macos ]
+  xargs:
+    desc: Build and execute command lines from standard input
+    tags: [ linux, macos ]
+  ln:
+    desc: Create symbolic or hard links
+    tags: [ linux, macos ]
+  df -h:
+    desc: Display disk usage in human-readable format
+    tags: [ linux, macos ]
+  free:
+    desc: Display memory usage
+    tags: [ linux, macos ]
+  iostat:
+    desc: Display CPU and I/O statistics
+    tags: [ linux, macos ]
+  netstat:
+    desc: Network statistics (use ss as modern alternative)
+    tags: [ linux, macos ]
+  ifconfig/ip:
+    desc: Configure network interfaces (use ip as modern alternative)
+    tags: [ linux, macos ]
+  iptables:
+    desc: Configure firewall rules
+    tags: [ linux, macos ]
+  systemctl:
+    desc: Control the systemd system and service manager
+    tags: [ linux, macos ]
+  journalctl:
+    desc: View system logs
+    tags: [ linux, macos ]
+  crontab:
+    desc: Schedule recurring tasks
+    tags: [ linux, macos ]
+  at:
+    desc: Schedule tasks for a specific time
+    tags: [ linux, macos ]
+  whoami:
+    desc: Display the current user
+    tags: [ linux, macos ]
+  users:
+    desc: List all users currently logged in
+    tags: [ linux, macos ]
+  hostname:
+    desc: Display or set the system hostname
+    tags: [ linux, macos ]
+  env:
+    desc: Display environment variables
+    tags: [ linux, macos ]
+  export:
+    desc: Set environment variables.-
+    tags: [ linux, macos ]
+  ip addr:
+    desc: Display or configure IP addresses
+    tags: [ linux, macos, net ]
+  ip route:
+    desc: Show or manipulate routing tables
+    tags: [ linux, macos, net ]
+  traceroute:
+    desc: Trace the route packets take to a host
+    tags: [ linux, macos, net ]
+  nslookup:
+    desc: Query DNS records
+    tags: [ linux, macos, net ]
+  dig:
+    desc: Query DNS servers
+    tags: [ linux, macos, net ]
+  ftp:
+    desc: Transfer files using the FTP protocol
+    tags: [ linux, macos, net ]
+  nmap:
+    tags: [ linux, macos, net ]
+    desc: Network scanning and discovery
+  telnet:
+    tags: [ linux, macos, net ]
+    desc: Communicate with remote hosts
+  stat:
+    tags: [ linux, macos, net ]
+    desc: Display detailed information about a file
+  tree:
+    desc: Display directories as a tree
+    tags: [ linux, macos, file ]
+  file:
+    tags: [ linux, macos ]
+    desc: Determine a file's type
+  basename:
+    tags: [ linux, macos ]
+    desc: Extract the filename from a path
+  dirname:
+    desc: Extract the directory part of a path
+    tags: [ linux, macos, file ]
+  vmstat:
+    desc: Display virtual memory statistics
+    tags: [ linux, macos ]
+  htop:
+    desc: Interactive process viewer (alternative to top)
+    tags: [ linux, macos ]
+  dmesg:
+    desc: Print kernel ring buffer messages
+    tags: [ linux, macos ]
+  uptime:
+    tags: [ linux, macos ]
+    desc: Show how long the system has been running
+  iotop:
+    desc: Display real-time disk I/O by processes
+    tags: [ linux, macos ]
+  apt:
+    desc: Package manager for Debian-based distributions
+    tags: [ linux, debian, ubuntu ]
+  yum:
+    desc: Package manager for RHEL-based distributions
+    tags: [ linux, redhat, fedora ]
+  snap:
+    desc: Manage snap packages
+    tags: [ linux, debian, ubuntu ]
+  rpm:
+    desc: Manage RPM packages
+    tags: [ linux, redhat, fedora ]
+  mount:
+    desc: Mount or unmount filesystems
+    tags: [ linux, disk ]
+  fsck:
+    desc: Check and repair filesystems
+    tags: [ linux, disk ]
+  mkfs:
+    desc: Create a new filesystem
+    tags: [ linux, disk ]
+  blkid:
+    desc: Display information about block devices
+    tags: [ linux, disk ]
+  parted:
+    desc: Manage partitions interactively
+    tags: [ linux, disk ]
+  gcc:
+    desc: Compile C programs
+    tags: [ linux, cli, tool ]
+  make:
+    desc: Build and manage projects
+    tags: [ linux, macos, cli ]
+  strace:
+    desc: Trace system calls and signals
+    tags: [ linux, macos, cli ]
+  gdb:
+    desc: Debug programs
+    tags: [ linux, macos, cli ]
+  date:
+    desc: Display or set the system date and time
+    tags: [ linux, macos, cli ]
+  cal:
+    desc: Display a calendar
+    tags: [ linux, macos, cli ]
+  man:
+    desc: Display the manual for a command
+    tags: [ linux, macos, cli ]
+  history:
+    desc: Show previously executed commands
+    tags: [ linux, macos, cli ]
+  useradd -m -s /bin/zsh -G users vscode:
+    desc: Add a user vscode to the system
+    tags: [ linux, debian ]
+  passwd vscode:
+    desc: Set the password for the user vscode
+    tags: [ linux, debian ]
+  su - vscode:
+    desc: Switch to the user vscode
+    tags: [ linux, debian ]
+  ls:
+    desc: List files and directories
+    tags: [ linux, macos ]
+  cd:
+    desc: Change directory
+    tags: [ linux, macos ]
+  mkdir:
+    desc: Create a new directory
+    tags: [ linux, macos ]
+  rm:
+    desc: Remove files or directories
+    tags: [ linux, macos ]
+  rmdir:
+    desc: Remove empty directories
+    tags: [ linux, macos ]
+  cp:
+    desc: Copy files or directories
+    tags: [ linux, macos ]
+  mv:
+    desc: Move or rename files and directories
+    tags: [ linux, macos ]
+  cat:
+    desc: Display the content of a file
+    tags: [ linux, macos ]
+  echo:
+    desc: Display a line of text
+    tags: [ linux, macos ]
+  chmod:
+    desc: Change file permissions
+    tags: [ linux, macos ]
+  chown:
+    desc: Change file ownership
+    tags: [ linux, macos ]
+  find:
+    desc: Search for files and directories
+    tags: [ linux, macos ]
+  grep:
+    desc: Search for text in a file
+    tags: [ linux, macos ]
+  tar:
+    desc: Archive files into a tarball
+    tags: [ linux, macos ]
+  zip/unzip:
+    desc: Compress and extract ZIP files
+    tags: [ linux, macos ]
+  wget:
+    desc: Download files from the internet
+    tags: [ linux, macos ]
+  curl:
+    desc: Transfer data from or to a server
+    tags: [ linux, macos ]
+  scp:
+    desc: Securely copy files between systems
+    tags: [ linux, macos ]
+  rsync:
+    desc: Synchronize files and directories
+    tags: [ linux, macos ]
+  awk:
+    desc: Text processing and pattern scanning
+    tags: [ linux, macos ]
+  sed:
+    desc: Stream editor for filtering and transforming text
+    tags: [ linux, macos ]
+  ssh:
+    desc: Connect to a remote server via SSH
+    tags: [ linux, macos, net ]
+  netcat (nc):
+    desc: Read/write data over networks.
+    tags: [ linux, macos, net ]
+  locate:
+    tags: [ linux, macos ]
+    desc: Find files quickly using a database
+  lsof:
+    desc: List open files
+    tags: [ linux, macos ]
+  lsblk:
+    desc: List information about block devices
+    tags: [ linux, macos, disk ]
+  Fix permissions for global npm installs:
+    desc: Fix permissions for global npm installs
+    tags: [ linux, macos, npm ]
+    notes:
+      - sh: |
+          #!/bin/bash
+
+          # Fix npm permissions
+          sudo chown -R $(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}
+
+          # Or use npm prefix
+          mkdir ~/.npm-global
+          npm config set prefix '~/.npm-global'
+          echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.profile
+          source ~/.profile
+    # Debian
+  sudo apt update && sudo apt upgrade -y:
+    desc: Update the package list and upgrade the system
+    tags: [ linux, debian ]
+  usermod -aG sudo vscode:
+    desc: Add vscode:sudo (user vscode is in the sudo group)
+    tags: [ linux, debian ]
+  sudo apt update && sudo apt upgrade -y && sudo apt install -y zsh git && useradd -m -s /bin/zsh -G users vscode && passwd vscode && usermod -aG sudo vscode && su - vscode:
+    desc: Update the package list and upgrade the system, install zsh and git, add a user vscode to the system, set the password for the user vscode, add vscode:sudo (user vscode is in the sudo group) and switch to the user vscode
+    tags: [ linux, debian ]
+  useradd -m -s /bin/zsh -G users vscode && usermod -aG sudo vscode && echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && su - vscode:
+    desc: Add a passwordless sudo user vscode to the system, add vscode:sudo (user vscode is in the sudo group) and switch to the user vscode
+    tags: [ linux, debian ]
+  sudo apt update && sudo apt upgrade -y && sudo apt install -y zsh git && useradd -m -s /bin/zsh -G users vscode && usermod -aG sudo vscode && echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && su - vscode:
+    desc: Setup Debian/Ubuntu, add zsh, git and user vscode:vscode as sudo and switch to the user vscode
+    tags: [ linux, debian ]
+  useradd -m -s /bin/zsh -G users vscode && usermod -aG sudo vscode && echo "vscode ALL=(ALL) NOPASSWD:ALL" | EDITOR='tee -a' visudo && su - vscode:
+    desc: (SAFER) Add a passwordless sudo user vscode to the system, add vscode:sudo (user vscode is in the sudo group) and switch to the user vscode using VISUDO
+    tags: [ linux, debian ]
+  useradd -m -s /bin/zsh -G users vscode && passwd -d vscode && usermod -aG sudo vscode && echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers && su - vscode:
+    desc: (SAFER) Add a user vscode to the system, set the password for the user vscode to empty, add vscode:sudo (user vscode is in the sudo group) and switch to the user vscode
+    tags: [ linux, debian ]
+  useradd -m -s /bin/zsh -G users vscode && passwd -d vscode && usermod -aG sudo vscode && echo "vscode ALL=(ALL) NOPASSWD:ALL" | EDITOR='tee -a' visudo && su - vscode:
+    desc: (SAFER) Add a user vscode to the system, set the password for the user vscode to empty, add vscode:sudo (user vscode is in the sudo group) and switch to the user vscode using VISUDO
+    tags: [ linux, debian ]

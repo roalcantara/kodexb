@@ -1,5 +1,5 @@
-import { ENTRY_TYPE_VALUES } from '@core/domain/constants'
 import { Type } from '@sinclair/typebox'
+import { ENTRY_TYPE_VALUES } from '../../../core/domain/constants'
 
 const PAGE_SIZE_SMALL = 25
 const PAGE_SIZE_MEDIUM = 50

@@ -21,8 +21,8 @@ sequencing, delivery value, and recommended skills only.
 |   4   | Data Layer                     | V1-2         | ⬜ done    |
 |   5   | App Service + Elysia RPC       | V1-1         | ✔ done    |
 |   6   | Renderer: List View            | V1-3         | ⬜ done    |
-|   7   | Renderer: Detail View          | V1-4         | ⬜ pending |
-|   8   | First-Run Setup & Settings     | V1-1, V1-6   | ⬜ pending |
+|   7   | Renderer: Detail View          | V1-4         | ✔ done    |
+|   8   | First-Run Setup & Settings     | V1-1, V1-6   | ✔ done    |
 |   9   | Task Management                | V1-7         | ⬜ pending |
 |  10   | Actions System (⌘K)            | V1-8         | ⬜ pending |
 |  11   | Sync UI                        | V1-2         | ⬜ pending |
