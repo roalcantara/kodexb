@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.5.0](https://github.com/roalcantara/kodexb/compare/v0.4.0...v0.5.0) (2026-05-11)
+
+### Features
+
+* Add Elysia transport and enhance note ([e004540](https://github.com/roalcantara/kodexb/commit/e004540ebba8bb8cf432a303ab235a39dba40ef8))
+
 ## [0.4.0](https://github.com/roalcantara/kodexb/compare/v0.3.0...v0.4.0) (2026-05-11)
 
 ### Features
