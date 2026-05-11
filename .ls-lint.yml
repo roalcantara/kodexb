@@ -38,7 +38,7 @@ ls:
 
   # Concern sub-folders drop redundant prefixes — folder provides context.
   src/shell/main/rpc:
-    .ts: regex:^(host|requests|schemas)(\.spec)?$
+    .ts: regex:^(host|schemas|server)(\.spec)?$
 
   src/shell/main/window:
     .ts: regex:^state(\.spec)?$
@@ -52,7 +52,8 @@ ls:
 
   # RPC client — renderer side of the main↔renderer bridge.
   src/shell/renderer/rpc:
-    .ts: regex:^client$
+    .ts: regex:^(client|rpc_app\.types)(\.spec)?$
+    .tsx: regex:^client\.spec$
 
   src/shell/renderer/pages/list:
     .tsx: regex:[a-z][a-z0-9_]*\.page(\.spec)?

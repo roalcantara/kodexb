@@ -60,16 +60,18 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@elysiajs/eden": "^1.4.9",
     "@logtape/logtape": "^2.0.7",
     "@logtape/pretty": "^2.0.7",
     "@sinclair/typebox": "^0.34.49",
     "electrobun": "^1.18.1",
+    "elysia": "^1.4.28",
     "fast-glob": "^3.3.3",
     "fishery": "^2.4.0",
     "neverthrow": "^8.2.0",
     "react": "^19.2.6",
-    "react-markdown": "^10.1.0",
     "react-dom": "^19.2.6",
+    "react-markdown": "^10.1.0",
     "rehype-highlight": "^7.0.2",
     "type-fest": "^5.6.0"
   },

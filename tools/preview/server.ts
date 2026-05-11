@@ -6,13 +6,13 @@
 import path from 'node:path'
 import { App } from '../../src/shell/app/app'
 import { loadConfig } from '../../src/shell/app/config/config.loader'
+import { createRpcServer } from '../../src/shell/main/rpc/server'
 
 const PORT = Number.parseInt(process.env.PORT ?? '3456', 10)
 const ROOT = path.resolve(import.meta.dir, '../..')
 const ELECTROBUN_VIEW_RE = /^electrobun\/view$/
 const BYTES_PER_KIB = 1024
 const API_PREFIX = '/api/'
-const API_PREFIX_LENGTH = API_PREFIX.length
 
 // ── Build renderer bundle with electrobun/view swapped out ─────────────────
 console.log('Building renderer bundle…')
@@ -45,9 +45,10 @@ if (bundleOut === undefined) {
 const bundleJs = await bundleOut.text()
 console.log(`Renderer bundle built (${(bundleJs.length / BYTES_PER_KIB).toFixed(0)} KB).`)
 
-// ── Boot real App ────────────────────────────────────────────────────
+// ── Boot real App + Elysia RpcApp ──────────────────────────────────────────
 const config = await loadConfig()
 const app = new App(config, {}, false, {})
+const rpc = createRpcServer(app)
 
 // ── HTML shell ──────────────────────────────────────────────────────────────
 const cssPath = path.join(ROOT, 'build/dev-macos-arm64/kb-dev.app/Contents/Resources/app/views/shell/index.css')
@@ -70,7 +71,7 @@ const html = `<!doctype html>
 // ── Server ──────────────────────────────────────────────────────────────────
 Bun.serve({
   port: PORT,
-  async fetch(req) {
+  fetch(req) {
     const url = new URL(req.url)
     const p = url.pathname
 
@@ -79,47 +80,11 @@ Bun.serve({
     if (p === '/index.js') return new Response(bundleJs, { headers: { 'Content-Type': 'application/javascript' } })
     if (p === '/index.css' && cssExists) return new Response(Bun.file(cssPath))
 
-    // RPC endpoints
-    if (req.method === 'POST' && p.startsWith(API_PREFIX)) {
-      const method = p.slice(API_PREFIX_LENGTH)
-      const params = await req.json().catch(() => ({}))
-
-      try {
-        switch (method) {
-          case 'list':
-            return Response.json(await app.list(params))
-          case 'getListStats':
-            return Response.json(await app.getListStats())
-          case 'getStats':
-            return Response.json(await app.getStats())
-          case 'getEntry':
-            return Response.json(await app.getEntry(params.id))
-          case 'getConfig':
-            return Response.json({
-              configPath: config.configPath,
-              database: config.database,
-              sources: config.sources,
-              display: config.display
-            })
-          case 'sync':
-            return Response.json(await app.sync(params.sourcesDir))
-          case 'resizeWindow':
-            return Response.json(null)
-          case 'openExternal':
-            return Response.json(await app.openExternal(params.url))
-          case 'fetchPreviewImage':
-            return Response.json(await app.fetchPreviewImage(params.url))
-          case 'saveConfig':
-            return Response.json(await app.applyConfigPatch(params))
-          case 'showOpenDialog':
-            return Response.json(null)
-          default:
-            return new Response('Not found', { status: 404 })
-        }
-      } catch (e) {
-        console.error(`/api/${method} failed:`, e)
-        return new Response(String(e), { status: 500 })
-      }
+    // Forward all /api/* requests to the single Elysia RpcApp instance.
+    // This is the same `createRpcServer(app)` used by the desktop main process,
+    // so renderer ↔ main and preview share one transport contract.
+    if (p.startsWith(API_PREFIX)) {
+      return rpc.handle(req)
     }
 
     return new Response('Not found', { status: 404 })
