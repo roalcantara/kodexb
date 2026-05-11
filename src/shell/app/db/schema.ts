@@ -58,5 +58,3 @@ export type KnowledgeRow = {
   created_at: number
   updated_at: number
 }
-
-type KnowledgeInsert = KnowledgeRow

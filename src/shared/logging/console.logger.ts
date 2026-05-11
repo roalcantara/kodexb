@@ -51,5 +51,3 @@ export const createLogger = ({ debug }: CreateLoggerOpts) => {
     }
   }
 }
-
-type Logger = ReturnType<typeof createLogger>

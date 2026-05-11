@@ -1,7 +1,7 @@
-import { DEFAULTS } from '@core/constants'
 import { type Static, Type } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 import { err, ok, type Result } from 'neverthrow'
+import { DEFAULTS } from '../../../core/constants/defaults.const'
 
 export const PAGE_SIZE_SMALL = 25
 export const PAGE_SIZE_MEDIUM = 50
@@ -10,8 +10,6 @@ export const PAGE_SIZE_XL = 200
 const PAGE_SIZE_VALUES = [PAGE_SIZE_SMALL, PAGE_SIZE_MEDIUM, PAGE_SIZE_LARGE, PAGE_SIZE_XL] as const
 
 const PageSize = Type.Union(PAGE_SIZE_VALUES.map(value => Type.Literal(String(value))))
-
-const pageSizePatchSchema = Type.Union(PAGE_SIZE_VALUES.map(value => Type.Literal(value)))
 
 const DisplayConfig = Type.Object({
   terminalApp: Type.Optional(Type.String()),
