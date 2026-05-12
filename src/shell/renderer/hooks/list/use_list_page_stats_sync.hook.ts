@@ -1,7 +1,7 @@
 import type { ListStats, RpcDbStats, RpcImportResult } from '@shared/rpc'
 import { useCallback, useEffect, useState } from 'react'
 
-import { getListStats, getStats, setSyncMessageHandlers, syncRpc } from '../../rpc/client'
+import { getListStats, getStats, getSyncInfo, setSyncMessageHandlers, syncRpc } from '../../rpc/client'
 
 export function useListPageStatsSync(refreshList: (append: boolean) => Promise<void>) {
   const [stats, setStats] = useState<ListStats | null>(null)
@@ -9,6 +9,7 @@ export function useListPageStatsSync(refreshList: (append: boolean) => Promise<v
   const [syncing, setSyncing] = useState(false)
   const [syncProg, setSyncProg] = useState<{ processed: number; total: number } | undefined>(undefined)
   const [toastResult, setToastResult] = useState<RpcImportResult | null>(null)
+  const [syncInfo, setSyncInfo] = useState<{ sourcesDir: string; fileCount: number } | null>(null)
 
   const dismissToast = useCallback(() => setToastResult(null), [])
 
@@ -17,6 +18,11 @@ export function useListPageStatsSync(refreshList: (append: boolean) => Promise<v
     setStats(s)
     const d = await getStats()
     setDbStats(d)
+    if (s.total === 0) {
+      getSyncInfo()
+        .then(setSyncInfo)
+        .catch(() => undefined)
+    }
   }, [])
 
   useEffect(() => {
@@ -41,10 +47,17 @@ export function useListPageStatsSync(refreshList: (append: boolean) => Promise<v
     setSyncing(true)
     setSyncProg(undefined)
     setToastResult(null)
-    syncRpc().catch(() => {
+    syncRpc().catch((err: unknown) => {
       setSyncing(false)
+      setSyncProg(undefined)
+      setToastResult({
+        filesProcessed: 0,
+        inserted: 0,
+        updated: 0,
+        errors: [err instanceof Error ? err.message : String(err)]
+      })
     })
   }
 
-  return { stats, dbStats, refreshStats, syncing, syncProg, onSync, toastResult, dismissToast }
+  return { stats, dbStats, refreshStats, syncing, syncProg, onSync, toastResult, dismissToast, syncInfo }
 }

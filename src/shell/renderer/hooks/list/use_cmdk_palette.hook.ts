@@ -6,12 +6,22 @@ import { cyclePriority, cycleStatus, openExternal, openInEditor } from '../../rp
 type CmdkPaletteDeps = {
   selectedEntry: RpcKnowledge | null
   onEditTask: (entry: RpcKnowledge) => void
+  onNewTask: () => void
+  onSync: () => void
 }
 
-function buildActions(entry: RpcKnowledge | null, onEditTask: (entry: RpcKnowledge) => void): CmdkAction[] {
-  if (!entry) return []
+function buildActions(
+  entry: RpcKnowledge | null,
+  onEditTask: (entry: RpcKnowledge) => void,
+  onNewTask: () => void,
+  onSync: () => void
+): CmdkAction[] {
+  const actions: CmdkAction[] = [
+    { id: 'sync', label: 'Sync', handler: () => onSync() },
+    { id: 'new-task', label: 'New Task', handler: () => onNewTask() }
+  ]
 
-  const actions: CmdkAction[] = []
+  if (!entry) return actions
 
   switch (entry.type) {
     case 'bookmark':
@@ -80,12 +90,15 @@ function buildActions(entry: RpcKnowledge | null, onEditTask: (entry: RpcKnowled
   return actions
 }
 
-export function useCmdkPalette({ selectedEntry, onEditTask }: CmdkPaletteDeps) {
+export function useCmdkPalette({ selectedEntry, onEditTask, onNewTask, onSync }: CmdkPaletteDeps) {
   const [open, setOpen] = useState(false)
-  const depsRef = useRef({ selectedEntry, onEditTask })
-  depsRef.current = { selectedEntry, onEditTask }
+  const depsRef = useRef({ selectedEntry, onEditTask, onNewTask, onSync })
+  depsRef.current = { selectedEntry, onEditTask, onNewTask, onSync }
 
-  const actions = useMemo(() => buildActions(selectedEntry, onEditTask), [selectedEntry, onEditTask])
+  const actions = useMemo(
+    () => buildActions(selectedEntry, onEditTask, onNewTask, onSync),
+    [selectedEntry, onEditTask, onNewTask, onSync]
+  )
 
   const openPalette = useCallback(() => setOpen(true), [])
   const closePalette = useCallback(() => setOpen(false), [])

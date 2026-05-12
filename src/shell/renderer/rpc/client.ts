@@ -228,3 +228,11 @@ export function openInEditor(filePath: string): Promise<void> {
 export function suggestTags(entryId: number): Promise<string[]> {
   return rpc.api.suggestTags.post({ entryId }).then(unwrap) as Promise<string[]>
 }
+
+export function hideWindow(): Promise<void> {
+  return rpc.api.hideWindow.post({}).then(unwrap) as Promise<void>
+}
+
+export function getSyncInfo(): Promise<{ sourcesDir: string; fileCount: number }> {
+  return rpc.api.getSyncInfo.post({}).then(unwrap) as Promise<{ sourcesDir: string; fileCount: number }>
+}

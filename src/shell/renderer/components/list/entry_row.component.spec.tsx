@@ -39,3 +39,26 @@ test('EntryRow title combines key and description preview', () => {
   render(<EntryRow entry={bookmarkGithub} allEntries={[bookmarkGithub]} selected={false} onSelect={() => undefined} />)
   expect(screen.getByRole('button').textContent).toContain(bookmarkGithub.key)
 })
+
+const taskCompact: RpcKnowledge = {
+  type: 'task',
+  id: 42,
+  key: 'Ship feature',
+  source: 'tasks.yml',
+  desc: 'Release checklist',
+  tags: [],
+  doc: '',
+  status: 'todo',
+  priority: 'high',
+  createdAt: 0,
+  updatedAt: 0
+}
+
+test('EntryRow compact task shows one type chip (no duplicate task badge)', () => {
+  render(
+    <EntryRow entry={taskCompact} allEntries={[taskCompact]} selected={false} onSelect={() => undefined} compact />
+  )
+  expect(document.querySelectorAll('.kb-pt-chip--task')).toHaveLength(1)
+  expect(document.querySelector('.kb-pt-chip--todo')).not.toBeNull()
+  expect(document.querySelector('.kb-pt-chip--high')).not.toBeNull()
+})

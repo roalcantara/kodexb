@@ -5,7 +5,6 @@ import { deleteTask, reorderTask } from '../../rpc/client'
 import { listPageEmptyFlags } from '../../utils/list/list_page_empty_flags.util'
 import { focusListSurface } from '../../utils/list/list_surface_focus.util'
 import { useCmdkPalette } from './use_cmdk_palette.hook'
-import { useListDetailResize } from './use_list_detail_resize.hook'
 import { useListFilterOverlay } from './use_list_filter_overlay.hook'
 import { useListPageData } from './use_list_page_data.hook'
 import { useListSelection } from './use_list_selection.hook'
@@ -26,11 +25,10 @@ export function useListPageShell() {
   const pageSize = useListViewportPageSize(listSurfaceRef)
   const data = useListPageData({ pageSizeOverride: pageSize })
   const filter = useListFilterOverlay()
-  const detailLayout = useListDetailResize()
   const onLeaveListUpward = useCallback(() => {
     searchInputRef.current?.focus()
   }, [])
-  const sel = useListSelection(data.rows, detailLayout, onLeaveListUpward, () => {
+  const sel = useListSelection(data.rows, onLeaveListUpward, () => {
     focusListSurface(listSurfaceRef)
   })
   const fetchMore = useCallback(() => data.refreshList(true), [data.refreshList])
@@ -46,7 +44,9 @@ export function useListPageShell() {
     selectedEntry: sel.detailEntry,
     onEditTask: _entry => {
       // TaskSheet is handled by the existing selection hook's detailEntry + openDetail
-    }
+    },
+    onNewTask: () => handleNewTask(),
+    onSync: data.onSync
   })
 
   const flags = listPageEmptyFlags(data)
@@ -115,7 +115,6 @@ export function useListPageShell() {
   return {
     data,
     filter,
-    detailLayout,
     sel,
     flags,
     listSurfaceRef,

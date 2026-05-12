@@ -1,60 +1,12 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import { type KeyboardEvent as ReactKeyboardEvent, useState } from 'react'
+import { useViewNavigation } from './use_view_navigation.hook'
 
 const REPEAT_MOVE_STEP = 5
-
-export type ListSelectionLayout = {
-  onFirstDetailOpen: () => void
-  onDetailClose: () => void
-}
-
-type DetailState = {
-  rows: RpcKnowledge[]
-  selectedId: number | null
-  detailEntry: RpcKnowledge | null
-  setDetailEntry: (v: RpcKnowledge | null) => void
-  layout?: ListSelectionLayout
-}
-
-function closeDetail(
-  detailEntry: RpcKnowledge | null,
-  setDetailEntry: (v: RpcKnowledge | null) => void,
-  layout?: ListSelectionLayout
-): void {
-  if (detailEntry === null) return
-  layout?.onDetailClose()
-  setDetailEntry(null)
-}
-
-function openDetail(
-  rows: RpcKnowledge[],
-  selectedId: number | null,
-  detailEntry: RpcKnowledge | null,
-  setDetailEntry: (v: RpcKnowledge | null) => void,
-  layout?: ListSelectionLayout
-): void {
-  const row = rows.find(r => r.id === selectedId)
-  if (row === undefined) return
-  const openingFirst = detailEntry === null
-  setDetailEntry(row)
-  if (openingFirst) layout?.onFirstDetailOpen()
-}
-
-function toggleDetail(state: DetailState): void {
-  const { rows, selectedId, detailEntry, setDetailEntry, layout } = state
-  const row = rows.find(r => r.id === selectedId)
-  if (row === undefined) return
-  if (detailEntry !== null && detailEntry.id === row.id) {
-    closeDetail(detailEntry, setDetailEntry, layout)
-    return
-  }
-  openDetail(rows, selectedId, detailEntry, setDetailEntry, layout)
-}
 
 type ListArrowNav = {
   rows: RpcKnowledge[]
   selectedId: number | null
-  detailEntry: RpcKnowledge | null
   setSelectedId: (id: number | null) => void
   moveSelection: (delta: number) => void
   onLeaveListUpward?: () => void
@@ -70,8 +22,13 @@ function handleListArrowDown(e: ReactKeyboardEvent<HTMLDivElement>, moveSelectio
 function handleListArrowUp(e: ReactKeyboardEvent<HTMLDivElement>, d: ListArrowNav): 'leave' | 'moved' | false {
   if (e.key !== 'ArrowUp') return false
   e.preventDefault()
-  if (d.detailEntry === null && d.rows.length > 0) {
+  if (d.rows.length > 0) {
     const idx = d.rows.findIndex(r => r.id === d.selectedId)
+    if (idx < 0) {
+      // Nothing selected — select last row
+      d.setSelectedId(d.rows[d.rows.length - 1]?.id ?? null)
+      return 'moved'
+    }
     if (idx === 0) {
       d.setSelectedId(null)
       d.onLeaveListUpward?.()
@@ -82,35 +39,21 @@ function handleListArrowUp(e: ReactKeyboardEvent<HTMLDivElement>, d: ListArrowNa
   return 'moved'
 }
 
-function handleDetailKey(e: ReactKeyboardEvent<HTMLDivElement>, state: DetailState): boolean {
-  if (e.key === 'ArrowRight') {
-    e.preventDefault()
-    openDetail(state.rows, state.selectedId, state.detailEntry, state.setDetailEntry, state.layout)
-    return true
-  }
-  if (e.key === '[' && (e.metaKey || e.ctrlKey)) {
-    if (state.detailEntry !== null) {
-      e.preventDefault()
-      closeDetail(state.detailEntry, state.setDetailEntry, state.layout)
-    }
-    return true
-  }
-  if (e.key !== 'ArrowLeft' && e.key !== 'Escape') return false
-  if (state.detailEntry !== null) {
-    e.preventDefault()
-    closeDetail(state.detailEntry, state.setDetailEntry, state.layout)
-  }
-  return true
-}
-
 export function useListSelection(
   rows: RpcKnowledge[],
-  layout?: ListSelectionLayout,
   onLeaveListUpward?: () => void,
   onRestoreListSurfaceFocus?: () => void
 ) {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
+
+  const { advance, retreat, closeToList, handleKey } = useViewNavigation({
+    rows,
+    selectedId,
+    detailEntry,
+    setSelectedId,
+    setDetailEntry
+  })
 
   const moveSelection = (delta: number) => {
     if (rows.length === 0) return
@@ -124,11 +67,11 @@ export function useListSelection(
     setSelectedId(rows[0]?.id ?? null)
   }
 
+  // List surface handler: ArrowUp/Down for selection, ArrowRight/Left for view nav
   const onListKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
     const nav: ListArrowNav = {
       rows,
       selectedId,
-      detailEntry,
       setSelectedId,
       moveSelection,
       onLeaveListUpward
@@ -143,12 +86,11 @@ export function useListSelection(
       onRestoreListSurfaceFocus?.()
       return
     }
-    const detailState = { rows, selectedId, detailEntry, setDetailEntry, layout }
-    if (handleDetailKey(e, detailState)) return
-    if (e.key !== 'Enter') return
-    e.preventDefault()
-    toggleDetail(detailState)
+    // ArrowRight/ArrowLeft view navigation — stop propagation so root handler
+    // doesn't double-fire (root only catches events from detail panel)
+    e.stopPropagation()
+    handleKey(e)
   }
 
-  return { selectedId, setSelectedId, detailEntry, setDetailEntry, selectFirst, onListKeyDown }
+  return { selectedId, setSelectedId, detailEntry, setDetailEntry, selectFirst, onListKeyDown, advance, retreat, closeToList, handleKey }
 }

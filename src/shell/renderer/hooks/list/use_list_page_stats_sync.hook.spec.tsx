@@ -8,12 +8,14 @@ const getListStatsMock = mock<() => Promise<ListStats>>()
 const getStatsMock = mock<() => Promise<RpcDbStats>>()
 const setSyncMessageHandlersMock = mock(() => undefined)
 const syncRpcMock = mock(() => Promise.resolve({ filesProcessed: 0, inserted: 0, updated: 0, errors: [] }))
+const getSyncInfoMock = mock(() => Promise.resolve({ sourcesDir: '/tmp', fileCount: 0 }))
 
 mock.module('../../rpc/client', () => ({
   getListStats: getListStatsMock,
   getStats: getStatsMock,
   setSyncMessageHandlers: setSyncMessageHandlersMock,
-  syncRpc: syncRpcMock
+  syncRpc: syncRpcMock,
+  getSyncInfo: getSyncInfoMock
 }))
 
 const { useListPageStatsSync } = await import('./use_list_page_stats_sync.hook')

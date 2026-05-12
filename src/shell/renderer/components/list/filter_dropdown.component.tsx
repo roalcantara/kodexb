@@ -96,6 +96,78 @@ function FilterDropdownPanel({ stats, types, tags, taskView, tagQ, setTagQ, onCh
   )
 }
 
+// ── Compact PowerToys filter ──────────────────────────────────────
+
+type CompactPanelProps = {
+  stats: ListStats
+  types: EntryTypeOption[]
+  taskView?: TaskView
+  onChange: (next: { types: EntryTypeOption[]; tags: string[]; taskView?: TaskView }) => void
+  onClose: () => void
+}
+
+function CompactFilterDropdownPanel({ stats, types, taskView, onChange, onClose }: CompactPanelProps) {
+  const toggleType = (t: EntryTypeOption) => {
+    const next = types.includes(t) ? types.filter(x => x !== t) : [...types, t]
+    onChange({ types: next, tags: [], taskView: next.includes('task') ? taskView : undefined })
+  }
+
+  const pickTaskView = (v: TaskView) => {
+    const next = taskView === v ? undefined : v
+    onChange({ types, tags: [], taskView: next })
+  }
+
+  return (
+    <div
+      className="kb-pt-filter-dropdown"
+      onMouseDown={e => e.stopPropagation()}
+      role="menu"
+      aria-label="Filter options"
+    >
+      <div className="kb-pt-filter-section">Type</div>
+      {ENTRY_TYPES.map(t => {
+        const sel = types.includes(t)
+        return (
+          <button
+            key={t}
+            type="button"
+            className={`kb-pt-filter-option${sel ? ' kb-pt-filter-option--selected' : ''}`}
+            onClick={() => toggleType(t)}
+          >
+            {TYPE_FILTER_LABEL[t]} ({stats[t]})
+          </button>
+        )
+      })}
+      {showTaskSection(types) ? (
+        <>
+          <div className="kb-pt-filter-divider" />
+          <div className="kb-pt-filter-section">Task View</div>
+          {TASK_VIEWS.map(v => {
+            const sel = taskView === v
+            return (
+              <button
+                key={v}
+                type="button"
+                className={`kb-pt-filter-option${sel ? ' kb-pt-filter-option--selected' : ''}`}
+                onClick={() => pickTaskView(v)}
+              >
+                {TASK_VIEW_LABEL[v]} ({stats.taskViews[v]})
+              </button>
+            )
+          })}
+        </>
+      ) : null}
+      <div className="kb-pt-filter-divider" />
+      <div className="kb-pt-filter-section">Add tags by typing #tagname in search</div>
+      <button type="button" className="kb-pt-filter-option" onClick={onClose}>
+        Close
+      </button>
+    </div>
+  )
+}
+
+// ── Root component ────────────────────────────────────────────────
+
 export type FilterDropdownProps = {
   open: boolean
   anchorRect: DOMRect | null
@@ -105,6 +177,7 @@ export type FilterDropdownProps = {
   taskView?: TaskView
   onChange: (next: { types: EntryTypeOption[]; tags: string[]; taskView?: TaskView }) => void
   onClose: () => void
+  compact?: boolean
 }
 
 export function FilterDropdown({
@@ -115,11 +188,26 @@ export function FilterDropdown({
   tags,
   taskView,
   onChange,
-  onClose
+  onClose,
+  compact
 }: FilterDropdownProps) {
   const [tagQ, setTagQ] = useState('')
 
-  if (!open || anchorRect === null) return null
+  if (!open) return null
+
+  if (compact) {
+    return (
+      <CompactFilterDropdownPanel
+        stats={stats}
+        types={types}
+        taskView={taskView}
+        onChange={onChange}
+        onClose={onClose}
+      />
+    )
+  }
+
+  if (anchorRect === null) return null
 
   const top = anchorRect.bottom + FILTER_DROPDOWN_GAP_PX
   const left = anchorRect.left

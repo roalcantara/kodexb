@@ -20,9 +20,11 @@ export type ListAreaProps = {
   sel: ListSel
   detailLayout: DetailLayout
   flags: { emptyDb: boolean; noResults: boolean; emptyList: boolean }
+  syncInfo?: { sourcesDir: string; fileCount: number } | null
   listSurfaceRef: RefObject<HTMLDivElement | null>
   listSentinelRef: RefObject<HTMLDivElement | null>
   onListKeyDown: (e: ReactKeyboardEvent<HTMLDivElement>) => void
+  onSync: () => void
   dragDrop?: DragDrop
   onCycleStatus?: (id: number) => void
   onCyclePriority?: (id: number) => void
@@ -33,9 +35,11 @@ export function ListArea({
   sel,
   detailLayout,
   flags,
+  syncInfo,
   listSurfaceRef,
   listSentinelRef,
   onListKeyDown,
+  onSync,
   dragDrop,
   onCycleStatus,
   onCyclePriority
@@ -65,7 +69,25 @@ export function ListArea({
         role="listbox"
         aria-label="Entries"
       >
-        {flags.emptyDb ? <p className="kb-empty">No entries yet. Run Sync to import YAML sources.</p> : null}
+        {flags.emptyDb ? (
+          <div className="kb-empty">
+            <p>No entries yet</p>
+            {syncInfo ? (
+              <div className="kb-empty-detail">
+                <p>
+                  Sources: <code>{syncInfo.sourcesDir}</code>
+                </p>
+                <p>
+                  {syncInfo.fileCount} YAML file{syncInfo.fileCount === 1 ? '' : 's'} found
+                </p>
+                {/* biome-ignore lint/a11y/noAutofocus: pre-existing interactive empty-db shortcut */}
+                <button type="button" className="kb-toolbar-sync" onClick={onSync} autoFocus>
+                  ↺ Sync — press Enter to start
+                </button>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
         {flags.noResults ? <p className="kb-empty">No results for this search.</p> : null}
         {flags.emptyList ? <p className="kb-empty">No entries match the current filters.</p> : null}
         {virtualWindow.paddingTop > 0 ? <div style={{ height: virtualWindow.paddingTop }} aria-hidden /> : null}

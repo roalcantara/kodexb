@@ -24,6 +24,7 @@ export type EntryRowProps = {
   dragOver?: boolean
   onCycleStatus?: (id: number) => void
   onCyclePriority?: (id: number) => void
+  compact?: boolean
 }
 
 function titleLine(entry: RpcKnowledge): string {
@@ -37,6 +38,32 @@ function subtitleLine(entry: RpcKnowledge): string {
   return `${entry.type}${tags === '' ? '' : `  ${tags}`}`
 }
 
+function getPrimaryActionHint(entry: RpcKnowledge): { label: string; className: string } | null {
+  switch (entry.type) {
+    case 'bookmark':
+      return { label: '\u21B5 Open', className: 'kb-pt-row-hint--bookmark' }
+    case 'command':
+      return { label: '\u2318C Copy', className: 'kb-pt-row-hint--command' }
+    case 'cheat':
+      return { label: '\u2318C Copy', className: 'kb-pt-row-hint--cheat' }
+    case 'task':
+      return { label: '\u2318E Edit', className: 'kb-pt-row-hint--task' }
+  }
+}
+
+function BadgeChips({ entry }: { entry: Extract<RpcKnowledge, { type: 'task' }> }) {
+  return (
+    <>
+      <span className={`kb-pt-chip kb-pt-chip--${entry.status}`}>{entry.status}</span>
+      {entry.priority ? <span className={`kb-pt-chip kb-pt-chip--${entry.priority}`}>{entry.priority}</span> : null}
+    </>
+  )
+}
+
+function typeChip(entry: RpcKnowledge) {
+  return <span className={`kb-pt-chip kb-pt-chip--${entry.type}`}>{entry.type}</span>
+}
+
 function EntryRowComponent({
   entry,
   allEntries,
@@ -45,8 +72,39 @@ function EntryRowComponent({
   dragHandlers,
   dragOver,
   onCycleStatus,
-  onCyclePriority
+  onCyclePriority,
+  compact
 }: EntryRowProps) {
+  if (compact) {
+    const isTask = entry.type === 'task'
+    const hint = getPrimaryActionHint(entry)
+    const rowCls = selected ? 'kb-pt-row kb-pt-row--selected' : 'kb-pt-row'
+    return (
+      <button
+        type="button"
+        className={rowCls}
+        data-entry-id={entry.id}
+        tabIndex={-1}
+        onClick={() => onSelect(entry.id)}
+      >
+        <span className="kb-pt-row-icon">{getIcon(entry)}</span>
+        <span className="kb-pt-row-body">
+          <span className="kb-pt-row-title">{titleLine(entry)}</span>
+          <span className="kb-pt-row-subtitle">
+            {typeChip(entry)}
+            {entry.tags.map(t => (
+              <span key={t} className="kb-pt-chip">
+                {t}
+              </span>
+            ))}
+            {isTask ? <BadgeChips entry={entry as Extract<RpcKnowledge, { type: 'task' }>} /> : null}
+          </span>
+        </span>
+        {hint && selected ? <span className={`kb-pt-row-hint ${hint.className}`}>{hint.label}</span> : null}
+      </button>
+    )
+  }
+
   const cls = selected
     ? 'kb-entryRow kb-entryRow--selected'
     : dragOver

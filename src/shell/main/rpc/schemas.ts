@@ -117,6 +117,10 @@ export const openInEditorSchema = Type.Object(
   { additionalProperties: false }
 )
 export const suggestTagsSchema = Type.Object({ entryId: Type.Integer() }, { additionalProperties: false })
+
+export const hideWindowSchema = Type.Object({}, { additionalProperties: false })
+
+export const syncInfoSchema = Type.Object({}, { additionalProperties: false })
 export const resizeWindowSchema = Type.Object(
   {
     width: Type.Integer({ minimum: 1 }),

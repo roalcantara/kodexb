@@ -62,6 +62,7 @@ export type SyncEmitter = {
 /** Optional native hooks (mutate after `BrowserWindow` construction). */
 export type AppShellHooks = {
   resizeWindow?: (width: number, height: number) => void
+  hideWindow?: () => void
   openExternal?: (url: string) => void
   showOpenDialog?: (opts?: OpenDialogOpts) => Promise<string | null>
   pasteInTerminal?: (cmd: string, terminalApp?: string) => void
@@ -261,7 +262,27 @@ export class App {
 
   async sync(sourcesDir?: string): Promise<RpcImportResult> {
     const dir = sourcesDir ?? this.loaded.sources.path
-    const importer = new ImportService(this.loaded.database.path)
+    const dbPath = this.loaded.database.path
+    this.closeDb()
+    // Rebuild DB from scratch to fix schema drift (e.g. missing task_order)
+    if (dbPath !== ':memory:') {
+      try {
+        await fs.unlink(dbPath)
+      } catch {
+        /* not found */
+      }
+      try {
+        await fs.unlink(`${dbPath}-wal`)
+      } catch {
+        /* not found */
+      }
+      try {
+        await fs.unlink(`${dbPath}-shm`)
+      } catch {
+        /* not found */
+      }
+    }
+    const importer = new ImportService(dbPath)
     this.invalidateListCache()
     const result = await importer.run(dir, {
       onProgress: (processed, total) => {
@@ -302,6 +323,18 @@ export class App {
     })
   }
 
+  async getSyncInfo(): Promise<{ sourcesDir: string; fileCount: number }> {
+    const sourcesDir = this.loaded.sources.path
+    let fileCount = 0
+    try {
+      const files = await fs.readdir(sourcesDir)
+      fileCount = files.filter(f => f.endsWith('.yml') || f.endsWith('.yaml')).length
+    } catch {
+      fileCount = 0
+    }
+    return { sourcesDir, fileCount }
+  }
+
   async applyConfigPatch(patch: ConfigPatch): Promise<RpcGetConfigPayload> {
     const pageSizeStr = patch.pageSize === undefined ? undefined : String(patch.pageSize)
     this.loaded = await saveConfig(this.loaded, {
@@ -330,7 +363,7 @@ export class App {
       const tasks = (doc.tasks ?? {}) as Record<string, unknown>
       tasks[task.key] = this.taskToYamlShape(task)
       doc.tasks = tasks
-      const tmpPath = filePath + '.tmp'
+      const tmpPath = `${filePath}.tmp`
       await fs.writeFile(tmpPath, Bun.YAML.stringify(doc), 'utf-8')
       await fs.rename(tmpPath, filePath)
     } catch (err) {
@@ -348,7 +381,7 @@ export class App {
         await fs.unlink(filePath)
       } else {
         doc.tasks = tasks
-        const tmpPath = filePath + '.tmp'
+        const tmpPath = `${filePath}.tmp`
         await fs.writeFile(tmpPath, Bun.YAML.stringify(doc), 'utf-8')
         await fs.rename(tmpPath, filePath)
       }
@@ -537,6 +570,11 @@ export class App {
       return App.rejectNotImplemented('resizeWindow')
     }
     fn(width, height)
+    return Promise.resolve()
+  }
+
+  hideWindow(): Promise<void> {
+    this.shellHooks.hideWindow?.()
     return Promise.resolve()
   }
 }

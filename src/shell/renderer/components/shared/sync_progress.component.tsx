@@ -6,11 +6,17 @@ export type SyncProgressProps = {
 }
 
 function SyncProgressComponent({ processed, total }: SyncProgressProps) {
+  const hasProgress = total > 0 && processed >= 0
+
   return (
     <div className="kb-syncProgress">
-      <progress className="kb-syncProgress-bar" value={processed} max={total} />
+      {hasProgress ? (
+        <progress className="kb-syncProgress-bar" value={processed} max={total} />
+      ) : (
+        <progress className="kb-syncProgress-bar kb-syncProgress-bar--indeterminate" />
+      )}
       <span className="kb-syncProgress-label">
-        Processing file {processed} of {total}
+        {hasProgress ? `Processing file ${processed} of ${total}` : 'Syncing…'}
       </span>
     </div>
   )

@@ -5,6 +5,7 @@ import {
   configPatchSchema,
   emptyBodySchema,
   getEntryParams,
+  hideWindowSchema,
   idWithDirSchema,
   idWithReorderDirSchema,
   listOptsSchema,
@@ -14,6 +15,7 @@ import {
   resizeWindowSchema,
   showOpenDialogSchema,
   suggestTagsSchema,
+  syncInfoSchema,
   syncParamsInner,
   taskCreateSchema,
   taskUpdateSchema
@@ -74,6 +76,8 @@ export function createRpcServer(appInstance: App) {
     .post('/resizeWindow', ({ body }) => appInstance.resizeWindow(body.width, body.height), {
       body: resizeWindowSchema
     })
+    .post('/hideWindow', () => appInstance.hideWindow(), { body: hideWindowSchema })
+    .post('/getSyncInfo', () => appInstance.getSyncInfo(), { body: syncInfoSchema })
 }
 
 export type RpcApp = ReturnType<typeof createRpcServer>
