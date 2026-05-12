@@ -407,9 +407,25 @@
     "mtime": 1778600302.5436773,
     "hash": "2450f586e8c3e40f8345fdb123314ccc"
   },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/sync_toast.component.spec.tsx": {
+    "mtime": 1778608083.7591176,
+    "hash": "22bc0b4a6d01e53b12ee6355c593c1b7"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/sync_progress.component.tsx": {
+    "mtime": 1778608083.7589872,
+    "hash": "8348c0d8d9d6e7f203cdd564d09d8b72"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/sync_toast.component.tsx": {
+    "mtime": 1778608083.7592282,
+    "hash": "fd8f634ba4b1cb0062a7956a4d2804a9"
+  },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/md_view.component.tsx": {
     "mtime": 1778522981.5181136,
     "hash": "980d773b452d014c4c8ff3d1969904c1"
+  },
+  "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/sync_progress.component.spec.tsx": {
+    "mtime": 1778608083.7344635,
+    "hash": "0288b3cdf74994bc9ad498ccc76b7b56"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/shared/brand_icon_or_glyph.component.tsx": {
     "mtime": 1778522981.5179818,
@@ -456,8 +472,8 @@
     "hash": "e90cda3baeb4a926c6874af7926b3c20"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/list_main.component.tsx": {
-    "mtime": 1778604770.8864892,
-    "hash": "a31f46641ac66faea74129509c1bfa0d"
+    "mtime": 1778608083.778264,
+    "hash": "20d1c5f1d00b1b1d108037b300e6b6dd"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/list_area.component.tsx": {
     "mtime": 1778600302.5431411,
@@ -484,7 +500,7 @@
     "hash": "23ac7d6cf614de988be3dc353e69ca07"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/toolbar.component.tsx": {
-    "mtime": 1778604770.7612581,
+    "mtime": 1778605590.6897104,
     "hash": "16231f96be38dcd94d0336e8fc5f0be2"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/list/filter_dropdown.component.tsx": {
@@ -500,11 +516,11 @@
     "hash": "c630efe358d8dde5432ccc851453cd69"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/actions/cmdk_palette.component.tsx": {
-    "mtime": 1778604770.885461,
+    "mtime": 1778605590.6889837,
     "hash": "9c31674e10644082d937fb80432cb771"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/components/actions/cmdk_palette.component.spec.tsx": {
-    "mtime": 1778604770.8852222,
+    "mtime": 1778605590.6887586,
     "hash": "819eb860ea24dd13160762f0331de090"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/settings/use_settings_page.hook.ts": {
@@ -524,8 +540,8 @@
     "hash": "5f467dc968ba54b7ce7a3e5c894875a5"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_page_shell.hook.ts": {
-    "mtime": 1778604770.8869166,
-    "hash": "e44801d431d822f6a439464e56b6de24"
+    "mtime": 1778608083.778576,
+    "hash": "61143b3055aec8163cb50db13ac84601"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_selection.hook.spec.tsx": {
     "mtime": 1778539498.1431932,
@@ -536,7 +552,7 @@
     "hash": "e8782567750950bdd32d183090d137f7"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_cmdk_palette.hook.ts": {
-    "mtime": 1778604770.8866634,
+    "mtime": 1778605590.6899202,
     "hash": "915fbdd22e1c33f35546c9e4e744ed81"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_virtual_list_window.hook.ts": {
@@ -548,8 +564,8 @@
     "hash": "3449a3cc03bf6879ecc3daf1c9c3f9da"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_page_data.hook.ts": {
-    "mtime": 1778522981.518974,
-    "hash": "0776b7896c8c586708a60582d1c20122"
+    "mtime": 1778608083.778422,
+    "hash": "179d0afff42104a180967e19d23bd6d7"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_task_drag_drop.hook.ts": {
     "mtime": 1778600302.5444136,
@@ -596,19 +612,19 @@
     "hash": "7827aa0f1acb9b4acb408c0e74e5fb9a"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_page_stats_sync.hook.ts": {
-    "mtime": 1778522981.5194874,
-    "hash": "f69e56150ce704d413029be60b13ca90"
+    "mtime": 1778608083.7787087,
+    "hash": "1a41f2affee34483fec32457f1effe70"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/hooks/list/use_list_surface_scroll_restore.hook.ts": {
     "mtime": 1778522981.5198705,
     "hash": "7957f8c3a1668840bd11ca0f045e27d0"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/rpc/client.spec.tsx": {
-    "mtime": 1778604770.7616644,
+    "mtime": 1778605590.6902843,
     "hash": "503a0dae4461ea2cce6f9640a54dad76"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/rpc/client.ts": {
-    "mtime": 1778604770.761938,
+    "mtime": 1778605590.6905751,
     "hash": "a33efd8686b81afe0bbfeb8603bce4e5"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/renderer/rpc/rpc_app.types.ts": {
@@ -640,11 +656,11 @@
     "hash": "843128182eb00b6cfd73c281750ca82f"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/app/app.spec.ts": {
-    "mtime": 1778604770.7597609,
+    "mtime": 1778605590.6867354,
     "hash": "527188c2815c849eb3a83401231cf5c4"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/app/app.ts": {
-    "mtime": 1778604770.7600658,
+    "mtime": 1778605590.6875045,
     "hash": "15871b9f85673559d8778b1387fada2c"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/app/config/config.schema.ts": {
@@ -696,7 +712,7 @@
     "hash": "390d8e5152a29448f95a5bba40e50500"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/main/main.ts": {
-    "mtime": 1778604770.8849692,
+    "mtime": 1778605590.6881578,
     "hash": "7be50a7a7858ba5caefee036ec04eb4f"
   },
   "/Users/roalcantara/Work/bun/kb/src/shell/main/index.ts": {
@@ -907,13 +923,25 @@
     "mtime": 1778288859.0166028,
     "hash": "1a81923fa94ac2dfb460f4d1b92652b7"
   },
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/sync-ui/requirements.md": {
+    "mtime": 1778608083.777801,
+    "hash": "3d67afa35f1f346ea8df53cf3e733fc6"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/sync-ui/tasks.md": {
+    "mtime": 1778608083.7780728,
+    "hash": "c6f10d77cbcfc184953a0d6265d6f373"
+  },
+  "/Users/roalcantara/Work/bun/kb/assets/docs/specs/sync-ui/design.md": {
+    "mtime": 1778608083.7775333,
+    "hash": "3e954b750f614aa754eb226a59510d06"
+  },
   "/Users/roalcantara/Work/bun/kb/assets/docs/specs/foundation/requirements.md": {
     "mtime": 1778522981.387271,
     "hash": "1bf9175a9709e630d24b0030c898f556"
   },
   "/Users/roalcantara/Work/bun/kb/assets/docs/specs/foundation/roadmap.md": {
-    "mtime": 1778604770.8305311,
-    "hash": "223195a0a5b8b830d328f003ed2a2473"
+    "mtime": 1778608083.7757766,
+    "hash": "43bd2720ddfc7241c5ebfdcabebb588e"
   },
   "/Users/roalcantara/Work/bun/kb/assets/docs/specs/foundation/design.md": {
     "mtime": 1778522981.387084,
@@ -928,15 +956,15 @@
     "hash": "0574d96193320d7db81a43b2b64a7082"
   },
   "/Users/roalcantara/Work/bun/kb/assets/docs/specs/actions-system/requirements.md": {
-    "mtime": 1778604770.7592158,
+    "mtime": 1778605590.6777906,
     "hash": "c42f6958f0924a1e7161114843833c8d"
   },
   "/Users/roalcantara/Work/bun/kb/assets/docs/specs/actions-system/tasks.md": {
-    "mtime": 1778604770.7594805,
+    "mtime": 1778605590.6782148,
     "hash": "32abd23eb4fb284f25e40729edbae042"
   },
   "/Users/roalcantara/Work/bun/kb/assets/docs/specs/actions-system/design.md": {
-    "mtime": 1778604770.7591002,
+    "mtime": 1778605590.6775172,
     "hash": "79a1dd40255584bacec734be9786b75e"
   },
   "/Users/roalcantara/Work/bun/kb/assets/docs/specs/phase-7-detail-view/requirements.md": {
