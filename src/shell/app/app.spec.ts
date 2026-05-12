@@ -185,4 +185,26 @@ describe('App', () => {
       assertCacheInvalidated(first, second)
     })
   })
+
+  it('pasteInTerminal calls shell hook with terminal app from config', async () => {
+    const calls: Array<{ cmd: string; app?: string }> = []
+    const cfg = factoryFor('loadedConfig', { overrides: { display: { terminalApp: 'Terminal.app', pageSize: '50' } } })
+    Object.assign(cfg, { writeTarget: '/tmp/tasks.yml' })
+    const app = new App(cfg, {}, false, {
+      pasteInTerminal: (cmd, termApp) => calls.push({ cmd, app: termApp })
+    })
+    await app.pasteInTerminal('git log')
+    expect(calls).toEqual([{ cmd: 'git log', app: 'Terminal.app' }])
+  })
+
+  it('openInEditor calls shell hook with editor app from config', async () => {
+    const calls: Array<{ filePath: string; app?: string }> = []
+    const cfg = factoryFor('loadedConfig', { overrides: { display: { editorApp: 'code', pageSize: '50' } } })
+    Object.assign(cfg, { writeTarget: '/tmp/tasks.yml' })
+    const app = new App(cfg, {}, false, {
+      openInEditor: (filePath, editorApp) => calls.push({ filePath, app: editorApp })
+    })
+    await app.openInEditor('/tmp/test.yaml')
+    expect(calls).toEqual([{ filePath: '/tmp/test.yaml', app: 'code' }])
+  })
 })

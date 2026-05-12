@@ -18,6 +18,7 @@ export type ToolbarProps = {
   syncTotal?: number
   onSettings?: () => void
   onNewTask?: () => void
+  onCmdK?: () => void
 }
 
 export function Toolbar({
@@ -37,7 +38,8 @@ export function Toolbar({
   syncProcessed,
   syncTotal,
   onSettings,
-  onNewTask
+  onNewTask,
+  onCmdK
 }: ToolbarProps) {
   const syncHint =
     syncing && syncTotal !== undefined && syncProcessed !== undefined ? ` ${syncProcessed}/${syncTotal}` : ''
@@ -80,9 +82,9 @@ export function Toolbar({
           ⚙
         </button>
       )}
-      <span className="kb-toolbar-hint" title="Action palette (stub)">
+      <button type="button" className="kb-toolbar-hint" onClick={onCmdK} title="Action palette (⌘K)">
         ⌘K
-      </span>
+      </button>
     </header>
   )
 }

@@ -2,6 +2,7 @@ import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 import { SettingsPage } from '../../pages/settings/settings.page'
 import { cyclePriority, cycleStatus } from '../../rpc/client'
 import { listFilterSummary } from '../../utils/list/list_filter_summary.util'
+import { CmdkPalette } from '../actions/cmdk_palette.component'
 import { TaskSheet } from '../task/task_sheet.component'
 import { FilterDropdown } from './filter_dropdown.component'
 import { ListArea } from './list_area.component'
@@ -47,6 +48,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
         syncTotal={p.data.syncProg?.total}
         onSettings={() => setShowSettings(v => !v)}
         onNewTask={p.onNewTask}
+        onCmdK={p.palette.openPalette}
       />
       {p.taskSheetVisible ? (
         <TaskSheet key={p.taskSheetEntry?.id ?? 'new'} entry={p.taskSheetEntry} onClose={p.onCloseTaskSheet} />
@@ -75,6 +77,9 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           onCycleStatus={handleCycleStatus}
           onCyclePriority={handleCyclePriority}
         />
+      )}
+      {p.palette.open && (
+        <CmdkPalette open={p.palette.open} actions={p.palette.actions} onClose={p.palette.closePalette} />
       )}
       {p.data.stats === null ? null : (
         <FilterDropdown
