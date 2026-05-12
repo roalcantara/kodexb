@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.6.0](https://github.com/roalcantara/kodexb/compare/v0.5.0...v0.6.0) (2026-05-12)
+
+### Features
+
+* Add task management ([e160e90](https://github.com/roalcantara/kodexb/commit/e160e9044f057e45b83c7718d1dd577a571bd8c8))
+
 ## [0.5.0](https://github.com/roalcantara/kodexb/compare/v0.4.0...v0.5.0) (2026-05-11)
 
 ### Features
