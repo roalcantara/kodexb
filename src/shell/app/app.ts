@@ -73,6 +73,81 @@ const OG_IMAGE_REVERSE_RE = /<meta\s+[^>]*content=["']([^"']+)["'][^>]*(?:proper
 const YOUTUBE_ID_RE = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/
 const OG_FETCH_TIMEOUT_MS = 5_000
 
+const STOP_WORDS = new Set([
+  'the',
+  'is',
+  'at',
+  'which',
+  'on',
+  'a',
+  'an',
+  'and',
+  'or',
+  'but',
+  'in',
+  'with',
+  'to',
+  'for',
+  'of',
+  'that',
+  'this',
+  'it',
+  'as',
+  'from',
+  'by',
+  'how',
+  'what',
+  'when',
+  'where',
+  'who',
+  'will',
+  'can',
+  'not',
+  'be',
+  'do',
+  'use',
+  'get',
+  'set',
+  'add',
+  'new',
+  'one',
+  'all',
+  'are',
+  'was',
+  'has'
+])
+
+const WORD_SPLIT_RE = /[\s,.;:!?()[\]{}'"<>/\\|`~@#$%^&*+=_-]+/
+const SUGGEST_COOCCURRENCE_LIMIT = 5
+const SUGGEST_MAX_RESULTS = 8
+
+function extractKeywords(text: string): string[] {
+  return text.split(WORD_SPLIT_RE).filter(w => w.length > 2 && !STOP_WORDS.has(w))
+}
+
+function countCooccurrence(cooccurrence: Map<string, number>, otherTags: string[], existingTags: Set<string>): void {
+  for (const tag of otherTags) {
+    if (existingTags.has(tag)) continue
+    for (const myTag of existingTags) {
+      if (otherTags.includes(myTag)) {
+        cooccurrence.set(tag, (cooccurrence.get(tag) ?? 0) + 1)
+      }
+    }
+  }
+}
+
+function computeCooccurrence(entry: Knowledge, allEntries: Knowledge[], existingTags: Set<string>): string[] {
+  const cooccurrence = new Map<string, number>()
+  for (const other of allEntries) {
+    if (other.id === entry.id) continue
+    countCooccurrence(cooccurrence, other.tags ?? [], existingTags)
+  }
+  return Array.from(cooccurrence.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, SUGGEST_COOCCURRENCE_LIMIT)
+    .map(([tag]) => tag)
+}
+
 function youtubePreviewImage(url: string): PreviewImageResult | null {
   const id = YOUTUBE_ID_RE.exec(url)?.[1]
   return id ? { url: `https://img.youtube.com/vi/${id}/mqdefault.jpg` } : null
@@ -198,11 +273,24 @@ export class App {
     return result
   }
 
-  getStats(): Promise<RpcDbStats> {
-    if (this.dbStatsCache) return Promise.resolve(this.dbStatsCache)
+  async getStats(): Promise<RpcDbStats> {
+    if (this.dbStatsCache) return this.dbStatsCache
     const { raw } = this.getDb()
-    this.dbStatsCache = getDbStats(raw)
-    return Promise.resolve(this.dbStatsCache)
+    const stats = getDbStats(raw)
+    let dbSize = 0
+    try {
+      const stat = await fs.stat(this.loaded.database.path)
+      dbSize = stat.size
+    } catch {
+      dbSize = 0
+    }
+    this.dbStatsCache = {
+      total: stats.total,
+      byType: stats.byType,
+      dbPath: this.loaded.database.path,
+      dbSize
+    }
+    return this.dbStatsCache
   }
 
   getConfig(): Promise<RpcGetConfigPayload> {
@@ -416,8 +504,31 @@ export class App {
     return previewImageFromHtml(html, parsed.toString())
   }
 
-  suggestTags(_entryId: number): Promise<string[]> {
-    return App.rejectNotImplemented('suggestTags')
+  async suggestTags(entryId: number): Promise<string[]> {
+    const entry = await this.getEntry(entryId)
+    if (!entry) return []
+
+    const { raw } = this.getDb()
+    const allEntries = findAll(raw, { limit: -1, offset: 0 })
+    const existingTags = new Set(entry.tags ?? [])
+
+    const topCooccurrence = computeCooccurrence(entry, allEntries, existingTags)
+
+    // Keyword extraction from entry text
+    const text = `${entry.key} ${entry.desc ?? ''}`.toLowerCase()
+    const words = extractKeywords(text)
+    const allTags = Array.from(new Set(allEntries.flatMap(e => e.tags ?? [])))
+    const keywordMatches = words
+      .filter(w => w.length > 2)
+      .map(word =>
+        allTags.find(
+          tag => tag.toLowerCase() === word || tag.toLowerCase().startsWith(word) || tag.toLowerCase().includes(word)
+        )
+      )
+      .filter((tag): tag is string => tag !== undefined && !existingTags.has(tag))
+
+    const combined = [...new Set([...topCooccurrence, ...keywordMatches])]
+    return combined.slice(0, SUGGEST_MAX_RESULTS)
   }
 
   resizeWindow(width: number, height: number): Promise<void> {

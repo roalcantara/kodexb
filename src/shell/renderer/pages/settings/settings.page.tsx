@@ -6,11 +6,20 @@ import type { SettingsRpc } from './settings.types'
 
 export type { SettingsRpc } from './settings.types'
 
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return `${parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`
+}
+
 /** Lazy-load real RPC so unit tests can inject `rpc` without pulling `electrobun/view`. */
 const defaultRpc: SettingsRpc = {
   getConfig: () => import('../../rpc/client').then(m => m.getConfig()),
   saveConfig: patch => import('../../rpc/client').then(m => m.saveConfig(patch)),
-  showOpenDialog: opts => import('../../rpc/client').then(m => m.showOpenDialog(opts))
+  showOpenDialog: opts => import('../../rpc/client').then(m => m.showOpenDialog(opts)),
+  getStats: () => import('../../rpc/client').then(m => m.getStats())
 }
 
 export type SettingsPageProps = {
@@ -124,6 +133,44 @@ export function SettingsPage({ onCloseRequest, onConfigSaved, rpc = defaultRpc }
             </label>
           ))}
         </fieldset>
+      </section>
+
+      <section className="kb-settingsSection">
+        <h2 className="kb-settingsSection-title">Stats</h2>
+        <div className="kb-settingsRow">
+          <table className="kb-statsTable">
+            <tbody>
+              <tr>
+                <td>Bookmarks</td>
+                <td className="kb-statsCount">{s.dbStats?.byType?.bookmark ?? 0}</td>
+              </tr>
+              <tr>
+                <td>Commands</td>
+                <td className="kb-statsCount">{s.dbStats?.byType?.command ?? 0}</td>
+              </tr>
+              <tr>
+                <td>Cheats</td>
+                <td className="kb-statsCount">{s.dbStats?.byType?.cheat ?? 0}</td>
+              </tr>
+              <tr>
+                <td>Tasks</td>
+                <td className="kb-statsCount">{s.dbStats?.byType?.task ?? 0}</td>
+              </tr>
+              <tr className="kb-statsTotal">
+                <td>Total</td>
+                <td className="kb-statsCount">{s.dbStats?.total ?? 0}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="kb-settingsRow">
+          <span className="kb-settings-label">Database Path</span>
+          <div className="kb-settingsValue">{s.dbStats?.dbPath ?? '—'}</div>
+        </div>
+        <div className="kb-settingsRow">
+          <span className="kb-settings-label">Database Size</span>
+          <div className="kb-settingsValue">{formatBytes(s.dbStats?.dbSize ?? 0)}</div>
+        </div>
       </section>
 
       <section className="kb-settings-section kb-settings-actions" aria-labelledby="settings-actions">

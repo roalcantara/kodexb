@@ -1,4 +1,4 @@
-import type { ConfigPatch, RpcGetConfigPayload } from '@shared/rpc'
+import type { ConfigPatch, RpcDbStats, RpcGetConfigPayload } from '@shared/rpc'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { PAGE_SIZE_LARGE, PAGE_SIZE_MEDIUM, PAGE_SIZE_SMALL, PAGE_SIZE_XL } from '../../../app/config/config.schema'
@@ -209,6 +209,14 @@ export function useSettingsPage({ rpc, onCloseRequest, onConfigSaved }: UseSetti
   )
   useEscapeToClose(onCloseRequest)
 
+  const [dbStats, setDbStats] = useState<RpcDbStats | null>(null)
+  useEffect(() => {
+    rpc
+      .getStats()
+      .then(s => setDbStats(s))
+      .catch(() => setDbStats(null))
+  }, [rpc])
+
   return {
     baseline: f.baseline,
     loadError: f.loadError,
@@ -226,6 +234,7 @@ export function useSettingsPage({ rpc, onCloseRequest, onConfigSaved }: UseSetti
     pickSourcesDir,
     onSave,
     onReset,
-    pageSizeOptions: PAGE_SIZE_OPTIONS
+    pageSizeOptions: PAGE_SIZE_OPTIONS,
+    dbStats
   }
 }

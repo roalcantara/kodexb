@@ -1,7 +1,7 @@
 import type { ListStats, RpcDbStats, RpcImportResult } from '@shared/rpc'
 import { useCallback, useEffect, useState } from 'react'
 
-import { getListStats, setSyncMessageHandlers, syncRpc } from '../../rpc/client'
+import { getListStats, getStats, setSyncMessageHandlers, syncRpc } from '../../rpc/client'
 
 export function useListPageStatsSync(refreshList: (append: boolean) => Promise<void>) {
   const [stats, setStats] = useState<ListStats | null>(null)
@@ -15,7 +15,8 @@ export function useListPageStatsSync(refreshList: (append: boolean) => Promise<v
   const refreshStats = useCallback(async () => {
     const s = await getListStats()
     setStats(s)
-    setDbStats({ total: s.total, byType: s.byType })
+    const d = await getStats()
+    setDbStats(d)
   }, [])
 
   useEffect(() => {

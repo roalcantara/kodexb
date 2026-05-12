@@ -54,6 +54,11 @@ function buildActions(entry: RpcKnowledge | null, onEditTask: (entry: RpcKnowled
       label: 'Copy Tags',
       handler: () => navigator.clipboard.writeText(entry.tags.join(', ')).catch(() => undefined)
     },
+    {
+      id: 'copy-notes',
+      label: 'Copy Notes',
+      handler: () => navigator.clipboard.writeText(entry.doc ?? '').catch(() => undefined)
+    },
     { id: 'open-editor', label: 'Open in Editor', handler: () => openInEditor(entry.source) }
   )
 

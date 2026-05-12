@@ -15,8 +15,8 @@ sequencing, delivery value, and recommended skills only.
 | Phase | Name                           | Requirements | Status    |
 | :---: | ------------------------------ | ------------ | --------- |
 |   0   | Scaffold & Tooling             | —            | ✔ done    |
-|   1   | Tooling                        | —            | ⬜ pending |
-|   2   | CI / Build / Packaging         | —            | ⬜ pending |
+|   1   | Tooling                        | —            | ✔ done    |
+|   2   | CI / Build / Packaging         | —            | ✔ done    |
 |   3   | Core Domain (port from KodexB) | —            | ⬜ done    |
 |   4   | Data Layer                     | V1-2         | ⬜ done    |
 |   5   | App Service + Elysia RPC       | V1-1         | ✔ done    |
@@ -26,7 +26,7 @@ sequencing, delivery value, and recommended skills only.
 |   9   | Task Management                | V1-7         | ✔ done    |
 |  10   | Actions System (⌘K)            | V1-8         | ✔ done    |
 |  11   | Sync UI                        | V1-2         | ✔ done    |
-|  12   | Stats Panel                    | V1-5         | ⬜ pending |
+|  12   | Stats Panel                    | V1-5         | ✔ done    |
 
 ---
 

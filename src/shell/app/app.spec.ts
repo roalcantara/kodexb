@@ -138,51 +138,35 @@ describe('App', () => {
     expect(third.length).toBeGreaterThan(0)
   })
 
-  function assertCacheInvalidated(
-    first: { total: number; byType: Record<string, number> },
-    second: { total: number; byType: Record<string, number> }
-  ) {
-    // biome-ignore lint/suspicious/noMisplacedAssertion: shared test helper
-    expect(second).not.toBe(first)
-    // biome-ignore lint/suspicious/noMisplacedAssertion: shared test helper
-    expect(second.total).toBe(first.total + 1)
-    // biome-ignore lint/suspicious/noMisplacedAssertion: shared test helper
-    expect(second.byType.bookmark).toBe((first.byType.bookmark ?? 0) + 1)
-  }
-
   describe('stats caching', () => {
     it('returns cached listStats on second call without hitting DB', async () => {
       const { app } = await importedAppFixture()
       const first = await app.getListStats()
       insertManualBookmark(app, 'manual-cached-list-stats')
       const second = await app.getListStats()
-
       expect(second).toBe(first)
       expect(second.total).toBe(first.total)
     })
 
-    // biome-ignore lint/nursery/useExpect: assertions delegated to assertCacheInvalidated helper
     it('clears listStats cache after sync', async () => {
       const { loaded, app } = await importedAppFixture()
       const first = await app.getListStats()
       insertManualBookmark(app, 'manual-list-stats-after-sync')
-
       await app.sync(loaded.sources.path)
       const second = await app.getListStats()
-
-      assertCacheInvalidated(first, second)
+      expect(second).not.toBe(first)
+      expect(second.total).toBe(first.total + 1)
+      expect(second.byType.bookmark).toBe((first.byType.bookmark ?? 0) + 1)
     })
 
-    // biome-ignore lint/nursery/useExpect: assertions delegated to assertCacheInvalidated helper
-    it('clears dbStats cache after applyConfigPatch', async () => {
+    it('clears cache after config change', async () => {
       const { app } = await importedAppFixture()
       const first = await app.getStats()
       insertManualBookmark(app, 'manual-db-stats-after-config')
-
       await app.applyConfigPatch({ pageSize: 25 })
       const second = await app.getStats()
-
-      assertCacheInvalidated(first, second)
+      expect(second.total).toBe(first.total + 1)
+      expect(second.byType.bookmark).toBe((first.byType.bookmark ?? 0) + 1)
     })
   })
 
@@ -206,5 +190,44 @@ describe('App', () => {
     })
     await app.openInEditor('/tmp/test.yaml')
     expect(calls).toEqual([{ filePath: '/tmp/test.yaml', app: 'code' }])
+  })
+
+  describe('suggestTags', () => {
+    async function seededFixture(): Promise<App> {
+      const loaded = await loadedFixture()
+      const importer = new ImportService(loaded.database.path)
+      await importer.run(testingPaths.minimal)
+      return new App(loaded)
+    }
+
+    it('returns empty array for non-existent entry', async () => {
+      const app = await seededFixture()
+      const result = await app.suggestTags(999999)
+      expect(result).toEqual([])
+    })
+
+    it('returns co-occurring tags for entries with existing tags', async () => {
+      const app = await seededFixture()
+      const result = await app.suggestTags(1)
+      expect(Array.isArray(result)).toBe(true)
+      expect(result.length).toBeLessThanOrEqual(8)
+      const entry = await app.getEntry(1)
+      if (entry) {
+        for (const tag of entry.tags ?? []) {
+          expect(result).not.toContain(tag)
+        }
+      }
+    })
+
+    it('returns keywords when entry has no tags', async () => {
+      const app = await seededFixture()
+      const entries = await app.list()
+      const untagged = entries.find(e => (e.tags ?? []).length === 0)
+      if (untagged) {
+        const result = await app.suggestTags(untagged.id)
+        expect(Array.isArray(result)).toBe(true)
+        expect(result.length).toBeLessThanOrEqual(8)
+      }
+    })
   })
 })

@@ -1,15 +1,17 @@
 /// <reference lib="dom" />
 
 import { beforeEach, expect, mock, test } from 'bun:test'
-import type { ListStats } from '@shared/rpc'
+import type { ListStats, RpcDbStats } from '@shared/rpc'
 import { render, screen, waitFor } from '@testing-library/react'
 
 const getListStatsMock = mock<() => Promise<ListStats>>()
+const getStatsMock = mock<() => Promise<RpcDbStats>>()
 const setSyncMessageHandlersMock = mock(() => undefined)
 const syncRpcMock = mock(() => Promise.resolve({ filesProcessed: 0, inserted: 0, updated: 0, errors: [] }))
 
 mock.module('../../rpc/client', () => ({
   getListStats: getListStatsMock,
+  getStats: getStatsMock,
   setSyncMessageHandlers: setSyncMessageHandlersMock,
   syncRpc: syncRpcMock
 }))
@@ -46,9 +48,16 @@ function Harness() {
 
 beforeEach(() => {
   getListStatsMock.mockReset()
+  getStatsMock.mockReset()
   setSyncMessageHandlersMock.mockReset()
   syncRpcMock.mockReset()
   getListStatsMock.mockResolvedValue(listStats)
+  getStatsMock.mockResolvedValue({
+    total: 4,
+    byType: { bookmark: 1, command: 1, cheat: 1, task: 1 },
+    dbPath: '/tmp/kb.sqlite',
+    dbSize: 4096
+  })
   setSyncMessageHandlersMock.mockImplementation(() => undefined)
   syncRpcMock.mockResolvedValue({ filesProcessed: 0, inserted: 0, updated: 0, errors: [] })
 })

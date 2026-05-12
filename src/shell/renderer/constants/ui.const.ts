@@ -1,5 +1,5 @@
 /** Search input debounce (ms); list RPC uses debounced value after typing stops. */
-export const SEARCH_DEBOUNCE_MS = 1000
+export const SEARCH_DEBOUNCE_MS = 300
 
 /** Default page size when config parse fails. */
 export const DEFAULT_LIST_PAGE_SIZE = 50

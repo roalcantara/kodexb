@@ -1,7 +1,7 @@
 /// <reference lib="dom" />
 
 import { afterEach, describe, expect, mock, test } from 'bun:test'
-import type { RpcGetConfigPayload } from '@shared/rpc'
+import type { RpcDbStats, RpcGetConfigPayload } from '@shared/rpc'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SettingsPage } from './settings.page'
@@ -17,6 +17,13 @@ const baseCfg: RpcGetConfigPayload = {
   display: { terminalApp: 'Terminal.app', editorApp: 'Code.app', pageSize: '50' }
 }
 
+const baseStats: RpcDbStats = {
+  total: 42,
+  byType: { bookmark: 10, command: 12, cheat: 8, task: 12 },
+  dbPath: '/home/kb/data.sqlite',
+  dbSize: 204800
+}
+
 function makeRpc(overrides: Partial<SettingsRpc> = {}): SettingsRpc {
   const getConfig = mock(() => Promise.resolve(baseCfg))
   const saveConfig = mock(() =>
@@ -26,7 +33,8 @@ function makeRpc(overrides: Partial<SettingsRpc> = {}): SettingsRpc {
     })
   )
   const showOpenDialog = mock(() => Promise.resolve('/picked/sources'))
-  return { getConfig, saveConfig, showOpenDialog, ...overrides }
+  const getStats = mock(() => Promise.resolve(baseStats))
+  return { getConfig, saveConfig, showOpenDialog, getStats, ...overrides }
 }
 
 describe('SettingsPage', () => {
@@ -40,11 +48,14 @@ describe('SettingsPage', () => {
     await waitFor(() => expect(rpc.getConfig).toHaveBeenCalled())
     expect(screen.getByRole('heading', { name: 'Settings' })).toBeTruthy()
     expect(screen.getByText('/home/kb/config.yaml')).toBeTruthy()
-    expect(screen.getByText('/home/kb/data.sqlite')).toBeTruthy()
+    expect(
+      screen.getByText((_, el) => el?.tagName === 'CODE' && el.textContent === '/home/kb/data.sqlite')
+    ).toBeTruthy()
     expect(screen.getByText('/home/kb/sources')).toBeTruthy()
     expect(screen.getByRole('heading', { name: 'Paths' })).toBeTruthy()
     expect(screen.getByRole('heading', { name: 'Apps' })).toBeTruthy()
     expect(screen.getByRole('heading', { name: 'Display' })).toBeTruthy()
+    expect(screen.getByRole('heading', { name: 'Stats' })).toBeTruthy()
     expect(screen.getByRole('heading', { name: 'Actions' })).toBeTruthy()
   })
 

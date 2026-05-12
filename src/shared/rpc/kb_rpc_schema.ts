@@ -8,6 +8,8 @@ export type RpcKnowledge = Knowledge
 export type RpcDbStats = {
   total: number
   byType: Record<string, number>
+  dbPath: string
+  dbSize: number
 }
 
 /** Serializable config snapshot for `getConfig` / `saveConfig` responses. */

@@ -80,14 +80,21 @@ describe('createRpcServer', () => {
   })
 
   describe('POST /api/getStats', () => {
-    it('returns total and byType', async () => {
+    it('returns total, byType, dbPath, and dbSize', async () => {
       const app = await importedAppFixture()
       const rpc = createRpcServer(app)
       const res = await rpc.handle(postJson('/api/getStats', {}))
       expect(res.status).toBe(200)
-      const data = (await res.json()) as { total: number; byType: Record<string, number> }
+      const data = (await res.json()) as {
+        total: number
+        byType: Record<string, number>
+        dbPath: string
+        dbSize: number
+      }
       expect(typeof data.total).toBe('number')
       expect(typeof data.byType).toBe('object')
+      expect(typeof data.dbPath).toBe('string')
+      expect(typeof data.dbSize).toBe('number')
     })
   })
 

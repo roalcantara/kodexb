@@ -1026,3 +1026,13 @@ body {
 .kb-syncToast-errors li:last-child { border-bottom: none; }
 .kb-syncToast-close { position: absolute; top: 8px; right: 8px; background: none; border: none; color: var(--kb-muted); cursor: pointer; font-size: 0.875rem; }
 @keyframes kb-slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* ── Stats section (Phase 12) ───────────────────────────────────── */
+.kb-settingsSection { margin-bottom: 1.5rem; }
+.kb-settingsSection-title { margin: 0 0 0.5rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--kb-muted); }
+.kb-settingsRow { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+.kb-settingsValue { font-size: 0.85rem; color: var(--kb-text); }
+.kb-statsTable { width: 100%; border-collapse: collapse; }
+.kb-statsTable td { padding: 6px 12px; font-size: 0.875rem; color: var(--kb-text); }
+.kb-statsCount { text-align: right; font-variant-numeric: tabular-nums; }
+.kb-statsTotal td { border-top: 1px solid var(--kb-border); font-weight: 600; padding-top: 8px; }
