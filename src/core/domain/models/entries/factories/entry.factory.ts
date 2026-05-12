@@ -4,7 +4,13 @@ import type { EntryType } from '../../../types/entry.types'
 import { approxEntryKeyLine } from '../../sources/parsers/source_location.parser'
 import { parseBaseEntryFields } from '../parsers/base_fields.parser'
 import { type Entry, entrySchema, type SourceRow } from '../schemas/entry.schema'
-import { parseTaskPriorityFromSource, parseTaskStatusFromSource } from '../schemas/task.schema'
+import {
+  parseTaskDependsOnFromSource,
+  parseTaskDueDateFromSource,
+  parseTaskOrderFromSource,
+  parseTaskPriorityFromSource,
+  parseTaskStatusFromSource
+} from '../schemas/task.schema'
 
 /**
  * Validates and narrows one source map row into an {@link Entry}.
@@ -14,7 +20,18 @@ export function toEntry(type: EntryType, raw: SourceRow, key: string, source: st
   if (type === 'task') {
     const priority = parseTaskPriorityFromSource(raw.priority)
     const status = parseTaskStatusFromSource(raw.status)
-    return parse(entrySchema, { ...base, type: 'task', ...(priority ? { priority } : {}), status })
+    const dueDate = parseTaskDueDateFromSource(raw.due ?? raw.due_date)
+    const taskOrder = parseTaskOrderFromSource(raw.task_order)
+    const dependsOn = parseTaskDependsOnFromSource(raw.depends_on)
+    return parse(entrySchema, {
+      ...base,
+      type: 'task',
+      ...(priority ? { priority } : {}),
+      status,
+      ...(dueDate === undefined ? {} : { dueDate }),
+      ...(taskOrder === undefined ? {} : { taskOrder }),
+      ...(dependsOn === undefined ? {} : { dependsOn })
+    })
   }
   return parse(entrySchema, { ...base, type })
 }

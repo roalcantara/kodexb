@@ -5,6 +5,7 @@ export type ToolbarProps = {
   searchInputRef?: RefObject<HTMLInputElement | null>
   syncButtonRef?: RefObject<HTMLButtonElement | null>
   settingsButtonRef?: RefObject<HTMLButtonElement | null>
+  newTaskButtonRef?: RefObject<HTMLButtonElement | null>
   search: string
   onSearchChange: (v: string) => void
   onSearchArrowDown?: () => void
@@ -16,6 +17,7 @@ export type ToolbarProps = {
   syncProcessed?: number
   syncTotal?: number
   onSettings?: () => void
+  onNewTask?: () => void
 }
 
 export function Toolbar({
@@ -23,6 +25,7 @@ export function Toolbar({
   searchInputRef,
   syncButtonRef,
   settingsButtonRef,
+  newTaskButtonRef,
   search,
   onSearchChange,
   onSearchArrowDown,
@@ -33,7 +36,8 @@ export function Toolbar({
   syncing,
   syncProcessed,
   syncTotal,
-  onSettings
+  onSettings,
+  onNewTask
 }: ToolbarProps) {
   const syncHint =
     syncing && syncTotal !== undefined && syncProcessed !== undefined ? ` ${syncProcessed}/${syncTotal}` : ''
@@ -60,6 +64,11 @@ export function Toolbar({
       <button ref={syncButtonRef} type="button" className="kb-toolbar-sync" onClick={onSync} disabled={syncing}>
         {syncing ? `⟳ Sync${syncHint}` : '↺ Sync'}
       </button>
+      {onNewTask === undefined ? null : (
+        <button ref={newTaskButtonRef} type="button" className="kb-toolbar-sync" onClick={onNewTask}>
+          + New Task
+        </button>
+      )}
       {onSettings === undefined ? null : (
         <button
           ref={settingsButtonRef}

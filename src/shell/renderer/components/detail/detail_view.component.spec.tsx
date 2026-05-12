@@ -17,7 +17,11 @@ const baseProps: DetailPageViewProps = {
   onSelectEntry: () => {
     /* noop */
   },
-  onOpenExternal: url => openExternalMock(url)
+  onOpenExternal: url => openExternalMock(url),
+  onFetchPreviewImage: () =>
+    new Promise<null>(() => {
+      /* never resolves — prevent PreviewImage async updates */
+    })
 }
 
 function makeBookmark(overrides: Partial<RpcKnowledge> = {}): RpcKnowledge {

@@ -21,7 +21,10 @@ export const taskEntrySchema = Type.Composite([
   Type.Object({
     type: Type.Literal('task'),
     priority: Type.Optional(Type.Union(TASK_PRIORITY_VALUES.map(value => Type.Literal(value)))),
-    status: Type.Union(TASK_STATUS_VALUES.map(value => Type.Literal(value)))
+    status: Type.Union(TASK_STATUS_VALUES.map(value => Type.Literal(value))),
+    dueDate: Type.Optional(Type.Number()),
+    taskOrder: Type.Optional(Type.Integer()),
+    dependsOn: Type.Optional(Type.Array(Type.Integer()))
   })
 ])
 

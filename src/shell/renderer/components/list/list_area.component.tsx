@@ -4,6 +4,7 @@ import type { useListDetailResize } from '../../hooks/list/use_list_detail_resiz
 import type { useListPageData } from '../../hooks/list/use_list_page_data.hook'
 import type { useListSelection } from '../../hooks/list/use_list_selection.hook'
 import { useListSurfaceScrollRestore } from '../../hooks/list/use_list_surface_scroll_restore.hook'
+import type { useTaskDragDrop } from '../../hooks/list/use_task_drag_drop.hook'
 import { useVirtualListWindow } from '../../hooks/list/use_virtual_list_window.hook'
 import { focusListSurface } from '../../utils/list/list_surface_focus.util'
 import { DetailPanel } from './detail_panel.component'
@@ -12,6 +13,7 @@ import { EntryRow } from './entry_row.component'
 type ListData = ReturnType<typeof useListPageData>
 type ListSel = ReturnType<typeof useListSelection>
 type DetailLayout = ReturnType<typeof useListDetailResize>
+type DragDrop = ReturnType<typeof useTaskDragDrop>
 
 export type ListAreaProps = {
   data: ListData
@@ -21,6 +23,9 @@ export type ListAreaProps = {
   listSurfaceRef: RefObject<HTMLDivElement | null>
   listSentinelRef: RefObject<HTMLDivElement | null>
   onListKeyDown: (e: ReactKeyboardEvent<HTMLDivElement>) => void
+  dragDrop?: DragDrop
+  onCycleStatus?: (id: number) => void
+  onCyclePriority?: (id: number) => void
 }
 
 export function ListArea({
@@ -30,7 +35,10 @@ export function ListArea({
   flags,
   listSurfaceRef,
   listSentinelRef,
-  onListKeyDown
+  onListKeyDown,
+  dragDrop,
+  onCycleStatus,
+  onCyclePriority
 }: ListAreaProps) {
   useListSurfaceScrollRestore(listSurfaceRef, sel.detailEntry)
 
@@ -68,6 +76,10 @@ export function ListArea({
             allEntries={data.rows}
             selected={entry.id === sel.selectedId}
             onSelect={onSelectEntry}
+            dragHandlers={dragDrop?.getDragHandlers(entry)}
+            dragOver={dragDrop?.dragOverId === entry.id}
+            onCycleStatus={onCycleStatus}
+            onCyclePriority={onCyclePriority}
           />
         ))}
         {virtualWindow.paddingBottom > 0 ? <div style={{ height: virtualWindow.paddingBottom }} aria-hidden /> : null}

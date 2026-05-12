@@ -15,10 +15,11 @@ const task: RpcKnowledge = {
   tags: ['kb', 'ui'],
   status: 'todo',
   priority: 'mid',
-  meta: { due: '2026-04-28', task_order: '7' },
   doc: '',
   createdAt: 1_700_000_000_000,
-  updatedAt: 1_700_000_100_000
+  updatedAt: 1_700_000_100_000,
+  dueDate: new Date('2026-04-28').getTime(),
+  taskOrder: 7
 }
 
 test('MetadataSidebar renders common fields', () => {
@@ -32,6 +33,6 @@ test('MetadataSidebar renders task fields', () => {
   render(<MetadataSidebar entry={task} />)
   expect(screen.getByText('todo')).not.toBeNull()
   expect(screen.getByText('mid')).not.toBeNull()
-  expect(screen.getByText('2026-04-28')).not.toBeNull()
+  expect(screen.getByText('28 Apr 2026')).not.toBeNull()
   expect(screen.getByText('7')).not.toBeNull()
 })

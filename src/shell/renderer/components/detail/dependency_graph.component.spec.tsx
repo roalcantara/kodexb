@@ -29,7 +29,7 @@ const review: RpcKnowledge = {
   tags: ['kb'],
   status: 'doing',
   priority: 'high',
-  meta: { dependsOn: 'setup-project' },
+  dependsOn: [1],
   doc: '',
   createdAt: 0,
   updatedAt: 0

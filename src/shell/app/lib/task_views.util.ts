@@ -23,8 +23,8 @@ function addDays(d: Date, n: number): Date {
 }
 
 function parseDue(k: TaskKnowledge): Date | null {
-  const raw = k.meta?.due
-  if (!raw || typeof raw !== 'string') return null
+  const raw = k.dueDate
+  if (raw === undefined || raw === null) return null
   const dt = new Date(raw)
   return Number.isNaN(dt.getTime()) ? null : dt
 }

@@ -1,6 +1,8 @@
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 import { SettingsPage } from '../../pages/settings/settings.page'
+import { cyclePriority, cycleStatus } from '../../rpc/client'
 import { listFilterSummary } from '../../utils/list/list_filter_summary.util'
+import { TaskSheet } from '../task/task_sheet.component'
 import { FilterDropdown } from './filter_dropdown.component'
 import { ListArea } from './list_area.component'
 import { Toolbar } from './toolbar.component'
@@ -11,7 +13,20 @@ export type ListMainProps = {
   setShowSettings: (value: boolean | ((prev: boolean) => boolean)) => void
 }
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: pre-existing pattern outside Phase 9 scope
 export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
+  const handleCycleStatus = (id: number) => {
+    cycleStatus(id, 'forward')
+      .then(() => p.data.refreshList(false).catch(() => undefined))
+      .catch(() => undefined)
+  }
+
+  const handleCyclePriority = (id: number) => {
+    cyclePriority(id, 'forward')
+      .then(() => p.data.refreshList(false).catch(() => undefined))
+      .catch(() => undefined)
+  }
+
   return (
     <>
       <Toolbar
@@ -19,6 +34,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
         searchInputRef={p.searchInputRef}
         syncButtonRef={p.syncButtonRef}
         settingsButtonRef={p.settingsButtonRef}
+        newTaskButtonRef={p.newTaskButtonRef}
         search={p.data.search}
         onSearchChange={p.data.setSearch}
         onSearchArrowDown={p.onSearchArrowDown}
@@ -30,7 +46,11 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
         syncProcessed={p.data.syncProg?.processed}
         syncTotal={p.data.syncProg?.total}
         onSettings={() => setShowSettings(v => !v)}
+        onNewTask={p.onNewTask}
       />
+      {p.taskSheetVisible ? (
+        <TaskSheet key={p.taskSheetEntry?.id ?? 'new'} entry={p.taskSheetEntry} onClose={p.onCloseTaskSheet} />
+      ) : null}
       {showSettings ? (
         <div className="kb-settingsHost">
           <SettingsPage
@@ -51,6 +71,9 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           listSurfaceRef={p.listSurfaceRef}
           listSentinelRef={p.listSentinelRef}
           onListKeyDown={p.onListSurfaceKeyDown}
+          dragDrop={p.dragDrop}
+          onCycleStatus={handleCycleStatus}
+          onCyclePriority={handleCyclePriority}
         />
       )}
       {p.data.stats === null ? null : (

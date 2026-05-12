@@ -2,23 +2,9 @@ import type { RpcKnowledge } from '@shared/rpc'
 
 import { BadgeAccessory } from '../shared/badge_accessory.component'
 
-const DEP_KEYS = ['dependsOn', 'depends_on', 'depends', 'deps']
-
-function dependencyKeys(entry: RpcKnowledge): string[] {
+function dependencyKeys(entry: RpcKnowledge): number[] {
   if (entry.type !== 'task') return []
-  const meta = entry.meta as Record<string, unknown> | undefined
-  if (!meta) return []
-  for (const key of DEP_KEYS) {
-    const raw = meta[key]
-    if (Array.isArray(raw)) return raw.filter((v): v is string => typeof v === 'string' && v.length > 0)
-    if (typeof raw === 'string') {
-      return raw
-        .split(',')
-        .map(v => v.trim())
-        .filter(Boolean)
-    }
-  }
-  return []
+  return entry.dependsOn ?? []
 }
 
 function statusText(entry: RpcKnowledge): string | null {
@@ -27,14 +13,14 @@ function statusText(entry: RpcKnowledge): string | null {
 
 function DependencyRow({
   entry,
-  fallbackKey,
+  fallbackId,
   onSelectEntry
 }: {
   entry?: RpcKnowledge
-  fallbackKey: string
+  fallbackId: number
   onSelectEntry: (id: number) => void
 }) {
-  const label = entry?.key ?? fallbackKey
+  const label = entry?.key ?? String(fallbackId)
   return (
     <li>
       <button
@@ -65,8 +51,8 @@ export type DependencyGraphProps = {
 
 export function DependencyGraph({ entry, allEntries, onSelectEntry }: DependencyGraphProps) {
   const blockedByKeys = dependencyKeys(entry)
-  const blockedBy = blockedByKeys.map(key => ({ key, entry: allEntries.find(row => row.key === key) }))
-  const blocking = allEntries.filter(row => row.id !== entry.id && dependencyKeys(row).includes(entry.key))
+  const blockedBy = blockedByKeys.map(id => ({ id, entry: allEntries.find(row => row.id === id) }))
+  const blocking = allEntries.filter(row => row.id !== entry.id && dependencyKeys(row).includes(entry.id))
 
   if (blockedBy.length === 0 && blocking.length === 0) return null
 
@@ -78,7 +64,7 @@ export function DependencyGraph({ entry, allEntries, onSelectEntry }: Dependency
           <h3>Blocked by</h3>
           <ul>
             {blockedBy.map(dep => (
-              <DependencyRow key={dep.key} fallbackKey={dep.key} entry={dep.entry} onSelectEntry={onSelectEntry} />
+              <DependencyRow key={dep.id} fallbackId={dep.id} entry={dep.entry} onSelectEntry={onSelectEntry} />
             ))}
           </ul>
         </div>
@@ -88,7 +74,7 @@ export function DependencyGraph({ entry, allEntries, onSelectEntry }: Dependency
           <h3>Blocking</h3>
           <ul>
             {blocking.map(row => (
-              <DependencyRow key={row.id} fallbackKey={row.key} entry={row} onSelectEntry={onSelectEntry} />
+              <DependencyRow key={row.id} fallbackId={row.id} entry={row} onSelectEntry={onSelectEntry} />
             ))}
           </ul>
         </div>

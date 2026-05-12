@@ -866,3 +866,135 @@ body {
   color: var(--kb-accent);
   font-size: 0.9rem;
 }
+
+/* ── Modal / TaskSheet ──────────────────────────────────────────── */
+
+.kb-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.kb-taskSheet {
+  background: var(--kb-surface);
+  border-radius: 6px;
+  padding: 24px;
+  min-width: 400px;
+  max-width: 560px;
+}
+
+.kb-taskSheet--field {
+  margin-bottom: 0.75rem;
+}
+
+.kb-taskSheet--field label {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--kb-muted);
+  margin-bottom: 0.25rem;
+}
+
+.kb-taskSheet--row {
+  display: flex;
+  gap: 1rem;
+}
+
+.kb-taskSheet--row .kb-taskSheet--field {
+  flex: 0 0 auto;
+}
+
+.kb-taskSheet--input,
+.kb-taskSheet--textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--kb-bg);
+  color: var(--kb-text);
+  border: 1px solid var(--kb-border);
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.kb-taskSheet--textarea {
+  resize: vertical;
+}
+
+.kb-taskSheet--actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.kb-taskSheet--btn {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid var(--kb-border);
+  background: var(--kb-surface);
+  color: var(--kb-text);
+}
+
+.kb-taskSheet--btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.kb-taskSheet--btnPrimary {
+  background: var(--kb-accent);
+  color: var(--kb-bg);
+  border-color: transparent;
+}
+
+/* ── Confirm dialog ─────────────────────────────────────────────── */
+
+.kb-confirmDialog {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.5rem;
+  margin-bottom: 0.25rem;
+  background: var(--kb-surface);
+  border: 1px solid var(--kb-border);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.kb-confirmDialog-label {
+  flex: 1;
+  min-width: 0;
+  color: var(--kb-text);
+}
+
+.kb-confirmDialog-btn {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--kb-border);
+  background: var(--kb-bg);
+  color: var(--kb-text);
+}
+
+.kb-confirmDialog-btnDanger {
+  border-color: var(--kb-danger);
+  color: #fca5a5;
+}
+
+/* ── Drag and drop ──────────────────────────────────────────────── */
+
+.kb-entryRow--dragging {
+  opacity: 0.4;
+}
+
+.kb-entryRow--dragOver {
+  border-top: 2px solid var(--kb-accent);
+}

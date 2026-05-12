@@ -18,7 +18,7 @@ const overdueTask: RpcKnowledge = {
   doc: '',
   createdAt: 0,
   updatedAt: 0,
-  meta: { due: '1999-06-15' }
+  dueDate: new Date('1999-06-15').getTime()
 }
 
 test('BadgeAccessory shows overdue pill for past due todo', () => {

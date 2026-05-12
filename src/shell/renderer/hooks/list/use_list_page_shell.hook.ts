@@ -1,6 +1,7 @@
-import type { TaskView } from '@shared/rpc'
-import { useCallback, useRef } from 'react'
+import type { RpcKnowledge, TaskView } from '@shared/rpc'
+import { useCallback, useRef, useState } from 'react'
 import type { EntryTypeOption } from '../../components/list/filter_dropdown.component'
+import { deleteTask, reorderTask } from '../../rpc/client'
 import { listPageEmptyFlags } from '../../utils/list/list_page_empty_flags.util'
 import { focusListSurface } from '../../utils/list/list_surface_focus.util'
 import { useListDetailResize } from './use_list_detail_resize.hook'
@@ -11,13 +12,17 @@ import { useListSelection } from './use_list_selection.hook'
 import { useListSentinelPagination } from './use_list_sentinel_pagination.hook'
 import { useListSurfaceKeyDown } from './use_list_surface_keydown.hook'
 import { useListViewportPageSize } from './use_list_viewport_page_size.hook'
+import { useTaskDragDrop } from './use_task_drag_drop.hook'
+import { useTaskKeyboard } from './use_task_keyboard.hook'
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: pre-existing pattern outside Phase 9 scope
 export function useListPageShell() {
   const listSurfaceRef = useRef<HTMLDivElement>(null)
   const listSentinelRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const syncButtonRef = useRef<HTMLButtonElement>(null)
   const settingsButtonRef = useRef<HTMLButtonElement>(null)
+  const newTaskButtonRef = useRef<HTMLButtonElement>(null)
   const pageSize = useListViewportPageSize(listSurfaceRef)
   const data = useListPageData({ pageSizeOverride: pageSize })
   const filter = useListFilterOverlay()
@@ -57,6 +62,51 @@ export function useListPageShell() {
     searchInputRef
   })
 
+  const [taskSheetEntry, setTaskSheetEntry] = useState<RpcKnowledge | null>(null)
+  const [taskSheetOpen, setTaskSheetOpen] = useState(false)
+  const taskSheetVisible = taskSheetOpen
+
+  const handleNewTask = useCallback(() => {
+    setTaskSheetEntry(null)
+    setTaskSheetOpen(true)
+  }, [])
+
+  const handleEditTask = useCallback((entry: RpcKnowledge) => {
+    setTaskSheetEntry(entry)
+    setTaskSheetOpen(true)
+  }, [])
+
+  const handleCloseTaskSheet = useCallback(() => {
+    setTaskSheetEntry(null)
+    setTaskSheetOpen(false)
+    data.refreshList(false).catch(() => undefined)
+  }, [data.refreshList])
+
+  const handleRequestDelete = useCallback(
+    (entry: RpcKnowledge) => {
+      deleteTask(entry.id)
+        .then(() => data.refreshList(false).catch(() => undefined))
+        .catch(() => undefined)
+    },
+    [data.refreshList]
+  )
+
+  useTaskKeyboard({
+    selectedId: sel.selectedId,
+    rows: data.rows,
+    onRefresh: () => data.refreshList(false).catch(() => undefined),
+    onNewTask: handleNewTask,
+    onRequestDelete: handleRequestDelete
+  })
+
+  const dragDrop = useTaskDragDrop(data.rows, id => {
+    reorderTask(id.entryId, id.dir)
+      .then(() => {
+        data.refreshList(false).catch(() => undefined)
+      })
+      .catch(() => undefined)
+  })
+
   return {
     data,
     filter,
@@ -68,9 +118,16 @@ export function useListPageShell() {
     searchInputRef,
     syncButtonRef,
     settingsButtonRef,
+    newTaskButtonRef,
     onSearchArrowDown,
     onListSurfaceKeyDown,
-    onFilterChange
+    onFilterChange,
+    taskSheetVisible,
+    taskSheetEntry,
+    onNewTask: handleNewTask,
+    onEditTask: handleEditTask,
+    onCloseTaskSheet: handleCloseTaskSheet,
+    dragDrop
   }
 }
 

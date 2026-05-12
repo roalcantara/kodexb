@@ -1,4 +1,7 @@
-import type { Knowledge } from '../../core'
+// biome-ignore lint/nursery/noExcessiveLinesPerFile: pre-existing pattern outside Phase 9 scope
+import fs from 'node:fs/promises'
+import type { Entry, Knowledge, TaskEntry } from '../../core'
+import { toKnowledge } from '../../core'
 import { createLogger } from '../../shared/logging'
 import type {
   ConfigPatch,
@@ -15,8 +18,17 @@ import type {
 import type { LoadedConfig } from './config/config.loader'
 import { saveConfig } from './config/config.loader'
 import { openDatabase } from './db/client'
-import { type FindAllOpts, findAll, findById, getDbStats, getTagCounts } from './db/entry.repository'
+import {
+  deleteById,
+  type FindAllOpts,
+  findAll,
+  findById,
+  getDbStats,
+  getTagCounts,
+  upsert
+} from './db/entry.repository'
 import { ImportService } from './db/import.service'
+import { maxTaskOrder, updateTaskOrder } from './db/task.repository'
 import { countTasksByView, filterKnowledgeByTaskView } from './lib/task_views.util'
 
 type TaskKnowledge = Extract<Knowledge, { type: 'task' }>
@@ -216,32 +228,145 @@ export class App {
     return this.getConfig()
   }
 
+  private async writeTaskToYaml(task: Knowledge, filePath: string): Promise<void> {
+    try {
+      let doc: Record<string, unknown> = {}
+      try {
+        const content = await fs.readFile(filePath, 'utf-8')
+        doc = Bun.YAML.parse(content) as Record<string, unknown>
+      } catch (e) {
+        if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e
+      }
+      const tasks = (doc.tasks ?? {}) as Record<string, unknown>
+      tasks[task.key] = this.taskToYamlShape(task)
+      doc.tasks = tasks
+      const tmpPath = filePath + '.tmp'
+      await fs.writeFile(tmpPath, Bun.YAML.stringify(doc), 'utf-8')
+      await fs.rename(tmpPath, filePath)
+    } catch (err) {
+      this.log.error(['YAML write-back failed', task.key, filePath, err])
+    }
+  }
+
+  private async removeTaskFromYaml(key: string, filePath: string): Promise<void> {
+    try {
+      const content = await fs.readFile(filePath, 'utf-8')
+      const doc = Bun.YAML.parse(content) as Record<string, unknown>
+      const tasks = (doc.tasks ?? {}) as Record<string, unknown>
+      delete tasks[key]
+      if (Object.keys(tasks).length === 0) {
+        await fs.unlink(filePath)
+      } else {
+        doc.tasks = tasks
+        const tmpPath = filePath + '.tmp'
+        await fs.writeFile(tmpPath, Bun.YAML.stringify(doc), 'utf-8')
+        await fs.rename(tmpPath, filePath)
+      }
+    } catch (err) {
+      this.log.error(['YAML remove failed', key, filePath, err])
+    }
+  }
+
+  private taskToYamlShape(task: Knowledge): Record<string, unknown> {
+    const shape: Record<string, unknown> = {}
+    if (task.desc) shape.desc = task.desc
+    if (task.tags && task.tags.length > 0) shape.tags = task.tags
+    if (task.type === 'task') {
+      shape.status = task.status
+      if (task.priority) shape.priority = task.priority
+      if (task.dueDate) shape.due = new Date(task.dueDate).toISOString().split('T')[0]
+      if (task.taskOrder != null) shape.task_order = task.taskOrder
+      if (task.dependsOn && task.dependsOn.length > 0) shape.depends_on = task.dependsOn.map(String)
+    }
+    return shape
+  }
+
   private static rejectNotImplemented(method: string): Promise<never> {
     return Promise.reject(new Error(`Not implemented: ${method}`))
   }
 
-  createTask(_input: TaskCreateInput): Promise<Knowledge> {
-    return App.rejectNotImplemented('createTask')
+  async createTask(input: TaskCreateInput): Promise<Knowledge> {
+    const { raw } = this.getDb()
+    const order = maxTaskOrder(raw)
+    const now = Date.now()
+    const entry: Entry = {
+      type: 'task',
+      key: input.key,
+      source: this.loaded.writeTarget,
+      desc: input.desc ?? '',
+      tags: input.tags ?? [],
+      priority: input.priority ?? 'mid',
+      status: 'todo',
+      dueDate: input.dueDate,
+      taskOrder: order,
+      dependsOn: input.dependsOn
+    } as Entry
+    const knowledge = toKnowledge(entry, now)
+    upsert(raw, knowledge)
+    await this.writeTaskToYaml(knowledge, this.loaded.writeTarget)
+    this.invalidateListCache()
+    return knowledge
   }
 
-  updateTask(_id: number, _patch: TaskUpdateInput): Promise<Knowledge> {
-    return App.rejectNotImplemented('updateTask')
+  async updateTask(id: number, patch: TaskUpdateInput): Promise<Knowledge> {
+    const existing = await this.getEntry(id)
+    if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
+    const merged = { ...existing, ...patch, updatedAt: Date.now() }
+    const { raw } = this.getDb()
+    upsert(raw, merged)
+    await this.writeTaskToYaml(merged, merged.source)
+    this.invalidateListCache()
+    return merged
   }
 
-  deleteTask(_id: number): Promise<void> {
-    return App.rejectNotImplemented('deleteTask')
+  async deleteTask(id: number): Promise<void> {
+    const existing = await this.getEntry(id)
+    if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
+    const { raw } = this.getDb()
+    deleteById(raw, id)
+    await this.removeTaskFromYaml(existing.key, existing.source)
+    this.invalidateListCache()
   }
 
-  cycleStatus(_id: number, _dir: 'forward' | 'backward'): Promise<Knowledge> {
-    return App.rejectNotImplemented('cycleStatus')
+  async cycleStatus(id: number, dir: 'forward' | 'backward'): Promise<Knowledge> {
+    const values: TaskEntry['status'][] = ['todo', 'doing', 'done']
+    const existing = await this.getEntry(id)
+    if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
+    const idx = values.indexOf(existing.status)
+    const delta = dir === 'forward' ? 1 : -1
+    const next = values[(idx + delta + values.length) % values.length]
+    if (!next) throw new Error(`Invalid status cycle: ${values.join(',')} at index ${idx}`)
+    return this.updateTask(id, { status: next })
   }
 
-  cyclePriority(_id: number, _dir: 'forward' | 'backward'): Promise<Knowledge> {
-    return App.rejectNotImplemented('cyclePriority')
+  async cyclePriority(id: number, dir: 'forward' | 'backward'): Promise<Knowledge> {
+    const values: NonNullable<TaskEntry['priority']>[] = ['low', 'mid', 'high', 'urgent']
+    const existing = await this.getEntry(id)
+    if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
+    const current = existing.priority ?? 'mid'
+    const idx = values.indexOf(current)
+    const delta = dir === 'forward' ? 1 : -1
+    const next = values[(idx + delta + values.length) % values.length]
+    if (!next) throw new Error(`Invalid priority cycle: ${values.join(',')} at index ${idx}`)
+    return this.updateTask(id, { priority: next })
   }
 
-  reorderTask(_id: number, _dir: 'up' | 'down'): Promise<void> {
-    return App.rejectNotImplemented('reorderTask')
+  async reorderTask(id: number, dir: 'up' | 'down'): Promise<Knowledge[]> {
+    const { raw } = this.getDb()
+    const affected = updateTaskOrder(raw, id, dir)
+    if (affected.length === 0) return []
+    const writes = affected.map(async ({ id: affectedId }) => {
+      const entry = findById(raw, affectedId)
+      if (entry) {
+        await this.writeTaskToYaml(entry, entry.source)
+        return entry
+      }
+      return null
+    })
+    const settled = await Promise.all(writes)
+    const results: Knowledge[] = settled.filter((e): e is Knowledge => e !== null)
+    this.invalidateListCache()
+    return results
   }
 
   openExternal(url: string): Promise<void> {

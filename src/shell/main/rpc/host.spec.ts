@@ -1,7 +1,17 @@
-import { describe, expect, it } from 'bun:test'
+import { describe, expect, it, mock } from 'bun:test'
+
+mock.module('electrobun/bun', () => ({
+  BrowserView: {}
+}))
+
+// biome-ignore lint/nursery/useImportsFirst: must follow mock.module for Bun to intercept
 import { Elysia, t } from 'elysia'
 
-import { testing_helpers } from './host'
+const { testing_helpers } =
+  // import('./host') must happen after mock.module is registered above
+  await import('./host')
+
+// biome-ignore lint/nursery/useImportsFirst: must follow dynamic import
 import { rpcErrorContract } from './server'
 
 const HTTP_INTERNAL_ERROR = 500
