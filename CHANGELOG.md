@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.8.0](https://github.com/roalcantara/kodexb/compare/v0.7.0...v0.8.0) (2026-05-12)
+
+### Features
+
+* Add sync UI ([ffecbdb](https://github.com/roalcantara/kodexb/commit/ffecbdb866e027187794e1f2a09997ff6533d5c2))
+
 ## [0.7.0](https://github.com/roalcantara/kodexb/compare/v0.6.0...v0.7.0) (2026-05-12)
 
 ### Features
