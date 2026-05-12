@@ -216,3 +216,15 @@ export function cyclePriority(id: number, dir: 'forward' | 'backward'): Promise<
 export function reorderTask(id: number, dir: 'up' | 'down'): Promise<RpcKnowledge[]> {
   return rpc.api.reorderTask.post({ id, dir }).then(unwrap) as Promise<RpcKnowledge[]>
 }
+
+export function pasteInTerminal(cmd: string): Promise<void> {
+  return rpc.api.pasteInTerminal.post({ cmd }).then(unwrap) as Promise<void>
+}
+
+export function openInEditor(filePath: string): Promise<void> {
+  return rpc.api.openInEditor.post({ filePath }).then(unwrap) as Promise<void>
+}
+
+export function suggestTags(entryId: number): Promise<string[]> {
+  return rpc.api.suggestTags.post({ entryId }).then(unwrap) as Promise<string[]>
+}

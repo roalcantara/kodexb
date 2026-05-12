@@ -24,7 +24,7 @@ sequencing, delivery value, and recommended skills only.
 |   7   | Renderer: Detail View          | V1-4         | ✔ done    |
 |   8   | First-Run Setup & Settings     | V1-1, V1-6   | ✔ done    |
 |   9   | Task Management                | V1-7         | ✔ done    |
-|  10   | Actions System (⌘K)            | V1-8         | ⬜ pending |
+|  10   | Actions System (⌘K)            | V1-8         | ✔ done    |
 |  11   | Sync UI                        | V1-2         | ⬜ pending |
 |  12   | Stats Panel                    | V1-5         | ⬜ pending |
 

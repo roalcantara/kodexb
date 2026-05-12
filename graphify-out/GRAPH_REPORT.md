@@ -1,12 +1,12 @@
 # Graph Report - src/ + assets/docs/  (2026-05-12)
 
 ## Corpus Check
-- 239 files · ~101,964 words
+- 243 files · ~106,905 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1071 nodes · 1797 edges · 102 communities (75 shown, 27 thin omitted)
-- Extraction: 96% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 42 edges (avg confidence: 0.8)
+- 1117 nodes · 1782 edges · 148 communities (73 shown, 75 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 42 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -73,14 +73,14 @@
 - [[_COMMUNITY_Community 60|Community 60]]
 - [[_COMMUNITY_Community 61|Community 61]]
 - [[_COMMUNITY_Community 62|Community 62]]
-- [[_COMMUNITY_Community 63|Community 63]]
+- [[_COMMUNITY_Community 64|Community 64]]
 - [[_COMMUNITY_Community 65|Community 65]]
 - [[_COMMUNITY_Community 66|Community 66]]
 - [[_COMMUNITY_Community 67|Community 67]]
 - [[_COMMUNITY_Community 68|Community 68]]
 - [[_COMMUNITY_Community 69|Community 69]]
 - [[_COMMUNITY_Community 70|Community 70]]
-- [[_COMMUNITY_Community 71|Community 71]]
+- [[_COMMUNITY_Community 84|Community 84]]
 - [[_COMMUNITY_Community 85|Community 85]]
 - [[_COMMUNITY_Community 86|Community 86]]
 - [[_COMMUNITY_Community 87|Community 87]]
@@ -98,6 +98,52 @@
 - [[_COMMUNITY_Community 99|Community 99]]
 - [[_COMMUNITY_Community 100|Community 100]]
 - [[_COMMUNITY_Community 101|Community 101]]
+- [[_COMMUNITY_Community 102|Community 102]]
+- [[_COMMUNITY_Community 103|Community 103]]
+- [[_COMMUNITY_Community 104|Community 104]]
+- [[_COMMUNITY_Community 105|Community 105]]
+- [[_COMMUNITY_Community 106|Community 106]]
+- [[_COMMUNITY_Community 107|Community 107]]
+- [[_COMMUNITY_Community 108|Community 108]]
+- [[_COMMUNITY_Community 109|Community 109]]
+- [[_COMMUNITY_Community 110|Community 110]]
+- [[_COMMUNITY_Community 111|Community 111]]
+- [[_COMMUNITY_Community 112|Community 112]]
+- [[_COMMUNITY_Community 113|Community 113]]
+- [[_COMMUNITY_Community 114|Community 114]]
+- [[_COMMUNITY_Community 115|Community 115]]
+- [[_COMMUNITY_Community 116|Community 116]]
+- [[_COMMUNITY_Community 117|Community 117]]
+- [[_COMMUNITY_Community 118|Community 118]]
+- [[_COMMUNITY_Community 119|Community 119]]
+- [[_COMMUNITY_Community 120|Community 120]]
+- [[_COMMUNITY_Community 121|Community 121]]
+- [[_COMMUNITY_Community 122|Community 122]]
+- [[_COMMUNITY_Community 123|Community 123]]
+- [[_COMMUNITY_Community 124|Community 124]]
+- [[_COMMUNITY_Community 125|Community 125]]
+- [[_COMMUNITY_Community 126|Community 126]]
+- [[_COMMUNITY_Community 127|Community 127]]
+- [[_COMMUNITY_Community 128|Community 128]]
+- [[_COMMUNITY_Community 129|Community 129]]
+- [[_COMMUNITY_Community 130|Community 130]]
+- [[_COMMUNITY_Community 131|Community 131]]
+- [[_COMMUNITY_Community 132|Community 132]]
+- [[_COMMUNITY_Community 133|Community 133]]
+- [[_COMMUNITY_Community 134|Community 134]]
+- [[_COMMUNITY_Community 135|Community 135]]
+- [[_COMMUNITY_Community 136|Community 136]]
+- [[_COMMUNITY_Community 137|Community 137]]
+- [[_COMMUNITY_Community 138|Community 138]]
+- [[_COMMUNITY_Community 139|Community 139]]
+- [[_COMMUNITY_Community 140|Community 140]]
+- [[_COMMUNITY_Community 141|Community 141]]
+- [[_COMMUNITY_Community 142|Community 142]]
+- [[_COMMUNITY_Community 143|Community 143]]
+- [[_COMMUNITY_Community 144|Community 144]]
+- [[_COMMUNITY_Community 145|Community 145]]
+- [[_COMMUNITY_Community 146|Community 146]]
+- [[_COMMUNITY_Community 147|Community 147]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `App` - 33 edges
@@ -116,12 +162,12 @@
   __tests__/helpers/testing.seed.ts → core/domain/models/entries/parsers/source_document.parser.ts
 - `deriveId()` --calls--> `crc32()`  [INFERRED]
   core/domain/models/knowledges/factories/knowledge.factory.ts → shared/utils/crc32.ts
+- `loadedFixture()` --calls--> `factoryFor`  [INFERRED]
+  shell/app/app.spec.ts → __tests__/factories/factories.builder.ts
 - `bootstrap()` --calls--> `createLogger()`  [INFERRED]
   shell/main/main.ts → shared/logging/console.logger.ts
 - `loadedFixture()` --calls--> `createTempDir()`  [INFERRED]
   shell/main/rpc/server.spec.ts → __tests__/helpers/testing.tmp.ts
-- `loadedFixture()` --calls--> `factoryFor`  [INFERRED]
-  shell/main/rpc/server.spec.ts → __tests__/factories/factories.builder.ts
 
 ## Hyperedges (group relationships)
 - **Renderer HTML shell → entry → React root** — index_html_renderer_shell, index_ts_renderer_entry, app_tsx_root_mount [INFERRED 0.85]
@@ -133,275 +179,267 @@
 - **Detail View Implementation Cluster across spec documents** — roadmap_phase_7, requirements_detail_page_view, design_detail_view_component, tasks_detail_view_spec [EXTRACTED 1.00]
 - **TypeBox schema/parser split and shared validation helper** — validators_design_decision_pure_schema_boundary, validators_design_decision_typebox_helper, entry_factory_toentry, knowledge_factory_toknowledge [INFERRED 0.82]
 - **Data layer substrate — knowledges schema, entry repository, import service, FTS5** — design_knowledges_schema, design_entry_repository_api, design_import_service_flow, requirements_entry_model [INFERRED 0.85]
-- **Phase 9 Task Management Full Stack** — task_sheet_modal, rpc_bridge, typebox, task_mutation, sqlite, yaml_write_back [1.0]
-- **Core Type Promotion from meta to First-Class** — task_knowledge, due_date_field, task_order_field, dependency_cycle_detection, entry_repository [1.0]
-- **Superpowers Gated Development Loop** — superpowers_workflow, kb_quality_gate, phase_9_task_management [1.0]
+- **Palette dispatches Open URL via rpc.openExternal when focused entry is a Bookmark** — cmd_k_palette_component, entry_bookmark, rpc_open_external [INFERRED]
+- **pasteInTerminal shell hook reads terminalApp from Settings config and calls Utils.openExternal** — app_shell_hooks, paste_in_terminal_method, settings_config, utils_open_external [INFERRED]
+- **Renderer RPC client calls Elysia server through Eden Treaty, with TypeBox-validated schemas** — rpc_client_wrappers, elysia_rpc_server, typebox_validation, eden_treaty_client [INFERRED]
 
-## Communities (102 total, 27 thin omitted)
+## Communities (148 total, 75 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.05
-Nodes (44): DetailLayout, DragDrop, ListArea(), ListAreaProps, ListData, ListSel, ListData, listPageEmptyFlags() (+36 more)
+Nodes (43): DetailLayout, DragDrop, ListArea(), ListAreaProps, ListData, ListSel, ListData, listPageEmptyFlags() (+35 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.06
-Nodes (42): addDays(), countTasksByView(), isDueThisWeek(), isDueToday(), isOverdue(), parseDue(), startOfDay(), TASK_VIEW_MATCH (+34 more)
+Nodes (38): DependencyGraph(), DependencyGraphProps, dependencyKeys(), DependencyRow(), review, setup, statusText(), ConfigPatch (+30 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.1
-Nodes (27): assembleDoc(), assembleNotesDoc(), AssemblyError, buildPreamble(), renderFragment(), renderNoteFragments(), toBase64(), buildCheatPreamble() (+19 more)
+Cohesion: 0.08
+Nodes (32): SECTION_ENTRY_TYPES, e, raw, toEntry(), toEntryWithSourceHint(), parseBaseEntryFields(), parseSourceFile(), parseSourceSection() (+24 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.09
-Nodes (24): ListPage(), collectTabOrderedFocusables(), isTabFocusableCandidate(), ListPageFocusRingContext, listPageFocusRingElements(), ListPageFocusRingRefs, chain, els (+16 more)
+Nodes (28): AppShellHooks, SyncEmitter, ConfigLoadErrorDeps, reportConfigLoadErrorAndExit(), exit, logError, showMessageBox, createTempDir() (+20 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.1
-Nodes (23): getConfig(), saveConfig(), showOpenDialog(), defaultRpc, SettingsPage(), SettingsPageProps, baseCfg, browseButtons (+15 more)
+Cohesion: 0.08
+Nodes (27): isEntryType(), isEntryTypeSection(), parsed, rpc, configPatchSchema, dirSchema, emptyBodySchema, entryTypeSchema (+19 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.08
-Nodes (26): KnowledgeRow, findDependencies(), findDependents(), a, b, bad, bm, c (+18 more)
+Nodes (20): CmdkPaletteDeps, bridgeFetch(), cyclePriority(), cycleStatus(), deleteTask(), extractErrorMessage(), extractHeaders(), getListStats() (+12 more)
 
 ### Community 6 - "Community 6"
+Cohesion: 0.09
+Nodes (24): ListPage(), collectTabOrderedFocusables(), isTabFocusableCandidate(), ListPageFocusRingContext, listPageFocusRingElements(), ListPageFocusRingRefs, chain, els (+16 more)
+
+### Community 7 - "Community 7"
+Cohesion: 0.1
+Nodes (23): getConfig(), saveConfig(), showOpenDialog(), defaultRpc, SettingsPage(), SettingsPageProps, baseCfg, browseButtons (+15 more)
+
+### Community 8 - "Community 8"
+Cohesion: 0.08
+Nodes (26): KnowledgeRow, findDependencies(), findDependents(), a, b, bad, bm, c (+18 more)
+
+### Community 9 - "Community 9"
 Cohesion: 0.11
 Nodes (19): TAG_BRAND_GLYPHS, TAG_BRAND_SVG_BASENAME, DragHandlers, EntryRow, EntryRowComponent(), EntryRowProps, bookmarkGithub, btn (+11 more)
 
-### Community 7 - "Community 7"
-Cohesion: 0.16
-Nodes (4): App, deleteById(), maxTaskOrder(), updateTaskOrder()
-
-### Community 8 - "Community 8"
-Cohesion: 0.11
-Nodes (27): detail_view.component.tsx, doc.assembler.spec.ts, entry.repository.ts, factories.builder.ts, knowledge.factory.ts, knowledge.schema.ts, rowToKnowledge() Function, rowToParams() Function (+19 more)
-
-### Community 9 - "Community 9"
-Cohesion: 0.14
-Nodes (15): DbHandle, openDatabase(), rebuildFts(), formatBundleError(), ImportResult, ImportService, ParsedSourceBundle, dbPath (+7 more)
-
 ### Community 10 - "Community 10"
-Cohesion: 0.09
-Nodes (26): pageSize must be 25|50|100|200 constraint, AppService (app.ts) deferred to Phase 5 — heavy @shared/rpc coupling, assembleDoc() integration deferred to Phase 7 — doc column stays empty default, Entry repository — 6 public functions (upsert, rebuildFts, findAll, findById, getDbStats, getTagCounts), Fishery factories for typed test row creation — no drizzle-seed, no YAML in unit tests, Four future columns (doc, task_order, due_date, depends_on) added early to avoid migrations, ImportService.runOnce — glob YAML → parse → validate → transaction → upsert → rebuildFts, SQLite knowledges table DDL with FTS5 virtual table and 3 indexes (+18 more)
+Cohesion: 0.13
+Nodes (15): DbHandle, openDatabase(), rebuildFts(), formatBundleError(), ImportResult, ImportService, ParsedSourceBundle, dbPath (+7 more)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.15
-Nodes (20): e, raw, toEntry(), toEntryWithSourceHint(), parseBaseEntryFields(), approxEntryKeyLine(), escapeRegex(), nextTopLevelSectionLine() (+12 more)
+Nodes (4): App, deleteById(), maxTaskOrder(), updateTaskOrder()
 
 ### Community 12 - "Community 12"
 Cohesion: 0.11
-Nodes (17): TaskKeyboardDeps, bridgeFetch(), cycleStatus(), deleteTask(), extractErrorMessage(), extractHeaders(), getListStats(), kbWebviewRpc (+9 more)
+Nodes (27): detail_view.component.tsx, doc.assembler.spec.ts, entry.repository.ts, factories.builder.ts, knowledge.factory.ts, knowledge.schema.ts, rowToKnowledge() Function, rowToParams() Function (+19 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.14
-Nodes (22): configPatchSchema, dirSchema, emptyBodySchema, entryTypeSchema, getEntryParams, idWithDirSchema, idWithReorderDirSchema, listOptsSchema (+14 more)
+Cohesion: 0.09
+Nodes (26): pageSize must be 25|50|100|200 constraint, AppService (app.ts) deferred to Phase 5 — heavy @shared/rpc coupling, assembleDoc() integration deferred to Phase 7 — doc column stays empty default, Entry repository — 6 public functions (upsert, rebuildFts, findAll, findById, getDbStats, getTagCounts), Fishery factories for typed test row creation — no drizzle-seed, no YAML in unit tests, Four future columns (doc, task_order, due_date, depends_on) added early to avoid migrations, ImportService.runOnce — glob YAML → parse → validate → transaction → upsert → rebuildFts, SQLite knowledges table DDL with FTS5 virtual table and 3 indexes (+18 more)
 
 ### Community 14 - "Community 14"
-Cohesion: 0.14
-Nodes (13): TASK_VIEW_LABEL, TYPE_FILTER_LABEL, ENTRY_TYPES, FilterDropdown(), FilterDropdownPanel(), FilterDropdownProps, PanelProps, showTaskSection() (+5 more)
+Cohesion: 0.15
+Nodes (14): TASK_VIEW_LABEL, TYPE_FILTER_LABEL, ENTRY_TYPES, EntryTypeOption, FilterDropdown(), FilterDropdownPanel(), FilterDropdownProps, PanelProps (+6 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.12
-Nodes (18): DEFAULT_ENTRY_ICONS, ENTRY_KEYS, ENTRY_TYPE_SECTIONS, ENTRY_TYPE_VALUES, SECTION_ENTRY_TYPE_VALUES, SECTION_ENTRY_TYPES, TASK_PRIORITY_VALUES, TASK_STATUS_VALUES (+10 more)
+Cohesion: 0.14
+Nodes (17): previewImageFromHtml(), stableListCacheKey(), TaskKnowledge, toFindAllOpts(), youtubePreviewImage(), DbStats, findAll(), FindAllOpts (+9 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.13
-Nodes (16): deriveId(), a, b, entry, expected, k, toKnowledge(), parseSourceSection() (+8 more)
+Nodes (18): checkCache, compile(), formatErrors(), makeGuard(), parse(), check, errors, first (+10 more)
 
 ### Community 17 - "Community 17"
 Cohesion: 0.13
-Nodes (18): checkCache, compile(), formatErrors(), makeGuard(), parse(), check, errors, first (+10 more)
+Nodes (15): closeDetail(), DetailState, handleDetailKey(), ListArrowNav, ListSelectionLayout, openDetail(), Harness(), onDetailClose (+7 more)
 
 ### Community 18 - "Community 18"
 Cohesion: 0.13
-Nodes (15): closeDetail(), DetailState, handleDetailKey(), ListArrowNav, ListSelectionLayout, openDetail(), Harness(), onDetailClose (+7 more)
+Nodes (17): BaseEntry, BookmarkEntry, bookmarkEntrySchema, CheatEntry, cheatEntrySchema, CommandEntry, commandEntrySchema, entrySchema (+9 more)
 
 ### Community 19 - "Community 19"
-Cohesion: 0.14
-Nodes (12): AppShellHooks, previewImageFromHtml(), stableListCacheKey(), SyncEmitter, TaskKnowledge, toFindAllOpts(), youtubePreviewImage(), filterKnowledgeByTaskView() (+4 more)
+Cohesion: 0.13
+Nodes (13): DEFAULT_ENTRY_ICONS, ENTRY_KEYS, ENTRY_TYPE_SECTIONS, ENTRY_TYPE_VALUES, PATTERNS, SECTION_ENTRY_TYPE_VALUES, TASK_PRIORITY_VALUES, TASK_STATUS_VALUES (+5 more)
 
 ### Community 20 - "Community 20"
-Cohesion: 0.11
-Nodes (17): getDbStats(), getTagCounts(), all, bookmarks, { db }, [entry], found, idx (+9 more)
-
-### Community 21 - "Community 21"
-Cohesion: 0.18
-Nodes (15): loadConfig(), resolveConfig(), saveConfig(), cfgPath, invalidFixture, configSchema, DEFAULT_CONFIG_BODY, DisplayConfig (+7 more)
-
-### Community 22 - "Community 22"
-Cohesion: 0.15
-Nodes (19): Circular Dependency Detection, dueDate Field, Entry Repository (DB Row Mapping), KB Quality Gate, KB Implementation Roadmap, Phase 9 — Task Management, Requirement V1-7 — Task Management, SQLite Database (+11 more)
-
-### Community 23 - "Community 23"
 Cohesion: 0.21
 Nodes (14): buildBookmarkPreamble(), baseEntry, entry, out, extractYouTubeId(), candidates, YOUTUBE_THUMB_JPEG_STEMS, youTubeEmbedUrl() (+6 more)
 
-### Community 24 - "Community 24"
-Cohesion: 0.14
-Nodes (13): PATTERNS, Elysia + Eden Treaty RPC, nonEmpty, NoteBlock, noteBlockSchema, ParsedSourceBaseFields, sourceBaseEntryRowObjectSchema, SourceRowMin (+5 more)
+### Community 21 - "Community 21"
+Cohesion: 0.19
+Nodes (9): parseMetaFromSource(), makeError(), parseNoteBlock(), parseNoteBlocksFromSource(), nonEmpty, NoteBlock, noteBlockSchema, ParsedSourceBaseFields (+1 more)
 
-### Community 25 - "Community 25"
+### Community 22 - "Community 22"
+Cohesion: 0.15
+Nodes (12): PRIORITY_CYCLE, STATUS_CYCLE, TaskSheetFormState, toDateInputValue(), useTaskSheet(), createTask(), updateTask(), PRIORITY_CLASS (+4 more)
+
+### Community 23 - "Community 23"
+Cohesion: 0.12
+Nodes (15): all, bookmarks, { db }, [entry], found, idx, knowledge, makeMemoryDb() (+7 more)
+
+### Community 24 - "Community 24"
 Cohesion: 0.17
 Nodes (10): createLogger(), syncLogging(), ConsoleMethod, CreateLoggerOpts, FormattedMessage, Loggers, LogProps, Logs (+2 more)
 
-### Community 26 - "Community 26"
+### Community 25 - "Community 25"
 Cohesion: 0.15
 Nodes (9): defaultLoadEntry(), defaultOpenExternal(), DetailPage(), DetailPageProps, DetailPanel(), DetailPanelProps, aside, btn (+1 more)
 
-### Community 27 - "Community 27"
-Cohesion: 0.17
-Nodes (12): PRIORITY_CYCLE, STATUS_CYCLE, TaskSheetFormState, toDateInputValue(), useTaskSheet(), createTask(), updateTask(), PRIORITY_CLASS (+4 more)
-
-### Community 28 - "Community 28"
+### Community 26 - "Community 26"
 Cohesion: 0.24
 Nodes (10): makeError(), parseLinksFromSource(), parseSingleLinkItem(), parseTitledLink(), httpUrlSchema, LinkItem, linkItemSchema, linkMapValueSchema (+2 more)
 
-### Community 29 - "Community 29"
+### Community 27 - "Community 27"
+Cohesion: 0.23
+Nodes (11): addDays(), countTasksByView(), isDueThisWeek(), isDueToday(), isOverdue(), parseDue(), startOfDay(), TASK_VIEW_MATCH (+3 more)
+
+### Community 28 - "Community 28"
 Cohesion: 0.16
 Nodes (14): Single atomic commit per foundation phase (3 and 4), Phase 2 CI Build Packaging Design, Phase 3 Core Domain Design, Env-gated macOS codesign and notarize in electrobun.config, Foundation Design, Bun test documentation, @release-it/conventional-changelog, release-it (+6 more)
 
+### Community 29 - "Community 29"
+Cohesion: 0.27
+Nodes (10): assembleDoc(), assembleNotesDoc(), AssemblyError, buildPreamble(), renderFragment(), renderNoteFragments(), toBase64(), buildCheatPreamble() (+2 more)
+
 ### Community 30 - "Community 30"
-Cohesion: 0.31
-Nodes (11): bootstrap(), loadWindowState(), loadWindowStateSync(), parseWindowStateJson(), saveWindowState(), bounds, cfg, statePath (+3 more)
+Cohesion: 0.22
+Nodes (10): deriveId(), a, b, entry, expected, k, toKnowledge(), Entry (+2 more)
 
 ### Community 31 - "Community 31"
-Cohesion: 0.21
-Nodes (10): bookmarkFactory, cheatFactory, commandFactory, envFactory, factories, loadedConfigFactory, rawConfigFactory, taskFactory (+2 more)
+Cohesion: 0.17
+Nodes (10): app, calls, cfg, importedAppFixture(), importer, loadedFixture(), opened, shell (+2 more)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.17
-Nodes (10): app, importedAppFixture(), importer, loadedFixture(), opened, shell, showOpenDialog, sizes (+2 more)
+Cohesion: 0.21
+Nodes (10): bookmarkFactory, cheatFactory, commandFactory, envFactory, factories, loadedConfigFactory, rawConfigFactory, taskFactory (+2 more)
 
 ### Community 33 - "Community 33"
 Cohesion: 0.21
 Nodes (9): createFactoryFor(), FactoryLike, factories, factoryForLocal, row, FactoryBuildOpts, isFactoryOpts(), OPTION_KEYS (+1 more)
 
 ### Community 34 - "Community 34"
-Cohesion: 0.21
-Nodes (5): isEntryType(), isEntryTypeSection(), EntryKey, EntryType, SectionEntryType
+Cohesion: 0.2
+Nodes (7): CmdkAction, CmdkPalette(), CmdkPaletteProps, actions, handler, input, onClose
 
 ### Community 35 - "Community 35"
-Cohesion: 0.26
-Nodes (6): r, raw, result, parseMetaFromSource(), normalizeKnowledgeTag(), parseTagsFromSource()
+Cohesion: 0.3
+Nodes (8): loadConfig(), resolveConfig(), saveConfig(), cfgPath, invalidFixture, parseConfig(), expandPath(), err
 
 ### Community 36 - "Community 36"
 Cohesion: 0.18
-Nodes (6): doc, entries, knowledge, NOW, result, parseSourceFile()
-
-### Community 37 - "Community 37"
-Cohesion: 0.24
-Nodes (7): listFilterSummary(), ListMain(), ListMainProps, Toolbar(), ToolbarProps, ListPageShell, cyclePriority()
-
-### Community 38 - "Community 38"
-Cohesion: 0.18
 Nodes (8): DetailPageViewProps, baseProps, closeBtn, doingEls, entry, highEls, linkBtn, openExternalMock
 
-### Community 39 - "Community 39"
-Cohesion: 0.31
-Nodes (4): isNoteLang(), makeError(), parseNoteBlock(), parseNoteBlocksFromSource()
-
-### Community 40 - "Community 40"
+### Community 37 - "Community 37"
 Cohesion: 0.2
 Nodes (7): badges, body, bookmark, link, onOpenExternal, tags, task
 
-### Community 41 - "Community 41"
+### Community 38 - "Community 38"
+Cohesion: 0.27
+Nodes (6): listFilterSummary(), ListMain(), ListMainProps, Toolbar(), ToolbarProps, ListPageShell
+
+### Community 39 - "Community 39"
 Cohesion: 0.2
 Nodes (6): call, completes, ElectroviewMock, messageHandlers, progress, rpcCallMock
 
+### Community 40 - "Community 40"
+Cohesion: 0.22
+Nodes (8): LoadedConfig, factoryFor, app, calls, data, importedAppFixture(), loadedFixture(), rpc
+
+### Community 41 - "Community 41"
+Cohesion: 0.22
+Nodes (8): configSchema, DEFAULT_CONFIG_BODY, DisplayConfig, PAGE_SIZE_VALUES, PageSize, RawConfig, ResolvedConfig, DEFAULTS
+
 ### Community 42 - "Community 42"
-Cohesion: 0.29
-Nodes (9): DbStats, findAll(), FindAllOpts, findById(), parseJson(), rowToKnowledge(), rowToParams(), toFts5MatchQuery() (+1 more)
+Cohesion: 0.22
+Nodes (5): doc, entries, knowledge, NOW, result
 
 ### Community 43 - "Community 43"
-Cohesion: 0.31
-Nodes (7): DependencyGraph(), DependencyGraphProps, dependencyKeys(), DependencyRow(), review, setup, statusText()
+Cohesion: 0.22
+Nodes (3): DepsSnapshot, TaskKeyboardDeps, reorderTask()
 
 ### Community 44 - "Community 44"
-Cohesion: 0.25
-Nodes (7): createRpcServer(), app, calls, data, importedAppFixture(), loadedFixture(), rpc
-
-### Community 45 - "Community 45"
-Cohesion: 0.29
-Nodes (4): defaultFetchImage(), defaultOpenUrl(), PreviewImage(), PreviewImageProps
-
-### Community 46 - "Community 46"
 Cohesion: 0.43
 Nodes (7): DetailPageView(), LinkDisplay, LinkItem, linksToDisplay(), primaryUrl(), pushLinksFromObjectRecord(), safeHostname()
 
-### Community 47 - "Community 47"
+### Community 45 - "Community 45"
 Cohesion: 0.36
 Nodes (5): formatDateString(), formatTime(), MetadataSidebar(), MetadataSidebarProps, task
 
-### Community 48 - "Community 48"
+### Community 46 - "Community 46"
+Cohesion: 0.29
+Nodes (4): defaultFetchImage(), defaultOpenUrl(), PreviewImage(), PreviewImageProps
+
+### Community 47 - "Community 47"
 Cohesion: 0.48
 Nodes (4): parseNotes(), parseNotesFromBlocks(), NoteFragment, RawNotes
+
+### Community 48 - "Community 48"
+Cohesion: 0.38
+Nodes (5): buildTaskPreamble(), baseTask, out, t, TaskKnowledge
 
 ### Community 49 - "Community 49"
 Cohesion: 0.33
 Nodes (5): MdView(), MdViewProps, code, hasLangClass, p
 
 ### Community 50 - "Community 50"
-Cohesion: 0.33
-Nodes (5): ConfigLoadErrorDeps, reportConfigLoadErrorAndExit(), exit, logError, showMessageBox
-
-### Community 51 - "Community 51"
-Cohesion: 0.33
-Nodes (4): expandPath(), braceVar, EXPAND_PATH_CASES, mockEnv
-
-### Community 52 - "Community 52"
 Cohesion: 0.29
 Nodes (6): bookmark, cfg, cheat, command, row, task
 
-### Community 53 - "Community 53"
-Cohesion: 0.53
-Nodes (4): EntryTypeOption, loadListRows(), ListPageRowsInput, listEntries()
+### Community 51 - "Community 51"
+Cohesion: 0.47
+Nodes (4): buildCommandPreamble(), cmd, out, CommandKnowledge
 
-### Community 54 - "Community 54"
+### Community 52 - "Community 52"
 Cohesion: 0.33
 Nodes (5): getListStatsMock, Harness(), listStats, setSyncMessageHandlersMock, syncRpcMock
 
-### Community 55 - "Community 55"
-Cohesion: 0.33
-Nodes (4): parsed, rpc, testing_helpers, rpcErrorContract
-
-### Community 56 - "Community 56"
+### Community 53 - "Community 53"
 Cohesion: 0.5
 Nodes (3): crc32(), r, TABLE
 
+### Community 54 - "Community 54"
+Cohesion: 0.5
+Nodes (3): r, raw, result
+
 ### Community 57 - "Community 57"
 Cohesion: 0.5
-Nodes (3): createTempDir(), file, TempDir
+Nodes (3): FilterDropdownTags(), FilterDropdownTagsProps, TagRow
 
 ### Community 58 - "Community 58"
 Cohesion: 0.5
-Nodes (4): Bun Runtime, Electrobun, FCIS Architecture, KB Knowledge Base App
+Nodes (3): braceVar, EXPAND_PATH_CASES, mockEnv
 
-### Community 60 - "Community 60"
+### Community 59 - "Community 59"
 Cohesion: 0.83
 Nodes (4): kb desktop design, Validators TypeBox migration design, Validators migration requirements, Validators implementation tasks
 
-### Community 61 - "Community 61"
+### Community 60 - "Community 60"
 Cohesion: 0.5
 Nodes (4): Barrel-only path aliases — no wildcards, explicit named sub-barrels, 5 nested-superset stashes collapsed to single phase-pending stash, Validation boundaries — TypeBox at YAML→core, config→loaded, row→Knowledge, Single atomic feat(data) commit — all Phase 4 work in one commit
 
 ## Knowledge Gaps
-- **399 isolated node(s):** `MARKDOWN_SUPPORTED_LANGS`, `MarkdownLang`, `EntryKey`, `SectionEntryType`, `ENTRY_TYPE_VALUES` (+394 more)
+- **456 isolated node(s):** `MARKDOWN_SUPPORTED_LANGS`, `MarkdownLang`, `EntryKey`, `SectionEntryType`, `ENTRY_TYPE_VALUES` (+451 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **75 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `toKnowledge()` connect `Community 16` to `Community 17`, `Community 2`, `Community 36`, `Community 7`?**
-  _High betweenness centrality (0.059) - this node is a cross-community bridge._
-- **Why does `App` connect `Community 7` to `Community 32`, `Community 44`, `Community 13`, `Community 19`, `Community 20`, `Community 25`?**
-  _High betweenness centrality (0.051) - this node is a cross-community bridge._
-- **Why does `ImportService` connect `Community 9` to `Community 32`, `Community 36`, `Community 44`, `Community 19`, `Community 25`?**
-  _High betweenness centrality (0.042) - this node is a cross-community bridge._
+- **Why does `toKnowledge()` connect `Community 30` to `Community 2`, `Community 42`, `Community 11`, `Community 16`, `Community 29`?**
+  _High betweenness centrality (0.143) - this node is a cross-community bridge._
+- **Why does `App` connect `Community 11` to `Community 3`, `Community 4`, `Community 40`, `Community 15`, `Community 24`, `Community 31`?**
+  _High betweenness centrality (0.070) - this node is a cross-community bridge._
+- **Why does `upsert()` connect `Community 15` to `Community 8`, `Community 10`, `Community 11`, `Community 23`?**
+  _High betweenness centrality (0.058) - this node is a cross-community bridge._
 - **What connects `MARKDOWN_SUPPORTED_LANGS`, `MarkdownLang`, `EntryKey` to the rest of the system?**
-  _399 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _456 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.05 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
   _Cohesion score 0.06 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.1 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08 - nodes in this community are weakly interconnected._

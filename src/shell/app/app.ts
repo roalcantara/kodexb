@@ -64,6 +64,8 @@ export type AppShellHooks = {
   resizeWindow?: (width: number, height: number) => void
   openExternal?: (url: string) => void
   showOpenDialog?: (opts?: OpenDialogOpts) => Promise<string | null>
+  pasteInTerminal?: (cmd: string, terminalApp?: string) => void
+  openInEditor?: (filePath: string, editorApp?: string) => void
 }
 
 const OG_IMAGE_RE = /<meta\s+[^>]*(?:property|name)=["']og:image["'][^>]*content=["']([^"']+)["'][^>]*>/i
@@ -383,12 +385,16 @@ export class App {
     return Promise.resolve()
   }
 
-  pasteInTerminal(_cmd: string): Promise<void> {
-    return App.rejectNotImplemented('pasteInTerminal')
+  pasteInTerminal(cmd: string): Promise<void> {
+    const app = this.loaded.display.terminalApp
+    this.shellHooks.pasteInTerminal?.(cmd, app)
+    return Promise.resolve()
   }
 
-  openInEditor(_filePath: string): Promise<void> {
-    return App.rejectNotImplemented('openInEditor')
+  openInEditor(filePath: string): Promise<void> {
+    const app = this.loaded.display.editorApp
+    this.shellHooks.openInEditor?.(filePath, app)
+    return Promise.resolve()
   }
 
   showOpenDialog(opts?: OpenDialogOpts): Promise<string | null> {

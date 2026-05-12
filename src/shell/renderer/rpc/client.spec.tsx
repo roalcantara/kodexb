@@ -38,6 +38,8 @@ const {
   getListStats,
   listEntries,
   openExternal,
+  openInEditor,
+  pasteInTerminal,
   resizeWindow,
   setSyncMessageHandlers,
   syncRpc
@@ -170,6 +172,26 @@ describe('Eden Treaty client', () => {
 
       expect(progress).toEqual([{ processed: 1, total: 10 }])
       expect(completes).toHaveLength(1)
+    })
+  })
+
+  describe('.pasteInTerminal', () => {
+    it('forwards cmd to /api/pasteInTerminal', async () => {
+      rpcCallMock.mockImplementation(() => okResponse(undefined))
+      await pasteInTerminal('git log')
+      const call = rpcCallMock.mock.calls[0]?.[0] as { path: string; body: string }
+      expect(call.path).toBe('/api/pasteInTerminal')
+      expect(JSON.parse(call.body)).toEqual({ cmd: 'git log' })
+    })
+  })
+
+  describe('.openInEditor', () => {
+    it('forwards filePath to /api/openInEditor', async () => {
+      rpcCallMock.mockImplementation(() => okResponse(undefined))
+      await openInEditor('/tmp/file.yml')
+      const call = rpcCallMock.mock.calls[0]?.[0] as { path: string; body: string }
+      expect(call.path).toBe('/api/openInEditor')
+      expect(JSON.parse(call.body)).toEqual({ filePath: '/tmp/file.yml' })
     })
   })
 })

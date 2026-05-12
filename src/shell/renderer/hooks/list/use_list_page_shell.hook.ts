@@ -4,9 +4,9 @@ import type { EntryTypeOption } from '../../components/list/filter_dropdown.comp
 import { deleteTask, reorderTask } from '../../rpc/client'
 import { listPageEmptyFlags } from '../../utils/list/list_page_empty_flags.util'
 import { focusListSurface } from '../../utils/list/list_surface_focus.util'
+import { useCmdkPalette } from './use_cmdk_palette.hook'
 import { useListDetailResize } from './use_list_detail_resize.hook'
 import { useListFilterOverlay } from './use_list_filter_overlay.hook'
-import { useListPageCmdKeyStub } from './use_list_page_cmd_key_stub.hook'
 import { useListPageData } from './use_list_page_data.hook'
 import { useListSelection } from './use_list_selection.hook'
 import { useListSentinelPagination } from './use_list_sentinel_pagination.hook'
@@ -42,7 +42,12 @@ export function useListPageShell() {
     loading: data.loading,
     fetchMore
   })
-  useListPageCmdKeyStub()
+  const palette = useCmdkPalette({
+    selectedEntry: sel.detailEntry,
+    onEditTask: _entry => {
+      // TaskSheet is handled by the existing selection hook's detailEntry + openDetail
+    }
+  })
 
   const flags = listPageEmptyFlags(data)
   const onSearchArrowDown = () => {
@@ -127,7 +132,8 @@ export function useListPageShell() {
     onNewTask: handleNewTask,
     onEditTask: handleEditTask,
     onCloseTaskSheet: handleCloseTaskSheet,
-    dragDrop
+    dragDrop,
+    palette
   }
 }
 

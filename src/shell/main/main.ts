@@ -9,6 +9,7 @@ import { loadWindowStateSync, saveWindowState, validateBounds, windowStatePathFo
 
 const DEFAULT_FRAME = { x: 100, y: 100, width: 820, height: 600 }
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: pre-existing bootstrap function
 async function bootstrap() {
   const log = createLogger({ debug: false })
 
@@ -58,6 +59,13 @@ async function bootstrap() {
         allowsMultipleSelection: false
       })
       return paths[0] ?? null
+    },
+    pasteInTerminal: (_cmd, terminalApp) => {
+      if (terminalApp) Utils.openExternal(terminalApp)
+    },
+    openInEditor: (filePath, _editorApp) => {
+      const fileUrl = filePath.startsWith('/') ? `file://${filePath}` : filePath
+      Utils.openExternal(fileUrl)
     }
   }
 
