@@ -133,7 +133,9 @@ export function useListPageShell() {
     onEditTask: handleEditTask,
     onCloseTaskSheet: handleCloseTaskSheet,
     dragDrop,
-    palette
+    palette,
+    toastResult: data.toastResult,
+    dismissToast: data.dismissToast
   }
 }
 

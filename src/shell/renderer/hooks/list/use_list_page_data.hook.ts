@@ -13,7 +13,7 @@ export function useListPageData(opts: { pageSizeOverride?: number } = {}) {
     taskView: filters.taskView,
     pageSize
   })
-  const { stats, dbStats, syncing, syncProg, onSync } = useListPageStatsSync(refreshList)
+  const { stats, dbStats, syncing, syncProg, onSync, toastResult, dismissToast } = useListPageStatsSync(refreshList)
 
   return {
     rows,
@@ -35,6 +35,8 @@ export function useListPageData(opts: { pageSizeOverride?: number } = {}) {
     syncing,
     syncProg,
     refreshList,
-    onSync
+    onSync,
+    toastResult,
+    dismissToast
   }
 }

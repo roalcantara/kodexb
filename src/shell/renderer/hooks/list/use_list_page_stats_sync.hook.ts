@@ -1,4 +1,4 @@
-import type { ListStats, RpcDbStats } from '@shared/rpc'
+import type { ListStats, RpcDbStats, RpcImportResult } from '@shared/rpc'
 import { useCallback, useEffect, useState } from 'react'
 
 import { getListStats, setSyncMessageHandlers, syncRpc } from '../../rpc/client'
@@ -8,6 +8,9 @@ export function useListPageStatsSync(refreshList: (append: boolean) => Promise<v
   const [dbStats, setDbStats] = useState<RpcDbStats | null>(null)
   const [syncing, setSyncing] = useState(false)
   const [syncProg, setSyncProg] = useState<{ processed: number; total: number } | undefined>(undefined)
+  const [toastResult, setToastResult] = useState<RpcImportResult | null>(null)
+
+  const dismissToast = useCallback(() => setToastResult(null), [])
 
   const refreshStats = useCallback(async () => {
     const s = await getListStats()
@@ -22,9 +25,10 @@ export function useListPageStatsSync(refreshList: (append: boolean) => Promise<v
   useEffect(() => {
     setSyncMessageHandlers({
       onProgress: p => setSyncProg({ processed: p.processed, total: p.total }),
-      onComplete: () => {
+      onComplete: (result: RpcImportResult) => {
         setSyncing(false)
         setSyncProg(undefined)
+        setToastResult(result)
         refreshStats().catch(() => undefined)
         refreshList(false).catch(() => undefined)
       }
@@ -32,12 +36,14 @@ export function useListPageStatsSync(refreshList: (append: boolean) => Promise<v
   }, [refreshList, refreshStats])
 
   const onSync = () => {
+    if (syncing) return
     setSyncing(true)
     setSyncProg(undefined)
+    setToastResult(null)
     syncRpc().catch(() => {
       setSyncing(false)
     })
   }
 
-  return { stats, dbStats, refreshStats, syncing, syncProg, onSync }
+  return { stats, dbStats, refreshStats, syncing, syncProg, onSync, toastResult, dismissToast }
 }

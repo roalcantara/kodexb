@@ -3,6 +3,8 @@ import { SettingsPage } from '../../pages/settings/settings.page'
 import { cyclePriority, cycleStatus } from '../../rpc/client'
 import { listFilterSummary } from '../../utils/list/list_filter_summary.util'
 import { CmdkPalette } from '../actions/cmdk_palette.component'
+import { SyncProgress } from '../shared/sync_progress.component'
+import { SyncToast } from '../shared/sync_toast.component'
 import { TaskSheet } from '../task/task_sheet.component'
 import { FilterDropdown } from './filter_dropdown.component'
 import { ListArea } from './list_area.component'
@@ -53,6 +55,9 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
       {p.taskSheetVisible ? (
         <TaskSheet key={p.taskSheetEntry?.id ?? 'new'} entry={p.taskSheetEntry} onClose={p.onCloseTaskSheet} />
       ) : null}
+      {p.data.syncing && p.data.syncProg !== undefined && (
+        <SyncProgress processed={p.data.syncProg.processed} total={p.data.syncProg.total} />
+      )}
       {showSettings ? (
         <div className="kb-settingsHost">
           <SettingsPage
@@ -93,6 +98,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           onClose={() => p.filter.setFilterOpen(false)}
         />
       )}
+      <SyncToast result={p.data.toastResult} onDismiss={p.data.dismissToast} />
     </>
   )
 }
