@@ -35,6 +35,6 @@
       "@testing/*": ["./src/__tests__/*"]
     }
   },
-  "include": ["src/**/*", "tools/**/*"],
+  "include": ["src/**/*", "tools/**/*", "e2e/**/*.ts", "playwright.config.ts"],
   "exclude": ["node_modules", "dist", "build"]
 }

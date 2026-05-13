@@ -40,11 +40,15 @@
     "lint:ast-grep:fix": "mise exec -- ast-grep scan src tools --update-all --off=no-fishery-import --globs '!graphify-out/**'",
     "lint": "e=0; bun run typecheck || e=1; bun run lint:biome:strict || e=1; bun run lint:knip || e=1; bun run lint:depcruise || e=1; bun run lint:mise || e=1; bun run lint:jscpd || e=1; bun run lint:ls || e=1; bun run lint:ast-grep || e=1; exit $e",
     "lint:strict": "e=0; bun run typecheck || e=1; bun run lint:biome:strict || e=1; bun run lint:knip || e=1; bun run lint:depcruise || e=1; bun run lint:mise || e=1; bun run lint:jscpd || e=1; bun run lint:ls || e=1; bun run lint:ast-grep || e=1; exit $e",
-    "lint:fix": "e=0; bun run lint:biome:fix || e=1; bun run lint:knip:fix || e=1; bun run lint:ast-grep:fix || e=1; bun run typecheck || e=1; bun run lint:biome || e=1; exit $e"
+    "lint:fix": "e=0; bun run lint:biome:fix || e=1; bun run lint:knip:fix || e=1; bun run lint:ast-grep:fix || e=1; bun run typecheck || e=1; bun run lint:biome || e=1; exit $e",
+    "e2e:preview:install": "bunx playwright install chromium",
+    "e2e:preview": "bunx playwright test e2e/preview_list_nav.e2e.spec.ts",
+    "e2e:preview:ui": "bunx playwright test e2e/preview_list_nav.e2e.spec.ts --ui"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",
     "@happy-dom/global-registrator": "^20.9.0",
+    "@playwright/test": "^1.51.0",
     "@release-it/conventional-changelog": "^9",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",

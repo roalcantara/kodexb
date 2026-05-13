@@ -30,6 +30,7 @@ actionlint = "latest"
   ''' }
 "ci:review:lint" = { description = "Run the full Phase-1 lint chain", run = "bun run lint" }
 "ci:review:test" = { description = "Run tests with JUnit + coverage (CI shape)", run = "bun run test:ci" }
+"e2e:preview" = { description = "Playwright smoke against tools/preview (install browsers once: bun run e2e:preview:install)", run = "bun run e2e:preview" }
 "ci:review:build" = { description = "Smoke build with macOS signing forced off", run = '''
     #!/usr/bin/env bash
     ELECTROBUN_DEVELOPER_ID="" bun run build
@@ -265,3 +266,25 @@ actionlint = "latest"
     echo ""
     echo "Repository '$repo' deleted."
   ''' }
+"link:skills" = { description = "Symlink Electrobun skills from ~/.agents/skills into .agents/skills", run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+    ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+    if [[ -z "$ROOT" ]]; then
+      echo "link:skills: run from inside the kb git checkout" >&2
+      exit 1
+    fi
+    KB="$ROOT/.agents/skills"
+    SRC="${SKILLS_SRC:-$HOME/.agents/skills}"
+    cd "$KB" || exit 1
+    for name in \
+      electrobun electrobun-plugin-guide electrobun-dev electrobun-core \
+      electrobun-config electrobun-build electrobun-platform electrobun-distribution \
+      electrobun-testing electrobun-kitchen-sink electrobun-workflow \
+      agent-electrobun bun-development bun-runtime; do
+      if [[ -e "$KB/$name" || -L "$KB/$name" ]]; then
+        continue
+      fi
+      ln -s "$SRC/$name" "$KB/$name"
+    done
+''' }

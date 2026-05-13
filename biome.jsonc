@@ -218,7 +218,14 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.test.ts", "**/*.spec.ts", "**/*.test.tsx", "**/*.spec.tsx", "**/__tests__/**/*.ts"],
+      "includes": [
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "**/*.e2e.spec.ts",
+        "**/*.test.tsx",
+        "**/*.spec.tsx",
+        "**/__tests__/**/*.ts"
+      ],
       "linter": {
         "rules": {
           "complexity": {
@@ -249,11 +256,12 @@
       }
     },
     {
-      "includes": ["electrobun.config.ts"],
+      "includes": ["electrobun.config.ts", "playwright.config.ts"],
       "linter": {
         "rules": {
           "style": {
-            "noDefaultExport": "off"
+            "noDefaultExport": "off",
+            "useNamingConvention": "off"
           }
         }
       }
