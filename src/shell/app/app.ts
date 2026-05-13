@@ -127,13 +127,15 @@ function extractKeywords(text: string): string[] {
 }
 
 function countCooccurrence(cooccurrence: Map<string, number>, otherTags: string[], existingTags: Set<string>): void {
+  const otherSet = new Set(otherTags)
+  let sharedHits = 0
+  for (const myTag of existingTags) {
+    if (otherSet.has(myTag)) sharedHits += 1
+  }
+  if (sharedHits === 0) return
   for (const tag of otherTags) {
     if (existingTags.has(tag)) continue
-    for (const myTag of existingTags) {
-      if (otherTags.includes(myTag)) {
-        cooccurrence.set(tag, (cooccurrence.get(tag) ?? 0) + 1)
-      }
-    }
+    cooccurrence.set(tag, (cooccurrence.get(tag) ?? 0) + sharedHits)
   }
 }
 
