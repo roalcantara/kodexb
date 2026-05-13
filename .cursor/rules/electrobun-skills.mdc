@@ -9,12 +9,13 @@ When a task may involve **Electrobun** (desktop shell, webview/renderer, typed R
 
 1. Open **`.cursor/electrobun-skill-routing.md`** and use its table to choose skills.
 2. Load each needed guide with the **Read** tool at  
-   **`$HOME/.config/cursor/skills/<skill-id>/SKILL.md`**  
+   **`<repo>/.agents/skills/<skill-id>/SKILL.md`**  
    (replace `<skill-id>` with the slug from the table, e.g. `electrobun-rpc`).  
-   If that path is missing, list `~/.config/cursor/skills` to confirm symlinks.
+   If a skill is missing there, run `mise run link:skills` or check
+   `$HOME/.agents/skills/` / `$HOME/.config/cursor/skills/` for copies.
 
 If nothing matches, read **`electrobun-plugin-guide`** first, then narrow.
 
-Prefer repo guides for **kb-specific** wiring: `assets/guides/ELECTROBUN.md`, `assets/docs/design.md`.
+Prefer repo guides for **kb-specific** wiring: `assets/guides/ELECTROBUN.md`, `assets/docs/specs/foundation/design.md`.
 
 Do **not** rely on memory alone for Electrobun APIs when a skill covers the topic—read the skill, then implement.

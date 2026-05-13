@@ -82,6 +82,15 @@ bun test --coverage
 
 DoD §2: aim for ≥ 80% line coverage on changed files.
 
+Playwright preview specs (`bun run e2e:preview`) are **not** part of `gate.sh`
+by default — they need Chromium (`bun run e2e:preview:install` once) and a
+non-empty preview DB to execute meaningful assertions; otherwise they may
+`test.skip`. Run them explicitly when changing list/nav UI or preview tooling:
+
+```bash
+mise run e2e:preview
+```
+
 ### Stage 3 — Preview-server smoke test
 
 ```bash
@@ -133,17 +142,17 @@ Non-negotiable bits:
 
 ## Common Mistakes
 
-| Failure                           | Likely cause                                               | Fix                                              |
-| --------------------------------- | ---------------------------------------------------------- | ------------------------------------------------ |
-| Manual fixing biome/knip/ast-grep | Ran `bun run lint` before `bun run lint:fix`               | Re-run with `lint:fix` first; many auto-correct  |
-| `knip` unused export              | Added a helper not imported anywhere                       | Use it or delete it                              |
-| dep-cruiser violation             | Renderer imported from `src/shell/app/`                    | Route through Eden Treaty client only            |
-| dep-cruiser violation             | `core/` imported from `src/shell/` or `src/shared/logging` | Pass the dep in as a parameter (FCIS rule)       |
-| TypeBox + Zod type mismatch       | Used Zod schema in an Elysia route                         | Replace with `t.*` (TypeBox); Zod stays in core  |
-| Coverage < 80%                    | New branch/function not exercised                          | Add spec cases for uncovered paths               |
-| Preview-server route missing      | Added Elysia route but forgot to mirror                    | Add matching `case` in `tools/preview/server.ts` |
-| Subject line > 50 chars           | Wrote subject in 72-char "body width" mode                 | Rewrite — gitlint will reject the commit anyway  |
-| `console.log` in `src/`           | Debug statement left in                                    | Delete; logging goes through `@shared/logging`   |
+| Failure                           | Likely cause                                               | Fix                                                 |
+| --------------------------------- | ---------------------------------------------------------- | --------------------------------------------------- |
+| Manual fixing biome/knip/ast-grep | Ran `bun run lint` before `bun run lint:fix`               | Re-run with `lint:fix` first; many auto-correct     |
+| `knip` unused export              | Added a helper not imported anywhere                       | Use it or delete it                                 |
+| dep-cruiser violation             | Renderer imported from `src/shell/app/`                    | Route through Eden Treaty client only               |
+| dep-cruiser violation             | `core/` imported from `src/shell/` or `src/shared/logging` | Pass the dep in as a parameter (FCIS rule)          |
+| TypeBox / validation drift        | Used `z.*` or non–TypeBox shapes in an Elysia route        | Use `t.*` / TypeBox only; `zod` is not a dependency |
+| Coverage < 80%                    | New branch/function not exercised                          | Add spec cases for uncovered paths                  |
+| Preview-server route missing      | Added Elysia route but forgot to mirror                    | Add matching `case` in `tools/preview/server.ts`    |
+| Subject line > 50 chars           | Wrote subject in 72-char "body width" mode                 | Rewrite — gitlint will reject the commit anyway     |
+| `console.log` in `src/`           | Debug statement left in                                    | Delete; logging goes through `@shared/logging`      |
 
 ## Red Flags — STOP and re-run the gate
 

@@ -1,6 +1,8 @@
 # Electrobun skill routing (kb)
 
-Skills are installed under **`$HOME/.config/cursor/skills/<id>/SKILL.md`** (symlinks from skillshare are fine). **Read the full `SKILL.md`** with the Read tool when a row matches the task.
+**Read the full `SKILL.md`** with the Read tool when a row matches the task.
+
+**Where to read from:** kb vendors Electrobun skills under **`<repo>/.agents/skills/<id>/SKILL.md`** (same folder as `kb-context`, `kb-rpc`, etc.). Use `mise run link:skills` to symlink additional skills from `$HOME/.agents/skills/` into that tree. A global Cursor copy under `$HOME/.config/cursor/skills/` may also exist on your machine — prefer the repo path when both are present.
 
 | When the task involves…                                                         | Read this skill first     |
 | ------------------------------------------------------------------------------- | ------------------------- |
@@ -19,6 +21,6 @@ Skills are installed under **`$HOME/.config/cursor/skills/<id>/SKILL.md`** (syml
 | **milady-ai/milady** repo PRs and their Electrobun conventions                  | `electrobun-milady`       |
 | **CDP / automate the running app** (separate tool; not kb’s default dev script) | `agent-electrobun`        |
 
-**kb-specific in-repo docs** (read when relevant): [`assets/guides/ELECTROBUN.md`](../assets/guides/ELECTROBUN.md), [`assets/docs/design.md`](../assets/docs/specs/foundation/design.md) (RPC and layout).
+**kb-specific in-repo docs** (read when relevant): [`assets/guides/ELECTROBUN.md`](../assets/guides/ELECTROBUN.md), [`assets/docs/specs/foundation/design.md`](../assets/docs/specs/foundation/design.md) (RPC and layout).
 
 **Heuristic:** If the user edits under `src/shell/`, `electrobun.config.ts`, or `src/shared/rpc/`, load **`electrobun-core`** and/or **`electrobun-rpc`** before changing behavior.

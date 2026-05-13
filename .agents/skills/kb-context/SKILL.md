@@ -1,131 +1,165 @@
 ---
 name: kb-context
-description: >
-  Load this skill at the start of ANY task touching the kb codebase — adding
-  features, writing tests, reviewing code, planning phases, fixing bugs, or
-  running the QA gate. It defines the FCIS architecture (core/shell/renderer
-  layer rules), the Elysia + Eden Treaty RPC bridge, naming conventions, and
-  the Andromeda Void design system. Without it you risk importing across the
-  wrong layer boundary, using the wrong validation library, or naming files
-  inconsistently. When in doubt, load it — it's cheap and prevents costly
-  mistakes.
+description: Load this skill at the start of ANY task touching the kb codebase — adding features, writing tests, reviewing code, planning phases, fixing bugs, or running the QA gate. It defines the FCIS architecture (core/shell/renderer layer rules), the Elysia + Eden Treaty RPC bridge, naming conventions, and the Andromeda Void design system. Without it you risk importing across the wrong layer boundary, using the wrong validation library, or naming files inconsistently.
 ---
 
-# kb Project Context
+# kb — project context
 
-## What kb Is
+## When to load
 
-A macOS desktop app (Electrobun) that lets developers browse, search, and
-manage personal knowledge entries (bookmarks, commands, cheat-sheets, tasks).
-Data is stored in a local SQLite database fed by YAML source files.
+At the start of **any** kb task: features, tests, reviews, planning, bugs, or
+quality gate. This skill is the fastest way to avoid FCIS boundary mistakes,
+wrong validation, and naming drift.
 
-Runtime: **Bun**. Framework: **Electrobun** (Chromium view + native shell).
-UI: **React 19** (renderer process). RPC bridge: **Elysia + Eden Treaty**.
+## Skill locations
 
----
+- **kb-specific skills** (this file, `kb-rpc`, `kb-testing`, `kb-quality-gate`):
+  read from **`<repo>/.agents/skills/<skill-id>/SKILL.md`** (this repository).
+- **Electrobun skills** vendored for kb: same folder (e.g.
+  `electrobun-best-practices`, `electrobun-native-ui`). The
+  [`.cursor/electrobun-skill-routing.md`](../../../.cursor/electrobun-skill-routing.md)
+  table lists which to open for each topic.
+- **Optional global copies**: your Cursor install may also mirror skills under
+  `$HOME/.config/cursor/skills/` — if a path is missing, prefer the repo copy
+  above.
 
-## Architecture — FCIS (Functional Core, Imperative Shell)
+## Stack (authoritative)
+
+Canonical prose: [`CLAUDE.md`](../../../CLAUDE.md) at repo root. If this skill
+and `CLAUDE.md` disagree, **CLAUDE.md wins** — open a PR to fix the skill.
+
+| Layer                    | Role                                                                                                                                  |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Bun**                  | Runtime, package manager, bundler, test runner (`bun test`, `bun run`).                                                               |
+| **Electrobun**           | Desktop shell — main process + native webview.                                                                                        |
+| **React 19**             | Renderer UI only.                                                                                                                     |
+| **Elysia + Eden Treaty** | Typed HTTP RPC between renderer and main (`@rpc/client`).                                                                             |
+| **TypeBox**              | **All** validation (transport, core domain, config). **`zod` is not a dependency** — never use `z.*`.                                 |
+| **`bun:sqlite`**         | SQLite via typed prepared statements in `src/shell/app/db/`. **No Drizzle ORM**, no drizzle-kit, no drizzle-typebox, no drizzle-seed. |
+| **Fishery**              | `factoryFor` from `@testing` for typed test factories.                                                                                |
+| **YAML fixtures**        | Under `src/__tests__/fixtures/sample/` only for `ImportService` end-to-end specs.                                                     |
+
+## FCIS directory layout
 
 ```
-src/
-  core/         Pure domain logic — zero I/O, zero side-effects
-  shared/       Types and utilities shared across layers
-  shell/
-    app/        Application service — orchestrates DB + file I/O
-      db/       Drizzle + SQLite, import service, schema
-    main/       Electrobun main process — boots app, registers RPC server
-    renderer/   React UI — pages, components, hooks
-tools/          Dev tools (preview server, etc.)
+src/core/           Pure functions. No I/O. No side-effects.
+src/shared/         Pure utilities and types. No I/O.
+src/shell/app/      App + DB. All I/O except UI (implements `App` in app.ts).
+src/shell/main/     Electrobun main — boots app, hosts Elysia RPC (`rpc/server.ts`, `rpc/schemas.ts`).
+src/shell/renderer/ React UI. Calls main via Eden Treaty client ONLY.
 ```
 
-### Layer Rules (enforce with dependency-cruiser)
+### Forbidden imports (enforced by dependency-cruiser + ast-grep)
 
-| From              | May depend on          | Must NOT depend on      |
-|-------------------|------------------------|-------------------------|
-| `src/core/`       | nothing outside itself | shell, renderer, tools  |
-| `src/shell/app/`  | `src/core/`, `src/shared/` | renderer, main     |
-| `src/shell/main/` | `src/shell/app/`, `src/shared/` | renderer      |
-| `src/shell/renderer/` | `src/shared/`      | app, main, core (direct)|
+| From        | To           | Rule                                             |
+| ----------- | ------------ | ------------------------------------------------ |
+| `renderer/` | `shell/app/` | **Forbidden** — use `@rpc/client` (Eden Treaty). |
+| `core/`     | `shell/`     | **Forbidden** — core stays pure.                 |
+| `shared/`   | `shell/`     | **Forbidden** — shared stays I/O-free.           |
 
-`renderer` talks to `app` **exclusively** through the Elysia RPC bridge.
-It never imports from `src/shell/app/` directly.
+Handlers in `shell/app/` call into `core/` and `shared/`; data crosses the
+boundary as plain values, not imported I/O.
 
----
+## RPC contract
 
-## RPC Bridge — Elysia + Eden Treaty
+- **Single transport**: Elysia app in
+  [`src/shell/main/rpc/server.ts`](../../../src/shell/main/rpc/server.ts) with
+  TypeBox bodies in
+  [`src/shell/main/rpc/schemas.ts`](../../../src/shell/main/rpc/schemas.ts).
+- **Renderer**: Eden Treaty client only — never import `App` or repositories
+  from the renderer.
+- **Preview mirror**: every POST `/api/...` handler added or changed **must**
+  have a matching branch in
+  [`tools/preview/server.ts`](../../../tools/preview/server.ts) (see
+  `CLAUDE.md`).
 
-The Elysia `App` type is the single source of truth for the RPC contract.
-Eden Treaty auto-generates a fully type-safe client — no manual schema file.
+## Data layer
 
-```
-src/shell/main/rpc/
-  server.ts        Elysia app definition (all routes)
-  client.ts        Eden Treaty client (re-exported for renderer)
+- SQL DDL and helpers live under
+  [`src/shell/app/db/`](../../../src/shell/app/db/) (e.g. `schema.ts`,
+  `client.ts`, `*.repository.ts`, `import.service.ts`).
+- Use `db.query<RowType, [Params]>(sql)` (typed prepared statements). No ORM
+  query builder.
 
-src/shell/app/app.ts   AppService — injected into Elysia routes
-```
+## Naming conventions
 
-See skill `kb-rpc` for patterns and gotchas.
+Machine-checked: **Biome** (snake_case on every dot-separated segment) +
+**ls-lint** (directory ↔ suffix contract — see `.ls-lint.yml`). Full table:
+[`assets/guides/CODESTYLE_GUIDE.md`](../../../assets/guides/CODESTYLE_GUIDE.md)
+(File Naming).
 
----
+| Artifact          | Pattern                       | Example                        |
+| ----------------- | ----------------------------- | ------------------------------ |
+| React component   | `<snake_case>.component.tsx`  | `entry_row.component.tsx`      |
+| React page        | `<snake_case>.page.tsx`       | `list.page.tsx`                |
+| Hook              | `use_<snake_case>.hook.ts(x)` | `use_list_selection.hook.ts`   |
+| Spec (co-located) | same name + `.spec.ts(x)`     | `entry_row.component.spec.tsx` |
+| E2E spec          | same name + `.e2e.spec.ts`    | `import.e2e.spec.ts`           |
 
-## Data Layer — Drizzle + SQLite
+**Every new file under `src/`** needs a co-located `.spec.ts(x)` (see DoD in
+[`assets/guides/DoD.md`](../../../assets/guides/DoD.md)).
 
-```
-src/shell/app/db/
-  schema.ts       Drizzle table definitions
-  index.ts        DB connection (bun:sqlite)
-  import.service.ts  YAML → DB import pipeline
-  seed.ts         drizzle-seed fixtures (test + dev)
-```
+## Logging
 
-Schema validation at the transport layer uses **drizzle-typebox**
-(`createSelectSchema`, `createInsertSchema`) so shapes stay DRY.
+Use `createLogger()` from `@shared/logging`. Never `console.*` in `src/`.
 
----
+## Design system — Andromeda Void
 
-## Naming Conventions
+kb's renderer follows **Andromeda Void** — a dark-first, glassy, minimal chrome
+with electric cyan accents. When building UI:
 
-| Artifact           | Convention                          | Example                          |
-|--------------------|-------------------------------------|----------------------------------|
-| React components   | `PascalCase.component.tsx`          | `EntryRow.component.tsx`         |
-| React pages        | `kebab-case.page.tsx`               | `list.page.tsx`                  |
-| React hooks        | `use-kebab-case.hook.ts`            | `use-list-selection.hook.ts`     |
-| Elysia route files | `kebab-case.routes.ts`              | `entries.routes.ts`              |
-| DB schema file     | `schema.ts` (single file)           | —                                |
-| Test files         | same name + `.spec.ts(x)`           | `entry-row.component.spec.tsx`   |
-| Skills             | `kb-<topic>/SKILL.md`               | `kb-rpc/SKILL.md`                |
+- **Background**: deep charcoal / near-black base (`#0a0a0b` family), **not**
+  pure `#000000`.
+- **Glass**: translucent panels with `backdrop-blur`, subtle borders
+  (`white/5`–`white/10`).
+- **Accent**: electric cyan (`#00d4ff` family) — CTAs, focus rings, active
+  states. **Sparingly** — never flood the UI with glow.
+- **Typography**: **DM Sans** body, **JetBrains Mono** for code/IDs/paths.
+- **Motion**: respect `prefers-reduced-motion`; transitions ~150–250ms,
+  `ease-out`.
 
-All files: lowercase kebab-case. No `index.ts` barrel re-exports inside `src/core/`.
+Full tokens and patterns:
+[`assets/docs/specs/foundation/design.md`](../../../assets/docs/specs/foundation/design.md)
+(Design system section).
 
----
+## Deep dives (open as needed)
 
-## Design System — Andromeda Void
-
-| Token          | Value     | Usage                        |
-|----------------|-----------|------------------------------|
-| bg             | `#0b0e14` | App background               |
-| surface        | `#121721` | Cards, panels                |
-| accent-command | `#5ecfbe` | Commands, primary actions    |
-| accent-cheat   | `#a855f7` | Cheat-sheets                 |
-| accent-task    | `#ffae57` | Tasks                        |
-| accent-bookmark| `#3399ff` | Bookmarks                    |
-| radius         | `6px`     | All interactive controls     |
-| shadow         | none      | Depth = tonal only           |
-
-System font stack. No web fonts.
-
----
+| Topic              | Guide                                                                                              |
+| ------------------ | -------------------------------------------------------------------------------------------------- |
+| Architecture + RPC | [`assets/docs/specs/foundation/design.md`](../../../assets/docs/specs/foundation/design.md)        |
+| FCIS layer rules   | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md)                              |
+| Naming + SOLID     | [`assets/guides/CODESTYLE_GUIDE.md`](../../../assets/guides/CODESTYLE_GUIDE.md)                    |
+| Electrobun wiring  | [`assets/guides/ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md)                              |
+| Testing            | [`assets/guides/TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md) + **kb-testing** skill |
+| Factories          | [`assets/guides/FISHERY_GUIDE.md`](../../../assets/guides/FISHERY_GUIDE.md)                        |
+| DoD / gate         | [`assets/guides/DoD.md`](../../../assets/guides/DoD.md) + **kb-quality-gate** skill                |
 
 ## Gotchas
 
-- TypeBox is the sole validation library across `src/core/` and transport.
-  `*.schema.ts` files contain TypeBox shapes; `*.parser.ts` files contain
-  coercion logic and custom error messages.
+1. **TypeBox only** — Elysia bodies use `t.*` from Elysia/TypeBox; core/config
+   use `Type.Object` + `Value.Check`. No Zod in routes or new code paths.
+2. **No Drizzle** — migrations and queries are hand-authored SQL + repositories;
+   do not add `@libsql/client` ORM layers or drizzle dependencies.
+3. **Renderer isolation** — if you need data, add/adjust an RPC method and call
+   it through Eden; never reach into `shell/app/`.
+4. **Preview drift** — forgetting `tools/preview/server.ts` breaks local preview
+   and CI assumptions; mirror every new `/api/*` route.
+5. **`bun test` vs Playwright** — `bun test` only discovers tests under `src/`
+   (`bunfig.toml` `[test] root = "src"`), so Playwright files in `e2e/` are not
+   run by the gate. Use `mise run e2e:preview` (or `bun run e2e:preview:install`
+   once for Chromium) when validating preview UI flows; specs may `test.skip`
+   when the preview DB is empty or `PLAYWRIGHT` is unset.
 
-- **Never** import `src/shell/app/` from renderer — use Eden Treaty client only.
-- **Never** add `node:` builtins in `src/core/` — pure functions only.
-- Elysia is Bun-only; do not use Express/Fastify/Hono as alternatives.
-- `bun:sqlite` for the DB connection — not `better-sqlite3`.
-- Drizzle migrations live in `drizzle/` at project root, not `src/`.
-- The preview server (`tools/preview/server.ts`) must mirror every Elysia route — keep it in sync when adding endpoints.
+## Companion skills
+
+| Skill               | When                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| **kb-rpc**          | Touching `rpc/server.ts`, `rpc/schemas.ts`, Eden client, or preview server routes.         |
+| **kb-testing**      | Writing or changing any spec.                                                              |
+| **kb-quality-gate** | Before declaring work done or committing.                                                  |
+| **electrobun-***    | Per [`.cursor/electrobun-skill-routing.md`](../../../.cursor/electrobun-skill-routing.md). |
+
+---
+
+*Synced with `CLAUDE.md` (Bun, Electrobun, React 19, Elysia + Eden, TypeBox,
+`bun:sqlite`, Fishery, FCIS layout, Andromeda Void).*

@@ -151,6 +151,29 @@ dist
 tmp
 *.tgz
 
+# Playwright default output dirs (HTML report is under tmp/ via playwright.config)
+test-results
+playwright-report
+
+# Superpowers brainstorm scratch (local only)
+.superpowers/
+
+# Symlinks from `mise run link:skills` — absolute targets; never commit
+.agents/skills/agent-electrobun
+.agents/skills/bun-development
+.agents/skills/bun-runtime
+.agents/skills/electrobun
+.agents/skills/electrobun-build
+.agents/skills/electrobun-config
+.agents/skills/electrobun-core
+.agents/skills/electrobun-dev
+.agents/skills/electrobun-distribution
+.agents/skills/electrobun-kitchen-sink
+.agents/skills/electrobun-platform
+.agents/skills/electrobun-plugin-guide
+.agents/skills/electrobun-testing
+.agents/skills/electrobun-workflow
+
 # code coverage
 coverage
 *.lcov
