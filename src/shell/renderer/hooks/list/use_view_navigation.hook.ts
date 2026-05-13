@@ -1,6 +1,6 @@
-import { useCallback, useReducer, useRef } from 'react'
 import type { RpcKnowledge } from '@shared/rpc'
-import { viewReducer, type ViewState } from '../../utils/list/view_reducer.util'
+import { useCallback, useReducer, useRef } from 'react'
+import { type ViewState, viewReducer } from '../../utils/list/view_reducer.util'
 
 export type { ViewState }
 
@@ -56,6 +56,23 @@ export function useViewNavigation({
     dispatch('CLOSE_TO_LIST')
   }, [setDetailEntry])
 
+  /** In-panel detail switches (e.g. dependency links) must keep `viewState` aligned
+   * with `detailEntry`. Setting detail alone while the reducer is still `list` hides
+   * the list panel incorrectly; keyboard `advance()` always dispatches `ADVANCE`. */
+  const selectDetailEntry = useCallback(
+    (id: number) => {
+      const { rows: r, viewState: vs } = depsRef.current
+      const row = r.find(e => e.id === id) ?? null
+      if (!row) return
+      setSelectedId(id)
+      setDetailEntry(row)
+      if (vs === 'list') {
+        dispatch('ADVANCE')
+      }
+    },
+    [setSelectedId, setDetailEntry]
+  )
+
   // Keyboard handler for ArrowRight/ArrowLeft — called from list surface onKeyDown
   // with the same input guard as before.
   const handleKey = useCallback(
@@ -69,16 +86,13 @@ export function useViewNavigation({
         if (depsRef.current.viewState !== 'detail') advance()
         return
       }
-      if (e.key === 'ArrowLeft') {
-        if (depsRef.current.detailEntry !== null) {
-          e.preventDefault?.()
-          retreat()
-        }
-        return
+      if (e.key === 'ArrowLeft' && depsRef.current.detailEntry !== null) {
+        e.preventDefault?.()
+        retreat()
       }
     },
     [advance, retreat]
   )
 
-  return { viewState, advance, retreat, closeToList, handleKey }
+  return { viewState, advance, retreat, closeToList, selectDetailEntry, handleKey }
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { type KeyboardEvent as ReactKeyboardEvent, useCallback, useEffect } from 'react'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 import { useListSurfaceScrollRestore } from '../../hooks/list/use_list_surface_scroll_restore.hook'
 import { useVirtualListWindow } from '../../hooks/list/use_virtual_list_window.hook'
@@ -36,7 +36,17 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   }
 
   const detailEntry = p.sel.detailEntry
+  const viewState = p.sel.viewState
   const resultCount = p.data.stats?.total ?? p.data.rows.length
+
+  const listPanelClass =
+    detailEntry === null
+      ? 'kb-pt-list-panel'
+      : viewState === 'split'
+        ? 'kb-pt-list-panel kb-pt-list-panel--narrow'
+        : 'kb-pt-list-panel kb-pt-list-panel--hidden'
+  const detailPanelClass =
+    detailEntry === null ? '' : viewState === 'detail' ? 'kb-pt-detail kb-pt-detail--full' : 'kb-pt-detail'
 
   useListSurfaceScrollRestore(p.listSurfaceRef, detailEntry)
 
@@ -74,10 +84,27 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
     p.filter.setFilterOpen(!p.filter.filterOpen)
   }
 
+  const onPowertoysViewNavCapture = useCallback(
+    (e: ReactKeyboardEvent<HTMLDivElement>) => {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+      p.sel.handleKey(e)
+      if (e.defaultPrevented) e.stopPropagation()
+    },
+    [p.sel]
+  )
+
+  const powertoysClass = viewState === 'detail' ? 'kb-powertoys kb-powertoys--detail-full' : 'kb-powertoys'
+  const searchRowClass = viewState === 'detail' ? 'kb-pt-search kb-pt-search--hidden' : 'kb-pt-search'
+
   return (
     <>
-      <div className="kb-powertoys" onKeyDown={p.sel.handleKey}>
-        <div className="kb-pt-search">
+      <div
+        className={powertoysClass}
+        role="application"
+        aria-label="Knowledge list"
+        onKeyDownCapture={onPowertoysViewNavCapture}
+      >
+        <div className={searchRowClass}>
           <input
             ref={p.searchInputRef}
             type="search"
@@ -111,7 +138,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
         ) : null}
 
         <div className="kb-pt-main">
-          <div className={`kb-pt-list-panel${detailEntry ? ' kb-pt-list-panel--narrow' : ''}`}>
+          <div className={listPanelClass}>
             <div
               ref={p.listSurfaceRef}
               className="kb-pt-results"
@@ -177,18 +204,17 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           </div>
 
           {detailEntry ? (
-            <div className="kb-pt-detail">
+            <div className={detailPanelClass}>
               <div className="kb-pt-nav-hint">← / Escape to close</div>
               <DetailPage
                 entryId={detailEntry.id}
                 allEntries={p.data.rows}
                 onClose={() => {
-                  p.sel.setDetailEntry(null)
+                  p.sel.closeToList()
                   focusListSurface(p.listSurfaceRef)
                 }}
                 onSelectEntry={id => {
-                  p.sel.setSelectedId(id)
-                  p.sel.setDetailEntry(p.data.rows.find(r => r.id === id) ?? null)
+                  p.sel.selectDetailEntry(id)
                 }}
               />
             </div>
@@ -205,10 +231,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
         <TaskSheet key={p.taskSheetEntry?.id ?? 'new'} entry={p.taskSheetEntry} onClose={p.onCloseTaskSheet} />
       ) : null}
       {p.data.syncing ? (
-        <SyncProgress
-          processed={p.data.syncProg?.processed ?? 0}
-          total={p.data.syncProg?.total ?? 1}
-        />
+        <SyncProgress processed={p.data.syncProg?.processed ?? 0} total={p.data.syncProg?.total ?? 1} />
       ) : null}
       {showSettings ? (
         <div className="kb-settingsHost">

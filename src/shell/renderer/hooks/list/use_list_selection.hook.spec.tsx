@@ -2,23 +2,26 @@
 
 import { expect, mock, test } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { useListSelection } from './use_list_selection.hook'
 
-function Harness({
-  rows,
-  onLeaveListUpward
-}: {
-  rows: RpcKnowledge[]
-  onLeaveListUpward?: () => void
-}) {
+function Harness({ rows, onLeaveListUpward }: { rows: RpcKnowledge[]; onLeaveListUpward?: () => void }) {
   const sel = useListSelection(rows, onLeaveListUpward)
   return (
-    <div tabIndex={0} data-testid="list-surface" onKeyDown={sel.onListKeyDown} role="listbox" aria-label="Test list">
-      <span data-testid="selected">{sel.selectedId ?? 'null'}</span>
-      <span data-testid="detail">{sel.detailEntry?.id ?? 'null'}</span>
+    <div
+      onKeyDownCapture={e => {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+        sel.handleKey(e)
+        if (e.defaultPrevented) e.stopPropagation()
+      }}
+    >
+      <div tabIndex={0} data-testid="list-surface" onKeyDown={sel.onListKeyDown} role="listbox" aria-label="Test list">
+        <span data-testid="selected">{sel.selectedId ?? 'null'}</span>
+        <span data-testid="detail">{sel.detailEntry?.id ?? 'null'}</span>
+        <span data-testid="view-state">{sel.viewState}</span>
+      </div>
     </div>
   )
 }
@@ -37,10 +40,7 @@ function row(id: number, key = `k${id}`): RpcKnowledge {
   }
 }
 
-function renderFocusedSurface(
-  rows: RpcKnowledge[],
-  onLeaveListUpward?: () => void
-): HTMLElement {
+function renderFocusedSurface(rows: RpcKnowledge[], onLeaveListUpward?: () => void): HTMLElement {
   render(<Harness rows={rows} onLeaveListUpward={onLeaveListUpward} />)
   const surface = screen.getByTestId('list-surface')
   surface.focus()
@@ -72,7 +72,18 @@ test('ArrowRight works repeatedly after close', async () => {
   expect(screen.getByTestId('detail').textContent).toBe('1')
 })
 
-test('ArrowRight auto-selects first row when nothing selected', async () => {
+test('viewState reaches detail after two ArrowRight from list', async () => {
+  const rows = [row(1)]
+  const user = userEvent.setup()
+  const surface = renderFocusedSurface(rows)
+  await user.keyboard('{ArrowDown}')
+  fireEvent.keyDown(surface, { key: 'ArrowRight' })
+  expect(screen.getByTestId('view-state').textContent).toBe('split')
+  fireEvent.keyDown(surface, { key: 'ArrowRight' })
+  expect(screen.getByTestId('view-state').textContent).toBe('detail')
+})
+
+test('ArrowRight auto-selects first row when nothing selected', () => {
   const rows = [row(7)]
   const surface = renderFocusedSurface(rows)
   fireEvent.keyDown(surface, { key: 'ArrowRight' })

@@ -47,7 +47,7 @@ export function useListSelection(
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
 
-  const { advance, retreat, closeToList, handleKey } = useViewNavigation({
+  const { viewState, advance, retreat, closeToList, selectDetailEntry, handleKey } = useViewNavigation({
     rows,
     selectedId,
     detailEntry,
@@ -84,13 +84,23 @@ export function useListSelection(
     if (arrowUp === 'leave') return
     if (arrowUp === 'moved') {
       onRestoreListSurfaceFocus?.()
-      return
     }
-    // ArrowRight/ArrowLeft view navigation — stop propagation so root handler
-    // doesn't double-fire (root only catches events from detail panel)
-    e.stopPropagation()
-    handleKey(e)
+    // ArrowLeft/ArrowRight: handled in capture on `kb-powertoys` so keys still run
+    // when focus is inside the detail panel (bubble never reaches the shell).
   }
 
-  return { selectedId, setSelectedId, detailEntry, setDetailEntry, selectFirst, onListKeyDown, advance, retreat, closeToList, handleKey }
+  return {
+    selectedId,
+    setSelectedId,
+    detailEntry,
+    setDetailEntry,
+    viewState,
+    selectFirst,
+    onListKeyDown,
+    advance,
+    retreat,
+    closeToList,
+    selectDetailEntry,
+    handleKey
+  }
 }
