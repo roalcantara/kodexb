@@ -1,48 +1,45 @@
-import { BrowserWindow, Utils } from 'electrobun/bun'
+import { BrowserWindow, Screen, Utils } from 'electrobun/bun'
 import { createLogger } from '../../shared/logging'
 import { App, type AppShellHooks, type SyncEmitter } from '../app/app'
 import { loadConfig } from '../app/config/config.loader'
 import { reportConfigLoadErrorAndExit } from './helpers/error.helper'
 import { createKbWebviewRpc, createSyncEmitter } from './rpc/host'
 import { createRpcServer } from './rpc/server'
+import { isUsableWorkArea, resolveInitialFrame } from './window/placement.util'
 
 const DEFAULT_WIDTH = 680
 const DEFAULT_HEIGHT = 420
 
-async function bootstrap() {
-  const log = createLogger({ debug: false })
-
-  const config = await loadConfig().catch(async err => {
-    await reportConfigLoadErrorAndExit(err, {
-      showMessageBox: Utils.showMessageBox,
-      exit: Utils.quit,
-      logError: e => log.error([e])
-    })
-    throw err
-  })
-
-  let kbWebviewRpc: ReturnType<typeof createKbWebviewRpc> | null = null
-  let win: BrowserWindow<ReturnType<typeof createKbWebviewRpc>> | null = null
-
-  const hideWindow = () => {
-    win?.hide()
+function computeInitialFrame(log: ReturnType<typeof createLogger>) {
+  const primary = Screen.getPrimaryDisplay()
+  if (!isUsableWorkArea(primary?.workArea)) {
+    log.debug(['window placement: primary display work area unavailable; using safe fallback (100,100)'])
   }
+  return resolveInitialFrame(primary, { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT })
+}
 
-  const lateEmit: SyncEmitter = {
+type KbWebviewRpc = ReturnType<typeof createKbWebviewRpc>
+
+function createKbLateEmit(getKbRpc: () => KbWebviewRpc | null): SyncEmitter {
+  return {
     syncProgress: (processed, total) => {
-      if (kbWebviewRpc) createSyncEmitter(kbWebviewRpc).syncProgress(processed, total)
+      const rpc = getKbRpc()
+      if (rpc) createSyncEmitter(rpc).syncProgress(processed, total)
     },
     syncComplete: result => {
-      if (kbWebviewRpc) createSyncEmitter(kbWebviewRpc).syncComplete(result)
+      const rpc = getKbRpc()
+      if (rpc) createSyncEmitter(rpc).syncComplete(result)
     }
   }
+}
 
-  const shellHooks: AppShellHooks = {
+function createKbShellHooks(getWin: () => BrowserWindow<KbWebviewRpc> | null): AppShellHooks {
+  return {
     resizeWindow: (width, height) => {
-      win?.setSize(width, height)
+      getWin()?.setSize(width, height)
     },
     hideWindow: () => {
-      hideWindow()
+      getWin()?.hide()
     },
     openExternal: url => {
       Utils.openExternal(url)
@@ -67,15 +64,42 @@ async function bootstrap() {
       Utils.openExternal(fileUrl)
     }
   }
+}
+
+async function bootstrap() {
+  const log = createLogger({ debug: false })
+
+  const config = await loadConfig().catch(async err => {
+    await reportConfigLoadErrorAndExit(err, {
+      showMessageBox: Utils.showMessageBox,
+      exit: Utils.quit,
+      logError: e => log.error([e])
+    })
+    throw err
+  })
+
+  let kbWebviewRpc: KbWebviewRpc | null = null
+  let win: BrowserWindow<KbWebviewRpc> | null = null
+
+  const shellHooks: AppShellHooks = {
+    ...createKbShellHooks(() => win),
+    quit: () => {
+      Utils.quit()
+    }
+  }
+  const lateEmit = createKbLateEmit(() => kbWebviewRpc)
 
   const app = new App(config, lateEmit, false, shellHooks)
   const rpcApp = createRpcServer(app)
   kbWebviewRpc = createKbWebviewRpc(rpcApp)
 
+  const isDarwin = process.platform === 'darwin'
   win = new BrowserWindow({
     title: 'kb',
     url: 'views://shell/index.html',
-    frame: { x: 0, y: 0, width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT },
+    frame: computeInitialFrame(log),
+    titleBarStyle: isDarwin ? 'hidden' : 'default',
+    transparent: true,
     rpc: kbWebviewRpc
   })
 
@@ -83,7 +107,7 @@ async function bootstrap() {
   win.activate()
 
   win.on('blur', () => {
-    hideWindow()
+    win?.minimize()
   })
 }
 

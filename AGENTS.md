@@ -50,4 +50,4 @@ At the start of work that might touch the desktop stack, **read the routing file
 
 Optional: a **sessionStart** hook in [`.cursor/hooks.json`](.cursor/hooks.json) runs [`.cursor/hooks/electrobun_session_start.ts`](.cursor/hooks/electrobun_session_start.ts) to inject the same routing text when Cursor applies `additional_context` (if it does not appear, rely on the rule above).
 
-Repo docs: `assets/guides/ELECTROBUN.md`, `assets/docs/foundation/design.md`.
+Repo docs: `assets/guides/ELECTROBUN.md`, `assets/docs/specs/foundation/design.md`. Feature specs: `assets/docs/specs/README.md` (never `docs/superpowers/` — gitignored).

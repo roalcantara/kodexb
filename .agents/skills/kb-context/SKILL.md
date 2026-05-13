@@ -39,6 +39,11 @@ and `CLAUDE.md` disagree, **CLAUDE.md wins** — open a PR to fix the skill.
 | **Fishery**              | `factoryFor` from `@testing` for typed test factories.                                                                                |
 | **YAML fixtures**        | Under `src/__tests__/fixtures/sample/` only for `ImportService` end-to-end specs.                                                     |
 
+## Feature specs (where to write design docs)
+
+- **Canonical root:** [`assets/docs/specs/<feature-slug>/`](../../../assets/docs/specs/) — `requirements.md`, `design.md`, `tasks.md`, optional `implementation-plan.md`, prototypes. Index: [`assets/docs/specs/README.md`](../../../assets/docs/specs/README.md).
+- **`docs/superpowers/`** is **not used** in kb; it is **gitignored** (some external skills default there). Always redirect new specs into `assets/docs/specs/`.
+
 ## FCIS directory layout
 
 ```

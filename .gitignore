@@ -193,6 +193,9 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # IDE
 .idea
 
+# External skill / brainstorm default path — kb specs live in assets/docs/specs/
+docs/superpowers/
+
 # macOS
 .DS_Store
 ._*

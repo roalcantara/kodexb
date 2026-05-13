@@ -9,7 +9,7 @@ along that ladder (see RNF-2b). After the detail panel closes, **ArrowRight** mu
 still advance again.
 
 A prior investigation is captured in
-[`docs/superpowers/specs/2026-05-13-nav-flow-handoff.md`](../../../../docs/superpowers/specs/2026-05-13-nav-flow-handoff.md).
+[`handoff.md`](handoff.md).
 This folder is the **normative** contract for the fix.
 
 **Traceability:**

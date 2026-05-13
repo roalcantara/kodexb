@@ -41,7 +41,7 @@ ls:
     .ts: regex:^(host|schemas|server)(\.spec)?$
 
   src/shell/main/window:
-    .ts: regex:^state(\.spec)?$
+    .ts: regex:^(state|[a-z][a-z0-9_]*\.util)(\.spec)?$
 
   # ── Renderer: directory↔suffix contract ─────────────────────────────────────
   # Root: only the React root, entry point, and HTML shell.

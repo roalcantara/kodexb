@@ -8,8 +8,7 @@ webview after the detail panel closes. The **view state machine** in
 `view_reducer.util.ts` stays the source of truth; this work fixes **event delivery
 and focus** so user input reaches the handlers.
 
-**Context archive:** prior notes in
-[`docs/superpowers/specs/2026-05-13-nav-flow-handoff.md`](../../../../docs/superpowers/specs/2026-05-13-nav-flow-handoff.md).
+**Context archive:** prior notes in [`handoff.md`](handoff.md).
 
 ---
 

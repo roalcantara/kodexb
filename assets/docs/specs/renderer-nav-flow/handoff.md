@@ -18,14 +18,14 @@ when focus is on `document.body` (which happens after the DetailPage component u
 
 ## What works
 
-| Artifact | Status | Notes |
-|----------|--------|-------|
-| `view_reducer.ts` | ✅ | Pure state machine, 9 transitions, 9 tests pass |
-| `view_reducer.spec.ts` | ✅ | Isolated unit tests for list↔split↔detail |
-| `use_view_navigation.hook.ts` | ⚠️ | Hook logic correct, but capture-phase listener unreliable in webview |
-| `use_list_selection.hook.ts` | ✅ | ArrowUp/Down only, 3 params, clean |
-| HTML simulator | ✅ | `tools/test/nav-simulator.html` — standalone, confirms state machine |
-| 368 unit tests | ✅ | All pass including ArrowRight/ArrowLeft cycle tests |
+| Artifact                      | Status | Notes                                                                |
+| ----------------------------- | ------ | -------------------------------------------------------------------- |
+| `view_reducer.ts`             | ✅      | Pure state machine, 9 transitions, 9 tests pass                      |
+| `view_reducer.spec.ts`        | ✅      | Isolated unit tests for list↔split↔detail                            |
+| `use_view_navigation.hook.ts` | ⚠️      | Hook logic correct, but capture-phase listener unreliable in webview |
+| `use_list_selection.hook.ts`  | ✅      | ArrowUp/Down only, 3 params, clean                                   |
+| HTML simulator                | ✅      | `tools/test/nav-simulator.html` — standalone, confirms state machine |
+| 368 unit tests                | ✅      | All pass including ArrowRight/ArrowLeft cycle tests                  |
 
 ## What has been tried (and failed)
 
@@ -37,14 +37,14 @@ when focus is on `document.body` (which happens after the DetailPage component u
 
 ## Files involved
 
-| File | Role |
-|------|------|
-| `src/shell/renderer/hooks/list/view_reducer.ts` | Pure state machine |
-| `src/shell/renderer/hooks/list/use_view_navigation.hook.ts` | Hook with document-level listener |
-| `src/shell/renderer/hooks/list/use_list_selection.hook.ts` | List surface: ArrowUp/Down only |
-| `src/shell/renderer/hooks/list/use_list_page_shell.hook.ts` | Shell composition |
-| `src/shell/renderer/components/list/list_main.component.tsx` | Renders view based on `detailEntry` |
-| `tools/test/nav-simulator.html` | Standalone HTML to verify state machine |
+| File                                                         | Role                                    |
+| ------------------------------------------------------------ | --------------------------------------- |
+| `src/shell/renderer/hooks/list/view_reducer.ts`              | Pure state machine                      |
+| `src/shell/renderer/hooks/list/use_view_navigation.hook.ts`  | Hook with document-level listener       |
+| `src/shell/renderer/hooks/list/use_list_selection.hook.ts`   | List surface: ArrowUp/Down only         |
+| `src/shell/renderer/hooks/list/use_list_page_shell.hook.ts`  | Shell composition                       |
+| `src/shell/renderer/components/list/list_main.component.tsx` | Renders view based on `detailEntry`     |
+| `tools/test/nav-simulator.html`                              | Standalone HTML to verify state machine |
 
 ## Test commands
 
