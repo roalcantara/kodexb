@@ -22,11 +22,11 @@ const bookmarkGithub: RpcKnowledge = {
   updatedAt: 0
 }
 
-test('EntryRow shows brand image when a mapped tag is present', () => {
+test('EntryRow shows favicon when bookmark URL and mapped tag', () => {
   render(<EntryRow entry={bookmarkGithub} allEntries={[bookmarkGithub]} selected={false} onSelect={() => undefined} />)
-  const img = document.querySelector('img.kb-entryGlyphImg')
-  expect(img).not.toBeNull()
-  expect(img?.getAttribute('aria-label')).toContain('github')
+  const img = screen.getByLabelText('github')
+  expect(img.getAttribute('src')).toContain('icons.duckduckgo.com')
+  expect(img.getAttribute('src')).toContain('github.com')
 })
 
 test('EntryRow shows selected styling when selected', () => {
