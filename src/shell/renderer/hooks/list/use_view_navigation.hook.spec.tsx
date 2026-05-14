@@ -2,6 +2,7 @@
 
 import { expect, test } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
+import { fireTwoRightsExpectSplitThenDetail } from '@testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { useState } from 'react'
 
@@ -102,11 +103,7 @@ test('handleKey follows arbitrary split/detail ladder from list surface', () => 
   expect(screen.getByTestId('view-state').textContent).toBe('list')
   expect(screen.getByTestId('detail-id').textContent).toBe('null')
 
-  fireEvent.keyDown(surface, { key: 'ArrowRight' })
-  expect(screen.getByTestId('view-state').textContent).toBe('split')
-
-  fireEvent.keyDown(surface, { key: 'ArrowRight' })
-  expect(screen.getByTestId('view-state').textContent).toBe('detail')
+  fireTwoRightsExpectSplitThenDetail(surface)
   expect(screen.getByTestId('detail-id').textContent).toBe('1')
 
   fireEvent.keyDown(surface, { key: 'ArrowLeft' })

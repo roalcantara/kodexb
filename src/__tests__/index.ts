@@ -1,5 +1,6 @@
 export { factoryFor } from './factories/factories.builder'
 export { createFactoryFor } from './helpers/testing.factory'
+export { fireTwoRightsExpectSplitThenDetail } from './helpers/testing.react.helper'
 export { createSeededMemoryDb, readMinimalFixtureEntries, seedMinimalFixture } from './helpers/testing.seed'
 export { createTempDir, type TempDir } from './helpers/testing.tmp'
 export { type FactoryBuildOpts, isFactoryOpts, type WrappedFactoryOpts } from './helpers/testing.types'

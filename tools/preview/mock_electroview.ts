@@ -54,7 +54,8 @@ function makeRequestProxy(): Record<string, (params: unknown) => Promise<unknown
 export class Electroview {
   readonly rpc: unknown
 
-  static ['defineRPC'](_config: Schema) {
+  // biome-ignore lint/style/useNamingConvention: mirrors Electrobun Electroview.defineRPC
+  static defineRPC(_config: Schema) {
     return {
       request: makeRequestProxy(),
       setTransport: () => undefined,

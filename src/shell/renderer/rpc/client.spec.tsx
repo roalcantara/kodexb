@@ -21,7 +21,8 @@ function mockElectroviewDefineRpc(config: { handlers?: { messages?: Record<strin
 
 mock.module('electrobun/view', () => ({
   Electroview: class {
-    static ['defineRPC'] = mockElectroviewDefineRpc
+    // biome-ignore lint/style/useNamingConvention: mirrors Electrobun Electroview.defineRPC
+    static defineRPC = mockElectroviewDefineRpc
     rpc: unknown
     constructor(config: { rpc: unknown }) {
       this.rpc = config.rpc
