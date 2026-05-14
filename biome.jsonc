@@ -218,6 +218,16 @@
   },
   "overrides": [
     {
+      "includes": ["src/__tests__/helpers/**/*.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noMisplacedAssertion": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": [
         "**/*.test.ts",
         "**/*.spec.ts",

@@ -26,7 +26,7 @@ echo "kb Quality Gate"
 echo "═══════════════"
 
 echo ""
-echo "0 / Autofix (biome + knip + ast-grep)"
+echo "0 / Autofix (knip + ast-grep + biome + typecheck)"
 run_check "bun run lint:fix" bun run lint:fix
 
 echo ""

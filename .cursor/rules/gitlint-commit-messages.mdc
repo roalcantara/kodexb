@@ -1,0 +1,34 @@
+---
+description: >
+  When drafting, editing, or generating git commit messages (including
+  Conventional Commits, gitlint failures, or SCM commit descriptions), match
+  this repo’s .gitlint contract so messages pass pre-commit without rewrite.
+alwaysApply: false
+---
+
+# Commit messages must match `.gitlint`
+
+Single source of truth: **`.gitlint`** (and **`assets/guides/GIT_COMMITS_GUIDE.md`** for prose style).
+
+When you output a **full** commit message (subject + body), it must satisfy at least:
+
+1. **Subject (first line)**  
+   - Entire line **≤ 50 characters** (`title-max-length`).  
+   - Regex: `^(feat|fix|docs|style|ref|test|revert|chore|ci|build)(\([^)]*\))?(!)?: [A-Z].*`  
+   - Use **`ref`** for refactors, **not** `refactor`.  
+   - Imperative mood; **capital letter** immediately after `": "`; no trailing period; not the word `wip`.
+
+2. **Body**  
+   - Blank line after the subject.  
+   - **≥ 20 characters** total (`body-min-length`) — a trivial one-line body usually fails; write a real *what + why*.  
+   - Each body line **≤ 72 characters** (`body-max-line-length`).
+
+3. **Validate locally** before handing off:
+
+   ```bash
+   printf '%s\n' '<paste message>' | gitlint -C .gitlint
+   ```
+
+   Or after writing to a file: `gitlint -C .gitlint --msg-filename path`.
+
+If the user asks for a **short subject only**, still respect the 50-char cap and regex; warn that `.gitlint` requires a substantive body when they actually commit.

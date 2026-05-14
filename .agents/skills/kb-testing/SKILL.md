@@ -122,14 +122,16 @@ Acceptable mock targets (TESTING_GUIDE §11): external HTTP services, slow
 operations a unit test must skip, non-deterministic behavior (random
 values, timestamps).
 
-## Test fixtures — Fishery preferred, drizzle-seed for raw schema
+## Test fixtures — Fishery factories
 
-### Fishery `factoryFor` (preferred — domain rows)
+### Fishery `factoryFor` (domain rows)
 
 [`FISHERY_GUIDE.md`](../../../assets/guides/FISHERY_GUIDE.md) is the canonical
 reference. Use this for `Knowledge` variants (bookmark/command/cheat/task),
 `Env`, `RawConfig`, `LoadedConfig`, and any other typed object that must
-satisfy domain validation.
+satisfy domain validation. The repo does **not** use `drizzle-seed` (see
+[`assets/docs/specs/foundation/design.md`](../../../assets/docs/specs/foundation/design.md)
+Decision 4).
 
 ```ts
 import { factoryFor } from '@testing'
@@ -146,35 +148,6 @@ The wrapper accepts either a plain partial OR
 `{ overrides?, associations?, transient?, afterBuild? }`. Defaults are
 declared in `src/__tests__/factories/factories.builder.ts`.
 
-### drizzle-seed (secondary — raw schema seeding only)
-
-Use only when you need bulk-shaped DB rows that bypass domain validation
-(e.g. seeding 100 rows for a pagination integration test). Prefer
-`createSeededMemoryDb` from `@testing` if a helper already exists.
-
-```ts
-import { drizzle } from 'drizzle-orm/bun-sqlite'
-import { Database } from 'bun:sqlite'
-import { seed } from 'drizzle-seed'
-import * as schema from '@db/schema'
-
-const sqlite = new Database(':memory:')
-const db = drizzle(sqlite, { schema })
-await seed(db, schema, { seed: 42 }).refine((f) => ({
-  knowledges: { count: 100, with: { type: f.valuesFromArray({
-    values: ['bookmark', 'command', 'cheat', 'task']
-  }) } }
-}))
-```
-
-Always pass a `seed` value for reproducible sequences.
-
-> **Note:** `CLAUDE.md` currently says "Never fishery." That contradicts
-> [`TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md) and
-> [`FISHERY_GUIDE.md`](../../../assets/guides/FISHERY_GUIDE.md), which mandate
-> Fishery. The guides win — Fishery is the default. The CLAUDE.md line is
-> a known drift item to fix separately.
-
 ## In-memory SQLite via `@testing`
 
 `@testing` (mapped in `tsconfig.json` to `src/__tests__/index.ts`) re-exports
@@ -185,27 +158,27 @@ the canonical helpers:
 | `factoryFor`                | Typed factories for `Knowledge`, `Env`, `RawConfig`, `LoadedConfig` |
 | `testingPaths`              | Absolute paths under `src/__tests__/fixtures/`                      |
 | `minimalEntriesYml`         | Path to the minimal YAML import fixture                             |
-| `createSeededMemoryDb`      | Drizzle on `:memory:` SQLite, FTS-ready                             |
-| `seedMinimalFixture`        | Run the YAML → DB import path against `:memory:`                    |
-| `readMinimalFixtureEntries` | Parse YAML directly without DB                                      |
+| `createSeededMemoryDb`      | `:memory:` `bun:sqlite` handle seeded from minimal YAML + FTS       |
+| `seedMinimalFixture`        | Upsert minimal YAML rows on an existing `DbHandle`                  |
+| `readMinimalFixtureEntries` | Parse minimal YAML to entries (no DB)                               |
 | `createTempDir`             | `mkdtemp` + `cleanup()` for disk-backed integration                 |
 | `createFactoryFor`          | Low-level builder when adding a new factory module                  |
 
 ```ts
 import { afterEach, beforeEach, describe, it, expect } from 'bun:test'
+import { findAll } from '@shell/app/db/entry.repository'
 import { createSeededMemoryDb } from '@testing'
 
-describe('EntryRepository', () => {
-  let db: Awaited<ReturnType<typeof createSeededMemoryDb>>
+describe('Seeded DB', () => {
+  let handle: Awaited<ReturnType<typeof createSeededMemoryDb>>
 
-  beforeEach(async () => { db = await createSeededMemoryDb() })
-  afterEach(() => db.sqlite.close())
+  beforeEach(async () => {
+    handle = await createSeededMemoryDb()
+  })
+  afterEach(() => handle.raw.close(true))
 
-  describe('#findByType', () => {
-    it('returns matching rows', async () => {
-      const rows = await db.repo.findByType('bookmark')
-      expect(rows).toHaveLength(1)
-    })
+  it('loads minimal fixture rows', () => {
+    expect(findAll(handle.raw)).toHaveLength(4)
   })
 })
 ```

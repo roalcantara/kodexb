@@ -1,3 +1,6 @@
+# Install commit-msg hook too: `pre-commit install` (default_install_hook_types).
+default_install_hook_types: [pre-commit, commit-msg]
+
 repos:
   - repo: https://github.com/jorisroovers/gitlint
     rev: v0.19.1
@@ -6,4 +9,4 @@ repos:
         # --msg-filename must stay last; see gitlint pre-commit docs.
         # --staged is required so gitlint can infer author metadata; this keeps
         # the Dependabot ignore-by-author-name rule effective.
-        args: [ --staged, -C, .gitlint, --msg-filename ]
+        args: [--staged, -C, .gitlint, --msg-filename]

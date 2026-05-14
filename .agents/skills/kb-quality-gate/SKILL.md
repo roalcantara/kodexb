@@ -50,10 +50,21 @@ If any stage fails, fix it, then re-run from Stage 0. Do NOT skip ahead.
 bun run lint:fix
 ```
 
-Runs `biome:fix` + `knip:fix` + `ast-grep:fix` (see `package.json`). Many
-violations are auto-correctable; running this **before** `bun run lint`
-saves a manual-fix loop. [`assets/guides/DoD.md`](../../../assets/guides/DoD.md)
-§1 lists this as the first DoD step.
+Runs `knip:fix` + `ast-grep:fix`, then **one** `lint:biome:fix` pass (`biome
+check --write` with `--diagnostic-level=warn` and `--error-on-warnings`), then
+`typecheck`. Biome runs **after** the other fixers so formatting and
+lint-safe fixes apply to the final tree without a second full Biome scan; Stage
+1’s `bun run lint` still runs `lint:biome:strict` for the full gate. Many
+violations are auto-correctable; running this **before** `bun run lint` saves a
+manual-fix loop. [`assets/guides/DoD.md`](../../../assets/guides/DoD.md) §1
+lists this as the first DoD step.
+
+**Other linters:** `knip` is invoked with `--no-exit-code` in `lint:knip`, so
+it reports issues but does not fail the gate by itself; treat its output as a
+fix backlog unless you tighten `package.json` later. `jscpd` reads
+`.jscpd.json` (`threshold: 0`); any detected clone fails the gate.
+`dependency-cruiser`, `ls-lint`, and `ast-grep` use normal exit codes in
+`bun run lint`.
 
 ### Stage 0.5 — Policy (suppressions + guard reminders)
 
@@ -70,7 +81,13 @@ tree or index **adds** new inline suppressions under `src/`, `tools/`, or
 
 It **warns** when guard configs change (`biome.jsonc`, `knip.jsonc`,
 `.dependency-cruiser.cjs`, `tsconfig.json`, `.ls-lint.yml`, `sgconfig.yml`) so you double-check
-they do not relax enforcement without approval.
+they do not relax enforcement without approval. The script does **not** parse
+whether a change tightens or weakens rules; reviewers (and optional
+`CODEOWNERS` on those files) are the backstop. To make guard edits explicitly
+approved in automation, extend `gate_policy.sh` (for example: fail the gate
+when any listed guard file is in the diff unless
+`KB_GATE_APPROVED_TOOL_WEAKENING=1`, or add a dedicated env flag for config-only
+changes) — trade-off: more friction on benign edits (`tsconfig` path tweaks).
 
 It **reminds** (informational) that Electrobun-facing work must follow
 `electrobun-best-practices` + routing (R7); the gate does not statically prove
@@ -86,7 +103,8 @@ allows the suppression diff check to pass after explicit maintainer sign-off.
 bun run lint
 ```
 
-This single script runs **all** of: `tsc --noEmit`, `biome check`,
+This single script runs **all** of: `tsc --noEmit`, `biome check` (strict:
+warn-level + error on warnings),
 `knip`, `dependency-cruiser`, `tombi check mise.toml`, `jscpd`,
 `@ls-lint/ls-lint`, `ast-grep scan`. Exit 0 means every architectural and
 style guard passed (including FCIS — `dependency-cruiser` enforces "no
