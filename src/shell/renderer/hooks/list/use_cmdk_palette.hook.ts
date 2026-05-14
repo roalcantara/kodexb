@@ -1,13 +1,18 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CmdkAction } from '../../components/actions/cmdk_palette.component'
-import { cyclePriority, cycleStatus, openExternal, openInEditor } from '../../rpc/client'
+import { cyclePriority, cycleStatus, openExternal, openInEditor, quitApp } from '../../rpc/client'
 
 type CmdkPaletteDeps = {
   selectedEntry: RpcKnowledge | null
   onEditTask: (entry: RpcKnowledge) => void
   onNewTask: () => void
   onSync: () => void
+}
+
+function paletteQuitShortcut(): string {
+  if (typeof navigator === 'undefined') return '⌘Q'
+  return /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent) ? '⌘Q' : 'Ctrl+Q'
 }
 
 function buildActions(
@@ -18,7 +23,15 @@ function buildActions(
 ): CmdkAction[] {
   const actions: CmdkAction[] = [
     { id: 'sync', label: 'Sync', handler: () => onSync() },
-    { id: 'new-task', label: 'New Task', handler: () => onNewTask() }
+    { id: 'new-task', label: 'New Task', handler: () => onNewTask() },
+    {
+      id: 'quit',
+      label: 'Quit kb',
+      shortcut: paletteQuitShortcut(),
+      handler: () => {
+        void quitApp().catch(() => undefined)
+      }
+    }
   ]
 
   if (!entry) return actions

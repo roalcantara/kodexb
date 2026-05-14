@@ -1,29 +1,15 @@
-import { type RefObject, useEffect, useMemo, useState } from 'react'
+import { type RefObject, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { DEFAULT_LIST_ROW_HEIGHT_PX } from '../../constants/ui.const'
+import { type ListScrollMetrics, readListScrollMetrics } from '../../utils/list/read_list_scroll_metrics.util'
 import { virtualListWindow } from '../../utils/list/virtual_list_window.util'
-
-type VirtualListMetrics = {
-  scrollTop: number
-  viewportHeight: number
-  rowHeight: number
-}
-
-function readMetrics(root: HTMLElement): VirtualListMetrics {
-  const row = root.querySelector<HTMLElement>('.kb-entryRow')
-  const measuredRowHeight = row?.getBoundingClientRect().height ?? 0
-  return {
-    scrollTop: root.scrollTop,
-    viewportHeight: root.clientHeight,
-    rowHeight: measuredRowHeight > 0 ? measuredRowHeight : DEFAULT_LIST_ROW_HEIGHT_PX
-  }
-}
 
 export function useVirtualListWindow(
   total: number,
   scrollRootRef: RefObject<HTMLElement | null>,
-  selectedIndex: number
+  selectedIndex: number,
+  selectedEntryId: number | null
 ) {
-  const [metrics, setMetrics] = useState<VirtualListMetrics>({
+  const [metrics, setMetrics] = useState<ListScrollMetrics>({
     scrollTop: 0,
     viewportHeight: 0,
     rowHeight: DEFAULT_LIST_ROW_HEIGHT_PX
@@ -36,7 +22,7 @@ export function useVirtualListWindow(
     let frame = 0
     const update = () => {
       cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(() => setMetrics(readMetrics(root)))
+      frame = requestAnimationFrame(() => setMetrics(readListScrollMetrics(root)))
     }
 
     update()
@@ -51,21 +37,30 @@ export function useVirtualListWindow(
     }
   }, [scrollRootRef])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const root = scrollRootRef.current
     if (root === null || selectedIndex < 0) return
 
-    const selectedTop = selectedIndex * metrics.rowHeight
-    const selectedBottom = selectedTop + metrics.rowHeight
+    const rh = metrics.rowHeight
+    const selectedTop = selectedIndex * rh
+    const selectedBottom = selectedTop + rh
     if (selectedTop < root.scrollTop) {
       root.scrollTop = selectedTop
-      return
+    } else {
+      const viewportBottom = root.scrollTop + root.clientHeight
+      if (selectedBottom > viewportBottom) {
+        root.scrollTop = selectedBottom - root.clientHeight
+      }
     }
-    const viewportBottom = root.scrollTop + root.clientHeight
-    if (selectedBottom > viewportBottom) {
-      root.scrollTop = selectedBottom - root.clientHeight
-    }
-  }, [metrics.rowHeight, scrollRootRef, selectedIndex])
+
+    if (selectedEntryId === null) return
+    requestAnimationFrame(() => {
+      const r = scrollRootRef.current
+      if (r === null) return
+      const el = r.querySelector<HTMLElement>(`button[data-entry-id="${String(selectedEntryId)}"]`)
+      el?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+    })
+  }, [metrics.rowHeight, scrollRootRef, selectedEntryId, selectedIndex])
 
   return useMemo(
     () =>

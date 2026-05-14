@@ -1,7 +1,8 @@
-import { type KeyboardEvent as ReactKeyboardEvent, useCallback, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 import { useListSurfaceScrollRestore } from '../../hooks/list/use_list_surface_scroll_restore.hook'
 import { useVirtualListWindow } from '../../hooks/list/use_virtual_list_window.hook'
+import { useWindowViewNavKeys } from '../../hooks/list/use_window_view_nav_keys.hook'
 import { DetailPage } from '../../pages/detail/detail.page'
 import { SettingsPage } from '../../pages/settings/settings.page'
 import { cyclePriority, cycleStatus } from '../../rpc/client'
@@ -50,6 +51,12 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
 
   useListSurfaceScrollRestore(p.listSurfaceRef, detailEntry)
 
+  useEffect(() => {
+    if (detailEntry !== null && viewState === 'detail' && p.filter.filterOpen) {
+      p.filter.setFilterOpen(false)
+    }
+  }, [detailEntry, viewState, p.filter.filterOpen, p.filter.setFilterOpen])
+
   // Restore focus to list surface after detail closes so arrow keys work
   useEffect(() => {
     if (detailEntry) return
@@ -73,7 +80,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   )
 
   const selectedIndex = p.data.rows.findIndex(e => e.id === p.sel.selectedId)
-  const virtualWindow = useVirtualListWindow(p.data.rows.length, p.listSurfaceRef, selectedIndex)
+  const virtualWindow = useVirtualListWindow(p.data.rows.length, p.listSurfaceRef, selectedIndex, p.sel.selectedId)
   const visibleRows = p.data.rows.slice(virtualWindow.startIndex, virtualWindow.endIndex)
 
   const filterSummary = listFilterSummary(p.data.types, p.data.tags, p.data.taskView)
@@ -81,49 +88,73 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   const filterChipCls = `kb-pt-filter-chip${filterActive ? ' kb-pt-filter-chip--active' : ''}`
 
   const toggleFilter = () => {
-    p.filter.setFilterOpen(!p.filter.filterOpen)
+    if (p.filter.filterOpen) {
+      p.filter.setFilterOpen(false)
+    } else {
+      p.filter.openFilter()
+    }
   }
 
-  const onPowertoysViewNavCapture = useCallback(
-    (e: ReactKeyboardEvent<HTMLDivElement>) => {
-      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
-      p.sel.handleKey(e)
-      if (e.defaultPrevented) e.stopPropagation()
-    },
-    [p.sel]
-  )
+  const viewNavKeysDisabled = showSettings || p.taskSheetVisible || p.palette.open
+  useWindowViewNavKeys({
+    disabled: viewNavKeysDisabled,
+    handleKey: p.sel.handleKey
+  })
 
   const powertoysClass = viewState === 'detail' ? 'kb-powertoys kb-powertoys--detail-full' : 'kb-powertoys'
-  const searchRowClass = viewState === 'detail' ? 'kb-pt-search kb-pt-search--hidden' : 'kb-pt-search'
+
+  const closeDetailToList = useCallback(() => {
+    p.sel.closeToList()
+    focusListSurface(p.listSurfaceRef)
+  }, [p.listSurfaceRef, p.sel.closeToList])
+
+  const isFullDetail = detailEntry !== null && viewState === 'detail'
+  const showBackWithSearch = detailEntry !== null && viewState === 'split'
 
   return (
     <>
-      <div
-        className={powertoysClass}
-        role="application"
-        aria-label="Knowledge list"
-        onKeyDownCapture={onPowertoysViewNavCapture}
-      >
-        <div className={searchRowClass}>
-          <input
-            ref={p.searchInputRef}
-            type="search"
-            placeholder="Search your knowledge base…"
-            value={p.data.search}
-            onChange={e => p.data.setSearch(e.target.value)}
-            onKeyDown={e => {
-              if (e.key !== 'ArrowDown') return
-              e.preventDefault()
-              p.onSearchArrowDown()
-            }}
-            aria-label="Search"
-          />
-          <button type="button" className={filterChipCls} onClick={toggleFilter}>
-            {filterSummary} ▾
-          </button>
-        </div>
+      <div className={powertoysClass} role="application" aria-label="Knowledge list">
+        {isFullDetail ? <div className="kb-windowDragStripe kb-windowDragStripe--detail" aria-hidden /> : null}
+        {isFullDetail ? null : (
+          <div className="kb-pt-search">
+            <div className="kb-pt-search-wrap kb-pt-search-wrap--withBack">
+              <button
+                type="button"
+                className={`kb-pt-back${showBackWithSearch ? '' : ' kb-pt-back--inactive'}`}
+                aria-label="Back to list"
+                title={showBackWithSearch ? 'Back to list (Escape)' : undefined}
+                aria-hidden={!showBackWithSearch}
+                tabIndex={showBackWithSearch ? 0 : -1}
+                onClick={() => {
+                  if (showBackWithSearch) closeDetailToList()
+                }}
+              >
+                ←
+              </button>
+              <search className="kb-pt-bar">
+                <input
+                  ref={p.searchInputRef}
+                  type="search"
+                  placeholder="Search your knowledge base…"
+                  value={p.data.search}
+                  onChange={e => p.data.setSearch(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key !== 'ArrowDown') return
+                    e.preventDefault()
+                    p.onSearchArrowDown()
+                  }}
+                  aria-label="Search"
+                />
+                <span aria-hidden className="kb-pt-bar-divider" />
+                <button ref={p.filter.filterButtonRef} type="button" className={filterChipCls} onClick={toggleFilter}>
+                  {filterSummary} ▾
+                </button>
+              </search>
+            </div>
+          </div>
+        )}
 
-        {p.filter.filterOpen && p.data.stats !== null ? (
+        {p.filter.filterOpen && p.data.stats !== null && !isFullDetail ? (
           <FilterDropdown
             open={p.filter.filterOpen}
             anchorRect={p.filter.anchorRect}
@@ -205,14 +236,10 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
 
           {detailEntry ? (
             <div className={detailPanelClass}>
-              <div className="kb-pt-nav-hint">← / Escape to close</div>
               <DetailPage
                 entryId={detailEntry.id}
                 allEntries={p.data.rows}
-                onClose={() => {
-                  p.sel.closeToList()
-                  focusListSurface(p.listSurfaceRef)
-                }}
+                onClose={closeDetailToList}
                 onSelectEntry={id => {
                   p.sel.selectDetailEntry(id)
                 }}
@@ -223,7 +250,31 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
 
         <div className="kb-pt-footer">
           <span>{resultCount} results</span>
-          <span>⌘K · ⌘N · ⌘,</span>
+          <span className="kb-pt-footer-right">
+            <span className="kb-pt-footer-keys">
+              <span
+                className={`kb-pt-footer-keysPrefix${isFullDetail ? '' : ' kb-pt-footer-keysPrefix--inactive'}`}
+                aria-hidden={!isFullDetail}
+              >
+                <button
+                  type="button"
+                  className="kb-pt-footer-keyBack"
+                  aria-label="Back to list"
+                  title="Back to list (Escape)"
+                  tabIndex={isFullDetail ? 0 : -1}
+                  onClick={() => {
+                    if (isFullDetail) closeDetailToList()
+                  }}
+                >
+                  ⎋
+                </button>
+                <span className="kb-pt-footer-keysSep" aria-hidden>
+                  {' · '}
+                </span>
+              </span>
+              <span>⌘K · ⌘N · ⌘,</span>
+            </span>
+          </span>
         </div>
       </div>
 
