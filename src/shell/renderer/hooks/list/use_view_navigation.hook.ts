@@ -1,6 +1,7 @@
-import type { RpcKnowledge } from '@shared/rpc'
+import type { RefObject } from 'react'
 import { useCallback, useReducer, useRef } from 'react'
-import { type ViewState, viewReducer } from '../../utils/list/view_reducer.util'
+import type { RpcKnowledge } from '@shared/rpc'
+import { viewReducer, type ViewState } from '../../utils/list/view_reducer.util'
 
 export type { ViewState }
 
@@ -10,6 +11,8 @@ type ViewNavigationDeps = {
   detailEntry: RpcKnowledge | null
   setSelectedId: (id: number | null) => void
   setDetailEntry: (entry: RpcKnowledge | null) => void
+  searchInputRef?: RefObject<HTMLInputElement | null>
+  hideWindow?: () => void
 }
 
 export function useViewNavigation({
@@ -17,7 +20,9 @@ export function useViewNavigation({
   selectedId,
   detailEntry,
   setSelectedId,
-  setDetailEntry
+  setDetailEntry,
+  searchInputRef,
+  hideWindow
 }: ViewNavigationDeps) {
   const [viewState, dispatch] = useReducer(viewReducer, 'list')
   const depsRef = useRef({ rows, selectedId, detailEntry, viewState })
@@ -26,7 +31,6 @@ export function useViewNavigation({
   const advance = useCallback(() => {
     const { rows: r, selectedId: sid, viewState: vs } = depsRef.current
 
-    // Auto-select first entry if nothing selected
     if (sid === null && r.length > 0) {
       setSelectedId(r[0]?.id ?? null)
     }
@@ -73,13 +77,48 @@ export function useViewNavigation({
     [setSelectedId, setDetailEntry]
   )
 
-  // Keyboard handler for ArrowRight/ArrowLeft — called from list surface onKeyDown
-  // with the same input guard as before.
+  // Keyboard handler — called from list surface onKeyDown and root div onKeyDown
   const handleKey = useCallback(
-    (e: { key: string; preventDefault?: () => void; target?: EventTarget | null }) => {
+    (e: { key: string; metaKey?: boolean; ctrlKey?: boolean; preventDefault?: () => void; target?: EventTarget | null }) => {
       // Skip when user is typing in an input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
-      if (e.target instanceof HTMLElement && e.target.isContentEditable) return
+      const isInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement
+      const isEditable = e.target instanceof HTMLElement && e.target.isContentEditable
+
+      // ⌘L / Ctrl+L: focus search input
+      if ((e.metaKey || e.ctrlKey) && e.key === 'l') {
+        e.preventDefault?.()
+        if (searchInputRef?.current) {
+          searchInputRef.current.focus()
+          searchInputRef.current.select()
+        }
+        return
+      }
+
+      // Escape: blur search input, or hide window, or close detail
+      if (e.key === 'Escape') {
+        if (isInput) {
+          // Escape from search input → blur
+          e.preventDefault?.()
+          ;(e.target as HTMLElement).blur()
+          return
+        }
+        if (!isEditable) {
+          if (depsRef.current.detailEntry !== null) {
+            // Escape with detail open → close detail
+            e.preventDefault?.()
+            retreat()
+            return
+          }
+          // Escape with no detail, not in input → hide window
+          e.preventDefault?.()
+          hideWindow?.()
+          return
+        }
+        return
+      }
+
+      // Skip navigation keys when typing
+      if (isInput || isEditable) return
 
       if (e.key === 'ArrowRight') {
         e.preventDefault?.()
@@ -91,7 +130,7 @@ export function useViewNavigation({
         retreat()
       }
     },
-    [advance, retreat]
+    [advance, retreat, searchInputRef, hideWindow]
   )
 
   return { viewState, advance, retreat, closeToList, selectDetailEntry, handleKey }

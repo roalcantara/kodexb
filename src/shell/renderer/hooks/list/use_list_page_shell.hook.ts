@@ -1,7 +1,7 @@
 import type { RpcKnowledge, TaskView } from '@shared/rpc'
 import { useCallback, useRef, useState } from 'react'
 import type { EntryTypeOption } from '../../components/list/filter_dropdown.component'
-import { deleteTask, reorderTask } from '../../rpc/client'
+import { deleteTask, hideWindow, reorderTask } from '../../rpc/client'
 import { listPageEmptyFlags } from '../../utils/list/list_page_empty_flags.util'
 import { focusListSurface } from '../../utils/list/list_surface_focus.util'
 import { useCmdkPalette } from './use_cmdk_palette.hook'
@@ -30,7 +30,7 @@ export function useListPageShell() {
   }, [])
   const sel = useListSelection(data.rows, onLeaveListUpward, () => {
     focusListSurface(listSurfaceRef)
-  })
+  }, searchInputRef, hideWindow)
   const fetchMore = useCallback(() => data.refreshList(true), [data.refreshList])
 
   useListSentinelPagination({

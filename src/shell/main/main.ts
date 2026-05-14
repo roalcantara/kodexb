@@ -1,4 +1,4 @@
-import { BrowserWindow, Screen, Utils } from 'electrobun/bun'
+import { BrowserWindow, GlobalShortcut, Screen, Utils } from 'electrobun/bun'
 import { createLogger } from '../../shared/logging'
 import { App, type AppShellHooks, type SyncEmitter } from '../app/app'
 import { loadConfig } from '../app/config/config.loader'
@@ -105,6 +105,20 @@ async function bootstrap() {
 
   win.show()
   win.activate()
+
+  let windowVisible = true
+
+  GlobalShortcut.register('CommandOrControl+Alt+/', () => {
+    if (!win) return
+    if (windowVisible) {
+      win.hide()
+      windowVisible = false
+    } else {
+      win.show()
+      win.activate()
+      windowVisible = true
+    }
+  })
 
   win.on('blur', () => {
     win?.minimize()

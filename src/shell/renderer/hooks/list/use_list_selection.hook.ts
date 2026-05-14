@@ -1,4 +1,5 @@
 import type { RpcKnowledge } from '@shared/rpc'
+import type { RefObject } from 'react'
 import { type KeyboardEvent as ReactKeyboardEvent, useState } from 'react'
 import { useViewNavigation } from './use_view_navigation.hook'
 
@@ -42,17 +43,21 @@ function handleListArrowUp(e: ReactKeyboardEvent<HTMLDivElement>, d: ListArrowNa
 export function useListSelection(
   rows: RpcKnowledge[],
   onLeaveListUpward?: () => void,
-  onRestoreListSurfaceFocus?: () => void
+  onRestoreListSurfaceFocus?: () => void,
+  searchInputRef?: RefObject<HTMLInputElement | null>,
+  hideWindow?: () => void
 ) {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
 
-  const { viewState, advance, retreat, closeToList, selectDetailEntry, handleKey } = useViewNavigation({
+  const { advance, retreat, closeToList, selectDetailEntry, viewState, handleKey } = useViewNavigation({
     rows,
     selectedId,
     detailEntry,
     setSelectedId,
-    setDetailEntry
+    setDetailEntry,
+    searchInputRef,
+    hideWindow
   })
 
   const moveSelection = (delta: number) => {
