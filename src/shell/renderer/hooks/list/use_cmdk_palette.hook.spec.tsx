@@ -34,7 +34,8 @@ describe('useCmdkPalette', () => {
         selectedEntry: null,
         onEditTask: () => undefined,
         onNewTask: () => undefined,
-        onSync: () => undefined
+        onSync: () => undefined,
+        pushToast: () => undefined
       })
     )
     const quit = result.current.actions.find(a => a.id === 'quit')

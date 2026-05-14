@@ -4,6 +4,7 @@ import type { EntryTypeOption } from '../../components/list/filter_dropdown.comp
 import { deleteTask, hideWindow, reorderTask } from '../../rpc/client'
 import { listPageEmptyFlags } from '../../utils/list/list_page_empty_flags.util'
 import { focusListSurface } from '../../utils/list/list_surface_focus.util'
+import { useActionToast } from '../shared/use_action_toast.hook'
 import { useCmdkPalette } from './use_cmdk_palette.hook'
 import { useListFilterOverlay } from './use_list_filter_overlay.hook'
 import { useListPageData } from './use_list_page_data.hook'
@@ -25,12 +26,13 @@ export function useListPageShell() {
   const pageSize = useListViewportPageSize(listSurfaceRef)
   const data = useListPageData({ pageSizeOverride: pageSize })
   const filter = useListFilterOverlay()
+  const { toasts, pushToast, dismissToast } = useActionToast()
   const onLeaveListUpward = useCallback(() => {
     searchInputRef.current?.focus()
   }, [])
   const sel = useListSelection(data.rows, onLeaveListUpward, () => {
     focusListSurface(listSurfaceRef)
-  }, searchInputRef, hideWindow)
+  }, searchInputRef, hideWindow, pushToast)
   const fetchMore = useCallback(() => data.refreshList(true), [data.refreshList])
 
   useListSentinelPagination({
@@ -42,6 +44,7 @@ export function useListPageShell() {
   })
   const palette = useCmdkPalette({
     selectedEntry: sel.detailEntry,
+    pushToast,
     onEditTask: _entry => {
       // TaskSheet is handled by the existing selection hook's detailEntry + openDetail
     },
@@ -134,7 +137,9 @@ export function useListPageShell() {
     dragDrop,
     palette,
     toastResult: data.toastResult,
-    dismissToast: data.dismissToast
+    dismissToast: data.dismissToast,
+    actionToasts: toasts,
+    dismissActionToast: dismissToast
   }
 }
 

@@ -1070,6 +1070,14 @@ body {
 .kb-syncToast-close { position: absolute; top: 8px; right: 8px; background: none; border: none; color: var(--kb-muted); cursor: pointer; font-size: 0.875rem; }
 @keyframes kb-slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+/* Action toasts — stacked above sync toast */
+.kb-action-toasts { position: fixed; bottom: 16px; right: 16px; z-index: 210; display: flex; flex-direction: column-reverse; gap: 8px; max-width: 380px; }
+.kb-action-toast { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 6px; font-size: 0.8125rem; animation: kb-slideUp 200ms ease; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.kb-action-toast--success { background: #121721; border: 1px solid var(--kb-accent); color: var(--kb-text); }
+.kb-action-toast--error { background: #121721; border: 1px solid var(--kb-danger); color: var(--kb-text); }
+.kb-action-toast-msg { flex: 1; }
+.kb-action-toast-close { background: none; border: none; color: var(--kb-muted); cursor: pointer; font-size: 0.75rem; padding: 0; }
+
 /* ── Stats section (Phase 12) ───────────────────────────────────── */
 .kb-settingsSection { margin-bottom: 1.5rem; }
 .kb-settingsSection-title { margin: 0 0 0.5rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--kb-muted); }

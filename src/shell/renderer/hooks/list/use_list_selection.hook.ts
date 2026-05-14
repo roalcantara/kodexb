@@ -45,7 +45,8 @@ export function useListSelection(
   onLeaveListUpward?: () => void,
   onRestoreListSurfaceFocus?: () => void,
   searchInputRef?: RefObject<HTMLInputElement | null>,
-  hideWindow?: () => void
+  hideWindow?: () => void,
+  pushToast?: (msg: string, type: 'success' | 'error') => void
 ) {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
@@ -57,7 +58,8 @@ export function useListSelection(
     setSelectedId,
     setDetailEntry,
     searchInputRef,
-    hideWindow
+    hideWindow,
+    pushToast
   })
 
   const moveSelection = (delta: number) => {

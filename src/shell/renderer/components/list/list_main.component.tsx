@@ -11,6 +11,7 @@ import { focusListSurface } from '../../utils/list/list_surface_focus.util'
 import { CmdkPalette } from '../actions/cmdk_palette.component'
 import { SyncProgress } from '../shared/sync_progress.component'
 import { SyncToast } from '../shared/sync_toast.component'
+import { ActionToastHost } from '../shared/action_toast_host.component'
 import { TaskSheet } from '../task/task_sheet.component'
 import { EntryRow } from './entry_row.component'
 import { FilterDropdown } from './filter_dropdown.component'
@@ -300,6 +301,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
         <CmdkPalette open={p.palette.open} actions={p.palette.actions} onClose={p.palette.closePalette} />
       )}
       <SyncToast result={p.data.toastResult} onDismiss={p.data.dismissToast} />
+      <ActionToastHost toasts={p.actionToasts} onDismiss={p.dismissActionToast} />
     </>
   )
 }

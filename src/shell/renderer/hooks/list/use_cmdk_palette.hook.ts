@@ -3,23 +3,37 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CmdkAction } from '../../components/actions/cmdk_palette.component'
 import { cyclePriority, cycleStatus, openExternal, openInEditor, quitApp } from '../../rpc/client'
 
+const APPLE_UA_PATTERN = /Mac|iPhone|iPod|iPad/i
+
 type CmdkPaletteDeps = {
   selectedEntry: RpcKnowledge | null
   onEditTask: (entry: RpcKnowledge) => void
   onNewTask: () => void
   onSync: () => void
+  pushToast: (msg: string, type: 'success' | 'error') => void
 }
 
 function paletteQuitShortcut(): string {
   if (typeof navigator === 'undefined') return '⌘Q'
-  return /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent) ? '⌘Q' : 'Ctrl+Q'
+  return APPLE_UA_PATTERN.test(navigator.userAgent) ? '⌘Q' : 'Ctrl+Q'
 }
 
+function clipboardToast(pushToast: (msg: string, type: 'success' | 'error') => void, label: string) {
+  return (promise: Promise<void>) => {
+    promise.then(
+      () => pushToast(`${label} copied`, 'success'),
+      () => pushToast(`${label} copy failed`, 'error')
+    )
+  }
+}
+
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: palette action list is intentionally flat for readability
 function buildActions(
   entry: RpcKnowledge | null,
   onEditTask: (entry: RpcKnowledge) => void,
   onNewTask: () => void,
-  onSync: () => void
+  onSync: () => void,
+  pushToast: (msg: string, type: 'success' | 'error') => void
 ): CmdkAction[] {
   const actions: CmdkAction[] = [
     { id: 'sync', label: 'Sync', handler: () => onSync() },
@@ -29,7 +43,7 @@ function buildActions(
       label: 'Quit kb',
       shortcut: paletteQuitShortcut(),
       handler: () => {
-        void quitApp().catch(() => undefined)
+        quitApp().catch(() => pushToast('Failed to quit', 'error'))
       }
     }
   ]
@@ -38,14 +52,20 @@ function buildActions(
 
   switch (entry.type) {
     case 'bookmark':
-      actions.push({ id: 'open-url', label: 'Open URL', handler: () => openExternal(entry.key) })
+      actions.push({
+        id: 'open-url',
+        label: 'Open URL',
+        handler: () => {
+          openExternal(entry.key).catch(() => pushToast('Failed to open URL', 'error'))
+        }
+      })
       break
     case 'command':
       actions.push({
         id: 'paste-terminal',
         label: 'Paste in Terminal',
         handler: () => {
-          navigator.clipboard.writeText(entry.key).catch(() => undefined)
+          clipboardToast(pushToast, 'Command')(navigator.clipboard.writeText(entry.key))
         }
       })
       break
@@ -53,7 +73,9 @@ function buildActions(
       actions.push({
         id: 'copy-doc',
         label: 'Copy to Clipboard',
-        handler: () => navigator.clipboard.writeText(entry.doc ?? '').catch(() => undefined)
+        handler: () => {
+          clipboardToast(pushToast, 'Content')(navigator.clipboard.writeText(entry.doc ?? ''))
+        }
       })
       break
     case 'task':
@@ -65,24 +87,30 @@ function buildActions(
     {
       id: 'copy-title',
       label: 'Copy Title',
-      handler: () => navigator.clipboard.writeText(entry.key).catch(() => undefined)
+      handler: () => clipboardToast(pushToast, 'Title')(navigator.clipboard.writeText(entry.key))
     },
     {
       id: 'copy-desc',
       label: 'Copy Description',
-      handler: () => navigator.clipboard.writeText(entry.desc ?? '').catch(() => undefined)
+      handler: () => clipboardToast(pushToast, 'Description')(navigator.clipboard.writeText(entry.desc ?? ''))
     },
     {
       id: 'copy-tags',
       label: 'Copy Tags',
-      handler: () => navigator.clipboard.writeText(entry.tags.join(', ')).catch(() => undefined)
+      handler: () => clipboardToast(pushToast, 'Tags')(navigator.clipboard.writeText(entry.tags.join(', ')))
     },
     {
       id: 'copy-notes',
       label: 'Copy Notes',
-      handler: () => navigator.clipboard.writeText(entry.doc ?? '').catch(() => undefined)
+      handler: () => clipboardToast(pushToast, 'Notes')(navigator.clipboard.writeText(entry.doc ?? ''))
     },
-    { id: 'open-editor', label: 'Open in Editor', handler: () => openInEditor(entry.source) }
+    {
+      id: 'open-editor',
+      label: 'Open in Editor',
+      handler: () => {
+        openInEditor(entry.source).catch(() => pushToast('Failed to open editor', 'error'))
+      }
+    }
   )
 
   if (entry.type === 'task') {
@@ -90,12 +118,16 @@ function buildActions(
       {
         id: 'cycle-status',
         label: 'Cycle Status',
-        handler: () => cycleStatus(entry.id, 'forward').catch(() => undefined)
+        handler: () => {
+          cycleStatus(entry.id, 'forward').catch(() => pushToast('Status cycle failed', 'error'))
+        }
       },
       {
         id: 'cycle-priority',
         label: 'Cycle Priority',
-        handler: () => cyclePriority(entry.id, 'forward').catch(() => undefined)
+        handler: () => {
+          cyclePriority(entry.id, 'forward').catch(() => pushToast('Priority cycle failed', 'error'))
+        }
       }
     )
   }
@@ -103,14 +135,14 @@ function buildActions(
   return actions
 }
 
-export function useCmdkPalette({ selectedEntry, onEditTask, onNewTask, onSync }: CmdkPaletteDeps) {
+export function useCmdkPalette({ selectedEntry, onEditTask, onNewTask, onSync, pushToast }: CmdkPaletteDeps) {
   const [open, setOpen] = useState(false)
-  const depsRef = useRef({ selectedEntry, onEditTask, onNewTask, onSync })
-  depsRef.current = { selectedEntry, onEditTask, onNewTask, onSync }
+  const depsRef = useRef({ selectedEntry, onEditTask, onNewTask, onSync, pushToast })
+  depsRef.current = { selectedEntry, onEditTask, onNewTask, onSync, pushToast }
 
   const actions = useMemo(
-    () => buildActions(selectedEntry, onEditTask, onNewTask, onSync),
-    [selectedEntry, onEditTask, onNewTask, onSync]
+    () => buildActions(selectedEntry, onEditTask, onNewTask, onSync, pushToast),
+    [selectedEntry, onEditTask, onNewTask, onSync, pushToast]
   )
 
   const openPalette = useCallback(() => setOpen(true), [])
