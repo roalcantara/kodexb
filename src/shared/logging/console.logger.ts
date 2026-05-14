@@ -1,6 +1,13 @@
 import { getLogger } from '@logtape/logtape'
 import type { ConsoleMethod, CreateLoggerOpts, LogProps, PhaseLabel } from '../types/logger.types'
+import type { KbLogVerbosity } from './kb_log_verbosity'
 import { syncLogging } from './logtape.adapter'
+
+function resolveVerbosity(opts: CreateLoggerOpts): KbLogVerbosity {
+  if (opts.verbosity !== undefined) return opts.verbosity
+  if (opts.debug === true) return 'debug'
+  return 'default'
+}
 
 export const formatMessage = <L extends ConsoleMethod>(args: unknown[], props?: LogProps<L>) => {
   if (props) {
@@ -9,11 +16,13 @@ export const formatMessage = <L extends ConsoleMethod>(args: unknown[], props?: 
   return args.map(a => String(a)).join(' ')
 }
 
-export const createLogger = ({ debug }: CreateLoggerOpts) => {
-  const dbug = debug ?? false
-  syncLogging(dbug)
+export const createLogger = (opts: CreateLoggerOpts = {}) => {
+  const verbosity = resolveVerbosity(opts)
+  syncLogging(verbosity)
   return {
-    isEnabled: dbug,
+    verbosity,
+    /** True when Logtape `kb` accepts at least `debug` (verbosity debug or trace). */
+    isEnabled: verbosity === 'debug' || verbosity === 'trace',
     assert: console.assert,
     clear: console.clear,
     count: console.count,
@@ -42,8 +51,7 @@ export const createLogger = ({ debug }: CreateLoggerOpts) => {
       return process.exit(1)
     },
     phase: (phase: PhaseLabel, label: string, durMs: number) => {
-      if (!dbug) return
-      getLogger(['kb']).debug('{phase} label={label} dur_ms={dur_ms}', {
+      getLogger(['kb']).info('{phase} label={label} dur_ms={dur_ms}', {
         phase,
         label,
         dur_ms: durMs.toFixed(2)
