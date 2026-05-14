@@ -1,5 +1,6 @@
 import { BrowserWindow, GlobalShortcut, Screen, Utils } from 'electrobun/bun'
 import { createLogger } from '../../shared/logging'
+import type { RpcSyncProgressPayload } from '../../shared/rpc'
 import { App, type AppShellHooks, type SyncEmitter } from '../app/app'
 import { loadConfig } from '../app/config/config.loader'
 import { reportConfigLoadErrorAndExit } from './helpers/error.helper'
@@ -22,9 +23,9 @@ type KbWebviewRpc = ReturnType<typeof createKbWebviewRpc>
 
 function createKbLateEmit(getKbRpc: () => KbWebviewRpc | null): SyncEmitter {
   return {
-    syncProgress: (processed, total) => {
+    syncProgress: (payload: RpcSyncProgressPayload) => {
       const rpc = getKbRpc()
-      if (rpc) createSyncEmitter(rpc).syncProgress(processed, total)
+      if (rpc) createSyncEmitter(rpc).syncProgress(payload)
     },
     syncComplete: result => {
       const rpc = getKbRpc()

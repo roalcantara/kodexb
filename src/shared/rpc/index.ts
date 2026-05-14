@@ -11,6 +11,8 @@ export type {
   RpcGetConfigPayload,
   RpcImportResult,
   RpcKnowledge,
+  RpcSyncFileResult,
+  RpcSyncProgressPayload,
   TaskCreateInput,
   TaskUpdateInput,
   TaskView

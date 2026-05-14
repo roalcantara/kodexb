@@ -15,7 +15,7 @@ import { useListViewportPageSize } from './use_list_viewport_page_size.hook'
 import { useTaskDragDrop } from './use_task_drag_drop.hook'
 import { useTaskKeyboard } from './use_task_keyboard.hook'
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: pre-existing pattern outside Phase 9 scope
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: shell composes list, palette, task sheet, toasts
 export function useListPageShell() {
   const listSurfaceRef = useRef<HTMLDivElement>(null)
   const listSentinelRef = useRef<HTMLDivElement>(null)
@@ -24,15 +24,22 @@ export function useListPageShell() {
   const settingsButtonRef = useRef<HTMLButtonElement>(null)
   const newTaskButtonRef = useRef<HTMLButtonElement>(null)
   const pageSize = useListViewportPageSize(listSurfaceRef)
-  const data = useListPageData({ pageSizeOverride: pageSize })
+  const { toasts: actionToasts, pushToast, dismissToast: dismissActionToast } = useActionToast()
+  const data = useListPageData({ pageSizeOverride: pageSize, pushToast })
   const filter = useListFilterOverlay()
-  const { toasts, pushToast, dismissToast } = useActionToast()
   const onLeaveListUpward = useCallback(() => {
     searchInputRef.current?.focus()
   }, [])
-  const sel = useListSelection(data.rows, onLeaveListUpward, () => {
-    focusListSurface(listSurfaceRef)
-  }, searchInputRef, hideWindow, pushToast)
+  const sel = useListSelection(
+    data.rows,
+    onLeaveListUpward,
+    () => {
+      focusListSurface(listSurfaceRef)
+    },
+    searchInputRef,
+    hideWindow,
+    pushToast
+  )
   const fetchMore = useCallback(() => data.refreshList(true), [data.refreshList])
 
   useListSentinelPagination({
@@ -136,10 +143,8 @@ export function useListPageShell() {
     onCloseTaskSheet: handleCloseTaskSheet,
     dragDrop,
     palette,
-    toastResult: data.toastResult,
-    dismissToast: data.dismissToast,
-    actionToasts: toasts,
-    dismissActionToast: dismissToast
+    actionToasts,
+    dismissActionToast
   }
 }
 

@@ -1,9 +1,11 @@
 import type { Database } from 'bun:sqlite'
 import fs from 'node:fs/promises'
+import path from 'node:path'
 import glob from 'fast-glob'
 import type { Entry, Knowledge } from '../../../core'
 import { isValidSourceRowMin, parseSourceFile, toKnowledge } from '../../../core'
 import { createLogger } from '../../../shared/logging'
+import type { RpcSyncFileResult, RpcSyncProgressPayload } from '../../../shared/rpc'
 import { openDatabase } from './client'
 import { rebuildFts, upsert } from './entry.repository'
 
@@ -48,14 +50,25 @@ export class ImportService {
     }
   }
 
-  private persistParsedSourceBundle(db: Database, bundle: ParsedSourceBundle, result: ImportResult): void {
+  private persistParsedSourceBundle(db: Database, bundle: ParsedSourceBundle, result: ImportResult): RpcSyncFileResult {
+    const label = path.basename(bundle.filePath)
     const t0 = performance.now()
     if ('error' in bundle) {
-      result.errors.push(formatBundleError(bundle.filePath, bundle.error))
-      return
+      const msg = formatBundleError(bundle.filePath, bundle.error)
+      result.errors.push(msg)
+      return {
+        path: bundle.filePath,
+        label,
+        ok: false,
+        error: bundle.error,
+        inserted: 0,
+        updated: 0
+      }
     }
 
     const now = Date.now()
+    let insertedInFile = 0
+    let updatedInFile = 0
     try {
       db.transaction(() => {
         const toUpsert: Knowledge[] = []
@@ -69,22 +82,42 @@ export class ImportService {
 
         for (const row of toUpsert) {
           const action = upsert(db, row)
-          if (action === 'inserted') result.inserted += 1
-          else result.updated += 1
+          if (action === 'inserted') {
+            result.inserted += 1
+            insertedInFile += 1
+          } else {
+            result.updated += 1
+            updatedInFile += 1
+          }
         }
       })()
 
       result.filesProcessed += 1
       this.log.phase('import', bundle.filePath, performance.now() - t0)
+      return {
+        path: bundle.filePath,
+        label,
+        ok: true,
+        inserted: insertedInFile,
+        updated: updatedInFile
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       result.errors.push(formatBundleError(bundle.filePath, msg))
+      return {
+        path: bundle.filePath,
+        label,
+        ok: false,
+        error: msg,
+        inserted: insertedInFile,
+        updated: updatedInFile
+      }
     }
   }
 
   async runOnce(
     sourcesDir: string,
-    options?: { onProgress?: (processed: number, total: number) => void }
+    options?: { onProgress?: (payload: RpcSyncProgressPayload) => void }
   ): Promise<ImportResult> {
     const { raw: db } = openDatabase(this.dbPath)
     const result: ImportResult = {
@@ -99,20 +132,16 @@ export class ImportService {
     let processed = 0
 
     for (const bundle of bundles) {
-      options?.onProgress?.(processed, total)
-      this.persistParsedSourceBundle(db, bundle, result)
+      const recentFile = this.persistParsedSourceBundle(db, bundle, result)
       processed += 1
-      options?.onProgress?.(processed, total)
+      options?.onProgress?.({ processed, total, recentFile })
     }
 
     rebuildFts(db)
     return result
   }
 
-  run(
-    sourcesDir: string,
-    options?: { onProgress?: (processed: number, total: number) => void }
-  ): Promise<ImportResult> {
+  run(sourcesDir: string, options?: { onProgress?: (payload: RpcSyncProgressPayload) => void }): Promise<ImportResult> {
     return this.runOnce(sourcesDir, options)
   }
 }

@@ -12,6 +12,7 @@ import type {
   RpcGetConfigPayload,
   RpcImportResult,
   RpcKnowledge,
+  RpcSyncProgressPayload,
   TaskCreateInput,
   TaskUpdateInput
 } from '@shared/rpc'
@@ -23,7 +24,7 @@ const RPC_TIMEOUT_MS = 60_000
 const BRIDGE_ORIGIN = 'http://kb.local'
 
 const syncListeners: {
-  onProgress?: (payload: { processed: number; total: number }) => void
+  onProgress?: (payload: RpcSyncProgressPayload) => void
   onComplete?: (result: RpcImportResult) => void
 } = {}
 
@@ -141,7 +142,7 @@ function extractErrorMessage(value: unknown): string {
 
 /** Register main→renderer sync notifications (replace previous listeners). */
 export function setSyncMessageHandlers(handlers: {
-  onProgress?: (payload: { processed: number; total: number }) => void
+  onProgress?: (payload: RpcSyncProgressPayload) => void
   onComplete?: (result: RpcImportResult) => void
 }): void {
   syncListeners.onProgress = handlers.onProgress

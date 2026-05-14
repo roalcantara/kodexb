@@ -41,6 +41,15 @@ type ViewNavigationKeyCtx = {
   pushToast?: (msg: string, type: 'success' | 'error') => void
 }
 
+export type ViewNavigationResult = {
+  viewState: ViewState
+  advance: () => void
+  retreat: () => void
+  closeToList: () => void
+  selectDetailEntry: (id: number) => void
+  handleKey: (e: ViewNavigationKeyEvent) => void
+}
+
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: keyboard routing matrix for list/detail/split views
 function handleViewNavigationKey(e: ViewNavigationKeyEvent, ctx: ViewNavigationKeyCtx): void {
   const { depsRef, advance, retreat, searchInputRef, hideWindow, pushToast } = ctx
@@ -118,7 +127,7 @@ export function useViewNavigation({
   searchInputRef,
   hideWindow,
   pushToast
-}: ViewNavigationDeps) {
+}: ViewNavigationDeps): ViewNavigationResult {
   const [viewState, dispatch] = useReducer(viewReducer, 'list')
   const depsRef = useRef({ rows, selectedId, detailEntry, viewState })
   depsRef.current = { rows, selectedId, detailEntry, viewState }
@@ -180,5 +189,12 @@ export function useViewNavigation({
     [advance, retreat, searchInputRef, hideWindow, pushToast]
   )
 
-  return { viewState, advance, retreat, closeToList, selectDetailEntry, handleKey }
+  return {
+    viewState,
+    advance,
+    retreat,
+    closeToList,
+    selectDetailEntry,
+    handleKey
+  }
 }

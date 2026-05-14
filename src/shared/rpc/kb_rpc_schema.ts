@@ -32,6 +32,23 @@ export type RpcImportResult = {
   errors: string[]
 }
 
+/** One source file finished (success or failure) during import. */
+export type RpcSyncFileResult = {
+  path: string
+  label: string
+  ok: boolean
+  error?: string
+  inserted: number
+  updated: number
+}
+
+/** Main→renderer push while `sync` runs (hybrid with Eden `sync` response). */
+export type RpcSyncProgressPayload = {
+  processed: number
+  total: number
+  recentFile?: RpcSyncFileResult
+}
+
 export type TaskView = 'actionable' | 'today' | 'overdue' | 'this_week' | 'all_pending' | 'all_doing'
 
 export type ListOpts = {
@@ -133,7 +150,7 @@ export type KbDesktopRpcSchema = ElectrobunRPCSchema & {
   webview: RPCSchema<{
     requests: Record<string, never>
     messages: {
-      syncProgress: { processed: number; total: number }
+      syncProgress: RpcSyncProgressPayload
       syncComplete: RpcImportResult
     }
   }>

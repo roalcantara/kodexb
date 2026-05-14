@@ -1,5 +1,11 @@
 import { BrowserView } from 'electrobun/bun'
-import type { KbDesktopRpcSchema, RpcCallParams, RpcCallResponse, RpcImportResult } from '../../../shared/rpc'
+import type {
+  KbDesktopRpcSchema,
+  RpcCallParams,
+  RpcCallResponse,
+  RpcImportResult,
+  RpcSyncProgressPayload
+} from '../../../shared/rpc'
 
 import type { SyncEmitter } from '../../app/app'
 import type { RpcApp } from './server'
@@ -61,11 +67,11 @@ export function createKbWebviewRpc(rpcApp: RpcApp, maxRequestTime = DEFAULT_RPC_
  */
 export function createSyncEmitter(webviewRpc: ReturnType<typeof createKbWebviewRpc>): Required<SyncEmitter> {
   const send = webviewRpc.send as {
-    syncProgress: (payload: { processed: number; total: number }) => void
+    syncProgress: (payload: RpcSyncProgressPayload) => void
     syncComplete: (payload: RpcImportResult) => void
   }
   return {
-    syncProgress: (processed, total) => send.syncProgress({ processed, total }),
+    syncProgress: payload => send.syncProgress(payload),
     syncComplete: result => send.syncComplete(result)
   }
 }

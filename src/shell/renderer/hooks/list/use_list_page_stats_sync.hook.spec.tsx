@@ -6,9 +6,12 @@ import { render, screen, waitFor } from '@testing-library/react'
 
 const getListStatsMock = mock<() => Promise<ListStats>>()
 const getStatsMock = mock<() => Promise<RpcDbStats>>()
-const setSyncMessageHandlersMock = mock(() => undefined)
+const setSyncMessageHandlersMock = mock<(handlers: { onProgress?: unknown; onComplete?: unknown }) => void>(
+  () => undefined
+)
 const syncRpcMock = mock(() => Promise.resolve({ filesProcessed: 0, inserted: 0, updated: 0, errors: [] }))
 const getSyncInfoMock = mock(() => Promise.resolve({ sourcesDir: '/tmp', fileCount: 0 }))
+const pushToastMock = mock(() => undefined)
 
 mock.module('../../rpc/client', () => ({
   getListStats: getListStatsMock,
@@ -39,7 +42,10 @@ const listStats: ListStats = {
 }
 
 function Harness() {
-  const { stats, dbStats } = useListPageStatsSync(mock(() => Promise.resolve()))
+  const { stats, dbStats } = useListPageStatsSync({
+    refreshList: mock(() => Promise.resolve()),
+    pushToast: pushToastMock
+  })
   return (
     <div>
       <span data-testid="total">{stats?.total ?? 'pending'}</span>
@@ -53,6 +59,8 @@ beforeEach(() => {
   getStatsMock.mockReset()
   setSyncMessageHandlersMock.mockReset()
   syncRpcMock.mockReset()
+  getSyncInfoMock.mockReset()
+  pushToastMock.mockReset()
   getListStatsMock.mockResolvedValue(listStats)
   getStatsMock.mockResolvedValue({
     total: 4,
@@ -67,9 +75,17 @@ beforeEach(() => {
 test('loads stats with a single list stats RPC call', async () => {
   render(<Harness />)
 
-  await waitFor(() => expect(screen.getByTestId('total').textContent).toBe('4'))
+  await waitFor(() => expect(getListStatsMock).toHaveBeenCalledTimes(1))
+  expect(screen.getByTestId('total').textContent).toBe('4')
+})
 
-  expect(getListStatsMock).toHaveBeenCalledTimes(1)
+test('registers sync message handlers', async () => {
+  render(<Harness />)
+
+  await waitFor(() => expect(setSyncMessageHandlersMock).toHaveBeenCalled())
+  const first = setSyncMessageHandlersMock.mock.calls[0]?.[0]
+  expect(typeof first?.onProgress).toBe('function')
+  expect(typeof first?.onComplete).toBe('function')
 })
 
 test('derives db byType data from the list stats response', async () => {

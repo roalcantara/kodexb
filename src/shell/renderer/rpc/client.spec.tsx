@@ -1,6 +1,7 @@
 import '@happy-dom/global-registrator'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
+import type { RpcSyncProgressPayload } from '@shared/rpc'
 
 const rpcCallMock = mock<(params: unknown) => Promise<{ status: number; body: string }>>()
 
@@ -160,17 +161,19 @@ describe('Eden Treaty client', () => {
 
   describe('.setSyncMessageHandlers', () => {
     it('registers progress and completion callbacks', () => {
-      const progress: Array<{ processed: number; total: number }> = []
+      const progress: RpcSyncProgressPayload[] = []
       const completes: unknown[] = []
       setSyncMessageHandlers({
         onProgress: p => progress.push(p),
         onComplete: r => completes.push(r)
       })
 
-      messageHandlers.syncProgress?.({ processed: 1, total: 10 })
+      const recentFile = { path: '/tmp/a.yml', label: 'a.yml', ok: true, inserted: 2, updated: 0 }
+      messageHandlers.syncProgress?.({ processed: 1, total: 10, recentFile })
       messageHandlers.syncComplete?.({ filesProcessed: 1, inserted: 1, updated: 0, errors: [] })
 
-      expect(progress).toEqual([{ processed: 1, total: 10 }])
+      expect(progress).toEqual([{ processed: 1, total: 10, recentFile }])
+      expect(progress).toEqual([{ processed: 1, total: 10, recentFile }])
       expect(completes).toHaveLength(1)
     })
   })

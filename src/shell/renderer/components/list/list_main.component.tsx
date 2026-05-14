@@ -9,9 +9,8 @@ import { cyclePriority, cycleStatus } from '../../rpc/client'
 import { listFilterSummary } from '../../utils/list/list_filter_summary.util'
 import { focusListSurface } from '../../utils/list/list_surface_focus.util'
 import { CmdkPalette } from '../actions/cmdk_palette.component'
-import { SyncProgress } from '../shared/sync_progress.component'
-import { SyncToast } from '../shared/sync_toast.component'
 import { ActionToastHost } from '../shared/action_toast_host.component'
+import { SyncModal } from '../shared/sync_modal.component'
 import { TaskSheet } from '../task/task_sheet.component'
 import { EntryRow } from './entry_row.component'
 import { FilterDropdown } from './filter_dropdown.component'
@@ -282,9 +281,6 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
       {p.taskSheetVisible ? (
         <TaskSheet key={p.taskSheetEntry?.id ?? 'new'} entry={p.taskSheetEntry} onClose={p.onCloseTaskSheet} />
       ) : null}
-      {p.data.syncing ? (
-        <SyncProgress processed={p.data.syncProg?.processed ?? 0} total={p.data.syncProg?.total ?? 1} />
-      ) : null}
       {showSettings ? (
         <div className="kb-settingsHost">
           <SettingsPage
@@ -300,7 +296,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
       {p.palette.open && (
         <CmdkPalette open={p.palette.open} actions={p.palette.actions} onClose={p.palette.closePalette} />
       )}
-      <SyncToast result={p.data.toastResult} onDismiss={p.data.dismissToast} />
+      <SyncModal model={p.data.syncUi} onDismiss={p.data.dismissSyncModal} />
       <ActionToastHost toasts={p.actionToasts} onDismiss={p.dismissActionToast} />
     </>
   )

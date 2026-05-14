@@ -1,5 +1,6 @@
 // biome-ignore lint/nursery/noExcessiveLinesPerFile: pre-existing pattern outside Phase 9 scope
 import fs from 'node:fs/promises'
+import glob from 'fast-glob'
 import type { Entry, Knowledge, TaskEntry } from '../../core'
 import { toKnowledge } from '../../core'
 import { createLogger } from '../../shared/logging'
@@ -12,6 +13,7 @@ import type {
   RpcDbStats,
   RpcGetConfigPayload,
   RpcImportResult,
+  RpcSyncProgressPayload,
   TaskCreateInput,
   TaskUpdateInput
 } from '../../shared/rpc'
@@ -55,7 +57,7 @@ function toFindAllOpts(opts: ListOpts): FindAllOpts {
 }
 
 export type SyncEmitter = {
-  syncProgress?: (processed: number, total: number) => void
+  syncProgress?: (payload: RpcSyncProgressPayload) => void
   syncComplete?: (result: RpcImportResult) => void
 }
 
@@ -289,8 +291,8 @@ export class App {
     const importer = new ImportService(dbPath)
     this.invalidateListCache()
     const result = await importer.run(dir, {
-      onProgress: (processed, total) => {
-        this.emit.syncProgress?.(processed, total)
+      onProgress: (payload: RpcSyncProgressPayload) => {
+        this.emit.syncProgress?.(payload)
       }
     })
     this.emit.syncComplete?.(result)
@@ -331,8 +333,8 @@ export class App {
     const sourcesDir = this.loaded.sources.path
     let fileCount = 0
     try {
-      const files = await fs.readdir(sourcesDir)
-      fileCount = files.filter(f => f.endsWith('.yml') || f.endsWith('.yaml')).length
+      const files = await glob('**/*.{yaml,yml}', { cwd: sourcesDir, absolute: true })
+      fileCount = files.length
     } catch {
       fileCount = 0
     }
