@@ -14,6 +14,8 @@ type ViewNavigationDeps = {
   setSelectedId: (id: number | null) => void
   setDetailEntry: (entry: RpcKnowledge | null) => void
   searchInputRef?: RefObject<HTMLInputElement | null>
+  /** Blur search and focus the list surface (Escape from search). */
+  onEscapeFromSearch?: () => void
   hideWindow?: () => void
   pushToast?: (msg: string, type: 'success' | 'error') => void
 }
@@ -38,6 +40,7 @@ type ViewNavigationKeyCtx = {
   advance: () => void
   retreat: () => void
   searchInputRef?: RefObject<HTMLInputElement | null>
+  onEscapeFromSearch?: () => void
   hideWindow?: () => void
   pushToast?: (msg: string, type: 'success' | 'error') => void
 }
@@ -103,8 +106,18 @@ function tryEscapeKey(
 ): boolean {
   if (e.key !== 'Escape') return false
   if (isInput) {
+    const t = e.target as HTMLElement
+    if (ctx.searchInputRef?.current === t) {
+      e.preventDefault?.()
+      if (ctx.onEscapeFromSearch) {
+        ctx.onEscapeFromSearch()
+      } else {
+        t.blur()
+      }
+      return true
+    }
     e.preventDefault?.()
-    ;(e.target as HTMLElement).blur()
+    t.blur()
     return true
   }
   if (!isEditable) {
@@ -141,6 +154,7 @@ function handleViewNavigationKey(e: ViewNavigationKeyEvent, ctx: ViewNavigationK
   tryArrowKeys(e, ctx)
 }
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: reducer + stable callbacks stay co-located with handleKey
 export function useViewNavigation({
   rows,
   selectedId,
@@ -148,6 +162,7 @@ export function useViewNavigation({
   setSelectedId,
   setDetailEntry,
   searchInputRef,
+  onEscapeFromSearch,
   hideWindow,
   pushToast
 }: ViewNavigationDeps): ViewNavigationResult {
@@ -207,9 +222,17 @@ export function useViewNavigation({
   // Keyboard handler — called from list surface onKeyDown and root div onKeyDown
   const handleKey = useCallback(
     (e: ViewNavigationKeyEvent) => {
-      handleViewNavigationKey(e, { depsRef, advance, retreat, searchInputRef, hideWindow, pushToast })
+      handleViewNavigationKey(e, {
+        depsRef,
+        advance,
+        retreat,
+        searchInputRef,
+        onEscapeFromSearch,
+        hideWindow,
+        pushToast
+      })
     },
-    [advance, retreat, searchInputRef, hideWindow, pushToast]
+    [advance, retreat, searchInputRef, onEscapeFromSearch, hideWindow, pushToast]
   )
 
   return {

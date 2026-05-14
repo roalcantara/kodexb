@@ -1,10 +1,10 @@
 /// <reference lib="dom" />
 
-import { expect, test } from 'bun:test'
+import { expect, mock, test } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { fireTwoRightsExpectSplitThenDetail } from '@testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 import { useViewNavigation } from './use_view_navigation.hook'
 
@@ -158,17 +158,32 @@ test('selectDetailEntry from split keeps split and updates detail row', () => {
   expect(screen.getByTestId('detail-id').textContent).toBe('2')
 })
 
-function SearchShortcutHarness({ rows }: { rows: RpcKnowledge[] }) {
+function SearchShortcutHarness({
+  rows,
+  onEscapeFromSearch: onEscapeProp,
+  hideWindow
+}: {
+  rows: RpcKnowledge[]
+  onEscapeFromSearch?: () => void
+  hideWindow?: () => void
+}) {
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const listSurfaceRef = useRef<HTMLDivElement>(null)
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
+  const leaveSearch = useCallback(() => {
+    searchInputRef.current?.blur()
+    listSurfaceRef.current?.focus()
+  }, [])
   const { viewState, handleKey } = useViewNavigation({
     rows,
     selectedId,
     detailEntry,
     setSelectedId,
     setDetailEntry,
-    searchInputRef
+    searchInputRef,
+    onEscapeFromSearch: onEscapeProp ?? leaveSearch,
+    hideWindow
   })
   const isFullDetail = detailEntry !== null && viewState === 'detail'
   return (
@@ -179,7 +194,7 @@ function SearchShortcutHarness({ rows }: { rows: RpcKnowledge[] }) {
       }}
     >
       {isFullDetail ? null : <input ref={searchInputRef} type="search" data-testid="search" defaultValue="typed" />}
-      <div tabIndex={0} data-testid="surface" role="listbox" aria-label="Test list surface">
+      <div ref={listSurfaceRef} tabIndex={0} data-testid="surface" role="listbox" aria-label="Test list surface">
         surface
       </div>
       <span data-testid="view-state">{viewState}</span>
@@ -219,4 +234,31 @@ test('⌘L from full detail retreats to split then focuses search', async () => 
     },
     { timeout: 5000 }
   )
+})
+
+test('Escape from search moves focus to list surface', () => {
+  render(<SearchShortcutHarness rows={[row(1)]} />)
+  const search = screen.getByTestId('search')
+  const surface = screen.getByTestId('surface')
+  search.focus()
+  fireEvent.keyDown(search, { key: 'Escape', bubbles: true })
+  expect(document.activeElement).toBe(surface)
+})
+
+test('Escape from search uses injected onEscapeFromSearch when provided', () => {
+  const onEscape = mock(() => undefined)
+  render(<SearchShortcutHarness rows={[row(1)]} onEscapeFromSearch={onEscape} />)
+  const search = screen.getByTestId('search')
+  search.focus()
+  fireEvent.keyDown(search, { key: 'Escape', bubbles: true })
+  expect(onEscape).toHaveBeenCalledTimes(1)
+})
+
+test('Escape from list surface calls hideWindow when detail is closed', () => {
+  const hide = mock(() => undefined)
+  render(<SearchShortcutHarness rows={[row(1)]} hideWindow={hide} />)
+  const surface = screen.getByTestId('surface')
+  surface.focus()
+  fireEvent.keyDown(surface, { key: 'Escape', bubbles: true })
+  expect(hide).toHaveBeenCalledTimes(1)
 })

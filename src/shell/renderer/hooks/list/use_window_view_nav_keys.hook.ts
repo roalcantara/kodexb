@@ -32,12 +32,17 @@ function runListWindowKeydown(
     return
   }
   if (disabled) return
+  if (e.key === 'Escape') {
+    handleKey(e)
+    stopIfDefaultPrevented(e)
+    return
+  }
   if (!isArrowLeftOrRight(e)) return
   handleKey(e)
   stopIfDefaultPrevented(e)
 }
 
-/** Capture-phase `window` listener so ArrowLeft/ArrowRight and ⌘L reach handlers when focus is outside the list shell (e.g. full detail). */
+/** Capture-phase `window` listener so Escape, ArrowLeft/ArrowRight, and ⌘L reach handlers when focus is outside the list shell (e.g. full detail). */
 export function useWindowViewNavKeys({ disabled, handleKey, handleModL }: WindowViewNavKeysOpts): void {
   const onModL = handleModL ?? handleKey
   useEffect(() => {

@@ -59,6 +59,10 @@ export function Toolbar({
         type="search"
         placeholder="Search your knowledge base…"
         value={search}
+        spellCheck={false}
+        autoComplete="off"
+        autoCorrect="off"
+        autoCapitalize="none"
         onChange={e => onSearchChange(e.target.value)}
         onKeyDown={onSearchKeyDown}
         aria-label="Search"

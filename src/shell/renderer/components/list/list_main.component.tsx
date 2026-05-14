@@ -146,6 +146,10 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
                   type="search"
                   placeholder="Search your knowledge base…"
                   value={p.data.search}
+                  spellCheck={false}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="none"
                   onChange={e => p.data.setSearch(e.target.value)}
                   onKeyDown={e => {
                     if (e.key !== 'ArrowDown') return

@@ -31,6 +31,10 @@ export function useListPageShell() {
   const onLeaveListUpward = useCallback(() => {
     searchInputRef.current?.focus()
   }, [])
+  const onEscapeFromSearch = useCallback(() => {
+    searchInputRef.current?.blur()
+    focusListSurface(listSurfaceRef)
+  }, [])
   const sel = useListSelection(
     data.rows,
     onLeaveListUpward,
@@ -39,7 +43,8 @@ export function useListPageShell() {
     },
     searchInputRef,
     hideWindow,
-    pushToast
+    pushToast,
+    onEscapeFromSearch
   )
 
   const handleWindowModL = useCallback(
