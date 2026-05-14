@@ -30,6 +30,9 @@ echo "0 / Autofix (biome + knip + ast-grep)"
 run_check "bun run lint:fix" bun run lint:fix
 
 echo ""
+bash "$ROOT/.agents/skills/kb-quality-gate/scripts/gate_policy.sh"
+
+echo ""
 echo "1 / Lint + Typecheck (typecheck + biome + knip + depcruise + jscpd + ls + ast-grep + mise)"
 run_check "bun run lint" bun run lint
 

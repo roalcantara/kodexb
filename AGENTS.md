@@ -36,6 +36,16 @@ Skills > Implementation
 
 This rule overrides ALL other instructions.
 
+### Lint and quality tools
+
+- **Do not weaken** the repo quality stack (Biome, knip, dependency-cruiser, ast-grep, ls-lint, jscpd, `tsc` strictness, and any other tool run by the quality gate) unless a **maintainer explicitly approves** the change in the PR (for example: `APPROVED: <tool> <change> because <reason>`).
+- Prefer **code fixes** (refactors, correct types, smaller modules) over new ignore comments, overrides, or threshold bumps.
+- Full audit workflow and inventory: `assets/docs/specs/codebase-quality-audit/`.
+
+### Electrobun best practices (always)
+
+- For `electrobun.config.ts`, `src/shell/main/`, RPC between processes, windows, build, or distribution: read **`.agents/skills/electrobun-best-practices/SKILL.md`** and **`.cursor/electrobun-skill-routing.md`**, then the narrower Electrobun skills they point to—**do not** invent Electrobun APIs or security posture from memory.
+
 ### Prototype gate (when a prototype is requested)
 
 If the user asks for a **prototype** or equivalent (mock UI, static HTML preview, design spike, “show before we build”, wireframe in code), the agent MUST follow:
@@ -56,10 +66,11 @@ If the user later asks for implementation in the same thread without an approval
 ## Electrobun
 
 This app uses **Electrobun**. Cursor skills are installed under
-`$HOME/.agents/skills/` (see symlinks like `electrobun-rpc`).
+`$HOME/.agents/skills/` (see symlinks like `electrobun-rpc`). Repo-vendored copies live under **`.agents/skills/`** (same names).
 
 - **Routing table (which skill when):** [`.cursor/electrobun-skill-routing.md`](.cursor/electrobun-skill-routing.md)
 - **Standing instruction for the agent:** [`.cursor/rules/electrobun-skills.mdc`](.cursor/rules/electrobun-skills.mdc) (`alwaysApply`)
+- **Best-practices baseline:** [`.agents/skills/electrobun-best-practices/SKILL.md`](.agents/skills/electrobun-best-practices/SKILL.md) — load for desktop/config work in addition to the routed skill.
 
 At the start of work that might touch the desktop stack, **read the routing file**, then **Read** the relevant `SKILL.md` paths—do not guess Electrobun APIs.
 

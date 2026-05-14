@@ -17,7 +17,7 @@ This skill is the executable form of [`assets/guides/DoD.md`](../../../assets/gu
 If the skill and DoD ever disagree, **DoD wins** — update the skill to match.
 The skill exists to give the agent a runnable sequence; DoD lists the contract.
 
-The gate is one sentence: **autofix → lint → test → smoke → DoD checklist → commit.**
+The gate is one sentence: **autofix → policy → lint → test → smoke → DoD checklist → commit.**
 
 ## When to Run
 
@@ -54,6 +54,31 @@ Runs `biome:fix` + `knip:fix` + `ast-grep:fix` (see `package.json`). Many
 violations are auto-correctable; running this **before** `bun run lint`
 saves a manual-fix loop. [`assets/guides/DoD.md`](../../../assets/guides/DoD.md)
 §1 lists this as the first DoD step.
+
+### Stage 0.5 — Policy (suppressions + guard reminders)
+
+```bash
+bash .agents/skills/kb-quality-gate/scripts/gate_policy.sh
+```
+
+Runs automatically from `gate.sh` after Stage 0. It **fails** if the working
+tree or index **adds** new inline suppressions under `src/`, `tools/`, or
+`electrobun.config.ts` (`biome-ignore*`, `@ts-expect-error`, `@ts-ignore`,
+`eslint-disable`) unless a maintainer has approved weakening and you export
+`KB_GATE_APPROVED_TOOL_WEAKENING=1` for that gate run (see `AGENTS.md` and
+`assets/docs/specs/codebase-quality-audit/requirements.md` R6).
+
+It **warns** when guard configs change (`biome.jsonc`, `knip.jsonc`,
+`.dependency-cruiser.cjs`, `tsconfig.json`, `.ls-lint.yml`, `sgconfig.yml`) so you double-check
+they do not relax enforcement without approval.
+
+It **reminds** (informational) that Electrobun-facing work must follow
+`electrobun-best-practices` + routing (R7); the gate does not statically prove
+compliance—read the skill before shipping.
+
+**Escape hatches:** `KB_GATE_SKIP_POLICY=1` skips the whole policy stage (use
+sparingly, e.g. broken `git` sandbox). `KB_GATE_APPROVED_TOOL_WEAKENING=1`
+allows the suppression diff check to pass after explicit maintainer sign-off.
 
 ### Stage 1 — Lint + Typecheck
 
