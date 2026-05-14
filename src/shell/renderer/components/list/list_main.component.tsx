@@ -106,7 +106,8 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   const viewNavKeysDisabled = showSettings || p.taskSheetVisible || p.palette.open
   useWindowViewNavKeys({
     disabled: viewNavKeysDisabled,
-    handleKey: p.sel.handleKey
+    handleKey: p.sel.handleKey,
+    handleModL: p.handleWindowModL
   })
 
   const powertoysClass = viewState === 'detail' ? 'kb-powertoys kb-powertoys--detail-full' : 'kb-powertoys'

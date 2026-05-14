@@ -3,8 +3,8 @@
 import { expect, test } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { fireTwoRightsExpectSplitThenDetail } from '@testing'
-import { fireEvent, render, screen } from '@testing-library/react'
-import { useState } from 'react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { useRef, useState } from 'react'
 
 import { useViewNavigation } from './use_view_navigation.hook'
 
@@ -156,4 +156,67 @@ test('selectDetailEntry from split keeps split and updates detail row', () => {
   fireEvent.click(screen.getByTestId('pick-2'))
   expect(screen.getByTestId('view-state').textContent).toBe('split')
   expect(screen.getByTestId('detail-id').textContent).toBe('2')
+})
+
+function SearchShortcutHarness({ rows }: { rows: RpcKnowledge[] }) {
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
+  const { viewState, handleKey } = useViewNavigation({
+    rows,
+    selectedId,
+    detailEntry,
+    setSelectedId,
+    setDetailEntry,
+    searchInputRef
+  })
+  const isFullDetail = detailEntry !== null && viewState === 'detail'
+  return (
+    <div
+      onKeyDownCapture={e => {
+        handleKey(e)
+        if (e.defaultPrevented) e.stopPropagation()
+      }}
+    >
+      {isFullDetail ? null : <input ref={searchInputRef} type="search" data-testid="search" defaultValue="typed" />}
+      <div tabIndex={0} data-testid="surface" role="listbox" aria-label="Test list surface">
+        surface
+      </div>
+      <span data-testid="view-state">{viewState}</span>
+    </div>
+  )
+}
+
+test('⌘L focuses search and selects all when search is mounted', () => {
+  render(<SearchShortcutHarness rows={[row(1)]} />)
+  const surface = screen.getByTestId('surface')
+  const search = screen.getByTestId('search') as HTMLInputElement
+  surface.focus()
+  fireEvent.keyDown(surface, { key: 'l', metaKey: true, bubbles: true })
+  expect(document.activeElement).toBe(search)
+  expect(search.selectionStart).toBe(0)
+  expect(search.selectionEnd).toBe(5)
+})
+
+test('⌘L from full detail retreats to split then focuses search', async () => {
+  render(<SearchShortcutHarness rows={[row(1)]} />)
+  const surface = screen.getByTestId('surface')
+  surface.focus()
+  fireEvent.keyDown(surface, { key: 'ArrowRight' })
+  fireEvent.keyDown(surface, { key: 'ArrowRight' })
+  expect(screen.getByTestId('view-state').textContent).toBe('detail')
+  expect(screen.queryByTestId('search')).toBeNull()
+
+  fireEvent.keyDown(surface, { key: 'l', metaKey: true, bubbles: true })
+  expect(screen.getByTestId('view-state').textContent).toBe('split')
+
+  await waitFor(
+    () => {
+      const search = screen.getByTestId('search') as HTMLInputElement
+      expect(document.activeElement).toBe(search)
+      expect(search.selectionStart).toBe(0)
+      expect(search.selectionEnd).toBe(5)
+    },
+    { timeout: 5000 }
+  )
 })

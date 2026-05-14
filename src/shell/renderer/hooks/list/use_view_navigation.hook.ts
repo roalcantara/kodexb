@@ -1,6 +1,7 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import type { MutableRefObject, RefObject } from 'react'
 import { useCallback, useReducer, useRef } from 'react'
+import { scheduleFocusSearchInputSelectAll } from '../../utils/list/schedule_double_raf.util'
 import { type ViewState, viewReducer } from '../../utils/list/view_reducer.util'
 import { primaryClipboardContent } from '../../utils/shared/clipboard_content.util'
 
@@ -59,9 +60,18 @@ function navTargetsFor(e: ViewNavigationKeyEvent): { isInput: boolean; isEditabl
 function tryFocusSearchShortcut(e: ViewNavigationKeyEvent, ctx: ViewNavigationKeyCtx): boolean {
   if (!((e.metaKey || e.ctrlKey) && e.key === 'l')) return false
   e.preventDefault?.()
+  const { viewState, detailEntry } = ctx.depsRef.current
+  if (viewState === 'detail' && detailEntry !== null) {
+    ctx.retreat()
+    if (ctx.searchInputRef) {
+      scheduleFocusSearchInputSelectAll(ctx.searchInputRef)
+    }
+    return true
+  }
   if (ctx.searchInputRef?.current) {
-    ctx.searchInputRef.current.focus()
+    ctx.searchInputRef.current.focus({ preventScroll: true })
     ctx.searchInputRef.current.select()
+    return true
   }
   return true
 }

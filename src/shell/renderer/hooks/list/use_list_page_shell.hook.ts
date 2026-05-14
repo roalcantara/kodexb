@@ -4,6 +4,7 @@ import type { EntryTypeOption } from '../../components/list/filter_dropdown.comp
 import { deleteTask, hideWindow, reorderTask } from '../../rpc/client'
 import { listPageEmptyFlags } from '../../utils/list/list_page_empty_flags.util'
 import { focusListSurface } from '../../utils/list/list_surface_focus.util'
+import { scheduleDoubleRaf } from '../../utils/list/schedule_double_raf.util'
 import { useActionToast } from '../shared/use_action_toast.hook'
 import { useCmdkPalette } from './use_cmdk_palette.hook'
 import { useListFilterOverlay } from './use_list_filter_overlay.hook'
@@ -39,6 +40,20 @@ export function useListPageShell() {
     searchInputRef,
     hideWindow,
     pushToast
+  )
+
+  const handleWindowModL = useCallback(
+    (e: KeyboardEvent) => {
+      if (data.syncUi.open) {
+        data.dismissSyncModal()
+        scheduleDoubleRaf(() => {
+          sel.handleKey(e)
+        })
+        return
+      }
+      sel.handleKey(e)
+    },
+    [data.syncUi.open, data.dismissSyncModal, sel.handleKey]
   )
   const fetchMore = useCallback(() => data.refreshList(true), [data.refreshList])
 
@@ -126,6 +141,7 @@ export function useListPageShell() {
     data,
     filter,
     sel,
+    handleWindowModL,
     flags,
     listSurfaceRef,
     listSentinelRef,

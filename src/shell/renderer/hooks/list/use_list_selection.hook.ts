@@ -92,8 +92,8 @@ export function useListSelection(
     if (arrowUp === 'moved') {
       onRestoreListSurfaceFocus?.()
     }
-    // ArrowLeft/ArrowRight: handled in capture on `kb-powertoys` so keys still run
-    // when focus is inside the detail panel (bubble never reaches the shell).
+    // ArrowLeft/ArrowRight and ⌘L: handled via `useWindowViewNavKeys` (window capture)
+    // so keys still run when focus is inside the detail panel.
   }
 
   return {
