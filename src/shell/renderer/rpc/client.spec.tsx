@@ -2,6 +2,7 @@ import '@happy-dom/global-registrator'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { RpcSyncProgressPayload } from '@shared/rpc'
+import { factoryFor } from '@testing'
 
 const rpcCallMock = mock<(params: unknown) => Promise<{ status: number; body: string }>>()
 
@@ -35,6 +36,7 @@ const {
   getEntry,
   getListStats,
   listEntries,
+  listMatchCount,
   openExternal,
   openInEditor,
   pasteInTerminal,
@@ -64,7 +66,13 @@ describe('Eden Treaty client', () => {
   describe('.listEntries', () => {
     describe('when main returns rows', () => {
       it('forwards body to /api/list and returns the rows', async () => {
-        rpcCallMock.mockImplementation(() => okResponse([{ id: 1, type: 'bookmark', key: 'k' }]))
+        rpcCallMock.mockImplementation(() =>
+          okResponse([
+            factoryFor('bookmark', {
+              overrides: { id: 1, key: 'k', source: 's', desc: 'd', tags: [], doc: '', createdAt: 0, updatedAt: 0 }
+            })
+          ])
+        )
 
         const rows = await listEntries({ limit: 5 })
 
@@ -82,6 +90,19 @@ describe('Eden Treaty client', () => {
 
         await expect(listEntries()).rejects.toThrow('bad list')
       })
+    })
+  })
+
+  describe('.listMatchCount', () => {
+    it('forwards body to /api/listMatchCount and returns the number', async () => {
+      rpcCallMock.mockImplementation(() => okResponse(42))
+
+      const n = await listMatchCount({ query: 'brew' })
+
+      expect(n).toBe(42)
+      const call = rpcCallMock.mock.calls[0]?.[0] as { path: string; body: string }
+      expect(call.path).toBe('/api/listMatchCount')
+      expect(JSON.parse(call.body)).toEqual({ query: 'brew' })
     })
   })
 

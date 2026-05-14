@@ -2,6 +2,7 @@
 
 import { expect, test } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
+import { factoryFor } from '@testing'
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -11,17 +12,18 @@ const noopSelect = () => undefined
 const loadEntry = () => Promise.resolve(entry)
 const pendingLoad = () => new Promise<null>(() => undefined)
 
-const entry: RpcKnowledge = {
-  type: 'bookmark',
-  id: 42,
-  key: 'example-bookmark',
-  source: 'fixtures/test.yaml',
-  desc: 'An example bookmark',
-  tags: ['web'],
-  doc: '',
-  createdAt: 0,
-  updatedAt: 0
-}
+const entry = factoryFor('bookmark', {
+  overrides: {
+    id: 42,
+    key: 'example-bookmark',
+    source: 'fixtures/test.yaml',
+    desc: 'An example bookmark',
+    tags: ['web'],
+    doc: '',
+    createdAt: 0,
+    updatedAt: 0
+  }
+}) as RpcKnowledge
 
 test('DetailPanel has visible class when entry is provided', () => {
   render(

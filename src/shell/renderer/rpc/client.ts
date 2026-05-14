@@ -153,6 +153,10 @@ export function listEntries(opts: ListOpts = {}): Promise<RpcKnowledge[]> {
   return rpc.api.list.post(opts).then(unwrap) as Promise<RpcKnowledge[]>
 }
 
+export function listMatchCount(opts: ListOpts = {}): Promise<number> {
+  return rpc.api.listMatchCount.post(opts).then(unwrap) as Promise<number>
+}
+
 export function getListStats(): Promise<ListStats> {
   return rpc.api.getListStats.post({}).then(unwrap) as Promise<ListStats>
 }

@@ -4,9 +4,9 @@ import { useListPageFocusRing } from '../../hooks/list/use_list_page_focus_ring.
 import { useListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 
 export function ListPage() {
-  const p = useListPageShell()
-  const listPageRef = useRef<HTMLDivElement>(null)
   const [showSettings, setShowSettings] = useState(false)
+  const listPageRef = useRef<HTMLDivElement>(null)
+  const p = useListPageShell({ showSettings })
   const { onListPageKeyDownCapture } = useListPageFocusRing({
     showSettings,
     filterOpen: p.filter.filterOpen,

@@ -28,4 +28,8 @@ Some external skills default to `docs/superpowers/specs/` for brainstorm output.
 
 When an AI skill or template says to write under `docs/superpowers/`, **redirect** to `assets/docs/specs/<slug>/` instead (create the slug folder if needed).
 
+## Feature specs (index)
+
+- [Command palette and filter UX](command-palette-filter-ux/design.md) — ⌘P / ⌘K; behaviour matrix in the **project root** [README.md](../../../README.md).
+
 Also documented in [`CLAUDE.md`](../../../CLAUDE.md) (reference docs) and [`.agents/skills/kb-context/SKILL.md`](../../../.agents/skills/kb-context/SKILL.md).

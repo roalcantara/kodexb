@@ -65,6 +65,9 @@ describe('App', () => {
     const rows = await app.list({ limit: 20 })
     expect(rows.length).toBeGreaterThanOrEqual(4)
 
+    const matchCount = await app.listMatchCount({})
+    expect(matchCount).toBe((await app.getListStats()).total)
+
     const stats = await app.getListStats()
     expect(stats.total).toBeGreaterThanOrEqual(4)
     expect(stats.taskViews.all_pending).toBeGreaterThanOrEqual(1)

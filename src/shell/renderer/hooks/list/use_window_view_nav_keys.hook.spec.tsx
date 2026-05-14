@@ -34,6 +34,20 @@ function EscapeHarness({ disabled }: { disabled: boolean }) {
   return <span data-testid="escape-hits">{hits}</span>
 }
 
+function WindowCopyKeyHarness({ disabled }: { disabled: boolean }) {
+  const [hits, setHits] = useState(0)
+  useWindowViewNavKeys({
+    disabled,
+    handleKey: e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'c') {
+        e.preventDefault()
+        setHits(h => h + 1)
+      }
+    }
+  })
+  return <span data-testid="copy-hits">{hits}</span>
+}
+
 function WindowSearchShortcutHarness({ disabled }: { disabled: boolean }) {
   const [shortcutHits, setShortcutHits] = useState(0)
   useWindowViewNavKeys({
@@ -46,6 +60,73 @@ function WindowSearchShortcutHarness({ disabled }: { disabled: boolean }) {
   })
   return <span data-testid="shortcut-hits">{shortcutHits}</span>
 }
+
+function ListArrowsHarness({ disabled }: { disabled: boolean }) {
+  const [hits, setHits] = useState(0)
+  useWindowViewNavKeys({
+    disabled,
+    handleKey: () => undefined,
+    handleListArrows: () => {
+      setHits(h => h + 1)
+    }
+  })
+  return <span data-testid="list-arrow-hits">{hits}</span>
+}
+
+test('window capture invokes handleListArrows for ArrowDown when not disabled', async () => {
+  render(<ListArrowsHarness disabled={false} />)
+  act(() => {
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }))
+  })
+  await waitFor(() => {
+    expect(document.querySelector('[data-testid="list-arrow-hits"]')?.textContent).toBe('1')
+  })
+})
+
+test('window capture skips handleListArrows when disabled', async () => {
+  render(<ListArrowsHarness disabled />)
+  act(() => {
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
+  })
+  await new Promise(r => setTimeout(r, 20))
+  expect(document.querySelector('[data-testid="list-arrow-hits"]')?.textContent).toBe('0')
+})
+
+test('window capture skips handleListArrows for Cmd+ArrowDown', async () => {
+  render(<ListArrowsHarness disabled={false} />)
+  act(() => {
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowDown', metaKey: true, bubbles: true, cancelable: true })
+    )
+  })
+  await new Promise(r => setTimeout(r, 20))
+  expect(document.querySelector('[data-testid="list-arrow-hits"]')?.textContent).toBe('0')
+})
+
+test('window capture skips handleListArrows when target is search input', async () => {
+  function InputHarness() {
+    const [hits, setHits] = useState(0)
+    useWindowViewNavKeys({
+      disabled: false,
+      handleKey: () => undefined,
+      handleListArrows: () => setHits(h => h + 1)
+    })
+    return (
+      <>
+        <input data-testid="q" type="search" />
+        <span data-testid="list-arrow-hits">{hits}</span>
+      </>
+    )
+  }
+  render(<InputHarness />)
+  const input = document.querySelector('[data-testid="q"]') as HTMLInputElement
+  input.focus()
+  act(() => {
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }))
+  })
+  await new Promise(r => setTimeout(r, 20))
+  expect(document.querySelector('[data-testid="list-arrow-hits"]')?.textContent).toBe('0')
+})
 
 test('window capture invokes handleKey for ArrowLeft when not disabled', async () => {
   render(<Harness disabled={false} />)
@@ -83,6 +164,25 @@ test('window capture does not invoke handleKey for Escape when disabled', async 
   })
   await new Promise(r => setTimeout(r, 20))
   expect(document.querySelector('[data-testid="escape-hits"]')?.textContent).toBe('0')
+})
+
+test('window capture invokes handleKey for Cmd+C when not disabled', async () => {
+  render(<WindowCopyKeyHarness disabled={false} />)
+  act(() => {
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'c', metaKey: true, bubbles: true, cancelable: true }))
+  })
+  await waitFor(() => {
+    expect(document.querySelector('[data-testid="copy-hits"]')?.textContent).toBe('1')
+  })
+})
+
+test('window capture skips handleKey for Cmd+C when disabled', async () => {
+  render(<WindowCopyKeyHarness disabled />)
+  act(() => {
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'c', metaKey: true, bubbles: true }))
+  })
+  await new Promise(r => setTimeout(r, 20))
+  expect(document.querySelector('[data-testid="copy-hits"]')?.textContent).toBe('0')
 })
 
 test('window capture invokes handleModL for Cmd+L when not disabled', async () => {

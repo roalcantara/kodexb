@@ -1,7 +1,8 @@
 import type { RpcKnowledge, TaskView } from '@shared/rpc'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { EntryTypeOption } from '../../components/list/filter_dropdown.component'
-import { loadListRows } from '../../utils/list/list_entries_query.util'
+import { listMatchCount } from '../../rpc/client'
+import { listOptsFromListFilters, loadListRows } from '../../utils/list/list_entries_query.util'
 
 export type ListPageRowsInput = {
   debouncedSearch: string
@@ -17,6 +18,7 @@ export function useListPageRows(input: ListPageRowsInput) {
   const rowsRef = useRef<RpcKnowledge[]>([])
   const [hasMore, setHasMore] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [matchTotal, setMatchTotal] = useState<number | null>(null)
 
   useEffect(() => {
     rowsRef.current = rows
@@ -27,17 +29,41 @@ export function useListPageRows(input: ListPageRowsInput) {
       setLoading(true)
       try {
         const priorLen = append ? rowsRef.current.length : 0
-        const next = await loadListRows({
+        const filterOpts = listOptsFromListFilters({
           query: debouncedSearch,
           types,
           tags,
-          taskView,
-          pageSize,
-          append,
-          priorLen
+          taskView
         })
-        setRows(r => (append ? [...r, ...next] : next))
-        setHasMore(next.length === pageSize)
+        if (append) {
+          const next = await loadListRows({
+            query: debouncedSearch,
+            types,
+            tags,
+            taskView,
+            pageSize,
+            append: true,
+            priorLen
+          })
+          setRows(r => [...r, ...next])
+          setHasMore(next.length === pageSize)
+        } else {
+          const [next, total] = await Promise.all([
+            loadListRows({
+              query: debouncedSearch,
+              types,
+              tags,
+              taskView,
+              pageSize,
+              append: false,
+              priorLen: 0
+            }),
+            listMatchCount(filterOpts)
+          ])
+          setRows(next)
+          setMatchTotal(total)
+          setHasMore(next.length === pageSize)
+        }
       } finally {
         setLoading(false)
       }
@@ -49,5 +75,5 @@ export function useListPageRows(input: ListPageRowsInput) {
     refreshList(false).catch(() => undefined)
   }, [refreshList])
 
-  return { rows, loading, hasMore, refreshList }
+  return { rows, loading, hasMore, refreshList, matchTotal }
 }

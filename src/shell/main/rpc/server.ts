@@ -45,6 +45,7 @@ export function createRpcServer(appInstance: App) {
   return new Elysia({ prefix: '/api' })
     .use(rpcErrorContract)
     .post('/list', ({ body }) => appInstance.list(body), { body: listOptsSchema })
+    .post('/listMatchCount', ({ body }) => appInstance.listMatchCount(body), { body: listOptsSchema })
     .post('/getListStats', () => appInstance.getListStats(), { body: emptyBodySchema })
     .post('/getEntry', ({ body }) => appInstance.getEntry(body.id), { body: getEntryParams })
     .post('/sync', ({ body }) => appInstance.sync(body.sourcesDir), { body: syncParamsInner })

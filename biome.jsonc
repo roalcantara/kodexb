@@ -277,6 +277,22 @@
       }
     },
     {
+      "includes": ["src/shell/app/app.ts"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noExcessiveLinesPerFile": {
+              "level": "error",
+              "options": {
+                "maxLines": 320,
+                "skipBlankLines": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
       "includes": ["src/shell/renderer/**/*.tsx", "src/shell/renderer/**/*.ts"],
       "linter": {
         "rules": {

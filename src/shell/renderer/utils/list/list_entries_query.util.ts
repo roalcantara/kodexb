@@ -1,6 +1,9 @@
-import type { ListOpts, RpcKnowledge, TaskView } from '@shared/rpc'
+import type { RpcKnowledge, TaskView } from '@shared/rpc'
 import type { EntryTypeOption } from '../../components/list/filter_dropdown.component'
 import { listEntries } from '../../rpc/client'
+import { listOptsFromListFilters } from './list_opts_from_filters.util'
+
+export { listOptsFromListFilters } from './list_opts_from_filters.util'
 
 export function loadListRows(args: {
   query: string
@@ -11,14 +14,14 @@ export function loadListRows(args: {
   append: boolean
   priorLen: number
 }): Promise<RpcKnowledge[]> {
-  const q = args.query.trim()
-  const listOpts: ListOpts = {
-    query: q === '' ? undefined : q,
-    types: args.types.length > 0 ? [...args.types] : undefined,
-    tags: args.tags.length > 0 ? [...args.tags] : undefined,
-    taskView: args.taskView,
-    limit: args.pageSize,
-    offset: args.append ? args.priorLen : 0
-  }
-  return listEntries(listOpts)
+  return listEntries(
+    listOptsFromListFilters({
+      query: args.query,
+      types: args.types,
+      tags: args.tags,
+      taskView: args.taskView,
+      limit: args.pageSize,
+      offset: args.append ? args.priorLen : 0
+    })
+  )
 }

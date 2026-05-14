@@ -9,7 +9,7 @@ export function useListPageData(opts: {
 }) {
   const filters = useListPageFilters()
   const pageSize = effectiveListPageSize(opts.pageSizeOverride, filters.pageSize)
-  const { rows, loading, hasMore, refreshList } = useListPageRows({
+  const { rows, loading, hasMore, refreshList, matchTotal } = useListPageRows({
     debouncedSearch: filters.debouncedSearch,
     types: filters.types,
     tags: filters.tags,
@@ -39,6 +39,7 @@ export function useListPageData(opts: {
     setPageSize: filters.setPageSize,
     hasMore,
     loading,
+    matchTotal,
     syncing,
     refreshList,
     onSync,

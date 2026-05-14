@@ -20,14 +20,18 @@ function handleListArrowDown(e: ReactKeyboardEvent<HTMLDivElement>, moveSelectio
   return true
 }
 
-function handleListArrowUp(e: ReactKeyboardEvent<HTMLDivElement>, d: ListArrowNav): 'leave' | 'moved' | false {
+function handleListArrowUp(
+  e: ReactKeyboardEvent<HTMLDivElement>,
+  d: ListArrowNav,
+  patchSelection: (nextId: number | null, rowIfDetail?: RpcKnowledge | null) => void
+): 'leave' | 'moved' | false {
   if (e.key !== 'ArrowUp') return false
   e.preventDefault()
   if (d.rows.length > 0) {
     const idx = d.rows.findIndex(r => r.id === d.selectedId)
     if (idx < 0) {
-      // Nothing selected — select last row
-      d.setSelectedId(d.rows[d.rows.length - 1]?.id ?? null)
+      const last = d.rows[d.rows.length - 1] ?? null
+      patchSelection(last?.id ?? null, last)
       return 'moved'
     }
     if (idx === 0) {
@@ -40,6 +44,7 @@ function handleListArrowUp(e: ReactKeyboardEvent<HTMLDivElement>, d: ListArrowNa
   return 'moved'
 }
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: selection + detail sync stay with view nav wiring
 export function useListSelection(
   rows: RpcKnowledge[],
   onLeaveListUpward?: () => void,
@@ -64,16 +69,23 @@ export function useListSelection(
     pushToast
   })
 
+  const patchSelection = (nextId: number | null, rowIfDetail?: RpcKnowledge | null) => {
+    setSelectedId(nextId)
+    if (detailEntry !== null && rowIfDetail) setDetailEntry(rowIfDetail)
+  }
+
   const moveSelection = (delta: number) => {
     if (rows.length === 0) return
     const idx = rows.findIndex(r => r.id === selectedId)
     const base = idx < 0 ? -1 : idx
     const next = Math.max(0, Math.min(rows.length - 1, base + delta))
-    setSelectedId(rows[next]?.id ?? null)
+    const nextRow = rows[next]
+    patchSelection(nextRow?.id ?? null, nextRow ?? null)
   }
 
   const selectFirst = () => {
-    setSelectedId(rows[0]?.id ?? null)
+    const first = rows[0] ?? null
+    patchSelection(first?.id ?? null, first)
   }
 
   // List surface handler: ArrowUp/Down for selection, ArrowRight/Left for view nav
@@ -89,7 +101,7 @@ export function useListSelection(
       onRestoreListSurfaceFocus?.()
       return
     }
-    const arrowUp = handleListArrowUp(e, nav)
+    const arrowUp = handleListArrowUp(e, nav, patchSelection)
     if (arrowUp === 'leave') return
     if (arrowUp === 'moved') {
       onRestoreListSurfaceFocus?.()

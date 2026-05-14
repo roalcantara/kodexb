@@ -42,3 +42,24 @@ export function listKnowledgeForOpts(
   listCache.set(cacheKey, rows)
   return rows
 }
+
+/** Rows matching list filters (search, tags, types, task view), ignoring limit/offset. */
+export function countKnowledgeForOpts(raw: DbRaw, _loaded: LoadedConfig, opts: ListOpts): number {
+  const { limit: _limit, offset: _offset, ...filters } = opts
+
+  if (filters.taskView) {
+    if (filters.types?.length && !filters.types.includes('task')) {
+      return 0
+    }
+    const base = findAll(raw, {
+      query: filters.query,
+      tags: filters.tags,
+      types: filters.types?.length ? filters.types : ['task'],
+      limit: -1,
+      offset: 0
+    })
+    return filterKnowledgeByTaskView(base, filters.taskView).length
+  }
+
+  return findAll(raw, { ...toFindAllOpts(filters), limit: -1, offset: 0 }).length
+}

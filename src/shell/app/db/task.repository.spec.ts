@@ -1,6 +1,6 @@
 import { Database } from 'bun:sqlite'
 import { describe, expect, it } from 'bun:test'
-import { factoryFor } from '../../../__tests__/factories/factories.builder'
+import { factoryFor } from '@testing'
 import type { Knowledge } from '../../../core'
 import { upsert } from './entry.repository'
 import { findDependencies, findDependents, maxTaskOrder, updateTaskOrder, wouldCreateCycle } from './task.repository'

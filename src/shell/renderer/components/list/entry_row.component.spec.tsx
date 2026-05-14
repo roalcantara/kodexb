@@ -2,6 +2,7 @@
 
 import { afterEach, expect, test } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
+import { factoryFor } from '@testing'
 import { cleanup, render, screen } from '@testing-library/react'
 
 import { EntryRow } from './entry_row.component'
@@ -10,23 +11,26 @@ afterEach(() => {
   cleanup()
 })
 
-const bookmarkGithub: RpcKnowledge = {
-  type: 'bookmark',
-  id: 1,
-  key: 'https://github.com/example/repo',
-  source: 'fixtures/example.yaml',
-  desc: 'Example repository',
-  tags: ['github'],
-  doc: '',
-  createdAt: 0,
-  updatedAt: 0
-}
+const bookmarkGithub = factoryFor('bookmark', {
+  overrides: {
+    id: 1,
+    key: 'https://github.com/example/repo',
+    source: 'fixtures/example.yaml',
+    desc: 'Example repository',
+    tags: ['github'],
+    doc: '',
+    createdAt: 0,
+    updatedAt: 0
+  }
+}) as RpcKnowledge
 
-test('EntryRow shows favicon when bookmark URL and mapped tag', () => {
+const GITHUB_SVG_RE = /github\.svg/
+
+test('EntryRow shows bundled github.svg for github.com bookmark', () => {
   render(<EntryRow entry={bookmarkGithub} allEntries={[bookmarkGithub]} selected={false} onSelect={() => undefined} />)
   const img = screen.getByLabelText('github')
-  expect(img.getAttribute('src')).toContain('icons.duckduckgo.com')
-  expect(img.getAttribute('src')).toContain('github.com')
+  expect(img.getAttribute('src')).toMatch(GITHUB_SVG_RE)
+  expect(img.getAttribute('src')).not.toContain('icons.duckduckgo.com')
 })
 
 test('EntryRow shows selected styling when selected', () => {
@@ -40,19 +44,20 @@ test('EntryRow title combines key and description preview', () => {
   expect(screen.getByRole('button').textContent).toContain(bookmarkGithub.key)
 })
 
-const taskCompact: RpcKnowledge = {
-  type: 'task',
-  id: 42,
-  key: 'Ship feature',
-  source: 'tasks.yml',
-  desc: 'Release checklist',
-  tags: [],
-  doc: '',
-  status: 'todo',
-  priority: 'high',
-  createdAt: 0,
-  updatedAt: 0
-}
+const taskCompact = factoryFor('task', {
+  overrides: {
+    id: 42,
+    key: 'Ship feature',
+    source: 'tasks.yml',
+    desc: 'Release checklist',
+    tags: [],
+    doc: '',
+    status: 'todo',
+    priority: 'high',
+    createdAt: 0,
+    updatedAt: 0
+  }
+}) as RpcKnowledge
 
 test('EntryRow compact task shows one type chip (no duplicate task badge)', () => {
   render(

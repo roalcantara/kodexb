@@ -2,7 +2,7 @@
 
 import { expect, mock, test } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
-import { fireTwoRightsExpectSplitThenDetail } from '@testing'
+import { fireTwoRightsExpectSplitThenDetail, rpcBookmarkRow } from '@testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -28,17 +28,7 @@ function Harness({ rows, onLeaveListUpward }: { rows: RpcKnowledge[]; onLeaveLis
 }
 
 function row(id: number, key = `k${id}`): RpcKnowledge {
-  return {
-    type: 'bookmark',
-    id,
-    key,
-    source: 'fixtures/t.yaml',
-    desc: '',
-    tags: [],
-    doc: '',
-    createdAt: 0,
-    updatedAt: 0
-  }
+  return rpcBookmarkRow(id, key)
 }
 
 function renderFocusedSurface(rows: RpcKnowledge[], onLeaveListUpward?: () => void): HTMLElement {
@@ -71,6 +61,33 @@ test('viewState reaches detail after two ArrowRight from list', async () => {
   await user.keyboard('{ArrowDown}')
   fireTwoRightsExpectSplitThenDetail(surface)
   expect(screen.getByTestId('detail').textContent).toBe('1')
+})
+
+test('ArrowDown keeps detail preview in sync after split ↔ full detail via ArrowRight', async () => {
+  const user = userEvent.setup()
+  const surface = renderFocusedSurface([row(1), row(2), row(3)])
+  await user.keyboard('{ArrowDown}')
+  fireEvent.keyDown(surface, { key: 'ArrowRight' })
+  expect(screen.getByTestId('view-state').textContent).toBe('split')
+  expect(screen.getByTestId('detail').textContent).toBe('1')
+  fireEvent.keyDown(surface, { key: 'ArrowRight' })
+  expect(screen.getByTestId('view-state').textContent).toBe('detail')
+  fireEvent.keyDown(surface, { key: 'ArrowRight' })
+  expect(screen.getByTestId('view-state').textContent).toBe('split')
+  await user.keyboard('{ArrowDown}')
+  expect(screen.getByTestId('selected').textContent).toBe('2')
+  expect(screen.getByTestId('detail').textContent).toBe('2')
+})
+
+test('ArrowDown updates detail preview while split view is open', async () => {
+  const user = userEvent.setup()
+  const surface = renderFocusedSurface([row(1), row(2)])
+  await user.keyboard('{ArrowDown}')
+  fireEvent.keyDown(surface, { key: 'ArrowRight' })
+  expect(screen.getByTestId('detail').textContent).toBe('1')
+  await user.keyboard('{ArrowDown}')
+  expect(screen.getByTestId('selected').textContent).toBe('2')
+  expect(screen.getByTestId('detail').textContent).toBe('2')
 })
 
 test('ArrowRight auto-selects first row when nothing selected', () => {

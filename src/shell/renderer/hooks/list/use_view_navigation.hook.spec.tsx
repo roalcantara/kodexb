@@ -2,24 +2,47 @@
 
 import { expect, mock, test } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
-import { fireTwoRightsExpectSplitThenDetail } from '@testing'
+import { fireTwoRightsExpectSplitThenDetail, rpcBookmarkRow } from '@testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useCallback, useRef, useState } from 'react'
 
 import { useViewNavigation } from './use_view_navigation.hook'
 
 function row(id: number): RpcKnowledge {
-  return {
-    type: 'bookmark',
-    id,
-    key: `k${id}`,
-    source: 'fixtures/t.yaml',
-    desc: '',
-    tags: [],
-    doc: '',
-    createdAt: 0,
-    updatedAt: 0
-  }
+  return rpcBookmarkRow(id, `k${id}`)
+}
+
+function CopyKeyHarness({
+  rows,
+  selectedId: initialSelected,
+  pushToast
+}: {
+  rows: RpcKnowledge[]
+  selectedId: number | null
+  pushToast: (msg: string, type: 'success' | 'error') => void
+}) {
+  const [selectedId, setSelectedId] = useState<number | null>(initialSelected)
+  const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
+  const { handleKey } = useViewNavigation({
+    rows,
+    selectedId,
+    detailEntry,
+    setSelectedId,
+    setDetailEntry,
+    pushToast
+  })
+  return (
+    <div
+      onKeyDownCapture={e => {
+        handleKey(e)
+        if (e.defaultPrevented) e.stopPropagation()
+      }}
+    >
+      <div tabIndex={0} data-testid="surface" role="listbox" aria-label="Test list">
+        surface
+      </div>
+    </div>
+  )
 }
 
 function Harness({ rows }: { rows: RpcKnowledge[] }) {
@@ -107,6 +130,12 @@ test('handleKey follows arbitrary split/detail ladder from list surface', () => 
   expect(screen.getByTestId('detail-id').textContent).toBe('1')
 
   fireEvent.keyDown(surface, { key: 'ArrowLeft' })
+  expect(screen.getByTestId('view-state').textContent).toBe('split')
+
+  fireEvent.keyDown(surface, { key: 'ArrowRight' })
+  expect(screen.getByTestId('view-state').textContent).toBe('detail')
+
+  fireEvent.keyDown(surface, { key: 'ArrowRight' })
   expect(screen.getByTestId('view-state').textContent).toBe('split')
 
   fireEvent.keyDown(surface, { key: 'ArrowRight' })
@@ -261,4 +290,36 @@ test('Escape from list surface calls hideWindow when detail is closed', () => {
   surface.focus()
   fireEvent.keyDown(surface, { key: 'Escape', bubbles: true })
   expect(hide).toHaveBeenCalledTimes(1)
+})
+
+test('⌘C with no selection shows toast', () => {
+  const pushToast = mock(() => undefined)
+  render(<CopyKeyHarness rows={[row(1)]} selectedId={null} pushToast={pushToast} />)
+  const surface = screen.getByTestId('surface')
+  surface.focus()
+  fireEvent.keyDown(surface, { key: 'c', metaKey: true, bubbles: true })
+  expect(pushToast).toHaveBeenCalledWith('Select an entry to copy', 'success')
+})
+
+test('⌘C with selection copies and shows success toast', async () => {
+  const pushToast = mock(() => undefined)
+  const writeText = mock(() => Promise.resolve())
+  const prev = navigator.clipboard
+  Object.defineProperty(navigator, 'clipboard', {
+    value: { writeText },
+    configurable: true,
+    writable: true
+  })
+  try {
+    render(<CopyKeyHarness rows={[row(1)]} selectedId={1} pushToast={pushToast} />)
+    const surface = screen.getByTestId('surface')
+    surface.focus()
+    fireEvent.keyDown(surface, { key: 'c', metaKey: true, bubbles: true })
+    expect(writeText).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(pushToast).toHaveBeenCalledWith(`'k1' copied to clipboard`, 'success')
+    })
+  } finally {
+    Object.defineProperty(navigator, 'clipboard', { value: prev, configurable: true, writable: true })
+  }
 })

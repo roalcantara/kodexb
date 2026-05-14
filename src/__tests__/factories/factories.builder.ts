@@ -78,6 +78,30 @@ const taskFactory = Factory.define<TaskKnowledge>(({ sequence }) => ({
   updatedAt: 1_700_000_000_000
 }))
 
+const knowledgeFtsWeakerFactory = Factory.define<BookmarkKnowledge>(() => ({
+  id: 1,
+  type: 'bookmark',
+  key: 'https://k3d.io',
+  source: 'kb:spec:knowledge/fts:weaker',
+  desc: 'Run k3s in Docker. For automation use brew install k3d.',
+  tags: ['coding'],
+  doc: '',
+  createdAt: 1,
+  updatedAt: 1
+}))
+
+const knowledgeFtsStrongerFactory = Factory.define<CommandKnowledge>(() => ({
+  id: 2,
+  type: 'command',
+  key: 'brew autoremove && brew update && brew upgrade',
+  source: 'kb:spec:knowledge/fts:stronger',
+  desc: 'brew autoremove && brew update && brew upgrade && brew upgrade --cask',
+  tags: ['brew', 'macos', 'maintenance'],
+  doc: '',
+  createdAt: 1,
+  updatedAt: 1
+}))
+
 const factories = {
   env: envFactory,
   rawConfig: rawConfigFactory,
@@ -85,7 +109,9 @@ const factories = {
   bookmark: bookmarkFactory,
   command: commandFactory,
   cheat: cheatFactory,
-  task: taskFactory
+  task: taskFactory,
+  'knowledge:weaker': knowledgeFtsWeakerFactory,
+  'knowledge:stronger': knowledgeFtsStrongerFactory
 } as const
 
 /**

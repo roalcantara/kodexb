@@ -1,19 +1,30 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 
-export type CmdkAction = {
+export type CommandPaletteSection = 'entry' | 'clipboard' | 'source' | 'library' | 'app'
+
+export const COMMAND_PALETTE_SECTION_LABEL: Record<CommandPaletteSection, string> = {
+  entry: 'This entry',
+  clipboard: 'Clipboard',
+  source: 'Source',
+  library: 'Library',
+  app: 'App'
+}
+
+export type CommandPaletteAction = {
   id: string
   label: string
+  section: CommandPaletteSection
   shortcut?: string
   handler: () => void
 }
 
-export type CmdkPaletteProps = {
+export type CommandPaletteProps = {
   open: boolean
-  actions: CmdkAction[]
+  actions: CommandPaletteAction[]
   onClose: () => void
 }
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: extracted from CmdkPalette to keep parent under 50 lines
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: extracted from CommandPalette to keep parent under 50 lines
 function PaletteContent({
   search,
   onSearchChange,
@@ -26,7 +37,7 @@ function PaletteContent({
   search: string
   onSearchChange: (value: string) => void
   inputRef: React.RefObject<HTMLInputElement | null>
-  filtered: CmdkAction[]
+  filtered: CommandPaletteAction[]
   selectedIndex: number
   onSelectedIndexChange: (i: number) => void
   onClose: () => void
@@ -42,10 +53,10 @@ function PaletteContent({
         if (e.key === 'Escape') onClose()
       }}
     >
-      <div className="kb-cmdk">
+      <div className="kb-command-palette">
         <input
           ref={inputRef}
-          className="kb-cmdk-search"
+          className="kb-command-palette-search"
           type="text"
           placeholder="Type an action..."
           value={search}
@@ -76,33 +87,43 @@ function PaletteContent({
             }
           }}
         />
-        <div className="kb-cmdk-list">
+        <div className="kb-command-palette-list" role="listbox" aria-label="Command palette actions">
           {filtered.length === 0 ? (
-            <div className="kb-cmdk-empty">No matching actions</div>
+            <div className="kb-command-palette-empty">No matching actions</div>
           ) : (
-            filtered.map((action, i) => (
-              <div
-                key={action.id}
-                role="option"
-                aria-selected={i === selectedIndex}
-                tabIndex={-1}
-                className={`kb-cmdk-action${i === selectedIndex ? ' kb-cmdk-action--selected' : ''}`}
-                onClick={() => {
-                  action.handler()
-                  onClose()
-                }}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    action.handler()
-                    onClose()
-                  }
-                }}
-              >
-                <span>{action.label}</span>
-                {action.shortcut ? <span className="kb-cmdk-shortcut">{action.shortcut}</span> : null}
-              </div>
-            ))
+            filtered.map((action, i) => {
+              const prev = i > 0 ? filtered[i - 1] : undefined
+              const showHeader = i === 0 || action.section !== prev?.section
+              return (
+                <Fragment key={action.id}>
+                  {showHeader ? (
+                    <div className="kb-command-palette-section" role="presentation">
+                      {COMMAND_PALETTE_SECTION_LABEL[action.section]}
+                    </div>
+                  ) : null}
+                  <div
+                    role="option"
+                    aria-selected={i === selectedIndex}
+                    tabIndex={-1}
+                    className={`kb-command-palette-action${i === selectedIndex ? ' kb-command-palette-action--selected' : ''}`}
+                    onClick={() => {
+                      action.handler()
+                      onClose()
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        action.handler()
+                        onClose()
+                      }
+                    }}
+                  >
+                    <span>{action.label}</span>
+                    {action.shortcut ? <span className="kb-command-palette-shortcut">{action.shortcut}</span> : null}
+                  </div>
+                </Fragment>
+              )
+            })
           )}
         </div>
       </div>
@@ -110,7 +131,7 @@ function PaletteContent({
   )
 }
 
-export function CmdkPalette({ open, actions, onClose }: CmdkPaletteProps) {
+export function CommandPalette({ open, actions, onClose }: CommandPaletteProps) {
   const [search, setSearch] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)

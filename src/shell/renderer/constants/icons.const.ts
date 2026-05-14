@@ -4,6 +4,7 @@
  */
 export const TAG_BRAND_GLYPHS: Record<string, string> = {
   git: '⎇',
+  github: '◆',
   yt: '▶',
   youtube: '▶',
   bun: '🥟',

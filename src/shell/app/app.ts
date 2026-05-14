@@ -21,7 +21,7 @@ import { saveConfig } from './config/config.loader'
 import { openDatabase } from './db/client'
 import { deleteById, findAll, findById, getDbStats, upsert } from './db/entry.repository'
 import { maxTaskOrder, updateTaskOrder } from './db/task.repository'
-import { listKnowledgeForOpts } from './lib/app_list_query.util'
+import { countKnowledgeForOpts, listKnowledgeForOpts } from './lib/app_list_query.util'
 import { buildListStats } from './lib/app_list_stats.util'
 import { fetchPreviewImageFromUrl } from './lib/app_preview_fetch.util'
 import type { AppShellHooks } from './lib/app_shell_hooks.types'
@@ -90,7 +90,10 @@ export class App {
     const { raw } = this.getDb()
     return Promise.resolve(listKnowledgeForOpts(raw, this.loaded, opts, this.listCache))
   }
-
+  listMatchCount(opts: ListOpts = {}): Promise<number> {
+    const { raw } = this.getDb()
+    return Promise.resolve(countKnowledgeForOpts(raw, this.loaded, opts))
+  }
   getEntry(id: number): Promise<Knowledge | null> {
     const { raw } = this.getDb()
     return Promise.resolve(findById(raw, id))

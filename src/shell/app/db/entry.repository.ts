@@ -166,8 +166,9 @@ export function findAll(db: Database, opts: FindAllOpts = {}): Knowledge[] {
     const sql = `
       SELECT k.*
       FROM knowledges k
-      JOIN knowledges_fts f ON k.id = f.id
+      JOIN knowledges_fts ON k.id = knowledges_fts.id
       WHERE knowledges_fts MATCH ?
+      ORDER BY bm25(knowledges_fts)
       LIMIT ? OFFSET ?
     `
     rows = db.query(sql).all(match, limitParam, offset) as UnknownRecord[]

@@ -2,24 +2,26 @@
 
 import { expect, test } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
+import { factoryFor } from '@testing'
 import { render, screen } from '@testing-library/react'
 
 import { BadgeAccessory } from './badge_accessory.component'
 
-const overdueTask: RpcKnowledge = {
-  type: 'task',
-  id: 2,
-  key: 'task-overdue',
-  source: 'fixtures/t.yaml',
-  desc: 'Late task',
-  tags: [],
-  status: 'todo',
-  priority: 'high',
-  doc: '',
-  createdAt: 0,
-  updatedAt: 0,
-  dueDate: new Date('1999-06-15').getTime()
-}
+const overdueTask = factoryFor('task', {
+  overrides: {
+    id: 2,
+    key: 'task-overdue',
+    source: 'fixtures/t.yaml',
+    desc: 'Late task',
+    tags: [],
+    status: 'todo',
+    priority: 'high',
+    doc: '',
+    createdAt: 0,
+    updatedAt: 0,
+    dueDate: new Date('1999-06-15').getTime()
+  }
+}) as RpcKnowledge
 
 test('BadgeAccessory shows overdue pill for past due todo', () => {
   render(<BadgeAccessory entry={overdueTask} allEntries={[overdueTask]} />)
@@ -29,17 +31,18 @@ test('BadgeAccessory shows overdue pill for past due todo', () => {
 })
 
 test('BadgeAccessory shows bookmark URL pill when key is https', () => {
-  const b: RpcKnowledge = {
-    type: 'bookmark',
-    id: 3,
-    key: 'https://example.com',
-    source: 'f.yaml',
-    desc: 'Ex',
-    tags: [],
-    doc: '',
-    createdAt: 0,
-    updatedAt: 0
-  }
+  const b = factoryFor('bookmark', {
+    overrides: {
+      id: 3,
+      key: 'https://example.com',
+      source: 'f.yaml',
+      desc: 'Ex',
+      tags: [],
+      doc: '',
+      createdAt: 0,
+      updatedAt: 0
+    }
+  }) as RpcKnowledge
   render(<BadgeAccessory entry={b} />)
   expect(screen.getByTitle('Has URL')).toBeTruthy()
 })

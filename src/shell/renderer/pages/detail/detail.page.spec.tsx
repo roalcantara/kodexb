@@ -2,6 +2,7 @@
 
 import { expect, mock, test } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
+import { factoryFor } from '@testing'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -10,33 +11,35 @@ import { DetailPageView } from '../../components/detail/detail_view.component'
 const onOpenExternal = mock(() => Promise.resolve())
 const pendingOg = () => new Promise<null>(() => undefined)
 
-const bookmark: RpcKnowledge = {
-  type: 'bookmark',
-  id: 1,
-  key: 'https://bun.sh',
-  source: 'fixtures/test.yaml',
-  desc: 'Bun JavaScript runtime',
-  tags: ['bun', 'js'],
-  links: ['https://bun.sh/docs'],
-  notes: [{ md: 'Fast JS runtime.' }],
-  doc: '> Bun JavaScript runtime\n\nFast JS runtime.',
-  createdAt: 0,
-  updatedAt: 0
-}
+const bookmark = factoryFor('bookmark', {
+  overrides: {
+    id: 1,
+    key: 'https://bun.sh',
+    source: 'fixtures/test.yaml',
+    desc: 'Bun JavaScript runtime',
+    tags: ['bun', 'js'],
+    links: ['https://bun.sh/docs'],
+    notes: [{ md: 'Fast JS runtime.' }],
+    doc: '> Bun JavaScript runtime\n\nFast JS runtime.',
+    createdAt: 0,
+    updatedAt: 0
+  }
+}) as RpcKnowledge
 
-const task: RpcKnowledge = {
-  type: 'task',
-  id: 2,
-  key: 'fix-login-bug',
-  source: 'fixtures/tasks.yaml',
-  desc: 'Fix the login redirect',
-  tags: [],
-  priority: 'high',
-  status: 'doing',
-  doc: '> Fix the login redirect',
-  createdAt: 0,
-  updatedAt: 0
-}
+const task = factoryFor('task', {
+  overrides: {
+    id: 2,
+    key: 'fix-login-bug',
+    source: 'fixtures/tasks.yaml',
+    desc: 'Fix the login redirect',
+    tags: [],
+    priority: 'high',
+    status: 'doing',
+    doc: '> Fix the login redirect',
+    createdAt: 0,
+    updatedAt: 0
+  }
+}) as RpcKnowledge
 
 function renderDetail(entry: RpcKnowledge = bookmark) {
   return render(

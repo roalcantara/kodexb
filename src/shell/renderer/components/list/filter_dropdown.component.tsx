@@ -2,6 +2,7 @@ import type { ListStats, TaskView } from '@shared/rpc'
 import { useMemo, useState } from 'react'
 import { TASK_VIEW_LABEL, TYPE_FILTER_LABEL } from '../../constants/filter_labels.const'
 import { FILTER_DROPDOWN_GAP_PX, FILTER_DROPDOWN_MAX_WIDTH_PX } from '../../constants/layout.const'
+import { CompactFilterOverlay } from './compact_filter_overlay.component'
 import { FilterDropdownTags } from './filter_dropdown_tags.component'
 
 const ENTRY_TYPES = ['bookmark', 'command', 'cheat', 'task'] as const
@@ -9,7 +10,7 @@ export type EntryTypeOption = (typeof ENTRY_TYPES)[number]
 
 const TASK_VIEWS: TaskView[] = ['actionable', 'today', 'overdue', 'this_week', 'all_pending', 'all_doing']
 
-function sortedTags(tags: Record<string, number>, q: string): Array<{ tag: string; count: number }> {
+export function sortedTags(tags: Record<string, number>, q: string): Array<{ tag: string; count: number }> {
   const needle = q.trim().toLowerCase()
   return Object.entries(tags)
     .filter(([t]) => needle === '' || t.toLowerCase().includes(needle))
@@ -17,7 +18,7 @@ function sortedTags(tags: Record<string, number>, q: string): Array<{ tag: strin
     .sort((a, b) => (a.count === b.count ? a.tag.localeCompare(b.tag) : b.count - a.count))
 }
 
-function showTaskSection(types: EntryTypeOption[]): boolean {
+export function showTaskSection(types: EntryTypeOption[]): boolean {
   return types.length === 0 || types.includes('task')
 }
 
@@ -96,78 +97,6 @@ function FilterDropdownPanel({ stats, types, tags, taskView, tagQ, setTagQ, onCh
   )
 }
 
-// ── Compact PowerToys filter ──────────────────────────────────────
-
-type CompactPanelProps = {
-  stats: ListStats
-  types: EntryTypeOption[]
-  taskView?: TaskView
-  onChange: (next: { types: EntryTypeOption[]; tags: string[]; taskView?: TaskView }) => void
-  onClose: () => void
-}
-
-function CompactFilterDropdownPanel({ stats, types, taskView, onChange, onClose }: CompactPanelProps) {
-  const toggleType = (t: EntryTypeOption) => {
-    const next = types.includes(t) ? types.filter(x => x !== t) : [...types, t]
-    onChange({ types: next, tags: [], taskView: next.includes('task') ? taskView : undefined })
-  }
-
-  const pickTaskView = (v: TaskView) => {
-    const next = taskView === v ? undefined : v
-    onChange({ types, tags: [], taskView: next })
-  }
-
-  return (
-    <div
-      className="kb-pt-filter-dropdown"
-      onMouseDown={e => e.stopPropagation()}
-      role="menu"
-      aria-label="Filter options"
-    >
-      <div className="kb-pt-filter-section">Type</div>
-      {ENTRY_TYPES.map(t => {
-        const sel = types.includes(t)
-        return (
-          <button
-            key={t}
-            type="button"
-            className={`kb-pt-filter-option${sel ? ' kb-pt-filter-option--selected' : ''}`}
-            onClick={() => toggleType(t)}
-          >
-            {TYPE_FILTER_LABEL[t]} ({stats[t]})
-          </button>
-        )
-      })}
-      {showTaskSection(types) ? (
-        <>
-          <div className="kb-pt-filter-divider" />
-          <div className="kb-pt-filter-section">Task View</div>
-          {TASK_VIEWS.map(v => {
-            const sel = taskView === v
-            return (
-              <button
-                key={v}
-                type="button"
-                className={`kb-pt-filter-option${sel ? ' kb-pt-filter-option--selected' : ''}`}
-                onClick={() => pickTaskView(v)}
-              >
-                {TASK_VIEW_LABEL[v]} ({stats.taskViews[v]})
-              </button>
-            )
-          })}
-        </>
-      ) : null}
-      <div className="kb-pt-filter-divider" />
-      <div className="kb-pt-filter-section">Add tags by typing #tagname in search</div>
-      <button type="button" className="kb-pt-filter-option" onClick={onClose}>
-        Close
-      </button>
-    </div>
-  )
-}
-
-// ── Root component ────────────────────────────────────────────────
-
 export type FilterDropdownProps = {
   open: boolean
   anchorRect: DOMRect | null
@@ -178,6 +107,9 @@ export type FilterDropdownProps = {
   onChange: (next: { types: EntryTypeOption[]; tags: string[]; taskView?: TaskView }) => void
   onClose: () => void
   compact?: boolean
+  pushToast?: (msg: string, type: 'success' | 'error') => void
+  closeToList?: () => void
+  isFullDetail?: boolean
 }
 
 export function FilterDropdown({
@@ -189,7 +121,10 @@ export function FilterDropdown({
   taskView,
   onChange,
   onClose,
-  compact
+  compact,
+  pushToast,
+  closeToList,
+  isFullDetail
 }: FilterDropdownProps) {
   const [tagQ, setTagQ] = useState('')
 
@@ -197,12 +132,16 @@ export function FilterDropdown({
 
   if (compact) {
     return (
-      <CompactFilterDropdownPanel
+      <CompactFilterOverlay
         stats={stats}
         types={types}
+        tags={tags}
         taskView={taskView}
         onChange={onChange}
         onClose={onClose}
+        pushToast={pushToast}
+        closeToList={closeToList}
+        isFullDetail={isFullDetail}
       />
     )
   }

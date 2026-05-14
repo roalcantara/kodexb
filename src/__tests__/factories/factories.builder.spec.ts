@@ -29,4 +29,15 @@ describe('factoryFor()', () => {
     const task = factoryFor('task')
     expect(task.doc.length).toBeGreaterThan(0)
   })
+
+  describe('knowledge FTS ranking pair', () => {
+    it('builds weaker and stronger presets for BM25 specs', () => {
+      const weaker = factoryFor('knowledge:weaker')
+      const stronger = factoryFor('knowledge:stronger')
+      expect(weaker.type).toBe('bookmark')
+      expect(stronger.type).toBe('command')
+      expect(weaker.tags).toContain('coding')
+      expect(stronger.tags).toContain('brew')
+    })
+  })
 })

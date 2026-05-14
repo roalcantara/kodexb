@@ -1,9 +1,10 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import type { MutableRefObject, RefObject } from 'react'
 import { useCallback, useReducer, useRef } from 'react'
+import { copyTextForEntry } from '../../../../core/index.ts'
+import { clipboardCopiedToastMessage } from '../../utils/list/clipboard_copy_toast.util'
 import { scheduleFocusSearchInputSelectAll } from '../../utils/list/schedule_double_raf.util'
 import { type ViewState, viewReducer } from '../../utils/list/view_reducer.util'
-import { primaryClipboardContent } from '../../utils/shared/clipboard_content.util'
 
 export type { ViewState }
 
@@ -86,14 +87,18 @@ function tryCopyShortcut(
   isEditable: boolean
 ): boolean {
   if (!((e.metaKey || e.ctrlKey) && e.key === 'c' && !isInput && !isEditable)) return false
+  e.preventDefault?.()
   const { rows: r, selectedId: sid } = ctx.depsRef.current
   const selected = r.find(row => row.id === sid)
   if (selected) {
-    const content = primaryClipboardContent(selected)
+    const content = copyTextForEntry(selected)
+    const msg = clipboardCopiedToastMessage(content)
     navigator.clipboard.writeText(content).then(
-      () => ctx.pushToast?.('Copied!', 'success'),
+      () => ctx.pushToast?.(msg, 'success'),
       () => ctx.pushToast?.('Copy failed', 'error')
     )
+  } else {
+    ctx.pushToast?.('Select an entry to copy', 'success')
   }
   return true
 }
@@ -136,7 +141,12 @@ function tryEscapeKey(
 function tryArrowKeys(e: ViewNavigationKeyEvent, ctx: ViewNavigationKeyCtx): void {
   if (e.key === 'ArrowRight') {
     e.preventDefault?.()
-    if (ctx.depsRef.current.viewState !== 'detail') ctx.advance()
+    const vs = ctx.depsRef.current.viewState
+    if (vs === 'detail') {
+      ctx.retreat()
+    } else {
+      ctx.advance()
+    }
     return
   }
   if (e.key === 'ArrowLeft' && ctx.depsRef.current.detailEntry !== null) {

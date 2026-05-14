@@ -1,3 +1,4 @@
+import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 import { useListSurfaceScrollRestore } from '../../hooks/list/use_list_surface_scroll_restore.hook'
@@ -7,8 +8,9 @@ import { DetailPage } from '../../pages/detail/detail.page'
 import { SettingsPage } from '../../pages/settings/settings.page'
 import { cyclePriority, cycleStatus } from '../../rpc/client'
 import { listFilterSummary } from '../../utils/list/list_filter_summary.util'
+import { formatListFooterStatus } from '../../utils/list/list_footer_status.util'
 import { focusListSurface } from '../../utils/list/list_surface_focus.util'
-import { CmdkPalette } from '../actions/cmdk_palette.component'
+import { CommandPalette } from '../actions/command_palette.component'
 import { ActionToastHost } from '../shared/action_toast_host.component'
 import { SyncModal } from '../shared/sync_modal.component'
 import { TaskSheet } from '../task/task_sheet.component'
@@ -25,6 +27,7 @@ export type ListMainProps = {
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing inline rendering
 export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   const emptySyncButtonRef = useRef<HTMLButtonElement>(null)
+  const detailScrollRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
     if (p.flags.emptyDb) {
@@ -46,7 +49,13 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
 
   const detailEntry = p.sel.detailEntry
   const viewState = p.sel.viewState
-  const resultCount = p.data.stats?.total ?? p.data.rows.length
+
+  const footerStatus = formatListFooterStatus({
+    matchTotal: p.data.matchTotal,
+    showing: p.data.rows.length,
+    pageSize: p.data.pageSize,
+    loading: p.data.loading
+  })
 
   const listPanelClass =
     detailEntry === null
@@ -107,7 +116,12 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   useWindowViewNavKeys({
     disabled: viewNavKeysDisabled,
     handleKey: p.sel.handleKey,
-    handleModL: p.handleWindowModL
+    handleModL: p.handleWindowModL,
+    handleListArrows: e => {
+      p.onListKeyDown(e as unknown as ReactKeyboardEvent<HTMLDivElement>)
+    },
+    detailScrollRef,
+    detailScrollActive: detailEntry !== null
   })
 
   const powertoysClass = viewState === 'detail' ? 'kb-powertoys kb-powertoys--detail-full' : 'kb-powertoys'
@@ -167,7 +181,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           </div>
         )}
 
-        {p.filter.filterOpen && p.data.stats !== null && !isFullDetail ? (
+        {p.filter.filterOpen && p.data.stats !== null ? (
           <FilterDropdown
             open={p.filter.filterOpen}
             anchorRect={p.filter.anchorRect}
@@ -177,6 +191,9 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
             taskView={p.data.taskView}
             onChange={p.onFilterChange}
             onClose={() => p.filter.setFilterOpen(false)}
+            pushToast={p.pushToast}
+            closeToList={closeDetailToList}
+            isFullDetail={isFullDetail}
             compact
           />
         ) : null}
@@ -247,7 +264,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           </div>
 
           {detailEntry ? (
-            <div className={detailPanelClass}>
+            <div ref={detailScrollRef} className={detailPanelClass}>
               <DetailPage
                 entryId={detailEntry.id}
                 allEntries={p.data.rows}
@@ -261,7 +278,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
         </div>
 
         <div className="kb-pt-footer">
-          <span>{resultCount} results</span>
+          <span>{footerStatus}</span>
           <span className="kb-pt-footer-right">
             <span className="kb-pt-footer-keys">
               <span
@@ -284,7 +301,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
                   {' · '}
                 </span>
               </span>
-              <span>⌘K · ⌘N · ⌘,</span>
+              <span>⌘P · ⌘K · ⌘N · ⌘,{detailEntry === null ? '' : ' · ⌘↓ scroll'}</span>
             </span>
           </span>
         </div>
@@ -306,7 +323,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
         </div>
       ) : null}
       {p.palette.open && (
-        <CmdkPalette open={p.palette.open} actions={p.palette.actions} onClose={p.palette.closePalette} />
+        <CommandPalette open={p.palette.open} actions={p.palette.actions} onClose={p.palette.closePalette} />
       )}
       <SyncModal model={p.data.syncUi} onDismiss={p.data.dismissSyncModal} />
       <ActionToastHost toasts={p.actionToasts} onDismiss={p.dismissActionToast} />

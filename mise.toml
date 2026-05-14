@@ -288,3 +288,288 @@ actionlint = "latest"
       ln -s "$SRC/$name" "$KB/$name"
     done
 ''' }
+
+[tasks."icons:svg-contrast"]
+description = "Contrast-check SVG colors in assets/images vs list shell background (#0b0e14). Default scope=all (Raycast-style tag-rail). scope=brand: tag map + entry-type defaults only. Writes only with --write-safe. Exits 1 with --strict when any file fails."
+usage = '''
+    flag "--scope <scope>" default="all" help="all: every assets/images/*.svg; brand: tag map + entry-type basenames only" {
+      choices "all" "brand"
+    }
+    flag "--write-safe" help="Apply curated SAFE_HEX_REPLACEMENTS (see run script SAFE_HEX_REPLACEMENTS)"
+    flag "--strict" help="Fail when any file is below --min ratio vs #0b0e14"
+    flag "--min <min>" default="3" help="Minimum contrast ratio (WCAG-style vs list bg)"
+'''
+run = '''
+#!/usr/bin/env bun
+import { readdir } from "node:fs/promises"
+import path from "node:path"
+
+function chdirToGitRoot(): void {
+  const r = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"])
+  if (r.exitCode !== 0) {
+    console.error("icons:svg-contrast: run from inside the kb git checkout")
+    process.exit(1)
+  }
+  const bytes = r.stdout
+  const out = typeof bytes === "string" ? bytes : new TextDecoder().decode(bytes as Uint8Array)
+  const root = out.trim()
+  if (!root) {
+    console.error("icons:svg-contrast: run from inside the kb git checkout")
+    process.exit(1)
+  }
+  process.chdir(root)
+}
+
+chdirToGitRoot()
+
+/** Matches list.css `--kb-bg` (Andromeda Void shell). */
+const KB_LIST_BG = "#0b0e14"
+
+/** WCAG 1.4.11 non-text contrast target for graphical objects (relaxed vs body text). */
+const DEFAULT_MIN_RATIO = 3
+
+/** Only these exact hex strings are rewritten with `--write-safe` (case-insensitive keys). */
+const SAFE_HEX_REPLACEMENTS: Record<string, string> = {
+  "#24292f": "#e6edf3" // GitHub mark (dark UI) → light for void background
+}
+
+function parseArgs(argv: string[]) {
+  let scope: "brand" | "all" =
+    process.env.usage_scope === "brand" || process.env.usage_scope === "all" ? process.env.usage_scope : "all"
+  let writeSafe = process.env.usage_write_safe === "true"
+  let strict = process.env.usage_strict === "true"
+  let minRatio = DEFAULT_MIN_RATIO
+  const envMin = process.env.usage_min
+  if (envMin !== undefined && envMin !== "") {
+    const n = Number(envMin)
+    if (Number.isFinite(n) && n > 0) {
+      minRatio = n
+    }
+  }
+  for (const a of argv) {
+    if (a === "--write-safe") writeSafe = true
+    else if (a === "--strict") strict = true
+    else if (a.startsWith("--scope=")) {
+      const v = a.slice("--scope=".length)
+      if (v === "brand" || v === "all") scope = v
+      else {
+        console.error(`Unknown --scope=${v} (use brand|all)`)
+        process.exit(2)
+      }
+    } else if (a.startsWith("--min=")) {
+      minRatio = Number(a.slice("--min=".length))
+      if (!Number.isFinite(minRatio) || minRatio <= 0) {
+        console.error(`Invalid --min=${a}`)
+        process.exit(2)
+      }
+    }
+  }
+  return { scope, writeSafe, strict, minRatio }
+}
+
+function expandShorthandHex(hex: string): string {
+  const h = hex.slice(1).toLowerCase()
+  if (h.length === 3) {
+    return `#${h
+      .split("")
+      .map(c => c + c)
+      .join("")}`
+  }
+  if (h.length === 6) return `#${h}`
+  return hex.toLowerCase()
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const normalized = expandShorthandHex(hex.startsWith("#") ? hex : `#${hex}`)
+  const m = /^#([0-9a-f]{6})$/.exec(normalized)
+  if (!m?.[1]) return null
+  const n = Number.parseInt(m[1], 16)
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 }
+}
+
+function channelL(u: number): number {
+  const c = u / 255
+  return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+}
+
+function relativeLuminance(rgb: { r: number; g: number; b: number }): number {
+  return 0.2126 * channelL(rgb.r) + 0.7152 * channelL(rgb.g) + 0.0722 * channelL(rgb.b)
+}
+
+function contrastRatio(fgHex: string, bgHex: string): number | null {
+  const fg = hexToRgb(fgHex)
+  const bg = hexToRgb(bgHex)
+  if (!fg || !bg) return null
+  const l1 = relativeLuminance(fg)
+  const l2 = relativeLuminance(bg)
+  const lighter = Math.max(l1, l2)
+  const darker = Math.min(l1, l2)
+  return (lighter + 0.05) / (darker + 0.05)
+}
+
+function hasLightAndNearBlack(samples: string[]): boolean {
+  let hasLight = false
+  let hasNearBlack = false
+  for (const raw of samples) {
+    const rgb = hexToRgb(raw)
+    if (!rgb) continue
+    const L = relativeLuminance(rgb)
+    if (L > 0.28) hasLight = true
+    if (L < 0.12) hasNearBlack = true
+  }
+  return hasLight && hasNearBlack
+}
+
+const HEX_IN_SVG = /#([0-9a-f]{3}|[0-9a-f]{6})\b/gi
+const RGB_IN_SVG = /rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/gi
+
+function rgbTripletToHex(r: number, g: number, b: number): string {
+  const clamp = (n: number) => Math.min(255, Math.max(0, Math.round(n)))
+  const h = (n: number) => clamp(n).toString(16).padStart(2, "0")
+  return expandShorthandHex(`#${h(r)}${h(g)}${h(b)}`)
+}
+
+function collectHexSamples(svgText: string): string[] {
+  const out = new Set<string>()
+  for (const m of svgText.matchAll(HEX_IN_SVG)) {
+    const g1 = m[1]
+    if (g1 === undefined) continue
+    const full = expandShorthandHex(`#${g1}`)
+    out.add(full)
+  }
+  for (const m of svgText.matchAll(RGB_IN_SVG)) {
+    const r = Number(m[1])
+    const g = Number(m[2])
+    const b = Number(m[3])
+    if (Number.isFinite(r) && Number.isFinite(g) && Number.isFinite(b)) {
+      out.add(rgbTripletToHex(r, g, b))
+    }
+  }
+  return [...out]
+}
+
+async function loadBrandBasenames(root: string): Promise<string[]> {
+  const tagPath = path.join(root, "src/shell/renderer/constants/tag_brand_svg_map.const.ts")
+  const entPath = path.join(root, "src/shell/renderer/constants/entry_type_icon_basename.const.ts")
+  const tag = (await import(tagPath)) as { TAG_BRAND_SVG_BASENAME: Record<string, string> }
+  const ent = (await import(entPath)) as { ENTRY_TYPE_DEFAULT_SVG_BASENAME: Record<string, string> }
+  const fromTags = Object.values(tag.TAG_BRAND_SVG_BASENAME)
+  const fromTypes = Object.values(ent.ENTRY_TYPE_DEFAULT_SVG_BASENAME)
+  return [...new Set([...fromTags, ...fromTypes])].sort()
+}
+
+async function allSvgRelPaths(dir: string): Promise<string[]> {
+  const names = await readdir(dir)
+  return names.filter(n => n.endsWith(".svg")).sort()
+}
+
+function applySafeReplacements(content: string): { next: string; hits: number } {
+  let next = content
+  let total = 0
+  for (const [from, to] of Object.entries(SAFE_HEX_REPLACEMENTS)) {
+    const pattern = new RegExp(from.replace("#", "#"), "gi")
+    next = next.replace(pattern, m => {
+      if (m.toLowerCase() === from.toLowerCase()) {
+        total += 1
+        return to
+      }
+      return m
+    })
+  }
+  return { next, hits: total }
+}
+
+type ScanRow =
+  | { base: string; missing: true }
+  | { base: string; missing: false; bad: { hex: string; ratio: number }[]; written: boolean }
+
+const CHUNK = 80
+
+async function main() {
+  const root = process.cwd()
+  const imagesDir = path.join(root, "assets/images")
+  const { scope, writeSafe, strict, minRatio } = parseArgs(process.argv.slice(2))
+
+  const basenames =
+    scope === "brand"
+      ? await loadBrandBasenames(root)
+      : (await allSvgRelPaths(imagesDir)).map(f => f.replace(/\.svg$/i, ""))
+
+  const rows: ScanRow[] = []
+  for (let i = 0; i < basenames.length; i += CHUNK) {
+    const slice = basenames.slice(i, i + CHUNK)
+    const part = await Promise.all(
+      slice.map(async (base): Promise<ScanRow> => {
+        const filePath = path.join(imagesDir, `${base}.svg`)
+        let content: string
+        try {
+          content = await Bun.file(filePath).text()
+        } catch {
+          console.warn(`missing: ${base}.svg`)
+          return { base, missing: true }
+        }
+
+        let text = content
+        let written = false
+        if (writeSafe) {
+          const { next, hits } = applySafeReplacements(content)
+          if (hits > 0 && next !== content) {
+            await Bun.write(filePath, next)
+            written = true
+            console.log(`write-safe: ${base}.svg (${hits} replacement(s))`)
+            text = next
+          }
+        }
+
+        const samples = collectHexSamples(text)
+        const dualTone = hasLightAndNearBlack(samples)
+        const bad: { hex: string; ratio: number }[] = []
+        for (const hex of samples) {
+          const rgb = hexToRgb(hex)
+          if (!rgb) continue
+          if (dualTone && relativeLuminance(rgb) < 0.12) {
+            continue
+          }
+          const r = contrastRatio(hex, KB_LIST_BG)
+          if (r !== null && r < minRatio) {
+            bad.push({ hex, ratio: r })
+          }
+        }
+        return { base, missing: false, bad, written }
+      })
+    )
+    rows.push(...part)
+  }
+
+  let failures = 0
+  let filesWritten = 0
+  for (const row of rows) {
+    if (row.missing) continue
+    if (row.written) filesWritten += 1
+    if (row.bad.length > 0) {
+      failures += 1
+      const line = row.bad
+        .sort((a, b) => a.ratio - b.ratio)
+        .map(x => `${x.hex} (${x.ratio.toFixed(2)}:1)`)
+        .join(", ")
+      console.log(`FAIL ${row.base}.svg  <${minRatio}:1  vs ${KB_LIST_BG}  →  ${line}`)
+    }
+  }
+
+  console.log("")
+  console.log(
+    `scope=${scope}  files=${basenames.length}  failing=${failures}  minRatio=${minRatio}  writeSafe=${writeSafe}  strict=${strict}  written=${filesWritten}`
+  )
+
+  if (failures > 0) {
+    console.log(
+      "Hint: add targeted entries to SAFE_HEX_REPLACEMENTS and run with --write-safe; use --strict to fail CI"
+    )
+  }
+  if (failures > 0 && strict) {
+    process.exit(1)
+  }
+}
+
+await main()
+'''

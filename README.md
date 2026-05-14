@@ -25,6 +25,23 @@ bun run lint      # Run the full Phase-1 quality chain
 bun run lint:fix  # Auto-fix what can be fixed (Biome / Knip / ast-grep)
 ```
 
+### Keyboard — command palette (⌘P) and filter (⌘K)
+
+Product rules for the list shell (normative for implementation). Full specs: [requirements](assets/docs/specs/command-palette-filter-ux/requirements.md) · [design](assets/docs/specs/command-palette-filter-ux/design.md) · [tasks](assets/docs/specs/command-palette-filter-ux/tasks.md) · [HANDOFF](assets/docs/specs/command-palette-filter-ux/HANDOFF.md). Visual reference (non-normative): [raycast.list_filter_opened.png](assets/wireframe/references/raycast.list_filter_opened.png).
+
+| Shortcut                                                     | Action                                                                                                                                                                                                                                                 |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **⌘P** / **Ctrl+P**                                          | Toggle **command palette**. Opening the palette **closes** the filter overlay if it is open.                                                                                                                                                           |
+| **⌘K** / **Ctrl+K**                                          | Toggle **filter** overlay. Opening the filter **closes** the palette if it is open.                                                                                                                                                                    |
+| **⌘P** / **⌘K** while **settings** or **task sheet** is open | **No-op** (same suppression family as list nav).                                                                                                                                                                                                       |
+| **Filter** — live apply                                      | Changes apply immediately (`onChange`). **Esc**, **click-outside**, and **⌘K** only **close** the overlay — **no** staged undo of filter state.                                                                                                        |
+| **Filter** — **↑/↓**                                         | Move highlight in a **flat** filter list only; **do not** change main list **`selectedId`**.                                                                                                                                                           |
+| **Filter** — **Enter** (commit path)                         | Compare current `{ types, tags, taskView }` to a **snapshot taken when the overlay opened** (tags sorted for equality). **Unchanged** → neutral toast, close, restore focus. **Changed** → optional success toast, close, restore focus.               |
+| **Full detail** + filter **Enter** + **changed**             | Same as commit path, and **also** leave full detail for **list view** (e.g. `closeToList`). **Esc** / toggle / click-outside without that Enter path → close overlay only, **no** forced list view.                                                    |
+| **Palette** — **↑/↓**                                        | Palette internal navigation only (unchanged); **not** main list selection.                                                                                                                                                                             |
+| **Palette** — actions                                        | **Entry-first** sections: This entry → Clipboard → Source → Library → App (see [design](assets/docs/specs/command-palette-filter-ux/design.md)). With **`selectedId === null`**: Library (Sync, New Task) then App (Quit). Headers are non-selectable. |
+| **Implementation**                                           | Prefer **`keydown` capture** on `window` (or one coordinator). Rename legacy **`cmdk_palette`** / **`kb-cmdk-*`** to **`command_palette`** / **`kb-command-palette-*`**.                                                                               |
+
 ### CI mirror tasks
 
 The same checks GitHub Actions runs are mirrored locally via [Mise][6]:

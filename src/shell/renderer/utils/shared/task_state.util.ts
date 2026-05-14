@@ -1,4 +1,4 @@
-import type { Knowledge } from '@core'
+import type { Knowledge } from '../../../../core/index.ts'
 
 export type TaskKnowledge = Extract<Knowledge, { type: 'task' }>
 

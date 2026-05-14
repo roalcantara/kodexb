@@ -55,6 +55,18 @@ describe('createRpcServer', () => {
     })
   })
 
+  describe('POST /api/listMatchCount', () => {
+    it('returns a non-negative integer', async () => {
+      const app = await importedAppFixture()
+      const rpc = createRpcServer(app)
+      const res = await rpc.handle(postJson('/api/listMatchCount', {}))
+      expect(res.status).toBe(200)
+      const data = (await res.json()) as unknown
+      expect(typeof data).toBe('number')
+      expect(data as number).toBeGreaterThanOrEqual(0)
+    })
+  })
+
   describe('POST /api/getListStats', () => {
     it('returns object with numeric totals', async () => {
       const app = await importedAppFixture()

@@ -2,25 +2,27 @@
 
 import { expect, test } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
+import { factoryFor } from '@testing'
 import { render, screen } from '@testing-library/react'
 
 import { MetadataSidebar } from './metadata_sidebar.component'
 
-const task: RpcKnowledge = {
-  type: 'task',
-  id: 42,
-  key: 'ship-detail',
-  source: '/tasks.yml',
-  desc: 'Ship detail view',
-  tags: ['kb', 'ui'],
-  status: 'todo',
-  priority: 'mid',
-  doc: '',
-  createdAt: 1_700_000_000_000,
-  updatedAt: 1_700_000_100_000,
-  dueDate: new Date('2026-04-28').getTime(),
-  taskOrder: 7
-}
+const task = factoryFor('task', {
+  overrides: {
+    id: 42,
+    key: 'ship-detail',
+    source: '/tasks.yml',
+    desc: 'Ship detail view',
+    tags: ['kb', 'ui'],
+    status: 'todo',
+    priority: 'mid',
+    doc: '',
+    createdAt: 1_700_000_000_000,
+    updatedAt: 1_700_000_100_000,
+    dueDate: new Date('2026-04-28').getTime(),
+    taskOrder: 7
+  }
+}) as RpcKnowledge
 
 test('MetadataSidebar renders common fields', () => {
   render(<MetadataSidebar entry={task} />)

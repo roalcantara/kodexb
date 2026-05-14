@@ -5,7 +5,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "clean": "rm -rf dist tmp",
+    "clean": "rm -rf dist tmp .electrobun-cache",
+    "clean:cache": "bun run clean",
     "cleanup": "bun run clean && rm -rf node_modules bun.lock*",
     "reinstall": "bun run cleanup && mise exec -- bun install",
     "dev:kill": "mise run dev:kill",

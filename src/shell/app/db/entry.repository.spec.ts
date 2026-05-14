@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { parseSourceFile, toKnowledge } from '@core'
-import { createSeededMemoryDb, readMinimalFixtureEntries } from '@testing'
+import { createSeededMemoryDb, factoryFor, readMinimalFixtureEntries } from '@testing'
 import { openDatabase } from './client'
 import { findAll, findById, getDbStats, getTagCounts, rebuildFts, upsert } from './entry.repository'
 
@@ -61,6 +61,17 @@ describe('findAll()', () => {
     const { raw } = await createSeededMemoryDb()
     const results = findAll(raw, { query: 'git' })
     expect(results.length).toBeGreaterThan(0)
+  })
+
+  it('orders FTS hits by BM25 relevance', () => {
+    const { raw } = makeMemoryDb()
+    const weaker = factoryFor('knowledge:weaker')
+    const stronger = factoryFor('knowledge:stronger')
+    upsert(raw, weaker)
+    upsert(raw, stronger)
+    rebuildFts(raw)
+    const results = findAll(raw, { query: 'brew auto', limit: 10 })
+    expect(results[0]?.id).toBe(stronger.id)
   })
 
   it('returns empty array when FTS query matches nothing', async () => {

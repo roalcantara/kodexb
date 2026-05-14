@@ -6,7 +6,7 @@ import { listPageEmptyFlags } from '../../utils/list/list_page_empty_flags.util'
 import { focusListSurface } from '../../utils/list/list_surface_focus.util'
 import { scheduleDoubleRaf } from '../../utils/list/schedule_double_raf.util'
 import { useActionToast } from '../shared/use_action_toast.hook'
-import { useCmdkPalette } from './use_cmdk_palette.hook'
+import { useCommandPalette } from './use_command_palette.hook'
 import { useListFilterOverlay } from './use_list_filter_overlay.hook'
 import { useListPageData } from './use_list_page_data.hook'
 import { useListSelection } from './use_list_selection.hook'
@@ -17,7 +17,7 @@ import { useTaskDragDrop } from './use_task_drag_drop.hook'
 import { useTaskKeyboard } from './use_task_keyboard.hook'
 
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: shell composes list, palette, task sheet, toasts
-export function useListPageShell() {
+export function useListPageShell({ showSettings }: { showSettings: boolean }) {
   const listSurfaceRef = useRef<HTMLDivElement>(null)
   const listSentinelRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
@@ -69,14 +69,21 @@ export function useListPageShell() {
     loading: data.loading,
     fetchMore
   })
-  const palette = useCmdkPalette({
-    selectedEntry: sel.detailEntry,
+  const [taskSheetEntry, setTaskSheetEntry] = useState<RpcKnowledge | null>(null)
+  const [taskSheetOpen, setTaskSheetOpen] = useState(false)
+  const taskSheetVisible = taskSheetOpen
+
+  const palette = useCommandPalette({
+    selectedId: sel.selectedId,
+    rows: data.rows,
     pushToast,
     onEditTask: _entry => {
       // TaskSheet is handled by the existing selection hook's detailEntry + openDetail
     },
     onNewTask: () => handleNewTask(),
-    onSync: data.onSync
+    onSync: data.onSync,
+    setFilterOpen: filter.setFilterOpen,
+    shortcutsBlocked: showSettings || taskSheetVisible
   })
 
   const flags = listPageEmptyFlags(data)
@@ -96,10 +103,6 @@ export function useListPageShell() {
     setSelectedId: sel.setSelectedId,
     searchInputRef
   })
-
-  const [taskSheetEntry, setTaskSheetEntry] = useState<RpcKnowledge | null>(null)
-  const [taskSheetOpen, setTaskSheetOpen] = useState(false)
-  const taskSheetVisible = taskSheetOpen
 
   const handleNewTask = useCallback(() => {
     setTaskSheetEntry(null)
@@ -146,6 +149,7 @@ export function useListPageShell() {
     data,
     filter,
     sel,
+    onListKeyDown: sel.onListKeyDown,
     handleWindowModL,
     flags,
     listSurfaceRef,
@@ -165,7 +169,8 @@ export function useListPageShell() {
     dragDrop,
     palette,
     actionToasts,
-    dismissActionToast
+    dismissActionToast,
+    pushToast
   }
 }
 
