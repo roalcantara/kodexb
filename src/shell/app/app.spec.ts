@@ -80,7 +80,7 @@ describe('App', () => {
         sizes.push({ w, h })
       }
     }
-    const app = new App(loaded, {}, false, shell)
+    const app = new App(loaded, {}, 'default', shell)
     await app.resizeWindow(1200, 700)
     expect(sizes).toEqual([{ w: 1200, h: 700 }])
   })
@@ -88,7 +88,7 @@ describe('App', () => {
   it('openExternal calls shell hook for URL', async () => {
     const loaded = await loadedFixture()
     const opened: string[] = []
-    const app = new App(loaded, {}, false, { openExternal: url => opened.push(url) })
+    const app = new App(loaded, {}, 'default', { openExternal: url => opened.push(url) })
     await app.openExternal('https://example.com/docs')
     expect(opened).toEqual(['https://example.com/docs'])
   })
@@ -102,7 +102,7 @@ describe('App', () => {
   it('showOpenDialog delegates to shell hook', async () => {
     const loaded = await loadedFixture()
     const showOpenDialog = mock(() => Promise.resolve('/picked'))
-    const app = new App(loaded, {}, false, { showOpenDialog })
+    const app = new App(loaded, {}, 'default', { showOpenDialog })
     await expect(app.showOpenDialog({ title: 'Pick' })).resolves.toBe('/picked')
     expect(showOpenDialog).toHaveBeenCalled()
   })
@@ -173,7 +173,7 @@ describe('App', () => {
     const calls: Array<{ cmd: string; app?: string }> = []
     const cfg = factoryFor('loadedConfig', { overrides: { display: { terminalApp: 'Terminal.app', pageSize: '50' } } })
     Object.assign(cfg, { writeTarget: '/tmp/tasks.yml' })
-    const app = new App(cfg, {}, false, {
+    const app = new App(cfg, {}, 'default', {
       pasteInTerminal: (cmd, termApp) => calls.push({ cmd, app: termApp })
     })
     await app.pasteInTerminal('git log')
@@ -184,7 +184,7 @@ describe('App', () => {
     const calls: Array<{ filePath: string; app?: string }> = []
     const cfg = factoryFor('loadedConfig', { overrides: { display: { editorApp: 'code', pageSize: '50' } } })
     Object.assign(cfg, { writeTarget: '/tmp/tasks.yml' })
-    const app = new App(cfg, {}, false, {
+    const app = new App(cfg, {}, 'default', {
       openInEditor: (filePath, editorApp) => calls.push({ filePath, app: editorApp })
     })
     await app.openInEditor('/tmp/test.yaml')

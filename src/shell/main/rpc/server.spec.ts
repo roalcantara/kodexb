@@ -114,7 +114,7 @@ describe('createRpcServer', () => {
       it('forwards width and height to the hook', async () => {
         const loaded = await loadedFixture()
         const calls: Array<{ width: number; height: number }> = []
-        const app = new App(loaded, {}, false, {
+        const app = new App(loaded, {}, 'default', {
           resizeWindow: (width, height) => calls.push({ width, height })
         })
         const rpc = createRpcServer(app)
@@ -130,7 +130,7 @@ describe('createRpcServer', () => {
       it('invokes the quit hook once', async () => {
         const loaded = await loadedFixture()
         let calls = 0
-        const app = new App(loaded, {}, false, {
+        const app = new App(loaded, {}, 'default', {
           quit: () => {
             calls += 1
           }

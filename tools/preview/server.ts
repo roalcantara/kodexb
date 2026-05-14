@@ -47,7 +47,7 @@ console.log(`Renderer bundle built (${(bundleJs.length / BYTES_PER_KIB).toFixed(
 
 // ── Boot real App + Elysia RpcApp ──────────────────────────────────────────
 const config = await loadConfig()
-const app = new App(config, {}, false, {})
+const app = new App(config, {}, 'default', {})
 const rpc = createRpcServer(app)
 
 // ── HTML shell ──────────────────────────────────────────────────────────────

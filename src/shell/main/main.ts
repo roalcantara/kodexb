@@ -1,8 +1,9 @@
 import { BrowserWindow, GlobalShortcut, Screen, Utils } from 'electrobun/bun'
-import { createLogger } from '../../shared/logging'
+import { createLogger, parseKbLogVerbosity } from '../../shared/logging'
 import type { RpcSyncProgressPayload } from '../../shared/rpc'
-import { App, type AppShellHooks, type SyncEmitter } from '../app/app'
+import { App, type SyncEmitter } from '../app/app'
 import { loadConfig } from '../app/config/config.loader'
+import type { AppShellHooks } from '../app/lib/app_shell_hooks.types'
 import { reportConfigLoadErrorAndExit } from './helpers/error.helper'
 import { createKbWebviewRpc, createSyncEmitter } from './rpc/host'
 import { createRpcServer } from './rpc/server'
@@ -39,8 +40,9 @@ function createKbShellHooks(getWin: () => BrowserWindow<KbWebviewRpc> | null): A
     resizeWindow: (width, height) => {
       getWin()?.setSize(width, height)
     },
+    /** Match `win.on('blur')` so renderer Escape matches clicking away from the webview. */
     hideWindow: () => {
-      getWin()?.hide()
+      getWin()?.minimize()
     },
     openExternal: url => {
       Utils.openExternal(url)
@@ -68,7 +70,8 @@ function createKbShellHooks(getWin: () => BrowserWindow<KbWebviewRpc> | null): A
 }
 
 async function bootstrap() {
-  const log = createLogger({ debug: false })
+  const verbosity = parseKbLogVerbosity()
+  const log = createLogger({ verbosity })
 
   const config = await loadConfig().catch(async err => {
     await reportConfigLoadErrorAndExit(err, {
@@ -90,7 +93,7 @@ async function bootstrap() {
   }
   const lateEmit = createKbLateEmit(() => kbWebviewRpc)
 
-  const app = new App(config, lateEmit, false, shellHooks)
+  const app = new App(config, lateEmit, verbosity, shellHooks)
   const rpcApp = createRpcServer(app)
   kbWebviewRpc = createKbWebviewRpc(rpcApp)
 

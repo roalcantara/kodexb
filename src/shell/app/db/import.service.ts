@@ -4,7 +4,7 @@ import path from 'node:path'
 import glob from 'fast-glob'
 import type { Entry, Knowledge } from '../../../core'
 import { isValidSourceRowMin, parseSourceFile, toKnowledge } from '../../../core'
-import { createLogger } from '../../../shared/logging'
+import { createLogger, type KbLogVerbosity } from '../../../shared/logging'
 import type { RpcSyncFileResult, RpcSyncProgressPayload } from '../../../shared/rpc'
 import { openDatabase } from './client'
 import { rebuildFts, upsert } from './entry.repository'
@@ -28,9 +28,9 @@ export class ImportService {
   private readonly dbPath: string
   private readonly log: ReturnType<typeof createLogger>
 
-  constructor(dbPath: string, debug = false) {
+  constructor(dbPath: string, verbosity: KbLogVerbosity = 'default') {
     this.dbPath = dbPath
-    this.log = createLogger({ debug })
+    this.log = createLogger({ verbosity })
   }
 
   private async loadParsedSourceBundles(sourcesDir: string): Promise<ParsedSourceBundle[]> {
