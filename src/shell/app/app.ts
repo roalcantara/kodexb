@@ -63,6 +63,8 @@ export type SyncEmitter = {
 export type AppShellHooks = {
   resizeWindow?: (width: number, height: number) => void
   hideWindow?: () => void
+  /** Terminate the desktop process (Electrobun `Utils.quit`). Omitted in preview / tests = no-op. */
+  quit?: () => void
   openExternal?: (url: string) => void
   showOpenDialog?: (opts?: OpenDialogOpts) => Promise<string | null>
   pasteInTerminal?: (cmd: string, terminalApp?: string) => void
@@ -577,6 +579,11 @@ export class App {
 
   hideWindow(): Promise<void> {
     this.shellHooks.hideWindow?.()
+    return Promise.resolve()
+  }
+
+  quit(): Promise<void> {
+    this.shellHooks.quit?.()
     return Promise.resolve()
   }
 }

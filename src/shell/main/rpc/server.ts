@@ -77,6 +77,7 @@ export function createRpcServer(appInstance: App) {
       body: resizeWindowSchema
     })
     .post('/hideWindow', () => appInstance.hideWindow(), { body: hideWindowSchema })
+    .post('/quit', () => appInstance.quit(), { body: emptyBodySchema })
     .post('/getSyncInfo', () => appInstance.getSyncInfo(), { body: syncInfoSchema })
 }
 

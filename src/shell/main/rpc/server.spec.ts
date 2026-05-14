@@ -125,6 +125,24 @@ describe('createRpcServer', () => {
     })
   })
 
+  describe('POST /api/quit', () => {
+    describe('when shell hook is wired', () => {
+      it('invokes the quit hook once', async () => {
+        const loaded = await loadedFixture()
+        let calls = 0
+        const app = new App(loaded, {}, false, {
+          quit: () => {
+            calls += 1
+          }
+        })
+        const rpc = createRpcServer(app)
+        const res = await rpc.handle(postJson('/api/quit', {}))
+        expect(res.status).toBe(200)
+        expect(calls).toBe(1)
+      })
+    })
+  })
+
   describe('unknown route under /api', () => {
     it('does not match list and falls through', async () => {
       const app = await importedAppFixture()
