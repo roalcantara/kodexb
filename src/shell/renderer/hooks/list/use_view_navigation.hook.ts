@@ -50,72 +50,85 @@ export type ViewNavigationResult = {
   handleKey: (e: ViewNavigationKeyEvent) => void
 }
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: keyboard routing matrix for list/detail/split views
-function handleViewNavigationKey(e: ViewNavigationKeyEvent, ctx: ViewNavigationKeyCtx): void {
-  const { depsRef, advance, retreat, searchInputRef, hideWindow, pushToast } = ctx
-  // Skip when user is typing in an input
+function navTargetsFor(e: ViewNavigationKeyEvent): { isInput: boolean; isEditable: boolean } {
   const isInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement
   const isEditable = e.target instanceof HTMLElement && e.target.isContentEditable
+  return { isInput, isEditable }
+}
 
-  // ⌘L / Ctrl+L: focus search input
-  if ((e.metaKey || e.ctrlKey) && e.key === 'l') {
+function tryFocusSearchShortcut(e: ViewNavigationKeyEvent, ctx: ViewNavigationKeyCtx): boolean {
+  if (!((e.metaKey || e.ctrlKey) && e.key === 'l')) return false
+  e.preventDefault?.()
+  if (ctx.searchInputRef?.current) {
+    ctx.searchInputRef.current.focus()
+    ctx.searchInputRef.current.select()
+  }
+  return true
+}
+
+function tryCopyShortcut(
+  e: ViewNavigationKeyEvent,
+  ctx: ViewNavigationKeyCtx,
+  isInput: boolean,
+  isEditable: boolean
+): boolean {
+  if (!((e.metaKey || e.ctrlKey) && e.key === 'c' && !isInput && !isEditable)) return false
+  const { rows: r, selectedId: sid } = ctx.depsRef.current
+  const selected = r.find(row => row.id === sid)
+  if (selected) {
+    const content = primaryClipboardContent(selected)
+    navigator.clipboard.writeText(content).then(
+      () => ctx.pushToast?.('Copied!', 'success'),
+      () => ctx.pushToast?.('Copy failed', 'error')
+    )
+  }
+  return true
+}
+
+function tryEscapeKey(
+  e: ViewNavigationKeyEvent,
+  ctx: ViewNavigationKeyCtx,
+  isInput: boolean,
+  isEditable: boolean
+): boolean {
+  if (e.key !== 'Escape') return false
+  if (isInput) {
     e.preventDefault?.()
-    if (searchInputRef?.current) {
-      searchInputRef.current.focus()
-      searchInputRef.current.select()
-    }
-    return
+    ;(e.target as HTMLElement).blur()
+    return true
   }
-
-  // ⌘C / Ctrl+C: copy selected entry content (skip when typing)
-  if ((e.metaKey || e.ctrlKey) && e.key === 'c' && !isInput && !isEditable) {
-    const { rows: r, selectedId: sid } = depsRef.current
-    const selected = r.find(row => row.id === sid)
-    if (selected) {
-      const content = primaryClipboardContent(selected)
-      navigator.clipboard.writeText(content).then(
-        () => pushToast?.('Copied!', 'success'),
-        () => pushToast?.('Copy failed', 'error')
-      )
-    }
-    return
-  }
-
-  // Escape: blur search input, or hide window, or close detail
-  if (e.key === 'Escape') {
-    if (isInput) {
-      // Escape from search input → blur
+  if (!isEditable) {
+    if (ctx.depsRef.current.detailEntry !== null) {
       e.preventDefault?.()
-      ;(e.target as HTMLElement).blur()
-      return
+      ctx.retreat()
+      return true
     }
-    if (!isEditable) {
-      if (depsRef.current.detailEntry !== null) {
-        // Escape with detail open → close detail
-        e.preventDefault?.()
-        retreat()
-        return
-      }
-      // Escape with no detail, not in input → hide window
-      e.preventDefault?.()
-      hideWindow?.()
-      return
-    }
-    return
+    e.preventDefault?.()
+    ctx.hideWindow?.()
+    return true
   }
+  return true
+}
 
-  // Skip navigation keys when typing
-  if (isInput || isEditable) return
-
+function tryArrowKeys(e: ViewNavigationKeyEvent, ctx: ViewNavigationKeyCtx): void {
   if (e.key === 'ArrowRight') {
     e.preventDefault?.()
-    if (depsRef.current.viewState !== 'detail') advance()
+    if (ctx.depsRef.current.viewState !== 'detail') ctx.advance()
     return
   }
-  if (e.key === 'ArrowLeft' && depsRef.current.detailEntry !== null) {
+  if (e.key === 'ArrowLeft' && ctx.depsRef.current.detailEntry !== null) {
     e.preventDefault?.()
-    retreat()
+    ctx.retreat()
   }
+}
+
+function handleViewNavigationKey(e: ViewNavigationKeyEvent, ctx: ViewNavigationKeyCtx): void {
+  const { isInput, isEditable } = navTargetsFor(e)
+  if (tryFocusSearchShortcut(e, ctx)) return
+  if (tryCopyShortcut(e, ctx, isInput, isEditable)) return
+  if (tryEscapeKey(e, ctx, isInput, isEditable)) return
+  if (isInput || isEditable) return
+  tryArrowKeys(e, ctx)
 }
 
 export function useViewNavigation({

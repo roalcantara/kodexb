@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 import { useListSurfaceScrollRestore } from '../../hooks/list/use_list_surface_scroll_restore.hook'
 import { useVirtualListWindow } from '../../hooks/list/use_virtual_list_window.hook'
@@ -24,6 +24,14 @@ export type ListMainProps = {
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: pre-existing pattern outside Phase 9 scope
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing inline rendering
 export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
+  const emptySyncButtonRef = useRef<HTMLButtonElement>(null)
+
+  useLayoutEffect(() => {
+    if (p.flags.emptyDb) {
+      emptySyncButtonRef.current?.focus()
+    }
+  }, [p.flags.emptyDb])
+
   const handleCycleStatus = (id: number) => {
     cycleStatus(id, 'forward')
       .then(() => p.data.refreshList(false).catch(() => undefined))
@@ -193,8 +201,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
                         {p.data.syncInfo.fileCount} YAML file{p.data.syncInfo.fileCount === 1 ? '' : 's'} found
                       </p>
                     ) : null}
-                    {/* biome-ignore lint/a11y/noAutofocus: sync button must be focused for Enter-to-start */}
-                    <button type="button" onClick={p.data.onSync} autoFocus>
+                    <button ref={emptySyncButtonRef} type="button" onClick={p.data.onSync}>
                       ↺ Sync — press Enter to start
                     </button>
                   </div>
