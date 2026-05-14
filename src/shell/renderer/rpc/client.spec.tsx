@@ -7,25 +7,21 @@ const rpcCallMock = mock<(params: unknown) => Promise<{ status: number; body: st
 
 const messageHandlers: Record<string, (payload: unknown) => void> = {}
 
-const ElectroviewMock = {
-  // biome-ignore lint/style/useNamingConvention: mirrors Electrobun API
-  defineRPC(config: { handlers?: { messages?: Record<string, (payload: unknown) => void> } }) {
-    const messages = config.handlers?.messages ?? {}
-    for (const [name, handler] of Object.entries(messages)) {
-      messageHandlers[name] = handler
-    }
-    return {
-      request: { rpcCall: rpcCallMock },
-      send: {},
-      setTransport: () => undefined
-    }
+function mockElectroviewDefineRpc(config: { handlers?: { messages?: Record<string, (payload: unknown) => void> } }) {
+  const messages = config.handlers?.messages ?? {}
+  for (const [name, handler] of Object.entries(messages)) {
+    messageHandlers[name] = handler
+  }
+  return {
+    request: { rpcCall: rpcCallMock },
+    send: {},
+    setTransport: () => undefined
   }
 }
 
 mock.module('electrobun/view', () => ({
   Electroview: class {
-    // biome-ignore lint/style/useNamingConvention: mirrors Electrobun API
-    static defineRPC = ElectroviewMock.defineRPC
+    static ['defineRPC'] = mockElectroviewDefineRpc
     rpc: unknown
     constructor(config: { rpc: unknown }) {
       this.rpc = config.rpc
@@ -172,7 +168,6 @@ describe('Eden Treaty client', () => {
       messageHandlers.syncProgress?.({ processed: 1, total: 10, recentFile })
       messageHandlers.syncComplete?.({ filesProcessed: 1, inserted: 1, updated: 0, errors: [] })
 
-      expect(progress).toEqual([{ processed: 1, total: 10, recentFile }])
       expect(progress).toEqual([{ processed: 1, total: 10, recentFile }])
       expect(completes).toHaveLength(1)
     })

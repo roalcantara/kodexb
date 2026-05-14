@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/style/useNamingConvention: false positive */
 import type { ElectrobunConfig } from 'electrobun'
 
 const kbIconset = 'assets/icons/kb-logo.iconset'

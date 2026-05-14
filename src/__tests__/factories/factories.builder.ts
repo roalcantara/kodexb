@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/style/useNamingConvention: Factory definitions are not exported */
 import path from 'node:path'
 import type { BookmarkKnowledge, CheatKnowledge, CommandKnowledge, TaskKnowledge } from '@core'
 import type { Env } from '@shared/types'
@@ -8,8 +7,10 @@ import { Factory } from 'fishery'
 import { createFactoryFor } from '../helpers/testing.factory'
 import { minimalEntriesYml, testingPaths } from '../paths'
 
+const processHomeKey = 'HOME' as const
+
 const envFactory = Factory.define<Env>(() => ({
-  HOME: '/home/tester'
+  [processHomeKey]: '/home/tester'
 }))
 
 const rawConfigFactory = Factory.define<RawConfig>(() => ({

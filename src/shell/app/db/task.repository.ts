@@ -20,7 +20,22 @@ export function maxTaskOrder(db: Database): number {
   return row ? row.max_order + 1 : 0
 }
 
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing pattern outside Phase 9 scope
+function parseDependsOnJson(raw: string | null): number[] | null {
+  if (!raw) return null
+  try {
+    const deps = JSON.parse(raw) as unknown
+    if (!Array.isArray(deps)) return null
+    return deps as number[]
+  } catch {
+    return null
+  }
+}
+
+function readTaskDependencyIds(db: Database, taskRowId: number): number[] {
+  const row = db.query<{ depends_on: string | null }, [number, string]>(FIND_DEPS_SQL).get(taskRowId, 'task')
+  return parseDependsOnJson(row?.depends_on ?? null) ?? []
+}
+
 export function wouldCreateCycle(db: Database, taskId: number, newDepId: number, maxDepth: number = 3): boolean {
   if (taskId === newDepId) return true
   const visited = new Set<number>([taskId])
@@ -28,24 +43,11 @@ export function wouldCreateCycle(db: Database, taskId: number, newDepId: number,
 
   while (queue.length > 0) {
     const current = queue.shift()
-    if (!current) break
-    if (current.depth >= maxDepth) continue
+    if (!current || current.depth >= maxDepth) continue
     if (visited.has(current.id)) continue
     visited.add(current.id)
 
-    const row = db.query<{ depends_on: string | null }, [number, string]>(FIND_DEPS_SQL).get(current.id, 'task')
-
-    if (!row?.depends_on) continue
-
-    let deps: number[] = []
-    try {
-      deps = JSON.parse(row.depends_on) as number[]
-    } catch {
-      continue
-    }
-    if (!Array.isArray(deps)) continue
-
-    for (const depId of deps) {
+    for (const depId of readTaskDependencyIds(db, current.id)) {
       if (depId === taskId) return true
       queue.push({ id: depId, depth: current.depth + 1 })
     }

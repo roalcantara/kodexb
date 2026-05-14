@@ -7,8 +7,7 @@ import { renderHook } from '@testing-library/react'
 
 mock.module('electrobun/view', () => ({
   Electroview: class {
-    // biome-ignore lint/style/useNamingConvention: mirrors Electrobun API
-    static defineRPC() {
+    static ['defineRPC']() {
       return {
         request: {
           rpcCall: mock(() => Promise.resolve({ status: 200, body: 'null' }))

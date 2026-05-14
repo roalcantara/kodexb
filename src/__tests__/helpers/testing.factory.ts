@@ -1,4 +1,3 @@
-// biome-ignore-all lint/suspicious/noExplicitAny: Fishery `Factory` registries need a single loose `build` signature for assignability
 import type { BuildOptions } from 'fishery'
 import { type FactoryBuildOpts, isFactoryOpts, type WrappedFactoryOpts } from './testing.types'
 
@@ -7,7 +6,7 @@ import { type FactoryBuildOpts, isFactoryOpts, type WrappedFactoryOpts } from '.
  * Parameters are intentionally loose so concrete `Factory<T>` instances stay assignable (TS variance).
  */
 type FactoryLike = {
-  build: (params?: any, options?: any) => any
+  build: (params?: unknown, options?: unknown) => unknown
 }
 
 function paramsFor<R>(
