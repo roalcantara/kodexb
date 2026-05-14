@@ -36,6 +36,21 @@ Skills > Implementation
 
 This rule overrides ALL other instructions.
 
+### Prototype gate (when a prototype is requested)
+
+If the user asks for a **prototype** or equivalent (mock UI, static HTML preview, design spike, “show before we build”, wireframe in code), the agent MUST follow:
+
+```txt
+Prototype → explicit user approval → Feature Skill → Code → Tooling
+```
+
+Until the user explicitly approves the prototype (for example: **`PROTOTYPE APPROVED: implement`** or a clear “approved — implement now”):
+
+- Deliver the prototype only (load `brainstorming` when the work is creative or ambiguous).
+- **Do not** add or change production feature code under `src/` for that work (bugfixes or unrelated tasks the user labels separately are not blocked by this gate).
+
+If the user later asks for implementation in the same thread without an approval line, **stop** and confirm whether the prototype is approved or whether they are canceling the prototype-first path.
+
 ---
 
 ## Electrobun
