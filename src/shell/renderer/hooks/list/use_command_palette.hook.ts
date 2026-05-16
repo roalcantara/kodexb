@@ -156,7 +156,6 @@ export function useCommandPalette({
   shortcutsBlocked
 }: CommandPaletteDeps) {
   const [open, setOpen] = useState(false)
-  const focusedBeforeOpenRef = useRef<HTMLElement | null>(null)
   const entry = useMemo(() => rows.find(r => r.id === selectedId) ?? null, [rows, selectedId])
   const depsRef = useRef({ selectedId, rows, onEditTask, onNewTask, onSync, pushToast })
   depsRef.current = { selectedId, rows, onEditTask, onNewTask, onSync, pushToast }
@@ -167,19 +166,11 @@ export function useCommandPalette({
   )
 
   const openPalette = useCallback(() => {
-    if (document.activeElement instanceof HTMLElement) {
-      focusedBeforeOpenRef.current = document.activeElement
-    }
     setFilterOpen?.(false)
     setOpen(true)
   }, [setFilterOpen])
   const closePalette = useCallback(() => {
     setOpen(false)
-    const el = focusedBeforeOpenRef.current
-    if (el) {
-      focusedBeforeOpenRef.current = null
-      queueMicrotask(() => requestAnimationFrame(() => requestAnimationFrame(() => el.focus())))
-    }
   }, [])
 
   useEffect(() => {

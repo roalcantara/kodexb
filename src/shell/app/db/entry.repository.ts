@@ -62,6 +62,15 @@ function toFts5MatchQuery(input: string): string {
   return tokens.map(token => `"${token.replaceAll(DOUBLE_QUOTE_RE, '""')}"*`).join(' ')
 }
 
+/** AND semantics: row must contain every tag (matches prior in-memory filter). */
+function sqlKnowHasEveryTag(aliasTable: string, tags: string[]): { clause: string; params: string[] } {
+  if (tags.length === 0) return { clause: '', params: [] }
+  const clause = tags
+    .map(() => `EXISTS (SELECT 1 FROM json_each(${aliasTable}.tags) AS kb_tag_row WHERE kb_tag_row.value = ?)`)
+    .join(' AND ')
+  return { clause, params: [...tags] }
+}
+
 function parseJson<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback
   try {
@@ -154,43 +163,62 @@ export function rebuildFts(db: Database): void {
   db.query('INSERT INTO knowledges_fts(knowledges_fts) VALUES(?)').run('rebuild')
 }
 
+function findAllRowsFts(
+  db: Database,
+  match: string,
+  tagFilter: { clause: string; params: string[] },
+  limitParam: number,
+  offset: number
+): UnknownRecord[] {
+  const tagWhere = tagFilter.clause === '' ? '' : ` AND (${tagFilter.clause})`
+  const sql = `
+      SELECT k.*
+      FROM knowledges k
+      JOIN knowledges_fts ON k.id = knowledges_fts.id
+      WHERE knowledges_fts MATCH ?${tagWhere}
+      ORDER BY bm25(knowledges_fts)
+      LIMIT ? OFFSET ?
+    `
+  return db.query(sql).all(match, ...tagFilter.params, limitParam, offset) as UnknownRecord[]
+}
+
+function findAllRowsPlain(
+  db: Database,
+  types: EntryType[] | undefined,
+  tagFilter: { clause: string; params: string[] },
+  limitParam: number,
+  offset: number
+): UnknownRecord[] {
+  const conditions: string[] = []
+  const params: string[] = []
+
+  if (types && types.length > 0) {
+    conditions.push(`k.type IN (${types.map(() => '?').join(',')})`)
+    params.push(...types)
+  }
+
+  if (tagFilter.clause !== '') {
+    conditions.push(`(${tagFilter.clause})`)
+    params.push(...tagFilter.params)
+  }
+
+  const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+  const sql = `SELECT k.* FROM knowledges k ${where} LIMIT ? OFFSET ?`
+  return db.query(sql).all(...params, limitParam, offset) as UnknownRecord[]
+}
+
 export function findAll(db: Database, opts: FindAllOpts = {}): Knowledge[] {
   const { query, tags, types, offset = 0 } = opts
   const limit = opts.limit ?? DEFAULT_QUERY_LIMIT
   const limitParam = limit === -1 ? -1 : limit
 
-  let rows: UnknownRecord[]
+  const tagFilter = sqlKnowHasEveryTag('k', tags && tags.length > 0 ? tags : [])
 
-  if (query) {
-    const match = toFts5MatchQuery(query)
-    const sql = `
-      SELECT k.*
-      FROM knowledges k
-      JOIN knowledges_fts ON k.id = knowledges_fts.id
-      WHERE knowledges_fts MATCH ?
-      ORDER BY bm25(knowledges_fts)
-      LIMIT ? OFFSET ?
-    `
-    rows = db.query(sql).all(match, limitParam, offset) as UnknownRecord[]
-  } else {
-    const conditions: string[] = []
-    const params: string[] = []
-
-    if (types && types.length > 0) {
-      conditions.push(`type IN (${types.map(() => '?').join(',')})`)
-      params.push(...types)
-    }
-
-    const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
-    const sql = `SELECT * FROM knowledges ${where} LIMIT ? OFFSET ?`
-    rows = db.query(sql).all(...params, limitParam, offset) as UnknownRecord[]
-  }
+  const rows = query
+    ? findAllRowsFts(db, toFts5MatchQuery(query), tagFilter, limitParam, offset)
+    : findAllRowsPlain(db, types, tagFilter, limitParam, offset)
 
   let list = rows.map(row => rowToKnowledge(row as KnowledgeRow))
-
-  if (tags && tags.length > 0) {
-    list = list.filter(entry => tags.every(tag => entry.tags.includes(tag)))
-  }
 
   if (query && types && types.length > 0) {
     list = list.filter(entry => types.includes(entry.type))

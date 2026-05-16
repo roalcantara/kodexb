@@ -107,7 +107,7 @@ describe('Eden Treaty client', () => {
   })
 
   describe('.getListStats', () => {
-    it('posts an empty body to /api/getListStats', async () => {
+    it('posts an empty body to /api/getListStats by default', async () => {
       rpcCallMock.mockImplementation(() => okResponse({ total: 3 }))
 
       const stats = await getListStats()
@@ -116,6 +116,16 @@ describe('Eden Treaty client', () => {
       const call = rpcCallMock.mock.calls[0]?.[0] as { path: string; body: string }
       expect(call.path).toBe('/api/getListStats')
       expect(JSON.parse(call.body)).toEqual({})
+    })
+
+    it('forwards filter context in the POST body when provided', async () => {
+      rpcCallMock.mockImplementation(() => okResponse({ total: 1 }))
+
+      await getListStats({ types: ['cheat'], tags: ['fabric'] })
+
+      const call = rpcCallMock.mock.calls[0]?.[0] as { path: string; body: string }
+      expect(call.path).toBe('/api/getListStats')
+      expect(JSON.parse(call.body)).toEqual({ types: ['cheat'], tags: ['fabric'] })
     })
   })
 

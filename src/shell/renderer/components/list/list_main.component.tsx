@@ -1,12 +1,13 @@
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
+import { useFilterDropdownStats } from '../../hooks/list/use_filter_dropdown_stats.hook'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 import { useListSurfaceScrollRestore } from '../../hooks/list/use_list_surface_scroll_restore.hook'
 import { useVirtualListWindow } from '../../hooks/list/use_virtual_list_window.hook'
 import { useWindowViewNavKeys } from '../../hooks/list/use_window_view_nav_keys.hook'
 import { DetailPage } from '../../pages/detail/detail.page'
 import { SettingsPage } from '../../pages/settings/settings.page'
-import { cyclePriority, cycleStatus } from '../../rpc/client'
+import { cyclePriority, cycleStatus, getListStats } from '../../rpc/client'
 import { listFilterSummary } from '../../utils/list/list_filter_summary.util'
 import { formatListFooterStatus } from '../../utils/list/list_footer_status.util'
 import { focusListSurface } from '../../utils/list/list_surface_focus.util'
@@ -28,6 +29,14 @@ export type ListMainProps = {
 export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   const emptySyncButtonRef = useRef<HTMLButtonElement>(null)
   const detailScrollRef = useRef<HTMLDivElement>(null)
+  const filterDropdownStats = useFilterDropdownStats(getListStats, {
+    filterOpen: p.filter.filterOpen,
+    baseStats: p.data.stats,
+    debouncedSearch: p.data.debouncedSearch,
+    types: p.data.types,
+    tags: p.data.tags,
+    taskView: p.data.taskView
+  })
 
   useLayoutEffect(() => {
     if (p.flags.emptyDb) {
@@ -112,9 +121,18 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
     }
   }
 
+  const focusMainSearch = useCallback(() => {
+    queueMicrotask(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => p.searchInputRef.current?.focus({ preventScroll: true }))
+      })
+    })
+  }, [p.searchInputRef])
+
   const viewNavKeysDisabled = showSettings || p.taskSheetVisible || p.palette.open
   useWindowViewNavKeys({
     disabled: viewNavKeysDisabled,
+    skipEscapeCapture: p.filter.filterOpen,
     handleKey: p.sel.handleKey,
     handleModL: p.handleWindowModL,
     handleListArrows: e => {
@@ -185,12 +203,15 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           <FilterDropdown
             open={p.filter.filterOpen}
             anchorRect={p.filter.anchorRect}
-            stats={p.data.stats}
+            stats={filterDropdownStats ?? p.data.stats}
             types={p.data.types}
             tags={p.data.tags}
             taskView={p.data.taskView}
             onChange={p.onFilterChange}
-            onClose={() => p.filter.setFilterOpen(false)}
+            onClose={() => {
+              p.filter.setFilterOpen(false)
+              focusMainSearch()
+            }}
             pushToast={p.pushToast}
             closeToList={closeDetailToList}
             isFullDetail={isFullDetail}
@@ -323,7 +344,14 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
         </div>
       ) : null}
       {p.palette.open && (
-        <CommandPalette open={p.palette.open} actions={p.palette.actions} onClose={p.palette.closePalette} />
+        <CommandPalette
+          open={p.palette.open}
+          actions={p.palette.actions}
+          onClose={() => {
+            p.palette.closePalette()
+            focusMainSearch()
+          }}
+        />
       )}
       <SyncModal model={p.data.syncUi} onDismiss={p.data.dismissSyncModal} />
       <ActionToastHost toasts={p.actionToasts} onDismiss={p.dismissActionToast} />

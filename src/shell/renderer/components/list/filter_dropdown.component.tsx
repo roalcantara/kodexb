@@ -1,7 +1,18 @@
 import type { ListStats, TaskView } from '@shared/rpc'
 import { useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { TASK_VIEW_LABEL, TYPE_FILTER_LABEL } from '../../constants/filter_labels.const'
-import { FILTER_DROPDOWN_GAP_PX, FILTER_DROPDOWN_MAX_WIDTH_PX } from '../../constants/layout.const'
+import {
+  FILTER_DROPDOWN_GAP_PX,
+  FILTER_DROPDOWN_MAX_WIDTH_PX,
+  FILTER_DROPDOWN_PORTAL_FALLBACK_VIEWPORT_HEIGHT_PX,
+  FILTER_DROPDOWN_PORTAL_FALLBACK_VIEWPORT_WIDTH_PX,
+  FILTER_DROPDOWN_PORTAL_MAX_PANEL_HEIGHT_PX,
+  FILTER_DROPDOWN_PORTAL_MIN_PANEL_HEIGHT_PX,
+  FILTER_DROPDOWN_PORTAL_MIN_WIDTH_PX,
+  FILTER_DROPDOWN_PORTAL_VIEWPORT_BOTTOM_MARGIN_PX,
+  FILTER_DROPDOWN_PORTAL_VIEWPORT_HORIZONTAL_MARGIN_PX
+} from '../../constants/layout.const'
 import { CompactFilterOverlay } from './compact_filter_overlay.component'
 import { FilterDropdownTags } from './filter_dropdown_tags.component'
 
@@ -10,9 +21,14 @@ export type EntryTypeOption = (typeof ENTRY_TYPES)[number]
 
 const TASK_VIEWS: TaskView[] = ['actionable', 'today', 'overdue', 'this_week', 'all_pending', 'all_doing']
 
-export function sortedTags(tags: Record<string, number>, q: string): Array<{ tag: string; count: number }> {
+export function sortedTags(
+  tags: Record<string, number>,
+  q: string,
+  selectedTags: string[] = []
+): Array<{ tag: string; count: number }> {
   const needle = q.trim().toLowerCase()
   return Object.entries(tags)
+    .filter(([t, count]) => count > 0 || selectedTags.includes(t))
     .filter(([t]) => needle === '' || t.toLowerCase().includes(needle))
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => (a.count === b.count ? a.tag.localeCompare(b.tag) : b.count - a.count))
@@ -20,6 +36,39 @@ export function sortedTags(tags: Record<string, number>, q: string): Array<{ tag
 
 export function showTaskSection(types: EntryTypeOption[]): boolean {
   return types.length === 0 || types.includes('task')
+}
+
+/**
+ * Positions the compact filter portal under the anchor vertically, and **horizontally
+ * centered in the viewport** (then clamped to side margins). Matches Raycast-style palettes.
+ * `anchorRect` / `vw` / `vh` are in CSS pixels (e.g. from `getBoundingClientRect` and `window.inner*`).
+ */
+export function compactFilterPortalBox(
+  anchorRect: Pick<DOMRect, 'left' | 'bottom' | 'width'>,
+  vw: number,
+  vh: number
+): { top: number; left: number; width: number; maxHeight: number } {
+  const marginH = FILTER_DROPDOWN_PORTAL_VIEWPORT_HORIZONTAL_MARGIN_PX
+  const marginBottom = FILTER_DROPDOWN_PORTAL_VIEWPORT_BOTTOM_MARGIN_PX
+  const top = anchorRect.bottom + FILTER_DROPDOWN_GAP_PX
+
+  const capW = Math.max(1, vw - 2 * marginH)
+  const width = Math.min(
+    Math.max(anchorRect.width, FILTER_DROPDOWN_PORTAL_MIN_WIDTH_PX),
+    FILTER_DROPDOWN_MAX_WIDTH_PX,
+    capW
+  )
+
+  let left = (vw - width) / 2
+  left = Math.min(left, vw - marginH - width)
+  left = Math.max(marginH, left)
+
+  const maxHeight = Math.min(
+    FILTER_DROPDOWN_PORTAL_MAX_PANEL_HEIGHT_PX,
+    Math.max(FILTER_DROPDOWN_PORTAL_MIN_PANEL_HEIGHT_PX, vh - top - marginBottom)
+  )
+
+  return { top, left, width, maxHeight }
 }
 
 type PanelProps = {
@@ -34,7 +83,7 @@ type PanelProps = {
 }
 
 function FilterDropdownPanel({ stats, types, tags, taskView, tagQ, setTagQ, onChange, style }: PanelProps) {
-  const tagRows = useMemo(() => sortedTags(stats.tags, tagQ), [stats.tags, tagQ])
+  const tagRows = useMemo(() => sortedTags(stats.tags, tagQ, tags), [stats.tags, tagQ, tags])
 
   const pickType = (t: EntryTypeOption) => {
     const only = types.length === 1 && types[0] === t ? [] : [t]
@@ -131,18 +180,29 @@ export function FilterDropdown({
   if (!open) return null
 
   if (compact) {
-    return (
-      <CompactFilterOverlay
-        stats={stats}
-        types={types}
-        tags={tags}
-        taskView={taskView}
-        onChange={onChange}
-        onClose={onClose}
-        pushToast={pushToast}
-        closeToList={closeToList}
-        isFullDetail={isFullDetail}
-      />
+    if (anchorRect === null) return null
+    const vw = typeof window === 'undefined' ? FILTER_DROPDOWN_PORTAL_FALLBACK_VIEWPORT_WIDTH_PX : window.innerWidth
+    const vh = typeof window === 'undefined' ? FILTER_DROPDOWN_PORTAL_FALLBACK_VIEWPORT_HEIGHT_PX : window.innerHeight
+    const { top, left, width, maxHeight } = compactFilterPortalBox(anchorRect, vw, vh)
+
+    return createPortal(
+      <div className="kb-filterStack kb-filterStack--compactPortal">
+        <button type="button" className="kb-filterBackdrop" aria-label="Close filters" onClick={onClose} />
+        <div className="kb-pt-filter-portal-clip" style={{ top, left, width, height: maxHeight, maxHeight }}>
+          <CompactFilterOverlay
+            stats={stats}
+            types={types}
+            tags={tags}
+            taskView={taskView}
+            onChange={onChange}
+            onClose={onClose}
+            pushToast={pushToast}
+            closeToList={closeToList}
+            isFullDetail={isFullDetail}
+          />
+        </div>
+      </div>,
+      document.body
     )
   }
 

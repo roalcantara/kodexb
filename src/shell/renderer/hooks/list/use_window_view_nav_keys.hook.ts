@@ -3,6 +3,11 @@ import { useEffect } from 'react'
 
 export type WindowViewNavKeysOpts = {
   disabled: boolean
+  /**
+   * When true, the capture listener does not handle Escape (lets compact filter / in-DOM
+   * handlers receive it on the bubble phase).
+   */
+  skipEscapeCapture?: boolean
   handleKey: (e: KeyboardEvent) => void
   /** Cmd/Ctrl+L (defaults to `handleKey`). */
   handleModL?: (e: KeyboardEvent) => void
@@ -68,6 +73,7 @@ function tryListArrows(e: KeyboardEvent, handleListArrows?: (e: KeyboardEvent) =
 function runListWindowKeydown(
   e: KeyboardEvent,
   disabled: boolean,
+  skipEscapeCapture: boolean | undefined,
   handleKey: (e: KeyboardEvent) => void,
   onModL: (e: KeyboardEvent) => void,
   handleListArrows: ((e: KeyboardEvent) => void) | undefined,
@@ -91,6 +97,7 @@ function runListWindowKeydown(
     return
   }
   if (e.key === 'Escape') {
+    if (skipEscapeCapture) return
     handleKey(e)
     stopIfDefaultPrevented(e)
     return
@@ -104,6 +111,7 @@ function runListWindowKeydown(
 /** Capture-phase `window` listener so ⌘C, Escape, arrows, and ⌘L reach handlers when focus is outside the list shell (e.g. full detail). */
 export function useWindowViewNavKeys({
   disabled,
+  skipEscapeCapture,
   handleKey,
   handleModL,
   handleListArrows,
@@ -113,9 +121,18 @@ export function useWindowViewNavKeys({
   const onModL = handleModL ?? handleKey
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      runListWindowKeydown(e, disabled, handleKey, onModL, handleListArrows, detailScrollRef, detailScrollActive)
+      runListWindowKeydown(
+        e,
+        disabled,
+        skipEscapeCapture,
+        handleKey,
+        onModL,
+        handleListArrows,
+        detailScrollRef,
+        detailScrollActive
+      )
     }
     window.addEventListener('keydown', onKeyDown, true)
     return () => window.removeEventListener('keydown', onKeyDown, true)
-  }, [disabled, handleKey, onModL, handleListArrows, detailScrollRef, detailScrollActive])
+  }, [disabled, skipEscapeCapture, handleKey, onModL, handleListArrows, detailScrollRef, detailScrollActive])
 }

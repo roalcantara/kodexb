@@ -110,17 +110,15 @@ async function bootstrap() {
   win.show()
   win.activate()
 
-  let windowVisible = true
-
+  /** Toggle minimize — must match `hideWindow` (Escape) which uses `minimize()`, not `hide()`. */
   GlobalShortcut.register('CommandOrControl+Alt+/', () => {
     if (!win) return
-    if (windowVisible) {
-      win.hide()
-      windowVisible = false
-    } else {
+    if (win.isMinimized()) {
+      win.unminimize()
       win.show()
       win.activate()
-      windowVisible = true
+    } else {
+      win.minimize()
     }
   })
 

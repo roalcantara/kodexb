@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>kb — filter icon picks (mosaic prototype)</title>
+  <style>
+    :root {
+      --kb-bg: #0b0e14;
+      --kb-surface: #121721;
+      --kb-border: #232936;
+      --kb-text: #e2e9f5;
+      --kb-muted: #8892a4;
+      --kb-accent: #5ecfbe;
+      --kb-row-hover: #1c2537;
+      --radius: 10px;
+      /* One tile for every filter icon: readable currentColor strokes + full-color SVGs on dark UI */
+      --kb-filter-icon-tile: linear-gradient(180deg, rgba(245, 248, 255, 0.94), rgba(220, 228, 240, 0.9));
+      --kb-filter-icon-tile-border: rgba(35, 41, 54, 0.55);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      background: var(--kb-bg);
+      color: var(--kb-text);
+      line-height: 1.45;
+    }
+
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0 0 8px;
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--kb-muted);
+      max-width: 720px;
+      margin-bottom: 24px;
+    }
+
+    .note code {
+      font-size: 11px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    table {
+      width: 100%;
+      max-width: 720px;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-bottom: 32px;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--kb-border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--kb-muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .icon-cell {
+      width: 52px;
+    }
+
+    .icon-slot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--kb-filter-icon-tile);
+      border: 1px solid var(--kb-filter-icon-tile-border);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      vertical-align: middle;
+    }
+
+    .icon-slot img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .basename {
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+      color: var(--kb-accent);
+    }
+
+    h2 {
+      font-size: 0.95rem;
+      margin: 32px 0 12px;
+    }
+
+    .panel {
+      max-width: 400px;
+      background: var(--kb-surface);
+      border: 1px solid var(--kb-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .panel input {
+      width: 100%;
+      padding: 12px 14px;
+      border: none;
+      border-bottom: 1px solid var(--kb-border);
+      background: transparent;
+      color: var(--kb-text);
+      font-size: 14px;
+    }
+
+    .scroll {
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 6px 0 10px;
+    }
+
+    .sec-title {
+      padding: 10px 14px 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--kb-muted);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 16px 34px 1fr auto;
+      align-items: center;
+      gap: 8px 10px;
+      width: 100%;
+      padding: 8px 14px;
+      border: none;
+      background: transparent;
+      color: var(--kb-muted);
+      font: inherit;
+      font-size: 13px;
+      text-align: left;
+      cursor: default;
+    }
+
+    .row:hover {
+      background: var(--kb-row-hover);
+      color: var(--kb-text);
+    }
+
+    .row .icon-slot {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .row .icon-slot img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
+    .row .count {
+      font-variant-numeric: tabular-nums;
+      font-size: 12px;
+      color: var(--kb-muted);
+    }
+
+    .row:hover .count {
+      color: var(--kb-text);
+    }
+
+    .row--on {
+      /* Selection: ✓ only — no teal row tint (differs from current list.css prototype) */
+      color: var(--kb-text);
+    }
+
+    .row-mark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      flex-shrink: 0;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .row--on .row-mark {
+      color: var(--kb-text);
+    }
+
+    .row-mark--off {
+      color: transparent;
+      user-select: none;
+    }
+
+    .state-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 32px;
+    }
+
+    .state-grid .panel {
+      flex: 1 1 280px;
+      min-width: 260px;
+      max-width: 400px;
+    }
+
+    .panel-caption {
+      margin: 0 0 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--kb-text);
+    }
+
+    .panel-caption+.panel {
+      margin-top: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Filter dropdown — SVG picks (mosaic)</h1>
+  <p class="note">
+    Open this file from the repo path
+    <code>assets/wireframe/prototypes/list_filter_icon_mosaic_prototype.html</code>
+    so relative paths <code>../../images/*.svg</code> resolve. Or run
+    <code>cd assets &amp;&amp; python3 -m http.server 9877</code> and visit
+    <code>/wireframe/prototypes/list_filter_icon_mosaic_prototype.html</code>.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="icon-cell">Icon</th>
+        <th>Filter</th>
+        <th>File (<code>assets/images/</code>)</th>
+        <th>Rationale</th>
+      </tr>
+    </thead>
+    <tbody id="legend"></tbody>
+  </table>
+
+  <h2>Applied vs not applied (immediate apply)</h2>
+  <p class="note">
+    Toggling a row calls <code>onChange</code> at once: <strong>applied</strong> = that facet is in the current filter
+    (<code>isOn</code> in code). In this prototype, <strong>only a ✓</strong> marks applied rows (no accent tint on the
+    row or on the mark). <strong>Not applied</strong> = same row when that facet is off — muted label, no check.
+    There is no separate “pending” row state.
+  </p>
+
+  <div class="state-grid" aria-label="Applied vs not applied comparison">
+    <div>
+      <p class="panel-caption">Applied — facet is on (list query includes it)</p>
+      <div class="panel" aria-label="Applied examples">
+        <input type="search" placeholder="Search filters…" disabled />
+        <div class="scroll">
+          <div class="sec-title">Examples</div>
+          <button type="button" class="row row--on" disabled>
+            <span class="row-mark" aria-hidden="true">✓</span>
+            <span class="icon-slot" aria-hidden="true"><img src="../../images/list.svg" alt="" /></span>
+            <span>All entries</span>
+            <span class="count">3992</span>
+          </button>
+          <button type="button" class="row row--on" disabled>
+            <span class="row-mark" aria-hidden="true">✓</span>
+            <span class="icon-slot" aria-hidden="true"><img src="../../images/task_warrior.svg" alt="" /></span>
+            <span>Actionable</span>
+            <span class="count">1</span>
+          </button>
+          <button type="button" class="row row--on" disabled>
+            <span class="row-mark" aria-hidden="true">✓</span>
+            <span class="icon-slot" aria-hidden="true"><img src="../../images/build.svg" alt="" /></span>
+            <span>All doing</span>
+            <span class="count">4</span>
+          </button>
+          <button type="button" class="row row--on" disabled>
+            <span class="row-mark" aria-hidden="true">✓</span>
+            <span class="icon-slot" aria-hidden="true"><img src="../../images/hash.svg" alt="" /></span>
+            <span>serverless</span>
+            <span class="count">42</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p class="panel-caption">Not applied — facet is off</p>
+      <div class="panel" aria-label="Not applied examples">
+        <input type="search" placeholder="Search filters…" disabled />
+        <div class="scroll">
+          <div class="sec-title">Same filters, inactive</div>
+          <button type="button" class="row" disabled>
+            <span class="row-mark row-mark--off" aria-hidden="true"></span>
+            <span class="icon-slot" aria-hidden="true"><img src="../../images/list.svg" alt="" /></span>
+            <span>All entries</span>
+            <span class="count">3992</span>
+          </button>
+          <button type="button" class="row" disabled>
+            <span class="row-mark row-mark--off" aria-hidden="true"></span>
+            <span class="icon-slot" aria-hidden="true"><img src="../../images/task_warrior.svg" alt="" /></span>
+            <span>Actionable</span>
+            <span class="count">1</span>
+          </button>
+          <button type="button" class="row" disabled>
+            <span class="row-mark row-mark--off" aria-hidden="true"></span>
+            <span class="icon-slot" aria-hidden="true"><img src="../../images/build.svg" alt="" /></span>
+            <span>All doing</span>
+            <span class="count">4</span>
+          </button>
+          <button type="button" class="row" disabled>
+            <span class="row-mark row-mark--off" aria-hidden="true"></span>
+            <span class="icon-slot" aria-hidden="true"><img src="../../images/hash.svg" alt="" /></span>
+            <span>serverless</span>
+            <span class="count">42</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Full dropdown preview (mixed on/off)</h2>
+  <div class="panel" aria-label="Preview">
+    <input type="search" placeholder="Search filters…" disabled />
+    <div class="scroll">
+      <div class="sec-title">Quick</div>
+      <button type="button" class="row row--on" disabled>
+        <span class="row-mark" aria-hidden="true">✓</span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/list.svg" alt="" /></span>
+        <span>All entries</span>
+        <span class="count">3992</span>
+      </button>
+      <div class="sec-title">Task views</div>
+      <button type="button" class="row" disabled>
+        <span class="row-mark row-mark--off" aria-hidden="true"></span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/task_warrior.svg" alt="" /></span>
+        <span>Actionable</span>
+        <span class="count">1</span>
+      </button>
+      <button type="button" class="row" disabled>
+        <span class="row-mark row-mark--off" aria-hidden="true"></span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/calendar.svg" alt="" /></span>
+        <span>Today</span>
+        <span class="count">0</span>
+      </button>
+      <button type="button" class="row" disabled>
+        <span class="row-mark row-mark--off" aria-hidden="true"></span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/important.svg" alt="" /></span>
+        <span>Overdue</span>
+        <span class="count">0</span>
+      </button>
+      <button type="button" class="row" disabled>
+        <span class="row-mark row-mark--off" aria-hidden="true"></span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/days.svg" alt="" /></span>
+        <span>This week</span>
+        <span class="count">0</span>
+      </button>
+      <button type="button" class="row" disabled>
+        <span class="row-mark row-mark--off" aria-hidden="true"></span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/sheets.svg" alt="" /></span>
+        <span>All pending</span>
+        <span class="count">1</span>
+      </button>
+      <button type="button" class="row row--on" disabled>
+        <span class="row-mark" aria-hidden="true">✓</span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/build.svg" alt="" /></span>
+        <span>All doing</span>
+        <span class="count">4</span>
+      </button>
+      <div class="sec-title">Types</div>
+      <button type="button" class="row row--on" disabled>
+        <span class="row-mark" aria-hidden="true">✓</span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/bookmark.svg" alt="" /></span>
+        <span>Bookmarks</span>
+        <span class="count">1112</span>
+      </button>
+      <button type="button" class="row" disabled>
+        <span class="row-mark row-mark--off" aria-hidden="true"></span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/terminal.svg" alt="" /></span>
+        <span>Commands</span>
+        <span class="count">842</span>
+      </button>
+      <button type="button" class="row" disabled>
+        <span class="row-mark row-mark--off" aria-hidden="true"></span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/markdown.svg" alt="" /></span>
+        <span>Cheats</span>
+        <span class="count">1201</span>
+      </button>
+      <button type="button" class="row" disabled>
+        <span class="row-mark row-mark--off" aria-hidden="true"></span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/checklist.svg" alt="" /></span>
+        <span>Tasks</span>
+        <span class="count">837</span>
+      </button>
+      <div class="sec-title">Tags</div>
+      <button type="button" class="row row--on" disabled>
+        <span class="row-mark" aria-hidden="true">✓</span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/hash.svg" alt="" /></span>
+        <span>serverless</span>
+        <span class="count">42</span>
+      </button>
+      <button type="button" class="row" disabled>
+        <span class="row-mark row-mark--off" aria-hidden="true"></span>
+        <span class="icon-slot" aria-hidden="true"><img src="../../images/hash.svg" alt="" /></span>
+        <span>ruby</span>
+        <span class="count">28</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const rows = [
+      ['../../images/list.svg', 'All entries', 'list.svg', 'Full catalog / results list'],
+      ['../../images/task_warrior.svg', 'Actionable', 'task_warrior.svg', 'currentColor; matches task tooling vibe'],
+      ['../../images/calendar.svg', 'Today', 'calendar.svg', 'Obvious day scope'],
+      ['../../images/important.svg', 'Overdue', 'important.svg', 'Warning triangle — urgency'],
+      ['../../images/days.svg', 'This week', 'days.svg', 'Distinct from “today”; week window'],
+      ['../../images/sheets.svg', 'All pending', 'sheets.svg', 'Queued lines (avoid backlog.svg raster)'],
+      ['../../images/build.svg', 'All doing', 'build.svg', 'currentColor; active / in-progress work'],
+      ['../../images/bookmark.svg', 'Type: Bookmarks', 'bookmark.svg', 'Same as ENTRY_TYPE_DEFAULT_SVG_BASENAME'],
+      ['../../images/terminal.svg', 'Type: Commands', 'terminal.svg', 'Kb default for command'],
+      ['../../images/markdown.svg', 'Type: Cheats', 'markdown.svg', 'Kb default for cheat'],
+      ['../../images/checklist.svg', 'Type: Tasks', 'checklist.svg', 'Kb default for task'],
+      ['../../images/hash.svg', 'Tags (each)', 'hash.svg', 'Literal # tag chip metaphor']
+    ]
+    const tbody = document.getElementById('legend')
+    for (const [src, label, base, why] of rows) {
+      const tr = document.createElement('tr')
+      tr.innerHTML = `<td class="icon-cell"><span class="icon-slot"><img src="${src}" alt="" /></span></td><td>${label}</td><td class="basename">${base}</td><td>${why}</td>`
+      tbody.appendChild(tr)
+    }
+  </script>
+</body>
+
+</html>

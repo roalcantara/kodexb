@@ -9,6 +9,7 @@ import {
   idWithDirSchema,
   idWithReorderDirSchema,
   listOptsSchema,
+  listStatsFilterSchema,
   openExternalSchema,
   openInEditorSchema,
   pasteInTerminalSchema,
@@ -46,7 +47,7 @@ export function createRpcServer(appInstance: App) {
     .use(rpcErrorContract)
     .post('/list', ({ body }) => appInstance.list(body), { body: listOptsSchema })
     .post('/listMatchCount', ({ body }) => appInstance.listMatchCount(body), { body: listOptsSchema })
-    .post('/getListStats', () => appInstance.getListStats(), { body: emptyBodySchema })
+    .post('/getListStats', ({ body }) => appInstance.getListStats(body), { body: listStatsFilterSchema })
     .post('/getEntry', ({ body }) => appInstance.getEntry(body.id), { body: getEntryParams })
     .post('/sync', ({ body }) => appInstance.sync(body.sourcesDir), { body: syncParamsInner })
     .post('/getStats', () => appInstance.getStats(), { body: emptyBodySchema })

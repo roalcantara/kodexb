@@ -23,6 +23,7 @@ import { deleteById, findAll, findById, getDbStats, upsert } from './db/entry.re
 import { maxTaskOrder, updateTaskOrder } from './db/task.repository'
 import { countKnowledgeForOpts, listKnowledgeForOpts } from './lib/app_list_query.util'
 import { buildListStats } from './lib/app_list_stats.util'
+import { buildListStatsForFilters } from './lib/app_list_stats_for_filters.util'
 import { fetchPreviewImageFromUrl } from './lib/app_preview_fetch.util'
 import type { AppShellHooks } from './lib/app_shell_hooks.types'
 import {
@@ -99,11 +100,22 @@ export class App {
     return Promise.resolve(findById(raw, id))
   }
 
-  getListStats(): Promise<ListStats> {
-    if (this.listStatsCache) return Promise.resolve(this.listStatsCache)
+  getListStats(filters: Partial<Pick<ListOpts, 'query' | 'tags' | 'types' | 'taskView'>> = {}): Promise<ListStats> {
+    const hasContext =
+      (filters.query !== undefined && filters.query.trim() !== '') ||
+      (filters.types?.length ?? 0) > 0 ||
+      (filters.tags?.length ?? 0) > 0 ||
+      filters.taskView !== undefined
+
     const { raw } = this.getDb()
-    this.listStatsCache = buildListStats(raw)
-    return Promise.resolve(this.listStatsCache)
+
+    if (!hasContext) {
+      if (this.listStatsCache) return Promise.resolve(this.listStatsCache)
+      this.listStatsCache = buildListStats(raw)
+      return Promise.resolve(this.listStatsCache)
+    }
+
+    return Promise.resolve(buildListStatsForFilters(raw, this.loaded, filters))
   }
 
   sync(sourcesDir?: string): Promise<RpcImportResult> {

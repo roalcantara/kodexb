@@ -20,10 +20,11 @@ function Harness({ disabled }: { disabled: boolean }) {
   return <span data-testid="hits">{hits}</span>
 }
 
-function EscapeHarness({ disabled }: { disabled: boolean }) {
+function EscapeHarness({ disabled, skipEscapeCapture }: { disabled: boolean; skipEscapeCapture?: boolean }) {
   const [hits, setHits] = useState(0)
   useWindowViewNavKeys({
     disabled,
+    skipEscapeCapture,
     handleKey: e => {
       if (e.key === 'Escape') {
         e.preventDefault()
@@ -147,11 +148,30 @@ test('window capture does not invoke handleKey when disabled', async () => {
   expect(document.querySelector('[data-testid="hits"]')?.textContent).toBe('0')
 })
 
-test('window capture invokes handleKey for Escape when not disabled', async () => {
-  render(<EscapeHarness disabled={false} />)
+function dispatchWindowEscapeKey(): void {
   act(() => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
   })
+}
+
+test('window capture invokes handleKey for Escape when not disabled', async () => {
+  render(<EscapeHarness disabled={false} />)
+  dispatchWindowEscapeKey()
+  await waitFor(() => {
+    expect(document.querySelector('[data-testid="escape-hits"]')?.textContent).toBe('1')
+  })
+})
+
+test('window capture does not invoke handleKey for Escape when skipEscapeCapture', async () => {
+  render(<EscapeHarness disabled={false} skipEscapeCapture />)
+  dispatchWindowEscapeKey()
+  await new Promise(r => setTimeout(r, 20))
+  expect(document.querySelector('[data-testid="escape-hits"]')?.textContent).toBe('0')
+})
+
+test('window capture invokes handleKey for Escape when skipEscapeCapture is false', async () => {
+  render(<EscapeHarness disabled={false} skipEscapeCapture={false} />)
+  dispatchWindowEscapeKey()
   await waitFor(() => {
     expect(document.querySelector('[data-testid="escape-hits"]')?.textContent).toBe('1')
   })

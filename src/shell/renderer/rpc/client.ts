@@ -157,8 +157,10 @@ export function listMatchCount(opts: ListOpts = {}): Promise<number> {
   return rpc.api.listMatchCount.post(opts).then(unwrap) as Promise<number>
 }
 
-export function getListStats(): Promise<ListStats> {
-  return rpc.api.getListStats.post({}).then(unwrap) as Promise<ListStats>
+export function getListStats(
+  body: Partial<Pick<ListOpts, 'query' | 'tags' | 'types' | 'taskView'>> = {}
+): Promise<ListStats> {
+  return rpc.api.getListStats.post(body).then(unwrap) as Promise<ListStats>
 }
 
 export function getStats(): Promise<RpcDbStats> {

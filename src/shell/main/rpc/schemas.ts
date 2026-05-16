@@ -31,17 +31,24 @@ const entryTypeSchema = Type.Union([
   Type.Literal(ENTRY_TYPE_VALUES[3])
 ])
 
+const listFilterFields = {
+  query: Type.Optional(Type.String()),
+  tags: Type.Optional(Type.Array(Type.String())),
+  types: Type.Optional(Type.Array(entryTypeSchema)),
+  taskView: Type.Optional(taskViewSchema)
+}
+
 export const listOptsSchema = Type.Object(
   {
-    query: Type.Optional(Type.String()),
-    tags: Type.Optional(Type.Array(Type.String())),
-    types: Type.Optional(Type.Array(entryTypeSchema)),
-    taskView: Type.Optional(taskViewSchema),
+    ...listFilterFields,
     limit: Type.Optional(Type.Integer({ minimum: 1, maximum: RPC_LIST_LIMIT_MAX })),
     offset: Type.Optional(Type.Integer({ minimum: 0 }))
   },
   { additionalProperties: false }
 )
+
+/** Body for `getListStats` when computing contextual facet counts (no pagination keys). */
+export const listStatsFilterSchema = Type.Object(listFilterFields, { additionalProperties: false })
 
 export const getEntryParams = Type.Object({ id: Type.Integer() }, { additionalProperties: false })
 

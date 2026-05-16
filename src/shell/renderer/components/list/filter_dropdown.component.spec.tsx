@@ -3,7 +3,11 @@ import { expect, test } from 'bun:test'
 import type { ListStats } from '@shared/rpc'
 import { render, screen } from '@testing-library/react'
 
-import { FilterDropdown } from './filter_dropdown.component'
+import {
+  FILTER_DROPDOWN_PORTAL_MIN_WIDTH_PX,
+  FILTER_DROPDOWN_PORTAL_VIEWPORT_HORIZONTAL_MARGIN_PX
+} from '../../constants/layout.const'
+import { compactFilterPortalBox, FilterDropdown } from './filter_dropdown.component'
 
 const noop = () => undefined
 
@@ -53,4 +57,47 @@ test('FilterDropdown shows Task views when type filter is empty', () => {
     />
   )
   expect(screen.getByText('Task views')).toBeTruthy()
+})
+
+test('FilterDropdown compact portals under document.body with clip shell', () => {
+  const anchor = { bottom: 48, left: 12, width: 260, top: 8, right: 272, height: 40, x: 12, y: 8 } as DOMRect
+  const { unmount } = render(
+    <FilterDropdown
+      open
+      compact
+      anchorRect={anchor}
+      stats={stats}
+      types={[]}
+      tags={[]}
+      onChange={noop}
+      onClose={noop}
+    />
+  )
+  expect(document.body.querySelector('.kb-filterStack--compactPortal')).toBeTruthy()
+  expect(document.body.querySelector('.kb-pt-filter-portal-clip')).toBeTruthy()
+  expect(document.body.querySelector('.kb-pt-filter-portal-clip .kb-pt-filter-dropdown')).toBeTruthy()
+  unmount()
+})
+
+test('compactFilterPortalBox centers panel in viewport when unclamped', () => {
+  const anchor = { left: 400, bottom: 40, width: 100 } as DOMRect
+  const vw = 1000
+  const box = compactFilterPortalBox(anchor, vw, 800)
+  expect(box.width).toBe(FILTER_DROPDOWN_PORTAL_MIN_WIDTH_PX)
+  expect(box.left + box.width / 2).toBeCloseTo(vw / 2, 5)
+})
+
+test('compactFilterPortalBox keeps panel inside viewport when anchor is on the right', () => {
+  const anchor = { left: 920, bottom: 44, width: 72 } as DOMRect
+  const box = compactFilterPortalBox(anchor, 1000, 800)
+  expect(box.left).toBeGreaterThanOrEqual(FILTER_DROPDOWN_PORTAL_VIEWPORT_HORIZONTAL_MARGIN_PX)
+  expect(box.left + box.width).toBeLessThanOrEqual(1000 - FILTER_DROPDOWN_PORTAL_VIEWPORT_HORIZONTAL_MARGIN_PX)
+  expect(box.width).toBe(FILTER_DROPDOWN_PORTAL_MIN_WIDTH_PX)
+})
+
+test('compactFilterPortalBox respects narrow viewport width cap', () => {
+  const anchor = { left: 4, bottom: 40, width: 280 } as DOMRect
+  const box = compactFilterPortalBox(anchor, 260, 700)
+  expect(box.width).toBeLessThanOrEqual(260 - 24)
+  expect(box.left + box.width).toBeLessThanOrEqual(260 - 12)
 })

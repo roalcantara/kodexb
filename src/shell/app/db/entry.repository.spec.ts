@@ -80,6 +80,34 @@ describe('findAll()', () => {
     expect(results).toHaveLength(0)
   })
 
+  it('applies tag filter in SQL before limit so matches beyond first page appear', () => {
+    const { raw } = makeMemoryDb()
+    for (let i = 0; i < 55; i++) {
+      upsert(raw, factoryFor('bookmark', { overrides: { tags: ['other'], key: `https://example.com/page/${i}` } }))
+    }
+    upsert(
+      raw,
+      factoryFor('bookmark', {
+        overrides: { tags: ['needle'], key: 'https://example.com/has-needle' }
+      })
+    )
+    rebuildFts(raw)
+    const got = findAll(raw, { tags: ['needle'], limit: 50, offset: 0 })
+    expect(got).toHaveLength(1)
+    expect(got[0]?.tags).toContain('needle')
+  })
+
+  it('combines multiple tags with AND on one row', () => {
+    const { raw } = makeMemoryDb()
+    upsert(raw, factoryFor('bookmark', { overrides: { id: 101, tags: ['a'], key: 'https://a.example' } }))
+    upsert(raw, factoryFor('bookmark', { overrides: { id: 102, tags: ['b'], key: 'https://b.example' } }))
+    upsert(raw, factoryFor('bookmark', { overrides: { id: 103, tags: ['a', 'b'], key: 'https://ab.example' } }))
+    rebuildFts(raw)
+    const both = findAll(raw, { tags: ['a', 'b'], limit: 10, offset: 0 })
+    expect(both).toHaveLength(1)
+    expect(both[0]?.id).toBe(103)
+  })
+
   it('second import is idempotent (row counts stable)', async () => {
     const { db, raw } = await createSeededMemoryDb()
     const countBefore = findAll(raw).length
