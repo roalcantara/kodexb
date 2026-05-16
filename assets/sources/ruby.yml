@@ -642,7 +642,6 @@ cheats:
         array = my_set.to_a
         set = array.to_set
         ```
-commands:
   Installing Ruby On Rails on Apple Silicon:
     desc: Install Ruby On Rails on macOS 14 Sonoma (Apple Silicon, M1, M2)
     tags: [rb]

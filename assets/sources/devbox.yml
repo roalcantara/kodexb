@@ -55,6 +55,7 @@ bookmarks:
 
           ignore:
             - node_modules
+
   https://alexpasmantier.github.io/television:
     desc: Television - A fast, portable and hackable fuzzy finder for the terminal in RUST
     tags: [ devbox, term, fzf ]
@@ -130,6 +131,146 @@ bookmarks:
 
           - While Television is powerful, it is not perfect.
           - Users should be prepared to spend time setting up their own custom channels to truly unlock its potential
+
+  https://handlebarsjs.com:
+    desc: Minimal templating on steroids | Handlebars
+    tags: [devbox, md, templating]
+    links:
+      - Expressions: https://handlebarsjs.com/guide/expressions.html
+    notes:
+      - md: | #markdown
+          # OVERVIEW
+
+          - **Handlebars** is a simple templating language.
+
+          - It uses a template and an input object to generate **HTML** or other text formats.
+
+          ## HOW IT WORKS?
+
+          - A handlebars expression is a `{{`, some contents, followed by a `}}`
+
+          - When the template is executed, these expressions are replaced with values from an input object.
+
+          ## EXAMPLE
+
+          - Given following template defining two Handlebars expressions:
+
+            ```handlebars
+            <p>{{firstname}} {{lastname}}</p>
+            ```
+
+          - When the following input object is applied:
+
+            ```json
+            {
+              firstname: "Yehuda",
+              lastname: "Katz",
+            }
+            ```
+
+          - Then expressions will be replaced by the corresponding properties resulting in:
+
+            ```html
+            <p>Yehuda Katz</p>
+            ```
+
+          ### FEATURES
+
+          #### Semantic templates
+
+          - Handlebars provides the power necessary to let you build semantic templates effectively with no frustration.
+
+          #### Mustache-compatible
+
+          - Handlebars is largely compatible with Mustache templates.
+          - In most cases it is possible to swap out Mustache with Handlebars and continue using your current templates.
+
+          #### Fast execution
+
+          - Handlebars compiles templates into JavaScript functions.
+          - This makes the template execution faster than most other template engines
+
+  https://github.com/openvalidation/openvalidation:
+    desc: Programming validation rules using natural languages
+    tags: [http://openvalidation.io]
+    notes:
+      - md: | #markdown
+          # Compose validation rules in the language you use every day, openVALIDATION handles code creation for you
+
+          ## INSTALLATION
+
+          1. install via npm as global cli command:
+
+            ```sh
+            npm i openvalidation -g
+            ```
+
+          2. docker image:
+
+            ```sh
+            docker pull openvalidation/openvalidation-rest
+            ```
+
+          ## USAGE
+
+          1. npm cli
+
+            ```sh
+            openvalidation -r "user's age should not be less than 18 years" -s "{age:0}" -c en -l javascript
+            ```
+
+          2. docker container
+
+            ```sh
+            docker run -p 7070:80  openvalidation/openvalidation-rest
+
+            curl -X POST -H "Content-Type: application/json" -d "{\"rule\":\"user's age should not be less than 18 years\",\"culture\":\"en\",\"language\":\"JavaScript\",\"schema\":\"{age:0}\"}" http://localhost:7070/
+            ```
+
+          ### RESULT
+
+          The following JavaScript code will be generated:
+
+              ```htmls
+                var HUMLValidator = function() {
+                    var huml = new HUMLFramework();
+
+                        huml.appendRule("",
+                            ["age"],
+                            "user&#x27;s age should not be less than 18 years"ocks for many different languages
+                            function(model) {
+                                return huml.LESS_THAN(model.age, 18.0);
+                            },
+                            false
+                        );
+
+                    this.validate = function(model){
+                        return huml.validate(model);
+                    }
+                }
+              ```
+
+  https://rust-lang.github.io/mdBook:
+    desc: Create book from markdown files. Like Gitbook but implemented in Rust
+    tags: [devbox, markdown, books]
+    notes:
+      - md: | #markdown
+
+          # **mdBook** is a command line tool to create books with Markdown.
+
+          It is ideal for creating product or API documentation, tutorials, course materials or anything that requires a clean, easily navigable and customizable presentation.
+
+          ### FEATURES
+
+            - Lightweight Markdown syntax helps you focus more on your content
+            - Integrated search support
+            - Color syntax highlighting for code bl
+            - Theme files allow customizing the formatting of the output
+            - Preprocessors can provide extensions for custom syntax and modifying content
+            - Backends can render the output to multiple formats
+            - Written in Rust for speed, safety, and simplicity
+            - Automated testing of Rust code samples
+
   https://youtu.be/ztjlsmJcVnE:
     desc: Stop Overengineering Logs. Use This Instead
     tags: [ devbox, logs ]
