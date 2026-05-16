@@ -171,6 +171,7 @@ playwright-report
 .agents/skills/electrobun-kitchen-sink
 .agents/skills/electrobun-platform
 .agents/skills/electrobun-plugin-guide
+.agents/skills/electrobun-rpc
 .agents/skills/electrobun-testing
 .agents/skills/electrobun-workflow
 

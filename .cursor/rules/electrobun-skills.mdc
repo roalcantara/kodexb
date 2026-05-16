@@ -11,8 +11,9 @@ When a task may involve **Electrobun** (desktop shell, webview/renderer, typed R
 2. Load each needed guide with the **Read** tool at  
    **`<repo>/.agents/skills/<skill-id>/SKILL.md`**  
    (replace `<skill-id>` with the slug from the table, e.g. `electrobun-rpc`).  
-   If a skill is missing there, run `mise run link:skills` or check
-   `$HOME/.agents/skills/` / `$HOME/.config/cursor/skills/` for copies.
+   If an approved linked skill is missing there, run `mise run link:skills`
+   (the approved set is defined in `assets/guides/SKILLS.md`). For global-only
+   skills, read from `$HOME/.agents/skills/` or `$HOME/.config/cursor/skills/`.
 
 If nothing matches, read **`electrobun-plugin-guide`** first, then narrow.
 

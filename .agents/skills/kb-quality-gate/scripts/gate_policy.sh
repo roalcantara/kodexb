@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Policy checks aligned with AGENTS.md + assets/docs/specs/codebase-quality-audit/
 # (R6 tool weakening, R7 Electrobun discipline). Complements mechanical linters.
-set -euo pipefail
+set -eu -o pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"

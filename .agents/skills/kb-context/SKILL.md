@@ -15,13 +15,18 @@ wrong validation, and naming drift.
 
 - **kb-specific skills** (this file, `kb-rpc`, `kb-testing`, `kb-quality-gate`):
   read from **`<repo>/.agents/skills/<skill-id>/SKILL.md`** (this repository).
-- **Electrobun skills** vendored for kb: same folder (e.g.
-  `electrobun-best-practices`, `electrobun-native-ui`). The
+- **Project skill ledger**:
+  [`assets/guides/SKILLS.md`](../../../assets/guides/SKILLS.md) records which
+  skills are adopted locally, linked by `mise run link:skills`, or kept as
+  optional global companions.
+- **Electrobun skills** adopted or linked for kb: same folder (e.g.
+  `electrobun-best-practices`, `electrobun-rpc`). The
   [`.cursor/electrobun-skill-routing.md`](../../../.cursor/electrobun-skill-routing.md)
   table lists which to open for each topic.
-- **Optional global copies**: your Cursor install may also mirror skills under
-  `$HOME/.config/cursor/skills/` — if a path is missing, prefer the repo copy
-  above.
+- **Optional global copies**: non-linked companions stay under
+  `$HOME/.agents/skills/`; your Cursor install may also mirror skills under
+  `$HOME/.config/cursor/skills/`. Prefer the repo path when a skill exists in
+  both places.
 
 ## Stack (authoritative)
 
@@ -163,6 +168,26 @@ Full tokens and patterns:
 | **kb-testing**      | Writing or changing any spec.                                                              |
 | **kb-quality-gate** | Before declaring work done or committing.                                                  |
 | **electrobun-***    | Per [`.cursor/electrobun-skill-routing.md`](../../../.cursor/electrobun-skill-routing.md). |
+
+Optional companions stay subordinate to kb-specific skills and guides:
+
+| Skill                         | When                                                                                 |
+| ----------------------------- | ------------------------------------------------------------------------------------ |
+| **systematic-debugging**      | Investigating failing tests, gate failures, regressions, or unexpected behavior.     |
+| **elysia**                    | Checking Elysia route mechanics after loading **kb-rpc**.                            |
+| **receiving-code-review**     | Applying review feedback, especially when feedback is ambiguous or broad.            |
+| **requesting-code-review**    | Preparing a review handoff, PR, or larger completed change for scrutiny.             |
+| **mise-tasks**                | Editing `mise.toml`, task dependencies, or multi-step project workflows.             |
+| **mise-expert**               | Editing mise tool versions or environment setup.                                     |
+| **ast-grep**                  | Authoring or debugging structural search and rewrite rules.                          |
+| **knip**                      | Resolving unused exports, files, dependencies, or knip configuration findings.       |
+| **jscpd**                     | Investigating duplication reports and planning small shared abstractions.            |
+| **dry-principle**             | Deciding whether duplication warrants extraction.                                    |
+| **solid-principles**          | Reviewing class or module design.                                                    |
+| **react:components**          | Translating design artifacts into renderer components, adapted to kb conventions.    |
+| **stitch-design**             | Design intake or prototypes, only under the prototype gate.                          |
+| **using-git-worktrees**       | Isolated parallel work, only when requested or approved.                             |
+| **verification-before-completion** | Final reminder only; **kb-quality-gate** is the executable authority.           |
 
 ---
 

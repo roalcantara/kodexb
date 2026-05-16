@@ -25,6 +25,28 @@ bun run lint      # Run the full Phase-1 quality chain
 bun run lint:fix  # Auto-fix what can be fixed (Biome / Knip / ast-grep)
 ```
 
+### Project definitions and agent routing
+
+The canonical engineering and agent definitions are split by purpose:
+
+| File / guide | Purpose |
+| ------------ | ------- |
+| [CLAUDE.md][24] | Primary agent instructions: stack, FCIS layers, required skills, and reference docs. |
+| [AGENTS.md][23] | Repo-wide agent guardrails, commit workflow, prototype gate, and Electrobun process rules. |
+| [SKILLS.md][21] | Skill adoption ledger: local skills, linked companions, global-only companions, and rationale. |
+| [MISE_GUIDE.md][22] | Task-runner policy: prefer mise tasks for project workflows and avoid ad-hoc project scripts. |
+| [Electrobun routing][25] | Which Electrobun skill to read for desktop shell, build, platform, RPC, and automation work. |
+
+Skill routing follows one rule of thumb: project-specific guidance wins. Load
+`kb-context` for any kb task, then add narrower skills such as `kb-rpc`,
+`kb-testing`, `kb-quality-gate`, or the routed Electrobun skill when the work
+calls for them.
+
+`mise run link:skills` syncs only the approved linked companions from
+[SKILLS.md][21] into `.agents/skills/`. Optional global companions stay under
+`$HOME/.agents/skills/` unless the skill ledger marks them as linked project
+skills.
+
 ### Keyboard — command palette (⌘P) and filter (⌘K)
 
 Product rules for the list shell (normative for implementation). Full specs: [requirements](assets/docs/specs/command-palette-filter-ux/requirements.md) · [design](assets/docs/specs/command-palette-filter-ux/design.md) · [tasks](assets/docs/specs/command-palette-filter-ux/tasks.md) · [HANDOFF](assets/docs/specs/command-palette-filter-ux/HANDOFF.md). Visual reference (non-normative): [raycast.list_filter_opened.png](assets/wireframe/references/raycast.list_filter_opened.png).
@@ -54,6 +76,22 @@ mise run ci:publish --version=0.1.0 --target=linux-x64  # build + package + chec
 ```
 
 See the [CI / CD guide][20] for the full task table.
+
+### Miscellaneous mise tasks
+
+Run `mise tasks ls` for the live task list. These tasks cover local setup,
+agent skill wiring, UI smoke checks, and maintenance workflows:
+
+| Task | Use when |
+| ---- | -------- |
+| `mise run setup` | Installing tool versions, dependencies, and hooks after cloning. |
+| `mise run prepare` | Refreshing Bun dependencies and commit hooks without reinstalling tools. |
+| `mise run link:skills` | Syncing approved project skill symlinks from `$HOME/.agents/skills/`. |
+| `mise run e2e:preview` | Running the Playwright preview smoke test. Install Chromium once with `bun run e2e:preview:install`. |
+| `mise run icons:svg-contrast` | Auditing SVG contrast against the list shell background; use `--write-safe` only for curated safe replacements. |
+| `mise run repo:setup` | Creating the GitHub repo and required CI secrets / variables. |
+| `mise run repo:prune` | Deleting the GitHub repo, releases, and tags for a reset. Use with care. |
+| `mise run ci:reset-branch` | Rebuilding the CI fix branch from the scripted recovery path. Use only for release workflow repair. |
 
 ### DEPENDENCIES
 
@@ -135,3 +173,8 @@ The project is available as open source under the terms of the [MIT][1] [License
 [18]: https://ast-grep.github.io 'Code structural search, lint, rewriting at large scale'
 [19]: https://github.com/release-it/release-it 'release-it'
 [20]: assets/guides/CI_GUIDE.md 'CI / CD operational guide'
+[21]: assets/guides/SKILLS.md 'Project skill guide'
+[22]: assets/guides/MISE_GUIDE.md 'Mise task guidelines'
+[23]: AGENTS.md 'Agent notes'
+[24]: CLAUDE.md 'Claude Code instructions'
+[25]: .cursor/electrobun-skill-routing.md 'Electrobun skill routing'

@@ -74,7 +74,33 @@ Load these at the start of any kb task:
 - `kb-testing` — when writing or modifying tests
 - `kb-quality-gate` — before marking anything done
 
-Skills live at `.agents/skills/`. Global Electrobun skills at `~/.agents/skills/`.
+Optional companion skills for narrower situations:
+
+- `systematic-debugging` — before fixing failing tests, gate failures, or
+  unexpected behavior
+- `elysia` — for Elysia route mechanics, after `kb-rpc`
+- `receiving-code-review` — when applying review feedback
+- `requesting-code-review` — before review handoff or PR preparation
+- `mise-tasks` — when editing `mise.toml` or task orchestration
+- `mise-expert` — when editing mise tool versions or environment setup
+- `ast-grep` — when debugging or authoring structural search rules
+- `knip` — when handling unused exports, files, or dependencies
+- `jscpd` — when investigating duplication findings
+- `dry-principle` — when duplication findings need extraction judgment
+- `solid-principles` — when reviewing module or class design
+- `react:components` — when translating a design artifact into renderer
+  components, adapted to kb's renderer conventions
+- `stitch-design` — for design intake or prototypes, under the prototype gate
+- `using-git-worktrees` — only when isolated parallel work is requested or
+  approved
+- `verification-before-completion` — as a reminder; `kb-quality-gate` remains
+  the executable authority
+
+Skill adoption and routing rationale lives in
+[`assets/guides/SKILLS.md`](assets/guides/SKILLS.md). Project skills and
+approved symlinks live at `.agents/skills/`; `mise run link:skills` syncs only
+the linked companions named there. Other optional companions remain global at
+`~/.agents/skills/`.
 
 ## Reference docs
 
@@ -89,6 +115,7 @@ with this `CLAUDE.md`, **the guides win** — open a PR to fix `CLAUDE.md`.
 - [`assets/guides/DoD.md`](assets/guides/DoD.md) — Definition of Done (gated by `kb-quality-gate`)
 - [`assets/guides/GIT_COMMITS_GUIDE.md`](assets/guides/GIT_COMMITS_GUIDE.md) — Conventional Commits, ≤ 50-char subject
 - [`assets/guides/MISE_GUIDE.md`](assets/guides/MISE_GUIDE.md) — when to use `mise run` vs `bun run`
+- [`assets/guides/SKILLS.md`](assets/guides/SKILLS.md) — skill adoption ledger, routing rationale, optional companions
 - [`assets/guides/CI_GUIDE.md`](assets/guides/CI_GUIDE.md) — review/release/publish workflows
 - [`assets/guides/BUN_RUNTIME.md`](assets/guides/BUN_RUNTIME.md) — Bun YAML/JSON5/SQLite quick reference
 - [`assets/guides/ELECTROBUN.md`](assets/guides/ELECTROBUN.md) — Electrobun official-docs map + RPC shape

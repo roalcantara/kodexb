@@ -38,6 +38,14 @@ Shared type (e.g. `KbDesktopRpcSchema` in `src/shared/rpc/kb_rpc_schema.ts`) has
 
 **kb / `design.md` mapping:** `RendererToMain` methods align with **`bun.requests`**. `MainToRenderer` notifications align with **`webview.messages`**.
 
+## Build
+
+The default `bun run build` runs Electro build with TLS verification enabled.
+An escape-hatch `bun run build:insecure-local` exists for environments where local
+certificate configuration blocks the Electrobun download step. Prefer the
+default build; only use `build:insecure-local` when the default build fails
+with a specific TLS error and the environment cannot be fixed directly.
+
 ## Security
 
 For remote or untrusted `url`, use **`sandbox: true`** so RPC is disabled ([BrowserView RPC](https://blackboard.sh/electrobun/docs/apis/browser-view)).

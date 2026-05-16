@@ -36,6 +36,16 @@ Skills > Implementation
 
 This rule overrides ALL other instructions.
 
+### Skill routing ledger
+
+- The project skill registry and adoption rationale live in
+  **`assets/guides/SKILLS.md`**.
+- **`mise run link:skills`** syncs only the approved linked companions from that
+  guide into `.agents/skills/`.
+- Optional global companions named in the guide remain under
+  `$HOME/.agents/skills/` unless `assets/guides/SKILLS.md` marks them as
+  linked/adopted project skills.
+
 ### Lint and quality tools
 
 - **Do not weaken** the repo quality stack (Biome, knip, dependency-cruiser, ast-grep, ls-lint, jscpd, `tsc` strictness, and any other tool run by the quality gate) unless a **maintainer explicitly approves** the change in the PR (for example: `APPROVED: <tool> <change> because <reason>`).
@@ -83,11 +93,13 @@ If the user later asks for implementation in the same thread without an approval
 ## Electrobun
 
 This app uses **Electrobun**. Cursor skills are installed under
-`$HOME/.agents/skills/` (see symlinks like `electrobun-rpc`). Repo-vendored copies live under **`.agents/skills/`** (same names).
+`$HOME/.agents/skills/`. Repo-owned skills and approved symlinks live under
+**`.agents/skills/`**.
 
 - **Routing table (which skill when):** [`.cursor/electrobun-skill-routing.md`](.cursor/electrobun-skill-routing.md)
 - **Standing instruction for the agent:** [`.cursor/rules/electrobun-skills.mdc`](.cursor/rules/electrobun-skills.mdc) (`alwaysApply`)
 - **Best-practices baseline:** [`.agents/skills/electrobun-best-practices/SKILL.md`](.agents/skills/electrobun-best-practices/SKILL.md) — load for desktop/config work in addition to the routed skill.
+- **Skill adoption ledger:** [`assets/guides/SKILLS.md`](assets/guides/SKILLS.md)
 
 At the start of work that might touch the desktop stack, **read the routing file**, then **Read** the relevant `SKILL.md` paths—do not guess Electrobun APIs.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # kb quality gate — run all stages sequentially, exit 1 on first failure.
 # Mirrors the stage list in `.agents/skills/kb-quality-gate/SKILL.md`.
-set -euo pipefail
+set -eu -o pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
@@ -18,7 +18,12 @@ run_check() {
   local label="$1"
   shift
   if [[ "$mode" == "tee" ]]; then
-    if "$@" 2>&1 | tee /tmp/kb-gate-out; then
+    # Pipeline exit status is tee's without pipefail; use PIPESTATUS[0] for "$@".
+    set +e
+    "$@" 2>&1 | tee /tmp/kb-gate-out
+    local cmd_status="${PIPESTATUS[0]}"
+    set -e
+    if [[ "$cmd_status" -eq 0 ]]; then
       echo -e "  $label … $PASS"
     else
       echo -e "  $label … $FAIL"

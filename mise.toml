@@ -266,7 +266,7 @@ actionlint = "latest"
     echo ""
     echo "Repository '$repo' deleted."
   ''' }
-"link:skills" = { description = "Symlink Electrobun skills from ~/.agents/skills into .agents/skills", run = '''
+"link:skills" = { description = "Sync approved skill symlinks from ~/.agents/skills into .agents/skills per assets/guides/SKILLS.md", run = '''
     #!/usr/bin/env bash
     set -euo pipefail
     ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
@@ -276,17 +276,89 @@ actionlint = "latest"
     fi
     KB="$ROOT/.agents/skills"
     SRC="${SKILLS_SRC:-$HOME/.agents/skills}"
-    cd "$KB" || exit 1
-    for name in \
-      electrobun electrobun-plugin-guide electrobun-dev electrobun-core \
-      electrobun-config electrobun-build electrobun-platform electrobun-distribution \
-      electrobun-testing electrobun-kitchen-sink electrobun-workflow \
-      agent-electrobun bun-development bun-runtime; do
-      if [[ -e "$KB/$name" || -L "$KB/$name" ]]; then
+    GUIDE="$ROOT/assets/guides/SKILLS.md"
+    if [[ ! -d "$KB" ]]; then
+      echo "link:skills: missing $KB" >&2
+      exit 1
+    fi
+    if [[ ! -d "$SRC" ]]; then
+      echo "link:skills: missing source skills directory $SRC" >&2
+      exit 1
+    fi
+    if [[ ! -f "$GUIDE" ]]; then
+      echo "link:skills: missing $GUIDE" >&2
+      exit 1
+    fi
+
+    desired_skills=()
+    desired_count=0
+    while IFS= read -r name; do
+      desired_skills+=("$name")
+      desired_count=$((desired_count + 1))
+    done < <(
+      awk -F "|" '
+        /^## Candidate Skill Evaluation/ { exit }
+        /^\| `[^`]+` \|/ {
+          skill = $2
+          status = $3
+          gsub(/^[[:space:]]*`|`[[:space:]]*$/, "", skill)
+          gsub(/^[[:space:]]+|[[:space:]]+$/, "", status)
+          if (status == "Linked companion" || status == "Routed companion to link" || status == "Adopted as a linked companion") {
+            print skill
+          }
+        }
+      ' "$GUIDE"
+    )
+    if [[ "$desired_count" -eq 0 ]]; then
+      echo "link:skills: no linkable skills found in $GUIDE" >&2
+      exit 1
+    fi
+
+    is_desired_skill() {
+      local candidate="$1"
+      local name
+      for name in "${desired_skills[@]}"; do
+        if [[ "$candidate" == "$name" ]]; then
+          return 0
+        fi
+      done
+      return 1
+    }
+
+    missing=0
+    for name in "${desired_skills[@]}"; do
+      src_path="$SRC/$name"
+      dest_path="$KB/$name"
+      if [[ ! -e "$src_path" && ! -L "$src_path" ]]; then
+        echo "link:skills: missing source skill $src_path" >&2
+        missing=1
         continue
       fi
-      ln -s "$SRC/$name" "$KB/$name"
+      if [[ -L "$dest_path" ]]; then
+        current_target="$(readlink "$dest_path")"
+        if [[ "$current_target" == "$src_path" ]]; then
+          continue
+        fi
+        rm "$dest_path"
+      elif [[ -e "$dest_path" ]]; then
+        echo "link:skills: keeping local skill directory $dest_path" >&2
+        continue
+      fi
+      ln -s "$src_path" "$dest_path"
     done
+
+    while IFS= read -r link_path; do
+      name="$(basename "$link_path")"
+      if is_desired_skill "$name"; then
+        continue
+      fi
+      echo "link:skills: removing unapproved skill symlink $link_path"
+      rm "$link_path"
+    done < <(find "$KB" -maxdepth 1 -type l | sort)
+
+    if [[ "$missing" -ne 0 ]]; then
+      exit 1
+    fi
 ''' }
 
 [tasks."icons:svg-contrast"]

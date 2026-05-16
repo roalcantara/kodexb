@@ -3,14 +3,13 @@ name: kb-rpc
 description: >
   Load this skill whenever working on the RPC layer of the kb codebase —
   adding a new endpoint, modifying an existing route, updating TypeBox
-  schemas, wiring the Eden Treaty client in the renderer, integrating
-  drizzle-typebox response shapes, or syncing the preview server. RPC
-  changes are cross-cutting: a route added to server.ts must also appear
-  in tools/preview/server.ts, and the Eden Treaty client type updates
-  automatically. This skill prevents the most common mistakes (Zod in a
-  route, missing preview-server mirror, wrong TypeBox optional semantics).
-  Also load it if you're unsure whether a piece of logic belongs in the
-  Elysia route or in AppService.
+  schemas, wiring the Eden Treaty client in the renderer, or syncing the
+  preview server. RPC changes are cross-cutting: a route added to server.ts
+  must also appear in tools/preview/server.ts, and the Eden Treaty client
+  type updates automatically. This skill prevents the most common mistakes
+  (Zod in a route, missing preview-server mirror, wrong TypeBox optional
+  semantics). Also load it if you're unsure whether a piece of logic belongs
+  in the Elysia route or in AppService.
 ---
 
 # kb RPC Patterns (Elysia + Eden Treaty)
@@ -22,11 +21,13 @@ description: >
 | Server      | `elysia`                       | Route definition, validation, IoC   |
 | Validation  | `elysia` → `t` (TypeBox)       | Runtime validation at transport     |
 | Client      | `@elysiajs/eden` (Treaty)      | Auto-generated type-safe client     |
-| DB schemas  | `drizzle-typebox`              | Derive TypeBox from Drizzle tables  |
-| Domain      | `@sinclair/typebox`            | YAML parsing, core invariants       |
+| DB          | `bun:sqlite`                   | Typed prepared statements           |
+| Domain      | `@sinclair/typebox`            | Core invariants, config validation  |
 
-**Rule:** TypeBox is the sole validation library. `*.schema.ts` files contain
-shapes; `*.parser.ts` files contain coercion logic and custom error messages.
+**Rule:** TypeBox is the sole validation library — `t.*` from elysia/TypeBox in
+routes, `Type.Object` + `Value.Check` in core/config. **No Zod, no Drizzle, no
+drizzle-typebox.** `*.schema.ts` files contain hand-authored TypeBox shapes;
+`*.parser.ts` files contain coercion logic and custom error messages.
 
 ---
 
@@ -77,16 +78,21 @@ export const rpc = treaty<RpcApp>('kb-app')
 // const { data, error } = await rpc.list.get({ query: { limit: 20 } })
 ```
 
-## drizzle-typebox — Derive Schemas from DB Tables
+## Database Access (bun:sqlite)
 
 ```ts
-// src/shell/app/db/schema-types.ts
-import { createSelectSchema, createInsertSchema } from 'drizzle-typebox'
-import { knowledges } from './schema'
+// src/shell/app/db/schema.ts — hand-authored SQL DDL
+// src/shell/app/db/client.ts — typed prepared statements
+// src/shell/app/db/entry.repository.ts — data access methods
 
-export const SelectKnowledgeSchema = createSelectSchema(knowledges)
-export const InsertKnowledgeSchema = createInsertSchema(knowledges)
-// Use these in Elysia route response types, not manually authored TypeBox objects.
+// Example typed query:
+// const rows = db.query<KnowledgeRow, [string]>(
+//   'SELECT * FROM knowledges WHERE type = ?', [entryType]
+// ).all()
+
+// Route response shapes: author a plain TypeBox Object matching the
+// DB row shape needed. Use t.Pick() / t.Omit() when only a subset is
+// needed. No ORM-derived schema generation.
 ```
 
 ## Elysia in Electrobun (IPC, not HTTP)
@@ -115,7 +121,7 @@ same `AppService`, no mock logic.
 
 - [ ] Add route to `src/shell/main/rpc/server.ts`
 - [ ] Add TypeBox body/query/params schema inline (not in a separate file)
-- [ ] If response shape matches a DB row, derive with `drizzle-typebox`
+- [ ] If DB access needed, write typed prepared statements in the repository
 - [ ] Mirror the route in `tools/preview/server.ts`
 - [ ] Write a spec in `src/shell/main/rpc/server.spec.ts` (use `app.handle(request)`)
 - [ ] Run `bun test && bun run lint` — both must pass before commit
@@ -126,8 +132,6 @@ same `AppService`, no mock logic.
   The route path becomes a chained property: `rpc.entry[':id'].get(...)`.
 - TypeBox `t.Optional(T)` means the field may be absent from the object entirely —
   different from `t.Union([T, t.Null()])` which allows `null` as a value.
-- `drizzle-typebox` schemas include all columns including auto-generated ones
-  (`id`, `created_at`). Wrap in `t.Pick()` when the endpoint only needs a subset.
 - Do NOT mix validation libraries in routes or domain modules — TypeBox only.
 - The Elysia app is the **only** place where `AppService` methods are called from
   the main process toward the renderer — no direct module imports cross the boundary.

@@ -25,11 +25,11 @@ Cursor rule (summary): `.cursor/rules/codestyle.mdc`
 
 - **Inline simple single-use types** — If a type is used only once and has ≤3 properties, prefer inline definition over extracted type alias. Extraction adds indirection without benefit.
 - **Extract reusable types** — If a type is used in multiple places, extract it to avoid duplication.
-- **Extract complex types** — If a type has many properties or complex validation (Zod refinements, unions, transforms), extraction improves readability even if used once.
+- **Extract complex types** — If a type has many properties or complex validation (TypeBox refinements, unions, transforms), extraction improves readability even if used once.
 - **Extract semantic types** — If the type name adds significant meaning (e.g., `EntryTypeName`, `ThemeColorName`), extraction is justified.
 
 ```typescript
-import { z } from 'zod'
+import { type Static, Type } from '@sinclair/typebox'
 
 // ❌ Avoid: single-use type with few properties
 type FetchConfig = {
@@ -40,13 +40,13 @@ export type Config = {
   fetch: FetchConfig  // indirection without benefit
 }
 
-// ✅ Prefer: single-use shape — colocate Zod schema and infer the type
-const fetchSchema = z.object({
-  timeout_ms: z.number().int().min(1),
-  user_agent: z.string().optional(),
+// ✅ Prefer: single-use shape — colocate TypeBox schema and infer the type
+const fetchSchema = Type.Object({
+  timeout_ms: Type.Integer({ minimum: 1 }),
+  user_agent: Type.Optional(Type.String()),
 })
 export type Config = {
-  fetch: z.infer<typeof fetchSchema>
+  fetch: Static<typeof fetchSchema>
 }
 
 // ✅ Keep extracted: reused or semantically meaningful
@@ -92,7 +92,7 @@ collection of the same kind (e.g. `rpc.host.schemas.ts` exports many schemas).
 | ---------------- | ------------------------------------------------- | --------------------------- |
 | `.service.ts`    | Business logic orchestration                      | `app.service.ts`            |
 | `.repository.ts` | Data access (queries, writes)                     | `entry.repository.ts`       |
-| `.schema.ts`     | Zod schema + inferred input type                  | `config.schema.ts`          |
+| `.schema.ts`     | TypeBox schema + inferred input type              | `config.schema.ts`          |
 | `.schemas.ts`    | Aggregate: re-exports multiple schemas            | `rpc.host.schemas.ts`       |
 | `.loader.ts`     | File / resource loading                           | `config.loader.ts`          |
 | `.parser.ts`     | Parse input → structured result, no side-effects  | `source_document.parser.ts` |
@@ -223,7 +223,7 @@ Accessed exclusively through the RPC interface.
 | Sub-folder       | Purpose                                                             |
 | ---------------- | ------------------------------------------------------------------- |
 | `config/`        | Config loading, schema, defaults                                    |
-| `db/`            | SQLite client, Drizzle schema, entry repository                     |
+| `db/`            | SQLite client (bun:sqlite), hand-authored schema, entry repository  |
 | `services/`      | Operation services (e.g. import, sync) — one sub-folder per service |
 | `lib/`           | Internal utilities that support the above (not exported publicly)   |
 | `app.service.ts` | Root orchestrator; the single entry point consumed by `main/`       |
@@ -243,7 +243,7 @@ Grouped into concern sub-folders — the folder provides context so prefixes dro
 | `*.helper.ts`             | Process-level helpers (e.g. error dialogs)                      |
 | `rpc/host.ts`             | RPC host definition (binds the typed schema to the process)     |
 | `rpc/requests.ts`         | RPC handler implementations — thin delegation to `AppService`   |
-| `rpc/schemas.ts`          | Aggregate Zod schemas for validating all RPC payloads           |
+| `rpc/schemas.ts`          | Aggregate TypeBox schemas for validating all RPC payloads           |
 | `window/state.ts`         | Persists and restores window bounds between sessions            |
 
 ### `src/shell/renderer/` — UI layer
