@@ -33,9 +33,11 @@ has_new_suppression() {
   return 1
 }
 
-echo ""
-echo "0.5 / Policy (new suppressions + reminders)"
-echo "──────────────────────────────────────────"
+if [[ -z "${KB_GATE_EMBEDDED_POLICY:-}" ]]; then
+  echo ""
+  echo "0.5 / Policy (new suppressions + reminders)"
+  echo "──────────────────────────────────────────"
+fi
 
 if has_new_suppression; then
   if [[ "${KB_GATE_APPROVED_TOOL_WEAKENING:-}" == "1" ]]; then

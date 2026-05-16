@@ -10,7 +10,22 @@ PASS="\033[0;32m✔\033[0m"
 FAIL="\033[0;31m✘\033[0m"
 
 run_check() {
-  local label="$1"; shift
+  local mode="capture"
+  if [[ "${1:-}" == "--tee" ]]; then
+    mode="tee"
+    shift
+  fi
+  local label="$1"
+  shift
+  if [[ "$mode" == "tee" ]]; then
+    if "$@" 2>&1 | tee /tmp/kb-gate-out; then
+      echo -e "  $label … $PASS"
+    else
+      echo -e "  $label … $FAIL"
+      exit 1
+    fi
+    return
+  fi
   echo -n "  $label … "
   if "$@" > /tmp/kb-gate-out 2>&1; then
     echo -e "$PASS"
@@ -30,7 +45,10 @@ echo "0 / Autofix (knip + ast-grep + biome + typecheck)"
 run_check "bun run lint:fix" bun run lint:fix
 
 echo ""
-bash "$ROOT/.agents/skills/kb-quality-gate/scripts/gate_policy.sh"
+echo "0.5 / Policy (new suppressions + reminders)"
+echo "──────────────────────────────────────────"
+KB_GATE_EMBEDDED_POLICY=1 run_check --tee "Policy" \
+  bash "$ROOT/.agents/skills/kb-quality-gate/scripts/gate_policy.sh"
 
 echo ""
 echo "1 / Lint + Typecheck (typecheck + biome + knip + depcruise + jscpd + ls + ast-grep + mise)"
@@ -45,7 +63,9 @@ echo "3 / Preview server smoke"
 bun tools/preview/server.ts &
 SERVER_PID=$!
 sleep 3
-HTTP_STATUS=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:3456/ || echo "000")
+# Do not use curl -f: on 4xx/5xx it exits non-zero and would mask %{http_code} in diagnostics.
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3456/)
+HTTP_STATUS=${HTTP_STATUS:-000}
 kill "$SERVER_PID" 2>/dev/null || true
 if [ "$HTTP_STATUS" = "200" ]; then
   echo -e "  Preview server … $PASS"
