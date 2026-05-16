@@ -1,115 +1,69 @@
 /// <reference lib="dom" />
 
-import { beforeEach, describe, expect, it, mock } from 'bun:test'
-import type { RpcKnowledge } from '@shared/rpc'
-import { rpcBookmarkRow } from '@testing'
-import { fireEvent, render, screen } from '@testing-library/react'
-import { useState } from 'react'
+import { beforeAll, beforeEach, describe, expect, mock, test } from 'bun:test'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { rpcBookmarkRow } from '../../../../__tests__/helpers/rpc_knowledge_test_row.util'
+import {
+  installEntryActionPanelDepsMock,
+  installRecordEntryVisitMock,
+  withMockClipboard
+} from '../../actions/entry_action_spec_setup.util'
 
-const recordEntryVisitFireAndForget = mock<(id: number) => void>()
+installEntryActionPanelDepsMock()
+const recordEntryVisitFireAndForget = installRecordEntryVisitMock()
 
-mock.module('../../utils/list/record_entry_visit.util', () => ({
-  recordEntryVisitFireAndForget
-}))
+type HarnessModule = typeof import('../../../../__tests__/helpers/view_navigation.harness.util')
 
-const { useViewNavigation } = await import('./use_view_navigation.hook')
-
-function row(id: number): RpcKnowledge {
-  return rpcBookmarkRow(id, `k${id}`)
-}
-
-function Harness({ rows }: { rows: RpcKnowledge[] }) {
-  const [selectedId, setSelectedId] = useState<number | null>(rows[0]?.id ?? null)
-  const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
-  const { advance, selectDetailEntry, handleKey } = useViewNavigation({
-    rows,
-    selectedId,
-    detailEntry,
-    setSelectedId,
-    setDetailEntry
-  })
-
-  return (
-    <div>
-      <div
-        tabIndex={0}
-        role="listbox"
-        aria-label="Test list surface"
-        data-testid="surface"
-        onKeyDownCapture={e => {
-          handleKey(e)
-          if (e.defaultPrevented) e.stopPropagation()
-        }}
-      >
-        surface
-      </div>
-      <button type="button" data-testid="advance" onClick={() => advance()}>
-        advance
-      </button>
-      <button type="button" data-testid="select-2" onClick={() => selectDetailEntry(2)}>
-        select 2
-      </button>
-    </div>
-  )
-}
+let harness: HarnessModule
 
 describe('useViewNavigation recordEntryVisit', () => {
+  beforeAll(async () => {
+    harness = await import('../../../../__tests__/helpers/view_navigation.harness.util')
+  })
+
   beforeEach(() => {
     recordEntryVisitFireAndForget.mockReset()
   })
 
-  it('records visit when advance opens detail from list', () => {
-    render(<Harness rows={[row(1), row(2)]} />)
+  test('records visit when advance opens detail from list', () => {
+    const { ViewNavigationVisitHarness } = harness
+    render(<ViewNavigationVisitHarness rows={[rpcBookmarkRow(1), rpcBookmarkRow(2)]} />)
     fireEvent.click(screen.getByTestId('advance'))
     expect(recordEntryVisitFireAndForget).toHaveBeenCalledWith(1)
   })
 
-  it('records visit when selectDetailEntry targets another row', () => {
-    render(<Harness rows={[row(1), row(2)]} />)
+  test('records visit when selectDetailEntry targets another row', () => {
+    const { ViewNavigationVisitHarness } = harness
+    render(<ViewNavigationVisitHarness rows={[rpcBookmarkRow(1), rpcBookmarkRow(2)]} />)
     fireEvent.click(screen.getByTestId('select-2'))
     expect(recordEntryVisitFireAndForget).toHaveBeenCalledWith(2)
   })
 
-  it('records visit after successful copy shortcut', async () => {
-    function CopyHarness() {
-      const [selectedId, setSelectedId] = useState<number | null>(1)
-      const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
-      const { handleKey } = useViewNavigation({
-        rows: [row(1)],
-        selectedId,
-        detailEntry,
-        setSelectedId,
-        setDetailEntry,
-        pushToast: () => undefined
-      })
-      return (
-        <div
-          onKeyDownCapture={e => {
-            handleKey(e)
-            if (e.defaultPrevented) e.stopPropagation()
-          }}
-        >
-          <div tabIndex={0} role="listbox" aria-label="Test list surface" data-testid="surface" />
-        </div>
-      )
+  test('records visit after successful copy shortcut', async () => {
+    const { ViewNavigationCopyHarness } = harness
+    const actionCtx = {
+      entry: null,
+      pushToast: () => undefined,
+      onEditTask: () => undefined,
+      onNewTask: () => undefined,
+      onSync: () => undefined
     }
-
     const writeText = mock(() => Promise.resolve())
-    const prev = navigator.clipboard
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText },
-      configurable: true,
-      writable: true
-    })
-    try {
-      render(<CopyHarness />)
+    await withMockClipboard(writeText, async () => {
+      render(
+        <ViewNavigationCopyHarness
+          rows={[rpcBookmarkRow(1)]}
+          selectedId={1}
+          pushToast={() => undefined}
+          actionCtx={actionCtx}
+        />
+      )
       const surface = screen.getByTestId('surface')
       surface.focus()
       fireEvent.keyDown(surface, { key: 'c', metaKey: true, bubbles: true })
-      await Promise.resolve()
-      expect(recordEntryVisitFireAndForget).toHaveBeenCalledWith(1)
-    } finally {
-      Object.defineProperty(navigator, 'clipboard', { value: prev, configurable: true, writable: true })
-    }
+      await waitFor(() => {
+        expect(recordEntryVisitFireAndForget).toHaveBeenCalledWith(1)
+      })
+    })
   })
 })

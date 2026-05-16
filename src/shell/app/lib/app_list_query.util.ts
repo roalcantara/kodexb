@@ -1,4 +1,3 @@
-import type { Knowledge } from '../../../core'
 import type { ListOpts, RpcListEntry } from '../../../shared/rpc'
 import type { LoadedConfig } from '../config/config.loader'
 import type { openDatabase } from '../db/client'

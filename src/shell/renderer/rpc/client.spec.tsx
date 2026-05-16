@@ -1,35 +1,13 @@
-import '@happy-dom/global-registrator'
-
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { RpcSyncProgressPayload } from '@shared/rpc'
-import { factoryFor } from '@testing'
+import { factoryFor } from '../../../__tests__/factories/factories.builder'
+import {
+  getElectrobunMessageHandler,
+  type RpcCallParams,
+  setRpcCallHandler
+} from '../../../__tests__/helpers/testing.electrobun_view.mock'
 
-const rpcCallMock = mock<(params: unknown) => Promise<{ status: number; body: string }>>()
-
-const messageHandlers: Record<string, (payload: unknown) => void> = {}
-
-function mockElectroviewDefineRpc(config: { handlers?: { messages?: Record<string, (payload: unknown) => void> } }) {
-  const messages = config.handlers?.messages ?? {}
-  for (const [name, handler] of Object.entries(messages)) {
-    messageHandlers[name] = handler
-  }
-  return {
-    request: { rpcCall: rpcCallMock },
-    send: {},
-    setTransport: () => undefined
-  }
-}
-
-mock.module('electrobun/view', () => ({
-  Electroview: class {
-    // biome-ignore lint/style/useNamingConvention: mirrors Electrobun Electroview.defineRPC
-    static defineRPC = mockElectroviewDefineRpc
-    rpc: unknown
-    constructor(config: { rpc: unknown }) {
-      this.rpc = config.rpc
-    }
-  }
-}))
+const rpcCallMock = mock<(params: RpcCallParams) => Promise<{ status: number; body: string }>>()
 
 const {
   fetchPreviewImage,
@@ -48,6 +26,7 @@ const {
 
 beforeEach(() => {
   rpcCallMock.mockReset()
+  setRpcCallHandler(params => rpcCallMock(params))
 })
 
 afterEach(() => {
@@ -211,8 +190,8 @@ describe('Eden Treaty client', () => {
       })
 
       const recentFile = { path: '/tmp/a.yml', label: 'a.yml', ok: true, inserted: 2, updated: 0 }
-      messageHandlers.syncProgress?.({ processed: 1, total: 10, recentFile })
-      messageHandlers.syncComplete?.({ filesProcessed: 1, inserted: 1, updated: 0, errors: [] })
+      getElectrobunMessageHandler('syncProgress')?.({ processed: 1, total: 10, recentFile })
+      getElectrobunMessageHandler('syncComplete')?.({ filesProcessed: 1, inserted: 1, updated: 0, errors: [] })
 
       expect(progress).toEqual([{ processed: 1, total: 10, recentFile }])
       expect(completes).toHaveLength(1)

@@ -5,39 +5,32 @@ import '@happy-dom/global-registrator'
 import { describe, expect, it, mock } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'
-import { renderHook } from '@testing-library/react'
+import { act, renderHook } from '@testing-library/react'
+import type { EntryActionPanelDeps } from '../../actions/entry_action_panel_deps.util'
+import { useCommandPalette } from './use_command_palette.hook'
 
-mock.module('electrobun/view', () => ({
-  Electroview: class {
-    // biome-ignore lint/style/useNamingConvention: mirrors Electrobun Electroview.defineRPC
-    static defineRPC() {
-      return {
-        request: {
-          rpcCall: mock(() => Promise.resolve({ status: 200, body: 'null' }))
-        },
-        send: {},
-        setTransport: () => undefined
-      }
-    }
-
-    rpc: unknown
-    constructor(config: { rpc: unknown }) {
-      this.rpc = config.rpc
-    }
-  }
-}))
-
-const { useCommandPalette } = await import('./use_command_palette.hook')
+const testEntryPanelDeps: EntryActionPanelDeps = {
+  openExternal: mock(() => Promise.resolve()),
+  openInEditor: mock(() => Promise.resolve()),
+  cycleStatus: mock(() => Promise.resolve()),
+  cyclePriority: mock(() => Promise.resolve()),
+  quitApp: mock(() => Promise.resolve())
+}
 
 const paletteCallbacks = {
   onEditTask: () => undefined,
   onNewTask: () => undefined,
   onSync: () => undefined,
-  pushToast: () => undefined
+  pushToast: () => undefined,
+  entryPanelDeps: testEntryPanelDeps
 }
 
 function renderPalette(overrides: { selectedId: number | null; rows: RpcKnowledge[] }) {
-  return renderHook(() => useCommandPalette({ ...paletteCallbacks, ...overrides }))
+  const hook = renderHook(() => useCommandPalette({ ...paletteCallbacks, ...overrides }))
+  act(() => {
+    hook.result.current.openPalette()
+  })
+  return hook
 }
 
 describe('useCommandPalette', () => {

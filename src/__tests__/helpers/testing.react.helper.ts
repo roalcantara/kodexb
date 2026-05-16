@@ -7,8 +7,16 @@ afterEach(() => {
 
 /** List row already selected: first ArrowRight → split; second → detail (`view-state`). */
 export function fireTwoRightsExpectSplitThenDetail(surface: HTMLElement): void {
-  fireEvent.keyDown(surface, { key: 'ArrowRight' })
-  expect(screen.getByTestId('view-state').textContent).toBe('split')
-  fireEvent.keyDown(surface, { key: 'ArrowRight' })
-  expect(screen.getByTestId('view-state').textContent).toBe('detail')
+  fireArrowKey(surface, 'ArrowRight')
+  expectViewState('split')
+  fireArrowKey(surface, 'ArrowRight')
+  expectViewState('detail')
+}
+
+export function expectViewState(expected: string): void {
+  expect(screen.getByTestId('view-state').textContent).toBe(expected)
+}
+
+export function fireArrowKey(surface: HTMLElement, key: 'ArrowLeft' | 'ArrowRight'): void {
+  fireEvent.keyDown(surface, { key })
 }

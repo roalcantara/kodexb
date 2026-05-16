@@ -1,5 +1,7 @@
 import type { RpcKnowledge, TaskView } from '@shared/rpc'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import type { EntryActionContext } from '../../actions/entry_action_panel.types'
+import { defaultEntryActionPanelDeps } from '../../actions/entry_action_panel_deps.util'
 import type { EntryTypeOption } from '../../components/list/filter_dropdown.component'
 import { deleteTask, hideWindow, reorderTask } from '../../rpc/client'
 import { listPageEmptyFlags } from '../../utils/list/list_page_empty_flags.util'
@@ -35,6 +37,34 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     searchInputRef.current?.blur()
     focusListSurface(listSurfaceRef)
   }, [])
+
+  const [taskSheetEntry, setTaskSheetEntry] = useState<RpcKnowledge | null>(null)
+  const [taskSheetOpen, setTaskSheetOpen] = useState(false)
+  const taskSheetVisible = taskSheetOpen
+
+  const handleNewTask = useCallback(() => {
+    setTaskSheetEntry(null)
+    setTaskSheetOpen(true)
+  }, [])
+
+  const handleEditTask = useCallback((entry: RpcKnowledge) => {
+    setTaskSheetEntry(entry)
+    setTaskSheetOpen(true)
+  }, [])
+
+  const actionCtx = useMemo<EntryActionContext>(
+    () => ({
+      entry: null,
+      pushToast,
+      onEditTask: handleEditTask,
+      onNewTask: handleNewTask,
+      onSync: data.onSync
+    }),
+    [pushToast, handleEditTask, handleNewTask, data.onSync]
+  )
+
+  const entryPanelDeps = useMemo(() => defaultEntryActionPanelDeps(), [])
+
   const sel = useListSelection(
     data.rows,
     onLeaveListUpward,
@@ -44,7 +74,8 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     searchInputRef,
     hideWindow,
     pushToast,
-    onEscapeFromSearch
+    onEscapeFromSearch,
+    actionCtx
   )
 
   const handleWindowModL = useCallback(
@@ -69,21 +100,17 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     loading: data.loading,
     fetchMore
   })
-  const [taskSheetEntry, setTaskSheetEntry] = useState<RpcKnowledge | null>(null)
-  const [taskSheetOpen, setTaskSheetOpen] = useState(false)
-  const taskSheetVisible = taskSheetOpen
-
   const palette = useCommandPalette({
     selectedId: sel.selectedId,
     rows: data.rows,
     pushToast,
-    onEditTask: _entry => {
-      // TaskSheet is handled by the existing selection hook's detailEntry + openDetail
-    },
-    onNewTask: () => handleNewTask(),
+    actionCtx,
+    onEditTask: handleEditTask,
+    onNewTask: handleNewTask,
     onSync: data.onSync,
     setFilterOpen: filter.setFilterOpen,
-    shortcutsBlocked: showSettings || taskSheetVisible
+    shortcutsBlocked: showSettings || taskSheetVisible,
+    entryPanelDeps
   })
 
   const flags = listPageEmptyFlags(data)
@@ -103,16 +130,6 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     setSelectedId: sel.setSelectedId,
     searchInputRef
   })
-
-  const handleNewTask = useCallback(() => {
-    setTaskSheetEntry(null)
-    setTaskSheetOpen(true)
-  }, [])
-
-  const handleEditTask = useCallback((entry: RpcKnowledge) => {
-    setTaskSheetEntry(entry)
-    setTaskSheetOpen(true)
-  }, [])
 
   const handleCloseTaskSheet = useCallback(() => {
     setTaskSheetEntry(null)
@@ -168,6 +185,8 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     onCloseTaskSheet: handleCloseTaskSheet,
     dragDrop,
     palette,
+    actionCtx,
+    entryPanelDeps,
     actionToasts,
     dismissActionToast,
     pushToast

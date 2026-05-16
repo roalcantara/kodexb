@@ -2,7 +2,7 @@
 
 import { expect, mock, test } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
-import { fireTwoRightsExpectSplitThenDetail, rpcBookmarkRow } from '@testing'
+import { expectViewState, fireArrowKey, fireTwoRightsExpectSplitThenDetail, rpcBookmarkRow } from '@testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -67,13 +67,13 @@ test('ArrowDown keeps detail preview in sync after split ↔ full detail via Arr
   const user = userEvent.setup()
   const surface = renderFocusedSurface([row(1), row(2), row(3)])
   await user.keyboard('{ArrowDown}')
-  fireEvent.keyDown(surface, { key: 'ArrowRight' })
-  expect(screen.getByTestId('view-state').textContent).toBe('split')
+  fireArrowKey(surface, 'ArrowRight')
+  expectViewState('split')
   expect(screen.getByTestId('detail').textContent).toBe('1')
-  fireEvent.keyDown(surface, { key: 'ArrowRight' })
-  expect(screen.getByTestId('view-state').textContent).toBe('detail')
-  fireEvent.keyDown(surface, { key: 'ArrowRight' })
-  expect(screen.getByTestId('view-state').textContent).toBe('split')
+  fireArrowKey(surface, 'ArrowRight')
+  expectViewState('detail')
+  fireArrowKey(surface, 'ArrowRight')
+  expectViewState('split')
   await user.keyboard('{ArrowDown}')
   expect(screen.getByTestId('selected').textContent).toBe('2')
   expect(screen.getByTestId('detail').textContent).toBe('2')

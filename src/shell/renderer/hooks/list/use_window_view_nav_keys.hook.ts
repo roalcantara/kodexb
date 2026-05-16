@@ -13,6 +13,8 @@ export type WindowViewNavKeysOpts = {
   handleModL?: (e: KeyboardEvent) => void
   /** Plain ArrowUp/Down when focus is outside the list surface (detail panel, etc.). */
   handleListArrows?: (e: KeyboardEvent) => void
+  /** Return / mod+Return for entry primary/secondary actions. */
+  handleEntryReturn?: (e: KeyboardEvent) => void
   /** Scroll container for ⌘/⌃+ArrowUp/ArrowDown (detail / split). */
   detailScrollRef?: RefObject<HTMLElement | null>
   /** When true, ⌘/⌃+vertical arrows scroll `detailScrollRef` instead of doing nothing. */
@@ -77,6 +79,7 @@ function runListWindowKeydown(
   handleKey: (e: KeyboardEvent) => void,
   onModL: (e: KeyboardEvent) => void,
   handleListArrows: ((e: KeyboardEvent) => void) | undefined,
+  handleEntryReturn: ((e: KeyboardEvent) => void) | undefined,
   detailScrollRef: RefObject<HTMLElement | null> | undefined,
   detailScrollActive: boolean | undefined
 ): void {
@@ -94,6 +97,13 @@ function runListWindowKeydown(
   if (isModC(e)) {
     handleKey(e)
     stopIfDefaultPrevented(e)
+    return
+  }
+  if (e.key === 'Enter' && handleEntryReturn) {
+    if (!keyTargetIsTextField(e.target)) {
+      handleEntryReturn(e)
+      stopIfDefaultPrevented(e)
+    }
     return
   }
   if (e.key === 'Escape') {
@@ -115,6 +125,7 @@ export function useWindowViewNavKeys({
   handleKey,
   handleModL,
   handleListArrows,
+  handleEntryReturn,
   detailScrollRef,
   detailScrollActive
 }: WindowViewNavKeysOpts): void {
@@ -128,11 +139,21 @@ export function useWindowViewNavKeys({
         handleKey,
         onModL,
         handleListArrows,
+        handleEntryReturn,
         detailScrollRef,
         detailScrollActive
       )
     }
     window.addEventListener('keydown', onKeyDown, true)
     return () => window.removeEventListener('keydown', onKeyDown, true)
-  }, [disabled, skipEscapeCapture, handleKey, onModL, handleListArrows, detailScrollRef, detailScrollActive])
+  }, [
+    disabled,
+    skipEscapeCapture,
+    handleKey,
+    onModL,
+    handleListArrows,
+    handleEntryReturn,
+    detailScrollRef,
+    detailScrollActive
+  ])
 }

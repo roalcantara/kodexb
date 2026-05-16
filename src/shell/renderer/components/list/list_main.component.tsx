@@ -1,6 +1,7 @@
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { useFilterDropdownStats } from '../../hooks/list/use_filter_dropdown_stats.hook'
+import { useListMainEntryKeys } from '../../hooks/list/use_list_main_entry_keys.hook'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 import { useListSurfaceScrollRestore } from '../../hooks/list/use_list_surface_scroll_restore.hook'
 import { useVirtualListWindow } from '../../hooks/list/use_virtual_list_window.hook'
@@ -59,6 +60,17 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
 
   const detailEntry = p.sel.detailEntry
   const viewState = p.sel.viewState
+
+  const handleEntryReturn = useListMainEntryKeys({
+    disabled: showSettings || p.taskSheetVisible || p.palette.open,
+    viewState,
+    rows: p.data.rows,
+    selectedId: p.sel.selectedId,
+    detailEntry,
+    detailScrollRef,
+    actionCtx: p.actionCtx,
+    entryPanelDeps: p.entryPanelDeps
+  })
 
   const footerStatus = formatListFooterStatus({
     matchTotal: p.data.matchTotal,
@@ -139,6 +151,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
     handleListArrows: e => {
       p.onListKeyDown(e as unknown as ReactKeyboardEvent<HTMLDivElement>)
     },
+    handleEntryReturn,
     detailScrollRef,
     detailScrollActive: detailEntry !== null
   })

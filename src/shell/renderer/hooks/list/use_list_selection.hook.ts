@@ -1,6 +1,7 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import type { RefObject } from 'react'
 import { type KeyboardEvent as ReactKeyboardEvent, useState } from 'react'
+import type { EntryActionContext } from '../../actions/entry_action_panel.types'
 import { useViewNavigation } from './use_view_navigation.hook'
 
 const REPEAT_MOVE_STEP = 5
@@ -52,7 +53,8 @@ export function useListSelection(
   searchInputRef?: RefObject<HTMLInputElement | null>,
   hideWindow?: () => void,
   pushToast?: (msg: string, type: 'success' | 'error') => void,
-  onEscapeFromSearch?: () => void
+  onEscapeFromSearch?: () => void,
+  actionCtx?: EntryActionContext
 ) {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
@@ -66,7 +68,8 @@ export function useListSelection(
     searchInputRef,
     onEscapeFromSearch,
     hideWindow,
-    pushToast
+    pushToast,
+    actionCtx
   })
 
   const patchSelection = (nextId: number | null, rowIfDetail?: RpcKnowledge | null) => {

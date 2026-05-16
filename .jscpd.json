@@ -15,10 +15,6 @@
     "**/tools/benchmarks/results/**",
     ".cursor/commands/**",
     "**/tmp/**",
-    "**/.superpowers/**",
-    "src/shell/renderer/utils/list/list_entries_query.util.spec.ts",
-    "src/shell/renderer/utils/list/list_opts_from_filters.util.spec.ts",
-    "src/shell/renderer/hooks/list/use_view_navigation.hook.spec.tsx",
-    "src/shell/renderer/hooks/list/use_list_selection.hook.spec.tsx"
+    "**/.superpowers/**"
   ]
 }

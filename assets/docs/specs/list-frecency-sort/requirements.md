@@ -18,6 +18,8 @@ Rank **entry rows** in List View and Split View by **frecency** (frequency + rec
 - The system **shall** record a visit on **successful command-palette Copy** and **Paste in Terminal** (clipboard actions for the selected entry).
 - The system **shall not** record a visit for row highlight alone or filter changes alone.
 
+**Extended by [Entry Action Panel](../entry-action-panel/requirements.md)** (R4–R6): primary/secondary list actions, palette actions via `executeEntryAction`, and consolidated detail/copy visit paths. Ordering (R3–R8) unchanged.
+
 ## R3 — Browse and filter ordering
 
 - When **no FTS query** is active, rows **shall** sort by:

@@ -1,5 +1,6 @@
 import type { RpcKnowledge, RpcListEntry } from '@shared/rpc'
 import { memo } from 'react'
+import { entryActionPrimaryRowHint } from '../../../../core/helpers/entry_action/entry_action_row_hint.util'
 import { getIcon } from '../../utils/shared/get_icon.util'
 import { BadgeAccessory } from '../shared/badge_accessory.component'
 import { EntryRowFrecencyIndicator } from './entry_row_frecency_indicator.component'
@@ -39,16 +40,10 @@ function subtitleLine(entry: RpcKnowledge): string {
   return `${entry.type}${tags === '' ? '' : `  ${tags}`}`
 }
 
-function getPrimaryActionHint(entry: RpcKnowledge): { label: string; className: string } | null {
-  switch (entry.type) {
-    case 'bookmark':
-      return { label: '\u21B5 Open', className: 'kb-pt-row-hint--bookmark' }
-    case 'command':
-      return { label: '\u2318C Copy', className: 'kb-pt-row-hint--command' }
-    case 'cheat':
-      return { label: '\u2318C Copy', className: 'kb-pt-row-hint--cheat' }
-    case 'task':
-      return { label: '\u2318E Edit', className: 'kb-pt-row-hint--task' }
+function getPrimaryActionHint(entry: RpcKnowledge): { label: string; className: string } {
+  return {
+    label: entryActionPrimaryRowHint(entry.type),
+    className: `kb-pt-row-hint--${entry.type}`
   }
 }
 
@@ -108,7 +103,7 @@ function EntryRowComponent({
             visitCount={entry.visitCount}
             maxFrecencyScore={maxFrecencyScore}
           />
-          {hint && selected ? <span className={`kb-pt-row-hint ${hint.className}`}>{hint.label}</span> : null}
+          {selected ? <span className={`kb-pt-row-hint ${hint.className}`}>{hint.label}</span> : null}
         </span>
       </button>
     )

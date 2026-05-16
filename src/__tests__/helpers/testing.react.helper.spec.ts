@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'bun:test'
 
-import { fireTwoRightsExpectSplitThenDetail } from './testing.react.helper'
+import { expectViewState, fireArrowKey, fireTwoRightsExpectSplitThenDetail } from './testing.react.helper'
 
-describe('fireTwoRightsExpectSplitThenDetail', () => {
-  it('is exported for list / view-navigation hook specs', () => {
+describe('testing.react.helper', () => {
+  it('exports list navigation test helpers', () => {
     expect(typeof fireTwoRightsExpectSplitThenDetail).toBe('function')
+    expect(typeof expectViewState).toBe('function')
+    expect(typeof fireArrowKey).toBe('function')
   })
 })

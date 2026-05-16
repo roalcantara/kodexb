@@ -1,9 +1,11 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import type { MutableRefObject, RefObject } from 'react'
 import { useCallback, useReducer, useRef } from 'react'
+import { resolveCurrentEntry } from '../../../../core/helpers/entry_action/resolve_current_entry.util'
 import { copyTextForEntry } from '../../../../core/index.ts'
+import type { EntryActionContext } from '../../actions/entry_action_panel.types'
+import { executeEntryAction } from '../../actions/execute_entry_action.util'
 import { clipboardCopiedToastMessage } from '../../utils/list/clipboard_copy_toast.util'
-import { recordEntryVisitFireAndForget } from '../../utils/list/record_entry_visit.util'
 import { scheduleFocusSearchInputSelectAll } from '../../utils/list/schedule_double_raf.util'
 import { type ViewState, viewReducer } from '../../utils/list/view_reducer.util'
 
@@ -20,9 +22,10 @@ type ViewNavigationDeps = {
   onEscapeFromSearch?: () => void
   hideWindow?: () => void
   pushToast?: (msg: string, type: 'success' | 'error') => void
+  actionCtx?: EntryActionContext
 }
 
-type ViewNavigationKeyEvent = {
+export type ViewNavigationKeyEvent = {
   key: string
   metaKey?: boolean
   ctrlKey?: boolean
@@ -45,6 +48,7 @@ type ViewNavigationKeyCtx = {
   onEscapeFromSearch?: () => void
   hideWindow?: () => void
   pushToast?: (msg: string, type: 'success' | 'error') => void
+  actionCtx?: EntryActionContext
 }
 
 export type ViewNavigationResult = {
@@ -89,16 +93,24 @@ function tryCopyShortcut(
 ): boolean {
   if (!((e.metaKey || e.ctrlKey) && e.key === 'c' && !isInput && !isEditable)) return false
   e.preventDefault?.()
-  const { rows: r, selectedId: sid } = ctx.depsRef.current
-  const selected = r.find(row => row.id === sid)
-  if (selected) {
-    const content = copyTextForEntry(selected)
+  const { rows: r, selectedId: sid, detailEntry, viewState } = ctx.depsRef.current
+  const actionCtx = ctx.actionCtx
+  const entry = actionCtx
+    ? resolveCurrentEntry({
+        viewState,
+        selectedId: sid,
+        detailEntry,
+        rows: r,
+        detailPanelHasFocus: false
+      })
+    : r.find(row => row.id === sid)
+  if (entry && actionCtx) {
+    executeEntryAction(entry, 'copy', { ...actionCtx, entry }).catch(() => undefined)
+  } else if (entry) {
+    const content = copyTextForEntry(entry)
     const msg = clipboardCopiedToastMessage(content)
     navigator.clipboard.writeText(content).then(
-      () => {
-        recordEntryVisitFireAndForget(selected.id)
-        ctx.pushToast?.(msg, 'success')
-      },
+      () => ctx.pushToast?.(msg, 'success'),
       () => ctx.pushToast?.('Copy failed', 'error')
     )
   } else {
@@ -178,7 +190,8 @@ export function useViewNavigation({
   searchInputRef,
   onEscapeFromSearch,
   hideWindow,
-  pushToast
+  pushToast,
+  actionCtx
 }: ViewNavigationDeps): ViewNavigationResult {
   const [viewState, dispatch] = useReducer(viewReducer, 'list')
   const depsRef = useRef({ rows, selectedId, detailEntry, viewState })
@@ -199,7 +212,6 @@ export function useViewNavigation({
 
     if (vs === 'list' || vs === 'split') {
       setDetailEntry(entry)
-      recordEntryVisitFireAndForget(entry.id)
     }
     dispatch('ADVANCE')
   }, [setSelectedId, setDetailEntry])
@@ -227,7 +239,6 @@ export function useViewNavigation({
       if (!row) return
       setSelectedId(id)
       setDetailEntry(row)
-      recordEntryVisitFireAndForget(id)
       if (vs === 'list') {
         dispatch('ADVANCE')
       }
@@ -245,10 +256,11 @@ export function useViewNavigation({
         searchInputRef,
         onEscapeFromSearch,
         hideWindow,
-        pushToast
+        pushToast,
+        actionCtx
       })
     },
-    [advance, retreat, searchInputRef, onEscapeFromSearch, hideWindow, pushToast]
+    [advance, retreat, searchInputRef, onEscapeFromSearch, hideWindow, pushToast, actionCtx]
   )
 
   return {
