@@ -1,4 +1,4 @@
-import type { RpcKnowledge, TaskView } from '@shared/rpc'
+import type { RpcListEntry, TaskView } from '@shared/rpc'
 import type { EntryTypeOption } from '../../components/list/filter_dropdown.component'
 import { listEntries } from '../../rpc/client'
 import { listOptsFromListFilters } from './list_opts_from_filters.util'
@@ -13,7 +13,7 @@ export function loadListRows(args: {
   pageSize: number
   append: boolean
   priorLen: number
-}): Promise<RpcKnowledge[]> {
+}): Promise<RpcListEntry[]> {
   return listEntries(
     listOptsFromListFilters({
       query: args.query,

@@ -12,6 +12,7 @@ import type {
   RpcGetConfigPayload,
   RpcImportResult,
   RpcKnowledge,
+  RpcListEntry,
   RpcSyncProgressPayload,
   TaskCreateInput,
   TaskUpdateInput
@@ -149,8 +150,8 @@ export function setSyncMessageHandlers(handlers: {
   syncListeners.onComplete = handlers.onComplete
 }
 
-export function listEntries(opts: ListOpts = {}): Promise<RpcKnowledge[]> {
-  return rpc.api.list.post(opts).then(unwrap) as Promise<RpcKnowledge[]>
+export function listEntries(opts: ListOpts = {}): Promise<RpcListEntry[]> {
+  return rpc.api.list.post(opts).then(unwrap) as Promise<RpcListEntry[]>
 }
 
 export function listMatchCount(opts: ListOpts = {}): Promise<number> {
@@ -169,6 +170,10 @@ export function getStats(): Promise<RpcDbStats> {
 
 export function getEntry(id: number): Promise<RpcKnowledge | null> {
   return rpc.api.getEntry.post({ id }).then(unwrap) as Promise<RpcKnowledge | null>
+}
+
+export function recordEntryVisit(id: number): Promise<{ ok: true }> {
+  return rpc.api.recordEntryVisit.post({ id }).then(unwrap) as Promise<{ ok: true }>
 }
 
 export function getConfig(): Promise<RpcGetConfigPayload> {

@@ -37,6 +37,7 @@ const {
   getListStats,
   listEntries,
   listMatchCount,
+  recordEntryVisit,
   openExternal,
   openInEditor,
   pasteInTerminal,
@@ -103,6 +104,19 @@ describe('Eden Treaty client', () => {
       const call = rpcCallMock.mock.calls[0]?.[0] as { path: string; body: string }
       expect(call.path).toBe('/api/listMatchCount')
       expect(JSON.parse(call.body)).toEqual({ query: 'brew' })
+    })
+  })
+
+  describe('.recordEntryVisit', () => {
+    it('forwards body to /api/recordEntryVisit', async () => {
+      rpcCallMock.mockImplementation(() => okResponse({ ok: true }))
+
+      const result = await recordEntryVisit(7)
+
+      expect(result).toEqual({ ok: true })
+      const call = rpcCallMock.mock.calls[0]?.[0] as { path: string; body: string }
+      expect(call.path).toBe('/api/recordEntryVisit')
+      expect(JSON.parse(call.body)).toEqual({ id: 7 })
     })
   })
 

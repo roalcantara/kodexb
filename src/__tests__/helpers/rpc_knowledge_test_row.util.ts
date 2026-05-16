@@ -1,9 +1,13 @@
-import type { RpcKnowledge } from '@shared/rpc'
+import type { RpcKnowledge, RpcListEntry } from '@shared/rpc'
 import { factoryFor } from '../factories/factories.builder'
 
 /** Minimal bookmark list row for renderer hook/component specs (explicit id + key). */
-export function rpcBookmarkRow(id: number, key = `k${id}`): RpcKnowledge {
-  return factoryFor('bookmark', {
+export function rpcBookmarkRow(
+  id: number,
+  key = `k${id}`,
+  frecency: { score?: number; visits?: number } = {}
+): RpcListEntry {
+  const base = factoryFor('bookmark', {
     overrides: {
       id,
       key,
@@ -15,4 +19,9 @@ export function rpcBookmarkRow(id: number, key = `k${id}`): RpcKnowledge {
       updatedAt: 0
     }
   }) as RpcKnowledge
+  return {
+    ...base,
+    frecencyScore: frecency.score ?? 0,
+    visitCount: frecency.visits ?? 0
+  }
 }

@@ -3,6 +3,18 @@ import type { UnknownRecord } from 'type-fest'
 import type { EntryType, Knowledge } from '../../../core'
 import type { KnowledgeRow } from './schema'
 
+export type KnowledgeWithFrecency = Knowledge & {
+  frecencyScore: number
+  visitCount: number
+}
+
+type KnowledgeRowWithFrecency = KnowledgeRow & {
+  frecency_score: number
+  visit_count: number
+}
+
+const FRECENCY_SELECT_SQL = 'COALESCE(f.frecency_score, 0) AS frecency_score, COALESCE(f.visit_count, 0) AS visit_count'
+
 export type FindAllOpts = {
   query?: string
   tags?: string[]
@@ -17,6 +29,14 @@ export type DbStats = {
 }
 
 const DEFAULT_QUERY_LIMIT = 50
+
+const FRECENCY_JOIN_SQL = 'LEFT JOIN entry_frecency f ON f.entry_id = k.id'
+
+const ORDER_BY_FRECENCY_TAIL_SQL = `
+      ORDER BY COALESCE(f.frecency_score, 0) DESC,
+               k.task_order ASC NULLS LAST,
+               k.updated_at DESC,
+               k.id DESC`
 
 const UPSERT_SQL = `
 INSERT INTO knowledges (
@@ -172,11 +192,16 @@ function findAllRowsFts(
 ): UnknownRecord[] {
   const tagWhere = tagFilter.clause === '' ? '' : ` AND (${tagFilter.clause})`
   const sql = `
-      SELECT k.*
+      SELECT k.*, ${FRECENCY_SELECT_SQL}
       FROM knowledges k
+      ${FRECENCY_JOIN_SQL}
       JOIN knowledges_fts ON k.id = knowledges_fts.id
       WHERE knowledges_fts MATCH ?${tagWhere}
-      ORDER BY bm25(knowledges_fts)
+      ORDER BY bm25(knowledges_fts),
+               COALESCE(f.frecency_score, 0) DESC,
+               k.task_order ASC NULLS LAST,
+               k.updated_at DESC,
+               k.id DESC
       LIMIT ? OFFSET ?
     `
   return db.query(sql).all(match, ...tagFilter.params, limitParam, offset) as UnknownRecord[]
@@ -203,11 +228,19 @@ function findAllRowsPlain(
   }
 
   const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
-  const sql = `SELECT k.* FROM knowledges k ${where} LIMIT ? OFFSET ?`
+  const sql = `SELECT k.*, ${FRECENCY_SELECT_SQL} FROM knowledges k ${FRECENCY_JOIN_SQL} ${where}${ORDER_BY_FRECENCY_TAIL_SQL} LIMIT ? OFFSET ?`
   return db.query(sql).all(...params, limitParam, offset) as UnknownRecord[]
 }
 
-export function findAll(db: Database, opts: FindAllOpts = {}): Knowledge[] {
+function rowToKnowledgeWithFrecency(row: KnowledgeRowWithFrecency): KnowledgeWithFrecency {
+  return {
+    ...rowToKnowledge(row),
+    frecencyScore: row.frecency_score,
+    visitCount: row.visit_count
+  }
+}
+
+export function findAll(db: Database, opts: FindAllOpts = {}): KnowledgeWithFrecency[] {
   const { query, tags, types, offset = 0 } = opts
   const limit = opts.limit ?? DEFAULT_QUERY_LIMIT
   const limitParam = limit === -1 ? -1 : limit
@@ -218,7 +251,7 @@ export function findAll(db: Database, opts: FindAllOpts = {}): Knowledge[] {
     ? findAllRowsFts(db, toFts5MatchQuery(query), tagFilter, limitParam, offset)
     : findAllRowsPlain(db, types, tagFilter, limitParam, offset)
 
-  let list = rows.map(row => rowToKnowledge(row as KnowledgeRow))
+  let list = rows.map(row => rowToKnowledgeWithFrecency(row as KnowledgeRowWithFrecency))
 
   if (query && types && types.length > 0) {
     list = list.filter(entry => types.includes(entry.type))

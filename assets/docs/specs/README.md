@@ -30,6 +30,7 @@ When an AI skill or template says to write under `docs/superpowers/`, **redirect
 
 ## Feature specs (index)
 
+- [List frecency sort](list-frecency-sort/design.md) — Raycast-style entry ranking for list/split; visits on detail open + copy; [requirements](list-frecency-sort/requirements.md), [tasks](list-frecency-sort/tasks.md), [implementation plan](list-frecency-sort/implementation-plan.md).
 - [Compact filter overlay rebuild](compact-filter-redesign/design.md) — single scrollport, fixed Close footer, highlight visibility; [tasks](compact-filter-redesign/tasks.md), [implementation plan](compact-filter-redesign/implementation-plan.md).
 - [Command palette and filter UX](command-palette-filter-ux/design.md) — ⌘P / ⌘K; behaviour matrix in the **project root** [README.md](../../../README.md).
 

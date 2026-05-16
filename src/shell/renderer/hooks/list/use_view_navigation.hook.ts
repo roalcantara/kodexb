@@ -3,6 +3,7 @@ import type { MutableRefObject, RefObject } from 'react'
 import { useCallback, useReducer, useRef } from 'react'
 import { copyTextForEntry } from '../../../../core/index.ts'
 import { clipboardCopiedToastMessage } from '../../utils/list/clipboard_copy_toast.util'
+import { recordEntryVisitFireAndForget } from '../../utils/list/record_entry_visit.util'
 import { scheduleFocusSearchInputSelectAll } from '../../utils/list/schedule_double_raf.util'
 import { type ViewState, viewReducer } from '../../utils/list/view_reducer.util'
 
@@ -94,7 +95,10 @@ function tryCopyShortcut(
     const content = copyTextForEntry(selected)
     const msg = clipboardCopiedToastMessage(content)
     navigator.clipboard.writeText(content).then(
-      () => ctx.pushToast?.(msg, 'success'),
+      () => {
+        recordEntryVisitFireAndForget(selected.id)
+        ctx.pushToast?.(msg, 'success')
+      },
       () => ctx.pushToast?.('Copy failed', 'error')
     )
   } else {
@@ -195,6 +199,7 @@ export function useViewNavigation({
 
     if (vs === 'list' || vs === 'split') {
       setDetailEntry(entry)
+      recordEntryVisitFireAndForget(entry.id)
     }
     dispatch('ADVANCE')
   }, [setSelectedId, setDetailEntry])
@@ -222,6 +227,7 @@ export function useViewNavigation({
       if (!row) return
       setSelectedId(id)
       setDetailEntry(row)
+      recordEntryVisitFireAndForget(id)
       if (vs === 'list') {
         dispatch('ADVANCE')
       }

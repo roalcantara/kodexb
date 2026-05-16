@@ -1,4 +1,4 @@
-import type { RpcKnowledge, TaskView } from '@shared/rpc'
+import type { RpcListEntry, TaskView } from '@shared/rpc'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { EntryTypeOption } from '../../components/list/filter_dropdown.component'
 import { listMatchCount } from '../../rpc/client'
@@ -14,8 +14,8 @@ export type ListPageRowsInput = {
 
 export function useListPageRows(input: ListPageRowsInput) {
   const { debouncedSearch, types, tags, taskView, pageSize } = input
-  const [rows, setRows] = useState<RpcKnowledge[]>([])
-  const rowsRef = useRef<RpcKnowledge[]>([])
+  const [rows, setRows] = useState<RpcListEntry[]>([])
+  const rowsRef = useRef<RpcListEntry[]>([])
   const [hasMore, setHasMore] = useState(false)
   const [loading, setLoading] = useState(true)
   const [matchTotal, setMatchTotal] = useState<number | null>(null)

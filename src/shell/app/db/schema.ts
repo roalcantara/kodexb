@@ -33,11 +33,29 @@ CREATE VIRTUAL TABLE IF NOT EXISTS knowledges_fts USING fts5(
 );
 `
 
+export const CREATE_ENTRY_FRECENCY_SQL = `
+CREATE TABLE IF NOT EXISTS entry_frecency (
+  entry_id         INTEGER PRIMARY KEY
+                   REFERENCES knowledges(id) ON DELETE CASCADE,
+  visit_count      INTEGER NOT NULL DEFAULT 0,
+  last_visited_at  INTEGER NOT NULL,
+  frecency_score   REAL    NOT NULL DEFAULT 0
+);
+`
+
 export const CREATE_INDEXES_SQL = [
   'CREATE INDEX IF NOT EXISTS idx_knowledges_type       ON knowledges(type);',
   'CREATE INDEX IF NOT EXISTS idx_knowledges_task_order ON knowledges(task_order);',
-  'CREATE INDEX IF NOT EXISTS idx_knowledges_due_date   ON knowledges(due_date);'
+  'CREATE INDEX IF NOT EXISTS idx_knowledges_due_date   ON knowledges(due_date);',
+  'CREATE INDEX IF NOT EXISTS idx_entry_frecency_score  ON entry_frecency(frecency_score DESC);'
 ] as const
+
+export type EntryFrecencyRow = {
+  entry_id: number
+  visit_count: number
+  last_visited_at: number
+  frecency_score: number
+}
 
 export type KnowledgeRow = {
   id: number

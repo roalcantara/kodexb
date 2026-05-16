@@ -3,6 +3,7 @@ import { parseSourceFile, toKnowledge } from '@core'
 import { createSeededMemoryDb, factoryFor, readMinimalFixtureEntries } from '@testing'
 import { openDatabase } from './client'
 import { findAll, findById, getDbStats, getTagCounts, rebuildFts, upsert } from './entry.repository'
+import { recordEntryVisit } from './frecency.repository'
 
 function makeMemoryDb() {
   return openDatabase(':memory:')
@@ -42,6 +43,14 @@ describe('openDatabase()', () => {
     const idx = raw.query("SELECT name FROM sqlite_master WHERE type='index' AND name='idx_knowledges_type'").get()
     expect(idx).toBeTruthy()
   })
+
+  it('creates entry_frecency table and score index', () => {
+    const { raw } = makeMemoryDb()
+    const table = raw.query("SELECT name FROM sqlite_master WHERE type='table' AND name='entry_frecency'").get()
+    const idx = raw.query("SELECT name FROM sqlite_master WHERE type='index' AND name='idx_entry_frecency_score'").get()
+    expect(table).toBeTruthy()
+    expect(idx).toBeTruthy()
+  })
 })
 
 describe('findAll()', () => {
@@ -61,6 +70,21 @@ describe('findAll()', () => {
     const { raw } = await createSeededMemoryDb()
     const results = findAll(raw, { query: 'git' })
     expect(results.length).toBeGreaterThan(0)
+  })
+
+  it('orders plain browse by frecency score then updated_at', () => {
+    const { raw } = makeMemoryDb()
+    const low = factoryFor('bookmark', { overrides: { id: 1, key: 'https://low.example', updatedAt: 100 } })
+    const high = factoryFor('bookmark', { overrides: { id: 2, key: 'https://high.example', updatedAt: 200 } })
+    upsert(raw, low)
+    upsert(raw, high)
+    recordEntryVisit(raw, low.id, 1_700_000_000_000)
+    recordEntryVisit(raw, low.id, 1_700_000_000_001)
+    recordEntryVisit(raw, high.id, 1_700_000_000_000)
+    const rows = findAll(raw, { limit: 10 })
+    expect(rows[0]?.id).toBe(low.id)
+    expect(rows[0]?.frecencyScore).toBeGreaterThan(rows[1]?.frecencyScore ?? 0)
+    expect(rows[0]?.visitCount).toBe(2)
   })
 
   it('orders FTS hits by BM25 relevance', () => {

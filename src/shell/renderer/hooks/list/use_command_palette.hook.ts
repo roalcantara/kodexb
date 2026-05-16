@@ -4,6 +4,7 @@ import { copyTextForEntry } from '../../../../core/index.ts'
 import type { CommandPaletteAction } from '../../components/actions/command_palette.component'
 import { cyclePriority, cycleStatus, openExternal, openInEditor, quitApp } from '../../rpc/client'
 import { clipboardCopiedToastMessage } from '../../utils/list/clipboard_copy_toast.util'
+import { recordEntryVisitFireAndForget } from '../../utils/list/record_entry_visit.util'
 
 const APPLE_UA_PATTERN = /Mac|iPhone|iPod|iPad/i
 
@@ -23,15 +24,6 @@ type CommandPaletteDeps = {
 function paletteQuitShortcut(): string {
   if (typeof navigator === 'undefined') return '⌘Q'
   return APPLE_UA_PATTERN.test(navigator.userAgent) ? '⌘Q' : 'Ctrl+Q'
-}
-
-function clipboardToast(pushToast: (msg: string, type: 'success' | 'error') => void, label: string) {
-  return (promise: Promise<void>) => {
-    promise.then(
-      () => pushToast(`${label} copied`, 'success'),
-      () => pushToast(`${label} copy failed`, 'error')
-    )
-  }
 }
 
 function libraryActions(onNewTask: () => void, onSync: () => void): [CommandPaletteAction, CommandPaletteAction] {
@@ -86,7 +78,13 @@ function buildActions(
         label: 'Paste in Terminal',
         section: 'entry',
         handler: () => {
-          clipboardToast(pushToast, 'Command')(navigator.clipboard.writeText(entry.key))
+          navigator.clipboard.writeText(entry.key).then(
+            () => {
+              recordEntryVisitFireAndForget(entry.id)
+              pushToast('Command copied', 'success')
+            },
+            () => pushToast('Command copy failed', 'error')
+          )
         }
       })
       break
@@ -124,7 +122,10 @@ function buildActions(
         const text = copyTextForEntry(entry)
         const msg = clipboardCopiedToastMessage(text)
         navigator.clipboard.writeText(text).then(
-          () => pushToast(msg, 'success'),
+          () => {
+            recordEntryVisitFireAndForget(entry.id)
+            pushToast(msg, 'success')
+          },
           () => pushToast('Copy failed', 'error')
         )
       }

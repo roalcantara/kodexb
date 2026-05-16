@@ -49,6 +49,7 @@ export function createRpcServer(appInstance: App) {
     .post('/listMatchCount', ({ body }) => appInstance.listMatchCount(body), { body: listOptsSchema })
     .post('/getListStats', ({ body }) => appInstance.getListStats(body), { body: listStatsFilterSchema })
     .post('/getEntry', ({ body }) => appInstance.getEntry(body.id), { body: getEntryParams })
+    .post('/recordEntryVisit', ({ body }) => appInstance.recordEntryVisit(body.id), { body: getEntryParams })
     .post('/sync', ({ body }) => appInstance.sync(body.sourcesDir), { body: syncParamsInner })
     .post('/getStats', () => appInstance.getStats(), { body: emptyBodySchema })
     .post('/getConfig', () => appInstance.getConfig(), { body: emptyBodySchema })

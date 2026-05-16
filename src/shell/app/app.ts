@@ -12,6 +12,7 @@ import type {
   RpcDbStats,
   RpcGetConfigPayload,
   RpcImportResult,
+  RpcListEntry,
   RpcSyncProgressPayload,
   TaskCreateInput,
   TaskUpdateInput
@@ -20,6 +21,7 @@ import type { LoadedConfig } from './config/config.loader'
 import { saveConfig } from './config/config.loader'
 import { openDatabase } from './db/client'
 import { deleteById, findAll, findById, getDbStats, upsert } from './db/entry.repository'
+import { recordEntryVisit as persistEntryVisit } from './db/frecency.repository'
 import { maxTaskOrder, updateTaskOrder } from './db/task.repository'
 import { countKnowledgeForOpts, listKnowledgeForOpts } from './lib/app_list_query.util'
 import { buildListStats } from './lib/app_list_stats.util'
@@ -49,7 +51,7 @@ export class App {
   private readonly log: ReturnType<typeof createLogger>
   private loaded: LoadedConfig
   private db: ReturnType<typeof openDatabase> | null = null
-  private readonly listCache = new Map<string, Knowledge[]>()
+  private readonly listCache = new Map<string, RpcListEntry[]>()
   private listStatsCache: ListStats | null = null
   private dbStatsCache: RpcDbStats | null = null
   private readonly emit: SyncEmitter
@@ -87,7 +89,7 @@ export class App {
     this.dbStatsCache = null
   }
 
-  list(opts: ListOpts = {}): Promise<Knowledge[]> {
+  list(opts: ListOpts = {}): Promise<RpcListEntry[]> {
     const { raw } = this.getDb()
     return Promise.resolve(listKnowledgeForOpts(raw, this.loaded, opts, this.listCache))
   }
@@ -98,6 +100,13 @@ export class App {
   getEntry(id: number): Promise<Knowledge | null> {
     const { raw } = this.getDb()
     return Promise.resolve(findById(raw, id))
+  }
+
+  recordEntryVisit(id: number): Promise<{ ok: true }> {
+    const { raw } = this.getDb()
+    persistEntryVisit(raw, id)
+    this.invalidateListCache()
+    return Promise.resolve({ ok: true })
   }
 
   getListStats(filters: Partial<Pick<ListOpts, 'query' | 'tags' | 'types' | 'taskView'>> = {}): Promise<ListStats> {

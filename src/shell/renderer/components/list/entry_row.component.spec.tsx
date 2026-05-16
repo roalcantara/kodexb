@@ -1,7 +1,7 @@
 /// <reference lib="dom" />
 
 import { afterEach, expect, test } from 'bun:test'
-import type { RpcKnowledge } from '@shared/rpc'
+import type { RpcKnowledge, RpcListEntry } from '@shared/rpc'
 import { factoryFor } from '@testing'
 import { cleanup, render, screen } from '@testing-library/react'
 
@@ -11,18 +11,26 @@ afterEach(() => {
   cleanup()
 })
 
-const bookmarkGithub = factoryFor('bookmark', {
-  overrides: {
-    id: 1,
-    key: 'https://github.com/example/repo',
-    source: 'fixtures/example.yaml',
-    desc: 'Example repository',
-    tags: ['github'],
-    doc: '',
-    createdAt: 0,
-    updatedAt: 0
-  }
-}) as RpcKnowledge
+const listRow = (row: RpcKnowledge, frecencyScore = 0, visitCount = 0): RpcListEntry => ({
+  ...row,
+  frecencyScore,
+  visitCount
+})
+
+const bookmarkGithub = listRow(
+  factoryFor('bookmark', {
+    overrides: {
+      id: 1,
+      key: 'https://github.com/example/repo',
+      source: 'fixtures/example.yaml',
+      desc: 'Example repository',
+      tags: ['github'],
+      doc: '',
+      createdAt: 0,
+      updatedAt: 0
+    }
+  }) as RpcKnowledge
+)
 
 const GITHUB_SVG_RE = /github\.svg/
 
@@ -61,9 +69,31 @@ const taskCompact = factoryFor('task', {
 
 test('EntryRow compact task shows one type chip (no duplicate task badge)', () => {
   render(
-    <EntryRow entry={taskCompact} allEntries={[taskCompact]} selected={false} onSelect={() => undefined} compact />
+    <EntryRow
+      entry={listRow(taskCompact)}
+      allEntries={[taskCompact]}
+      selected={false}
+      onSelect={() => undefined}
+      compact
+      maxFrecencyScore={3}
+    />
   )
   expect(document.querySelectorAll('.kb-pt-chip--task')).toHaveLength(1)
   expect(document.querySelector('.kb-pt-chip--todo')).not.toBeNull()
   expect(document.querySelector('.kb-pt-chip--high')).not.toBeNull()
+})
+
+test('EntryRow compact shows frecency bars when visited', () => {
+  render(
+    <EntryRow
+      entry={listRow(bookmarkGithub, 6, 4)}
+      allEntries={[bookmarkGithub]}
+      selected={false}
+      onSelect={() => undefined}
+      compact
+      maxFrecencyScore={6}
+    />
+  )
+  expect(screen.getByLabelText('Used 4 times')).toBeTruthy()
+  expect(document.querySelectorAll('.kb-pt-frecency-bar--on')).toHaveLength(3)
 })

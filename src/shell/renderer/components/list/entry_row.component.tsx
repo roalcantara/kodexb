@@ -1,8 +1,8 @@
-import type { RpcKnowledge } from '@shared/rpc'
+import type { RpcKnowledge, RpcListEntry } from '@shared/rpc'
 import { memo } from 'react'
-
 import { getIcon } from '../../utils/shared/get_icon.util'
 import { BadgeAccessory } from '../shared/badge_accessory.component'
+import { EntryRowFrecencyIndicator } from './entry_row_frecency_indicator.component'
 
 const DESC_PREVIEW_LEN = 80
 
@@ -16,10 +16,11 @@ type DragHandlers = {
 }
 
 export type EntryRowProps = {
-  entry: RpcKnowledge
+  entry: RpcListEntry
   allEntries: RpcKnowledge[]
   selected: boolean
   onSelect: (id: number) => void
+  maxFrecencyScore?: number
   dragHandlers?: DragHandlers
   dragOver?: boolean
   onCycleStatus?: (id: number) => void
@@ -73,6 +74,7 @@ function EntryRowComponent({
   dragOver,
   onCycleStatus,
   onCyclePriority,
+  maxFrecencyScore = 0,
   compact
 }: EntryRowProps) {
   if (compact) {
@@ -100,7 +102,14 @@ function EntryRowComponent({
             {isTask ? <BadgeChips entry={entry as Extract<RpcKnowledge, { type: 'task' }>} /> : null}
           </span>
         </span>
-        {hint && selected ? <span className={`kb-pt-row-hint ${hint.className}`}>{hint.label}</span> : null}
+        <span className="kb-pt-row-trailing">
+          <EntryRowFrecencyIndicator
+            frecencyScore={entry.frecencyScore}
+            visitCount={entry.visitCount}
+            maxFrecencyScore={maxFrecencyScore}
+          />
+          {hint && selected ? <span className={`kb-pt-row-hint ${hint.className}`}>{hint.label}</span> : null}
+        </span>
       </button>
     )
   }
@@ -150,5 +159,8 @@ export const EntryRow = memo(
     prev.entry === next.entry &&
     prev.allEntries === next.allEntries &&
     prev.selected === next.selected &&
+    prev.maxFrecencyScore === next.maxFrecencyScore &&
+    prev.entry.frecencyScore === next.entry.frecencyScore &&
+    prev.entry.visitCount === next.entry.visitCount &&
     prev.onSelect === next.onSelect
 )

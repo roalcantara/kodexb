@@ -1,5 +1,5 @@
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
-import { useCallback, useEffect, useLayoutEffect, useRef } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { useFilterDropdownStats } from '../../hooks/list/use_filter_dropdown_stats.hook'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 import { useListSurfaceScrollRestore } from '../../hooks/list/use_list_surface_scroll_restore.hook'
@@ -27,6 +27,7 @@ export type ListMainProps = {
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: pre-existing pattern outside Phase 9 scope
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing inline rendering
 export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
+  const maxFrecencyScore = useMemo(() => Math.max(0, ...p.data.rows.map(row => row.frecencyScore)), [p.data.rows])
   const emptySyncButtonRef = useRef<HTMLButtonElement>(null)
   const detailScrollRef = useRef<HTMLDivElement>(null)
   const filterDropdownStats = useFilterDropdownStats(getListStats, {
@@ -266,6 +267,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
                   key={entry.id}
                   entry={entry}
                   allEntries={p.data.rows}
+                  maxFrecencyScore={maxFrecencyScore}
                   selected={entry.id === p.sel.selectedId}
                   onSelect={onSelectEntry}
                   dragHandlers={p.dragDrop?.getDragHandlers(entry)}

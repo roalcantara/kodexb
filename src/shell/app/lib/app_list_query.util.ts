@@ -1,5 +1,5 @@
 import type { Knowledge } from '../../../core'
-import type { ListOpts } from '../../../shared/rpc'
+import type { ListOpts, RpcListEntry } from '../../../shared/rpc'
 import type { LoadedConfig } from '../config/config.loader'
 import type { openDatabase } from '../db/client'
 import { findAll } from '../db/entry.repository'
@@ -12,8 +12,8 @@ export function listKnowledgeForOpts(
   raw: DbRaw,
   loaded: LoadedConfig,
   opts: ListOpts,
-  listCache: Map<string, Knowledge[]>
-): Knowledge[] {
+  listCache: Map<string, RpcListEntry[]>
+): RpcListEntry[] {
   const pageSize = Number.parseInt(loaded.display.pageSize, 10)
   const safePage = Number.isFinite(pageSize) && pageSize > 0 ? pageSize : DEFAULT_LIST_PAGE_SIZE
   const limit = opts.limit ?? safePage
@@ -30,7 +30,7 @@ export function listKnowledgeForOpts(
       limit: -1,
       offset: 0
     })
-    const filtered = filterKnowledgeByTaskView(base, opts.taskView)
+    const filtered = filterKnowledgeByTaskView(base, opts.taskView) as RpcListEntry[]
     return filtered.slice(offset, offset + limit)
   }
 

@@ -4,6 +4,12 @@ import type { Knowledge } from '../../core'
 /** Stable id + source row shape returned from SQLite (discriminated `Knowledge`). */
 export type RpcKnowledge = Knowledge
 
+/** List/split row: knowledge plus local usage ranking (not in YAML). */
+export type RpcListEntry = RpcKnowledge & {
+  frecencyScore: number
+  visitCount: number
+}
+
 /** Mirrors `getDbStats()` in the shell; kept here so `src/shared` stays shell-free. */
 export type RpcDbStats = {
   total: number

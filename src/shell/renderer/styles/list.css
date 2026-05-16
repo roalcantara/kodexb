@@ -1545,6 +1545,41 @@ body {
 .kb-pt-row-hint--cheat { color: #a855f7; }
 .kb-pt-row-hint--task { color: #ffae57; }
 
+.kb-pt-row-trailing {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  align-self: center;
+  padding-left: 4px;
+}
+
+.kb-pt-frecency {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 10px;
+}
+
+.kb-pt-frecency-bar {
+  width: 3px;
+  border-radius: 1px;
+  background: rgba(136, 146, 164, 0.35);
+  height: 4px;
+}
+
+.kb-pt-frecency-bar--on {
+  background: #5ecfbe;
+}
+
+.kb-pt-frecency-bar:nth-child(2).kb-pt-frecency-bar--on {
+  height: 6px;
+}
+
+.kb-pt-frecency-bar:nth-child(3).kb-pt-frecency-bar--on {
+  height: 8px;
+}
+
 /* Chips */
 .kb-pt-chip {
   display: inline-block;
