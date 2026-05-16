@@ -17,7 +17,8 @@
       "!.cursor",
       "!.opencode",
       "!.agents",
-      "!graphify-out"
+      "!graphify-out",
+      "!.venv"
     ]
   },
   "formatter": {

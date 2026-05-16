@@ -203,6 +203,9 @@ docs/superpowers/
 # Override global Icon? rule which case-insensitively matches assets/icons/ on macOS
 !assets/icons/
 
+# Python (local venv — never part of the TS tree)
+.venv/
+
 # Bun
 *.bun-build
 

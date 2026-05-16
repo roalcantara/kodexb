@@ -30,7 +30,7 @@ module.exports = {
   ],
   options: {
     // Symlinks to external dirs can ELOOP or be unreadable in some envs
-    exclude: { path: '^(assets/(images|sources)|graphify-out)' },
+    exclude: { path: '^(assets/(images|sources)|graphify-out|\\.venv)' },
     doNotFollow: { path: 'node_modules' },
     tsPreCompilationDeps: true,
     tsConfig: { fileName: 'tsconfig.json' },

@@ -1,6 +1,7 @@
 {
   "threshold": 0,
   "ignore": [
+    "**/.venv/**",
     "**/node_modules/**",
     "**/dist/**",
     "**/build/**",
@@ -9,6 +10,7 @@
     "assets/images/**",
     "assets/sources/**",
     "assets/docs/**",
+    "assets/wireframe/**",
     "graphify-out/**",
     "**/tools/benchmarks/results/**",
     ".cursor/commands/**",
