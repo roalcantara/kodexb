@@ -33,7 +33,8 @@ The canonical engineering and agent definitions are split by purpose:
 | ------------ | ------- |
 | [CLAUDE.md][24] | Primary agent instructions: stack, FCIS layers, required skills, and reference docs. |
 | [AGENTS.md][23] | Repo-wide agent guardrails, commit workflow, prototype gate, and Electrobun process rules. |
-| [SKILLS.md][21] | Skill adoption ledger: local skills, linked companions, global-only companions, and rationale. |
+| [SKILLS.md][21] | Skill adoption ledger: owned skills, Skills CLI-managed project skills, global companions, and rationale. |
+| [SKILLS.yml][26] | Structured skill registry used by `mise run skill sync` and `mise run skill install`. |
 | [MISE_GUIDE.md][22] | Task-runner policy: prefer mise tasks for project workflows and avoid ad-hoc project scripts. |
 | [Electrobun routing][25] | Which Electrobun skill to read for desktop shell, build, platform, RPC, and automation work. |
 
@@ -42,9 +43,9 @@ Skill routing follows one rule of thumb: project-specific guidance wins. Load
 `kb-testing`, `kb-quality-gate`, or the routed Electrobun skill when the work
 calls for them.
 
-`mise run link:skills` syncs only the approved linked companions from
-[SKILLS.md][21] into `.agents/skills/`. Optional global companions stay under
-`$HOME/.agents/skills/` unless the skill ledger marks them as linked project
+`mise run skill install` restores Skills CLI-managed project skills from
+[skills-lock.json][27] into `.agents/skills/`. Optional global companions stay
+under `$HOME/.agents/skills/` unless the skill registry marks them as project
 skills.
 
 ### Keyboard — command palette (⌘P) and filter (⌘K)
@@ -86,7 +87,8 @@ agent skill wiring, UI smoke checks, and maintenance workflows:
 | ---- | -------- |
 | `mise run setup` | Installing tool versions, dependencies, and hooks after cloning. |
 | `mise run prepare` | Refreshing Bun dependencies and commit hooks without reinstalling tools. |
-| `mise run link:skills` | Syncing approved project skill symlinks from `$HOME/.agents/skills/`. |
+| `mise run skill sync` | Rewriting generated skill routing snippets from `assets/guides/SKILLS.yml`. |
+| `mise run skill install` | Restoring Skills CLI-managed project skills from `skills-lock.json`. |
 | `mise run e2e:preview` | Running the Playwright preview smoke test. Install Chromium once with `bun run e2e:preview:install`. |
 | `mise run icons:svg-contrast` | Auditing SVG contrast against the list shell background; use `--write-safe` only for curated safe replacements. |
 | `mise run repo:setup` | Creating the GitHub repo and required CI secrets / variables. |
@@ -178,3 +180,5 @@ The project is available as open source under the terms of the [MIT][1] [License
 [23]: AGENTS.md 'Agent notes'
 [24]: CLAUDE.md 'Claude Code instructions'
 [25]: .cursor/electrobun-skill-routing.md 'Electrobun skill routing'
+[26]: assets/guides/SKILLS.yml 'Structured skill registry'
+[27]: skills-lock.json 'Skills CLI project lock file'

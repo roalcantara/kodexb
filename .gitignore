@@ -158,22 +158,17 @@ playwright-report
 # Superpowers brainstorm scratch (local only)
 .superpowers/
 
-# Symlinks from `mise run link:skills` — absolute targets; never commit
-.agents/skills/agent-electrobun
-.agents/skills/bun-development
-.agents/skills/bun-runtime
-.agents/skills/electrobun
-.agents/skills/electrobun-build
-.agents/skills/electrobun-config
-.agents/skills/electrobun-core
-.agents/skills/electrobun-dev
-.agents/skills/electrobun-distribution
-.agents/skills/electrobun-kitchen-sink
-.agents/skills/electrobun-platform
-.agents/skills/electrobun-plugin-guide
-.agents/skills/electrobun-rpc
-.agents/skills/electrobun-testing
-.agents/skills/electrobun-workflow
+# Skills CLI project materializations; restored from skills-lock.json.
+.agents/skills/*
+!.agents/skills/kb-context/
+!.agents/skills/kb-context/**
+!.agents/skills/kb-quality-gate/
+!.agents/skills/kb-quality-gate/**
+!.agents/skills/kb-rpc/
+!.agents/skills/kb-rpc/**
+!.agents/skills/kb-testing/
+!.agents/skills/kb-testing/**
+.claude/skills/*
 
 # code coverage
 coverage

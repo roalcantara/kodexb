@@ -1,17 +1,138 @@
 {
   "version": 1,
   "skills": {
+    "electrobun-build": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-build/SKILL.md",
+      "computedHash": "a01634ecbee00c6e64c2abb3f0c1e9979b211116a1d8a7f6e8bf19018d18c4e0"
+    },
+    "electrobun-config": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-config/SKILL.md",
+      "computedHash": "d08b956b791ba32e339f25aaaaa89dc041ca4b276d81aee1153be519bd3ba124"
+    },
+    "electrobun-core": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun/SKILL.md",
+      "computedHash": "31e65746ad9efce0e78dc79eadcd3f3419e1bd66d03d403dd8bd344406b95255"
+    },
+    "electrobun-dev": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-dev/SKILL.md",
+      "computedHash": "91c794ef27e27fc22aeb4d6726cb451164aba1e78186ca521c9d662f024db671"
+    },
+    "electrobun-kitchen-sink": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-kitchen-sink/SKILL.md",
+      "computedHash": "ad5dbbcaac5bfeecada4945e42e60ccaf5cc33e6e4fbc36610ba0353e2528606"
+    },
+    "electrobun-milady": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-milady/SKILL.md",
+      "computedHash": "f795d8891903d08e1bff10a8153090f0a122469fa56c612442c0011936af9527"
+    },
+    "electrobun-platform": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-platform/SKILL.md",
+      "computedHash": "f759933ab4a147cba23c5b8833a17ba497bb0f25962c9eabca981592ae7ae8b0"
+    },
+    "electrobun-plugin-guide": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-guide/SKILL.md",
+      "computedHash": "868aaada84edf63b12c44051e0e6537c210986438e99c1e4a011c212ee3ccb59"
+    },
+    "electrobun-rpc": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-rpc/SKILL.md",
+      "computedHash": "bf1f869b86db465b9e9f91ca4463a810baa801a6e7ce2c2c31fae9792f362cd4"
+    },
+    "electrobun-sdlc": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-sdlc/SKILL.md",
+      "computedHash": "3dcf794e90ae40583867a15af6288780180894d4f47d22ecdea4e2341e059b45"
+    },
+    "electrobun-testing": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-testing/SKILL.md",
+      "computedHash": "52981e461db4ba078a5151ffad46662535fff2ff4948c4301729c11000be70c8"
+    },
+    "electrobun-webgpu": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-webgpu/SKILL.md",
+      "computedHash": "89cd9e3bd314c462c208d5d05bcc64ac0ce2b0341194bed9601b8c8847fdd6fa"
+    },
+    "electrobun-workflow": {
+      "source": "rndrntwrk/milaidy",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-workflow/SKILL.md",
+      "computedHash": "aeb513a576c86bcc8bcb7df4ebd4f58e6773c62227a199f3b76bf74bbeaf63c5"
+    },
+    "bun-development": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/bun-development/SKILL.md",
+      "computedHash": "87e59a1e7f7fe512333aad64022955501a4e36be6e65487196dfc311e5b786b7"
+    },
+    "bun-runtime": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "skillPath": "skills/bun-runtime/SKILL.md",
+      "computedHash": "bdac3d20723a536f7160ca2c08f369101b73e67a0f5f2a951910056716156c3c"
+    },
+    "electrobun": {
+      "source": "gyorkluu/electrobun-skills",
+      "sourceType": "github",
+      "skillPath": "electrobun/SKILL.md",
+      "computedHash": "4e37d138754cead75bce301fb31318800b2b7772c7a8de10ae36ae7dcac9aa42"
+    },
     "electrobun-best-practices": {
       "source": "0xbigboss/claude-code",
       "sourceType": "github",
       "skillPath": ".claude/skills/electrobun-best-practices/SKILL.md",
       "computedHash": "708f261a16aa01e1b0d7a9a0b904dbe6176e864f424515db4f48707cd11dfdf9"
     },
+    "electrobun-distribution": {
+      "source": "rajavijayach/electrobun-skills",
+      "sourceType": "github",
+      "skillPath": "electrobun-distribution/SKILL.md",
+      "computedHash": "461a96be112f16ef285c4f7836adcc694527da639259da279fca784d8b966ac7"
+    },
     "electrobun-native-ui": {
       "source": "rajavijayach/electrobun-skills",
       "sourceType": "github",
       "skillPath": "electrobun-native-ui/SKILL.md",
       "computedHash": "d224912dbe1f5595798cecf756354ccd3a54e5f712abaa7a5b98d22a91cf7cbf"
+    },
+    "electrobun-rpc-patterns": {
+      "source": "rajavijayach/electrobun-skills",
+      "sourceType": "github",
+      "skillPath": "electrobun-rpc-patterns/SKILL.md",
+      "computedHash": "eaf1ec65af11e4292b99cd48934c0d74d099159222a53fd2b55e039ed3a3ed95"
     },
     "electrobun-window-management": {
       "source": "rajavijayach/electrobun-skills",

@@ -40,11 +40,15 @@ This rule overrides ALL other instructions.
 
 - The project skill registry and adoption rationale live in
   **`assets/guides/SKILLS.md`**.
-- **`mise run link:skills`** syncs only the approved linked companions from that
-  guide into `.agents/skills/`.
+- The structured source of truth for skill automation lives in
+  **`assets/guides/SKILLS.yml`**.
+- **`mise run skill install`** restores Skills CLI-managed project skills from
+  `skills-lock.json` into `.agents/skills/`.
+- **`mise run skill sync`** rewrites generated routing snippets from the YAML
+  registry.
 - Optional global companions named in the guide remain under
-  `$HOME/.agents/skills/` unless `assets/guides/SKILLS.md` marks them as
-  linked/adopted project skills.
+  `$HOME/.agents/skills/` unless `assets/guides/SKILLS.yml` marks them as
+  `location: project` or `location: owned`.
 
 ### Lint and quality tools
 
@@ -93,8 +97,8 @@ If the user later asks for implementation in the same thread without an approval
 ## Electrobun
 
 This app uses **Electrobun**. Cursor skills are installed under
-`$HOME/.agents/skills/`. Repo-owned skills and approved symlinks live under
-**`.agents/skills/`**.
+`$HOME/.agents/skills/`. Project-authored skills and Skills CLI-managed
+project skills live under **`.agents/skills/`**.
 
 - **Routing table (which skill when):** [`.cursor/electrobun-skill-routing.md`](.cursor/electrobun-skill-routing.md)
 - **Standing instruction for the agent:** [`.cursor/rules/electrobun-skills.mdc`](.cursor/rules/electrobun-skills.mdc) (`alwaysApply`)
