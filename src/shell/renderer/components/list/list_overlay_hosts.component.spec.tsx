@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 
-import { afterEach, expect, test } from 'bun:test'
+import { afterEach, describe, expect, it } from 'bun:test'
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
@@ -40,36 +40,39 @@ function shell(overrides: Partial<ListPageShell> = {}) {
     ...overrides
   } as unknown as ListPageShell
 }
+describe('ListOverlayHosts', () => {
+  describe('when action toasts are present', () => {
+    it('renders them', () => {
+      render(
+        <ListOverlayHosts
+          p={shell({ actionToasts: [{ id: 1, message: 'Saved', type: 'success' }] } as Partial<ListPageShell>)}
+          showSettings={false}
+          setShowSettings={() => undefined}
+          focusMainSearch={() => undefined}
+        />
+      )
 
-test('ListOverlayHosts renders action toasts', () => {
-  render(
-    <ListOverlayHosts
-      p={shell({ actionToasts: [{ id: 1, message: 'Saved', type: 'success' }] } as Partial<ListPageShell>)}
-      showSettings={false}
-      setShowSettings={() => undefined}
-      focusMainSearch={() => undefined}
-    />
-  )
+      expect(screen.getByText('Saved')).toBeTruthy()
+    })
 
-  expect(screen.getByText('Saved')).toBeTruthy()
-})
+    it('dismisses on button click', async () => {
+      let dismissed = 0
+      render(
+        <ListOverlayHosts
+          p={shell({
+            actionToasts: [{ id: 7, message: 'Done', type: 'success' }],
+            dismissActionToast: id => {
+              dismissed = id
+            }
+          } as Partial<ListPageShell>)}
+          showSettings={false}
+          setShowSettings={() => undefined}
+          focusMainSearch={() => undefined}
+        />
+      )
 
-test('ListOverlayHosts dismisses action toast', async () => {
-  let dismissed = 0
-  render(
-    <ListOverlayHosts
-      p={shell({
-        actionToasts: [{ id: 7, message: 'Done', type: 'success' }],
-        dismissActionToast: id => {
-          dismissed = id
-        }
-      } as Partial<ListPageShell>)}
-      showSettings={false}
-      setShowSettings={() => undefined}
-      focusMainSearch={() => undefined}
-    />
-  )
-
-  await userEvent.click(screen.getByRole('button', { name: 'Dismiss' }))
-  expect(dismissed).toBe(7)
+      await userEvent.click(screen.getByRole('button', { name: 'Dismiss' }))
+      expect(dismissed).toBe(7)
+    })
+  })
 })

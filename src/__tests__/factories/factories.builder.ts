@@ -102,6 +102,18 @@ const knowledgeFtsStrongerFactory = Factory.define<CommandKnowledge>(() => ({
   updatedAt: 1
 }))
 
+const rectangleFactory = Factory.define<{ x: number; y: number; width: number; height: number }>(() => ({
+  x: 0,
+  y: 0,
+  width: 1920,
+  height: 1080
+}))
+
+const windowSizeFactory = Factory.define<{ width: number; height: number }>(() => ({
+  width: 680,
+  height: 420
+}))
+
 const factories = {
   env: envFactory,
   rawConfig: rawConfigFactory,
@@ -111,7 +123,9 @@ const factories = {
   cheat: cheatFactory,
   task: taskFactory,
   'knowledge:weaker': knowledgeFtsWeakerFactory,
-  'knowledge:stronger': knowledgeFtsStrongerFactory
+  'knowledge:stronger': knowledgeFtsStrongerFactory,
+  rectangle: rectangleFactory,
+  windowSize: windowSizeFactory
 } as const
 
 /**

@@ -26,7 +26,7 @@ Foundation and roadmap:
 
 Some external skills default to `docs/superpowers/specs/` for brainstorm output. **kb does not commit there.** That path is listed in **`.gitignore`** so accidental files never enter the repo.
 
-When an AI skill or template says to write under `docs/superpowers/`, **redirect** to `assets/docs/specs/<slug>/` instead (create the slug folder if needed).
+When an AI skill or template says to write under `docs/superpowers/`, use the `spec-driven-development` skill shape and **redirect** to `assets/docs/specs/<slug>/` instead (create the slug folder if needed). Use `requirements.md`, `design.md`, `tasks.md`, and optional `handoff.md`.
 
 ## Feature specs (index)
 
@@ -34,5 +34,6 @@ When an AI skill or template says to write under `docs/superpowers/`, **redirect
 - [List frecency sort](list-frecency-sort/design.md) — Raycast-style entry ranking for list/split; visits on detail open + copy; [requirements](list-frecency-sort/requirements.md), [tasks](list-frecency-sort/tasks.md), [implementation plan](list-frecency-sort/implementation-plan.md).
 - [Compact filter overlay rebuild](compact-filter-redesign/design.md) — single scrollport, fixed Close footer, highlight visibility; [tasks](compact-filter-redesign/tasks.md), [implementation plan](compact-filter-redesign/implementation-plan.md).
 - [Command palette and filter UX](command-palette-filter-ux/design.md) — ⌘P / ⌘K; behaviour matrix in the **project root** [README.md](../../../README.md).
+- [Elysia and Electrobun capability inventory](elysia-electrobun-capability-inventory/design.md) — decision-neutral upstream capability research for maintainer priority review; [requirements](elysia-electrobun-capability-inventory/requirements.md), [tasks](elysia-electrobun-capability-inventory/tasks.md), [report](elysia-electrobun-capability-inventory/report.md), [inventory](elysia-electrobun-capability-inventory/inventory.yml).
 
 Also documented in [`CLAUDE.md`](../../../CLAUDE.md) (reference docs) and [`.agents/skills/kb-context/SKILL.md`](../../../.agents/skills/kb-context/SKILL.md).

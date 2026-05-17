@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import { expect, test } from 'bun:test'
+import { describe, expect, it } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'
 import { render, screen } from '@testing-library/react'
@@ -23,21 +23,6 @@ const cheatGit = factoryFor('cheat', {
   }
 }) as RpcKnowledge
 
-test('getIcon renders img for tag with SVG map', () => {
-  render(<div>{getIcon(cheatGit)}</div>)
-  const img = screen.getByLabelText('git')
-  expect(img.tagName).toBe('IMG')
-  expect(img.getAttribute('src')).toMatch(GIT_SVG)
-})
-
-test('getIcon renders type default SVG when no mapped brand tag', () => {
-  const noBrand = { ...cheatGit, tags: ['unmapped_tag_xyz'] } as RpcKnowledge
-  render(<div>{getIcon(noBrand)}</div>)
-  const img = screen.getByLabelText('unmapped_tag_xyz')
-  expect(img.tagName).toBe('IMG')
-  expect(img.getAttribute('src')).toMatch(MARKDOWN_SVG)
-})
-
 const bookmarkNoBrand = factoryFor('bookmark', {
   overrides: {
     id: 9,
@@ -51,27 +36,52 @@ const bookmarkNoBrand = factoryFor('bookmark', {
   }
 }) as RpcKnowledge
 
-test('getIcon renders bundled github.svg for github.com bookmark (not DDG favicon)', () => {
-  const bookmarkGithub = factoryFor('bookmark', {
-    overrides: {
-      id: 10,
-      key: 'https://github.com/foo/bar',
-      source: 'fixture',
-      desc: 'Repo',
-      tags: ['github'],
-      doc: '',
-      createdAt: 0,
-      updatedAt: 0
-    }
-  }) as RpcKnowledge
-  render(<div>{getIcon(bookmarkGithub)}</div>)
-  const img = screen.getByLabelText('github')
-  expect(img.getAttribute('src')).toMatch(GITHUB_SVG)
-  expect(img.getAttribute('src')).not.toContain('icons.duckduckgo.com')
-})
+describe('getIcon', () => {
+  describe('with a mapped brand tag', () => {
+    it('renders img with SVG source', () => {
+      render(<div>{getIcon(cheatGit)}</div>)
+      const img = screen.getByLabelText('git')
+      expect(img.tagName).toBe('IMG')
+      expect(img.getAttribute('src')).toMatch(GIT_SVG)
+    })
+  })
 
-test('getIcon renders remote favicon for bookmark without brand tag', () => {
-  render(<div>{getIcon(bookmarkNoBrand)}</div>)
-  const img = screen.getByLabelText('bookmark')
-  expect(img.getAttribute('src')).toBe('https://icons.duckduckgo.com/ip3/example.org.ico')
+  describe('with no mapped brand tag', () => {
+    it('renders type default SVG', () => {
+      const noBrand = { ...cheatGit, tags: ['unmapped_tag_xyz'] } as RpcKnowledge
+      render(<div>{getIcon(noBrand)}</div>)
+      const img = screen.getByLabelText('unmapped_tag_xyz')
+      expect(img.tagName).toBe('IMG')
+      expect(img.getAttribute('src')).toMatch(MARKDOWN_SVG)
+    })
+  })
+
+  describe('with a github.com bookmark', () => {
+    it('renders bundled github.svg instead of favicon', () => {
+      const bookmarkGithub = factoryFor('bookmark', {
+        overrides: {
+          id: 10,
+          key: 'https://github.com/foo/bar',
+          source: 'fixture',
+          desc: 'Repo',
+          tags: ['github'],
+          doc: '',
+          createdAt: 0,
+          updatedAt: 0
+        }
+      }) as RpcKnowledge
+      render(<div>{getIcon(bookmarkGithub)}</div>)
+      const img = screen.getByLabelText('github')
+      expect(img.getAttribute('src')).toMatch(GITHUB_SVG)
+      expect(img.getAttribute('src')).not.toContain('icons.duckduckgo.com')
+    })
+  })
+
+  describe('with a bookmark without brand tag', () => {
+    it('renders remote favicon', () => {
+      render(<div>{getIcon(bookmarkNoBrand)}</div>)
+      const img = screen.getByLabelText('bookmark')
+      expect(img.getAttribute('src')).toBe('https://icons.duckduckgo.com/ip3/example.org.ico')
+    })
+  })
 })

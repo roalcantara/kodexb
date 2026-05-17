@@ -15,6 +15,7 @@
     "**/tools/benchmarks/results/**",
     ".cursor/commands/**",
     "**/tmp/**",
-    "**/.superpowers/**"
+    "**/.superpowers/**",
+    "src/shell/app/db/import.service.spec.ts"
   ]
 }

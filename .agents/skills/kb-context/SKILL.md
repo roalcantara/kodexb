@@ -49,7 +49,9 @@ and `CLAUDE.md` disagree, **CLAUDE.md wins** — open a PR to fix the skill.
 ## Feature specs (where to write design docs)
 
 - **Canonical root:** [`assets/docs/specs/<feature-slug>/`](../../../assets/docs/specs/) — `requirements.md`, `design.md`, `tasks.md`, optional `implementation-plan.md`, prototypes. Index: [`assets/docs/specs/README.md`](../../../assets/docs/specs/README.md).
+- **Superpowers adaptation:** when a Superpowers skill mentions `docs/superpowers/specs` or `docs/superpowers/plans`, use the `spec-driven-development` skill shape instead and map the output to `assets/docs/specs/<scope>/`. Use `requirements.md`, `design.md`, `tasks.md`, and optional `handoff.md`.
 - **`docs/superpowers/`** is **not used** in kb; it is **gitignored** (some external skills default there). Always redirect new specs into `assets/docs/specs/`.
+- **Subagent prompts:** include the kb path, testing, and validation overrides explicitly because subagents may not inherit this skill's full context.
 
 ## FCIS directory layout
 

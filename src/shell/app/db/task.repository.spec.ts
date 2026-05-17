@@ -30,12 +30,12 @@ function freshDb(): Database {
 }
 
 describe('maxTaskOrder', () => {
-  it('returns 0 when no tasks exist', () => {
+  it('returns 0 for empty table', () => {
     const db = freshDb()
     expect(maxTaskOrder(db)).toBe(0)
   })
 
-  it('returns the highest task_order + 1', () => {
+  it('returns highest task_order + 1', () => {
     const db = freshDb()
     const t1 = factoryFor('task', { overrides: { taskOrder: 0 } })
     const t2 = factoryFor('task', { overrides: { taskOrder: 5 } })
@@ -65,14 +65,14 @@ describe('maxTaskOrder', () => {
 })
 
 describe('wouldCreateCycle', () => {
-  it('returns true for self-dependency', () => {
+  it('detects self-dependency', () => {
     const db = freshDb()
     const task = factoryFor('task')
     upsert(db, task)
     expect(wouldCreateCycle(db, task.id, task.id)).toBe(true)
   })
 
-  it('returns false when there is no depends_on link', () => {
+  it('returns false with no dependency', () => {
     const db = freshDb()
     const a = factoryFor('task')
     const b = factoryFor('task')
@@ -81,7 +81,7 @@ describe('wouldCreateCycle', () => {
     expect(wouldCreateCycle(db, a.id, b.id)).toBe(false)
   })
 
-  it('detects direct cycle (B→A→B)', () => {
+  it('detects direct cycle', () => {
     const db = freshDb()
     // B depends on A (B→A)
     // Would adding A as dep of B (B→A is already true, but check if A→B would cycle)
@@ -95,7 +95,7 @@ describe('wouldCreateCycle', () => {
     expect(wouldCreateCycle(db, b.id, a.id)).toBe(true)
   })
 
-  it('detects indirect cycle (C→A→B→C) within maxDepth', () => {
+  it('detects indirect cycle within maxDepth', () => {
     const db = freshDb()
     // C has no deps (yet)
     const c = factoryFor('task', { overrides: { dependsOn: [] } })
@@ -120,7 +120,7 @@ describe('wouldCreateCycle', () => {
     expect(wouldCreateCycle(db, a.id, b.id)).toBe(false)
   })
 
-  it('returns false when cycle depth exceeds maxDepth', () => {
+  it('returns false when depth exceeds maxDepth', () => {
     const db = freshDb()
     // Chain: D→C→B→A (D depends on C depends on B depends on A)
     const a = factoryFor('task', { overrides: { dependsOn: [] } })
@@ -140,7 +140,7 @@ describe('wouldCreateCycle', () => {
     expect(wouldCreateCycle(db, a.id, d.id, 2)).toBe(false)
   })
 
-  it('returns false when depends_on is malformed JSON', () => {
+  it('handles malformed JSON depends_on', () => {
     const db = freshDb()
     const a = factoryFor('task')
     const b = factoryFor('task', { overrides: { dependsOn: [] } })

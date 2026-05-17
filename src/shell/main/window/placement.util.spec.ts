@@ -1,5 +1,5 @@
-import { describe, expect, test } from 'bun:test'
-import type { Display, Rectangle } from 'electrobun/bun'
+import { describe, expect, it } from 'bun:test'
+import { factoryFor } from '@testing'
 
 import {
   centerBoundsInWorkArea,
@@ -9,7 +9,7 @@ import {
   SAFE_FALLBACK_Y
 } from './placement.util'
 
-const fakeDisplay = (workArea: Rectangle): Display => ({
+const fakeDisplay = (workArea: ReturnType<typeof factoryFor<'rectangle'>>) => ({
   id: 1,
   bounds: workArea,
   workArea,
@@ -18,81 +18,123 @@ const fakeDisplay = (workArea: Rectangle): Display => ({
 })
 
 describe('centerBoundsInWorkArea', () => {
-  test('centers within a zero-origin work area', () => {
-    const frame = centerBoundsInWorkArea({ x: 0, y: 0, width: 1920, height: 1080 }, { width: 680, height: 420 })
-    expect(frame).toEqual({ x: 620, y: 330, width: 680, height: 420 })
+  const windowSize = factoryFor('windowSize')
+
+  describe('with a zero-origin work area', () => {
+    const workArea = factoryFor('rectangle')
+    const frame = () => centerBoundsInWorkArea(workArea, windowSize)
+
+    it('centers the window', () => {
+      expect(frame()).toEqual(factoryFor('rectangle', { overrides: { x: 620, y: 330, width: 680, height: 420 } }))
+    })
   })
 
-  test('honors a non-zero work-area origin (macOS menu-bar offset)', () => {
-    const frame = centerBoundsInWorkArea({ x: 0, y: 25, width: 1440, height: 875 }, { width: 680, height: 420 })
-    expect(frame).toEqual({ x: 380, y: 253, width: 680, height: 420 })
+  describe('with a non-zero work-area origin', () => {
+    const workArea = factoryFor('rectangle', { overrides: { y: 25, width: 1440, height: 875 } })
+    const frame = () => centerBoundsInWorkArea(workArea, windowSize)
+
+    it('honors the macOS menu-bar offset', () => {
+      expect(frame()).toEqual(factoryFor('rectangle', { overrides: { x: 380, y: 253, width: 680, height: 420 } }))
+    })
   })
 
-  test('rounds half-pixel offsets to integers', () => {
-    const frame = centerBoundsInWorkArea({ x: 0, y: 0, width: 1001, height: 601 }, { width: 200, height: 100 })
-    expect(frame).toEqual({ x: 401, y: 251, width: 200, height: 100 })
-    expect(Number.isInteger(frame.x)).toBe(true)
-    expect(Number.isInteger(frame.y)).toBe(true)
+  describe('with half-pixel offsets', () => {
+    const workArea = factoryFor('rectangle', { overrides: { width: 1001, height: 601 } })
+    const window = factoryFor('windowSize', { overrides: { width: 200, height: 100 } })
+    const result = centerBoundsInWorkArea(workArea, window)
+
+    it('rounds to integers', () => {
+      expect(result).toEqual(factoryFor('rectangle', { overrides: { x: 401, y: 251, width: 200, height: 100 } }))
+    })
+
+    it('produces integer coordinates', () => {
+      expect(Number.isInteger(result.x)).toBe(true)
+      expect(Number.isInteger(result.y)).toBe(true)
+    })
   })
 
-  test('clamps to work-area origin when window exactly fills the work area', () => {
-    const frame = centerBoundsInWorkArea({ x: 10, y: 20, width: 680, height: 420 }, { width: 680, height: 420 })
-    expect(frame).toEqual({ x: 10, y: 20, width: 680, height: 420 })
+  describe('when window fills the work area', () => {
+    const workArea = factoryFor('rectangle', { overrides: { x: 10, y: 20, width: 680, height: 420 } })
+    const frame = () => centerBoundsInWorkArea(workArea, windowSize)
+
+    it('clamps to work-area origin', () => {
+      expect(frame()).toEqual(factoryFor('rectangle', { overrides: { x: 10, y: 20, width: 680, height: 420 } }))
+    })
   })
 
-  test('pins to work-area origin when window is larger than work area', () => {
-    const frame = centerBoundsInWorkArea({ x: 10, y: 20, width: 600, height: 400 }, { width: 800, height: 500 })
-    expect(frame).toEqual({ x: 10, y: 20, width: 800, height: 500 })
+  describe('when window exceeds the work area', () => {
+    const workArea = factoryFor('rectangle', { overrides: { x: 10, y: 20, width: 600, height: 400 } })
+    const window = factoryFor('windowSize', { overrides: { width: 800, height: 500 } })
+    const frame = () => centerBoundsInWorkArea(workArea, window)
+
+    it('pins to work-area origin', () => {
+      expect(frame()).toEqual(factoryFor('rectangle', { overrides: { x: 10, y: 20, width: 800, height: 500 } }))
+    })
   })
 
-  test('floors fractional input sizes', () => {
-    const frame = centerBoundsInWorkArea({ x: 0, y: 0, width: 1000, height: 800 }, { width: 680.9, height: 420.1 })
-    expect(frame.width).toBe(680)
-    expect(frame.height).toBe(420)
+  describe('with fractional input sizes', () => {
+    const workArea = factoryFor('rectangle', { overrides: { width: 1000, height: 800 } })
+    const window = factoryFor('windowSize', { overrides: { width: 680.9, height: 420.1 } })
+    const frame = () => centerBoundsInWorkArea(workArea, window)
+
+    it('floors the values', () => {
+      expect(frame().width).toBe(680)
+      expect(frame().height).toBe(420)
+    })
   })
 })
 
 describe('isUsableWorkArea', () => {
-  test('rejects null/undefined and zero-or-negative dimensions', () => {
-    expect(isUsableWorkArea(null)).toBe(false)
-    expect(isUsableWorkArea(undefined)).toBe(false)
-    expect(isUsableWorkArea({ x: 0, y: 0, width: 0, height: 600 })).toBe(false)
-    expect(isUsableWorkArea({ x: 0, y: 0, width: 800, height: -1 })).toBe(false)
-    expect(isUsableWorkArea({ x: 0, y: 0, width: Number.NaN, height: 600 })).toBe(false)
+  describe('with invalid dimensions', () => {
+    const invalidCases = [
+      { name: 'null', input: null },
+      { name: 'undefined', input: undefined },
+      { name: 'zero width', input: factoryFor('rectangle', { overrides: { width: 0, height: 600 } }) },
+      { name: 'negative height', input: factoryFor('rectangle', { overrides: { width: 800, height: -1 } }) },
+      { name: 'NaN width', input: factoryFor('rectangle', { overrides: { width: Number.NaN, height: 600 } }) }
+    ]
+
+    for (const { name, input } of invalidCases) {
+      it(`rejects ${name}`, () => {
+        expect(isUsableWorkArea(input)).toBe(false)
+      })
+    }
   })
 
-  test('accepts a normal work area', () => {
-    expect(isUsableWorkArea({ x: 0, y: 25, width: 1440, height: 875 })).toBe(true)
+  describe('with a normal work area', () => {
+    it('accepts the value', () => {
+      expect(isUsableWorkArea(factoryFor('rectangle', { overrides: { y: 25, width: 1440, height: 875 } }))).toBe(true)
+    })
   })
 })
 
 describe('resolveInitialFrame', () => {
-  test('centers when display has a usable work area', () => {
-    const display = fakeDisplay({ x: 0, y: 0, width: 1920, height: 1080 })
-    expect(resolveInitialFrame(display, { width: 680, height: 420 })).toEqual({
-      x: 620,
-      y: 330,
-      width: 680,
-      height: 420
+  const windowSize = factoryFor('windowSize')
+  const safeFallbackFrame = factoryFor('rectangle', {
+    overrides: { x: SAFE_FALLBACK_X, y: SAFE_FALLBACK_Y, width: windowSize.width, height: windowSize.height }
+  })
+
+  describe('when display has a usable work area', () => {
+    const display = fakeDisplay(factoryFor('rectangle'))
+
+    it('centers the window', () => {
+      expect(resolveInitialFrame(display, windowSize)).toEqual(
+        factoryFor('rectangle', { overrides: { x: 620, y: 330, width: 680, height: 420 } })
+      )
     })
   })
 
-  test('falls back to safe coordinates when display is null', () => {
-    expect(resolveInitialFrame(null, { width: 680, height: 420 })).toEqual({
-      x: SAFE_FALLBACK_X,
-      y: SAFE_FALLBACK_Y,
-      width: 680,
-      height: 420
+  describe('when display is missing', () => {
+    it('falls back to safe coordinates', () => {
+      expect(resolveInitialFrame(null, windowSize)).toEqual(safeFallbackFrame)
     })
   })
 
-  test('falls back when work area has zero dimensions (Electrobun default empty Display)', () => {
-    const display = fakeDisplay({ x: 0, y: 0, width: 0, height: 0 })
-    expect(resolveInitialFrame(display, { width: 680, height: 420 })).toEqual({
-      x: SAFE_FALLBACK_X,
-      y: SAFE_FALLBACK_Y,
-      width: 680,
-      height: 420
+  describe('when Electrobun reports an empty work area', () => {
+    const display = fakeDisplay(factoryFor('rectangle', { overrides: { width: 0, height: 0 } }))
+
+    it('falls back to safe coordinates', () => {
+      expect(resolveInitialFrame(display, windowSize)).toEqual(safeFallbackFrame)
     })
   })
 })

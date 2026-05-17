@@ -1,6 +1,7 @@
 export { factoryFor } from './factories/factories.builder'
 export { rpcBookmarkRow } from './helpers/rpc_knowledge_test_row.util'
 export { createFactoryFor } from './helpers/testing.factory'
+export { configureQuietLogtape, noopLogSink } from './helpers/testing.quiet_stdio'
 export {
   expectViewState,
   fireArrowKey,

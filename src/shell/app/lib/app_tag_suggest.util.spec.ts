@@ -19,7 +19,7 @@ function makeEntry(overrides: Partial<Knowledge> = {}): Knowledge {
 }
 
 describe('extractKeywords', () => {
-  it('extracts words longer than 2 chars', () => {
+  it('extracts words >2 chars', () => {
     const result = extractKeywords('build the knowledge base')
     expect(result).toContain('build')
     expect(result).toContain('knowledge')

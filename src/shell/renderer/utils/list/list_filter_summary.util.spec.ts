@@ -1,11 +1,17 @@
-import { expect, test } from 'bun:test'
+import { describe, expect, it } from 'bun:test'
 
 import { listFilterSummary } from './list_filter_summary.util'
 
-test('listFilterSummary prefers task view label', () => {
-  expect(listFilterSummary([], [], 'overdue')).toContain('Overdue')
-})
+describe('listFilterSummary', () => {
+  describe('with a task view', () => {
+    it('prefers task view label', () => {
+      expect(listFilterSummary([], [], 'overdue')).toContain('Overdue')
+    })
+  })
 
-test('listFilterSummary uses single type label', () => {
-  expect(listFilterSummary(['task'], [], undefined)).toContain('Task')
+  describe('with a single type', () => {
+    it('uses type label', () => {
+      expect(listFilterSummary(['task'], [], undefined)).toContain('Task')
+    })
+  })
 })

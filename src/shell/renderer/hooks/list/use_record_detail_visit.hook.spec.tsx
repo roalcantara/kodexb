@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from 'bun:test'
+import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { rpcBookmarkRow } from '@testing'
 import { cleanup, render } from '@testing-library/react'
@@ -25,19 +25,23 @@ describe('useRecordDetailVisit', () => {
     cleanup()
   })
 
-  test('records visit when detail entry id is set', () => {
-    const { rerender } = render(<Harness entry={rpcBookmarkRow(1)} />)
-    expect(recordEntryVisitFireAndForget).toHaveBeenCalledWith(1)
-    recordEntryVisitFireAndForget.mockReset()
-    rerender(<Harness entry={rpcBookmarkRow(2)} />)
-    expect(recordEntryVisitFireAndForget).toHaveBeenCalledWith(2)
+  describe('when detail entry id changes', () => {
+    it('records visit for new entry', () => {
+      const { rerender } = render(<Harness entry={rpcBookmarkRow(1)} />)
+      expect(recordEntryVisitFireAndForget).toHaveBeenCalledWith(1)
+      recordEntryVisitFireAndForget.mockReset()
+      rerender(<Harness entry={rpcBookmarkRow(2)} />)
+      expect(recordEntryVisitFireAndForget).toHaveBeenCalledWith(2)
+    })
   })
 
-  test('does not record again for the same id', () => {
-    const row = rpcBookmarkRow(1)
-    const { rerender } = render(<Harness entry={row} />)
-    expect(recordEntryVisitFireAndForget).toHaveBeenCalledTimes(1)
-    rerender(<Harness entry={row} />)
-    expect(recordEntryVisitFireAndForget).toHaveBeenCalledTimes(1)
+  describe('when detail entry id does not change', () => {
+    it('does not record again', () => {
+      const row = rpcBookmarkRow(1)
+      const { rerender } = render(<Harness entry={row} />)
+      expect(recordEntryVisitFireAndForget).toHaveBeenCalledTimes(1)
+      rerender(<Harness entry={row} />)
+      expect(recordEntryVisitFireAndForget).toHaveBeenCalledTimes(1)
+    })
   })
 })

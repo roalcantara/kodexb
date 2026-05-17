@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'bun:test'
+import { describe, expect, it } from 'bun:test'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -9,11 +9,11 @@ const invalidFixture = path.join(import.meta.dir, '../../../__tests__/fixtures/c
 const CONFIG_AT = /config at/
 
 describe('loadConfig', () => {
-  test('rejects config that parses as YAML but fails schema validation', async () => {
+  it('rejects YAML with invalid schema', async () => {
     await expect(loadConfig(invalidFixture)).rejects.toThrow(CONFIG_AT)
   })
 
-  test('rejects malformed YAML', async () => {
+  it('rejects malformed YAML', async () => {
     const dir = await mkdtemp(path.join(tmpdir(), 'kb-cfg-'))
     const cfgPath = path.join(dir, 'config.yaml')
     try {

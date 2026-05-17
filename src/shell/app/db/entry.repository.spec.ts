@@ -18,7 +18,7 @@ bookmarks:
     tags: [test]
 `
 
-  it('inserts a new row and returns "inserted"', () => {
+  it('inserts new row', () => {
     const { db } = makeMemoryDb()
     const [entry] = parseSourceFile(filePath, content)
     if (!entry) throw new Error('expected entry')
@@ -26,7 +26,7 @@ bookmarks:
     expect(result).toBe('inserted')
   })
 
-  it('updates an existing row and returns "updated"', () => {
+  it('updates existing row', () => {
     const { db } = makeMemoryDb()
     const [entry] = parseSourceFile(filePath, content)
     if (!entry) throw new Error('expected entry')
@@ -54,7 +54,7 @@ describe('openDatabase()', () => {
 })
 
 describe('findAll()', () => {
-  it('returns all entries after seeding', async () => {
+  it('returns all after seeding', async () => {
     const { raw } = await createSeededMemoryDb()
     const rows = findAll(raw)
     expect(rows.length).toBe(4)
@@ -63,16 +63,16 @@ describe('findAll()', () => {
   it('filters by type', async () => {
     const { raw } = await createSeededMemoryDb()
     const bookmarks = findAll(raw, { types: ['bookmark'] })
-    expect(bookmarks.every(r => r.type === 'bookmark')).toBe(true)
+    expect(bookmarks.filter(r => r.type !== 'bookmark')).toHaveLength(0)
   })
 
-  it('returns FTS5 results when query is provided', async () => {
+  it('returns FTS5 results with query', async () => {
     const { raw } = await createSeededMemoryDb()
     const results = findAll(raw, { query: 'git' })
     expect(results.length).toBeGreaterThan(0)
   })
 
-  it('orders plain browse by frecency score then updated_at', () => {
+  it('orders plain browse by frecency', () => {
     const { raw } = makeMemoryDb()
     const low = factoryFor('bookmark', { overrides: { id: 1, key: 'https://low.example', updatedAt: 100 } })
     const high = factoryFor('bookmark', { overrides: { id: 2, key: 'https://high.example', updatedAt: 200 } })
@@ -98,13 +98,13 @@ describe('findAll()', () => {
     expect(results[0]?.id).toBe(stronger.id)
   })
 
-  it('returns empty array when FTS query matches nothing', async () => {
+  it('returns empty for unmatched FTS query', async () => {
     const { raw } = await createSeededMemoryDb()
     const results = findAll(raw, { query: 'zzznomatch9999' })
     expect(results).toHaveLength(0)
   })
 
-  it('applies tag filter in SQL before limit so matches beyond first page appear', () => {
+  it('applies tag filter before limit', () => {
     const { raw } = makeMemoryDb()
     for (let i = 0; i < 55; i++) {
       upsert(raw, factoryFor('bookmark', { overrides: { tags: ['other'], key: `https://example.com/page/${i}` } }))
@@ -121,7 +121,7 @@ describe('findAll()', () => {
     expect(got[0]?.tags).toContain('needle')
   })
 
-  it('combines multiple tags with AND on one row', () => {
+  it('combines tags with AND', () => {
     const { raw } = makeMemoryDb()
     upsert(raw, factoryFor('bookmark', { overrides: { id: 101, tags: ['a'], key: 'https://a.example' } }))
     upsert(raw, factoryFor('bookmark', { overrides: { id: 102, tags: ['b'], key: 'https://b.example' } }))
@@ -132,7 +132,7 @@ describe('findAll()', () => {
     expect(both[0]?.id).toBe(103)
   })
 
-  it('second import is idempotent (row counts stable)', async () => {
+  it('second import is idempotent', async () => {
     const { db, raw } = await createSeededMemoryDb()
     const countBefore = findAll(raw).length
     const entries = await readMinimalFixtureEntries()
@@ -145,7 +145,7 @@ describe('findAll()', () => {
 })
 
 describe('findById()', () => {
-  it('returns a knowledge row by id', async () => {
+  it('returns row by id', async () => {
     const { raw } = await createSeededMemoryDb()
     const all = findAll(raw)
     const first = all[0]
@@ -162,7 +162,7 @@ describe('findById()', () => {
 })
 
 describe('getDbStats()', () => {
-  it('returns correct total and byType breakdown', async () => {
+  it('returns correct total and byType', async () => {
     const { raw } = await createSeededMemoryDb()
     const stats = getDbStats(raw)
     expect(stats.total).toBe(4)
@@ -174,7 +174,7 @@ describe('getDbStats()', () => {
 })
 
 describe('getTagCounts()', () => {
-  it('aggregates tags from JSON tag arrays', async () => {
+  it('aggregates tags from JSON arrays', async () => {
     const { raw } = await createSeededMemoryDb()
     const tags = getTagCounts(raw)
     expect(tags.git).toBe(2)

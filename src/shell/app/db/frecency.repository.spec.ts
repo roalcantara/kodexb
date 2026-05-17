@@ -5,7 +5,7 @@ import { upsert } from './entry.repository'
 import { recordEntryVisit } from './frecency.repository'
 
 describe('recordEntryVisit()', () => {
-  it('creates a frecency row on first visit', () => {
+  it('creates row on first visit', () => {
     const { raw } = openDatabase(':memory:')
     const row = factoryFor('bookmark')
     upsert(raw, row)
@@ -21,12 +21,12 @@ describe('recordEntryVisit()', () => {
     expect(stored?.frecency_score).toBe(1)
   })
 
-  it('returns false when knowledge id does not exist', () => {
+  it('returns false for unknown id', () => {
     const { raw } = openDatabase(':memory:')
     expect(recordEntryVisit(raw, 999)).toBe(false)
   })
 
-  it('removes frecency when knowledge row is deleted', () => {
+  it('cascades on knowledge delete', () => {
     const { raw } = openDatabase(':memory:')
     const row = factoryFor('bookmark')
     upsert(raw, row)

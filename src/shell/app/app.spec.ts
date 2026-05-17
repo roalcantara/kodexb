@@ -56,94 +56,124 @@ describe('App', () => {
     return { loaded, app: new App(loaded) }
   }
 
-  it('lists entries after import into the same db file', async () => {
-    const loaded = await loadedFixture()
-    const importer = new ImportService(loaded.database.path)
-    await importer.run(loaded.sources.path)
+  describe('list and cache', () => {
+    it('lists entries after import', async () => {
+      const loaded = await loadedFixture()
+      const importer = new ImportService(loaded.database.path)
+      await importer.run(loaded.sources.path)
 
-    const app = new App(loaded)
-    const rows = await app.list({ limit: 20 })
-    expect(rows.length).toBeGreaterThanOrEqual(4)
+      const app = new App(loaded)
+      const rows = await app.list({ limit: 20 })
+      expect(rows.length).toBeGreaterThanOrEqual(4)
 
-    const matchCount = await app.listMatchCount({})
-    expect(matchCount).toBe((await app.getListStats()).total)
+      const matchCount = await app.listMatchCount({})
+      expect(matchCount).toBe((await app.getListStats()).total)
 
-    const stats = await app.getListStats()
-    expect(stats.total).toBeGreaterThanOrEqual(4)
-    expect(stats.taskViews.all_pending).toBeGreaterThanOrEqual(1)
-    expect(stats.tags.git).toBe(2)
-    expect(stats.tags.example).toBe(1)
+      const stats = await app.getListStats()
+      expect(stats.total).toBeGreaterThanOrEqual(4)
+      expect(stats.taskViews.all_pending).toBeGreaterThanOrEqual(1)
+      expect(stats.tags.git).toBe(2)
+      expect(stats.tags.example).toBe(1)
+    })
+
+    it('invalidates cache after sync', async () => {
+      const { loaded, app } = await importedAppFixture()
+      await app.list({ limit: 1 })
+      await app.list({ limit: 1 })
+
+      await app.sync(loaded.sources.path)
+      const third = await app.list({ limit: 2 })
+      expect(third.length).toBeGreaterThan(0)
+    })
   })
 
-  it('resizeWindow calls shell hook when set', async () => {
-    const loaded = await loadedFixture()
-    const sizes: Array<{ w: number; h: number }> = []
-    const shell = {
-      resizeWindow(w: number, h: number) {
-        sizes.push({ w, h })
+  describe('shell hooks', () => {
+    it('resizeWindow delegates', async () => {
+      const loaded = await loadedFixture()
+      const sizes: Array<{ w: number; h: number }> = []
+      const shell = {
+        resizeWindow(w: number, h: number) {
+          sizes.push({ w, h })
+        }
       }
-    }
-    const app = new App(loaded, {}, 'default', shell)
-    await app.resizeWindow(1200, 700)
-    expect(sizes).toEqual([{ w: 1200, h: 700 }])
+      const app = new App(loaded, {}, 'default', shell)
+      await app.resizeWindow(1200, 700)
+      expect(sizes).toEqual([{ w: 1200, h: 700 }])
+    })
+
+    it('openExternal delegates for URL', async () => {
+      const loaded = await loadedFixture()
+      const opened: string[] = []
+      const app = new App(loaded, {}, 'default', { openExternal: url => opened.push(url) })
+      await app.openExternal('https://example.com/docs')
+      expect(opened).toEqual(['https://example.com/docs'])
+    })
+
+    it('openExternal rejects bad URL', async () => {
+      const loaded = await loadedFixture()
+      const app = new App(loaded)
+      await expect(app.openExternal('not a url')).rejects.toThrow()
+    })
+
+    it('showOpenDialog delegates', async () => {
+      const loaded = await loadedFixture()
+      const showOpenDialog = mock(() => Promise.resolve('/picked'))
+      const app = new App(loaded, {}, 'default', { showOpenDialog })
+      await expect(app.showOpenDialog({ title: 'Pick' })).resolves.toBe('/picked')
+      expect(showOpenDialog).toHaveBeenCalled()
+    })
+
+    it('showOpenDialog rejects when hook missing', async () => {
+      const loaded = await loadedFixture()
+      const app = new App(loaded)
+      await expect(app.showOpenDialog({})).rejects.toThrow(NOT_IMPLEMENTED_RE)
+    })
+
+    it('pasteInTerminal delegates', async () => {
+      const calls: Array<{ cmd: string; app?: string }> = []
+      const cfg = factoryFor('loadedConfig', {
+        overrides: { display: { terminalApp: 'Terminal.app', pageSize: '50' } }
+      })
+      Object.assign(cfg, { writeTarget: '/tmp/tasks.yml' })
+      const app = new App(cfg, {}, 'default', {
+        pasteInTerminal: (cmd, termApp) => calls.push({ cmd, app: termApp })
+      })
+      await app.pasteInTerminal('git log')
+      expect(calls).toEqual([{ cmd: 'git log', app: 'Terminal.app' }])
+    })
+
+    it('openInEditor delegates', async () => {
+      const calls: Array<{ filePath: string; app?: string }> = []
+      const cfg = factoryFor('loadedConfig', { overrides: { display: { editorApp: 'code', pageSize: '50' } } })
+      Object.assign(cfg, { writeTarget: '/tmp/tasks.yml' })
+      const app = new App(cfg, {}, 'default', {
+        openInEditor: (filePath, editorApp) => calls.push({ filePath, app: editorApp })
+      })
+      await app.openInEditor('/tmp/test.yaml')
+      expect(calls).toEqual([{ filePath: '/tmp/test.yaml', app: 'code' }])
+    })
   })
 
-  it('openExternal calls shell hook for URL', async () => {
-    const loaded = await loadedFixture()
-    const opened: string[] = []
-    const app = new App(loaded, {}, 'default', { openExternal: url => opened.push(url) })
-    await app.openExternal('https://example.com/docs')
-    expect(opened).toEqual(['https://example.com/docs'])
-  })
+  describe('preview images', () => {
+    it('returns YouTube thumbnail', async () => {
+      const loaded = await loadedFixture()
+      const app = new App(loaded)
+      const result = await app.fetchPreviewImage('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+      expect(result?.url).toContain('dQw4w9WgXcQ')
+    })
 
-  it('openExternal rejects bad URL', async () => {
-    const loaded = await loadedFixture()
-    const app = new App(loaded)
-    await expect(app.openExternal('not a url')).rejects.toThrow()
-  })
-
-  it('showOpenDialog delegates to shell hook', async () => {
-    const loaded = await loadedFixture()
-    const showOpenDialog = mock(() => Promise.resolve('/picked'))
-    const app = new App(loaded, {}, 'default', { showOpenDialog })
-    await expect(app.showOpenDialog({ title: 'Pick' })).resolves.toBe('/picked')
-    expect(showOpenDialog).toHaveBeenCalled()
-  })
-
-  it('showOpenDialog rejects when hook missing', async () => {
-    const loaded = await loadedFixture()
-    const app = new App(loaded)
-    await expect(app.showOpenDialog({})).rejects.toThrow(NOT_IMPLEMENTED_RE)
-  })
-
-  it('fetchPreviewImage returns YouTube thumbnail', async () => {
-    const loaded = await loadedFixture()
-    const app = new App(loaded)
-    const result = await app.fetchPreviewImage('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
-    expect(result?.url).toContain('dQw4w9WgXcQ')
-  })
-
-  it('fetchPreviewImage parses OG meta tags', async () => {
-    const loaded = await loadedFixture()
-    const app = new App(loaded)
-    const html = '<meta property="og:image" content="https://example.com/image.png">'
-    globalThis.fetch = mock(async () => new Response(html)) as unknown as typeof fetch
-    const result = await app.fetchPreviewImage('https://example.com/page')
-    expect(result).toEqual({ url: 'https://example.com/image.png' })
-  })
-
-  it('invalidates list cache after sync', async () => {
-    const { loaded, app } = await importedAppFixture()
-    await app.list({ limit: 1 })
-    await app.list({ limit: 1 })
-
-    await app.sync(loaded.sources.path)
-    const third = await app.list({ limit: 2 })
-    expect(third.length).toBeGreaterThan(0)
+    it('parses OG meta tags', async () => {
+      const loaded = await loadedFixture()
+      const app = new App(loaded)
+      const html = '<meta property="og:image" content="https://example.com/image.png">'
+      globalThis.fetch = mock(async () => new Response(html)) as unknown as typeof fetch
+      const result = await app.fetchPreviewImage('https://example.com/page')
+      expect(result).toEqual({ url: 'https://example.com/image.png' })
+    })
   })
 
   describe('stats caching', () => {
-    it('returns cached listStats on second call without hitting DB', async () => {
+    it('returns cached listStats', async () => {
       const { app } = await importedAppFixture()
       const first = await app.getListStats()
       insertManualBookmark(app, 'manual-cached-list-stats')
@@ -152,7 +182,7 @@ describe('App', () => {
       expect(second.total).toBe(first.total)
     })
 
-    it('clears listStats cache after sync', async () => {
+    it('clears listStats after sync', async () => {
       const { loaded, app } = await importedAppFixture()
       const first = await app.getListStats()
       insertManualBookmark(app, 'manual-list-stats-after-sync')
@@ -173,28 +203,6 @@ describe('App', () => {
     })
   })
 
-  it('pasteInTerminal calls shell hook with terminal app from config', async () => {
-    const calls: Array<{ cmd: string; app?: string }> = []
-    const cfg = factoryFor('loadedConfig', { overrides: { display: { terminalApp: 'Terminal.app', pageSize: '50' } } })
-    Object.assign(cfg, { writeTarget: '/tmp/tasks.yml' })
-    const app = new App(cfg, {}, 'default', {
-      pasteInTerminal: (cmd, termApp) => calls.push({ cmd, app: termApp })
-    })
-    await app.pasteInTerminal('git log')
-    expect(calls).toEqual([{ cmd: 'git log', app: 'Terminal.app' }])
-  })
-
-  it('openInEditor calls shell hook with editor app from config', async () => {
-    const calls: Array<{ filePath: string; app?: string }> = []
-    const cfg = factoryFor('loadedConfig', { overrides: { display: { editorApp: 'code', pageSize: '50' } } })
-    Object.assign(cfg, { writeTarget: '/tmp/tasks.yml' })
-    const app = new App(cfg, {}, 'default', {
-      openInEditor: (filePath, editorApp) => calls.push({ filePath, app: editorApp })
-    })
-    await app.openInEditor('/tmp/test.yaml')
-    expect(calls).toEqual([{ filePath: '/tmp/test.yaml', app: 'code' }])
-  })
-
   describe('suggestTags', () => {
     async function seededFixture(): Promise<App> {
       const loaded = await loadedFixture()
@@ -203,13 +211,13 @@ describe('App', () => {
       return new App(loaded)
     }
 
-    it('returns empty array for non-existent entry', async () => {
+    it('returns empty for non-existent entry', async () => {
       const app = await seededFixture()
       const result = await app.suggestTags(999999)
       expect(result).toEqual([])
     })
 
-    it('returns co-occurring tags for entries with existing tags', async () => {
+    it('returns co-occurring tags', async () => {
       const app = await seededFixture()
       const result = await app.suggestTags(1)
       expect(Array.isArray(result)).toBe(true)
@@ -222,7 +230,7 @@ describe('App', () => {
       }
     })
 
-    it('returns keywords when entry has no tags', async () => {
+    it('returns keywords for untagged entry', async () => {
       const app = await seededFixture()
       const entries = await app.list()
       const untagged = entries.find(e => (e.tags ?? []).length === 0)

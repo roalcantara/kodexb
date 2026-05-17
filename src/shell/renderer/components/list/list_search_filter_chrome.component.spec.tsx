@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 
-import { afterEach, expect, test } from 'bun:test'
+import { afterEach, describe, expect, it } from 'bun:test'
 import type { ListStats } from '@shared/rpc'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -50,33 +50,40 @@ function renderChrome(overrides: Partial<Parameters<typeof ListSearchFilterChrom
 
   return render(<ListSearchFilterChrome {...props} />)
 }
+describe('ListSearchFilterChrome', () => {
+  describe('when search text changes', () => {
+    it('updates search value', () => {
+      let value = ''
+      renderChrome({
+        onSearchChange: next => {
+          value = next
+        }
+      })
 
-test('ListSearchFilterChrome changes search text', () => {
-  let value = ''
-  renderChrome({
-    onSearchChange: next => {
-      value = next
-    }
+      fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'bun' } })
+      expect(value).toBe('bun')
+    })
   })
 
-  fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'bun' } })
-  expect(value).toBe('bun')
-})
+  describe('when back button is clicked', () => {
+    it('returns from split detail', async () => {
+      let closed = false
+      renderChrome({
+        showBackWithSearch: true,
+        closeDetailToList: () => {
+          closed = true
+        }
+      })
 
-test('ListSearchFilterChrome returns from split detail', async () => {
-  let closed = false
-  renderChrome({
-    showBackWithSearch: true,
-    closeDetailToList: () => {
-      closed = true
-    }
+      await userEvent.click(screen.getByRole('button', { name: 'Back to list' }))
+      expect(closed).toBe(true)
+    })
   })
 
-  await userEvent.click(screen.getByRole('button', { name: 'Back to list' }))
-  expect(closed).toBe(true)
-})
-
-test('ListSearchFilterChrome renders detail drag stripe', () => {
-  const { container } = renderChrome({ isFullDetail: true })
-  expect(container.querySelector('.kb-windowDragStripe--detail')).toBeTruthy()
+  describe('when in full detail', () => {
+    it('renders drag stripe', () => {
+      const { container } = renderChrome({ isFullDetail: true })
+      expect(container.querySelector('.kb-windowDragStripe--detail')).toBeTruthy()
+    })
+  })
 })

@@ -40,6 +40,27 @@ bun test --coverage        # coverage report
 
 Use `bun:test` exclusively — never Jest, Vitest, or Mocha.
 
+### Terminal output
+
+`bunfig.toml` sets `[test] onlyFailures = true`, so the terminal shows **summary
+only** when all tests pass (failures still print in full). This avoids long
+`describe > describe > it` breadcrumb lines — not duplicate runs.
+
+`testing.quiet_stdio.ts` is preloaded after Happy DOM: it configures Logtape with
+a noop sink (meta at `fatal`) and replaces `console.log` / `warn` / `error` /
+etc. with no-ops so LogTape startup lines, React `act(...)` hints, and unknown
+element warnings never pollute the terminal. Specs that reconfigure Logtape
+(e.g. `console.logger.spec.ts`) must call `configureQuietLogtape()` from
+`@testing` in `afterEach`, not `configureSync({ sinks: {}, loggers: [] })`.
+
+- **VS Code / Cursor Testing panel** — hierarchical tree; use it when you want
+  per-test names without noisy terminal output.
+- **Verbose terminal names** — temporarily remove `onlyFailures` from
+  `bunfig.toml`, or rely on the Testing panel; Bun has no `--no-only-failures`
+  flag.
+- **CI** — `bun run test:ci` adds JUnit XML (`--reporter=junit`) regardless of
+  `onlyFailures`.
+
 ## File location & naming
 
 Co-locate every spec next to its source. Suffix follows

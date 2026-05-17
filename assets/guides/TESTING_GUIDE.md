@@ -11,6 +11,12 @@ Cursor rule (detailed patterns): `.cursor/rules/testing.mdc`
 
 `bun:test` exports **`describe`** (and `it`, `expect`, …) but **not** RSpec’s `context`. **Do not** alias (`const context = describe`); that adds noise. Use **nested `describe` blocks** for situation groups (“when …”, “with …”). Same structure as Better Specs “contexts”, one API only.
 
+Project specs use **`it()`** for behavior examples. Bun also exposes
+`test()`, but new and touched source specs should import and call `it()` so the
+suite reads consistently with Better Specs examples. Convert existing
+`test()` calls to `it()` during normalisation work unless the spec ledger
+records a narrow exception.
+
 ## Core Principles
 
 1. Write unit tests for all public functions and classes
@@ -155,29 +161,94 @@ describe("ActOnEntry", () => {
 
 Better Specs is a collection of best practices for writing high-quality tests. These guidelines should be followed for all test files in this project.
 
+Better Specs is written for Rails/RSpec, so kb applies the intent through
+Bun, TypeScript, React Testing Library, Fishery, and the `@testing` helpers
+rather than copying RSpec APIs literally.
+
+| Better Specs guideline   | kb adaptation                                                                                                                        |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Describe methods         | Use `.` for class/static methods and `#` for instance methods where that distinction applies.                                        |
+| Use contexts             | Use nested `describe` blocks; never alias `context`.                                                                                 |
+| Short description        | Keep `describe` and `it` text under 40 characters; split with nested `describe`.                                                     |
+| Single expectation       | Prefer one behavior assertion per unit example; allow grouped assertions for expensive integration setup.                            |
+| All possible cases       | Cover valid, edge, invalid, empty, boundary, and error paths exposed by the public API.                                              |
+| Expect vs should         | Use `expect(...)` from `bun:test`; never use Chai/Jest/RSpec `should` syntax.                                                        |
+| Use subject              | Make the subject explicit with `subject`, `Subject`, `makeSubject()`, or `renderSubject()`; there is no Bun `subject()` API.          |
+| Use let and let!         | Prefer local builders and lazy helpers; use `beforeEach` only for lifecycle setup that must be recreated per example.                |
+| Mock or not to mock      | Prefer real implementations, dependency injection, and controlled test doubles; keep mocks narrow.                                   |
+| Create the data you need | Build only the records needed for the behavior under test.                                                                           |
+| Use factories            | Use `factoryFor` from `@testing`; reserve YAML fixtures for file-format import/sync integration.                                     |
+| Easy-to-read matchers    | Prefer direct readable matchers over boolean expressions inside matchers.                                                            |
+| Shared examples          | Prefer table-driven cases or local helper functions; avoid opaque shared-example abstractions.                                       |
+| Test what you see        | Test pure domain logic deeply and user-visible renderer/RPC behavior through public surfaces.                                        |
+| Do not use should        | Use present-tense behavior wording; never write descriptions that start with "should".                                               |
+| Continuous testing       | Use `bun test --watch` or focused `bun test <path>` while iterating.                                                                 |
+| Faster tests             | Keep core tests pure, DB tests in-memory, and preview e2e outside the default gate.                                                  |
+| Stubbing HTTP requests   | Avoid real network calls; use injected fetch functions, `data:` URLs, `Bun.serve()` fixtures, or narrow mocks for external services. |
+| Formatter                | Rely on Bun output plus focused paths locally; run the full quality gate before completion.                                          |
+
 #### Core Principles
 
 ##### 1. Describe Your Methods
 
 Be clear about what you are describing:
-- Use `.` or `::` for class methods
+- Use `.` for TypeScript static methods and factory methods
 - Use `#` for instance methods
+- Use the exported function, component, hook, route, or module concept when the
+  subject is not a class method
 
 ```typescript
 // ✅ Good
-describe('.create', () => {
-  // class method tests
+describe('parseConfig', () => {
+  // exported function tests
 })
 
-describe('#validate', () => {
-  // instance method tests
+describe('ConfigLoader', () => {
+  describe('.fromFile', () => {
+    // static method tests
+  })
+
+  describe('#validate', () => {
+    // instance method tests
+  })
+})
+
+describe('EntryRow', () => {
+  // React component tests
+})
+
+describe('useViewNavigation', () => {
+  // hook tests
+})
+
+describe('POST /api/list', () => {
+  // RPC route tests
 })
 
 // ❌ Bad
 describe('create', () => {
-  // unclear if class or instance method
+  // unclear if this is a function, static method, or instance method
 })
 ```
+
+For files that export several related functions, either group by the module
+concept and nest each exported subject, or make the dominant exported function
+the top-level `describe`.
+
+```typescript
+// ✅ Good for a multi-export utility file
+describe('window placement', () => {
+  describe('centerBoundsInWorkArea', () => {})
+  describe('resolveInitialFrame', () => {})
+})
+
+// ✅ Good when one function is the file's main subject
+describe('centerBoundsInWorkArea', () => {})
+```
+
+Avoid vague subjects like `describe('utils')`, `describe('helpers')`, or
+`describe('validation')` unless that phrase is the public concept a reader
+would use to find the behavior.
 
 ##### 2. Use nested `describe` for situations
 
@@ -202,7 +273,69 @@ describe('#destroy', () => {
 })
 ```
 
-##### 3. Keep Descriptions Short
+##### 3. Put Context Setup in the Context
+
+A BDD context is more than a label. When several examples share the same
+situation, keep that situation's immutable setup inside the nested
+`describe(...)` block so each `it(...)` can focus on one behavior.
+
+Use this shape for pure functions and deterministic helpers:
+
+```typescript
+// ✅ Good
+describe('centerBoundsInWorkArea', () => {
+  describe('with a zero-origin work area', () => {
+    const workArea = factoryFor('rectangle')
+    const windowSize = factoryFor('windowSize')
+
+    const frame = () => centerBoundsInWorkArea(workArea, windowSize)
+
+    it('centers the window', () => {
+      expect(frame()).toEqual({ x: 620, y: 330, width: 680, height: 420 })
+    })
+
+    it('preserves the requested size', () => {
+      expect(frame()).toMatchObject({ width: 680, height: 420 })
+    })
+  })
+})
+
+// ❌ Bad
+describe('centerBoundsInWorkArea', () => {
+  describe('with a zero-origin work area', () => {
+    it('centers the window', () => {
+      const frame = centerBoundsInWorkArea(
+        { x: 0, y: 0, width: 1920, height: 1080 },
+        { width: 680, height: 420 }
+      )
+      expect(frame).toEqual({ x: 620, y: 330, width: 680, height: 420 })
+    })
+  })
+})
+```
+
+Do not compute mutable or effectful results once in `describe(...)`, because
+that state is shared across examples. For mutable setup, create fresh state in
+`beforeEach(...)` or in a local `makeSubject()` helper:
+
+```typescript
+// ✅ Good when each example needs fresh mutable state
+describe('TaskRepository', () => {
+  describe('with an empty database', () => {
+    let db: Database
+
+    beforeEach(() => {
+      db = createSeededMemoryDb({ entries: [] })
+    })
+
+    it('returns no tasks', () => {
+      expect(findTasks(db)).toEqual([])
+    })
+  })
+})
+```
+
+##### 4. Keep Descriptions Short
 
 Spec descriptions should never be longer than 40 characters. If longer, split using another nested `describe`.
 
@@ -216,7 +349,7 @@ describe('when authenticated', () => {
 it('returns user data when the user is authenticated', () => {})
 ```
 
-##### 4. Single Expectation Per Test
+##### 5. Single Expectation Per Test
 
 Each test should make only one assertion. This helps identify errors quickly and keeps code readable.
 
@@ -242,7 +375,7 @@ it('creates user with all attributes', async () => {
 })
 ```
 
-##### 5. Test All Possible Cases
+##### 6. Test All Possible Cases
 
 Test valid, edge, and invalid cases. Think of all possible inputs.
 
@@ -264,39 +397,154 @@ describe('#destroy', () => {
 })
 ```
 
-##### 6. Use Subject
+##### 7. Make the Subject Explicit
 
-If you have several tests related to the same subject, use `subject` to DRY them up.
+Better Specs uses RSpec's `subject` to make the object under test obvious.
+`bun:test` has no `subject()` API, but kb adopts the same intent: every spec
+should make the tested surface easy to identify from the top of the file and
+from each context.
+
+Use this vocabulary:
+
+- `subject` for imported modules, namespaces, or a single callable function.
+- `Subject` for React components and classes that must stay PascalCase.
+- `makeSubject()` for constructing an instance or service.
+- `renderSubject()` for rendering a component.
+- A context-specific action helper such as `frame()` or `submit()` when it
+  reads clearer than calling the subject directly.
+
+For a single exported function, alias the import to `subject` when that improves
+the test shape:
 
 ```typescript
-// ✅ Good
-describe('User', () => {
-  subject(() => new User({ name: 'John', email: 'john@example.com' }))
+// ✅ Good: single exported function
+import { centerBoundsInWorkArea as subject } from './placement.util'
 
-  it('has a name', () => {
-    expect(subject().name).toBe('John')
-  })
+describe('centerBoundsInWorkArea', () => {
+  describe('with a zero-origin work area', () => {
+    const workArea = factoryFor('rectangle')
+    const windowSize = factoryFor('windowSize')
 
-  it('has an email', () => {
-    expect(subject().email).toBe('john@example.com')
-  })
-})
+    const frame = () => subject(workArea, windowSize)
 
-// ❌ Bad
-describe('User', () => {
-  it('has a name', () => {
-    const user = new User({ name: 'John', email: 'john@example.com' })
-    expect(user.name).toBe('John')
-  })
-
-  it('has an email', () => {
-    const user = new User({ name: 'John', email: 'john@example.com' })
-    expect(user.email).toBe('john@example.com')
+    it('centers the window', () => {
+      expect(frame()).toEqual({ x: 620, y: 330, width: 680, height: 420 })
+    })
   })
 })
 ```
 
-##### 7. Don't Use "should" in Descriptions
+For cohesive multi-export modules, import the module namespace as `subject` and
+nest exported functions under the module concept:
+
+```typescript
+// ✅ Good: cohesive multi-export utility module
+import * as subject from './placement.util'
+
+describe('window placement', () => {
+  describe('centerBoundsInWorkArea', () => {
+    it('centers the frame', () => {
+      expect(
+        subject.centerBoundsInWorkArea(
+          factoryFor('rectangle'),
+          factoryFor('windowSize')
+        )
+      ).toMatchObject({ x: 620, y: 330 })
+    })
+  })
+
+  describe('resolveInitialFrame', () => {
+    it('uses the saved frame', () => {
+      expect(subject.resolveInitialFrame(savedFrame)).toEqual(savedFrame)
+    })
+  })
+})
+```
+
+For components, keep the component name in the output and use `renderSubject`
+for setup:
+
+```tsx
+// ✅ Good: React component
+import { DependencyGraph as Subject } from './dependency_graph.component'
+
+describe('DependencyGraph', () => {
+  describe('when the task has dependencies', () => {
+    const dependency = factoryFor('task', { overrides: { id: 1, key: 'setup-project' } })
+    const task = factoryFor('task', { overrides: { dependsOn: [dependency.id] } })
+    const entries = [dependency, task]
+
+    const renderSubject = () =>
+      render(
+        <Subject
+          entry={task}
+          allEntries={entries}
+          onSelectEntry={() => undefined}
+        />
+      )
+
+    it('renders dependencies', () => {
+      renderSubject()
+      expect(screen.getByText('setup-project')).not.toBeNull()
+    })
+  })
+})
+```
+
+Avoid specs where the tested object is only discoverable by reading every
+assertion:
+
+```typescript
+// ❌ Bad: no clear subject, and two unrelated surfaces drift into one file
+describe('helpers', () => {
+  it('centers windows', () => {})
+  it('parses config paths', () => {})
+})
+```
+
+If `import * as subject from './file'` exposes unrelated exports, split the
+production file or split the spec. A subject namespace is for cohesive modules,
+not a way to hide mixed responsibilities.
+
+##### 7.1 Prefer Local Builders Over Shared Mutable Setup
+
+RSpec's `let` and `let!` map to simple TypeScript patterns in kb:
+
+- Use `factoryFor(...)` for recurring project-owned shapes, including geometry
+  and renderer props; see [FISHERY_GUIDE.md](./FISHERY_GUIDE.md).
+- Use local constants inside an `it()` only when the setup is unique to one
+  example.
+- Use `const makeSubject = (...) => ...` when several examples need the same
+  subject with small variations.
+- Use `let subject: Type` plus `beforeEach` only when each example needs a fresh
+  mutable object or lifecycle cleanup.
+- Avoid top-level mutable fixtures shared between examples.
+
+```typescript
+// ✅ Good
+describe('EntryPresenter', () => {
+  const makeSubject = (entry = factoryFor('bookmark')) => new EntryPresenter(entry)
+
+  it('returns the entry key', () => {
+    expect(makeSubject().title()).toBe('https://example.com')
+  })
+})
+
+// ✅ Good when lifecycle reset matters
+describe('WindowStateStore', () => {
+  let subject: WindowStateStore
+
+  beforeEach(() => {
+    subject = new WindowStateStore(':memory:')
+  })
+
+  it('starts empty', () => {
+    expect(subject.load()).toBeNull()
+  })
+})
+```
+
+##### 8. Don't Use "should" in Descriptions
 
 Use third person present tense. Describe what the code **does**, not what it **should do**.
 
@@ -312,7 +560,7 @@ it('should validate email format', () => {})
 it('should return 404 when not found', () => {})
 ```
 
-##### 8. Create Only the Data You Need
+##### 9. Create Only the Data You Need
 
 Don't load more data than needed. If you think you need dozens of records, you're probably wrong.
 
@@ -331,26 +579,108 @@ it('finds user by email', () => {
 })
 ```
 
-##### 9. Use Factories, Not Fixtures
+##### 10. Use Factories and Local Builders
 
-Use factories to reduce verbosity when creating test data. They're easier to control than fixtures.
-
-```typescript
-// ✅ Good
-import { factoryFor } from '@testing'
-
-const user = factoryFor('bookmark', { overrides: { desc: 'admin flow' } })
-```
+Use factories to reduce verbosity when creating kb test data. They are easier
+to control than fixtures, and they keep domain records, renderer props, config
+objects, RPC payloads, and geometry shapes aligned with real project types.
 
 Keep **YAML fixtures** under `src/__tests__/fixtures/` for import/sync integration tests
 that must read real files. See [FISHERY_GUIDE.md](./FISHERY_GUIDE.md).
 
+- ❌ Bad: `fixtures` _(hard to customize)_
+
+  ```typescript
+  // ❌ Bad
+  const user = fixtures.users.admin // fixtures
+  ```
+
+- ❌ Bad: `inline literals` _(hard to customize)_
+
+  ```typescript
+  describe('with a zero-origin work area', () => {
+    const workArea = { x: 0, y: 0, width: 1920, height: 1080 }
+    it('centers the window', () => {
+      expect(workArea).toEqual({ x: 0, y: 0, width: 1920, height: 1080 })
+    })
+    it('preserves the requested size', () => {
+      expect(workArea).toMatchObject({ width: 680, height: 420 })
+    })
+  })
+  ```
+
+- ✅ Good: `factories` _(easy to customize)_
+
+  ```typescript
+  import { factoryFor } from '@testing'
+
+  describe('with a zero-origin work area', () => {
+    const workArea = factoryFor('rectangle', { overrides: { x: 0, y: 0, width: 1920, height: 1080 } })
+    it('centers the window', () => {
+      expect(workArea).toEqual({ x: 0, y: 0, width: 1920, height: 1080 })
+    })
+    it('preserves the requested size', () => {
+      expect(workArea).toMatchObject({ width: 680, height: 420 })
+    })
+  })
+  ```
+
+Choose the smallest setup abstraction that matches the data:
+
+- Use `factoryFor(...)` for recurring project-owned shapes and exported types.
+  Factories are defined in `src/__tests__/factories/factories.builder.ts` and
+  accessed via the `factoryFor` helper. A factory entry is the single source of
+  truth for each type's default shape and repeated scenarios.
+- Promote local builders into factories when the same shape appears in another
+  spec file or represents a stable project concept.
+- Use inline literals only when the value is unique to one assertion and naming
+  it would add noise.
+- Do not use factories to hide the behavior under test. Override only the fields
+  needed for the current context.
+- Prefer a local `makeSubject(...)` or `renderSubject(...)` helper when several
+  examples render the same component with small prop variations.
+
 ```typescript
-// ❌ Bad
-const user = fixtures.users.admin // hard to customize
+// ✅ Good: project-shaped renderer data uses project factories
+describe('DependencyGraph', () => {
+  describe('when the task is blocked', () => {
+    const dependency = factoryFor('task', {
+      overrides: { id: 1, key: 'setup-project', status: 'done' }
+    })
+    const task = factoryFor('task', {
+      overrides: { id: 2, key: 'review-pr', dependsOn: [1] }
+    })
+
+    const renderSubject = () =>
+      render(
+        <DependencyGraph
+          entry={task}
+          allEntries={[dependency, task]}
+          onSelectEntry={() => undefined}
+        />
+      )
+
+    it('renders the dependency', () => {
+      renderSubject()
+      expect(screen.getByText('setup-project')).not.toBeNull()
+    })
+  })
+})
+
+// ✅ Good: registered geometry factory
+const workArea = factoryFor('rectangle', { width: 1920, height: 1080 })
+const windowSize = factoryFor('windowSize')
+
+// ❌ Bad: anonymous magic data hides what matters
+render(<DependencyGraph entry={review} allEntries={[setup, review]} onSelectEntry={() => undefined} />)
 ```
 
-##### 10. Use Readable Matchers
+Shared examples should be rare in TypeScript specs. Prefer table-driven cases or
+small local helpers first. Introduce a shared behavior helper only when the same
+observable contract repeats across multiple subjects and the helper keeps the
+spec output clearer than explicit examples.
+
+##### 11. Use Readable Matchers
 
 Use clear, expressive matchers that make tests easy to understand.
 
@@ -365,7 +695,10 @@ expect(user.name === 'John').toBe(true)
 expect(users.length === 3).toBe(true)
 ```
 
-##### 11. Mock Sparingly
+Use `expect(...)` from `bun:test` for assertions. Do not use Chai/Jest/RSpec
+`should` assertion syntax or add assertion libraries that compete with Bun.
+
+##### 12. Mock Sparingly
 
 Don't overuse mocks. Test real behavior when possible. Mocking makes specs faster but harder to maintain.
 
@@ -379,7 +712,7 @@ Avoid mocks for:
 - Simple functions
 - Domain models
 
-##### 12. Test What You See
+##### 13. Test What You See
 
 Focus on:
 - **Models**: Deep testing of business logic
@@ -387,6 +720,56 @@ Focus on:
 - **Controllers**: Minimal testing (covered by integration tests)
 
 Don't add useless complexity testing controllers separately if integration tests cover the behavior.
+
+##### 14. Share Behavior Carefully
+
+Better Specs recommends shared examples to avoid duplicated controller specs.
+In kb, prefer table-driven cases and small local helpers before introducing a
+shared test abstraction. Shared helpers are useful when they keep behavior
+obvious at the call site; they are harmful when a reader must jump between
+files to understand the assertion.
+
+```typescript
+// ✅ Good
+const cases = [
+  { status: 'todo', expected: false },
+  { status: 'done', expected: true }
+] as const
+
+for (const { status, expected } of cases) {
+  it(`returns ${expected} for ${status}`, () => {
+    expect(isComplete(status)).toBe(expected)
+  })
+}
+```
+
+##### 15. Stub HTTP Requests Explicitly
+
+Specs must not call real external services. Prefer an injected `fetch`
+function, a `data:` URL, or a local `Bun.serve()` fixture. Use `mock()` only for
+external services or non-deterministic behavior that cannot be made local.
+
+```typescript
+// ✅ Good
+const fetchJson = async () => new Response('{"ok":true}')
+await expect(loadRemoteConfig(fetchJson)).resolves.toEqual({ ok: true })
+
+// ❌ Bad
+await loadRemoteConfig(fetch) // reaches the real network
+```
+
+##### 16. Keep the Feedback Loop Fast
+
+Use focused commands while iterating:
+
+```bash
+bun test src/shell/app/
+bun test src/shell/main/window/placement.util.spec.ts
+bun test --watch
+```
+
+Before completion, run the repository quality gate. Preview e2e stays opt-in
+for renderer-risky work because it is slower and requires browser setup.
 
 #### Project-Specific Guidelines
 
@@ -430,18 +813,40 @@ describe('DocumentValidator', () => {
 - [ ] Keep descriptions under 40 characters
 - [ ] One expectation per test (except slow integration tests)
 - [ ] Test valid, edge, and invalid cases
-- [ ] Use `subject` to DRY up related tests
+- [ ] Make the subject explicit with `subject`, `Subject`, `makeSubject()`, or
+      `renderSubject()` when it improves clarity
+- [ ] Prefer local builders over shared mutable setup
 - [ ] **Never use "should" in test descriptions**
+- [ ] Use `expect(...)` assertions from `bun:test`
 - [ ] Use third person present tense
 - [ ] Create only necessary test data
 - [ ] Use factories instead of fixtures
 - [ ] Use readable matchers
 - [ ] Mock sparingly, test real behavior
+- [ ] Avoid real external HTTP calls
+- [ ] Prefer table-driven cases or local helpers over opaque shared examples
+- [ ] Use focused `bun test <path>` or `bun test --watch` while iterating
 - [ ] Focus on models and integration tests
+
+### BDD Style for Source Specs
+
+Write specs as behavior documentation.
+
+- `describe('<subject>')` names the public unit or user-visible surface.
+- nested `describe('when/with/without ...')` names the relevant context.
+- `it('<observable outcome>')` names what the system does.
+- `subject`, `Subject`, `makeSubject()`, or `renderSubject()` identifies the
+  tested object or action when the file would otherwise be ambiguous.
+- Prefer user-visible or public API behavior over implementation details.
+- Avoid examples named after internal steps, private helpers, or setup mechanics.
 
 ## Enforcement
 
-The "Enforce DRY Code Principles" hook will also check for Better Specs compliance during code reviews.
+`mise run test:spec-audit` checks co-located spec coverage only. Better Specs
+style is currently enforced by review, the normalise-specs ledger, and the
+quality gate's existing lint/type/test checks. Add an explicit ast-grep or
+audit guard only after a manual cleanup proves the rule has low false-positive
+risk.
 
 ## File Structure
 
@@ -451,14 +856,14 @@ Tests live next to the source files they test:
 src/
   domain/
     normalizeLinks.ts
-    normalizeLinks.test.ts
+    normalizeLinks.spec.ts
   adapters/
     SQLiteRepository.ts
-    SQLiteRepository.test.ts
+    SQLiteRepository.spec.ts
   application/
     usecases/
       GetEntry.ts
-      GetEntry.test.ts
+      GetEntry.spec.ts
 ```
 
 ## Running Tests
@@ -476,13 +881,13 @@ bun run test:watch
 `tsconfig.json` maps **`@testing`** to [`src/__tests__/index.ts`](../../src/__tests__/index.ts).
 Use it for Fishery factories, fixture paths, temp dirs, and seeded in-memory DBs.
 
-| Export | Role |
-| --- | --- |
-| `factoryFor` | Typed defaults for `Env`, `RawConfig`, `LoadedConfig`, and `Knowledge` variants |
-| `testingPaths`, `minimalEntriesYml` | Absolute paths under `src/__tests__/fixtures/` |
-| `createSeededMemoryDb`, `seedMinimalFixture`, `readMinimalFixtureEntries` | Minimal YAML → `:memory:` SQLite + FTS |
-| `createTempDir` | `mkdtemp` + `cleanup()` for disk-backed integration |
-| `createFactoryFor` | Low-level wrapper when you add a new factory module |
+| Export                                                                    | Role                                                                            |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `factoryFor`                                                              | Typed defaults for `Env`, `RawConfig`, `LoadedConfig`, geometry, and `Knowledge` variants |
+| `testingPaths`, `minimalEntriesYml`                                       | Absolute paths under `src/__tests__/fixtures/`                                  |
+| `createSeededMemoryDb`, `seedMinimalFixture`, `readMinimalFixtureEntries` | Minimal YAML → `:memory:` SQLite + FTS                                          |
+| `createTempDir`                                                           | `mkdtemp` + `cleanup()` for disk-backed integration                             |
+| `createFactoryFor`                                                        | Low-level wrapper when you add a new factory module                             |
 
 Keep DB specs on **`:memory:`** and avoid mocks for internal code; see [Definition of Done](./DoD.md).
 

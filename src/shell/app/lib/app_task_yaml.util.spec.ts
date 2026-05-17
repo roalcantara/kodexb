@@ -42,12 +42,12 @@ afterEach(async () => {
 })
 
 describe('taskToYamlShape', () => {
-  it('includes desc when present', () => {
+  it('includes desc', () => {
     const shape = taskToYamlShape(makeTask({ desc: 'A description' }))
     expect(shape.desc).toBe('A description')
   })
 
-  it('includes tags when non-empty', () => {
+  it('includes tags', () => {
     const shape = taskToYamlShape(makeTask({ tags: ['dev'] }))
     expect(shape.tags).toEqual(['dev'])
   })

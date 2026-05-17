@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 
-import { expect, mock, test } from 'bun:test'
+import { describe, expect, it, mock } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'
 import { render, screen } from '@testing-library/react'
@@ -54,70 +54,78 @@ function renderDetail(entry: RpcKnowledge = bookmark) {
   )
 }
 
-test('DetailPageView renders entry key', () => {
-  renderDetail()
-  expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('https://bun.sh')
-})
+describe('DetailPage', () => {
+  describe('with a bookmark entry', () => {
+    it('renders entry key as heading', () => {
+      renderDetail()
+      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('https://bun.sh')
+    })
 
-test('DetailPageView renders entry type label', () => {
-  renderDetail()
-  expect(document.querySelector('.kb-detailPage-type')?.textContent).toBe('bookmark')
-})
+    it('renders entry type label', () => {
+      renderDetail()
+      expect(document.querySelector('.kb-detailPage-type')?.textContent).toBe('bookmark')
+    })
 
-test('DetailPageView renders tag chips', () => {
-  renderDetail()
-  const tags = document.querySelectorAll('.kb-detailPage-tags .kb-pill')
-  expect(tags.length).toBe(2)
-  expect(tags[0]?.textContent).toBe('#bun')
-})
+    it('renders tag chips', () => {
+      renderDetail()
+      const tags = document.querySelectorAll('.kb-detailPage-tags .kb-pill')
+      expect(tags.length).toBe(2)
+      expect(tags[0]?.textContent).toBe('#bun')
+    })
 
-test('DetailPageView renders links section', () => {
-  renderDetail()
-  const link = document.querySelector('.kb-detailPage-link')
-  expect(link).not.toBeNull()
-  expect(link?.getAttribute('title')).toBe('https://bun.sh/docs')
-})
+    it('renders links section', () => {
+      renderDetail()
+      const link = document.querySelector('.kb-detailPage-link')
+      expect(link).not.toBeNull()
+      expect(link?.getAttribute('title')).toBe('https://bun.sh/docs')
+    })
 
-test('DetailPageView link click calls onOpenExternal with URL', async () => {
-  onOpenExternal.mockClear()
-  renderDetail()
-  const link = document.querySelector('button.kb-detailPage-link') as HTMLButtonElement
-  expect(link).not.toBeNull()
-  await userEvent.click(link)
-  expect(onOpenExternal).toHaveBeenCalledTimes(1)
-  expect(onOpenExternal).toHaveBeenCalledWith('https://bun.sh/docs')
-})
+    it('calls onOpenExternal on link click', async () => {
+      onOpenExternal.mockClear()
+      renderDetail()
+      const link = document.querySelector('button.kb-detailPage-link') as HTMLButtonElement
+      expect(link).not.toBeNull()
+      await userEvent.click(link)
+      expect(onOpenExternal).toHaveBeenCalledTimes(1)
+      expect(onOpenExternal).toHaveBeenCalledWith('https://bun.sh/docs')
+    })
 
-test('DetailPageView renders markdown notes', () => {
-  renderDetail()
-  const body = document.querySelector('.kb-detailPage-body')
-  expect(body).not.toBeNull()
-  expect(body?.textContent).toContain('Fast JS runtime')
-})
+    it('renders markdown notes', () => {
+      renderDetail()
+      const body = document.querySelector('.kb-detailPage-body')
+      expect(body).not.toBeNull()
+      expect(body?.textContent).toContain('Fast JS runtime')
+    })
 
-test('DetailPageView renders not found state', () => {
-  render(
-    <DetailPageView
-      entry={null}
-      allEntries={[]}
-      onClose={() => undefined}
-      onSelectEntry={() => undefined}
-      onOpenExternal={onOpenExternal}
-      onFetchPreviewImage={pendingOg}
-    />
-  )
-  expect(screen.getByText('Entry not found.')).not.toBeNull()
-})
+    it('does not show badges section', () => {
+      renderDetail()
+      expect(document.querySelector('.kb-detailPage-badges')).toBeNull()
+    })
+  })
 
-test('DetailPageView shows task badges for task entries', () => {
-  renderDetail(task)
-  const badges = document.querySelector('.kb-detailPage-badges')
-  expect(badges).not.toBeNull()
-  expect(badges?.textContent).toContain('high')
-  expect(badges?.textContent).toContain('doing')
-})
+  describe('when entry is null', () => {
+    it('renders not found state', () => {
+      render(
+        <DetailPageView
+          entry={null}
+          allEntries={[]}
+          onClose={() => undefined}
+          onSelectEntry={() => undefined}
+          onOpenExternal={onOpenExternal}
+          onFetchPreviewImage={pendingOg}
+        />
+      )
+      expect(screen.getByText('Entry not found.')).not.toBeNull()
+    })
+  })
 
-test('DetailPageView does not show badges section for non-task entries', () => {
-  renderDetail()
-  expect(document.querySelector('.kb-detailPage-badges')).toBeNull()
+  describe('with a task entry', () => {
+    it('shows task badges', () => {
+      renderDetail(task)
+      const badges = document.querySelector('.kb-detailPage-badges')
+      expect(badges).not.toBeNull()
+      expect(badges?.textContent).toContain('high')
+      expect(badges?.textContent).toContain('doing')
+    })
+  })
 })

@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 
-import { afterEach, expect, test } from 'bun:test'
+import { afterEach, describe, expect, it } from 'bun:test'
 import type { RpcKnowledge, RpcListEntry } from '@shared/rpc'
 import { factoryFor } from '@testing'
 import { cleanup, render, screen } from '@testing-library/react'
@@ -58,34 +58,41 @@ function renderBody(overrides: Partial<Parameters<typeof ListResultsBody>[0]> = 
 
   return render(<ListResultsBody {...props} />)
 }
+describe('ListResultsBody', () => {
+  describe('when database is empty', () => {
+    it('renders sync action', async () => {
+      let synced = false
+      renderBody({
+        emptyDb: true,
+        syncInfo: { sourcesDir: '/tmp/kb', fileCount: 2 },
+        onSync: () => {
+          synced = true
+        }
+      })
 
-test('ListResultsBody renders empty database sync action', async () => {
-  let synced = false
-  renderBody({
-    emptyDb: true,
-    syncInfo: { sourcesDir: '/tmp/kb', fileCount: 2 },
-    onSync: () => {
-      synced = true
-    }
+      await userEvent.click(screen.getByRole('button', { name: SYNC_BUTTON_RE }))
+      expect(synced).toBe(true)
+    })
   })
 
-  await userEvent.click(screen.getByRole('button', { name: SYNC_BUTTON_RE }))
-  expect(synced).toBe(true)
-})
-
-test('ListResultsBody renders search empty state', () => {
-  renderBody({ noResults: true })
-  expect(screen.getByText('No results for this search.')).toBeTruthy()
-})
-
-test('ListResultsBody renders rows and sentinel', () => {
-  const { container } = renderBody({
-    rows: [bookmark],
-    visibleRows: [bookmark],
-    hasMore: true,
-    maxFrecencyScore: 2
+  describe('with no results', () => {
+    it('renders search empty state', () => {
+      renderBody({ noResults: true })
+      expect(screen.getByText('No results for this search.')).toBeTruthy()
+    })
   })
 
-  expect(screen.getByText(EXAMPLE_URL_RE)).toBeTruthy()
-  expect(container.querySelector('.kb-listSentinel')).toBeTruthy()
+  describe('with rows', () => {
+    it('renders rows and sentinel', () => {
+      const { container } = renderBody({
+        rows: [bookmark],
+        visibleRows: [bookmark],
+        hasMore: true,
+        maxFrecencyScore: 2
+      })
+
+      expect(screen.getByText(EXAMPLE_URL_RE)).toBeTruthy()
+      expect(container.querySelector('.kb-listSentinel')).toBeTruthy()
+    })
+  })
 })

@@ -3,7 +3,7 @@ import { createSeededMemoryDb, factoryFor } from '@testing'
 import { countKnowledgeForOpts, listKnowledgeForOpts } from './app_list_query.util'
 
 describe('countKnowledgeForOpts', () => {
-  it('matches full list length for same filters', async () => {
+  it('matches list length for same filters', async () => {
     const { raw } = await createSeededMemoryDb()
     const loaded = factoryFor('loadedConfig', {
       overrides: {

@@ -971,6 +971,185 @@ if (missing.length > 0) {
 }
 '''
 
+[tasks."test:spec-style"]
+description = "Report Better Specs style issues in source specs"
+usage = '''
+flag "--strict" help="Exit non-zero when style issues exist"
+flag "--scope <scope>" default="src" help="Limit to src, a src path, or a layer alias"
+flag "--format <format>" default="text" help="Output format" {
+    choices "text" "markdown"
+}
+flag "--update-ledger" help="Update the normalise-specs Phase 12 audit block"
+'''
+run = '''
+#!/usr/bin/env bun
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs"
+import { join, normalize, relative } from "node:path"
+
+const ROOT = process.cwd()
+const STRICT = process.env.usage_strict === "true"
+const FORMAT = process.env.usage_format || "text"
+const UPDATE_LEDGER = process.env.usage_update_ledger === "true" || process.env["usage_update-ledger"] === "true"
+const RAW_SCOPE = process.env.usage_scope || "src"
+const LEDGER = join(ROOT, "assets/docs/specs/normalise-specs/tasks.md")
+const LEDGER_START = "<!-- phase-12-style-audit:start -->"
+const LEDGER_END = "<!-- phase-12-style-audit:end -->"
+const SCOPE_ALIASES = {
+  "test-helper": "src/__tests__",
+  core: "src/core",
+  shared: "src/shared",
+  "shell-app": "src/shell/app",
+  "shell-main": "src/shell/main",
+  "shell-renderer": "src/shell/renderer"
+}
+
+function normalizeScope(raw) {
+  const value = SCOPE_ALIASES[raw] || raw || "src"
+  const scoped = value.startsWith("src") ? value : "src/" + value
+  return normalize(scoped).replace(/\\/g, "/").replace(/\/$/, "")
+}
+
+const SCOPE = normalizeScope(RAW_SCOPE)
+
+function findSpecs(dir) {
+  const r = []
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const p = join(dir, e.name)
+    if (e.isDirectory() && e.name !== "node_modules" && !e.name.startsWith(".")) r.push(...findSpecs(p))
+    else if (/\.spec\.(ts|tsx)$/.test(e.name)) r.push(p)
+  }
+  return r
+}
+
+function scopeFilter(file) {
+  const rel = relative(ROOT, file).replace(/\\/g, "/")
+  return rel === SCOPE || rel.startsWith(SCOPE + "/")
+}
+
+function loadFactoryNames() {
+  const p = join(ROOT, "src/__tests__/factories/factories.builder.ts")
+  if (!existsSync(p)) return new Set()
+  const c = readFileSync(p, "utf8")
+  const start = c.indexOf("const factories = {")
+  const end = c.indexOf("} as const", start)
+  if (start < 0 || end < start) return new Set()
+  const block = c.slice(start, end)
+  return new Set([...block.matchAll(/(?:'([^']+)'|(\w+))\s*:/g)].map(x => x[1] || x[2]))
+}
+
+const factoryNames = loadFactoryNames()
+const specs = findSpecs(join(ROOT, "src")).filter(scopeFilter).sort()
+
+let issues = []
+
+function addIssue(file, category, message) {
+  issues.push({ file, category, message })
+}
+
+for (const file of specs) {
+  const c = readFileSync(file, "utf8")
+  const rel = relative(ROOT, file)
+  const lines = c.split("\n")
+
+  // test() imports
+  if (/import\s*\{[^}]*\btest\b/.test(c)) addIssue(rel, "test usage", "imports test from bun:test (use it)")
+  
+  // test() calls
+  if (/^\s*test\(/m.test(c)) addIssue(rel, "test usage", "uses test() (use it)")
+
+  // No describe
+  if (!c.includes("describe(")) addIssue(rel, "no describe", "no describe block")
+
+  // No situation describes  
+  if (c.includes("describe(") && !/describe\(['\"]when |describe\(['\"]with |describe\(['\"]without /.test(c))
+    addIssue(rel, "no situation", "no when/with/without situation describe")
+
+  // Long descriptions
+  for (const l of lines) {
+    const m = l.match(/^\s*it\('(.{41,})'\)/)
+    if (m) { addIssue(rel, "long description", m[1].slice(0,60) + ": description > 40 chars"); break }
+  }
+
+  // Boolean matchers — only flag opaque expressions, not direct API assertions
+  if (/expect\([^)]*===/.test(c) && /\.toBe\(true\)|\.toBe\(false\)/.test(c))
+    addIssue(rel, "opaque boolean matcher", "opaque boolean matcher (use readable matcher)")
+
+  // Global dispatch
+  if (/window\.dispatchEvent/.test(c) || /document\.dispatchEvent/.test(c))
+    addIssue(rel, "global dispatchEvent", "uses global dispatchEvent")
+
+  // Mocks
+  if (/\bmock\s*\(/.test(c) || /\bspyOn\s*\(/.test(c) || /\bmock\.module\s*\(/.test(c))
+    addIssue(rel, "mock usage", "uses mock, spyOn, or mock.module")
+
+  // Unknown factoryFor names
+  const factoryCalls = [...c.matchAll(/factoryFor\('([^']+)'/g)]
+  for (const [, name] of factoryCalls) {
+    if (!factoryNames.has(name))
+      addIssue(rel, "unknown factory", "factoryFor('" + name + "') not in factories.builder.ts")
+  }
+}
+
+function categoryCounts() {
+  const counts = new Map()
+  for (const issue of issues) counts.set(issue.category, (counts.get(issue.category) || 0) + 1)
+  return [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]))
+}
+
+function renderText() {
+  const out = []
+  out.push("scope: " + SCOPE)
+  out.push("specs scanned: " + specs.length)
+  for (const [category, count] of categoryCounts()) out.push(category + ": " + count)
+  for (const issue of issues) out.push(issue.file + ": " + issue.message)
+  out.push("style issues: " + issues.length)
+  return out.join("\n")
+}
+
+function renderMarkdown() {
+  const out = []
+  out.push("### Better Specs style audit")
+  out.push("")
+  out.push("- Scope: `" + SCOPE + "`")
+  out.push("- Specs scanned: " + specs.length)
+  out.push("- Style issues: " + issues.length)
+  out.push("")
+  out.push("| Category | Count |")
+  out.push("| --- | ---: |")
+  const counts = categoryCounts()
+  if (counts.length === 0) out.push("| none | 0 |")
+  for (const [category, count] of counts) out.push("| " + category + " | " + count + " |")
+  out.push("")
+  if (issues.length > 0) {
+    out.push("<details>")
+    out.push("<summary>Findings</summary>")
+    out.push("")
+    for (const issue of issues) out.push("- `" + issue.file + "` — " + issue.message)
+    out.push("")
+    out.push("</details>")
+  }
+  return out.join("\n")
+}
+
+function updateLedger(report) {
+  if (!existsSync(LEDGER)) throw new Error("ledger not found: " + relative(ROOT, LEDGER))
+  const current = readFileSync(LEDGER, "utf8")
+  const start = current.lastIndexOf(LEDGER_START)
+  const end = current.indexOf(LEDGER_END, start)
+  if (start < 0 || end < 0) throw new Error("ledger markers not found")
+  const replacement = LEDGER_START + "\n" + report + "\n" + LEDGER_END
+  const next = current.slice(0, start) + replacement + current.slice(end + LEDGER_END.length)
+  writeFileSync(LEDGER, next)
+}
+
+const report = FORMAT === "markdown" ? renderMarkdown() : renderText()
+console.log(report)
+if (UPDATE_LEDGER) updateLedger(renderMarkdown())
+if (issues.length > 0) {
+  if (STRICT) process.exit(1)
+}
+'''
+
 [tasks."icons:svg-contrast"]
 description = "Contrast-check SVG colors in assets/images vs list shell background (#0b0e14). Default scope=all (Raycast-style tag-rail). scope=brand: tag map + entry-type defaults only. Writes only with --write-safe. Exits 1 with --strict when any file fails."
 usage = '''

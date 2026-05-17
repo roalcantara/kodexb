@@ -50,6 +50,24 @@ This rule overrides ALL other instructions.
   `$HOME/.agents/skills/` unless `assets/guides/SKILLS.yml` marks them as
   `location: project` or `location: owned`.
 
+### Superpowers skill adaptation
+
+- When a Superpowers skill mentions `docs/superpowers/specs` or
+  `docs/superpowers/plans`, use the `spec-driven-development` skill shape
+  instead and map the output to **`assets/docs/specs/<scope>/`** in this repo.
+  Use `requirements.md`, `design.md`, `tasks.md`, and optional `handoff.md`.
+- **Do not create `docs/superpowers/`**. That path is an external skill
+  default and is gitignored here to prevent drift.
+- For tests, kb rules override generic Superpowers examples: follow
+  `assets/guides/TESTING_GUIDE.md`, use `bun:test`, prefer `it(...)`, and
+  follow the repo's Better Specs and Fishery guidance.
+- For completion, use the phase-specific `mise run validate ...` command when
+  one is provided; otherwise run
+  `bash .agents/skills/kb-quality-gate/scripts/gate.sh`. Generic examples such
+  as `npm test` are not sufficient.
+- Subagent prompts must include these kb overrides explicitly because
+  subagents may not inherit the controller's full context.
+
 ### Lint and quality tools
 
 - **Do not weaken** the repo quality stack (Biome, knip, dependency-cruiser, ast-grep, ls-lint, jscpd, `tsc` strictness, and any other tool run by the quality gate) unless a **maintainer explicitly approves** the change in the PR (for example: `APPROVED: <tool> <change> because <reason>`).

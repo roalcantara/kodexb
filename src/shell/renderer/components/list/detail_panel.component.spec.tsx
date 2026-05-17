@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 
-import { expect, test } from 'bun:test'
+import { describe, expect, it } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'
 import { render, waitFor } from '@testing-library/react'
@@ -25,41 +25,49 @@ const entry = factoryFor('bookmark', {
   }
 }) as RpcKnowledge
 
-test('DetailPanel has visible class when entry is provided', () => {
-  render(
-    <DetailPanel
-      entryId={entry.id}
-      allEntries={[entry]}
-      onClose={() => undefined}
-      onSelectEntry={noopSelect}
-      loadEntry={pendingLoad}
-    />
-  )
-  const aside = document.querySelector('aside.kb-detailPanel')
-  expect(aside?.classList.contains('kb-detailPanel--visible')).toBe(true)
-})
+describe('DetailPanel', () => {
+  describe('when entry is provided', () => {
+    it('has visible class', () => {
+      render(
+        <DetailPanel
+          entryId={entry.id}
+          allEntries={[entry]}
+          onClose={() => undefined}
+          onSelectEntry={noopSelect}
+          loadEntry={pendingLoad}
+        />
+      )
+      const aside = document.querySelector('aside.kb-detailPanel')
+      expect(aside?.classList.contains('kb-detailPanel--visible')).toBe(true)
+    })
+  })
 
-test('DetailPanel has no visible class when entry is null', () => {
-  render(<DetailPanel entryId={null} allEntries={[]} onClose={() => undefined} onSelectEntry={noopSelect} />)
-  const aside = document.querySelector('aside.kb-detailPanel')
-  expect(aside?.classList.contains('kb-detailPanel--visible')).toBe(false)
-})
+  describe('when entry is null', () => {
+    it('has no visible class', () => {
+      render(<DetailPanel entryId={null} allEntries={[]} onClose={() => undefined} onSelectEntry={noopSelect} />)
+      const aside = document.querySelector('aside.kb-detailPanel')
+      expect(aside?.classList.contains('kb-detailPanel--visible')).toBe(false)
+    })
+  })
 
-test('DetailPanel close button calls onClose', async () => {
-  let closed = false
-  render(
-    <DetailPanel
-      entryId={entry.id}
-      allEntries={[entry]}
-      onClose={() => {
-        closed = true
-      }}
-      onSelectEntry={noopSelect}
-      loadEntry={loadEntry}
-    />
-  )
-  await waitFor(() => expect(document.querySelector('button.kb-detailPage-close')).not.toBeNull())
-  const btn = document.querySelector('button.kb-detailPage-close') as HTMLButtonElement
-  await userEvent.click(btn)
-  expect(closed).toBe(true)
+  describe('when close button is clicked', () => {
+    it('calls onClose', async () => {
+      let closed = false
+      render(
+        <DetailPanel
+          entryId={entry.id}
+          allEntries={[entry]}
+          onClose={() => {
+            closed = true
+          }}
+          onSelectEntry={noopSelect}
+          loadEntry={loadEntry}
+        />
+      )
+      await waitFor(() => expect(document.querySelector('button.kb-detailPage-close')).not.toBeNull())
+      const btn = document.querySelector('button.kb-detailPage-close') as HTMLButtonElement
+      await userEvent.click(btn)
+      expect(closed).toBe(true)
+    })
+  })
 })
