@@ -11,7 +11,7 @@ A native desktop knowledge management app built on [Electrobun][12].
 ```sh
 git clone https://github.com/roalcantara/kb
 cd kb
-mise run setup
+mise run project setup
 ```
 
 ## DEVELOPMENT
@@ -29,14 +29,14 @@ bun run lint:fix  # Auto-fix what can be fixed (Biome / Knip / ast-grep)
 
 The canonical engineering and agent definitions are split by purpose:
 
-| File / guide | Purpose |
-| ------------ | ------- |
-| [CLAUDE.md][24] | Primary agent instructions: stack, FCIS layers, required skills, and reference docs. |
-| [AGENTS.md][23] | Repo-wide agent guardrails, commit workflow, prototype gate, and Electrobun process rules. |
-| [SKILLS.md][21] | Skill adoption ledger: owned skills, Skills CLI-managed project skills, global companions, and rationale. |
-| [SKILLS.yml][26] | Structured skill registry used by `mise run skill sync` and `mise run skill install`. |
-| [MISE_GUIDE.md][22] | Task-runner policy: prefer mise tasks for project workflows and avoid ad-hoc project scripts. |
-| [Electrobun routing][25] | Which Electrobun skill to read for desktop shell, build, platform, RPC, and automation work. |
+| File / guide             | Purpose                                                                                                   |
+| ------------------------ | --------------------------------------------------------------------------------------------------------- |
+| [CLAUDE.md][24]          | Primary agent instructions: stack, FCIS layers, required skills, and reference docs.                      |
+| [AGENTS.md][23]          | Repo-wide agent guardrails, commit workflow, prototype gate, and Electrobun process rules.                |
+| [SKILLS.md][21]          | Skill adoption ledger: owned skills, Skills CLI-managed project skills, global companions, and rationale. |
+| [SKILLS.yml][26]         | Structured skill registry used by `mise run skill sync` and `mise run skill install`.                     |
+| [MISE_GUIDE.md][22]      | Task-runner policy: prefer mise tasks for project workflows and avoid ad-hoc project scripts.             |
+| [Electrobun routing][25] | Which Electrobun skill to read for desktop shell, build, platform, RPC, and automation work.              |
 
 Skill routing follows one rule of thumb: project-specific guidance wins. Load
 `kb-context` for any kb task, then add narrower skills such as `kb-rpc`,
@@ -70,10 +70,10 @@ Product rules for the list shell (normative for implementation). Full specs: [re
 The same checks GitHub Actions runs are mirrored locally via [Mise][6]:
 
 ```sh
-mise run ci:review              # lint + test + Linux smoke build
-mise run ci:release:dry-run     # preview the next release-it run
-mise run ci:release:notes       # preview only the next CHANGELOG entry
-mise run ci:publish --version=0.1.0 --target=linux-x64  # build + package + checksum
+mise run ci review              # lint + test + Linux smoke build
+mise run ci release --dry-run   # preview the next release-it run
+mise run ci release --notes     # preview only the next CHANGELOG entry
+  mise run ci publish package --version=0.1.0 --target=linux-x64  # build + package + checksum
 ```
 
 See the [CI / CD guide][20] for the full task table.
@@ -83,17 +83,17 @@ See the [CI / CD guide][20] for the full task table.
 Run `mise tasks ls` for the live task list. These tasks cover local setup,
 agent skill wiring, UI smoke checks, and maintenance workflows:
 
-| Task | Use when |
-| ---- | -------- |
-| `mise run setup` | Installing tool versions, dependencies, and hooks after cloning. |
-| `mise run prepare` | Refreshing Bun dependencies and commit hooks without reinstalling tools. |
-| `mise run skill sync` | Rewriting generated skill routing snippets from `assets/guides/SKILLS.yml`. |
-| `mise run skill install` | Restoring Skills CLI-managed project skills from `skills-lock.json`. |
-| `mise run e2e:preview` | Running Playwright smoke tests. Required for list navigation, filter, task sheet, or preview tooling changes. Install Chromium once with `bun run e2e:preview:install`. Report exact blockers when the environment cannot run it. |
-| `mise run icons:svg-contrast` | Auditing SVG contrast against the list shell background; use `--write-safe` only for curated safe replacements. |
-| `mise run repo:setup` | Creating the GitHub repo and required CI secrets / variables. |
-| `mise run repo:prune` | Deleting the GitHub repo, releases, and tags for a reset. Use with care. |
-| `mise run ci:reset-branch` | Rebuilding the CI fix branch from the scripted recovery path. Use only for release workflow repair. |
+| Task                       | Use when                                                                                                                                                                                                                          |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mise run project setup`           | Installing tool versions, dependencies, and hooks after cloning.                                                                                                                                                                  |
+| `mise run prepare`         | Refreshing Bun dependencies and commit hooks without reinstalling tools.                                                                                                                                                          |
+| `mise run skill sync`      | Rewriting generated skill routing snippets from `assets/guides/SKILLS.yml`.                                                                                                                                                       |
+| `mise run skill install`   | Restoring Skills CLI-managed project skills from `skills-lock.json`.                                                                                                                                                              |
+| `mise run test e2e-preview` | Running Playwright smoke tests. Required for list navigation, filter, task sheet, or preview tooling changes.|
+| `mise run project icons`     | Auditing SVG contrast against the list shell background; use `--fix` only for curated safe replacements.                                                                                                                   |
+| `mise run project repo setup`      | Creating the GitHub repo and required CI secrets / variables. |
+| `mise run project repo prune`      | Deleting the GitHub repo, releases, and tags for a reset. Use with care. |
+| `mise run project repo reset`      | Rebuilding the CI fix branch from the scripted recovery path. |
 
 ### DEPENDENCIES
 

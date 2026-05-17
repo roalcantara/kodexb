@@ -18,14 +18,14 @@ describe('parseKbLogVerbosity', () => {
     expect(parseKbLogVerbosity(envRecord([['KB_LOG', 'trace']]))).toBe('trace')
   })
 
-  it('invalid → default', () => {
+  it('unknown value returns default', () => {
     expect(parseKbLogVerbosity(envRecord([['KB_LOG', 'yes']]))).toBe('default')
     expect(parseKbLogVerbosity(envRecord([['KB_LOG', 'info']]))).toBe('default')
   })
 })
 
 describe('isKbLogVerbosity', () => {
-  it('narrows type', () => {
+  it('narrows valid types', () => {
     expect(isKbLogVerbosity('verbose')).toBe(true)
     expect(isKbLogVerbosity('info')).toBe(false)
   })

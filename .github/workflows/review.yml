@@ -27,13 +27,13 @@ jobs:
           set +e
           mkdir -p tmp/reports/linters
           e=0
-          bun run lint:biome:ci || e=$?
-          bun run lint:knip:ci || e=$?
-          bun run lint:depcruise:ci || e=$?
-          bun run lint:jscpd:ci || e=$?
-          bun run lint:ls:ci || e=$?
-          bun run lint:ast-grep:ci || e=$?
-          bun run lint:mise:ci || e=$?
+          mise run lint check --biome --ci || e=$?
+          mise run lint check --knip --ci || e=$?
+          mise run lint check --depcruise --ci || e=$?
+          mise run lint check --jscpd --ci || e=$?
+          mise run lint check --ls --ci || e=$?
+          mise run lint check --ast-grep --ci || e=$?
+          mise run lint check --mise --ci || e=$?
           bun run typecheck || e=$?
           exit $e
       - name: Write summary table
@@ -66,7 +66,7 @@ jobs:
       - uses: ./.github/actions/setup-bun-project
         with:
           setup_mode: mise
-      - run: bun run test:ci
+      - run: mise run test ci
       - name: Append JUnit summary
         if: always()
         uses: ./.github/actions/junit-summary

@@ -1,5 +1,7 @@
 import type { RefObject } from 'react'
 
+const SEARCH_FOCUS_MAX_ATTEMPTS = 6
+
 /** Runs `run` after `queueMicrotask` + two `requestAnimationFrame` ticks (layout-friendly). */
 export function scheduleDoubleRaf(run: () => void): void {
   queueMicrotask(() => {
@@ -13,10 +15,16 @@ export function scheduleDoubleRaf(run: () => void): void {
 
 /** Focuses the search input and selects all text (browser-style ⌘L). */
 export function scheduleFocusSearchInputSelectAll(ref: RefObject<HTMLInputElement | null>): void {
-  scheduleDoubleRaf(() => {
+  let attempts = 0
+  const focusWhenMounted = () => {
     const el = ref.current
-    if (!el) return
+    if (!el) {
+      attempts += 1
+      if (attempts < SEARCH_FOCUS_MAX_ATTEMPTS) scheduleDoubleRaf(focusWhenMounted)
+      return
+    }
     el.focus({ preventScroll: true })
     el.select()
-  })
+  }
+  scheduleDoubleRaf(focusWhenMounted)
 }

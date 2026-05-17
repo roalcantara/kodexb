@@ -173,7 +173,7 @@ rather than copying RSpec APIs literally.
 | Single expectation       | Prefer one behavior assertion per unit example; allow grouped assertions for expensive integration setup.                            |
 | All possible cases       | Cover valid, edge, invalid, empty, boundary, and error paths exposed by the public API.                                              |
 | Expect vs should         | Use `expect(...)` from `bun:test`; never use Chai/Jest/RSpec `should` syntax.                                                        |
-| Use subject              | Make the subject explicit with `subject`, `Subject`, `makeSubject()`, or `renderSubject()`; there is no Bun `subject()` API.          |
+| Use subject              | Make the subject explicit with `subject`, `Subject`, `makeSubject()`, or `renderSubject()`; there is no Bun `subject()` API.         |
 | Use let and let!         | Prefer local builders and lazy helpers; use `beforeEach` only for lifecycle setup that must be recreated per example.                |
 | Mock or not to mock      | Prefer real implementations, dependency injection, and controlled test doubles; keep mocks narrow.                                   |
 | Create the data you need | Build only the records needed for the behavior under test.                                                                           |
@@ -842,7 +842,7 @@ Write specs as behavior documentation.
 
 ## Enforcement
 
-`mise run test:spec-audit` checks co-located spec coverage only. Better Specs
+`mise run test spec-audit` checks co-located spec coverage only. Better Specs
 style is currently enforced by review, the normalise-specs ledger, and the
 quality gate's existing lint/type/test checks. Add an explicit ast-grep or
 audit guard only after a manual cleanup proves the rule has low false-positive
@@ -881,13 +881,13 @@ bun run test:watch
 `tsconfig.json` maps **`@testing`** to [`src/__tests__/index.ts`](../../src/__tests__/index.ts).
 Use it for Fishery factories, fixture paths, temp dirs, and seeded in-memory DBs.
 
-| Export                                                                    | Role                                                                            |
-| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Export                                                                    | Role                                                                                      |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | `factoryFor`                                                              | Typed defaults for `Env`, `RawConfig`, `LoadedConfig`, geometry, and `Knowledge` variants |
-| `testingPaths`, `minimalEntriesYml`                                       | Absolute paths under `src/__tests__/fixtures/`                                  |
-| `createSeededMemoryDb`, `seedMinimalFixture`, `readMinimalFixtureEntries` | Minimal YAML → `:memory:` SQLite + FTS                                          |
-| `createTempDir`                                                           | `mkdtemp` + `cleanup()` for disk-backed integration                             |
-| `createFactoryFor`                                                        | Low-level wrapper when you add a new factory module                             |
+| `testingPaths`, `minimalEntriesYml`                                       | Absolute paths under `src/__tests__/fixtures/`                                            |
+| `createSeededMemoryDb`, `seedMinimalFixture`, `readMinimalFixtureEntries` | Minimal YAML → `:memory:` SQLite + FTS                                                    |
+| `createTempDir`                                                           | `mkdtemp` + `cleanup()` for disk-backed integration                                       |
+| `createFactoryFor`                                                        | Low-level wrapper when you add a new factory module                                       |
 
 Keep DB specs on **`:memory:`** and avoid mocks for internal code; see [Definition of Done](./DoD.md).
 
@@ -905,13 +905,13 @@ Every production file under `src/` requires a co-located `.spec.ts` or
 - **Generated or fixture data** (`__tests__/fixtures/`, `generated`)
 - **Guard modules** (`.guard.ts`)
 
-Use `mise run test:spec-audit` to list non-exempt source files that lack
+Use `mise run test spec-audit` to list non-exempt source files that lack
 a co-located spec. The default mode is report-only (exits `0`). Add `--strict`
 to exit non-zero when missing specs exist.
 
 ## Preview e2e workflow
 
-`mise run e2e:preview` runs Playwright tests against the preview server.
+`mise run test e2e-preview` runs Playwright tests against the preview server.
 It requires Chromium (install once with `bun run e2e:preview:install`) and
 a useful preview database. It is intentionally **not** part of the default
 quality gate for speed and portability.
@@ -921,7 +921,7 @@ quality gate for speed and portability.
 - Changes touching list navigation, filters, task sheet, or preview tooling
 - Renderer component refactors with structural changes
 
-**Reporting:** Include `mise run e2e:preview` results in the implementation
+**Reporting:** Include `mise run test e2e-preview` results in the implementation
 notes. If it cannot run, report the exact blocker (missing Chromium, empty
 preview database, port conflict) rather than treating the default gate as
 equivalent coverage.

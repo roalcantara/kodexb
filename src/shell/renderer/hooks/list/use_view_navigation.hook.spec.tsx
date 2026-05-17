@@ -15,6 +15,26 @@ import {
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { withMockClipboard } from '../../actions/entry_action_spec_setup.util'
 
+function nextAnimationFrame(): Promise<void> {
+  return new Promise(resolve => requestAnimationFrame(() => resolve()))
+}
+
+async function flushSearchFocusSchedule(): Promise<void> {
+  await new Promise<void>(resolve => queueMicrotask(resolve))
+  await nextAnimationFrame()
+  await nextAnimationFrame()
+  await nextAnimationFrame()
+  await nextAnimationFrame()
+  await nextAnimationFrame()
+  await nextAnimationFrame()
+  await nextAnimationFrame()
+  await nextAnimationFrame()
+  await nextAnimationFrame()
+  await nextAnimationFrame()
+  await nextAnimationFrame()
+  await nextAnimationFrame()
+}
+
 describe('useViewNavigation', () => {
   describe('when navigating split/detail ladder', () => {
     it('follows split/detail ladder from list surface', () => {
@@ -105,15 +125,11 @@ describe('useViewNavigation', () => {
       expect(screen.queryByTestId('search')).toBeNull()
       fireEvent.keyDown(surface, { key: 'l', metaKey: true, bubbles: true })
       expectViewState('split')
-      await waitFor(
-        () => {
-          const search = screen.getByTestId('search') as HTMLInputElement
-          expect(document.activeElement).toBe(search)
-          expect(search.selectionStart).toBe(0)
-          expect(search.selectionEnd).toBe(5)
-        },
-        { timeout: 5000 }
-      )
+      await flushSearchFocusSchedule()
+      const search = screen.getByTestId('search') as HTMLInputElement
+      expect(document.activeElement).toBe(search)
+      expect(search.selectionStart).toBe(0)
+      expect(search.selectionEnd).toBe(5)
     })
   })
 

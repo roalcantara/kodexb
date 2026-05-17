@@ -12,21 +12,21 @@ sequencing, delivery value, and recommended skills only.
 
 ## Phase sequence
 
-| Phase | Name                           | Requirements | Status    |
-| :---: | ------------------------------ | ------------ | --------- |
-|   0   | Scaffold & Tooling             | —            | ✔ done    |
-|   1   | Tooling                        | —            | ✔ done    |
-|   2   | CI / Build / Packaging         | —            | ✔ done    |
-|   3   | Core Domain (port from KodexB) | —            | ⬜ done    |
-|   4   | Data Layer                     | V1-2         | ⬜ done    |
-|   5   | App Service + Elysia RPC       | V1-1         | ✔ done    |
-|   6   | Renderer: List View            | V1-3         | ⬜ done    |
-|   7   | Renderer: Detail View          | V1-4         | ✔ done    |
-|   8   | First-Run Setup & Settings     | V1-1, V1-6   | ✔ done    |
-|   9   | Task Management                | V1-7         | ✔ done    |
-|  10   | Actions System (⌘K)            | V1-8         | ✔ done    |
-|  11   | Sync UI                        | V1-2         | ✔ done    |
-|  12   | Stats Panel                    | V1-5         | ✔ done    |
+| Phase | Name                           | Requirements | Status |
+| :---: | ------------------------------ | ------------ | ------ |
+|   0   | Scaffold & Tooling             | —            | ✔ done |
+|   1   | Tooling                        | —            | ✔ done |
+|   2   | CI / Build / Packaging         | —            | ✔ done |
+|   3   | Core Domain (port from KodexB) | —            | ⬜ done |
+|   4   | Data Layer                     | V1-2         | ⬜ done |
+|   5   | App Service + Elysia RPC       | V1-1         | ✔ done |
+|   6   | Renderer: List View            | V1-3         | ⬜ done |
+|   7   | Renderer: Detail View          | V1-4         | ✔ done |
+|   8   | First-Run Setup & Settings     | V1-1, V1-6   | ✔ done |
+|   9   | Task Management                | V1-7         | ✔ done |
+|  10   | Actions System (⌘K)            | V1-8         | ✔ done |
+|  11   | Sync UI                        | V1-2         | ✔ done |
+|  12   | Stats Panel                    | V1-5         | ✔ done |
 
 ---
 
@@ -63,7 +63,7 @@ Add scripts to package.json:
 - "lint:knip": "bunx knip",
 - "lint:knip:fix": "bunx knip --fix",
 - "lint:depcruise": "bunx depcruise . --config .dependency-cruiser.cjs",
-- "lint:depcruise:graph": "bunx depcruise . --config .dependency-cruiser.cjs --include-only '^.' --output-type dot | dot -T svg > report/dependency-graph.svg",
+- "lint:depcruise:graph": "bunx depcruise . --config .dependency-cruiser.cjs --include-only '^.' --output-type mermaid --output-to tmp/reports/dependency-graph.mmd",
 - "lint:jscpd": "bunx jscpd .",
 - "lint:ls": "bunx @ls-lint/ls-lint",
 - "lint:ast-grep": "mise exec -- ast-grep scan --error",

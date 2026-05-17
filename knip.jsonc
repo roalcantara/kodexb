@@ -13,5 +13,5 @@
   "project": ["src/**/*.ts", "src/shell/renderer/**/*.tsx", "e2e/**/*.ts"],
   "ignoreExportsUsedInFile": true,
   "ignoreDependencies": ["@types/three"],
-  "ignoreBinaries": ["mise", "dot"]
+  "ignoreBinaries": ["mise"]
 }

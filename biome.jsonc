@@ -267,6 +267,40 @@
       }
     },
     {
+      "includes": ["tools/**/*.script.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off",
+            "noExcessiveLinesPerFunction": "off"
+          },
+          "style": {
+            "noMagicNumbers": "off",
+            "useNamingConvention": "off"
+          },
+          "security": {
+            "noSecrets": "off"
+          },
+          "suspicious": {
+            "noEmptyBlockStatements": "off"
+          },
+          "performance": {
+            "noAwaitInLoops": "off",
+            "useTopLevelRegex": "off"
+          },
+          "nursery": {
+            "noExcessiveLinesPerFile": {
+              "level": "warn",
+              "options": {
+                "maxLines": 400,
+                "skipBlankLines": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
       "includes": ["electrobun.config.ts", "playwright.config.ts"],
       "linter": {
         "rules": {
