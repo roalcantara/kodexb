@@ -95,3 +95,22 @@ test('derives db byType data from the list stats response', async () => {
 
   expect(getListStatsMock).toHaveBeenCalledTimes(1)
 })
+
+test('triggers stats refresh on sync complete', async () => {
+  let onComplete:
+    | ((result: { filesProcessed: number; inserted: number; updated: number; errors: string[] }) => void)
+    | undefined
+  setSyncMessageHandlersMock.mockImplementation((handlers: { onProgress?: unknown; onComplete?: unknown }) => {
+    onComplete = handlers.onComplete as typeof onComplete
+  })
+  render(<Harness />)
+
+  await waitFor(() => expect(setSyncMessageHandlersMock).toHaveBeenCalled())
+  if (!onComplete) return expect(onComplete).toBeDefined()
+
+  getListStatsMock.mockReset()
+  getListStatsMock.mockResolvedValueOnce(listStats)
+  onComplete({ filesProcessed: 1, inserted: 1, updated: 0, errors: [] })
+
+  await waitFor(() => expect(getListStatsMock).toHaveBeenCalledTimes(1))
+})

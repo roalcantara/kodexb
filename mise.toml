@@ -616,6 +616,361 @@ if (!ok) process.exit(1)
 "skills:sync" = { hide = true, description = "DEPRECATED: use mise run skill sync", run = "mise run skill sync" }
 "link:skills" = { hide = true, description = "DEPRECATED: use mise run skill install", run = "mise run skill install" }
 
+[tasks."perf"]
+description = "Run, compare, baseline, or open preview-server performance benchmarks"
+dir = "."
+usage = '''
+arg "<action>" help="Benchmark action" {
+    choices "run" "baseline" "compare" "open"
+}
+flag "--port <port>" default="3457" help="Preview server port for run action"
+'''
+run = '''
+#!/usr/bin/env bun
+import { existsSync } from "node:fs"
+import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises"
+import path from "node:path"
+
+type BenchmarkResult = {
+  timestamp: string
+  git_sha: string
+  bun_version: string
+  thresholds: Record<string, number>
+  results: Record<string, number>
+  violations: Array<{ path: string; metric: string; value: number; threshold: number; delta: number }>
+  summary: "PASS" | "FAIL"
+}
+
+const action = process.env.usage_action
+const port = Number.parseInt(process.env.usage_port ?? "3457", 10)
+if (!Number.isFinite(port) || port <= 0) {
+  console.error("perf: --port must be a positive integer")
+  process.exit(1)
+}
+
+function spawnText(cmd: string[], opts: Bun.SpawnOptions.OptionsObject = {}): string {
+  const child = Bun.spawnSync(cmd, opts)
+  if (child.exitCode !== 0) {
+    const err = new TextDecoder().decode(child.stderr)
+    throw new Error(err.trim() || `${cmd.join(" ")} failed`)
+  }
+  return new TextDecoder().decode(child.stdout).trim()
+}
+
+function repoRoot(): string {
+  return spawnText(["git", "rev-parse", "--show-toplevel"])
+}
+
+const ROOT = repoRoot()
+const BENCH = path.join(ROOT, "tools", "benchmarks")
+const SERVER = path.join(ROOT, "tools", "preview", "server.ts")
+const RESULTS = path.join(BENCH, "results")
+
+const THRESHOLDS = {
+  p1_cold_start_ms: 300,
+  p2_p50_ms: 2,
+  p2_p99_ms: 4,
+  p3_p50_ms: 2,
+  p3_p99_ms: 3,
+  p4_req_per_sec: 8000,
+  p5_p50_ms: 3,
+  p5_p99_ms: 5,
+}
+
+async function measure(baseUrl: string, endpoint: string, body: object, n = 100) {
+  const samples: number[] = []
+  for (let i = 0; i < n; i++) {
+    const t = performance.now()
+    const r = await fetch(`${baseUrl}/api/${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+    if (r.ok) samples.push(performance.now() - t)
+  }
+  if (samples.length === 0) throw new Error(`All requests to /api/${endpoint} failed`)
+  samples.sort((a, b) => a - b)
+  const last = samples.length - 1
+  return {
+    p50: samples[Math.floor(last * 0.5)]!,
+    p99: samples[Math.floor(last * 0.99)]!,
+  }
+}
+
+async function measureThroughput(baseUrl: string, endpoint: string, body: object, durationMs = 10_000, concurrency = 10) {
+  const until = performance.now() + durationMs
+  let completed = 0
+  const payload = JSON.stringify(body)
+  async function worker() {
+    while (performance.now() < until) {
+      const r = await fetch(`${baseUrl}/api/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      })
+      if (r.ok) completed += 1
+    }
+  }
+  await Promise.all(Array.from({ length: concurrency }, () => worker()))
+  return completed / (durationMs / 1000)
+}
+
+async function runBenchmarks() {
+  const baseUrl = `http://localhost:${port}`
+  const gitSha = spawnText(["git", "-C", ROOT, "rev-parse", "HEAD"])
+  const bunVer = spawnText(["bun", "--version"])
+  const timestamp = new Date().toISOString()
+
+  console.log("P1  cold start...")
+  const t0 = performance.now()
+  const srv = Bun.spawn(["bun", SERVER], {
+    cwd: ROOT,
+    env: { ...process.env, PORT: String(port) },
+    stdout: "ignore",
+    stderr: "inherit",
+  })
+
+  try {
+    let ready = false
+    let exited = false
+    srv.exited.then(() => {
+      exited = true
+    })
+    for (let i = 0; i < 900; i++) {
+      if (exited) throw new Error("Preview server exited before readiness")
+      try {
+        const r = await fetch(baseUrl)
+        if (r.ok) {
+          ready = true
+          break
+        }
+      } catch {}
+      await Bun.sleep(100)
+    }
+    const p1 = performance.now() - t0
+    if (!ready) throw new Error("Preview server did not start in 90 s")
+    console.log(`P1  ${p1.toFixed(0)} ms`)
+
+    console.log("P2  FTS search (100 samples)...")
+    const p2 = await measure(baseUrl, "list", { query: "bun", limit: 50 })
+    console.log(`P2  p50=${p2.p50.toFixed(1)} ms  p99=${p2.p99.toFixed(1)} ms`)
+
+    console.log("P3  filter query (100 samples)...")
+    const p3 = await measure(baseUrl, "list", { types: ["task"], limit: 50 })
+    console.log(`P3  p50=${p3.p50.toFixed(1)} ms  p99=${p3.p99.toFixed(1)} ms`)
+
+    console.log("P4  throughput 10 s...")
+    const p4 = await measureThroughput(baseUrl, "list", { query: "bun", limit: 50 })
+    console.log(`P4  ${p4.toFixed(0)} req/s`)
+
+    console.log("P5  getStats (100 samples)...")
+    const p5 = await measure(baseUrl, "getStats", {})
+    console.log(`P5  p50=${p5.p50.toFixed(1)} ms  p99=${p5.p99.toFixed(1)} ms`)
+
+    const violations: BenchmarkResult["violations"] = []
+    const checkMax = (id: string, metric: string, value: number, limit: number) => {
+      if (value > limit) {
+        violations.push({ path: id, metric, value: +value.toFixed(1), threshold: limit, delta: +(value - limit).toFixed(1) })
+      }
+    }
+    const checkMin = (id: string, metric: string, value: number, limit: number) => {
+      if (value < limit) {
+        violations.push({ path: id, metric, value: +value.toFixed(1), threshold: limit, delta: +(limit - value).toFixed(1) })
+      }
+    }
+    checkMax("P1", "cold_start_ms", p1, THRESHOLDS.p1_cold_start_ms)
+    checkMax("P2", "p50_ms", p2.p50, THRESHOLDS.p2_p50_ms)
+    checkMax("P2", "p99_ms", p2.p99, THRESHOLDS.p2_p99_ms)
+    checkMax("P3", "p50_ms", p3.p50, THRESHOLDS.p3_p50_ms)
+    checkMax("P3", "p99_ms", p3.p99, THRESHOLDS.p3_p99_ms)
+    checkMin("P4", "req_per_sec", p4, THRESHOLDS.p4_req_per_sec)
+    checkMax("P5", "p50_ms", p5.p50, THRESHOLDS.p5_p50_ms)
+    checkMax("P5", "p99_ms", p5.p99, THRESHOLDS.p5_p99_ms)
+
+    const slug = timestamp.replace(/[:.]/g, "-").slice(0, 19)
+    const dir = path.join(RESULTS, slug)
+    await mkdir(dir, { recursive: true })
+    const result: BenchmarkResult = {
+      timestamp,
+      git_sha: gitSha,
+      bun_version: bunVer,
+      thresholds: THRESHOLDS,
+      results: {
+        p1_cold_start_ms: +p1.toFixed(1),
+        p2_p50_ms: +p2.p50.toFixed(1),
+        p2_p99_ms: +p2.p99.toFixed(1),
+        p3_p50_ms: +p3.p50.toFixed(1),
+        p3_p99_ms: +p3.p99.toFixed(1),
+        p4_req_per_sec: +p4.toFixed(0),
+        p5_p50_ms: +p5.p50.toFixed(1),
+        p5_p99_ms: +p5.p99.toFixed(1),
+      },
+      violations,
+      summary: violations.length === 0 ? "PASS" : "FAIL",
+    }
+    const json = JSON.stringify(result, null, 2)
+    await writeFile(path.join(dir, "result.json"), json)
+    await writeFile(path.join(RESULTS, "latest.json"), json)
+
+    console.log("\nPerformance Report")
+    console.log(`P1 cold start  ${result.results.p1_cold_start_ms} ms`)
+    console.log(`P2 FTS p50     ${result.results.p2_p50_ms} ms`)
+    console.log(`P2 FTS p99     ${result.results.p2_p99_ms} ms`)
+    console.log(`P3 filter p50  ${result.results.p3_p50_ms} ms`)
+    console.log(`P3 filter p99  ${result.results.p3_p99_ms} ms`)
+    console.log(`P4 throughput  ${result.results.p4_req_per_sec} req/s`)
+    console.log(`P5 stats p50   ${result.results.p5_p50_ms} ms`)
+    console.log(`P5 stats p99   ${result.results.p5_p99_ms} ms`)
+    console.log(`${result.summary} ${violations.length} violation(s) -> ${dir}`)
+    process.exit(violations.length > 0 ? 1 : 0)
+  } finally {
+    srv.kill()
+  }
+}
+
+async function compareBenchmarks() {
+  const [baseRaw, latestRaw] = await Promise.all([
+    readFile(path.join(RESULTS, "baseline.json"), "utf-8").catch(() => null),
+    readFile(path.join(RESULTS, "latest.json"), "utf-8").catch(() => null),
+  ])
+  if (!baseRaw) {
+    console.error("No baseline.json - run `mise run perf baseline` first")
+    process.exit(1)
+  }
+  if (!latestRaw) {
+    console.error("No latest.json - run `mise run perf run` first")
+    process.exit(1)
+  }
+  const base = JSON.parse(baseRaw) as BenchmarkResult
+  const latest = JSON.parse(latestRaw) as BenchmarkResult
+  const metrics = [
+    { id: "P1", key: "p1_cold_start_ms", label: "cold start", dir: "lower" },
+    { id: "P2", key: "p2_p50_ms", label: "FTS p50", dir: "lower" },
+    { id: "P2", key: "p2_p99_ms", label: "FTS p99", dir: "lower" },
+    { id: "P3", key: "p3_p50_ms", label: "filter p50", dir: "lower" },
+    { id: "P3", key: "p3_p99_ms", label: "filter p99", dir: "lower" },
+    { id: "P4", key: "p4_req_per_sec", label: "throughput", dir: "higher" },
+    { id: "P5", key: "p5_p50_ms", label: "stats p50", dir: "lower" },
+    { id: "P5", key: "p5_p99_ms", label: "stats p99", dir: "lower" },
+  ] as const
+
+  console.log(`Baseline : ${base.git_sha.slice(0, 8)} ${base.timestamp.slice(0, 10)}`)
+  console.log(`Latest   : ${latest.git_sha.slice(0, 8)} ${latest.timestamp.slice(0, 10)}`)
+  let regressions = 0
+  for (const { id, key, label, dir } of metrics) {
+    const b = base.results[key]
+    const l = latest.results[key]
+    const delta = l - b
+    const pct = b === 0 ? 0 : (delta / b) * 100
+    const regressed = dir === "lower" ? l > b && l - b >= Math.max(0.25, b * 0.2) : pct < -20
+    if (regressed) regressions++
+    const unit = key.includes("req") ? "r/s" : "ms"
+    const status = regressed ? "REGRESSION" : Math.abs(pct) < 5 ? "stable" : delta > 0 ? "worse" : "better"
+    console.log(`${id} ${label}: ${b} -> ${l} (${delta >= 0 ? "+" : ""}${delta.toFixed(1)}${unit}) ${status}`)
+  }
+  console.log(`${regressions} regression(s)`)
+  process.exit(regressions > 0 ? 1 : 0)
+}
+
+async function baselineBenchmarks() {
+  const src = path.join(RESULTS, "latest.json")
+  const dst = path.join(RESULTS, "baseline.json")
+  const raw = await readFile(src, "utf-8").catch(() => null)
+  if (!raw) {
+    console.error("No latest.json - run `mise run perf run` first")
+    process.exit(1)
+  }
+  await copyFile(src, dst)
+  const { git_sha, timestamp } = JSON.parse(raw) as BenchmarkResult
+  console.log(`Baseline set -> ${git_sha.slice(0, 8)} (${timestamp.slice(0, 10)})`)
+}
+
+async function openLatest() {
+  const latest = path.join(RESULTS, "latest.json")
+  if (!existsSync(latest)) {
+    console.error("No latest.json yet - run `mise run perf run` first")
+    process.exit(1)
+  }
+  const raw = await Bun.file(latest).text()
+  const { timestamp } = JSON.parse(raw) as BenchmarkResult
+  const slug = timestamp.replace(/[:.]/g, "-").slice(0, 19)
+  const dir = path.join(RESULTS, slug)
+  const child = Bun.spawnSync(["open", dir])
+  process.exit(child.exitCode ?? 0)
+}
+
+if (action === "run") await runBenchmarks()
+else if (action === "compare") await compareBenchmarks()
+else if (action === "baseline") await baselineBenchmarks()
+else if (action === "open") await openLatest()
+else {
+  console.error("Usage: mise run perf <run|baseline|compare|open>")
+  process.exit(1)
+}
+'''
+
+[tasks."test:spec-audit"]
+description = "Report source files under src/ that lack co-located specs, with explicit exemptions"
+usage = '''
+flag "--strict" help="Exit non-zero when missing specs exist"
+'''
+run = '''
+#!/usr/bin/env bun
+import { readdirSync, statSync, existsSync } from "node:fs"
+import { join, relative } from "node:path"
+
+const ROOT = process.cwd()
+const STRICT = process.env.usage_strict === "true"
+
+const EXEMPT_SUFFIXES = [".d.ts", ".types.ts", ".const.ts", ".guard.ts"]
+const EXEMPT_FILES = ["index.ts", "main.ts", "registry.ts", "generated.ts"]
+
+function hasSpec(filePath: string): boolean {
+  const specTs = filePath.replace(/\\.tsx?$/, ".spec.tsx")
+  const specTs2 = filePath.replace(/\\.tsx?$/, ".spec.ts")
+  return existsSync(specTs) || existsSync(specTs2)
+}
+
+function isExempt(filePath: string): boolean {
+  const rel = relative(ROOT, filePath)
+  if (!rel.startsWith("src/")) return true
+  for (const suffix of EXEMPT_SUFFIXES) {
+    if (rel.endsWith(suffix)) return true
+  }
+  const base = rel.split("/").pop() || ""
+  if (EXEMPT_FILES.some(f => base === f || base.endsWith("." + f))) return true
+  // Schema-only modules
+  if (base.endsWith(".schema.ts") || base.endsWith(".schemas.ts")) return true
+  // Barrel exports
+  if (base === "index.ts" || base === "shared.ts") return true
+  // Generated / fixture data
+  if (rel.includes("__tests__/fixtures") || rel.includes("generated")) return true
+  return false
+}
+
+function scan(dir: string): string[] {
+  const missing: string[] = []
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name)
+    if (entry.isDirectory()) {
+      if (entry.name === "node_modules" || entry.name.startsWith(".")) continue
+      missing.push(...scan(full))
+    } else if (entry.isFile() && /\\.(ts|tsx)$/.test(entry.name)) {
+      if (isExempt(full)) continue
+      if (!hasSpec(full)) missing.push(relative(ROOT, full))
+    }
+  }
+  return missing
+}
+
+const missing = scan(join(ROOT, "src")).sort()
+for (const m of missing) console.log(m)
+if (missing.length > 0) {
+  console.error("missing specs:", missing.length)
+  if (STRICT) process.exit(1)
+}
+'''
+
 [tasks."icons:svg-contrast"]
 description = "Contrast-check SVG colors in assets/images vs list shell background (#0b0e14). Default scope=all (Raycast-style tag-rail). scope=brand: tag map + entry-type defaults only. Writes only with --write-safe. Exits 1 with --strict when any file fails."
 usage = '''

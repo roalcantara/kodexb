@@ -12,17 +12,70 @@ import type { RpcApp } from './server'
 
 const DEFAULT_RPC_TIMEOUT_MS = 60_000
 const BRIDGE_ORIGIN = 'http://kb.local'
+const ALLOWED_HEADERS = ['accept']
+
+const PATH_PREFIX = '/api/'
+const ALLOWED_METHOD = 'POST'
 
 type RequestHandler = { handle: (req: Request) => Promise<Response> | Response }
 
+export const bridge_error_codes = {
+  invalid_path: 'RPC_BRIDGE_INVALID_PATH',
+  invalid_method: 'RPC_BRIDGE_INVALID_METHOD',
+  missing_path: 'RPC_BRIDGE_MISSING_PATH'
+} as const
+
+function bridgeRejection(type: string, detail?: string): RpcCallResponse {
+  return {
+    status: 400,
+    body: JSON.stringify({ error: type, detail: detail ?? '' })
+  }
+}
+
+function filterHeaders(headers?: Record<string, string>): Record<string, string> {
+  if (!headers) return {}
+  const filtered: Record<string, string> = {}
+  for (const key of ALLOWED_HEADERS) {
+    const value = headers[key]
+    if (value !== undefined) filtered[key] = value
+  }
+  return filtered
+}
+
+/**
+ * Validate the Electrobun bridge payload before forwarding to the Elysia
+ * RpcApp. Rejects non-/api/ paths, non-POST methods, and filters headers
+ * to the explicit allowlist.
+ */
+function validateBridgePayload(params: RpcCallParams): true {
+  if (!params.path || params.path.trim() === '') {
+    throw Object.assign(new Error('RPC bridge: path is required'), { code: bridge_error_codes.missing_path })
+  }
+  if (!params.path.startsWith(PATH_PREFIX)) {
+    throw Object.assign(new Error('RPC bridge: path must start with /api/'), { code: bridge_error_codes.invalid_path })
+  }
+  const method = (params.method ?? '').trim()
+  if (method !== '' && method.toUpperCase() !== ALLOWED_METHOD) {
+    throw Object.assign(new Error('RPC bridge: only POST is allowed'), { code: bridge_error_codes.invalid_method })
+  }
+  return true
+}
+
 /**
  * Build a `Request` from the Electrobun-serialised RPC call payload and pass
- * it to the Elysia `RpcApp`. Headers default to JSON because every kb route
- * uses TypeBox bodies; explicit headers from the caller win.
+ * it to the Elysia `RpcApp`. The bridge validates the payload envelope before
+ * forwarding: only /api/ paths, only POST, only allowlisted headers.
  */
 async function forwardToRpcApp(rpc: RequestHandler, params: RpcCallParams): Promise<RpcCallResponse> {
-  const method = params.method ?? 'POST'
-  const headers = { 'content-type': 'application/json', ...(params.headers ?? {}) }
+  try {
+    validateBridgePayload(params)
+  } catch (e) {
+    const err = e as Error & { code?: string }
+    return bridgeRejection(err.code ?? 'RPC_BRIDGE_REJECTED', err.message)
+  }
+
+  const method = params.method ?? ALLOWED_METHOD
+  const headers = { 'content-type': 'application/json', ...filterHeaders(params.headers) }
   const init: RequestInit = {
     method,
     headers,
@@ -77,4 +130,4 @@ export function createSyncEmitter(webviewRpc: ReturnType<typeof createKbWebviewR
 }
 
 /** Helpers exported for unit testing the request bridge without a window. */
-export const testing_helpers = { forwardToRpcApp }
+export const testing_helpers = { forwardToRpcApp, validateBridgePayload, filterHeaders, bridge_error_codes }

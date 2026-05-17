@@ -127,7 +127,8 @@ describe('App', () => {
     const loaded = await loadedFixture()
     const app = new App(loaded)
     const html = '<meta property="og:image" content="https://example.com/image.png">'
-    const result = await app.fetchPreviewImage(`data:text/html,${encodeURIComponent(html)}`)
+    globalThis.fetch = mock(async () => new Response(html)) as unknown as typeof fetch
+    const result = await app.fetchPreviewImage('https://example.com/page')
     expect(result).toEqual({ url: 'https://example.com/image.png' })
   })
 

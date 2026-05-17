@@ -98,6 +98,12 @@ async function bootstrap() {
   kbWebviewRpc = createKbWebviewRpc(rpcApp)
 
   const isDarwin = process.platform === 'darwin'
+
+  // The main window loads trusted packaged renderer content at
+  // views://shell/index.html (bundled by Electrobun, no external origin).
+  // Any future external or third-party webview must use sandbox: true,
+  // partition isolation, and navigation allowlists per
+  // assets/guides/ELECTROBUN.md and electrobun-best-practices.
   win = new BrowserWindow({
     title: 'kb',
     url: 'views://shell/index.html',

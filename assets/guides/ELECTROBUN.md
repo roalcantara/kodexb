@@ -48,7 +48,25 @@ with a specific TLS error and the environment cannot be fixed directly.
 
 ## Security
 
-For remote or untrusted `url`, use **`sandbox: true`** so RPC is disabled ([BrowserView RPC](https://blackboard.sh/electrobun/docs/apis/browser-view)).
+### Main renderer trust
+
+The main `BrowserWindow` opens trusted packaged renderer content at
+`views://shell/index.html` (bundled by Electrobun, no external origin). This
+content has access to RPC because it is project-authored code.
+
+### External content policy
+
+Any future external or third-party webview (user-loaded URLs, embedded
+content from imported sources, or OOPIFs) must use:
+
+- **`sandbox: true`** — disables RPC for untrusted origins
+- **Partition isolation** — separate `partition:` values per trust domain
+- **Navigation allowlists** — explicit `setNavigationRules` per origin
+
+Guidance is in `.agents/skills/electrobun-best-practices/SKILL.md` and
+`.cursor/electrobun-skill-routing.md`. See also the Electrobun upstream
+[BrowserView RPC](https://blackboard.sh/electrobun/docs/apis/browser-view)
+documentation.
 
 ## References
 

@@ -488,6 +488,42 @@ Keep DB specs on **`:memory:`** and avoid mocks for internal code; see [Definiti
 
 For Fishery details and advanced APIs (`create`, `onCreate`, traits), see [FISHERY_GUIDE.md](./FISHERY_GUIDE.md).
 
+## Spec-audit task
+
+Every production file under `src/` requires a co-located `.spec.ts` or
+`.spec.tsx`. The following categories are **exempt** from this rule:
+
+- **Barrel re-exports** (`index.ts`, `shared.ts`)
+- **Pure type-only modules** (`.types.ts`, `.d.ts`)
+- **Constants modules** (`.const.ts`)
+- **Schema-only modules** (`.schema.ts`, `.schemas.ts`)
+- **Generated or fixture data** (`__tests__/fixtures/`, `generated`)
+- **Guard modules** (`.guard.ts`)
+
+Use `mise run test:spec-audit` to list non-exempt source files that lack
+a co-located spec. The default mode is report-only (exits `0`). Add `--strict`
+to exit non-zero when missing specs exist.
+
+## Preview e2e workflow
+
+`mise run e2e:preview` runs Playwright tests against the preview server.
+It requires Chromium (install once with `bun run e2e:preview:install`) and
+a useful preview database. It is intentionally **not** part of the default
+quality gate for speed and portability.
+
+**When to run:**
+
+- Changes touching list navigation, filters, task sheet, or preview tooling
+- Renderer component refactors with structural changes
+
+**Reporting:** Include `mise run e2e:preview` results in the implementation
+notes. If it cannot run, report the exact blocker (missing Chromium, empty
+preview database, port conflict) rather than treating the default gate as
+equivalent coverage.
+
+A maintainer-triggered CI workflow for preview e2e may be added later, but
+the default gate must remain fast and portable.
+
 ## References
 
 - [Bun Test Runner][0]

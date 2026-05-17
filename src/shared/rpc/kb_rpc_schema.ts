@@ -19,6 +19,25 @@ export type RpcDbStats = {
 }
 
 /** Serializable config snapshot for `getConfig` / `saveConfig` responses. */
+
+/**
+ * ├─ CONTRACT NOTE ──────────────────────────────────────────────
+ * │ Several shared types (ListOpts, ConfigPatch, TaskCreateInput,
+ * │ TaskUpdateInput, OpenDialogOpts) have corresponding TypeBox
+ * │ schemas in src/shell/main/rpc/schemas.ts. The shared types are
+ * │ intentionally hand-written because:
+ * │
+ * │  1. src/shared/ must not import from src/shell/ (FCIS).
+ * │  2. The renderer imports shared types for Eden Treaty typing;
+ * │     TypeBox schemas live in shell/main/ for transport validation.
+ * │  3. Route-contract tests in src/shell/main/rpc/schemas.spec.ts
+ * │     assert that valid payloads match both the schema and the
+ * │     shared type's shape, catching drift at test time.
+ * │
+ * │ When changing RPC payloads, update both the TypeBox schema AND
+ * │ this shared type, then run bun test src/shell/main/rpc.
+ * └──────────────────────────────────────────────────────────────
+ */
 export type RpcGetConfigPayload = {
   configPath: string
   database: { path: string }

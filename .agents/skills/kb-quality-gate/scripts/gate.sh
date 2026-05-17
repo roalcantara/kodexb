@@ -52,8 +52,8 @@ run_check "bun run lint:fix" bun run lint:fix
 echo ""
 echo "0.5 / Policy (new suppressions + reminders)"
 echo "──────────────────────────────────────────"
-KB_GATE_EMBEDDED_POLICY=1 run_check --tee "Policy" \
-  bash "$ROOT/.agents/skills/kb-quality-gate/scripts/gate_policy.sh"
+run_check --tee "Policy" \
+  env KB_GATE_EMBEDDED_POLICY=1 bash "$ROOT/.agents/skills/kb-quality-gate/scripts/gate_policy.sh"
 
 echo ""
 echo "1 / Lint + Typecheck (typecheck + biome + knip + depcruise + jscpd + ls + ast-grep + mise)"

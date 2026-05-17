@@ -7,17 +7,14 @@ import { useListSurfaceScrollRestore } from '../../hooks/list/use_list_surface_s
 import { useVirtualListWindow } from '../../hooks/list/use_virtual_list_window.hook'
 import { useWindowViewNavKeys } from '../../hooks/list/use_window_view_nav_keys.hook'
 import { DetailPage } from '../../pages/detail/detail.page'
-import { SettingsPage } from '../../pages/settings/settings.page'
 import { cyclePriority, cycleStatus, getListStats } from '../../rpc/client'
 import { listFilterSummary } from '../../utils/list/list_filter_summary.util'
 import { formatListFooterStatus } from '../../utils/list/list_footer_status.util'
 import { focusListSurface } from '../../utils/list/list_surface_focus.util'
-import { CommandPalette } from '../actions/command_palette.component'
-import { ActionToastHost } from '../shared/action_toast_host.component'
-import { SyncModal } from '../shared/sync_modal.component'
-import { TaskSheet } from '../task/task_sheet.component'
-import { EntryRow } from './entry_row.component'
-import { FilterDropdown } from './filter_dropdown.component'
+import { ListFooter } from './list_footer.component'
+import { ListOverlayHosts } from './list_overlay_hosts.component'
+import { ListResultsBody } from './list_results_body.component'
+import { ListSearchFilterChrome } from './list_search_filter_chrome.component'
 
 export type ListMainProps = {
   p: ListPageShell
@@ -25,8 +22,7 @@ export type ListMainProps = {
   setShowSettings: (value: boolean | ((prev: boolean) => boolean)) => void
 }
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: pre-existing pattern outside Phase 9 scope
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing inline rendering
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: shell composition remains tracked in codebase-quality-audit
 export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   const maxFrecencyScore = useMemo(() => Math.max(0, ...p.data.rows.map(row => row.frecencyScore)), [p.data.rows])
   const emptySyncButtonRef = useRef<HTMLButtonElement>(null)
@@ -169,134 +165,55 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   return (
     <>
       <div className={powertoysClass} role="application" aria-label="Knowledge list">
-        {isFullDetail ? <div className="kb-windowDragStripe kb-windowDragStripe--detail" aria-hidden /> : null}
-        {isFullDetail ? null : (
-          <div className="kb-pt-search">
-            <div className="kb-pt-search-wrap kb-pt-search-wrap--withBack">
-              <button
-                type="button"
-                className={`kb-pt-back${showBackWithSearch ? '' : ' kb-pt-back--inactive'}`}
-                aria-label="Back to list"
-                title={showBackWithSearch ? 'Back to list (Escape)' : undefined}
-                aria-hidden={!showBackWithSearch}
-                tabIndex={showBackWithSearch ? 0 : -1}
-                onClick={() => {
-                  if (showBackWithSearch) closeDetailToList()
-                }}
-              >
-                ←
-              </button>
-              <search className="kb-pt-bar">
-                <input
-                  ref={p.searchInputRef}
-                  type="search"
-                  placeholder="Search your knowledge base…"
-                  value={p.data.search}
-                  spellCheck={false}
-                  autoComplete="off"
-                  autoCorrect="off"
-                  autoCapitalize="none"
-                  onChange={e => p.data.setSearch(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key !== 'ArrowDown') return
-                    e.preventDefault()
-                    p.onSearchArrowDown()
-                  }}
-                  aria-label="Search"
-                />
-                <span aria-hidden className="kb-pt-bar-divider" />
-                <button ref={p.filter.filterButtonRef} type="button" className={filterChipCls} onClick={toggleFilter}>
-                  {filterSummary} ▾
-                </button>
-              </search>
-            </div>
-          </div>
-        )}
-
-        {p.filter.filterOpen && p.data.stats !== null ? (
-          <FilterDropdown
-            open={p.filter.filterOpen}
-            anchorRect={p.filter.anchorRect}
-            stats={filterDropdownStats ?? p.data.stats}
-            types={p.data.types}
-            tags={p.data.tags}
-            taskView={p.data.taskView}
-            onChange={p.onFilterChange}
-            onClose={() => {
-              p.filter.setFilterOpen(false)
-              focusMainSearch()
-            }}
-            pushToast={p.pushToast}
-            closeToList={closeDetailToList}
-            isFullDetail={isFullDetail}
-            compact
-          />
-        ) : null}
+        <ListSearchFilterChrome
+          isFullDetail={isFullDetail}
+          showBackWithSearch={showBackWithSearch}
+          closeDetailToList={closeDetailToList}
+          searchInputRef={p.searchInputRef}
+          search={p.data.search}
+          onSearchChange={p.data.setSearch}
+          onSearchArrowDown={p.onSearchArrowDown}
+          filterButtonRef={p.filter.filterButtonRef}
+          filterChipCls={filterChipCls}
+          filterSummary={filterSummary}
+          onToggleFilter={toggleFilter}
+          filterOpen={p.filter.filterOpen}
+          stats={filterDropdownStats ?? p.data.stats}
+          types={p.data.types}
+          tags={p.data.tags}
+          taskView={p.data.taskView}
+          onFilterChange={p.onFilterChange}
+          onFilterClose={() => {
+            p.filter.setFilterOpen(false)
+            focusMainSearch()
+          }}
+          pushToast={p.pushToast}
+          anchorRect={p.filter.anchorRect}
+        />
 
         <div className="kb-pt-main">
           <div className={listPanelClass}>
-            <div
-              ref={p.listSurfaceRef}
-              className="kb-pt-results"
-              tabIndex={0}
-              data-list-selection={p.sel.selectedId === null ? 'false' : 'true'}
+            <ListResultsBody
+              listSurfaceRef={p.listSurfaceRef}
+              listSentinelRef={p.listSentinelRef}
+              selectedId={p.sel.selectedId}
               onKeyDown={p.onListSurfaceKeyDown}
-              role="listbox"
-              aria-label="Entries"
-            >
-              {p.flags.emptyDb ? (
-                <div className="kb-pt-empty">
-                  <p>No entries yet</p>
-                  <div className="kb-pt-empty-detail">
-                    {p.data.syncInfo ? (
-                      <p>
-                        Sources: <code>{p.data.syncInfo.sourcesDir}</code>
-                      </p>
-                    ) : null}
-                    {p.data.syncInfo ? (
-                      <p>
-                        {p.data.syncInfo.fileCount} YAML file{p.data.syncInfo.fileCount === 1 ? '' : 's'} found
-                      </p>
-                    ) : null}
-                    <button ref={emptySyncButtonRef} type="button" onClick={p.data.onSync}>
-                      ↺ Sync — press Enter to start
-                    </button>
-                  </div>
-                </div>
-              ) : null}
-              {p.flags.noResults ? (
-                <div className="kb-pt-empty">
-                  <p>No results for this search.</p>
-                </div>
-              ) : null}
-              {p.flags.emptyList ? (
-                <div className="kb-pt-empty">
-                  <p>No entries match the current filters.</p>
-                </div>
-              ) : null}
-              {virtualWindow.paddingTop > 0 ? <div style={{ height: virtualWindow.paddingTop }} aria-hidden /> : null}
-              {visibleRows.map(entry => (
-                <EntryRow
-                  key={entry.id}
-                  entry={entry}
-                  allEntries={p.data.rows}
-                  maxFrecencyScore={maxFrecencyScore}
-                  selected={entry.id === p.sel.selectedId}
-                  onSelect={onSelectEntry}
-                  dragHandlers={p.dragDrop?.getDragHandlers(entry)}
-                  dragOver={p.dragDrop?.dragOverId === entry.id}
-                  onCycleStatus={handleCycleStatus}
-                  onCyclePriority={handleCyclePriority}
-                  compact
-                />
-              ))}
-              {virtualWindow.paddingBottom > 0 ? (
-                <div style={{ height: virtualWindow.paddingBottom }} aria-hidden />
-              ) : null}
-              {p.data.hasMore && p.data.rows.length > 0 ? (
-                <div ref={p.listSentinelRef} className="kb-listSentinel" aria-hidden />
-              ) : null}
-            </div>
+              emptyDb={p.flags.emptyDb}
+              noResults={p.flags.noResults}
+              emptyList={p.flags.emptyList}
+              syncInfo={p.data.syncInfo}
+              onSync={p.data.onSync}
+              emptySyncButtonRef={emptySyncButtonRef}
+              rows={p.data.rows}
+              visibleRows={visibleRows}
+              virtualWindow={virtualWindow}
+              hasMore={p.data.hasMore}
+              maxFrecencyScore={maxFrecencyScore}
+              onSelectEntry={onSelectEntry}
+              dragDrop={p.dragDrop}
+              onCycleStatus={handleCycleStatus}
+              onCyclePriority={handleCyclePriority}
+            />
           </div>
 
           {detailEntry ? (
@@ -312,64 +229,21 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
             </div>
           ) : null}
         </div>
-
-        <div className="kb-pt-footer">
-          <span>{footerStatus}</span>
-          <span className="kb-pt-footer-right">
-            <span className="kb-pt-footer-keys">
-              <span
-                className={`kb-pt-footer-keysPrefix${isFullDetail ? '' : ' kb-pt-footer-keysPrefix--inactive'}`}
-                aria-hidden={!isFullDetail}
-              >
-                <button
-                  type="button"
-                  className="kb-pt-footer-keyBack"
-                  aria-label="Back to list"
-                  title="Back to list (Escape)"
-                  tabIndex={isFullDetail ? 0 : -1}
-                  onClick={() => {
-                    if (isFullDetail) closeDetailToList()
-                  }}
-                >
-                  ⎋
-                </button>
-                <span className="kb-pt-footer-keysSep" aria-hidden>
-                  {' · '}
-                </span>
-              </span>
-              <span>⌘P · ⌘K · ⌘N · ⌘,{detailEntry === null ? '' : ' · ⌘↓ scroll'}</span>
-            </span>
-          </span>
-        </div>
       </div>
 
-      {p.taskSheetVisible ? (
-        <TaskSheet key={p.taskSheetEntry?.id ?? 'new'} entry={p.taskSheetEntry} onClose={p.onCloseTaskSheet} />
-      ) : null}
-      {showSettings ? (
-        <div className="kb-settingsHost">
-          <SettingsPage
-            onCloseRequest={() => setShowSettings(false)}
-            onConfigSaved={cfg => {
-              const ps = Number.parseInt(cfg.display.pageSize, 10)
-              if (Number.isFinite(ps) && ps > 0) p.data.setPageSize(ps)
-              p.data.refreshList(false).catch(() => undefined)
-            }}
-          />
-        </div>
-      ) : null}
-      {p.palette.open && (
-        <CommandPalette
-          open={p.palette.open}
-          actions={p.palette.actions}
-          onClose={() => {
-            p.palette.closePalette()
-            focusMainSearch()
-          }}
-        />
-      )}
-      <SyncModal model={p.data.syncUi} onDismiss={p.data.dismissSyncModal} />
-      <ActionToastHost toasts={p.actionToasts} onDismiss={p.dismissActionToast} />
+      <ListFooter
+        footerStatus={footerStatus}
+        isFullDetail={isFullDetail}
+        detailEntry={detailEntry}
+        closeDetailToList={closeDetailToList}
+      />
+
+      <ListOverlayHosts
+        p={p}
+        showSettings={showSettings}
+        setShowSettings={setShowSettings}
+        focusMainSearch={focusMainSearch}
+      />
     </>
   )
 }

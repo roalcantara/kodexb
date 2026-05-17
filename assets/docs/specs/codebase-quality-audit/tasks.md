@@ -32,8 +32,13 @@ Execute in order in **one** repo clone on the agreed integration branch. After e
 - [ ] **T4.1** `use_list_page_shell.hook.ts`, `use_list_page_stats_sync.hook.ts`, `use_task_sheet.hook.ts`, `use_cmdk_palette.hook.ts`: remove line-count ignores.
 - [ ] **T4.2** `use_view_navigation.hook.ts`: remove cognitive complexity ignore (table-driven or decomposed handlers).
 - [ ] **T4.3** `cmdk_palette.component.tsx`, `list_main.component.tsx`: remove complexity ignores; split UI.
+  - Progress from `codebase-best-practices-audit`: `list_main.component.tsx`
+    was reduced from 375 to 250 lines by extracting search/filter chrome,
+    results body, footer, and overlay hosts with co-located specs. Do not mark
+    this row complete until the remaining `list_main.component.tsx`
+    suppressions are removed or explicitly approved under R6.
 - [ ] **T4.4** `sync_modal.component.tsx`: remove complexity and `useExhaustiveDependencies` ignores.
-- [ ] **T4.5** `list_main.component.tsx`: resolve `noAutofocus` via explicit focus protocol + spec update.
+- [x] **T4.5** `list_main.component.tsx`: resolve `noAutofocus` via explicit focus protocol + spec update.
 
 ## Phase 5 — Closure
 

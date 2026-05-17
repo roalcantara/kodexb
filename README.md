@@ -89,7 +89,7 @@ agent skill wiring, UI smoke checks, and maintenance workflows:
 | `mise run prepare` | Refreshing Bun dependencies and commit hooks without reinstalling tools. |
 | `mise run skill sync` | Rewriting generated skill routing snippets from `assets/guides/SKILLS.yml`. |
 | `mise run skill install` | Restoring Skills CLI-managed project skills from `skills-lock.json`. |
-| `mise run e2e:preview` | Running the Playwright preview smoke test. Install Chromium once with `bun run e2e:preview:install`. |
+| `mise run e2e:preview` | Running Playwright smoke tests. Required for list navigation, filter, task sheet, or preview tooling changes. Install Chromium once with `bun run e2e:preview:install`. Report exact blockers when the environment cannot run it. |
 | `mise run icons:svg-contrast` | Auditing SVG contrast against the list shell background; use `--write-safe` only for curated safe replacements. |
 | `mise run repo:setup` | Creating the GitHub repo and required CI secrets / variables. |
 | `mise run repo:prune` | Deleting the GitHub repo, releases, and tags for a reset. Use with care. |

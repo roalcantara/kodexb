@@ -1,7 +1,7 @@
 import type { ConfigPatch, RpcDbStats, RpcGetConfigPayload } from '@shared/rpc'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { PAGE_SIZE_LARGE, PAGE_SIZE_MEDIUM, PAGE_SIZE_SMALL, PAGE_SIZE_XL } from '../../../app/config/config.schema'
+import { PAGE_SIZE_LARGE, PAGE_SIZE_MEDIUM, PAGE_SIZE_SMALL, PAGE_SIZE_XL } from '../../constants/page_size.const'
 import type { SettingsRpc } from '../../pages/settings/settings.types'
 
 const PAGE_SIZE_OPTIONS = [PAGE_SIZE_SMALL, PAGE_SIZE_MEDIUM, PAGE_SIZE_LARGE, PAGE_SIZE_XL] as const
