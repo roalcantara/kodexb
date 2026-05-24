@@ -2,10 +2,18 @@
 [tools]
 bun = "1.3.14"
 usage = "latest"
-pre-commit = "4.4"
+hk = "1.45.0"
 ast-grep = "latest"
 tombi = "0.9.22"
 actionlint = "latest"
+hadolint = "latest"
+container-structure-test = "latest"
+act = "latest"
+gum = "latest"
+
+[env]
+HK_MISE = "1"
+HK_PKL_BACKEND = "pklr"
 
 [tasks]
 "project" = { description = "Manage setup, dependencies, cleanup, icons, repository, and local maintenance", usage = '''
@@ -32,7 +40,7 @@ actionlint = "latest"
         ;;
       prepare)
         bun install ${usage_ci:+--frozen-lockfile}
-        ${usage_ci:-false} || pre-commit install --hook-type commit-msg
+        ${usage_ci:-false} || hk install --mise
         ;;
       clean)
         rm -rf dist tmp .electrobun-cache
@@ -797,7 +805,7 @@ actionlint = "latest"
     import { readdirSync } from 'node:fs'
     import path from 'node:path'
 
-    /** Matches list.css `--kb-bg` (Andromeda Void shell). */
+    /** Matches list.css `--theme-bg` (Andromeda Void shell). */
     const KB_LIST_BG = '#0b0e14'
     /** WCAG 1.4.11 non-text contrast target for graphical objects (relaxed vs body text). */
     const DEFAULT_MIN_RATIO = 3
@@ -1028,6 +1036,7 @@ actionlint = "latest"
       flag "--depcruise" help="Run dependency-cruiser"
       flag "--jscpd" help="Run jscpd"
       flag "--ls" help="Run ls-lint"
+      flag "--hadolint" help="Run hadolint on Dockerfile"
       flag "--ast-grep" help="Run ast-grep"
       flag "--mise" help="Run tombi on mise.toml"
       flag "--typecheck" help="Run TypeScript check"
@@ -1052,6 +1061,7 @@ actionlint = "latest"
     is_true "${usage_depcruise:-false}" && lint_flag_set=true
     is_true "${usage_jscpd:-false}" && lint_flag_set=true
     is_true "${usage_ls:-false}" && lint_flag_set=true
+    is_true "${usage_hadolint:-false}" && lint_flag_set=true
     is_true "${usage_ast_grep:-false}" && lint_flag_set=true
     is_true "${usage_mise:-false}" && lint_flag_set=true
     is_true "${usage_typecheck:-false}" && lint_flag_set=true
@@ -1118,6 +1128,14 @@ actionlint = "latest"
       fi
     }
 
+    run_hadolint() {
+      if is_true "${usage_ci:-false}"; then
+        bun run lint:hadolint | tee tmp/reports/linters/hadolint.txt
+      else
+        bun run lint:hadolint
+      fi
+    }
+
     run_ast_grep() {
       if is_true "${usage_ci:-false}"; then
         bun run lint:ast-grep | tee tmp/reports/linters/ast-grep.txt
@@ -1144,6 +1162,7 @@ actionlint = "latest"
         want "${usage_mise:-false}" && { run_mise || e=1; }
         want "${usage_jscpd:-false}" && { run_jscpd || e=1; }
         want "${usage_ls:-false}" && { run_ls || e=1; }
+        want "${usage_hadolint:-false}" && { run_hadolint || e=1; }
         want "${usage_ast_grep:-false}" && { run_ast_grep || e=1; }
         exit "$e"
         ;;
@@ -1176,6 +1195,50 @@ actionlint = "latest"
         ;;
     esac
   ''' }
+"app" = { description = "Manage app-specific tasks", usage = '''
+    flag "--stop" help="Stop the orphan watcher"
+    flag "--check" help="Check the app is running"
+    flag "--quit" help="Quit the macOS app bundle cleanly"
+    flag "--kill" help="Or kill the whole tree"
+    cmd "gates" help="Run the quality and policy gates" {
+      flag "--quality" help="Run the quality gate"
+      flag "--policy" help="Run the policy gate"
+    }
+  ''', run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [[ "${usage_stop:-false}" == "true" ]]; then
+      echo "app: stopping orphan watcher..."
+      pkill -f "electrobun dev --watch"
+      echo "app: orphan watcher stopped!"
+    fi
+    if [[ "${usage_check:-false}" == "true" ]]; then
+      echo "app: checking if app is running..."
+      if pgrep -fl 'kb-dev|blackboard.kb'; then
+        echo "app: is running!"
+      else
+        echo "app: is not running!"
+      fi
+    fi
+    if [[ "${usage_quit:-false}" == "true" ]]; then
+      echo "app: quitting app..."
+      osascript -e 'quit app "kb-dev"'
+      echo "app: app quit!"
+    fi
+    if [[ "${usage_kill:-false}" == "true" ]]; then
+      echo "app: killing app..."
+      pkill -f 'kb-dev.app'
+      echo "app: app killed!"
+    fi
+    if [[ "${usage_quality:-false}" == "true" ]]; then
+      echo "app: checking quality gate..."
+      .agents/skills/app-quality-gate/scripts/gate.sh
+    fi
+    if [[ "${usage_policy:-false}" == "true" ]]; then
+      echo "app: checking policy..."
+      .agents/skills/app-quality-gate/scripts/gate_policy.sh
+    fi
+  ''' }
 "policy" = { description = "Check Mise task policy and usage specs", quiet = true, usage = '''
     cmd "check" {
       flag "--format <format>" help="Output format" default="text" {
@@ -1196,6 +1259,7 @@ actionlint = "latest"
     const TABLE_TASK_PATTERN = /^\[tasks\."?([^"\]]+)"?\]/gm
     const EXPECTED_PUBLIC_TASKS = [
       ['ci', 'Run review, release, and publish CI workflows'],
+      ['docker', 'Build, run, and test the Docker image'],
       ['lint', 'Run lint, strict lint, fix, report, and graph workflows'],
       ['perf', 'Run preview-server performance benchmark workflows'],
       ['policy', 'Check Mise task policy and usage specs'],
@@ -1208,7 +1272,7 @@ actionlint = "latest"
       'build', 'build:prod', 'build:insecure-local', 'test', 'typecheck',
       'lint', 'lint:strict', 'lint:fix', 'lint:biome', 'lint:biome:strict',
       'lint:biome:fix', 'lint:biome:format', 'lint:mise', 'lint:knip',
-      'lint:depcruise', 'lint:jscpd', 'lint:ls', 'lint:ast-grep',
+      'lint:depcruise', 'lint:jscpd', 'lint:ls', 'lint:hadolint', 'lint:ast-grep',
       'lint:ast-grep:fix', 'e2e:preview:install', 'e2e:preview', 'e2e:preview:ui',
     ] as const
     const SPLIT_FAMILY_PREFIXES: string[] = []
@@ -1688,9 +1752,9 @@ async function sync() {
   const ctxTable = [
     "| Skill | When |",
     "| --- | --- |",
-    ...optionals.map(s => "| **" + s.name + "** | " + s.policy.surfaces.kb_context_optional + " |"),
+    ...optionals.map(s => "| **" + s.name + "** | " + s.policy.surfaces.app_context_optional + " |"),
   ].join("\n")
-  replaceManaged(root, ".agents/skills/kb-context/SKILL.md", "optional-companions", ctxTable)
+  replaceManaged(root, ".agents/skills/app-context/SKILL.md", "optional-companions", ctxTable)
 
   // Electrobun routing
   const ebRoutes = []
@@ -1783,3 +1847,137 @@ else if (ACTION === "report") { await report(); if (!validateOk) process.exit(1)
 
 if (!ok) process.exit(1)
 ''' }
+
+# mise run docker build
+# mise run docker build --nocache --platform amd64
+# mise run docker build --nocache --tag next
+# mise run docker run
+# mise run docker run --tag local
+# mise run docker run --xcompile all --prod
+# mise run docker test
+# mise run docker test --platform amd64
+# mise run docker test --skip-build           # reuse the current local image
+"docker" = { description = "Build, run, and test the Docker image", usage = '''
+    cmd "build" {
+        flag "--nocache" help="Disable build cache"
+        flag "--tag <tag>" help="Image tag suffix" default="latest"
+        flag "--image <image>" help="Image name (without tag)" env="REGISTRY_IMAGE" default="roalcantara/kb"
+        flag "--platform <platform>" {
+            help "Target platform"
+            choices "amd64" "arm64" "amd64v2"
+            default "arm64"
+        }
+    }
+    cmd "run" {
+        flag "--tag <tag>" help="Image tag (use with built image)" default="latest"
+        flag "--image <image>" help="Image name (without tag)" env="REGISTRY_IMAGE" default="roalcantara/kb"
+        flag "--xcompile <target>" {
+            help "Cross-compile dist/kb in Ubuntu (clean bun install) instead of an interactive shell"
+            choices "all" "bun-linux-x64-modern" "bun-linux-arm64" "bun-darwin-arm64"
+        }
+        flag "--prod" help="With --xcompile: bun install --production (omit devDependencies)"
+    }
+    cmd "test" {
+        flag "--tag <tag>" help="Image tag" default="latest"
+        flag "--image <image>" help="Image name (without tag)" env="REGISTRY_IMAGE" default="roalcantara/kb"
+        flag "--config <config>" help="CST config path" env="CST_CONFIG" default="tools/container-structure-test.yml"
+        flag "--platform <platform>" {
+            help "Target platform (forwarded to docker build)"
+            choices "amd64" "arm64" "amd64v2"
+            default "arm64"
+        }
+        flag "--nocache" help="Disable build cache (forwarded to docker build)"
+        flag "--skip-build" help="Skip docker build and test the existing image"
+        flag "--junit <path>" help="Write CST results as JUnit XML to <path> (for CI reporting)"
+    }
+  ''', run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+    CMD="${usage_cmd:-}"
+    case "$CMD" in
+      build)
+        case "$usage_platform" in
+          amd64)    PLATFORM_VALUE="linux/amd64" ;;
+          arm64)    PLATFORM_VALUE="linux/arm64" ;;
+          amd64v2)  PLATFORM_VALUE="linux/amd64/v2" ;;
+        esac
+        DOCKER_CMD=(DOCKER_BUILDKIT=1 docker build --build-arg=BUILDKIT_INLINE_CACHE=1 --platform="$PLATFORM_VALUE" --file="Dockerfile")
+        [ "${usage_nocache:-false}" = "true" ] && DOCKER_CMD+=(--no-cache)
+        DOCKER_CMD+=(--tag "$usage_image:$usage_tag" .)
+        echo "  ==> ${DOCKER_CMD[*]}"
+        eval "${DOCKER_CMD[*]}"
+        ;;
+      run)
+        if [ -n "${usage_xcompile:-}" ]; then
+          target="${usage_xcompile:?}"
+          case "$target" in
+            all) targets=(bun-linux-x64-modern bun-linux-arm64 bun-darwin-arm64) ;;
+            bun-linux-x64-modern|bun-linux-arm64|bun-darwin-arm64) targets=("$target") ;;
+            *) echo "unknown --xcompile: $target" >&2; exit 1 ;;
+          esac
+          export XCOMPILE_TARGETS="${targets[*]}"
+          export XCOMPILE_PROD="${usage_prod:-false}"
+          echo "  ==> docker xcompile (Ubuntu 24.04): $XCOMPILE_TARGETS prod=${XCOMPILE_PROD}"
+          docker run --rm \
+            -e XCOMPILE_TARGETS \
+            -e XCOMPILE_PROD \
+            -v "$PWD:/repo" \
+            -w /repo \
+            ubuntu:24.04 \
+            bash -lc 'set -euo pipefail
+              apt-get update -y >/dev/null
+              apt-get install -y curl unzip ca-certificates rsync >/dev/null
+              curl -fsSL https://bun.sh/install | bash >/dev/null
+              export PATH="/root/.bun/bin:$PATH"
+              bun --version
+              work=/tmp/kb-work
+              rm -rf "$work"
+              mkdir -p "$work"
+              rsync -a /repo/ "$work/" --exclude node_modules --exclude dist --exclude .git
+              cd "$work"
+              if [ "${XCOMPILE_PROD:-false}" = "true" ]; then
+                bun install --frozen-lockfile --production
+              else
+                bun install --frozen-lockfile
+              fi
+              mkdir -p /repo/dist
+              for t in $XCOMPILE_TARGETS; do
+                echo "=== build:prod --target=$t ==="
+                slug="${t#bun-}"
+                out="/tmp/kb.$slug"
+                bun build apps/kb/src/index.ts --minify --sourcemap --no-compile-autoload-dotenv --no-compile-autoload-bunfig --compile --outfile "$out" --target="$t"
+                cp "$out" "/repo/dist/kb-$slug"
+                rm -f "$out"
+              done'
+          exit 0
+        fi
+        echo "  ==> docker run -it --rm $usage_image:${usage_tag}"
+        docker run -it --rm "$usage_image:$usage_tag"
+        ;;
+      test)
+        image="${usage_image}:${usage_tag}"
+        if [ "${usage_skip_build:-false}" != "true" ]; then
+          BUILD_CMD=(mise run docker build --tag "$usage_tag" --image "$usage_image" --platform "$usage_platform")
+          [ "${usage_nocache:-false}" = "true" ] && BUILD_CMD+=(--nocache)
+          echo "  ==> ${BUILD_CMD[*]}"
+          "${BUILD_CMD[@]}"
+        fi
+        case "$usage_platform" in
+          amd64)    CST_PLATFORM="linux/amd64" ;;
+          arm64)    CST_PLATFORM="linux/arm64" ;;
+          amd64v2)  CST_PLATFORM="linux/amd64/v2" ;;
+        esac
+        CST_CMD=(mise exec -- container-structure-test test
+          --image "$image"
+          --config "$usage_config"
+          --platform "$CST_PLATFORM")
+        if [ -n "${usage_junit:-}" ]; then
+          mkdir -p "$(dirname "$usage_junit")"
+          CST_CMD+=(--output junit --test-report "$usage_junit")
+        fi
+        echo "  ==> ${CST_CMD[*]}"
+        "${CST_CMD[@]}"
+        ;;
+      *) echo "docker: unknown action '${CMD}' (expected one of: build, run, test)"; exit 2 ;;
+    esac
+  ''' }

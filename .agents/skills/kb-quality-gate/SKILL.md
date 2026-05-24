@@ -178,10 +178,10 @@ Canonical source: [`assets/guides/GIT_COMMITS_GUIDE.md`](../../../assets/guides/
 Non-negotiable bits:
 
 - Conventional Commits: `type(scope): Subject` (capital S, imperative mood)
-- **Subject line ≤ 50 characters** (strict — gitlint enforces this)
+- **Subject line ≤ 50 characters** (strict — HK's `commit-message-policy` step enforces this)
 - Body wrapped at 72 chars; explains WHAT + WHY, not HOW
 - Atomic — one logical change per commit
-- DoD §6 hooks must pass (`gitlint` etc.)
+- DoD §6 hooks must pass (HK `commit-message-policy` etc.)
 
 ## Common Mistakes
 
@@ -194,7 +194,7 @@ Non-negotiable bits:
 | TypeBox / validation drift        | Used `z.*` or non–TypeBox shapes in an Elysia route        | Use `t.*` / TypeBox only; `zod` is not a dependency |
 | Coverage < 80%                    | New branch/function not exercised                          | Add spec cases for uncovered paths                  |
 | Preview-server route missing      | Added Elysia route but forgot to mirror                    | Add matching `case` in `tools/preview/server.ts`    |
-| Subject line > 50 chars           | Wrote subject in 72-char "body width" mode                 | Rewrite — gitlint will reject the commit anyway     |
+| Subject line > 50 chars           | Wrote subject in 72-char "body width" mode                 | Rewrite — HK's commit-message-policy will reject the commit anyway     |
 | `console.log` in `src/`           | Debug statement left in                                    | Delete; logging goes through `@shared/logging`      |
 
 ## Red Flags — STOP and re-run the gate

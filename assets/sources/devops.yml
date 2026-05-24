@@ -862,16 +862,16 @@ cheats:
 
           A basic CI/CD Pipeline can be done on GitHub Actions with a few steps:
 
-          1. REVIREW: 
+          1. REVIREW:
             - When a non-draft pull request is opened, created, or updated, the review workflow will run
             - It will lint, test, and send a preview version to DockerHub
-          2. RELEASE: 
+          2. RELEASE:
             - When a the branch main is updated, the release workflow will run
             - It will create a release and publish the code to DockerHub
-          3. PUBLISH: 
+          3. PUBLISH:
             - When a new release is created, the publish workflow will run
             - It will build and upload self-contained binaries (`linux-x64`, `linux-arm64`, `darwin-arm64`) to the GitHub Release,
-            - Then it will generate and upload checksums with install notes, 
+            - Then it will generate and upload checksums with install notes,
             - Then it will publish a multi-arch Docker image to DockerHub with versioned tags
             - Then it will update the production environment URL
             - Finallt, it will set the GitHub Release to public
@@ -899,19 +899,19 @@ cheats:
           - This is called the supply chain problem — the chain between "source code" and "artifact you run" can be compromised at any step.
 
           ## The three concepts
-            
+
           ### Provenance
-          - is simply a record of where something came from and how it was built. 
-          - Like a certificate of origin on a product. 
+          - is simply a record of where something came from and how it was built.
+          - Like a certificate of origin on a product.
           - For a GitHub Actions build it answers: which repo, which commit, which workflow, which runner, at what time produced this artifact.
 
           ### Attestation
-          - is a signed statement asserting that provenance is true. 
-          - The signature proves the statement was made by a specific identity (in this case, GitHub's own OIDC identity for the Actions runner) and hasn't been tampered with since. 
+          - is a signed statement asserting that provenance is true.
+          - The signature proves the statement was made by a specific identity (in this case, GitHub's own OIDC identity for the Actions runner) and hasn't been tampered with since.
           - Without the signature it's just a text file anyone could fake.
 
           ### SLSA
-          - (Supply-chain Levels for Software Artifacts, pronounced "salsa") is a security framework that defines levels of trustworthiness for how software is built. 
+          - (Supply-chain Levels for Software Artifacts, pronounced "salsa") is a security framework that defines levels of trustworthiness for how software is built.
           - Provenance attestations are what gets you to SLSA Level 2 and above.
 
           ## HOW IT WORKS
@@ -920,7 +920,7 @@ cheats:
           2. Signs that metadata using the runner's OIDC token, which is a short-lived cryptographic identity GitHub issues specifically for that job
           3. Publishes the signed attestation to GitHub's Sigstore transparency log — a public, append-only, tamper-evident ledger
 
-          The result is a publicly verifiable record that says: 
+          The result is a publicly verifiable record that says:
 
           > "This specific binary was produced by this specific workflow at this specific commit, and GitHub's infrastructure signed this statement."
 
@@ -971,9 +971,9 @@ cheats:
           ## HOW IT RELATES TO SBOM: TRUE AND PROVENANCE: FALSE IN DOCKERFILES?
 
           - You already have `sbom: true` in your Docker build steps
-             — that generates a Software Bill of Materials, which is a manifest of every package and dependency inside the image. 
+             — that generates a Software Bill of Materials, which is a manifest of every package and dependency inside the image.
              - It's related but different: SBOM tells you what's in the artifact, provenance tells you how it was built.
-          - The `provenance: false` flag in Dockerfiles is the Docker-specific provenance flag (OCI image provenance), which you may have disabled because it was causing issues with some registries. 
+          - The `provenance: false` flag in Dockerfiles is the Docker-specific provenance flag (OCI image provenance), which you may have disabled because it was causing issues with some registries.
             - That's separate from `actions/attest-build-provenance`, which works at the GitHub level rather than the Docker level.
 
 commands:

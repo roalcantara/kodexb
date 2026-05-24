@@ -114,7 +114,7 @@ bookmarks:
           - Can be time-consuming, as it requires developers to write tests before writing the code
           - May not be suitable for small or simple projects where the cost of implementing BDD outweighs the benefits
           - Requires a strong understanding of testing techniques and best practices
-          - Can be challenging to implement in organizations that are not used to working in this way.    
+          - Can be challenging to implement in organizations that are not used to working in this way.
   https://chapterthree.com/blog/how-to-write-an-effective-bug-report-issue-or-ticket:
     desc: How to Write an Effective Bug Report, Issue, or Ticket
     tags: [agile, tracking]

@@ -340,7 +340,7 @@ cheats:
     tags: [ py, range ]
     notes:
       - md: |
-          
+
           ## Python uses range function for loops, which generates a sequence.
 
           ### Notice that 5 is not included in the output.

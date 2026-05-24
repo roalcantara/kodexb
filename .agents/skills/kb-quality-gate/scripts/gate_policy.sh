@@ -21,7 +21,7 @@ fi
 SUPPRESSION_RX='^\+[^+].*(//[[:space:]]*biome-ignore|/\*.*biome-ignore|biome-ignore-all|@ts-expect-error|@ts-ignore|eslint-disable)'
 
 collect_diff() {
-  # Working tree vs HEAD and staged vs HEAD (pre-commit).
+  # Working tree vs HEAD and staged vs HEAD (HK pre-commit and quality gate).
   git diff --no-color HEAD -- src/ tools/ electrobun.config.ts 2>/dev/null || true
   git diff --cached --no-color -- src/ tools/ electrobun.config.ts 2>/dev/null || true
 }

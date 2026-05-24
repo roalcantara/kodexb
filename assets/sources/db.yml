@@ -391,8 +391,8 @@ bookmarks:
 
           EdgeQL is to SQL what TypeScript is to JavaScript — **same power**, but **structure and types are built in from the start**, not added on top.
 
-          **Core ideas:** 
-            - Queries return **shaped objects**, not flat rows. 
+          **Core ideas:**
+            - Queries return **shaped objects**, not flat rows.
             - You navigate relationships with `.` like you would in code.
 
           ```edgeql

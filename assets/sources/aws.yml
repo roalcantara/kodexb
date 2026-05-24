@@ -697,7 +697,7 @@ bookmarks:
           ## KEY BENEFITS
 
           - **Built-in observability:**
-             
+
             - Structured logging, distributed tracing, and custom metrics with minimal configuration and zero infrastructure overhead.
 
           - **Progressive Enhancement:**
@@ -705,7 +705,7 @@ bookmarks:
             - Choose the utilities that best suit your needs. Adopt one, a few, or all industry practices progressively.
 
           - **Accelerated development:**
-            
+
             - Event parsing, validation, batch processing, and idempotency patterns reduce boilerplate code significantly.
 
           - **Multi-Language Support:**
@@ -1035,7 +1035,7 @@ bookmarks:
       - md: | #markdown
           # FLOCI SERVICES OVERVIEW
 
-          - Floci emulates 34 AWS services on a single port (`4566`). 
+          - Floci emulates 34 AWS services on a single port (`4566`).
           - All services use the real AWS wire protocol, your existing AWS CLI commands and SDK clients work without modification.
 
           ## SERVICE MATRIX
@@ -1134,7 +1134,7 @@ bookmarks:
           export AWS_ENDPOINT_URL=http://localhost:4566
           export AWS_DEFAULT_REGION=us-east-1
           export AWS_ACCESS_KEY_ID=test
-          export AWS_SECRET_ACCESS_KEY=test          
+          export AWS_SECRET_ACCESS_KEY=test
           ```
 
           ## Step 3 — Verify the Setup
@@ -1195,7 +1195,7 @@ bookmarks:
               ```
 
           - GO:
-              
+
               ```go
               cfg, _ := config.LoadDefaultConfig(context.TODO(),
                   config.WithRegion("us-east-1"),
@@ -1416,7 +1416,7 @@ bookmarks:
       - md: | #markdown
           # SNS
 
-          - **Protocol:** Query (XML) and JSON 1.0 (both supported) 
+          - **Protocol:** Query (XML) and JSON 1.0 (both supported)
           - **Endpoint:** `POST http://localhost:4566/`
 
           ## SUPPORTED ACTIONS
@@ -1478,11 +1478,11 @@ bookmarks:
 
           ## SNS → SQS Fan-Out
 
-          - Floci supports real SNS → SQS fan-out. 
+          - Floci supports real SNS → SQS fan-out.
           - When you publish to a topic, all SQS-subscribed queues receive the message immediately.
 
-          - **Supported subscription protocols:** 
-            - `sqs` delivers to a Floci SQS queue 
+          - **Supported subscription protocols:**
+            - `sqs` delivers to a Floci SQS queue
             - `lambda` invokes a Floci Lambda function
             - `http` / `https` posts to an HTTP endpoint
   https://floci.io/floci/services/s3:
@@ -1926,9 +1926,9 @@ bookmarks:
 
           ## HOT-RELOADING VIA REACTIVE S3 SYNC
 
-          - Floci supports an automatic hot-reloading mechanism when functions are deployed via S3. 
+          - Floci supports an automatic hot-reloading mechanism when functions are deployed via S3.
           - This follows the standard AWS behavior where S3 and Lambda interact, but is optimized for a seamless local development experience.
-          - When a Lambda function is created using an S3 bucket and key, Floci maintains a link between the function and its source object. 
+          - When a Lambda function is created using an S3 bucket and key, Floci maintains a link between the function and its source object.
           - Any subsequent update to that S3 object (e.g., via `s3:PutObject`) automatically triggers a reactive synchronization:
 
               1.  **Detection**: Floci detects the S3 update via an internal event system.
@@ -1967,16 +1967,16 @@ bookmarks:
           >
           > Reserved concurrency is enforced: invocations beyond the reserved value return `TooManyRequestsException` (HTTP 429).
           >
-          > Functions without a reserved value share a **per-region** pool 
+          > Functions without a reserved value share a **per-region** pool
           >
-          >   — AWS Lambda's "account-level" limit is in fact a per-account-per-region quota, and Floci mirrors that by partitioning counters on the ARN's region segment. 
-          >   - The pool size (default 1000) is configurable via `floci.services.lambda.region-concurrency-limit` and applies independently to each region. 
-          >   - `PutFunctionConcurrency` validates that the requested value leaves at least `floci.services.lambda.unreserved-concurrency-min` (default 100) available for unreserved functions in that region. 
+          >   — AWS Lambda's "account-level" limit is in fact a per-account-per-region quota, and Floci mirrors that by partitioning counters on the ARN's region segment.
+          >   - The pool size (default 1000) is configurable via `floci.services.lambda.region-concurrency-limit` and applies independently to each region.
+          >   - `PutFunctionConcurrency` validates that the requested value leaves at least `floci.services.lambda.unreserved-concurrency-min` (default 100) available for unreserved functions in that region.
           >   - `PutProvisionedConcurrencyConfig` and related provisioned-concurrency operations remain unimplemented.
           >
-          > Reducing or clearing a function's reserved value does not kill invocations that are already in flight 
+          > Reducing or clearing a function's reserved value does not kill invocations that are already in flight
           >
-          >   — this matches AWS, which applies changes only to new invocations. 
+          >   — this matches AWS, which applies changes only to new invocations.
           >   - As a consequence, during the drain window `Σreserved-inflight + unreserved-inflight` can briefly exceed `region-concurrency-limit`.
 
           ### FUNCTION URLS
@@ -2118,7 +2118,7 @@ bookmarks:
 
           > 💡 **ENFORCEMENT STATUS**
           >
-          >   - The configured `MaximumConcurrency` is persisted and returned on the wire, but the SQS poller does not yet cap concurrent invocations at this value (the poller today serializes invocations per ESM to one at a time regardless). 
+          >   - The configured `MaximumConcurrency` is persisted and returned on the wire, but the SQS poller does not yet cap concurrent invocations at this value (the poller today serializes invocations per ESM to one at a time regardless).
           >   - Real parallel dispatch capped by `MaximumConcurrency` is tracked as a follow-up.
 
           ## SUPPORTED RUNTIMES
@@ -2397,7 +2397,7 @@ bookmarks:
           #### INTEGRATIONS
 
           | Operation | Description |
-          |----|----|          
+          |----|----|
           | `CreateIntegration` | Create an integration |
           | `GetIntegration` | Get an integration |
           | `GetIntegrations` | Get integrations |
@@ -3227,10 +3227,10 @@ bookmarks:
 
           ## IAM ENFORCEMENT MODE
 
-          - By default Floci accepts any credentials without enforcing IAM policies — all requests are allowed through regardless of what policies are attached to the calling identity. 
+          - By default Floci accepts any credentials without enforcing IAM policies — all requests are allowed through regardless of what policies are attached to the calling identity.
           - This preserves backward compatibility and keeps the default setup frictionless.
 
-          - Setting `enforcement-enabled: true` activates the policy evaluator as a JAX-RS request filter. 
+          - Setting `enforcement-enabled: true` activates the policy evaluator as a JAX-RS request filter.
           - Every inbound request is then evaluated against the identity-based policies of the calling IAM user or assumed role before it reaches the service handler.
 
           ### ENABLE ENFORCEMENT
@@ -3302,9 +3302,9 @@ bookmarks:
 
           ### ASSUMED ROLES
 
-          - When a caller uses `sts:AssumeRole` the returned session credentials are registered internally. 
-          - Subsequent requests signed with those session credentials are evaluated against: 
-             1. The **role's** attached and inline policies. 
+          - When a caller uses `sts:AssumeRole` the returned session credentials are registered internally.
+          - Subsequent requests signed with those session credentials are evaluated against:
+             1. The **role's** attached and inline policies.
              2. The **session policy** (if provided during `AssumeRole`), acting as an intersection filter.
 
           ### EXAMPLE — minimal enforcement setup
@@ -3417,8 +3417,8 @@ bookmarks:
 
           Floci manages real Valkey/Redis Docker containers and proxies TCP connections to them. This means any Redis client works — including IAM authentication.
 
-          - **Protocol:** Query (XML) for management API + Redis RESP protocol for data plane 
-          - **Management Endpoint:** `POST http://localhost:4566/` 
+          - **Protocol:** Query (XML) for management API + Redis RESP protocol for data plane
+          - **Management Endpoint:** `POST http://localhost:4566/`
           - **Data Endpoint:** `localhost:<proxy-port>` (TCP)
 
           ## SUPPORTED MANAGEMENT ACTIONS
@@ -3448,7 +3448,7 @@ bookmarks:
 
           ### DOCKER COMPOSE
 
-          - ElastiCache requires the Docker socket and port range exposure. 
+          - ElastiCache requires the Docker socket and port range exposure.
           - For private registry authentication and other Docker settings see [Docker Configuration](https://floci.io/floci/configuration/docker).
 
           ```dockercompose
@@ -3497,7 +3497,7 @@ bookmarks:
 
           ### IAM AUTHENTICATION
 
-          - Floci supports ElastiCache IAM auth token validation. 
+          - Floci supports ElastiCache IAM auth token validation.
           - Create a user with access strings and validate tokens the same way real ElastiCache RBAC works.
 
           ```sh
@@ -3521,8 +3521,8 @@ bookmarks:
 
           Floci manages real PostgreSQL, MySQL, and MariaDB Docker containers and proxies TCP connections to them, including IAM authentication support.
 
-          - **Protocol:** Query (XML) for management API + PostgreSQL / MySQL wire protocol for data plane 
-          - **Management Endpoint:** `POST http://localhost:4566/` 
+          - **Protocol:** Query (XML) for management API + PostgreSQL / MySQL wire protocol for data plane
+          - **Management Endpoint:** `POST http://localhost:4566/`
           - **Data Endpoint:** `localhost:<proxy-port>` (TCP)
 
           ## SUPPORTED MANAGEMENT ACTIONS
@@ -3635,7 +3635,7 @@ bookmarks:
 
           Floci emulates Amazon MSK by orchestrating **Redpanda** containers. This provides high compatibility with the Kafka API while maintaining a low footprint.
 
-          - **Protocol:** REST-JSON 
+          - **Protocol:** REST-JSON
           - **Endpoint:** `http://localhost:4566/`
 
           ## SUPPORTED ACTIONS
@@ -3705,7 +3705,7 @@ bookmarks:
 
           Floci emulates the AWS Glue Data Catalog, allowing you to manage metadata for your Data Lake locally.
 
-          - **Protocol:** JSON 1.1 
+          - **Protocol:** JSON 1.1
           - **Endpoint:** `http://localhost:4566/`
 
           ## SUPPORTED ACTIONS
@@ -3742,7 +3742,7 @@ bookmarks:
 
           ## INTEGRATION WITH ATHENA
 
-          - The Glue Data Catalog is automatically used by **Athena** to resolve table names to S3 locations and formats. 
+          - The Glue Data Catalog is automatically used by **Athena** to resolve table names to S3 locations and formats.
           - When you define a table in Glue, Athena will know how to query the underlying S3 objects.
 
           ## EXAMPLE
@@ -3987,7 +3987,7 @@ bookmarks:
               - `State=DISABLED` schedules and schedules outside their `StartDate`/`EndDate` window are skipped.
               - The dispatcher ticks every `floci.services.scheduler.tick-interval-seconds` (default `10`).
 
-          - Supported target types: 
+          - Supported target types:
               - `SQS`
               - `Lambda`
               - `SNS`
@@ -4682,26 +4682,26 @@ bookmarks:
 
           ## EMULATION BEHAVIOR
 
-          - **REAL OCI REGISTRY BACKING.** 
-             - A single shared `registry:2` container per Floci instance serves all repositories. 
+          - **REAL OCI REGISTRY BACKING.**
+             - A single shared `registry:2` container per Floci instance serves all repositories.
              - The container is started lazily on the first ECR API call and reused across Floci restarts (`keep-running-on-shutdown: true` by default), so pushed image bytes survive restarts.
-          - **LOOPBACK URI SCHEME.** 
-             - Repository URIs follow `<account>.dkr.ecr.<region>.localhost:<registryPort>/<repoName>`. 
-             - RFC 6761 reserves `*.localhost` to resolve to the loopback address, and the docker daemon auto-trusts loopback as an insecure registry, so **no daemon configuration changes are required** — `docker push` and `docker pull` work out of the box. 
+          - **LOOPBACK URI SCHEME.**
+             - Repository URIs follow `<account>.dkr.ecr.<region>.localhost:<registryPort>/<repoName>`.
+             - RFC 6761 reserves `*.localhost` to resolve to the loopback address, and the docker daemon auto-trusts loopback as an insecure registry, so **no daemon configuration changes are required** — `docker push` and `docker pull` work out of the box.
              - A `path` URI style fallback (`localhost:<port>/<account>/<region>/<repo>`) is available via `floci.services.ecr.uri-style: path` for environments where `*.localhost` resolution misbehaves.
-          - **AUTHORIZATION.** 
-             - `GetAuthorizationToken` returns `Base64("AWS:floci")` plus a proxy endpoint. 
+          - **AUTHORIZATION.**
+             - `GetAuthorizationToken` returns `Base64("AWS:floci")` plus a proxy endpoint.
              - The backing `registry:2` runs without auth, so any `aws ecr get-login-password | docker login` succeeds.
-          - **MANIFEST FORMAT NEGOTIATION.** 
-             - `BatchGetImage` forwards the caller's `acceptedMediaTypes` as the upstream `Accept` header. 
+          - **MANIFEST FORMAT NEGOTIATION.**
+             - `BatchGetImage` forwards the caller's `acceptedMediaTypes` as the upstream `Accept` header.
              - Modern OCI manifests (`application/vnd.oci.image.manifest.v1+json`) and Docker v2 schema 2 are both supported.
-          - **CROSS-ACCOUNT / CROSS-REGION ISOLATION.** 
+          - **CROSS-ACCOUNT / CROSS-REGION ISOLATION.**
              - Internally the registry namespaces repositories as `<account>/<region>/<repoName>`, so the same repository name in different accounts or regions cannot collide.
-          - **RECONCILE ON FIRST START.** 
-             - When the registry container starts, Floci queries `GET /v2/_catalog` and recreates `Repository` metadata entries for any namespaces present in the registry but missing from local storage. 
+          - **RECONCILE ON FIRST START.**
+             - When the registry container starts, Floci queries `GET /v2/_catalog` and recreates `Repository` metadata entries for any namespaces present in the registry but missing from local storage.
              - This means image bytes are never orphaned across restarts.
-          - **LAMBDA INTEGRATION.** 
-             - Image-backed Lambda functions (`PackageType=Image`) reference the same loopback `repositoryUri`. 
+          - **LAMBDA INTEGRATION.**
+             - Image-backed Lambda functions (`PackageType=Image`) reference the same loopback `repositoryUri`.
              - Floci's Lambda runner rewrites real-AWS-shaped `<account>.dkr.ecr.<region>.amazonaws.com/...` URIs to the loopback registry at pull time, so CDK's `DockerImageFunction` (which generates AWS-shaped URIs in CloudFormation templates) works without any user-side rewriting.
 
           ## CONFIGURATION
@@ -4736,7 +4736,7 @@ bookmarks:
 
           ### DOCKER COMPOSE PORT MAPPING
 
-          - The ECR registry sidecar container binds its host port directly — do **not** add `5100-5199` to the floci service's `ports` in `docker-compose.yml`. 
+          - The ECR registry sidecar container binds its host port directly — do **not** add `5100-5199` to the floci service's `ports` in `docker-compose.yml`.
           - Adding that range pre-allocates those ports on the floci container and prevents the sidecar from binding them:
 
               ```dockercompose
@@ -4849,9 +4849,9 @@ bookmarks:
               });
               ```
 
-          - `cdk bootstrap` creates the asset ECR repository (`cdk-hnb659fds-container-assets-…`) via Floci's CloudFormation provisioner; 
-          - `cdk deploy` runs `docker build` + `docker push` against the emulated registry; 
-          - `aws lambda invoke` then pulls the image from the loopback registry and runs the handler. 
+          - `cdk bootstrap` creates the asset ECR repository (`cdk-hnb659fds-container-assets-…`) via Floci's CloudFormation provisioner;
+          - `cdk deploy` runs `docker build` + `docker push` against the emulated registry;
+          - `aws lambda invoke` then pulls the image from the loopback registry and runs the handler.
           - See [`compatibility-tests/compat-cdk`](https://github.com/floci-io/floci/tree/main/compatibility-tests/compat-cdk) for a working end-to-end example.
 
           ## NOT IMPLEMENTED
@@ -4867,24 +4867,24 @@ bookmarks:
 
           ## TROUBLESHOOTING
 
-          - **`FUNCTION.TIMEDOUT` when invoking image-backed Lambdas on native Linux Docker.** 
-            - Lambda containers reach Floci's Runtime API server via the docker bridge gateway. 
-            - On `Ubuntu` / `Pop!_OS` / `Debian` with UFW enabled, the default `INPUT DROP` policy blocks this path. 
+          - **`FUNCTION.TIMEDOUT` when invoking image-backed Lambdas on native Linux Docker.**
+            - Lambda containers reach Floci's Runtime API server via the docker bridge gateway.
+            - On `Ubuntu` / `Pop!_OS` / `Debian` with UFW enabled, the default `INPUT DROP` policy blocks this path.
             - See [Quick Start → Lambda on native Linux Docker](https://floci.io/floci/getting-started/quick-start/#lambda-on-native-linux-docker-ufw) for the one-line `ufw allow in on docker0` fix.
 
-          - **`docker login` FAILS WITH TLS ERRORS.** 
-            - Floci's emulated registry serves plain HTTP. 
-            - Docker auto-trusts loopback addresses (`127.0.0.1`, `*.localhost`) as insecure registries, so this should not normally happen. 
-            - If your URIs end up pointing somewhere non-loopback (e.g. you set `FLOCI_HOSTNAME=floci` for Docker Compose), 
+          - **`docker login` FAILS WITH TLS ERRORS.**
+            - Floci's emulated registry serves plain HTTP.
+            - Docker auto-trusts loopback addresses (`127.0.0.1`, `*.localhost`) as insecure registries, so this should not normally happen.
+            - If your URIs end up pointing somewhere non-loopback (e.g. you set `FLOCI_HOSTNAME=floci` for Docker Compose),
               - Add the hostname to the daemon's `insecure-registries` array in `/etc/docker/daemon.json`.
 
-          - **DISK NOT RECLAIMED AFTER DELETING IMAGES.** 
-            - `BatchDeleteImage` removes manifests but blobs remain on disk until garbage collection runs. 
-            - Trigger it with `curl -X POST http://localhost:4566/_floci/ecr/gc`. 
-            - The endpoint runs `registry garbage-collect` inside the backing container and returns the reclaimed blob list. 
+          - **DISK NOT RECLAIMED AFTER DELETING IMAGES.**
+            - `BatchDeleteImage` removes manifests but blobs remain on disk until garbage collection runs.
+            - Trigger it with `curl -X POST http://localhost:4566/_floci/ecr/gc`.
+            - The endpoint runs `registry garbage-collect` inside the backing container and returns the reclaimed blob list.
             - The operation is serialized — ECR API calls block for its duration (typically a few seconds).
 
-          - **`*.localhos1t` DOES NOT RESOLVE TO LOOPBACK ON THIS PLATFORM.** 
+          - **`*.localhos1t` DOES NOT RESOLVE TO LOOPBACK ON THIS PLATFORM.**
             - Set `floci.services.ecr.uri-style: path` to fall back to `localhost:<port>/<account>/<region>/<repo>` URIs.
   https://floci.io/floci/services/eks:
     desc: Floci emulates AWS EKS — Elastic Kubernetes Service.
@@ -4916,15 +4916,15 @@ bookmarks:
 
           ### MOCK MODE (`mock: true`)
 
-          - Cluster metadata is stored in-process. 
-          - No Docker containers are started. 
-          - The cluster transitions directly to `ACTIVE` on creation. 
+          - Cluster metadata is stored in-process.
+          - No Docker containers are started.
+          - The cluster transitions directly to `ACTIVE` on creation.
           - Use this in CI or whenever you only need the EKS API shape, not a real Kubernetes API server.
 
           ### REAL MODE (`mock: false`, default)
 
-          - Floci starts a **k3s** (`rancher/k3s`) container for each cluster. 
-          - The k3s API server is exposed on a host port from the configured range (`6500-6599`). 
+          - Floci starts a **k3s** (`rancher/k3s`) container for each cluster.
+          - The k3s API server is exposed on a host port from the configured range (`6500-6599`).
           - Once `/readyz` responds, the cluster transitions to `ACTIVE` and the CA certificate is extracted from the kubeconfig.
 
           > 💡 **DOCKER SOCKET REQUIRED**
@@ -4946,7 +4946,7 @@ bookmarks:
 
           > 💡 **NO PORT MAPPING NEEDED FOR K3s PORTS**
           >
-          >   - k3s containers bind their API server port (6500-6599) directly on the host via Docker — no `ports:` entry is required in `docker-compose.yml`. 
+          >   - k3s containers bind their API server port (6500-6599) directly on the host via Docker — no `ports:` entry is required in `docker-compose.yml`.
           >   - See [Ports Reference](https://floci.io/floci/configuration/ports/#ports-65006599-eks-real-mode) for the full explanation.
 
           ## CONFIGURATION
@@ -5097,21 +5097,21 @@ bookmarks:
 
           ### MOCK MODE (`mock: true`)
 
-          - Domain metadata is stored in-process. 
-          - No Docker containers are started. 
-          - Domains appear `Created: true` and `Processing: false` immediately. 
+          - Domain metadata is stored in-process.
+          - No Docker containers are started.
+          - Domains appear `Created: true` and `Processing: false` immediately.
           - Use this in CI or whenever you only need the management API shape, not a real search cluster.
 
           ### REAL MODE (`mock: false`, default)
 
-          - Floci starts an **OpenSearch** (`opensearchproject/opensearch:2`) Docker container per domain. 
-          - The container is exposed on a host port from the configured range (`9400-9499`). 
+          - Floci starts an **OpenSearch** (`opensearchproject/opensearch:2`) Docker container per domain.
+          - The container is exposed on a host port from the configured range (`9400-9499`).
           - Once `/_cluster/health` returns `green` or `yellow`, the domain transitions to `Created: true` and the `Endpoint` field is populated with the container's address.
 
           > 💡 **DOCKER SOCKET REQUIRED**
           >
-          >   - Real mode starts Docker containers. 
-          >   - Mount the Docker socket and set the Docker network so containers can reach each other. 
+          >   - Real mode starts Docker containers.
+          >   - Mount the Docker socket and set the Docker network so containers can reach each other.
           >   - For private registry authentication and other Docker settings see [Docker Configuration](https://floci.io/floci/configuration/docker).
 
           ```dockercompose
@@ -5136,7 +5136,7 @@ bookmarks:
           | `DescribeDomain` | `GET /2021-01-01/opensearch/domain/{name}` | Get domain details |
           | `DescribeDomains` | `POST /2021-01-01/opensearch/domain-info` | Batch describe domains |
           | `DescribeDomainConfig` | `GET /2021-01-01/opensearch/domain/{name}/config` | Get domain configuration |
-          | `UpdateDomainConfig` | `POST /2021-01-01/opensearch/domain/{name}/config` | Update cluster config, EBS options, engine version |  
+          | `UpdateDomainConfig` | `POST /2021-01-01/opensearch/domain/{name}/config` | Update cluster config, EBS options, engine version |
           | `DeleteDomain` | `DELETE /2021-01-01/opensearch/domain/{name}` | Delete a domain |
           | `ListDomainNames` | `GET /2021-01-01/domain` | List all domains (supports `?engineType=` filter) |
 
@@ -5708,7 +5708,7 @@ bookmarks:
           >   - `modelId` is URL-decoded by JAX-RS and echoed verbatim.
           >   - Plain model ids (e.g. `anthropic.claude-3-haiku-20240307-v1:0`), inference-profile ids (e.g. `us.anthropic.claude-3-5-sonnet-20241022-v2:0`), and full ARNs containing slashes (e.g. `arn:aws:bedrock:us-east-1:123456789012:inference-profile/us.anthropic.claude-3-5-sonnet-20241022-v2:0`) are all accepted.
           >
-          >   - Converse accepts `messages`, `system`, `inferenceConfig`, and `toolConfig` fields. Only `messages` is validated (non-empty array). 
+          >   - Converse accepts `messages`, `system`, `inferenceConfig`, and `toolConfig` fields. Only `messages` is validated (non-empty array).
           >   - Other fields are accepted and ignored. Tool-use round-tripping is not implemented.
           >
           >   - InvokeModel bodies are passed through as opaque bytes; the stub does not parse request payloads.

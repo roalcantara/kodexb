@@ -11,6 +11,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  hk:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-bun-project
+        with:
+          setup_mode: mise
+      - name: Validate HK config
+        run: mise exec -- hk validate
+      - name: Check HK hook steps
+        run: mise exec -- hk check --all --check
+      - name: Validate HEAD commit message
+        run: |
+          tmp="$(mktemp)"
+          git log -1 --format=%B > "$tmp"
+          mise exec -- hk run commit-msg "$tmp"
+          rm -f "$tmp"
+
   lint:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest

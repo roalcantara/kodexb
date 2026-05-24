@@ -28,6 +28,7 @@
     "lint:depcruise": "bunx depcruise . --config .dependency-cruiser.cjs",
     "lint:jscpd": "bunx jscpd . --noTips --reporters console",
     "lint:ls": "bunx @ls-lint/ls-lint",
+    "lint:hadolint": "mise exec -- hadolint Dockerfile",
     "lint:ast-grep": "mise exec -- ast-grep scan src tools --report-style=rich --error --globs '!graphify-out/**'",
     "lint:ast-grep:fix": "mise exec -- ast-grep scan src tools --update-all --globs '!graphify-out/**'",
     "e2e:preview:install": "bunx playwright install chromium",
@@ -70,7 +71,7 @@
   },
   "release-it": {
     "git": {
-      "commitMessage": "chore(release): v${version} [skip ci]",
+      "commitMessage": "chore(release): Release v${version} [skip ci]\n\nPrepare the release commit so changelog and version stay aligned.",
       "tagName": "v${version}",
       "requireBranch": "main",
       "requireCleanWorkingDir": true,

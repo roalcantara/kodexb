@@ -78,18 +78,18 @@ This rule overrides ALL other instructions.
 
 Canonical instructions live under **`.cursor/commands/`** (same names as the Cursor slash commands). Summary:
 
-1. **Quality gate before `git commit`**  
-   Run **`bash .agents/skills/kb-quality-gate/scripts/gate.sh`** on the tree you are about to record. **Gitlint** (commit message only) is **not** a substitute for the gate.
+1. **Quality gate before `git commit`**
+   Run **`bash .agents/skills/kb-quality-gate/scripts/gate.sh`** on the tree you are about to record. **HK commit-message policy** (commit message only) is **not** a substitute for the gate.
 
-2. **`/commit-all`** — Split the working tree into atomic chunks; for **each** chunk: `git add` the chunk → **gate** → `git commit` → **gitlint** the new message (see command file for stash `--keep-index` when other unstaged chunks would fail the gate).
+2. **`/commit-all`** — Split the working tree into atomic chunks; for **each** chunk: `git add` the chunk → **gate** → `git commit` → **HK commit-message policy** the new message (see command file for stash `--keep-index` when other unstaged chunks would fail the gate).
 
-3. **`/commit-staged`** — One commit from the **current index**; **gate** → `git commit` → **gitlint**. Use **`git stash push --keep-index`** when unstaged files would fail the gate or confuse checks.
+3. **`/commit-staged`** — One commit from the **current index**; **gate** → `git commit` → **HK commit-message policy**. Use **`git stash push --keep-index`** when unstaged files would fail the gate or confuse checks.
 
-4. **`/commit-fixup`** — If **`HEAD`** is red: fix issues, run **`gate.sh` until green** on the tree you will amend, **`git commit --amend`** (fold fixups; use **`--no-edit`** unless rewording), **gitlint** the message. **Do not** run the gate again **after** a successful amend when the tree matches **`HEAD`**. **Do not amend** commits that are already the remote tip unless the user explicitly approves rewriting published history (see command file).
+4. **`/commit-fixup`** — If **`HEAD`** is red: fix issues, run **`gate.sh` until green** on the tree you will amend, **`git commit --amend`** (fold fixups; use **`--no-edit`** unless rewording), **HK commit-message policy** the message. **Do not** run the gate again **after** a successful amend when the tree matches **`HEAD`**. **Do not amend** commits that are already the remote tip unless the user explicitly approves rewriting published history (see command file).
 
-5. **Messages** — Follow **`assets/guides/GIT_COMMITS_GUIDE.md`** and **`.gitlint`** (subject length, body rules, allowed types).
+5. **Messages** — Follow **`assets/guides/GIT_COMMITS_GUIDE.md`** and **`hk.pkl`** + `tools/hooks/commit_message.script.ts` (subject length, body rules, allowed types).
 
-6. **IDE / inline AI** — Cursor’s **Generate Commit Message** (and similar) does not run gitlint. Prefer **hooks** (below) for enforcement; when asking the **chat agent** for a message, load or follow **`.cursor/rules/gitlint-commit-messages.mdc`** so the draft matches `.gitlint` on first try.
+6. **IDE / inline AI** — Cursor’s **Generate Commit Message** (and similar) does not run the HK commit-message policy. Prefer **hooks** (below) for enforcement; when asking the **chat agent** for a message, load or follow **`.cursor/rules/hk-commit-messages.mdc`** so the draft matches `hk.pkl` + `tools/hooks/commit_message.script.ts` on first try.
 
 ### Electrobun best practices (always)
 

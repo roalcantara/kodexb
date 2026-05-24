@@ -1137,7 +1137,7 @@ cheats:
       - md: |
           ## Using `Ctrl+w` to delete the previous block of text
 
-          - Allows you to use `Ctrl+X, e` to open the current command in your configured text `$EDITOR` (like Neovim). 
+          - Allows you to use `Ctrl+X, e` to open the current command in your configured text `$EDITOR` (like Neovim).
           - Ideal for fixing complex, multi-line long commands errors using familiar editor keybindings.
       - zsh: | #zsh
           # .zshrc
@@ -1704,7 +1704,7 @@ commands:
     tags: [ conditional, pattern_matching, shell ]
     notes:
       - sh: |
-          
+
           # Basic case statement with single pattern
 
           fruit="apple"
@@ -1747,14 +1747,14 @@ commands:
 
           esac
       - md: |
-          
+
           ## Output
 
           Selected fruit is an apple
 
           It's a feline
       - sh: |
-          
+
           # Case-insensitive matching using :l modifier
 
           COLOR="RED"
@@ -1775,7 +1775,7 @@ commands:
 
           esac
       - md: |
-          
+
           ## Output
 
           Color is red (matched case-insensitive)

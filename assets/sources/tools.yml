@@ -8,7 +8,7 @@ bookmarks:
       - md: |
           # Crawl4AI - Turn ANY Website into LLM Knowledge in SECONDS
 
-          - How to efficiently scrape website data to create knowledge bases for Retrieval-Augmented Generation (RAG) systems using an open-source tool called Crawl4AI. 
+          - How to efficiently scrape website data to create knowledge bases for Retrieval-Augmented Generation (RAG) systems using an open-source tool called Crawl4AI.
           - It is a superior approach for helping LLMs (like the Pydantic AI framework) become experts on specific, up-to-date documentation.
           - Highly recommended for its speed, intuitive setup, and memory efficiency.
 
@@ -22,24 +22,24 @@ bookmarks:
 
           ## WORKFLOW
 
-            - Basic Crawl: 
+            - Basic Crawl:
               - After a simple pip install and setup extract markdown from any single URL with minimal code.
 
-            - Scalable Crawling (Sitemaps): 
+            - Scalable Crawling (Sitemaps):
               - Using sitemap.xml to automatically discover all pages on a site rather than manually listing URLs.
 
-            - Parallel/Batch Processing: 
-              - To handle large sites efficiently, the tool supports parallel crawling. 
+            - Parallel/Batch Processing:
+              - To handle large sites efficiently, the tool supports parallel crawling.
               - By setting a batch size (e.g., 10 pages at a time), it maintains a low memory footprint while significantly increasing speed.
 
           ## ETHICS
 
-          - The author emphasizes that scraping should be ethical. 
+          - The author emphasizes that scraping should be ethical.
           - Always check a website's robots.txt file before crawling to ensure you are following the site's rules and restrictions.
 
           ## RAG INTEGRATION
 
-          - **Pydantic AI** 
+          - **Pydantic AI**
              - An expert agent built using this workflow to provide accurate answers from documentation
              - It is integrated with a vector database (PGVector with Supabase) to store the knowledge base.
   https://youtu.be/b4dqb_KV-_M:
@@ -85,14 +85,14 @@ bookmarks:
 
               # 2. remove special characters
               wget -qO- "http://filmsbykris.com/scripts" | sed -e 's/&[^;]*;/ /g'
-              ``` 
+              ```
 
           ### 3. recode
 
           - **PURPOSE:** Converts HTML special characters (like &) into readable text.
           - **USAGE:** Good for fixing encoding issues, though it may require specific configuration (e.g., avoiding forced ASCII conversion) depending on the environment.
           - **EXAMPLE:**
-            
+
             ```bash
             # 0. Install recode in linux/debian
             sudo apt-get install recode
@@ -122,13 +122,13 @@ bookmarks:
             # 0. Install w3m
             sudo apt install w3m
             brew install w3m
-            
+
             # 1. display the HTML of a webpage
             w3m -dump "http://filmsbykris.com/scripts"
 
             # 2. display the HTML of a webpage and save it to a file
             w3m -dump "http://filmsbykris.com/scripts" > output.
-            
+
             # 3. Using along with wget
             wget -qO- "http://filmsbykris.com/scripts" | w3m -dump -T text/html
             ```
@@ -138,12 +138,12 @@ bookmarks:
           - **PURPOSE:** Converts HTML into plain text with a specific formatting style.
           - **USAGE:** A good, straightforward alternative to full browsers, though its formatting style (like using extra brackets) may vary.
           - **EXAMPLE:**
-            
+
               ```sh
               # 0. Install html2text
               sudo apt install html2text
               brew install html2text
-              
+
               # 1. convert the HTML of a webpage to plain text
               html2text "http://filmsbykris.com/scripts"
 
@@ -180,14 +180,14 @@ bookmarks:
 
           ## HACKS
       - md: | #markdown
-          0. Bind `Ctrl+w` to delete the previous block of text 
+          0. Bind `Ctrl+w` to delete the previous block of text
             - Deletes the previous block of text, preceding the current cursor position.
             - **EXAMPLES**
                 - **EXAMPLE 0:** Setup `Ctrl+w` to delete the previous block of text
 
                   ```zsh
                   # .zshrc
-                  
+
                   # Bind `Ctrl+w` to delete the previous block of text
                   bindkey '^W' delete-backward-word
                   ```
@@ -202,10 +202,10 @@ bookmarks:
               - It is useful for deleting complex, multi-line long commands errors.
       - md: | #markdown
           1. Binding `Ctrl+X, e` to `edit-command-line` widget to edit the current command buffer in $EDITOR:
-            - Allows you to use `Ctrl+X, e` to open the current command in your configured text `$EDITOR` (like Neovim). 
+            - Allows you to use `Ctrl+X, e` to open the current command in your configured text `$EDITOR` (like Neovim).
             - Ideal for fixing complex, multi-line long commands errors using familiar editor keybindings.
             - **EXAMPLE:**
-                
+
                 - **EXAMPLE 0:** Setup `Ctrl+X, e` to `edit-command-line` widget to edit the current command buffer in $EDITOR
 
                     ```zsh
@@ -216,9 +216,9 @@ bookmarks:
                     zle -N edit-command-line
                     bindkey '^Xe' edit-command-line
                     ```
-              
+
                 - **EXAMPLE 1:** Use `Ctrl+X, e` to edit the current command buffer in $EDITOR
-                
+
                   ```zsh
                   # 1. Given a complex, multi-line long command error at the end of the first line
                   $ transcriber transcribe
@@ -234,7 +234,7 @@ bookmarks:
                   ```
       - md: | #markdown
           2. Using `Ctrl + _` to undo the last action:
-            - Using `Ctrl + _` triggers an undo action. 
+            - Using `Ctrl + _` triggers an undo action.
             - This is necessary when accidental commands (like deleting too much text with `Ctrl + w`) cause mistakes in your input buffer.
       - md: | #markdown
           3. Binding `Space` to `magic-space` widget to expand the previous command: (instead of just `sudo !!`):
@@ -250,19 +250,19 @@ bookmarks:
                 ```
 
            - `magic-space` widget can also expand commands by index:
-               
+
                 ```zsh
                 $ !5001 <Space>
                 ```
 
             - `magic-space` widget can also expand arguments from a previous command:
-               
+
                 ```zsh
                 $ npm !* <Space>
                 ```
 
             - `magic-space` widget can also allow to search the last command that contains a specific string:
-                
+
                 ```zsh
                 $ !?docker? <Space>
                 ```
@@ -270,10 +270,10 @@ bookmarks:
           4. Using `chpwd` hook to execute specific commands whenever you change directories:
             - It is useful for auto-loading Nix environments, Python virtual environments, or specific Node.js versions based on project files.
             - **EXAMPLES:**
-            
+
                 ```zsh
                 # .zshrc
-                
+
                 # 1. List the contents of the current directory whenever you change directories
                 chpwd() {
                   ls
@@ -368,7 +368,7 @@ bookmarks:
                 ```
       - md: | #markdown
           6. Using `Global Aliases` to drop into a larger command:
-            - Unlike standard aliases, these can be used anywhere in a command string. 
+            - Unlike standard aliases, these can be used anywhere in a command string.
             - They are perfect for common snippets like piping output to `/dev/null` using a short alias like `NE`.
             - **EXAMPLE:**
 
@@ -406,10 +406,10 @@ bookmarks:
                 ```
       - md: | #markdown
           7. Using `zmv` to rename/move files in bulk:
-            - An advanced file renaming/moving tool. 
+            - An advanced file renaming/moving tool.
             - It uses pattern matching and capture groups, enabling batch operations that are much faster and safer than writing custom loops.
             - **EXAMPLES:**
-                
+
                 - **EXAMPLE 0:** Setup `zmv` plugin
 
                   ```zsh
@@ -419,8 +419,8 @@ bookmarks:
                   autoload -Uz zmv
                   ```
 
-               - **EXAMPLE 1:** Use `zmv` to rename a bunch of .log files to .txt  
-                
+               - **EXAMPLE 1:** Use `zmv` to rename a bunch of .log files to .txt
+
                   ```zsh
                   $ ls
                   # => file1.log file2.log file3.log
@@ -434,7 +434,7 @@ bookmarks:
                   ```
 
                - **EXAMPLE 2:** Use `zmv -W` to rename a bunch of .log files to .txt
-                
+
                   ```zsh
                   $ ls
                   # => file1.log file2.log file3.log
@@ -447,8 +447,8 @@ bookmarks:
                   # => file1.txt file2.txt file3.txt
                   ```
 
-               - **EXAMPLE 3:** Use `zmv -n -W` to DRY RUN the renaming of a bunch of .log files to .txt  
-                
+               - **EXAMPLE 3:** Use `zmv -n -W` to DRY RUN the renaming of a bunch of .log files to .txt
+
                   ```zsh
                   $ ls
                   # => file1.log file2.log file3.log
@@ -462,8 +462,8 @@ bookmarks:
                   # => file1.log file2.log file3.log
                   ```
 
-               - **EXAMPLE 4:** Use `zmv -i -W` to interactively rename a bunch of .log files to .txt  
-                
+               - **EXAMPLE 4:** Use `zmv -i -W` to interactively rename a bunch of .log files to .txt
+
                   ```zsh
                   $ ls
                   # => file1.log file2.log file3.log
@@ -479,8 +479,8 @@ bookmarks:
                   # => file1.txt file2.log file3.txt
                   ```
       - md: | #markdown
-          8. Using `Named Directories` to bookmark folders: 
-            - Allows you to bookmark folders (e.g., `~YT` for YouTube projects). 
+          8. Using `Named Directories` to bookmark folders:
+            - Allows you to bookmark folders (e.g., `~YT` for YouTube projects).
             - This simplifies navigation and referencing long directory paths in CLI commands.
             - **EXAMPLES:**
 
@@ -488,7 +488,7 @@ bookmarks:
 
                   ```zsh
                   # .zshrc
-                  
+
                   # Bookmark the YouTube folder
                   hash -d kb='~/Work/bun/kb'
                   hash -d dots='~/Work/dots'
@@ -512,7 +512,7 @@ bookmarks:
                   $ open ~dots
                   ```
       - md: | #markdown
-          9. Using `Custom Widgets` to perform actions on the command line buffer: 
+          9. Using `Custom Widgets` to perform actions on the command line buffer:
             - These are essentially functions that perform actions on the command line buffer
             - They can automate complex tasks, such as clearing history while keeping the current buffer or copying text to the system clipboard.
             - **EXAMPLES:**
@@ -521,7 +521,7 @@ bookmarks:
 
                   ```zsh
                   # .zshrc
-                
+
                   # `CTRL+X, L` runs `clear-screen` the Custom Widget to clear the zshell history keeping the current command buffer
                   clear-keep-buffer() {
                     zle clear-screen
@@ -538,8 +538,8 @@ bookmarks:
                   bindkey '^Xc' copy-command-buffer
                   ```
       - md: | #markdown
-          10. Using `Hotkey Insertions` to insert text into the command line buffer: 
-            - Allows you to bind key combinations to insert text into the buffer. 
+          10. Using `Hotkey Insertions` to insert text into the command line buffer:
+            - Allows you to bind key combinations to insert text into the buffer.
             - This is a massive time-saver for repetitive command boilerplate, such as inserting a `git commit -m ""` string with the cursor pre-positioned inside the quotes.
             - **EXAMPLES:**
 
@@ -549,7 +549,7 @@ bookmarks:
 
                   # Bind `CTRL+X, gc` to insert a `git commit -m ""` string with the cursor pre-positioned inside the quotes
                   bindkey -s '^Xgc' 'git commit -m ""\C-b'              # `\C-b` (CTRL+B) moves the cursor back one position
-                  ```   
+                  ```
   https://youtu.be/VGtxARciwDM:
     desc: 10 useful CLI apps I'm guessing you've not heard of
     tags: [ cli ]
@@ -584,8 +584,8 @@ bookmarks:
 
           This video features a collection of 11 terminal CLI tools that enhance productivity and workflow. Here is a summary of the tools showcased:
 
-          1. **Atuin**: 
-            
+          1. **Atuin**:
+
             - A robust tool for managing shell command history.
             - Highly recommended for its searchable features and cross-machine syncing capabilities.
 
@@ -594,37 +594,37 @@ bookmarks:
             - An NPM-based tool for managing Git work trees directly in the terminal.
             - Extremely useful for Git-heavy workflows.
 
-          3. **Superfile**: 
+          3. **Superfile**:
             - A terminal-based file manager.
             - Appreciates its ease of use and clean UI, noting it as a passionate open-source project.
 
-          4. **Pastel**: 
+          4. **Pastel**:
             - A versatile command-line tool for color manipulation (hex, RGB, HSL, gradients).
             - Described as a "no-brainer" for terminal users working with colors.
 
-          5. **Taproom**: 
+          5. **Taproom**:
             - A GUI-style Homebrew package manager for the terminal.
             - It allows users to search, update, and manage packages visually.
 
-          6. **Na'vi**: 
+          6. **Na'vi**:
             - An interactive cheat sheet tool that lets you execute one-liners.
             - Uses it to quickly run predefined scripts and commands.
 
-          7. **Tealdeer**: 
+          7. **Tealdeer**:
             - A community-driven alternative to man pages.
             - Quick, concise usage examples of complex commands.
 
-          8. **Cargo-seek**: 
+          8. **Cargo-seek**:
             - A manager for Cargo crates.
             - Helps in browsing, installing, and managing Rust packages directly from the terminal.
 
-          9. **Stormy**: 
+          9. **Stormy**:
             - Simple terminal-based weather utility that pulls data via an API.
 
-          10. **Hygg**: 
+          10. **Hygg**:
             - Tool for reading PDFs and e-books in the terminal with support for Vim-like motions.
 
-          11. **Smassh**: 
+          11. **Smassh**:
             - Terminal-based typing speed test tool, described as a "monkeytype clone" for your command line.
   https://npmx.dev/package/branchlet:
     desc: Manages Git work trees directly in the terminal - extremely useful for Git-heavy workflows
@@ -1036,7 +1036,7 @@ bookmarks:
       - md: |
           ## Overview
 
-          You can define tasks in mise.toml files or as standalone shell scripts. 
+          You can define tasks in mise.toml files or as standalone shell scripts.
 
           ### FEATURES/EXAMPLES:
 

@@ -943,14 +943,14 @@ bookmarks:
           # skills.sh
 
           - The ecosystem anchor.
-          - Unmatched discoverability and community pull, backed by the most credible sponsor. 
-          - The CLI is solid but thin — it's a great install tool, not a full lifecycle manager. 
+          - Unmatched discoverability and community pull, backed by the most credible sponsor.
+          - The CLI is solid but thin — it's a great install tool, not a full lifecycle manager.
           - The absence of local audit, offline operation, and team sync must be addressed.
 
           ### Purpose
 
-          - The canonical **registry and CLI** for the open agent skills ecosystem. 
-          - It serves two functions: 
+          - The canonical **registry and CLI** for the open agent skills ecosystem.
+          - It serves two functions:
             - Leaderboard/directory tracking 91k+ installs across 246+ skills from orgs like Anthropic, Microsoft, Vercel, Google, etc;
             - Reference `skills` CLI used to install, update, list, remove, search, and scaffold skills into agent projects.
 
@@ -1118,10 +1118,10 @@ bookmarks:
 
           ### PURPOSE
 
-          - A **skills lifecycle manager** focused on keeping skills in sync across all your AI agents and machines from a single source of truth. 
-          - Where skills.sh installs skills imperatively, skillshare takes a declarative approach: 
+          - A **skills lifecycle manager** focused on keeping skills in sync across all your AI agents and machines from a single source of truth.
+          - Where skills.sh installs skills imperatively, skillshare takes a declarative approach:
             - skills live in `~/.config/skillshare/skills/`
-            - `skillshare sync` symlinks (or copies) them into every detected agent directory. 
+            - `skillshare sync` symlinks (or copies) them into every detected agent directory.
             - Covers team sharing, security auditing, cross-machine sync via git, bidirectional collection, and a full web dashboard.
 
           ### FEATURES
@@ -1152,22 +1152,22 @@ bookmarks:
 
           ### PROS
 
-          - **One source of truth** — the central differentiator. 
+          - **One source of truth** — the central differentiator.
              - Skills are stored once, synced everywhere.
              - This solves the real pain of editing a skill in Claude and forgetting to update Cursor.
-          - **Bidirectional collect** 
+          - **Bidirectional collect**
              - `skillshare collect` pulls skills created inside agent directories back to source; no other tool does this.
           - **Built-in security audit**
-             — local scan for prompt injection, credential theft, and destructive commands. 
+             — local scan for prompt injection, credential theft, and destructive commands.
              - Critical threats block install.
              - This is the only tool with a local audit capability.
-          - **Web dashboard** 
+          - **Web dashboard**
              — visual management is unique; the others are CLI-only.
           - **Cross-machine sync**
              — git-backed config means a new machine is one `git clone` + `sync` away from full state.
-          - **No runtime dependency** — single Go binary. 
+          - **No runtime dependency** — single Go binary.
              - Works in environments without Node/npm.
-          - **No telemetry** 
+          - **No telemetry**
              — explicit design choice, respects privacy.
           - **Most releases**
              — 98 releases (vs 17 for skills.sh, 9 for openskills) signals active development.
@@ -1186,7 +1186,7 @@ bookmarks:
 
           ### HIGHLIGHTS
 
-          - **`skillshare collect` + `skillshare audit`** together are unique in the ecosystem. 
+          - **`skillshare collect` + `skillshare audit`** together are unique in the ecosystem.
           - The ability to pull a skill you created inside Claude Code back to your canonical source, then security-scan it before sharing with the team, is a workflow no other tool supports end-to-end.
           - The embedded Go-binary web dashboard is also a standout — visual skill management with dry-run sync controls, without installing anything extra.
 

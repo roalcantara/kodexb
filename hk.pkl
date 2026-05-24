@@ -1,0 +1,94 @@
+amends "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Builtins.pkl"
+
+// Repo-wide ignores. Bare directory names match recursively; patterns are
+// unioned with any per-step `.exclude` overrides below.
+exclude = List(
+    "graphify-out",   // generated knowledge-graph artifacts (>500 KB JSON/HTML)
+    "tmp",            // local report scratch (tmp/reports/...)
+    "build",          // electrobun bundle output
+    "dist",           // distribution outputs
+)
+// Large-asset carve-out: keep `check_added_large_files` active everywhere else
+// (so we still catch accidental binary commits), but allow tracked SVG/PNG/AVIF
+// design references that intentionally exceed the 500 KB default.
+local largeFilesCheck = (Builtins.check_added_large_files) {
+    exclude = List(
+        "assets/**",
+        "tools/**"
+    )
+}
+
+// Text-hygiene writers skip files that are technically text but live as
+// hand-rolled or generated assets. Rewriting them is wasteful (multi-MB
+// diffs in `assets/images/*.svg`), risks pre-commit stash conflicts when
+// the user is editing wireframes, and was the original source of the
+// parallel-write race that clobbered EOF newlines on >1 MB SVGs.
+local textWriterExclude = List(
+    "**/*.svg",
+    "**/*.min.js",
+    "**/*.min.css",
+    "bun.lock",
+    "bun.lockb",
+    "package-lock.json",
+    "yarn.lock",
+    "pnpm-lock.yaml"
+)
+
+// Belt-and-braces: even with SVGs excluded, chain the three writers with
+// `depends` so hk serializes their writes on the remaining text files.
+// Cost is ≈1s on this tree; benefit is single-pass `--fix` convergence.
+local endOfFileFixer = (Builtins.newlines) {
+    exclude = textWriterExclude
+}
+local mixedLineEnding = (Builtins.mixed_line_ending) {
+    exclude = textWriterExclude
+    depends = List("end-of-file-fixer")
+}
+local trailingWhitespace = (Builtins.trailing_whitespace) {
+    exclude = textWriterExclude
+    depends = List("mixed_line_ending")
+}
+
+// Shared hygiene step set. Both `pre-commit` and `check` consume the same
+// definitions so local commits and CI converge on the same truth. The
+// hooks differ only in `fix`/`stash`/scope (see the `hooks` block below)
+// and in `pre-commit`'s additional `no_commit_to_branch` guard.
+local hygieneSteps = new Mapping<String, Step> {
+    ["end-of-file-fixer"] = endOfFileFixer
+    ["mixed_line_ending"] = mixedLineEnding
+    ["trailing_whitespace"] = trailingWhitespace
+    ["check_merge_conflict"] = Builtins.check_merge_conflict
+    ["detect_private_key"] = Builtins.detect_private_key
+    ["check_case_conflict"] = Builtins.check_case_conflict
+    ["check_added_large_files"] = largeFilesCheck
+}
+
+// Forces hk to run only check commands (read-only) instead of fix commands.
+// https://hk.jdx.dev/configuration.html#check
+local preCommitSteps = (hygieneSteps) {
+    ["no_commit_to_branch"] = Builtins.no_commit_to_branch
+}
+
+local checkSteps = hygieneSteps
+
+// Custom steps must use `new Mapping<String, Step>` — inline `steps = { ... }`
+// in hooks omits HK's `_type` field and makes `hk validate` fail.
+local commitMsgSteps = new Mapping<String, Step> {
+    ["commit-message-policy"] {
+        check = "bun tools/hooks/commit_message.script.ts {{commit_msg_file}}"
+    }
+}
+
+local prePushSteps = new Mapping<String, Step> {
+    ["quality-gate"] {
+        check = "bash .agents/skills/app-quality-gate/scripts/gate.sh"
+    }
+}
+
+hooks {
+    ["pre-commit"] { fix = true; stash = "git"; steps = preCommitSteps }
+    ["commit-msg"] { steps = commitMsgSteps }
+    ["pre-push"] { steps = prePushSteps }
+    ["check"] { steps = checkSteps }
+}

@@ -1,10 +1,10 @@
 ---
-description: Gate until green before amend; gitlint after; no post-amend gate
+description: Gate until green before amend; HK commit-message policy after; no post-amend gate
 ---
 
 # commit-fixup
 
-**Repair the last local commit** when the quality gate fails on **`HEAD`** (or you forgot to run it before committing). **Fix** issues, run **`gate.sh` until it passes** on the tree you are about to record, **stage** fixups, **`git commit --amend`**, then **gitlint** the message. Do **not** run the quality gate again **after** a successful amend when the working tree matches the new commit (that duplicate run does not change anything you can act on).
+**Repair the last local commit** when the quality gate fails on **`HEAD`** (or you forgot to run it before committing). **Fix** issues, run **`gate.sh` until it passes** on the tree you are about to record, **stage** fixups, **`git commit --amend`**, then **HK commit-message policy** the message. Do **not** run the quality gate again **after** a successful amend when the working tree matches the new commit (that duplicate run does not change anything you can act on).
 
 ## When to use
 
@@ -39,18 +39,18 @@ description: Gate until green before amend; gitlint after; no post-amend gate
    git commit --amend --no-edit
    ```
 
-   If the message must change, amend with a new full message that still passes gitlint.
+   If the message must change, amend with a new full message that still passes HK commit-message policy.
 
-6. **Gitlint** the amended message:
+6. **HK commit-message policy** the amended message:
 
    ```bash
    _f=$(mktemp)
    git log -1 --format=%B > "$_f"
-   pre-commit run gitlint --hook-stage commit-msg --commit-msg-filename "$_f"
+   mise exec -- hk run commit-msg "$_f"
    rm -f "$_f"
    ```
 
-   On failure: `git commit --amend` with a corrected message until gitlint passes.
+   On failure: `git commit --amend` with a corrected message until HK passes.
 
 ## Done
 
@@ -58,4 +58,4 @@ Show `git log -1` (oneline + stat if useful) and `git status -sb`. Remind the us
 
 ## Note on `fixup!` commits
 
-This command uses **`git commit --amend`**, not a separate `fixup!` commit. `.gitlint` may ignore `fixup!` / `squash!` titles by design; here we keep **one** amended commit with a normal Conventional subject.
+This command uses **`git commit --amend`**, not a separate `fixup!` commit. HK commit-message policy may ignore `fixup!` / `squash!` titles by design; here we keep **one** amended commit with a normal Conventional subject.

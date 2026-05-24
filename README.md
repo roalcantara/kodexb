@@ -108,9 +108,9 @@ agent skill wiring, UI smoke checks, and maintenance workflows:
     - [dependency-cruiser][15] — dependency rules ([`.dependency-cruiser.cjs`](.dependency-cruiser.cjs))
     - [ls-lint][16] — file and folder naming convention enforcement ([`.ls-lint.yml`](.ls-lint.yml))
     - [jscpd][17] — copy-paste / duplication detection
-  - [pre-commit][7] — git hooks
+  - [hk][7] — git hook manager
   - [ast-grep][18] — code structural search, lint, rewriting at large scale
-  - [gitlint][8] — commit message validation
+  - HK commit-message policy — `bun tools/hooks/commit_message.script.ts`
 
 
 ## CI / CD
@@ -161,8 +161,8 @@ The project is available as open source under the terms of the [MIT][1] [License
 [4]: https://github.com/RichardLitt/standard-readme 'Standard Readme'
 [5]: https://git-scm.com 'Distributed version control system'
 [6]: https://mise.jdx.dev 'Manages dev tools like node, python, cmake, terraform, and hundreds more'
-[7]: https://pre-commit.com 'Framework for managing and maintaining multi-language pre-commit hooks'
-[8]: https://jorisroovers.com/gitlint 'Git commit message linter'
+[7]: https://github.com/brpylko/hk 'Git hook manager for monorepos'
+[8]: tools/hooks/commit_message.script.ts 'HK commit-message policy script'
 [9]: https://conventionalcommits.org 'Conventional Commits'
 [10]: https://typescriptlang.org
 [11]: https://bun.sh

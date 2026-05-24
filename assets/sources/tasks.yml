@@ -72,7 +72,7 @@ tasks:
 
           ## Onde DuckDB faria sentido no kodexb:
 
-          A parte interessante seria se você quiser fazer análise sobre sua própria base de conhecimento. Perguntas do tipo: 
+          A parte interessante seria se você quiser fazer análise sobre sua própria base de conhecimento. Perguntas do tipo:
             - "quais tags eu mais uso junto?"
             - "quais tópicos eu adicionei mais nos últimos 3 meses?"
             - "existe overlap semântico entre esses dois grupos de snippets?"
@@ -159,4 +159,3 @@ tasks:
 
           ## Priorização para uma v1 de analytics
           O que priorizaria para uma v1 de analytics: **decay (itens velhos)** + **co-ocorrência de tags**. São as duas queries com maior utilidade prática e menor complexidade de implementação. E revelam coisas sobre a base que você não consegue ver olhando item por item.
-

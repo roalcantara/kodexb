@@ -38,7 +38,7 @@ For day-to-day commit format, prefer **`assets/docs/guides/GIT_COMMITS_GUIDE.md`
 
    1. Separate the subject from the body with a blank line;
    2. Limit the subject line to a maximum of 50 characters;
-   3. Use the present tense; capitalize the subject line’s first letter (matches `GIT_COMMITS_GUIDE.md` and gitlint in this repo);
+   3. Use the present tense; capitalize the subject line’s first letter (matches `GIT_COMMITS_GUIDE.md` and the HK commit-message policy in this repo);
    4. Avoid ending the subject line with a period;
    5. Use the imperative mood in the subject line;
    6. Wrap the body at a maximum of 72 characters per line;

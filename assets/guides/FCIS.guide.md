@@ -255,7 +255,7 @@ it('returns a new task without mutating the original', () => {
 
 ---
 
-### Pre-Commit Checklist
+### Pre-Commit Checklist (HK)
 
 - [ ] No async/await in `apps/kb/src/core/`
 - [ ] No imports from `apps/kb/src/shell/` in `apps/kb/src/core/`
