@@ -1,5 +1,3 @@
-/// <reference lib="dom" />
-
 import type { RpcKnowledge } from '@shared/rpc'
 import { render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'

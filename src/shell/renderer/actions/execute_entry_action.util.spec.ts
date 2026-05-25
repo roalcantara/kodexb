@@ -1,5 +1,3 @@
-/// <reference lib="dom" />
-
 import { beforeAll, beforeEach, describe, expect, it } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'

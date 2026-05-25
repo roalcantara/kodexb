@@ -1,5 +1,3 @@
-/// <reference lib="dom" />
-
 import { describe, expect, it } from 'bun:test'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import { useState } from 'react'

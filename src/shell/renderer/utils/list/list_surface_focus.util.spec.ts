@@ -1,5 +1,3 @@
-/// <reference lib="dom" />
-
 import { afterEach, describe, expect, it } from 'bun:test'
 
 import { blurDescendantsKeepingRoot, focusListSurface } from './list_surface_focus.util'

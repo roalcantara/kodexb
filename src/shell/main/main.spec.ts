@@ -1,5 +1,3 @@
-/// <reference lib="dom" />
-
 import { describe, expect, it } from 'bun:test'
 
 describe('main bootstrap', () => {

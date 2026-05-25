@@ -1,10 +1,8 @@
-/// <reference lib="dom" />
-
 import { describe, expect, it } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
-import { factoryFor } from '@testing'
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { factoryFor } from '../../../../__tests__/factories/factories.builder'
 
 import { DetailPanel } from './detail_panel.component'
 

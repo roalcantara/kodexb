@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import { describe, expect, it } from 'bun:test'
 import { openDatabase } from '@shell/app/db/client'
 import { rebuildFts, upsert } from '@shell/app/db/entry.repository'

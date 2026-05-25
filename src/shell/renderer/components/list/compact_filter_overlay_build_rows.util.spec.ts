@@ -1,6 +1,5 @@
-/// <reference lib="dom" />
 import { describe, expect, it } from 'bun:test'
-import { sampleListStats } from '@testing/fixtures/list_stats.fixture'
+import { sampleListStats } from '../../../../__tests__/fixtures/list_stats.fixture'
 
 import { buildFilterRows, groupFilterRowsIntoSections } from './compact_filter_overlay_build_rows.util'
 

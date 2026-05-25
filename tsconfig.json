@@ -6,9 +6,9 @@
     "moduleDetection": "force",
     "jsx": "react-jsx",
     "allowJs": true,
-    "types": ["bun", "@types/bun"],
     // Bundler mode
     "moduleResolution": "bundler",
+    "types": ["bun", "@types/bun", "react", "react-dom"],
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,

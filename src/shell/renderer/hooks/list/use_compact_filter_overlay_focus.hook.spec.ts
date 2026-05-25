@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import { describe, expect, it } from 'bun:test'
 import { renderHook } from '@testing-library/react'
 import { useRef } from 'react'

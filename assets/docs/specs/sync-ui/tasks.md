@@ -202,7 +202,7 @@ import { SyncToast } from '../shared/sync_toast.component'
 ### sync_progress.component.spec.tsx
 
 ```tsx
-/// <reference lib="dom" />
+
 import { expect, test } from 'bun:test'
 import { render, screen } from '@testing-library/react'
 import { SyncProgress } from './sync_progress.component'
@@ -223,7 +223,7 @@ test('shows processing file label', () => {
 ### sync_toast.component.spec.tsx
 
 ```tsx
-/// <reference lib="dom" />
+
 import { expect, mock, test } from 'bun:test'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { SyncToast } from './sync_toast.component'

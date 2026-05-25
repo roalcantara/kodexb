@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import { describe, expect, it, mock } from 'bun:test'
 import { sampleListStats } from '@testing/fixtures/list_stats.fixture'
 import { renderHook } from '@testing-library/react'

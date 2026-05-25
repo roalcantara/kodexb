@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import { afterEach, describe, expect, it } from 'bun:test'
 
 import { compactFilterOptionNodes, scrollCompactFilterHighlightIntoView } from './compact_filter_overlay_keyboard.util'

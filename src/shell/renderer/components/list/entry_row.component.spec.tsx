@@ -1,5 +1,3 @@
-/// <reference lib="dom" />
-
 import { afterEach, describe, expect, it } from 'bun:test'
 import type { RpcKnowledge, RpcListEntry } from '@shared/rpc'
 import { factoryFor } from '@testing'

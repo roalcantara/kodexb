@@ -1,5 +1,3 @@
-/// <reference lib="dom" />
-
 import '@happy-dom/global-registrator'
 
 import { describe, expect, it, mock } from 'bun:test'

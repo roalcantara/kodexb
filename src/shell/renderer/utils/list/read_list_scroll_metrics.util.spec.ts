@@ -1,5 +1,3 @@
-/// <reference lib="dom" />
-
 import { describe, expect, it } from 'bun:test'
 
 import { DEFAULT_LIST_ROW_HEIGHT_PX } from '../../constants/ui.const'

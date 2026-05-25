@@ -1,5 +1,3 @@
-/// <reference lib="dom" />
-
 import { afterEach, describe, expect, it, mock } from 'bun:test'
 
 import { reportConfigLoadErrorAndExit } from './error.helper'

@@ -1,14 +1,13 @@
-/// <reference lib="dom" />
 import { describe, expect, it } from 'bun:test'
 import type { ListStats, TaskView } from '@shared/rpc'
-import { sampleListStats } from '@testing/fixtures/list_stats.fixture'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
+import { sampleListStats } from '../../../../__tests__/fixtures/list_stats.fixture'
 import { CompactFilterOverlay } from './compact_filter_overlay.component'
 import type { EntryTypeOption } from './filter_dropdown.component'
 
 const noop = () => undefined
+const stats = sampleListStats()
 
 function renderOverlay(
   props: Partial<{
@@ -32,8 +31,6 @@ const LIST_SVG_RE = /list\.svg/
 const HASH_AI_OPTION_RE = /^#ai/
 const ALL_ENTRIES_OPTION_RE = /^All entries/
 const BOOKMARK_OPTION_RE = /^Bookmark,/
-
-const stats = sampleListStats()
 
 describe('CompactFilterOverlay', () => {
   describe('with search input', () => {

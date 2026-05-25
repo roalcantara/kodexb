@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import { describe, expect, it } from 'bun:test'
 
 import { computeScrollTopAdjustmentForVisibility } from './ensure_option_row_visible_in_scroll_root.util'

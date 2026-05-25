@@ -1,4 +1,3 @@
-/// <reference lib="dom" />
 import { describe, expect, it } from 'bun:test'
 
 import { filterRowIconBasename } from './filter_row_icon_basename.util'

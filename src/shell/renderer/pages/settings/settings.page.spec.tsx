@@ -1,5 +1,3 @@
-/// <reference lib="dom" />
-
 import { afterEach, describe, expect, it, mock } from 'bun:test'
 import type { RpcDbStats, RpcGetConfigPayload } from '@shared/rpc'
 import { render, screen, waitFor } from '@testing-library/react'
