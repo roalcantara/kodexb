@@ -16,13 +16,13 @@ You are doing research and documentation only. Do not implement code, add
 dependencies, change runtime behavior, or make final priority decisions.
 
 Required context:
-- Read `.agents/skills/kb-context/SKILL.md`.
-- Read `.agents/skills/kb-rpc/SKILL.md`.
+- Read `.agents/skills/app-context/SKILL.md`.
+- Read `.agents/skills/app-rpc/SKILL.md`.
 - Read `.agents/skills/electrobun-best-practices/SKILL.md`.
 - Read `.cursor/electrobun-skill-routing.md`.
 - Use `docs-writer`.
 - Use `subagent-driven-development`.
-- Use `elysia` or `elysiajs` as an upstream reference only; kb rules override
+- Use `elysia` or `elysiajs` as an upstream reference only; app rules override
   generic Elysia scaffolding advice.
 - Read:
   - `assets/docs/specs/elysia-electrobun-capability-inventory/requirements.md`
@@ -35,10 +35,10 @@ Workflow:
 2. Use subagents for bounded research slices:
    - one Elysia documentation inventory subagent;
    - one Electrobun documentation inventory subagent;
-   - one local kb usage comparison subagent.
+   - one local app usage comparison subagent.
 3. Merge all findings into `inventory.yml`.
 4. Keep every capability at `priority: undecided`.
-5. Set `current_usage.status: used` only when local repo evidence proves kb
+5. Set `current_usage.status: used` only when local repo evidence proves app
    fully uses the capability.
 6. Render `DONE` as `✔` in `report.md` when `current_usage.status` is `used`;
    leave it empty for all other statuses.
@@ -55,8 +55,8 @@ Research sources:
 - Electrobun docs: `https://blackboard.sh/electrobun/docs/`
 
 Local comparison sources:
-- `.agents/skills/kb-context/SKILL.md`
-- `.agents/skills/kb-rpc/SKILL.md`
+- `.agents/skills/app-context/SKILL.md`
+- `.agents/skills/app-rpc/SKILL.md`
 - `.agents/skills/electrobun-best-practices/SKILL.md`
 - `.cursor/electrobun-skill-routing.md`
 - `assets/guides/SKILLS.yml`

@@ -9,7 +9,7 @@ The goal is to make `assets/guides/SKILLS.yml` safe by construction: one
 ## Handoff prompt
 
 ```markdown
-You are working in `/Users/roalcantara/Work/bun/kb`.
+You are working in `/Users/roalcantara/Work/bun/app`.
 
 Goal: Refactor `assets/guides/SKILLS.yml` to the final no-contradiction skill
 registry schema. The new schema must eliminate contradictory states by using:
@@ -22,7 +22,7 @@ The implementation must remove the old skill-level fields `source`, `install`,
 
 Before editing:
 
-1. Read `.agents/skills/kb-context/SKILL.md`.
+1. Read `.agents/skills/app-context/SKILL.md`.
 2. Because this touches `mise.toml`, use the `mise-tasks` skill if available.
    Specifically, use its task-argument guidance and the official mise
    [`usage` field documentation](https://mise.jdx.dev/tasks/task-arguments.html).
@@ -40,24 +40,24 @@ Before editing:
 ## Final schema concepts
 
 Use `location` to describe where the repo expects the skill to live. This uses
-the `skills` CLI's project/global vocabulary and adds `owned` for kb-authored
+the `skills` CLI's project/global vocabulary and adds `owned` for app-authored
 skills. Do not split source scope and install method into separate YAML fields.
 
-| `location` | Meaning |
-| --- | --- |
-| `owned` | Project-authored skill committed under `.agents/skills/<skill-id>`. |
-| `project` | External skill managed by the Skills CLI, recorded in `skills-lock.json`, and restored into `.agents/skills/<skill-id>`. |
-| `global` | Global skill used from `$HOME/.agents/skills/<skill-id>` and not materialized in the project. |
+| `location` | Meaning                                                                                                                  |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `owned`    | Project-authored skill committed under `.agents/skills/<skill-id>`.                                                      |
+| `project`  | External skill managed by the Skills CLI, recorded in `skills-lock.json`, and restored into `.agents/skills/<skill-id>`. |
+| `global`   | Global skill used from `$HOME/.agents/skills/<skill-id>` and not materialized in the project.                            |
 
 Use `policy.type` to describe how agents treat the skill:
 
-| `policy.type` | Meaning |
-| --- | --- |
-| `required` | Standing project skill that must be loaded for its domain. |
-| `routed` | Skill selected by generated routing tables. |
-| `optional` | Optional companion loaded manually for specific situations. |
-| `reference` | Upstream reference only. |
-| `blocked` | Do not use directly in kb. |
+| `policy.type` | Meaning                                                     |
+| ------------- | ----------------------------------------------------------- |
+| `required`    | Standing project skill that must be loaded for its domain.  |
+| `routed`      | Skill selected by generated routing tables.                 |
+| `optional`    | Optional companion loaded manually for specific situations. |
+| `reference`   | Upstream reference only.                                    |
+| `blocked`     | Do not use directly in app.                                 |
 
 Do not reintroduce separate skill-level `source`, `install`, `link`,
 `decision`, or `load` fields. `location` and `policy.type` are the two axes.
@@ -70,16 +70,16 @@ Required owned skill:
 
 ```yaml
 skills:
-  kb-context:
+  app-context:
     location: owned
     rationale: Mandatory project orientation. It defines FCIS, allowed RPC shape, guide routing, and the project quality workflow.
     policy:
       type: required
       usage:
-        summary: Always load at the start of any kb task.
+        summary: Always load at the start of any app task.
         when:
           load:
-            - any kb task
+            - any app task
           avoid: []
 ```
 
@@ -89,7 +89,7 @@ Routed project skill:
 skills:
   electrobun-rpc:
     location: project
-    rationale: Use for native Electrobun IPC only. App-level kb RPC remains owned by kb-rpc.
+    rationale: Use for native Electrobun IPC only. App-level app RPC remains owned by app-rpc.
     policy:
       type: routed
       usage:
@@ -132,7 +132,7 @@ skills:
             - runtime feature implementation with no task changes
       surfaces:
         claude_optional: when editing mise.toml or task orchestration
-        kb_context_optional: Editing mise.toml, task dependencies, or multi-step project workflows.
+        app_context_optional: Editing mise.toml, task dependencies, or multi-step project workflows.
 ```
 
 Reference-only global skill:
@@ -141,7 +141,7 @@ Reference-only global skill:
 skills:
   bash-scripting:
     location: global
-    rationale: Useful for shell-heavy work, but kb should still prefer mise tasks over ad-hoc standalone scripts.
+    rationale: Useful for shell-heavy work, but app should still prefer mise tasks over ad-hoc standalone scripts.
     policy:
       type: reference
       usage:
@@ -160,12 +160,12 @@ Blocked skill:
 skills:
   stitch-loop:
     location: global
-    rationale: Its autonomous website iteration workflow does not match kb's desktop app and gated implementation process.
+    rationale: Its autonomous website iteration workflow does not match app's desktop app and gated implementation process.
     policy:
       type: blocked
       reason: incompatible_workflow
       avoid:
-        - any kb implementation task
+        - any app implementation task
 ```
 
 Blocked skill covered by project guides:
@@ -174,16 +174,16 @@ Blocked skill covered by project guides:
 skills:
   functional-core-imperative-shell:
     location: global
-    rationale: kb already has FCIS as a project architecture rule, and the global skill's mandatory comments do not match current source conventions.
+    rationale: app already has FCIS as a project architecture rule, and the global skill's mandatory comments do not match current source conventions.
     policy:
       type: blocked
       reason: covered_by_project_guides
       redirect_to:
         - assets/guides/FCIS.guide.md
-        - .agents/skills/kb-context/SKILL.md
+        - .agents/skills/app-context/SKILL.md
       avoid:
         - direct adoption
-        - mandatory comments that do not match kb conventions
+        - mandatory comments that do not match app conventions
 ```
 
 ## Electrobun routes to preserve
@@ -191,21 +191,21 @@ skills:
 Preserve the existing Electrobun route semantics by moving/keeping these rows
 under `skills.<skill-id>.policy.routing.electrobun`:
 
-| Skill | Order | Triggers | Extra note |
-| --- | ---: | --- | --- |
-| `electrobun-plugin-guide` | 10 | `Unsure where to start`, `which electrobun skill`, `overview` |  |
-| `electrobun-config` | 20 | `electrobun.config.ts`, `build.views`, `copy assets` |  |
-| `electrobun-core` | 30 | `Main process`, `BrowserWindow`, `BrowserView`, `lifecycle`, `menus`, `tray` |  |
-| `electrobun-rpc` | 40 | `Typed RPC`, `Electroview.defineRPC`, `schema bun/webview`, `rpc.client` | `native IPC transport only` |
-| `electrobun-dev` | 50 | `electrobun dev`, `watch/hot`, `devtools`, `dev cycle` |  |
-| `electrobun-build` | 60 | `electrobun build`, `CI`, `signing`, `distribution failures` |  |
-| `electrobun-platform` | 70 | `Linux/Windows/macOS differences`, `CEF`, `multi-platform CI` |  |
-| `electrobun-sdlc` | 80 | `End-to-end feature pipeline`, `multi-agent SDLC` |  |
-| `electrobun-workflow` | 90 | `What stage next`, `lifecycle between dev/build/ship` |  |
-| `electrobun-kitchen-sink` | 100 | `Kitchen sink`, `defineTest`, `upstream Electrobun test harness` |  |
-| `electrobun-testing` | 110 | `Electrobun's own test framework patterns`, `defineTest` |  |
-| `electrobun-webgpu` | 120 | `WebGPU`, `GpuWindow`, `WGSL` |  |
-| `electrobun-milady` | 130 | `milady-ai/milady repo PRs`, `Electrobun conventions` |  |
+| Skill                     | Order | Triggers                                                                     | Extra note                  |
+| ------------------------- | ----: | ---------------------------------------------------------------------------- | --------------------------- |
+| `electrobun-plugin-guide` |    10 | `Unsure where to start`, `which electrobun skill`, `overview`                |                             |
+| `electrobun-config`       |    20 | `electrobun.config.ts`, `build.views`, `copy assets`                         |                             |
+| `electrobun-core`         |    30 | `Main process`, `BrowserWindow`, `BrowserView`, `lifecycle`, `menus`, `tray` |                             |
+| `electrobun-rpc`          |    40 | `Typed RPC`, `Electroview.defineRPC`, `schema bun/webview`, `rpc.client`     | `native IPC transport only` |
+| `electrobun-dev`          |    50 | `electrobun dev`, `watch/hot`, `devtools`, `dev cycle`                       |                             |
+| `electrobun-build`        |    60 | `electrobun build`, `CI`, `signing`, `distribution failures`                 |                             |
+| `electrobun-platform`     |    70 | `Linux/Windows/macOS differences`, `CEF`, `multi-platform CI`                |                             |
+| `electrobun-sdlc`         |    80 | `End-to-end feature pipeline`, `multi-agent SDLC`                            |                             |
+| `electrobun-workflow`     |    90 | `What stage next`, `lifecycle between dev/build/ship`                        |                             |
+| `electrobun-kitchen-sink` |   100 | `Kitchen sink`, `defineTest`, `upstream Electrobun test harness`             |                             |
+| `electrobun-testing`      |   110 | `Electrobun's own test framework patterns`, `defineTest`                     |                             |
+| `electrobun-webgpu`       |   120 | `WebGPU`, `GpuWindow`, `WGSL`                                                |                             |
+| `electrobun-milady`       |   130 | `milady-ai/milady repo PRs`, `Electrobun conventions`                        |                             |
 
 For routes, do not store `note: project`, `note: owned`, or
 `note: global only`. Generate that status from `location`:
@@ -272,7 +272,7 @@ Replace the current skill-related mise tasks with one public task:
 
 ```toml
 [tasks.skill]
-description = "Validate, generate, install, and report kb skill registry artifacts."
+description = "Validate, generate, install, and report app skill registry artifacts."
 usage = '''
 arg "<action>" help="Skill registry action" {
   choices "validate" "sync" "install" "all" "report"
@@ -288,13 +288,13 @@ run = '''
 
 Use a positional `action` rather than multiple public task names:
 
-| Command | Expected behavior |
-| --- | --- |
-| `mise run skill validate` | Validate `assets/guides/SKILLS.yml` only. |
-| `mise run skill sync` | Validate, then rewrite generated snippets. |
-| `mise run skill install` | Validate, then restore project skills from `skills-lock.json` through the Skills CLI. |
-| `mise run skill all` | Validate, sync snippets, then restore project skills from `skills-lock.json`. |
-| `mise run skill report` | Validate and print registry counts without writing files. |
+| Command                   | Expected behavior                                                                     |
+| ------------------------- | ------------------------------------------------------------------------------------- |
+| `mise run skill validate` | Validate `assets/guides/SKILLS.yml` only.                                             |
+| `mise run skill sync`     | Validate, then rewrite generated snippets.                                            |
+| `mise run skill install`  | Validate, then restore project skills from `skills-lock.json` through the Skills CLI. |
+| `mise run skill all`      | Validate, sync snippets, then restore project skills from `skills-lock.json`.         |
+| `mise run skill report`   | Validate and print registry counts without writing files.                             |
 
 The task must use mise `usage` variables from the usage field, for example
 `${usage_action?}`, `${usage_json:-false}`, and `${usage_dry_run:-false}`. Do
@@ -316,8 +316,8 @@ The `skill sync` action must:
 - Generate optional companion snippets from skills where
   `policy.type === "optional"` and `policy.surfaces` is present.
 - Use `policy.surfaces.claude_optional` for `CLAUDE.md`.
-- Use `policy.surfaces.kb_context_optional` for
-  `.agents/skills/kb-context/SKILL.md`.
+- Use `policy.surfaces.app_context_optional` for
+  `.agents/skills/app-context/SKILL.md`.
 - Generate `.cursor/electrobun-skill-routing.md` by scanning
   `skills.*.policy.routing.electrobun`.
 - Sort Electrobun routes by `order`.
@@ -407,7 +407,7 @@ Run a Skills CLI consistency check to confirm:
 Run:
 
 ```bash
-git diff --check -- assets/guides/SKILLS.yml assets/guides/SKILLS.md mise.toml CLAUDE.md .agents/skills/kb-context/SKILL.md .cursor/electrobun-skill-routing.md assets/docs/specs/skills-normalisation/requirements.md assets/docs/specs/skills-normalisation/handoff.md
+git diff --check -- assets/guides/SKILLS.yml assets/guides/SKILLS.md mise.toml CLAUDE.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md assets/docs/specs/skills-normalisation/requirements.md assets/docs/specs/skills-normalisation/handoff.md
 ```
 
 Search to confirm:

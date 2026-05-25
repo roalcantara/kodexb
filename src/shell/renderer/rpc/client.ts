@@ -197,6 +197,14 @@ export function resizeWindow(width: number, height: number): Promise<void> {
   return rpc.api.resizeWindow.post({ width, height }).then(unwrap) as Promise<void>
 }
 
+export function getWindowPosition(): Promise<{ x: number; y: number } | null> {
+  return rpc.api.getWindowPosition.post({}).then(unwrap) as Promise<{ x: number; y: number } | null>
+}
+
+export function setWindowPosition(x: number, y: number): Promise<void> {
+  return rpc.api.setWindowPosition.post({ x, y }).then(unwrap) as Promise<void>
+}
+
 export function openExternal(url: string): Promise<void> {
   return rpc.api.openExternal.post({ url }).then(unwrap) as Promise<void>
 }

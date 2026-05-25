@@ -2,8 +2,7 @@
 title: Fishery test factories
 description: Fishery API summary and kb test factory conventions
 ---
-
-# Fishery (kb)
+<!-- markdownlint-disable-file -->
 
 [Fishery](https://github.com/thoughtbot/fishery) builds typed test objects. In
 this repo it is a **devDependency** only. Production code must not import it.

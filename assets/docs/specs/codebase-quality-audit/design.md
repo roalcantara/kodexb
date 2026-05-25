@@ -16,7 +16,7 @@ Normative plan to eliminate Biome suppressions and tighten hygiene without weake
 
 | Item                         | Value                                                                   |
 | ---------------------------- | ----------------------------------------------------------------------- |
-| Primary clone (example path) | `/Users/roalcantara/Work/bun/kb`                                        |
+| Primary clone (example path) | `/Users/roalcantara/Work/bun/app`                                       |
 | Integration branch           | Agreed with maintainers (e.g. `feat-add-stats-panel` or `chore/*`)      |
 | Inventory snapshot           | Captured at `feat-add-stats-panel` @ `3fcd6ee` (update table if re-run) |
 
@@ -43,36 +43,36 @@ All audit commits and PRs use **one** clone only—do not split the same effort 
 
 Captured from worktree at `3fcd6ee`. Markdown or skill docs that **mention** `biome-ignore` in prose (e.g. `ci-build-packaging/tasks.md`) are not source suppressions and are out of scope for R2.
 
-| Path                                                               | Line (approx) | Suppression                                | Planned resolution                                                                |
-| ------------------------------------------------------------------ | ------------- | ------------------------------------------ | --------------------------------------------------------------------------------- |
-| `electrobun.config.ts`                                             | 1             | `biome-ignore-all` useNamingConvention     | Rename keys / split config / wrappers; `biome.json` override only if R6-approved  |
-| `src/__tests__/helpers/testing.factory.ts`                         | 1             | `biome-ignore-all` noExplicitAny           | Generic Fishery types                                                             |
-| `src/__tests__/factories/factories.builder.ts`                     | 1             | `biome-ignore-all` useNamingConvention     | snake_case factory keys and exports                                               |
-| `src/core/constants/lang.const.ts`                                 | 1             | `biome-ignore-all` noExcessiveLinesPerFile | Split modules / generated data                                                    |
-| `src/shell/app/app.ts`                                             | 1             | noExcessiveLinesPerFile                    | Split `App` into cohesive modules (routes vs lifecycle vs wiring)                 |
-| `src/shell/app/db/task.repository.ts`                              | 23            | noExcessiveCognitiveComplexity             | Extract query helpers                                                             |
-| `src/shell/main/rpc/host.spec.ts`                                  | 7, 14         | useImportsFirst                            | Restructure mocks per kb-testing; if impossible, allowlist with Bun justification |
-| `src/shell/renderer/components/actions/cmdk_palette.component.tsx` | 16            | noExcessiveLinesPerFunction                | Further extract subcomponents                                                     |
-| `src/shell/renderer/components/list/list_main.component.tsx`       | 25–26         | complexity                                  | Continue splitting rendering; `noAutofocus` is resolved                           |
-| `src/shell/renderer/components/shared/sync_modal.component.tsx`    | 31, 36        | complexity, useExhaustiveDependencies      | Split modal sections; fix effect deps                                             |
-| `src/shell/renderer/hooks/list/use_cmdk_palette.hook.ts`           | 30            | noExcessiveLinesPerFunction                | Extract action builders                                                           |
-| `src/shell/renderer/hooks/list/use_cmdk_palette.hook.spec.tsx`     | 10            | useNamingConvention                        | Mirror helpers                                                                    |
-| `src/shell/renderer/hooks/list/use_list_page_shell.hook.ts`        | 18            | noExcessiveLinesPerFunction                | Split shell concerns                                                              |
-| `src/shell/renderer/hooks/list/use_list_page_stats_sync.hook.ts`   | 23            | noExcessiveLinesPerFunction                | Split stats vs sync wiring                                                        |
-| `src/shell/renderer/hooks/list/use_task_sheet.hook.ts`             | 20            | noExcessiveLinesPerFunction                | Extract sheet state machine                                                       |
-| `src/shell/renderer/hooks/list/use_view_navigation.hook.ts`        | 53            | noExcessiveCognitiveComplexity             | Table-driven routing or smaller handlers                                          |
-| `src/shell/renderer/rpc/client.spec.tsx`                           | 11, 27        | useNamingConvention                        | Mirror helpers                                                                    |
-| `tools/preview/mock_electroview.ts`                                | 57            | useNamingConvention                        | Wrapper types                                                                     |
+| Path                                                               | Line (approx) | Suppression                                | Planned resolution                                                                 |
+| ------------------------------------------------------------------ | ------------- | ------------------------------------------ | ---------------------------------------------------------------------------------- |
+| `electrobun.config.ts`                                             | 1             | `biome-ignore-all` useNamingConvention     | Rename keys / split config / wrappers; `biome.json` override only if R6-approved   |
+| `src/__tests__/helpers/testing.factory.ts`                         | 1             | `biome-ignore-all` noExplicitAny           | Generic Fishery types                                                              |
+| `src/__tests__/factories/factories.builder.ts`                     | 1             | `biome-ignore-all` useNamingConvention     | snake_case factory keys and exports                                                |
+| `src/core/constants/lang.const.ts`                                 | 1             | `biome-ignore-all` noExcessiveLinesPerFile | Split modules / generated data                                                     |
+| `src/shell/app/app.ts`                                             | 1             | noExcessiveLinesPerFile                    | Split `App` into cohesive modules (routes vs lifecycle vs wiring)                  |
+| `src/shell/app/db/task.repository.ts`                              | 23            | noExcessiveCognitiveComplexity             | Extract query helpers                                                              |
+| `src/shell/main/rpc/host.spec.ts`                                  | 7, 14         | useImportsFirst                            | Restructure mocks per app-testing; if impossible, allowlist with Bun justification |
+| `src/shell/renderer/components/actions/cmdk_palette.component.tsx` | 16            | noExcessiveLinesPerFunction                | Further extract subcomponents                                                      |
+| `src/shell/renderer/components/list/list_main.component.tsx`       | 25–26         | complexity                                 | Continue splitting rendering; `noAutofocus` is resolved                            |
+| `src/shell/renderer/components/shared/sync_modal.component.tsx`    | 31, 36        | complexity, useExhaustiveDependencies      | Split modal sections; fix effect deps                                              |
+| `src/shell/renderer/hooks/list/use_cmdk_palette.hook.ts`           | 30            | noExcessiveLinesPerFunction                | Extract action builders                                                            |
+| `src/shell/renderer/hooks/list/use_cmdk_palette.hook.spec.tsx`     | 10            | useNamingConvention                        | Mirror helpers                                                                     |
+| `src/shell/renderer/hooks/list/use_list_page_shell.hook.ts`        | 18            | noExcessiveLinesPerFunction                | Split shell concerns                                                               |
+| `src/shell/renderer/hooks/list/use_list_page_stats_sync.hook.ts`   | 23            | noExcessiveLinesPerFunction                | Split stats vs sync wiring                                                         |
+| `src/shell/renderer/hooks/list/use_task_sheet.hook.ts`             | 20            | noExcessiveLinesPerFunction                | Extract sheet state machine                                                        |
+| `src/shell/renderer/hooks/list/use_view_navigation.hook.ts`        | 53            | noExcessiveCognitiveComplexity             | Table-driven routing or smaller handlers                                           |
+| `src/shell/renderer/rpc/client.spec.tsx`                           | 11, 27        | useNamingConvention                        | Mirror helpers                                                                     |
+| `tools/preview/mock_electroview.ts`                                | 57            | useNamingConvention                        | Wrapper types                                                                      |
 
 ## VERIFICATION
 
 Per PR and at completion:
 
 ```bash
-bash .agents/skills/kb-quality-gate/scripts/gate.sh
+bash .agents/skills/app-quality-gate/scripts/gate.sh
 ```
 
-That script runs **Stage 0.5** (`scripts/gate_policy.sh`) for new inline suppressions and guard-config reminders; use `KB_GATE_APPROVED_TOOL_WEAKENING=1` only after maintainer approval (R6). See `kb-quality-gate` skill.
+That script runs **Stage 0.5** (`scripts/gate_policy.sh`) for new inline suppressions and guard-config reminders; use `GATE_APPROVED_TOOL_WEAKENING=1` only after maintainer approval (R6). See `app-quality-gate` skill.
 
 Confirm no suppressions:
 

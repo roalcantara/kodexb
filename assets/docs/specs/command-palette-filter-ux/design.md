@@ -18,7 +18,7 @@ Display labels (copy):
 | `library`   | Library     |
 | `app`       | App         |
 
-**When `selectedId` is null** (no list row): actions **shall** be only **Library** then **App**, in this order: **Sync**, **New Task**, **Quit kb**.
+**When `selectedId` is null** (no list row): actions **shall** be only **Library** then **App**, in this order: **Sync**, **New Task**, **Quit app**.
 
 When **selectedId** is non-null, vertical order **shall** be:
 
@@ -26,7 +26,7 @@ When **selectedId** is non-null, vertical order **shall** be:
 2. **Clipboard** — single action **Copy** (`id: copy`). Payload: `bookmark` and `command` copy **`entry.key`** (URL or command line); **`cheat` and `task` copy `entry.doc`** (body / notes live in `doc`). Success toast: **`'<preview>' copied to clipboard`**, where **`preview`** is the copied string trimmed **for display only** to **100** characters, then **`...`** if longer; internal **single quotes** in the preview are shown as **U+2019** so the toast string stays readable. If the copied string is **empty**, toast **`Copied to clipboard`** (neutral, no empty quoted preview). On clipboard API failure, toast **`Copy failed`** (error). **Normative implementation:** payload **shall** use `copyTextForEntry` from `src/core/domain/models/knowledges/copy_text_for_entry.util.ts`; success toast **shall** use `clipboardCopiedToastMessage` from `src/shell/renderer/utils/list/clipboard_copy_toast.util.ts` (palette **Copy** and list **⌘C** / **Ctrl+C** when not in an input — same rules).
 3. **Source** — Open in Editor.
 4. **Library** — Sync, New Task.
-5. **App** — Quit kb (always last).
+5. **App** — Quit app (always last).
 
 Arrow keys and `selectedIndex` apply **only** to real actions (headers are not listbox options).
 
@@ -101,7 +101,7 @@ Do **not** register duplicate `useEffect` listeners for ⌘K in both old cmdk ho
 | `src/shell/renderer/hooks/list/use_cmdk_palette.hook.ts`                | `use_command_palette.hook.ts`                                   |
 | `src/shell/renderer/hooks/list/use_cmdk_palette.hook.spec.tsx`          | `use_command_palette.hook.spec.tsx`                             |
 | `CmdkPalette`, `CmdkPaletteProps`, `CmdkAction`                         | `CommandPalette`, `CommandPaletteProps`, `CommandPaletteAction` |
-| CSS classes `kb-cmdk`, `kb-cmdk-*`                                      | `kb-command-palette`, `kb-command-palette-*`                    |
+| CSS classes `app-cmdk`, `app-cmdk-*`                                    | `app-command-palette`, `app-command-palette-*`                  |
 
 Update every import: `list_main.component.tsx`, `use_list_page_shell.hook.ts`, `list.css` (or extracted stylesheet), tests, and any grep hits.
 

@@ -18,9 +18,9 @@ run focused verification, run the full quality gate, and create one commit.
 
 Before touching test files, load:
 
-- `.agents/skills/kb-context/SKILL.md`
-- `.agents/skills/kb-testing/SKILL.md`
-- `.agents/skills/kb-quality-gate/SKILL.md`
+- `.agents/skills/app-context/SKILL.md`
+- `.agents/skills/app-testing/SKILL.md`
+- `.agents/skills/app-quality-gate/SKILL.md`
 - `test-driven-development` for non-trivial test rewrites
 - `ast-grep` only if authoring structural searches or rewrites
 
@@ -33,7 +33,7 @@ For every phase:
 3. Implement only that phase.
 4. Run the focused verification command listed for the phase.
 5. Update the inventory or phase ledger in this file.
-6. Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+6. Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
 7. Commit exactly that phase's files with the suggested commit command.
 8. Continue to the next phase.
 
@@ -48,23 +48,23 @@ split so the plan can be adjusted before more agent time is spent.
 
 Fill this ledger during phase 0 and update it as later phases complete.
 
-| Phase | File group | Count | Categories addressed | Exceptions | Verification |
-| --- | --- | ---: | --- | --- | --- |
-| 0 | All source specs | 127 specs: core 30, shared 4, shell/app 11, shell/main 7, shell/renderer 65, __tests__ 10 | Follow-up inventory refreshed after drift was found | n/a | `mise run test:spec-audit` green |
-| 1 | Bun API and descriptions | 69 files still import/use `test`; 49 files have no `describe`; 266 descriptions > 40 chars | Reopened: original pass did not include explicit `test()` -> `it()` rule | n/a | Pending phase 8 |
-| 2 | Readable assertions and tables | 27 files use `.toBe(true)` or `.toBe(false)` | Reopened: distinguish direct boolean results from opaque boolean expressions | Record accepted direct boolean assertions | Pending phase 8 |
-| 3 | Mocking and DI | 17 files use `mock`; 3 files use `mock.module` | Review only if touched by phase 8; do not broaden into production refactors | Record retained external seams | Pending future cleanup |
-| 4 | DB and fixtures | Recheck only if touched by phase 8 | Keep YAML fixtures only for import/sync/file-format contracts | Record retained fixture reads | Pending future cleanup |
-| 5 | Error and edge paths | Recheck only for touched units | Preserve existing behavior; add missing edge cases only when the touched API exposes them | Record n/a reasons | Pending future cleanup |
-| 6 | Renderer event semantics | 1 file uses `window.dispatchEvent`: `src/shell/renderer/hooks/list/use_window_view_nav_keys.hook.spec.tsx` | Likely intentional because the hook listens on `window`; verify and record exception | Pending explicit exception | Pending phase 8 |
-| 7 | Co-location and closure | Previous closure is stale | `test:spec-audit` covers co-location, not Better Specs style | n/a | Re-run after phase 8 |
-| 8 | Better Specs follow-up | Stale closure: `test()` conversion landed, but follow-up review still found missing subject `describe` blocks, subject-only specs without BDD situation grouping, long descriptions, and unclassified boolean matchers | Accepted: window.dispatchEvent in view_nav_keys only if wrapped under the hook subject and recorded as a production listener surface | Reopened into phase 9 |
-| 9 | BDD structure completion | 2 files restructured as BDD models; 127 specs inventoried: 49 no-describe, 73 subject-only, 5 with situations, 273 long descs, 0 boolean matcher, 11 global dispatches | Accepted: `.toBe(false)` for isUsableWorkArea is direct boolean API; placement/state specs kept as the BDD seed models | Gate green, 645 tests pass |
-| 10 | BDD context setup completion | | | Pending |
-| 11 | Factories and local builders | | | Pending |
-| 12 | Complete Better Specs audit |  |  | Pending |
-| 13 | Explicit subject convention |  |  | Pending |
-| 14 | Audit finding burn-down | Pending: close `test:spec-style` finding categories one by one: no describe, no situation, boolean matchers, long descriptions, and `test()` usage | Documentation-only findings are not complete unless every path is a named exception | Pending |
+| Phase | File group                     |                                                                                                                                                                                                                  Count | Categories addressed                                                                                                                 | Exceptions                                | Verification                     |
+| ----- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------- | -------------------------------- |
+| 0     | All source specs               |                                                                                                                              127 specs: core 30, shared 4, shell/app 11, shell/main 7, shell/renderer 65, __tests__ 10 | Follow-up inventory refreshed after drift was found                                                                                  | n/a                                       | `mise run test:spec-audit` green |
+| 1     | Bun API and descriptions       |                                                                                                                             69 files still import/use `test`; 49 files have no `describe`; 266 descriptions > 40 chars | Reopened: original pass did not include explicit `test()` -> `it()` rule                                                             | n/a                                       | Pending phase 8                  |
+| 2     | Readable assertions and tables |                                                                                                                                                                           27 files use `.toBe(true)` or `.toBe(false)` | Reopened: distinguish direct boolean results from opaque boolean expressions                                                         | Record accepted direct boolean assertions | Pending phase 8                  |
+| 3     | Mocking and DI                 |                                                                                                                                                                         17 files use `mock`; 3 files use `mock.module` | Review only if touched by phase 8; do not broaden into production refactors                                                          | Record retained external seams            | Pending future cleanup           |
+| 4     | DB and fixtures                |                                                                                                                                                                                     Recheck only if touched by phase 8 | Keep YAML fixtures only for import/sync/file-format contracts                                                                        | Record retained fixture reads             | Pending future cleanup           |
+| 5     | Error and edge paths           |                                                                                                                                                                                         Recheck only for touched units | Preserve existing behavior; add missing edge cases only when the touched API exposes them                                            | Record n/a reasons                        | Pending future cleanup           |
+| 6     | Renderer event semantics       |                                                                                                             1 file uses `window.dispatchEvent`: `src/shell/renderer/hooks/list/use_window_view_nav_keys.hook.spec.tsx` | Likely intentional because the hook listens on `window`; verify and record exception                                                 | Pending explicit exception                | Pending phase 8                  |
+| 7     | Co-location and closure        |                                                                                                                                                                                              Previous closure is stale | `test:spec-audit` covers co-location, not Better Specs style                                                                         | n/a                                       | Re-run after phase 8             |
+| 8     | Better Specs follow-up         | Stale closure: `test()` conversion landed, but follow-up review still found missing subject `describe` blocks, subject-only specs without BDD situation grouping, long descriptions, and unclassified boolean matchers | Accepted: window.dispatchEvent in view_nav_keys only if wrapped under the hook subject and recorded as a production listener surface | Reopened into phase 9                     |
+| 9     | BDD structure completion       |                                                 2 files restructured as BDD models; 127 specs inventoried: 49 no-describe, 73 subject-only, 5 with situations, 273 long descs, 0 boolean matcher, 11 global dispatches | Accepted: `.toBe(false)` for isUsableWorkArea is direct boolean API; placement/state specs kept as the BDD seed models               | Gate green, 645 tests pass                |
+| 10    | BDD context setup completion   |                                                                                                                                                                                                                        |                                                                                                                                      | Pending                                   |
+| 11    | Factories and local builders   |                                                                                                                                                                                                                        |                                                                                                                                      | Pending                                   |
+| 12    | Complete Better Specs audit    |                                                                                                                                                                                                                        |                                                                                                                                      | Pending                                   |
+| 13    | Explicit subject convention    |                                                                                                                                                                                                                        |                                                                                                                                      | Pending                                   |
+| 14    | Audit finding burn-down        |                                                                     Pending: close `test:spec-style` finding categories one by one: no describe, no situation, boolean matchers, long descriptions, and `test()` usage | Documentation-only findings are not complete unless every path is a named exception                                                  | Pending                                   |
 
 ## Phase 0 — Inventory and baseline
 
@@ -506,7 +506,7 @@ EOF
   - Run focused `bun test` commands for each touched layer.
   - Run `mise run test:spec-audit`.
   - Run `bun test`.
-  - Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+  - Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
   - Update this file with final counts and accepted exceptions.
   - _Acceptance criteria: NS-7.2, NS-8.1, NS-8.2_
 
@@ -621,7 +621,7 @@ EOF
   - Run `mise run test:spec-audit`.
   - Run the refreshed BDD structure scans from task 9.1 and record final counts.
   - Run `bun test`.
-  - Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`. If the gate
+  - Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`. If the gate
     fails because of local temp-directory permissions, stop and report the exact
     failing command instead of marking the phase complete.
   - Update this file with final counts, retained exceptions, and verification
@@ -713,7 +713,7 @@ EOF
   - Run the context-content inventory scan from task 10.1 and record final
     counts plus retained exceptions.
   - Run `bun test`.
-  - Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+  - Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
   - Update this file with final evidence before committing.
   - _Acceptance criteria: NS-7.2, NS-8.1, NS-8.2, NS-8.4_
 
@@ -746,7 +746,7 @@ EOF
   - Scan touched and representative source specs for hard-coded setup objects,
     repeated prop literals, and repeated primitive tuples.
   - Classify each candidate as:
-    - `factoryFor(...)` candidate: kb domain records, RPC knowledge rows,
+    - `factoryFor(...)` candidate: app domain records, RPC knowledge rows,
       renderer props shaped from entries/tasks/config, geometry, display/window
       data, typed events, and any exported project type reused across specs;
     - local builder candidate: one-file primitive values whose shape is not a
@@ -763,7 +763,7 @@ EOF
 - [x] 11.2 Use factories for project-shaped data.
   - Replace hand-built or over-specified project-shaped records with
     `factoryFor(...)` plus minimal overrides.
-  - For renderer component specs, prefer factories when props represent kb
+  - For renderer component specs, prefer factories when props represent app
     entries, tasks, config, geometry, display/window data, or RPC knowledge rows.
   - Start with
     `src/shell/renderer/components/detail/dependency_graph.component.spec.tsx`:
@@ -802,7 +802,7 @@ EOF
   - Run focused `bun test <path>` commands for every touched file or directory.
   - Run `mise run test:spec-audit`.
   - Run `bun test`.
-  - Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+  - Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
   - Update this file with final inventory counts, retained inline literal
     exceptions, and verification evidence before committing.
   - _Acceptance criteria: NS-7.2, NS-8.1, NS-8.2, NS-8.4_
@@ -1026,7 +1026,7 @@ EOF
     bun test
     git diff --check
     git diff --cached --check
-    bash .agents/skills/kb-quality-gate/scripts/gate.sh
+    bash .agents/skills/app-quality-gate/scripts/gate.sh
     ```
 
   - Expected result: all commands are green before this phase is marked complete.
@@ -1041,13 +1041,13 @@ EOF
 - Specs scanned: 127
 - Style issues: 78
 
-| Category | Count |
-| --- | ---: |
-| global dispatchEvent | 1 |
-| long description | 1 |
-| mock usage | 17 |
-| no situation | 56 |
-| opaque boolean matcher | 3 |
+| Category               | Count |
+| ---------------------- | ----: |
+| global dispatchEvent   |     1 |
+| long description       |     1 |
+| mock usage             |    17 |
+| no situation           |    56 |
+| opaque boolean matcher |     3 |
 
 <details>
 <summary>Findings</summary>
@@ -1091,7 +1091,7 @@ EOF
 - `src/core/helpers/path.helper.spec.ts` — no when/with/without situation describe
 - `src/core/validation/typebox.helper.spec.ts` — no when/with/without situation describe
 - `src/shared/logging/console.logger.spec.ts` — no when/with/without situation describe
-- `src/shared/logging/kb_log_verbosity.spec.ts` — no when/with/without situation describe
+- `src/shared/logging/app_log_verbosity.spec.ts` — no when/with/without situation describe
 - `src/shared/logging/logtape.adapter.spec.ts` — no when/with/without situation describe
 - `src/shared/utils/crc32.spec.ts` — no when/with/without situation describe
 - `src/shell/app/app.spec.ts` — no when/with/without situation describe
@@ -1247,7 +1247,7 @@ EOF
     mise run test:spec-audit
     bun test
     git diff --check
-    bash .agents/skills/kb-quality-gate/scripts/gate.sh
+    bash .agents/skills/app-quality-gate/scripts/gate.sh
     ```
 
   - Expected result: all commands are green, or each remaining explicit-subject
@@ -1444,7 +1444,7 @@ EOF
     mise run test:spec-audit
     bun test
     git diff --check
-    bash .agents/skills/kb-quality-gate/scripts/gate.sh
+    bash .agents/skills/app-quality-gate/scripts/gate.sh
     ```
 
   - Expected result: strict style audit is green, or strict mode explicitly

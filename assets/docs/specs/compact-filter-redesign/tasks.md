@@ -12,15 +12,15 @@ Ordered verification. Requirements: [requirements.md](requirements.md). Design: 
 
 ## T2 — DOM rebuild (single scrollport)
 
-- [x] No sibling `.kb-pt-filter-dropdown-pinned` + `.kb-pt-filter-dropdown-scroll` split.
-- [x] One `[data-compact-filter-scroll-root]` contains Quick, Task views, Types, Tags (facets in `.kb-pt-filter-sticky-facets`).
+- [x] No sibling `.app-pt-filter-dropdown-pinned` + `.app-pt-filter-dropdown-scroll` split.
+- [x] One `[data-compact-filter-scroll-root]` contains Quick, Task views, Types, Tags (facets in `.app-pt-filter-sticky-facets`).
 - [x] Search input is **sibling above** scroll root; Close is **sibling below** scroll root.
 - [x] `filterRows` DOM order matches flat highlight index.
 
 ## T3 — CSS grid layout
 
-- [x] `.kb-pt-filter-dropdown` uses `grid-template-rows: auto minmax(0, 1fr) auto`.
-- [x] `.kb-pt-filter-scroll-root` is the only `overflow-y: auto` for options.
+- [x] `.app-pt-filter-dropdown` uses `grid-template-rows: auto minmax(0, 1fr) auto`.
+- [x] `.app-pt-filter-scroll-root` is the only `overflow-y: auto` for options.
 - [x] Sticky facets + footer + highlight styles per design; obsolete flex/pinned rules removed.
 
 ## T4 — Scroll sync
@@ -42,7 +42,7 @@ Ordered verification. Requirements: [requirements.md](requirements.md). Design: 
 
 ## T7 — Portal geometry
 
-- [x] `.kb-pt-filter-portal-clip` inline style sets `height` and `maxHeight` to `compactFilterPortalBox` cap.
+- [x] `.app-pt-filter-portal-clip` inline style sets `height` and `maxHeight` to `compactFilterPortalBox` cap.
 
 ## T8 — Manual Electrobun
 
@@ -51,4 +51,4 @@ Ordered verification. Requirements: [requirements.md](requirements.md). Design: 
 
 ## T9 — Quality gate
 
-- [ ] `bash .agents/skills/kb-quality-gate/scripts/gate.sh` green on changed tree (or agreed subset before commit).
+- [ ] `bash .agents/skills/app-quality-gate/scripts/gate.sh` green on changed tree (or agreed subset before commit).

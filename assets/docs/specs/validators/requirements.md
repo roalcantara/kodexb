@@ -144,13 +144,13 @@ and to ordered work in [tasks.md](tasks.md).
 3. WHEN `assets/docs/specs/foundation/roadmap.md` line 233 is inspected,
    THEN it SHALL state "TypeBox is the sole validation library across core
    and transport — Zod was removed in a prior refactor."
-4. WHEN `.agents/skills/kb-context/SKILL.md` is inspected, THEN the Zod /
+4. WHEN `.agents/skills/app-context/SKILL.md` is inspected, THEN the Zod /
    TypeBox rule SHALL state "TypeBox is the sole validation library across
    `src/core/` and the transport layer."
-5. WHEN `.agents/skills/kb-rpc/SKILL.md` is inspected, THEN the dependency
+5. WHEN `.agents/skills/app-rpc/SKILL.md` is inspected, THEN the dependency
    table SHALL list `@sinclair/typebox` for the Domain layer (not `zod`).
 6. WHEN `rg -i "\\bzod\\b" assets/docs/specs/foundation/
-   .agents/skills/kb-context/ .agents/skills/kb-rpc/` runs, THEN the system
+   .agents/skills/app-context/ .agents/skills/app-rpc/` runs, THEN the system
    SHALL produce zero matches.
 
 ---
@@ -176,17 +176,17 @@ and to ordered work in [tasks.md](tasks.md).
 
 ## QUALITY GATE (NFR)
 
-Per [`kb-quality-gate`](../../../../.agents/skills/kb-quality-gate/SKILL.md),
+Per [`app-quality-gate`](../../../../.agents/skills/app-quality-gate/SKILL.md),
 the amend is complete only when ALL of the following exit 0:
 
-| Goal                  | Command                                                |
-| --------------------- | ------------------------------------------------------ |
-| TypeScript            | `bun run typecheck`                                    |
-| Tests                 | `bun test src/core src/shared`                         |
-| Biome                 | `bunx biome check src/`                                |
-| Dependency-cruiser    | `bunx depcruise src/ --config .dependency-cruiser.cjs` |
-| Knip                  | `bunx knip` (no NEW unused vs. baseline)               |
-| jscpd                 | `bunx jscpd src/ --min-lines 10 --threshold 5`         |
+| Goal               | Command                                                |
+| ------------------ | ------------------------------------------------------ |
+| TypeScript         | `bun run typecheck`                                    |
+| Tests              | `bun test src/core src/shared`                         |
+| Biome              | `bunx biome check src/`                                |
+| Dependency-cruiser | `bunx depcruise src/ --config .dependency-cruiser.cjs` |
+| Knip               | `bunx knip` (no NEW unused vs. baseline)               |
+| jscpd              | `bunx jscpd src/ --min-lines 10 --threshold 5`         |
 
 Coverage target: ≥ 80 % line coverage on the new helper module
 `src/core/validation/typebox.helper.ts`.

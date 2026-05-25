@@ -11,9 +11,9 @@ Normalise source spec files so they consistently follow
 `assets/guides/TESTING_GUIDE.md`, without changing product behavior.
 
 Required context:
-- Read `.agents/skills/kb-context/SKILL.md`.
-- Read `.agents/skills/kb-testing/SKILL.md`.
-- Read `.agents/skills/kb-quality-gate/SKILL.md`.
+- Read `.agents/skills/app-context/SKILL.md`.
+- Read `.agents/skills/app-testing/SKILL.md`.
+- Read `.agents/skills/app-quality-gate/SKILL.md`.
 - Use the `subagent-driven-development` skill for execution.
 - Read `assets/guides/TESTING_GUIDE.md`.
 - Read `assets/guides/FISHERY_GUIDE.md`.
@@ -29,8 +29,8 @@ Workflow:
 5. Preserve test semantics. If behavior is ambiguous, stop and report the file,
    current assertion, ambiguity, and proposed decision.
 6. Run focused `bun test` commands for touched files or directories.
-7. Update the inventory ledger and checkboxes in `tasks.md`.
-8. Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+7. Update the inventory ledger and checappoxes in `tasks.md`.
+8. Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
 9. Commit exactly that phase's files using the suggested commit command.
 10. Continue to the next phase.
 
@@ -39,7 +39,7 @@ Audit closure rule:
 - A category is complete only when it has zero findings or every remaining path
   is listed as a narrow intentional exception with a reason.
 - If `mise run test:spec-style` reports a non-zero count, keep the relevant
-  Phase 14 checkbox open until the count is burned down or path-specific
+  Phase 14 checappox open until the count is burned down or path-specific
   exceptions are recorded.
 
 Subagent workflow:

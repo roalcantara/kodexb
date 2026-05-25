@@ -16,7 +16,7 @@ export async function reportConfigLoadErrorAndExit(err: unknown, deps: ConfigLoa
   await deps.showMessageBox({
     type: 'error',
 
-    title: 'kb — Configuration Error',
+    title: 'app — Configuration Error',
     message: String(err),
     buttons: ['OK']
   })

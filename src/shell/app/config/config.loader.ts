@@ -36,7 +36,7 @@ function resolveConfig(raw: unknown, configPath: string, env: Env): Result<Resol
 }
 
 /**
- * Loads and validates the kb config from the given path.
+ * Loads and validates the app config from the given path.
  * Creates the file with defaults if missing.
  */
 export async function loadConfig(pathArg?: string): Promise<LoadedConfig> {

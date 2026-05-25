@@ -3,7 +3,7 @@
 
 ## Introduction
 
-kb uses Elysia, Eden Treaty, TypeBox, and Electrobun as architectural
+app uses Elysia, Eden Treaty, TypeBox, and Electrobun as architectural
 foundations, but the upstream documentation contains more capabilities than the
 project currently uses. This spec creates a decision-neutral inventory of those
 capabilities so the project can later choose which items belong in the backlog.
@@ -18,9 +18,9 @@ the inventory.
 
 - Implementing Elysia or Electrobun feature changes.
 - Adding dependencies, plugins, telemetry, auth, or new runtime services.
-- Changing `kb-rpc`, Electrobun skills, or project routing docs.
+- Changing `app-rpc`, Electrobun skills, or project routing docs.
 - Making final backlog priority decisions without maintainer review.
-- Treating upstream examples as authoritative over kb-specific guides.
+- Treating upstream examples as authoritative over app-specific guides.
 
 ## Requirement syntax
 
@@ -38,7 +38,7 @@ the inventory.
    citations.
 3. WHEN an upstream page is unreachable, THEN the agent SHALL record the URL,
    access failure, timestamp, and the smallest skipped scope in the inventory.
-4. IF a capability appears in both upstream docs and local kb skills, THEN the
+4. IF a capability appears in both upstream docs and local app skills, THEN the
    agent SHALL record both references.
 
 ## Requirement CE-2: Decision-neutral inventory
@@ -46,13 +46,13 @@ the inventory.
 ### Acceptance criteria
 
 1. WHEN a capability is recorded, THEN the agent SHALL include its name,
-   ecosystem, source URL, summary, current kb usage, pros, cons,
+   ecosystem, source URL, summary, current app usage, pros, cons,
    risks, and candidate project touchpoints.
-2. WHEN kb fully uses a capability, THEN the agent SHALL set
+2. WHEN app fully uses a capability, THEN the agent SHALL set
    `current_usage.status: used` in YAML and render `DONE` as `✔` in the Markdown table.
-3. WHEN kb does not fully use a capability, THEN the agent SHALL use
+3. WHEN app does not fully use a capability, THEN the agent SHALL use
    `partial`, `not-used`, `unknown`, or `not-applicable` as appropriate and leave the rendered `DONE` cell empty.
-4. WHEN the agent has only weak evidence about current kb usage, THEN the agent
+4. WHEN the agent has only weak evidence about current app usage, THEN the agent
    SHALL set `usage_confidence: low` and describe the missing evidence.
 5. IF a capability is not relevant to a desktop-local app, THEN the agent SHALL
    still record it when it is prominent upstream, with a short reason in `cons`
@@ -91,12 +91,12 @@ the inventory.
 ### Acceptance criteria
 
 1. WHEN evaluating Elysia capabilities, THEN the agent SHALL compare them with
-   `kb-rpc`, `assets/guides/SKILLS.yml`, `assets/guides/ELECTROBUN.md`, and the
+   `app-rpc`, `assets/guides/SKILLS.yml`, `assets/guides/ELECTROBUN.md`, and the
    current RPC files under `src/shell/main/rpc/` and `src/shell/renderer/rpc/`.
 2. WHEN evaluating Electrobun capabilities, THEN the agent SHALL compare them
    with `electrobun-best-practices`, `.cursor/electrobun-skill-routing.md`,
    `assets/guides/ELECTROBUN.md`, and current files under `src/shell/main/`.
-3. WHEN a capability conflicts with kb rules, THEN the agent SHALL record the
+3. WHEN a capability conflicts with app rules, THEN the agent SHALL record the
    conflict and SHALL NOT recommend direct adoption.
 4. IF a capability requires network exposure, auth, cloud sync, or production
    telemetry, THEN the agent SHALL mark those prerequisites explicitly.

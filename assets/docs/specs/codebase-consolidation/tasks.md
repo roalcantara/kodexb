@@ -6,13 +6,13 @@ Execute in order, **one commit per track** (R13). After each track:
 
 1. Run the track's per-task verifications.
 2. Run the **track close** block (typecheck + lint + targeted tests).
-3. Update this file: tick checkboxes, fill in the **Verification** line
+3. Update this file: tick checappoxes, fill in the **Verification** line
    with the commit SHA and the actual command output.
 4. Commit using the suggested message.
 5. Only then move to the next track.
 
 Working directory for every command: repository root
-(`/Users/roalcantara/Work/bun/kb` or your local equivalent).
+(`/Users/roalcantara/Work/bun/app` or your local equivalent).
 
 `@core` = `src/core` (TS path alias confirmed by reading `tsconfig.json`
 during onboarding). When in doubt, use the relative path printed in the
@@ -429,20 +429,20 @@ git commit -m "refactor(renderer): Consolidate utils/list from 17 to 7 modules"
 ## Track F — Final cleanup (closure)
 
 Track F's behavioural fix was bundled into Group D.7. This phase
-is for closing verification, metric capture, and the kb quality gate.
+is for closing verification, metric capture, and the app quality gate.
 
 - [x] **T F.1** Recapture all metrics from
       [`report.md` §Baseline metrics](report.md#baseline-metrics) into
       `tmp/final-metrics.txt`. Each row's "before" → "after"
       transition matches
       [`report.md` §Closure metrics](report.md#closure-metrics).
-- [x] **T F.2** Run the full kb quality gate:
+- [x] **T F.2** Run the full app quality gate:
       ```sh
       bun test
       bun run typecheck
       bun run lint
       bun run build
-      bash .agents/skills/kb-quality-gate/scripts/gate.sh
+      bash .agents/skills/app-quality-gate/scripts/gate.sh
       ```
       Record output in `tmp/final-gate.log`.
 - [x] **T F.3** Run spec-compliance review with a fresh subagent (see

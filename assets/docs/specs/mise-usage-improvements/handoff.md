@@ -4,14 +4,14 @@
 ## Status
 
 This handoff is for the full Mise task contract cleanup in
-`/Users/roalcantara/Work/bun/kb`.
+`/Users/roalcantara/Work/bun/app`.
 
 The work is not a partial policy-checker cleanup. It is complete only when the
 exact public task surface, exact package script surface, Usage contracts,
 workflow commands, documentation references, and command validation matrix all
 match this document.
 
-Every implementation task in `tasks.md` has acceptance criteria. A checkbox is
+Every implementation task in `tasks.md` has acceptance criteria. A checappox is
 not complete unless the task's command-specific validation commands have been
 run and recorded under that task's `Evidence:` bullet.
 
@@ -35,18 +35,18 @@ Read these files before editing:
 
 Load these skills:
 
-- `kb-context`
+- `app-context`
 - `mise-tasks`
 - `docs-writer`
 - `mise-expert` only if you touch `[tools]`, `[env]`, setup behavior, or tool
   versions
-- `kb-quality-gate` before declaring completion
+- `app-quality-gate` before declaring completion
 
 ## Non-negotiable rules
 
 - Do not add deprecated compatibility wrappers.
 - Do not weaken the policy checker to make it pass.
-- Do not mark checkboxes complete with a bulk script.
+- Do not mark checappoxes complete with a bulk script.
 - Do not mark a task complete until its acceptance criteria and command
   validation checks pass.
 - Do not execute destructive repository, release, publish, remote deletion, or
@@ -358,7 +358,7 @@ mise run policy check --format=json
 NO_COLOR=1 COLUMNS=120 mise tasks
 mise tasks validate
 bun run typecheck
-bash .agents/skills/kb-quality-gate/scripts/gate.sh
+bash .agents/skills/app-quality-gate/scripts/gate.sh
 git diff --check
 ```
 
@@ -367,20 +367,20 @@ git diff --check
 Copy and paste this prompt into another agent if needed:
 
 ```txt
-Continue the Mise usage improvements work in /Users/roalcantara/Work/bun/kb.
+Continue the Mise usage improvements work in /Users/roalcantara/Work/bun/app.
 
 Read AGENTS.md, assets/guides/MISE_GUIDE.md, assets/docs/specs/mise-usage/,
 assets/docs/specs/mise-usage-improvements/, mise.toml, package.json, and
 .github/workflows/{review,release,publish}.yml before editing.
 
-Load kb-context, mise-tasks, and docs-writer. Load mise-expert only if you touch
-[tools], [env], setup behavior, or tool versions. Load kb-quality-gate before
+Load app-context, mise-tasks, and docs-writer. Load mise-expert only if you touch
+[tools], [env], setup behavior, or tool versions. Load app-quality-gate before
 declaring completion.
 
 Implement the full task contract cleanup from
 assets/docs/specs/mise-usage-improvements/tasks.md. Do not add deprecated
 compatibility wrappers. Do not weaken the policy checker. Do not bulk-edit
-checkboxes. Every checked task must include an Evidence bullet naming changed
+checappoxes. Every checked task must include an Evidence bullet naming changed
 files, exact commands, and the command-level acceptance criteria that passed.
 
 The expected public task surface is exactly the output recorded in
@@ -411,7 +411,7 @@ Run the command validation matrix in handoff.md. The work is only done when:
 6. Unsafe repository, release, and publish mutations were not executed without
    explicit maintainer approval for the exact command.
 7. bun run lint:mise, mise tasks validate, bun run typecheck,
-   bash .agents/skills/kb-quality-gate/scripts/gate.sh, and git diff --check
+   bash .agents/skills/app-quality-gate/scripts/gate.sh, and git diff --check
    all pass.
 
 Final response must include git status --short, exact mise tasks output, exact

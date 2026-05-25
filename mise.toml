@@ -212,7 +212,7 @@ HK_PKL_BACKEND = "pklr"
     function chdirToGitRoot(): string {
       const r = Bun.spawnSync(['git', 'rev-parse', '--show-toplevel'])
       const root = r.stdout.toString().trim()
-      if (!r.success || !root) die('test: run from inside the kb git checkout')
+      if (!r.success || !root) die('test: run from inside the app git checkout')
       process.chdir(root)
       return root
     }
@@ -806,7 +806,7 @@ HK_PKL_BACKEND = "pklr"
     import path from 'node:path'
 
     /** Matches list.css `--theme-bg` (Andromeda Void shell). */
-    const KB_LIST_BG = '#0b0e14'
+    const LIST_BG = '#0b0e14'
     /** WCAG 1.4.11 non-text contrast target for graphical objects (relaxed vs body text). */
     const DEFAULT_MIN_RATIO = 3
     /** Only these exact hex strings are rewritten with `--write-safe` (case-insensitive keys). */
@@ -823,7 +823,7 @@ HK_PKL_BACKEND = "pklr"
     function chdirToGitRoot(): void {
       const r = Bun.spawnSync(['git', 'rev-parse', '--show-toplevel'])
       const root = r.stdout.toString().trim()
-      if (!r.success || !root) die('icons: run from inside the kb git checkout')
+      if (!r.success || !root) die('icons: run from inside the app git checkout')
       process.chdir(root)
     }
 
@@ -980,7 +980,7 @@ HK_PKL_BACKEND = "pklr"
       const bad = samples.flatMap(hex => {
         const rgb = hexToRgb(hex)
         if (!rgb || (dualTone && relativeLuminance(rgb) < 0.12)) return []
-        const ratio = contrastRatio(hex, KB_LIST_BG)
+        const ratio = contrastRatio(hex, LIST_BG)
         return ratio !== null && ratio < minRatio ? [{ hex, ratio }] : []
       })
       return { base, missing: false, bad, written }
@@ -1011,7 +1011,7 @@ HK_PKL_BACKEND = "pklr"
           .toSorted((a, b) => a.ratio - b.ratio)
           .map(x => `${x.hex} (${x.ratio.toFixed(2)}:1)`)
           .join(', ')
-        console.log(`FAIL ${row.base}.svg  <${minRatio}:1  vs ${KB_LIST_BG}  →  ${line}`)
+        console.log(`FAIL ${row.base}.svg  <${minRatio}:1  vs ${LIST_BG}  →  ${line}`)
       }
 
       console.log('')
@@ -1295,7 +1295,7 @@ HK_PKL_BACKEND = "pklr"
     function chdirToGitRoot(): void {
       const r = Bun.spawnSync(['git', 'rev-parse', '--show-toplevel'])
       const root = r.stdout.toString().trim()
-      if (!r.success || !root) die('policy: run from inside the kb git checkout')
+      if (!r.success || !root) die('policy: run from inside the app git checkout')
       process.chdir(root)
     }
 
@@ -1527,7 +1527,7 @@ if (!VALID_ACTIONS.includes(ACTION)) {
 
 function gitRoot() {
   const r = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"])
-  if (r.exitCode !== 0) { console.error("skill: run from inside the kb git checkout"); process.exit(1) }
+  if (r.exitCode !== 0) { console.error("skill: run from inside the app git checkout"); process.exit(1) }
   return new TextDecoder().decode(r.stdout).trim()
 }
 

@@ -2,7 +2,7 @@
 
 # HANDOFF — Command palette (⌘P) and filter (⌘K)
 
-You are implementing **keyboard-first** command palette and filter overlay for the kb list shell. **Do not** change RPC or DB unless a task explicitly requires it.
+You are implementing **keyboard-first** command palette and filter overlay for the app list shell. **Do not** change RPC or DB unless a task explicitly requires it.
 
 ## Read first
 

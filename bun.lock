@@ -6,6 +6,7 @@
       "name": "kb",
       "dependencies": {
         "@elysiajs/eden": "^1.4.9",
+        "@logtape/elysia": "npm:@jsr/logtape__elysia",
         "@logtape/logtape": "^2.1.1",
         "@logtape/pretty": "^2.1.1",
         "@sinclair/typebox": "^0.34.49",
@@ -134,6 +135,10 @@
     "@jscpd/html-reporter": ["@jscpd/html-reporter@4.2.3", "", { "dependencies": { "colors": "1.4.0", "fs-extra": "^11.2.0", "pug": "^3.0.3" } }, "sha512-kp1pqJXCKwyRu5mJK5IvXdFQEDHWQDb7svLFlbVXGI0dVH1y1XNl8mrIrSoRw+0AySxhDkuSyIlQOSDC2GRwQg=="],
 
     "@jscpd/tokenizer": ["@jscpd/tokenizer@4.2.3", "", { "dependencies": { "@jscpd/core": "4.2.3", "spark-md5": "^3.0.2" } }, "sha512-RvjD7/hwqtcQC9MWOl31odTti6kGCFxZ77DKEhwyMn+r6oVEUFbXgcGvzn0GC/wuTl7f3j5MF9JNMeTneOFwYA=="],
+
+    "@jsr/logtape__logtape": ["@jsr/logtape__logtape@2.1.1", "https://npm.jsr.io/~/11/@jsr/logtape__logtape/2.1.1.tgz", {}, "sha512-ypGnHJC/Pz6dNH6RzSKq8MAlmViURpYrKx7zGuLC6wSv2xuTi7XaHRY+q0Pop8LRW5pT3VlPeJ10WFw3WgGfkA=="],
+
+    "@logtape/elysia": ["@jsr/logtape__elysia@2.1.1", "https://npm.jsr.io/~/11/@jsr/logtape__elysia/2.1.1.tgz", { "dependencies": { "@jsr/logtape__logtape": "^2.1.1", "elysia": "^1.4.0" } }, "sha512-/Jy3AxJ9qsCG4L1qkYcNhI2v47wLhv4U1UsOdtm1FdESlr4uh/FH0snXVL9Sw2IUpsacFP5FV1246K7JoqgVZw=="],
 
     "@logtape/logtape": ["@logtape/logtape@2.1.1", "", {}, "sha512-aULbCqUQGerfOsZ3CMvcKtueKzmdchluXYUd3bIHKmOIS93fx1ko0+hyRQ4flloGZ8EiyRPydZXiy8n1J/eAQA=="],
 

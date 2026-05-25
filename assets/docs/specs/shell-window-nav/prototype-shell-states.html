@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>kb — shell prototype (all states)</title>
+  <title>app — shell prototype (all states)</title>
   <style>
     :root {
       --void: #0a0a0c;
@@ -165,19 +165,19 @@
       display: none;
     }
 
-    .kb-mini {
+    .app-mini {
       font-size: 10px;
       padding: 0.5rem;
       min-height: 140px;
     }
 
-    .kb-pt-search {
+    .app-pt-search {
       display: flex;
       gap: 0.35rem;
       margin-bottom: 0.45rem;
     }
 
-    .kb-pt-search input {
+    .app-pt-search input {
       flex: 1;
       background: #0a0a0f;
       border: 1px solid var(--border);
@@ -187,13 +187,13 @@
       padding: 3px 5px;
     }
 
-    .kb-pt-main {
+    .app-pt-main {
       display: flex;
       gap: 0.35rem;
       min-height: 100px;
     }
 
-    .kb-pt-list {
+    .app-pt-list {
       flex: 1;
       background: #0c0c12;
       border: 1px solid var(--border);
@@ -201,15 +201,15 @@
       padding: 4px;
     }
 
-    .kb-pt-list.narrow {
+    .app-pt-list.narrow {
       flex: 0 0 38%;
     }
 
-    .kb-pt-list.hidden {
+    .app-pt-list.hidden {
       display: none;
     }
 
-    .kb-row {
+    .app-row {
       padding: 3px 4px;
       border-radius: 3px;
       margin-bottom: 2px;
@@ -217,12 +217,12 @@
       font-size: 9px;
     }
 
-    .kb-row.sel {
+    .app-row.sel {
       background: rgba(107, 159, 255, 0.18);
       color: var(--text);
     }
 
-    .kb-pt-detail {
+    .app-pt-detail {
       flex: 1;
       background: #0e0e14;
       border: 1px solid var(--border);
@@ -232,14 +232,14 @@
       position: relative;
     }
 
-    .kb-pt-nav-hint {
+    .app-pt-nav-hint {
       text-align: right;
       color: var(--muted);
       font-size: 8px;
       margin-bottom: 4px;
     }
 
-    .kb-pt-detail code {
+    .app-pt-detail code {
       color: var(--orange);
     }
 
@@ -253,7 +253,7 @@
       margin-top: 0.75rem;
     }
 
-    .flow kbd {
+    .flow appd {
       font-family: ui-monospace, monospace;
       font-size: 0.72rem;
       padding: 0.1rem 0.35rem;
@@ -277,7 +277,7 @@
 </head>
 
 <body>
-  <h1>kb — final solution prototype (all states)</h1>
+  <h1>app — final solution prototype (all states)</h1>
   <p class="meta">
     <strong>Platforms:</strong> macOS and Linux only (no Windows). Ship order:
     <strong>macOS perfect first</strong>, then Linux best-effort (same APIs where Electrobun supports them; document
@@ -297,7 +297,7 @@
         <div class="fake-desktop">
           <div class="fake-win corner">
             <div class="fake-titlebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-            kb
+            app
           </div>
         </div>
         <p style="padding: 0 0.85rem 0.85rem; font-size: 0.8rem; color: var(--muted); margin: 0">
@@ -312,7 +312,7 @@
         <div class="fake-desktop">
           <div class="fake-win center">
             <div class="fake-titlebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-            kb
+            app
           </div>
         </div>
         <p style="padding: 0 0.85rem 0.85rem; font-size: 0.8rem; color: var(--muted); margin: 0">
@@ -331,18 +331,18 @@
           Current — titled
           <span class="tag current">title bar</span>
         </div>
-        <div class="kb-mini">
+        <div class="app-mini">
           <div class="fake-titlebar" style="margin: -0.5rem -0.5rem 0.5rem; height: 16px">
             <span class="dot"></span><span class="dot"></span><span class="dot"></span>
           </div>
-          <div class="kb-pt-search">
+          <div class="app-pt-search">
             <input type="text" value="Search…" readonly />
             <span style="font-size: 8px; color: var(--muted)">▾</span>
           </div>
-          <div class="kb-pt-main">
-            <div class="kb-pt-list">
-              <div class="kb-row">Entry A</div>
-              <div class="kb-row sel">Entry B</div>
+          <div class="app-pt-main">
+            <div class="app-pt-list">
+              <div class="app-row">Entry A</div>
+              <div class="app-row sel">Entry B</div>
             </div>
           </div>
         </div>
@@ -352,20 +352,20 @@
           Target — frameless shell
           <span class="tag target">custom drag strip</span>
         </div>
-        <div class="kb-mini">
+        <div class="app-mini">
           <div class="fake-titlebar frameless"
             style="margin: -0.5rem -0.5rem 0.5rem; height: 14px; border-radius: 6px; border: 1px dashed rgba(107, 159, 255, 0.35)"
             title="CSS -webkit-app-region: drag in real app"></div>
           <p style="margin: 0 0 0.35rem; font-size: 8px; color: var(--muted)">No traffic lights in web mock; real app
             uses native frameless + optional inset controls.</p>
-          <div class="kb-pt-search">
+          <div class="app-pt-search">
             <input type="text" value="Search…" readonly />
             <span style="font-size: 8px; color: var(--muted)">▾</span>
           </div>
-          <div class="kb-pt-main">
-            <div class="kb-pt-list">
-              <div class="kb-row">Entry A</div>
-              <div class="kb-row sel">Entry B</div>
+          <div class="app-pt-main">
+            <div class="app-pt-list">
+              <div class="app-row">Entry A</div>
+              <div class="app-row sel">Entry B</div>
             </div>
           </div>
         </div>
@@ -382,55 +382,59 @@
     <div class="grid">
       <div class="card">
         <div class="card-h">State A — list only <span class="tag">viewState: list</span></div>
-        <div class="kb-mini">
-          <div class="kb-pt-search">
+        <div class="app-mini">
+          <div class="app-pt-search">
             <input type="text" value="Search your knowledge base…" readonly />
             <span style="font-size: 8px; color: var(--muted)">filters ▾</span>
           </div>
-          <div class="kb-pt-main">
-            <div class="kb-pt-list">
-              <div class="kb-row">docker prune</div>
-              <div class="kb-row sel">sam local invoke …</div>
-              <div class="kb-row">kubectl apply</div>
+          <div class="app-pt-main">
+            <div class="app-pt-list">
+              <div class="app-row">docker prune</div>
+              <div class="app-row sel">sam local invoke …</div>
+              <div class="app-row">kubectl apply</div>
             </div>
           </div>
-          <div class="flow"><kbd>→</kbd> <span class="arrow">→</span> split view</div>
+          <div class="flow">
+            <kbd>→</kbd> <span class="arrow">→</span> split view
+          </div>
         </div>
       </div>
       <div class="card">
         <div class="card-h">State B — split <span class="tag">viewState: split</span></div>
-        <div class="kb-mini">
-          <div class="kb-pt-search">
+        <div class="app-mini">
+          <div class="app-pt-search">
             <input type="text" value="Search…" readonly />
             <span style="font-size: 8px; color: var(--muted)">▾</span>
           </div>
-          <div class="kb-pt-main">
-            <div class="kb-pt-list narrow">
-              <div class="kb-row">docker …</div>
-              <div class="kb-row sel">sam …</div>
-              <div class="kb-row">kube …</div>
+          <div class="app-pt-main">
+            <div class="app-pt-list narrow">
+              <div class="app-row">docker …</div>
+              <div class="app-row sel">sam …</div>
+              <div class="app-row">kube …</div>
             </div>
-            <div class="kb-pt-detail">
-              <div class="kb-pt-nav-hint">← / Esc</div>
+            <div class="app-pt-detail">
+              <div class="app-pt-nav-hint">← / Esc</div>
               <strong style="font-size: 10px">sam local invoke</strong>
               <p style="margin: 0.2rem 0; color: var(--muted); font-size: 8px">Summary + tags…</p>
               <pre
                 style="margin: 0; font-size: 8px; background: #0a0a0f; padding: 3px; border-radius: 3px">sam <code>local</code> invoke …</pre>
             </div>
           </div>
-          <div class="flow"><kbd>→</kbd> full detail · <kbd>←</kbd> list</div>
+          <div class="flow">
+            <kbd>→</kbd> full detail · <kbd>←</kbd> list
+          </div>
         </div>
       </div>
       <div class="card">
         <div class="card-h">State C — full detail <span class="tag">viewState: detail</span></div>
-        <div class="kb-mini">
-          <div class="kb-pt-search" style="opacity: 0.35; pointer-events: none">
+        <div class="app-mini">
+          <div class="app-pt-search" style="opacity: 0.35; pointer-events: none">
             <input type="text" value="(hidden)" readonly />
           </div>
-          <div class="kb-pt-main">
-            <div class="kb-pt-list hidden">list</div>
-            <div class="kb-pt-detail" style="flex: 1">
-              <div class="kb-pt-nav-hint">← / Escape to close</div>
+          <div class="app-pt-main">
+            <div class="app-pt-list hidden">list</div>
+            <div class="app-pt-detail" style="flex: 1">
+              <div class="app-pt-nav-hint">← / Escape to close</div>
               <strong style="font-size: 10px">sam local invoke --event …</strong>
               <p style="margin: 0.2rem 0; color: var(--muted); font-size: 8px">#aws #serverless</p>
               <pre
@@ -438,7 +442,8 @@
             </div>
           </div>
           <div class="flow">
-            <kbd>←</kbd> <span class="arrow">must</span> retreat to split (same session) · <kbd>Esc</kbd> can close to
+            <kbd>←</kbd> <span class="arrow">must</span> retreat to split (same session) · <kbd>Esc</kbd> can close
+            to
             list per existing rules
           </div>
         </div>

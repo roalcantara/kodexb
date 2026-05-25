@@ -1,0 +1,13 @@
+failure-threshold: warning
+ignored:
+  - SC2155
+  # DL3008/DL3018: pinning ca-certificates, libstdc++6, etc. on rolling debian-slim
+  # and alpine bases breaks future rebuilds when upstream rotates versions out of
+  # the package index. We rely on the base-image tag + --no-install-recommends.
+  - DL3008
+  - DL3018
+strict-labels: false
+trustedRegistries:
+  - docker.io
+  - gcr.io
+  - mcr.microsoft.com

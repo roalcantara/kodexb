@@ -417,6 +417,16 @@ cheats:
               - EMAIL: rogerio.alcantara+1@gmail.com
               - Name: roalcantara
               - ARN: arn:aws:organizations::381491999605:account/o-1832960jyy/381491999605
+  That on the explanation:
+    desc: Message template for explaining something in a elegant way
+    tags: [pvt]
+    notes:
+      - md: |
+          Yeah!
+          The issue is that these docs don't just serve as documentation — they've also proven to be very effective at guiding agents down the right path. The Acceptance Criteria, with their clear and invariant outputs, help prevent drifting, while the tasks.md provides step-by-step instructions with very little room for interpretation.
+          I've had a few not-so-great experiences in the past when instructions left too much room for ambiguity or misinterpretation.
+          That said, if you're confident that handoff.md is sufficient, I'm happy to give it a try! 🙂
+
 commands:
   flux install bun:
     desc: Install bun in the current environment

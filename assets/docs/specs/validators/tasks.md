@@ -3,14 +3,14 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > `subagent-driven-development` (recommended) or `executing-plans` to
-> implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for
+> implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for
 > tracking.
 
 **Goal:** Amend the Phase 3 commit `33c3a63` (`feat(core): Add domain types,
 schemas, parsers`) on branch `chore-add-domain` so the foundation domain
 layer is TypeBox-native from day one. Replace Zod with TypeBox throughout
 `src/core/`, flatten the workspace by deleting nested `package.json` files,
-and apply `type-fest` aggressively. Foundation docs and kb skills update
+and apply `type-fest` aggressively. Foundation docs and app skills update
 inside the same amend commit.
 
 **Architecture:** No I/O changes. `*.schema.ts` files become thin TypeBox
@@ -47,26 +47,26 @@ unchanged. Zod removed.
 This plan produces ONE amended commit. Every other task is a non-commit
 operation (edit, write helper, delete, verify, doc update, gate).
 
-| Task | Subject (post-amend)                              | Scope                                                           |
-| ---- | ------------------------------------------------- | --------------------------------------------------------------- |
-| 16   | `feat(core): Add domain types, schemas, parsers`  | All Phase 3 paths + new validation helper + flat workspace + 5 doc updates |
+| Task | Subject (post-amend)                             | Scope                                                                      |
+| ---- | ------------------------------------------------ | -------------------------------------------------------------------------- |
+| 16   | `feat(core): Add domain types, schemas, parsers` | All Phase 3 paths + new validation helper + flat workspace + 5 doc updates |
 
 ---
 
 ## Verification commands cheat-sheet
 
-| Goal                          | Command                                                               |
-| ----------------------------- | --------------------------------------------------------------------- |
-| TypeScript shape              | `bun run typecheck`                                                   |
-| Phase 3 + validators tests    | `bun test src/core src/shared`                                        |
-| Biome on src                  | `bunx biome check src/`                                               |
-| Knip on full repo             | `bunx knip`                                                           |
-| Dependency-cruiser            | `bunx depcruise src/ --config .dependency-cruiser.cjs`                |
-| jscpd                         | `bunx jscpd src/ --min-lines 10 --threshold 5`                        |
-| Working tree                  | `git status --short`                                                  |
-| Stash list                    | `git stash list`                                                      |
-| Pre-amend HEAD check          | `git log -1 --format='%h %s'`                                         |
-| No upstream                   | `git status -sb`                                                      |
+| Goal                       | Command                                                |
+| -------------------------- | ------------------------------------------------------ |
+| TypeScript shape           | `bun run typecheck`                                    |
+| Phase 3 + validators tests | `bun test src/core src/shared`                         |
+| Biome on src               | `bunx biome check src/`                                |
+| Knip on full repo          | `bunx knip`                                            |
+| Dependency-cruiser         | `bunx depcruise src/ --config .dependency-cruiser.cjs` |
+| jscpd                      | `bunx jscpd src/ --min-lines 10 --threshold 5`         |
+| Working tree               | `git status --short`                                   |
+| Stash list                 | `git stash list`                                       |
+| Pre-amend HEAD check       | `git log -1 --format='%h %s'`                          |
+| No upstream                | `git status -sb`                                       |
 
 ---
 
@@ -514,19 +514,19 @@ rg -i "\\bzod\\b" assets/docs/specs/foundation/  # zero matches expected
 
 ---
 
-## Task 10: Update kb skills
+## Task 10: Update app skills
 
 **Files:**
 
-- `.agents/skills/kb-context/SKILL.md` (UPDATE validation rule)
-- `.agents/skills/kb-rpc/SKILL.md` (UPDATE dependency table + rule)
+- `.agents/skills/app-context/SKILL.md` (UPDATE validation rule)
+- `.agents/skills/app-rpc/SKILL.md` (UPDATE dependency table + rule)
 
 **Why:** [REQUIREMENT
 V-5](requirements.md#requirement-v-5-foundation-docs-reflect-the-inverted-decision)
 mandates skill alignment. Skills drive future agent behaviour; stale skills
 cause regressions.
 
-- [ ] **Step 1: Update `kb-context/SKILL.md`**
+- [ ] **Step 1: Update `app-context/SKILL.md`**
 
 Find the line:
 
@@ -539,7 +539,7 @@ Replace with:
 > transport layer. `*.schema.ts` files contain only TypeBox shapes;
 > `*.parser.ts` files contain coercion logic. Zod is not used.
 
-- [ ] **Step 2: Update `kb-rpc/SKILL.md`**
+- [ ] **Step 2: Update `app-rpc/SKILL.md`**
 
 Update the dependency table row:
 
@@ -560,7 +560,7 @@ And the rule below:
 - [ ] **Step 3: Verify**
 
 ```bash
-rg -i "\\bzod\\b" .agents/skills/kb-context/ .agents/skills/kb-rpc/  # zero matches expected
+rg -i "\\bzod\\b" .agents/skills/app-context/ .agents/skills/app-rpc/  # zero matches expected
 ```
 
 ---
@@ -607,8 +607,8 @@ find src -name package.json -type f   # zero
 
 ```bash
 rg -i "\\bzod\\b" assets/docs/specs/foundation/ \
-                  .agents/skills/kb-context/ \
-                  .agents/skills/kb-rpc/   # zero matches
+                  .agents/skills/app-context/ \
+                  .agents/skills/app-rpc/   # zero matches
 ```
 
 - [ ] **Step 6: Knip baseline preserved**
@@ -680,8 +680,8 @@ git add \
   assets/docs/specs/foundation/design.md \
   assets/docs/specs/foundation/requirements.md \
   assets/docs/specs/foundation/roadmap.md \
-  .agents/skills/kb-context/SKILL.md \
-  .agents/skills/kb-rpc/SKILL.md
+  .agents/skills/app-context/SKILL.md \
+  .agents/skills/app-rpc/SKILL.md
 ```
 
 NEVER `git add -A` or `git add .`. The `validators/` design files
@@ -733,7 +733,7 @@ Workspace: flat layout — all dependencies in root package.json.
 Path aliases (@core, @shared/*) resolved via tsconfig paths.
 
 Updates foundation specs (design.md Decision 2, requirements.md,
-roadmap.md) and kb-context, kb-rpc skills to reflect TypeBox-only
+roadmap.md) and app-context, app-rpc skills to reflect TypeBox-only
 direction.'
 ```
 
@@ -825,7 +825,7 @@ unused).
 - [ ] **Step 4: Final no-Zod sweep**
 
 ```bash
-rg "\\bzod\\b" src/ assets/docs/specs/foundation/ .agents/skills/kb-context/ .agents/skills/kb-rpc/
+rg "\\bzod\\b" src/ assets/docs/specs/foundation/ .agents/skills/app-context/ .agents/skills/app-rpc/
 ```
 
 Expected: zero matches anywhere.
@@ -853,4 +853,4 @@ acceptance criteria from
 [requirements.md](requirements.md#acceptance-criteria) are satisfied. Any
 unchecked criterion blocks completion.
 
-Reference: [`kb-quality-gate`](../../../../.agents/skills/kb-quality-gate/SKILL.md).
+Reference: [`app-quality-gate`](../../../../.agents/skills/app-quality-gate/SKILL.md).

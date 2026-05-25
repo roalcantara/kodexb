@@ -1,4 +1,8 @@
-# FCIS - Functional Core, Imperative Shell Guidelines
+---
+title: FCIS - Functional Core, Imperative Shell Guidelines
+description: Guidelines for the Functional Core, Imperative Shell pattern
+---
+<!-- markdownlint-disable-file -->
 
 Cursor does not auto-load this file; link from `.cursor/rules/codestyle.mdc` / `refactoring.mdc` when relevant.
 
@@ -6,10 +10,10 @@ Cursor does not auto-load this file; link from `.cursor/rules/codestyle.mdc` / `
 
 > 💡 A pattern that splits your codebase into two hard zones:
 
-| **ZONE**         | **LOCATION (KodexB CLI)**        | **RULE**                                          |
-| ---------------- | ------------------------------- | ------------------------------------------------- |
-| Functional Core  | `apps/kb/src/core/`             | Pure functions only. No I/O. No side effects.     |
-| Imperative Shell | `apps/kb/src/shell/`           | All I/O lives here. Calls core to make decisions. |
+| **ZONE**         | **LOCATION (KodexB CLI)** | **RULE**                                          |
+| ---------------- | ------------------------- | ------------------------------------------------- |
+| Functional Core  | `apps/kb/src/core/`       | Pure functions only. No I/O. No side effects.     |
+| Imperative Shell | `apps/kb/src/shell/`      | All I/O lives here. Calls core to make decisions. |
 
 Other workspace packages use their own trees (e.g. `@kb/kli` under `packages/kli/src/` with `core/` vs `shell/` inside that package). The **idea** is always the same: pure core, imperative shell; only the path prefix changes.
 
@@ -96,13 +100,13 @@ No minimum viable structure. Extract one pure function from a messy handler and 
 
 **FCIS** gets there through data flow instead. No interfaces. No adapter classes. No DI framework. The core is isolated not by indirection, but because it literally only speaks in plain data types and pure functions.
 
-| Dimension                 | **Clean / Hexagonal**     | **FCIS**                      |
-| ------------------------- | ------------------------- | ----------------------------- |
-| Isolation mechanism       | Interfaces + DI           | Pure functions + plain data   |
-| Boilerplate               | Higher                    | Lower                         |
-| Testability               | Good (often with mocks)   | Strong (core without mocks)   |
-| Learning curve            | Steeper                   | Gentler                       |
-| Best fit                  | Large, complex domains    | Small-to-medium TypeScript    |
+| Dimension           | **Clean / Hexagonal**   | **FCIS**                    |
+| ------------------- | ----------------------- | --------------------------- |
+| Isolation mechanism | Interfaces + DI         | Pure functions + plain data |
+| Boilerplate         | Higher                  | Lower                       |
+| Testability         | Good (often with mocks) | Strong (core without mocks) |
+| Learning curve      | Steeper                 | Gentler                     |
+| Best fit            | Large, complex domains  | Small-to-medium TypeScript  |
 
 > **Clean Architecture is powerful. FCIS is cheaper. Pick the one that matches your actual complexity.**
 

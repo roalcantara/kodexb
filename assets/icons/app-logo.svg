@@ -1,61 +1,59 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="KodexB">
   <defs>
-    <linearGradient id="kb-frame" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#e8e9f8"/>
-      <stop offset="45%" stop-color="#b8bdd8"/>
-      <stop offset="100%" stop-color="#8c92b0"/>
+    <linearGradient id="app-frame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e8e9f8" />
+      <stop offset="45%" stop-color="#b8bdd8" />
+      <stop offset="100%" stop-color="#8c92b0" />
     </linearGradient>
-    <linearGradient id="kb-frame-edge" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#6a708f"/>
-      <stop offset="100%" stop-color="#9aa0c0"/>
+    <linearGradient id="app-frame-edge" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6a708f" />
+      <stop offset="100%" stop-color="#9aa0c0" />
     </linearGradient>
-    <linearGradient id="kb-screen" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#12121c"/>
-      <stop offset="100%" stop-color="#050508"/>
+    <linearGradient id="app-screen" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#12121c" />
+      <stop offset="100%" stop-color="#050508" />
     </linearGradient>
-    <linearGradient id="kb-gloss" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
-      <stop offset="40%" stop-color="#ffffff" stop-opacity="0.06"/>
-      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    <linearGradient id="app-gloss" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22" />
+      <stop offset="40%" stop-color="#ffffff" stop-opacity="0.06" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
     </linearGradient>
-    <filter id="kb-soft" x="-8%" y="-8%" width="116%" height="116%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b"/>
-      <feOffset dx="2" dy="4" in="b" result="o"/>
+    <filter id="app-soft" x="-8%" y="-8%" width="116%" height="116%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="b" />
+      <feOffset dx="2" dy="4" in="b" result="o" />
       <feComponentTransfer in="o" result="a">
-        <feFuncA type="linear" slope="0.35"/>
+        <feFuncA type="linear" slope="0.35" />
       </feComponentTransfer>
       <feMerge>
-        <feMergeNode in="a"/>
-        <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="a" />
+        <feMergeNode in="SourceGraphic" />
       </feMerge>
     </filter>
   </defs>
   <g transform="translate(256 256) rotate(-10) translate(-256 -256)">
     <!-- subtle depth plate -->
     <g transform="translate(512 512) rotate(12) translate(-512 -512)">
-      <rect x="78" y="86" width="368" height="368" rx="52" ry="52" fill="url(#kb-frame-edge)" opacity="0.85"/>
+      <rect x="78" y="86" width="368" height="368" rx="52" ry="52" fill="url(#app-frame-edge)" opacity="0.85" />
     </g>
     <!-- main key body -->
-    <g filter="url(#kb-soft)">
-      <rect x="56" y="56" width="400" height="400" rx="56" ry="56" fill="url(#kb-frame)"/>
-      <rect x="56" y="56" width="400" height="400" rx="56" ry="56" fill="none" stroke="#f6f7ff" stroke-opacity="0.55" stroke-width="3"/>
-      <rect x="56" y="56" width="400" height="400" rx="56" ry="56" fill="none" stroke="#4a5068" stroke-opacity="0.25" stroke-width="2" transform="translate(1.5 1.5)"/>
+    <g filter="url(#app-soft)">
+      <rect x="56" y="56" width="400" height="400" rx="56" ry="56" fill="url(#app-frame)" />
+      <rect x="56" y="56" width="400" height="400" rx="56" ry="56" fill="none" stroke="#f6f7ff" stroke-opacity="0.55"
+        stroke-width="3" />
+      <rect x="56" y="56" width="400" height="400" rx="56" ry="56" fill="none" stroke="#4a5068" stroke-opacity="0.25"
+        stroke-width="2" transform="translate(1.5 1.5)" />
     </g>
     <!-- recessed screen -->
-    <rect x="88" y="88" width="336" height="336" rx="40" ry="40" fill="url(#kb-screen)"/>
-    <rect x="88" y="88" width="336" height="336" rx="40" ry="40" fill="none" stroke="#000" stroke-opacity="0.65" stroke-width="4"/>
-    <rect x="88" y="88" width="336" height="336" rx="40" ry="40" fill="none" stroke="#2a2a38" stroke-width="2" transform="translate(0 2)"/>
+    <rect x="88" y="88" width="336" height="336" rx="40" ry="40" fill="url(#app-screen)" />
+    <rect x="88" y="88" width="336" height="336" rx="40" ry="40" fill="none" stroke="#000" stroke-opacity="0.65"
+      stroke-width="4" />
+    <rect x="88" y="88" width="336" height="336" rx="40" ry="40" fill="none" stroke="#2a2a38" stroke-width="2"
+      transform="translate(0 2)" />
     <!-- diagonal glare on screen -->
-    <path d="M96 200 L420 140 L430 220 L108 280 Z" fill="url(#kb-gloss)"/>
+    <path d="M96 200 L420 140 L430 220 L108 280 Z" fill="url(#app-gloss)" />
     <!-- wordmark: terminal prompt + KodexB -->
-    <text
-      x="108"
-      y="252"
-      fill="#f4f4f8"
-      font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace"
-      font-size="48"
-      font-weight="600"
-      letter-spacing="-0.02em"
-    >&gt; KodexB<tspan fill="#ffffff" opacity="0.92">_</tspan></text>
+    <text x="108" y="252" fill="#f4f4f8"
+      font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace" font-size="48"
+      font-weight="600" letter-spacing="-0.02em">&gt; KodexB<tspan fill="#ffffff" opacity="0.92">_</tspan></text>
   </g>
 </svg>

@@ -6,7 +6,7 @@
 This spec converts the best-practices audit report into implementation-ready
 requirements. The work improves guard coverage, Electrobun/RPC boundary safety,
 build security, TypeBox contract consistency, test coverage, and follow-up
-automation without weakening kb's existing quality stack.
+automation without weakening app's existing quality stack.
 
 Source audit:
 [`report.md`](report.md).
@@ -15,7 +15,7 @@ Source audit:
 
 The implementation must preserve existing behavior unless a requirement
 explicitly calls for a stricter rejection path. Each change must stay aligned
-with `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`, and the routed
+with `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`, and the routed
 Electrobun skills.
 
 The existing suppression-removal effort remains tracked by
@@ -48,12 +48,12 @@ accident.
 ### R2 — Desktop RPC bridge envelope validation
 
 **User story:** As a maintainer, I want the Electrobun `rpcCall` bridge to
-accept only kb's intended RPC envelope, so that the native/webview boundary
+accept only app's intended RPC envelope, so that the native/webview boundary
 does not become a generic request proxy.
 
 #### Acceptance criteria
 
-1. WHEN `createKbWebviewRpc()` receives an RPC payload
+1. WHEN `createappWebviewRpc()` receives an RPC payload
    THEN it SHALL validate the payload shape before forwarding it to
    `RpcApp.handle()`.
 2. WHEN the payload path does not start with `/api/`
@@ -249,7 +249,7 @@ the existing quality stack, so that hardening work does not weaken the project.
 #### Acceptance criteria
 
 1. WHEN any task in this spec is completed
-   THEN `bash .agents/skills/kb-quality-gate/scripts/gate.sh` SHALL pass or
+   THEN `bash .agents/skills/app-quality-gate/scripts/gate.sh` SHALL pass or
    the remaining blocker SHALL be reported with exact command output.
 2. IF a task changes `mise.toml`
    THEN `bun run lint:mise` SHALL pass.
@@ -257,6 +257,6 @@ the existing quality stack, so that hardening work does not weaken the project.
    THEN the agent SHALL load `electrobun-best-practices` and the routed
    Electrobun skill before implementation.
 4. IF a task changes RPC code
-   THEN the agent SHALL load `kb-rpc` before implementation.
+   THEN the agent SHALL load `app-rpc` before implementation.
 5. IF a task changes tests
-   THEN the agent SHALL load `kb-testing` before implementation.
+   THEN the agent SHALL load `app-testing` before implementation.

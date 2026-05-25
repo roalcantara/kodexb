@@ -1,11 +1,11 @@
 <!-- markdownlint-disable-file -->
 # Phase 5 — App Service + Elysia RPC Implementation Plan
 
-> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan **task-by-task**. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan **task-by-task**. Steps use checappox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the manual Electrobun request map (`src/shell/main/rpc/requests.ts` + `parseRpcPayload`) and the ad-hoc preview `/api/*` switch with a **single Elysia `RpcApp`**: `createRpcServer(app)` in `src/shell/main/rpc/server.ts`, bound to **Electrobun IPC** in the desktop main process and to **HTTP** in `tools/preview/server.ts`. The renderer uses **Eden Treaty** (`@elysiajs/eden`) for all **request/response** RPC; **main→renderer sync progress** stays on the existing **`webview.messages`** channel (`syncProgress`, `syncComplete`) via a **hybrid** bridge (Eden + Electrobun messages only).
 
-**Architecture:** `App` (`src/shell/app/app.ts`) remains the sole orchestrator for DB, import, config, and shell hooks. Elysia routes are **thin**: validate with TypeBox (`@sinclair/typebox` schemas shared from `schemas.ts`), call `App` methods, return JSON-serializable values. No `zod`. No repository imports from route files. `RpcApp = ReturnType<typeof createRpcServer>` becomes the **transport contract**; `KbDesktopRpcSchema`’s **`bun.requests`** half is retired once Eden is live (keep **`webview.messages`** types until a slimmer shared type file exists).
+**Architecture:** `App` (`src/shell/app/app.ts`) remains the sole orchestrator for DB, import, config, and shell hooks. Elysia routes are **thin**: validate with TypeBox (`@sinclair/typebox` schemas shared from `schemas.ts`), call `App` methods, return JSON-serializable values. No `zod`. No repository imports from route files. `RpcApp = ReturnType<typeof createRpcServer>` becomes the **transport contract**; `appDesktopRpcSchema`’s **`bun.requests`** half is retired once Eden is live (keep **`webview.messages`** types until a slimmer shared type file exists).
 
 **Tech Stack:** Bun, `elysia`, `@elysiajs/eden`, `@sinclair/typebox`, `electrobun` (main + view), existing `App` / `ImportService` / `entry.repository`.
 
@@ -68,7 +68,7 @@
 | `tools/preview/mock_electroview.ts`       | Optional: route through Eden with `window.location.origin` instead of raw `fetch` proxy                         |
 | `src/shell/main/rpc/requests.ts`          | Delete after parity + tests moved (or keep thin re-export only if needed temporarily)                           |
 | `src/shell/main/rpc/requests.spec.ts`     | Migrate assertions to `server.spec.ts`, then delete                                                             |
-| `src/shared/rpc/kb_rpc_schema.ts`         | Remove `bun.requests` from schema type; keep `webview.messages` for Electrobun typing until simplified          |
+| `src/shared/rpc/app_rpc_schema.ts`        | Remove `bun.requests` from schema type; keep `webview.messages` for Electrobun typing until simplified          |
 | `assets/docs/specs/foundation/roadmap.md` | Mark Phase 5 done when verified                                                                                 |
 
 ---
@@ -80,7 +80,7 @@
 - [ ] **Step 1: Add packages**
 
 ```bash
-cd /Users/roalcantara/Work/bun/kb
+cd /Users/roalcantara/Work/bun/app
 bun add elysia @elysiajs/eden
 ```
 
@@ -176,7 +176,7 @@ export const showOpenDialogSchema = Type.Object(
 )
 ```
 
-- [ ] **Step 2: Change `requests.ts`** to import these symbols from `./schemas` and **delete** the duplicate inline `Type.Object` definitions (keep `kbRpc*` functions using `parseRpcPayload` until Task 9 removes the file).
+- [ ] **Step 2: Change `requests.ts`** to import these symbols from `./schemas` and **delete** the duplicate inline `Type.Object` definitions (keep `appRpc*` functions using `parseRpcPayload` until Task 9 removes the file).
 
 - [ ] **Step 3: Run tests**
 
@@ -412,7 +412,7 @@ git commit -m "feat(main): boot App and RpcApp with Electrobun host"
 
 **Files:** Modify `src/shell/renderer/rpc/client.ts`, add `src/shell/renderer/rpc/client.spec.ts` if missing (required by repo rule for touched files).
 
-**Goal:** Replace `kbWebviewRpc.request.*` with `treaty<RpcApp>(baseUrl, options?)` where:
+**Goal:** Replace `appWebviewRpc.request.*` with `treaty<RpcApp>(baseUrl, options?)` where:
 
 - **Preview / Happy-DOM:** `baseUrl` is `window.location.origin` (same as today’s `fetch('/api/...')`).
 - **Desktop:** `baseUrl` is a placeholder string; **`fetch`** is overridden via Eden’s `fetcher` (or documented Eden option) to call the Electrobun IPC bridge from Task 5.
@@ -518,12 +518,12 @@ git commit -m "feat(preview): forward HTTP to Elysia RpcApp"
 
 ## Task 9: Remove legacy request handlers
 
-**Files:** Delete `src/shell/main/rpc/requests.ts`, delete `src/shell/main/rpc/requests.spec.ts`, grep for `kbRpcDataHandlers` / `parseRpcPayload` imports.
+**Files:** Delete `src/shell/main/rpc/requests.ts`, delete `src/shell/main/rpc/requests.spec.ts`, grep for `appRpcDataHandlers` / `parseRpcPayload` imports.
 
 - [ ] **Step 1: Search**
 
 ```bash
-rg "requests\.ts|kbRpcDataHandlers|kbRpcTaskHandlers|kbRpcOpenHandlers|kbRpcDialogHandlers" src tools
+rg "requests\.ts|appRpcDataHandlers|appRpcTaskHandlers|appRpcOpenHandlers|appRpcDialogHandlers" src tools
 ```
 
 Remove all references.
@@ -543,9 +543,9 @@ git commit -m "refactor(rpc): remove manual Electrobun handler maps"
 
 ---
 
-## Task 10: Tighten `KbDesktopRpcSchema`
+## Task 10: Tighten `appDesktopRpcSchema`
 
-**Files:** Modify `src/shared/rpc/kb_rpc_schema.ts`
+**Files:** Modify `src/shared/rpc/app_rpc_schema.ts`
 
 **Goal:** Type-only schema for Electrobun **messages** path; remove unused `bun.requests` entries **or** replace `bun.requests` with `Record<string, never>` if Electrobun type requires the key — follow TypeScript errors.
 
@@ -554,7 +554,7 @@ git commit -m "refactor(rpc): remove manual Electrobun handler maps"
 - [ ] **Step 2: Commit**
 
 ```bash
-git add src/shared/rpc/kb_rpc_schema.ts
+git add src/shared/rpc/app_rpc_schema.ts
 git commit -m "refactor(rpc): slim Electrobun schema to messages-only"
 ```
 

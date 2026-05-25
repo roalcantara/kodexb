@@ -1,5 +1,5 @@
 <!-- markdownlint-disable-file -->
-# kb — Navigation Flow: Handoff Document
+# app — Navigation Flow: Handoff Document
 
 ## Bug
 
@@ -133,7 +133,7 @@ npx playwright test tools/test/nav-flow.spec.ts
 ## Quick start
 
 ```bash
-cd /Users/roalcantara/Work/bun/kb
+cd /Users/roalcantara/Work/bun/app
 bun test                          # 368 pass, confirms logic works
 open tools/test/nav-simulator.html # Standalone state machine demo
 bun dev                           # See the real app

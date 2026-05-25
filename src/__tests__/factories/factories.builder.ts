@@ -111,7 +111,7 @@ const rectangleFactory = Factory.define<{ x: number; y: number; width: number; h
 
 const windowSizeFactory = Factory.define<{ width: number; height: number }>(() => ({
   width: 680,
-  height: 420
+  height: 600
 }))
 
 const factories = {

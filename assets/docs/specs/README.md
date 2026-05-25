@@ -1,6 +1,6 @@
 <!-- markdownlint-disable-file -->
 
-# kb — feature specs (canonical location)
+# app — feature specs (canonical location)
 
 All **product and feature specifications** for this repository live under:
 
@@ -24,7 +24,7 @@ Foundation and roadmap:
 
 ## Do not use `docs/superpowers/`
 
-Some external skills default to `docs/superpowers/specs/` for brainstorm output. **kb does not commit there.** That path is listed in **`.gitignore`** so accidental files never enter the repo.
+Some external skills default to `docs/superpowers/specs/` for brainstorm output. **app does not commit there.** That path is listed in **`.gitignore`** so accidental files never enter the repo.
 
 When an AI skill or template says to write under `docs/superpowers/`, use the `spec-driven-development` skill shape and **redirect** to `assets/docs/specs/<slug>/` instead (create the slug folder if needed). Use `requirements.md`, `design.md`, `tasks.md`, and optional `handoff.md`.
 

@@ -30,12 +30,14 @@ import { buildListStatsForFilters } from './lib/app_list_stats_for_filters.util'
 import { fetchPreviewImageFromUrl } from './lib/app_preview_fetch.util'
 import type { AppShellHooks } from './lib/app_shell_hooks.types'
 import {
+  getWindowPositionFor,
   hideWindowFor,
   openExternalUrl,
   openInEditorFor,
   pasteInTerminalFor,
   quitFor,
   resizeWindowFor,
+  setWindowPositionFor,
   showOpenDialogFor
 } from './lib/app_shell_surface.util'
 import { runSourceImportSync } from './lib/app_sync.util'
@@ -316,6 +318,14 @@ export class App {
 
   hideWindow(): Promise<void> {
     return hideWindowFor(this.shellHooks)
+  }
+
+  getWindowPosition(): Promise<{ x: number; y: number } | null> {
+    return getWindowPositionFor(this.shellHooks)
+  }
+
+  setWindowPosition(x: number, y: number): Promise<void> {
+    return setWindowPositionFor(this.shellHooks, x, y)
   }
 
   quit(): Promise<void> {

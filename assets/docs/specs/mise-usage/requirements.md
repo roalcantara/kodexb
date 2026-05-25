@@ -11,7 +11,7 @@ inline and table-style task definitions.
 
 This spec defines a small policy system for Mise and Usage. The policy keeps
 `mise.toml` as the runtime source of truth, uses the official Usage CLI to
-validate embedded `usage` specs, and adds a repo-specific checker for kb's task
+validate embedded `usage` specs, and adds a repo-specific checker for app's task
 shape rules. It also records the documentation updates needed when canonical
 commands change.
 
@@ -134,7 +134,7 @@ commands change.
 2. WHEN the checker reports expected current violations, THEN the task plan
    SHALL record the findings before making the checker blocking.
 3. WHEN policy exceptions are encoded, THEN the checker SHALL become eligible
-   for `bun run lint` and the kb quality gate.
+   for `bun run lint` and the app quality gate.
 4. WHEN executable task behavior changes, THEN `bun run lint:mise`,
    `mise tasks --hidden`, relevant `mise run <task> --help` commands, and the
    full quality gate SHALL pass or a blocker SHALL be recorded.

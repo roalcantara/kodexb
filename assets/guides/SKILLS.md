@@ -1,4 +1,8 @@
-# Project Skill Guide
+---
+title: Project Skill Guide
+description: How the project classifies agent skills and how the project keeps that classification consistent.
+---
+<!-- markdownlint-disable-file -->
 
 This guide explains how the project classifies agent skills and how the
 project keeps that classification consistent. The structured source of truth

@@ -3,8 +3,8 @@
 
 ## Overview
 
-This report records the completed best-practices audit follow-up for kb. The
-audit started as a review against the project guide stack, `kb-context`, and
+This report records the completed best-practices audit follow-up for app. The
+audit started as a review against the project guide stack, `app-context`, and
 `electrobun-best-practices`; the implementation now turns the main findings
 into executable guards, focused tests, documentation, and task-runner support.
 
@@ -15,16 +15,16 @@ single source of truth for inline-suppression removal.
 
 ## Closure evidence
 
-| Check | Result |
-| --- | --- |
-| Focused list-section tests | Passed: 11 tests, 0 failures for `list_results_body`, `list_search_filter_chrome`, `list_overlay_hosts`, and `list_footer`. |
-| Focused app/RPC/renderer audit tests | Passed: 104 tests, 0 failures across RPC, preview fetch, tag suggestion, task YAML, sync modal, and stats sync. |
-| Typecheck | Passed with `bun run typecheck`. |
-| Mise task lint | Passed with `bun run lint:mise` after the root `perf` task migration. |
-| Spec audit | Passed: `mise run test:spec-audit --strict` reports zero missing non-exempt co-located specs. |
-| Performance thresholds | Passed: `mise run perf run --port 3457` reported 0 threshold violations. |
-| Performance comparison | `mise run perf compare` is expected to fail until the committed baseline is refreshed; latest threshold run passes, but the older baseline reports P1/P4 regressions. |
-| Full quality gate | Reached Stage 1 with typecheck, Biome, knip, dependency-cruiser, mise, jscpd, and ast-grep clean; blocked at `bunx @ls-lint/ls-lint` because this sandbox reports `bun is unable to write files to tempdir: PermissionDenied`. |
+| Check                                | Result                                                                                                                                                                                                                         |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Focused list-section tests           | Passed: 11 tests, 0 failures for `list_results_body`, `list_search_filter_chrome`, `list_overlay_hosts`, and `list_footer`.                                                                                                    |
+| Focused app/RPC/renderer audit tests | Passed: 104 tests, 0 failures across RPC, preview fetch, tag suggestion, task YAML, sync modal, and stats sync.                                                                                                                |
+| Typecheck                            | Passed with `bun run typecheck`.                                                                                                                                                                                               |
+| Mise task lint                       | Passed with `bun run lint:mise` after the root `perf` task migration.                                                                                                                                                          |
+| Spec audit                           | Passed: `mise run test:spec-audit --strict` reports zero missing non-exempt co-located specs.                                                                                                                                  |
+| Performance thresholds               | Passed: `mise run perf run --port 3457` reported 0 threshold violations.                                                                                                                                                       |
+| Performance comparison               | `mise run perf compare` is expected to fail until the committed baseline is refreshed; latest threshold run passes, but the older baseline reports P1/P4 regressions.                                                          |
+| Full quality gate                    | Reached Stage 1 with typecheck, Biome, knip, dependency-cruiser, mise, jscpd, and ast-grep clean; blocked at `bunx @ls-lint/ls-lint` because this sandbox reports `bun is unable to write files to tempdir: PermissionDenied`. |
 
 ## Completed findings
 
@@ -87,7 +87,7 @@ At closure, strict mode reports zero missing non-exempt specs.
 ### Electrobun trust-boundary docs
 
 `assets/guides/ELECTROBUN.md` and the main window bootstrap now document that
-kb's primary renderer is trusted packaged app content. Future external content
+app's primary renderer is trusted packaged app content. Future external content
 must use sandboxing, partition isolation, and navigation allowlists, with
 `electrobun-best-practices` and skill routing as the required reference.
 

@@ -1,4 +1,8 @@
-# .github/workflows/review.yml
+# Triggered on every non-draft PR targeting main.
+# 1. lint    — hadolint + bun lint
+# 2. test    — bun test
+# 3. cst     — build amd64 image (load only), run Container Structure Tests
+# 4. preview — push to DockerHub, set "review" env, post PR comment (only if CST passes)
 name: Review
 
 on:
@@ -10,10 +14,22 @@ concurrency:
   group: kb-${{ github.ref }}
   cancel-in-progress: true
 
+defaults:
+  run:
+    shell: bash
+
+env:
+  CI: true
+  FORCE_COLOR: true
+  # https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   hk:
-    if: github.event.pull_request.draft == false
-    runs-on: ubuntu-latest
+    # Ensure these jobs run only for PRs from branches in the main repo, not forks
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    name: HK - Enforces the local git-hook policy in CI so the policy doesn't depend on the honor system
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       checks: write
@@ -36,8 +52,10 @@ jobs:
           rm -f "$tmp"
 
   lint:
-    if: github.event.pull_request.draft == false
-    runs-on: ubuntu-latest
+    # Ensure these jobs run only for PRs from branches in the main repo, not forks
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    name: Lint - Runs the lint chain
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       checks: write
@@ -56,6 +74,7 @@ jobs:
           mise run lint check --depcruise --ci || e=$?
           mise run lint check --jscpd --ci || e=$?
           mise run lint check --ls --ci || e=$?
+          mise run lint check --hadolint --ci || e=$?
           mise run lint check --ast-grep --ci || e=$?
           mise run lint check --mise --ci || e=$?
           bun run typecheck || e=$?
@@ -80,8 +99,10 @@ jobs:
           retention-days: 7
 
   test:
-    if: github.event.pull_request.draft == false
-    runs-on: ubuntu-latest
+    # Ensure these jobs run only for PRs from branches in the main repo, not forks
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    name: Test - Runs the test suite
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       checks: write
@@ -111,9 +132,57 @@ jobs:
           fail_on_failure: true
           require_tests: true
 
-  build:
-    if: github.event.pull_request.draft == false
-    runs-on: ubuntu-latest
+  cst:
+    # Ensure these jobs run only for PRs from branches in the main repo, not forks
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    name: CST - Runs the Container Structure Tests
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-bun-project
+        with:
+          setup_mode: mise
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker image (linux/amd64, load locally)
+        run: mise run docker build --platform amd64
+      - name: Run Container Structure Tests
+        run: |
+          mkdir -p tmp/reports/cst
+          mise run docker test \
+            --platform amd64 \
+            --skip-build \
+            --junit tmp/reports/cst/junit.xml
+      - name: Append CST summary
+        if: always()
+        uses: ./.github/actions/junit-summary
+        with:
+          xml_path: tmp/reports/cst/junit.xml
+          output_path: ${{ github.step_summary }}
+          title: Container Structure Tests
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-cst
+          path: tmp/reports/cst
+          retention-days: 7
+      - uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: tmp/reports/cst/junit.xml
+          fail_on_failure: true
+          require_tests: true
+          check_name: Container Structure Tests
+
+  preview:
+    # Ensure these jobs run only for PRs from branches in the main repo, not forks
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    name: Preview - Builds the project
+    runs-on: ubuntu-24.04
+    needs: [lint, test, cst]
     permissions:
       contents: read
     steps:

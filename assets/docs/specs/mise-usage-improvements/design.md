@@ -134,7 +134,7 @@ mise run policy check --format=json
 NO_COLOR=1 COLUMNS=120 mise tasks
 mise tasks validate
 bun run typecheck
-bash .agents/skills/kb-quality-gate/scripts/gate.sh
+bash .agents/skills/app-quality-gate/scripts/gate.sh
 ```
 
 ## Decisions

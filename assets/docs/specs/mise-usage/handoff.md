@@ -49,17 +49,17 @@ the product has not released a public command contract.
 - `mise.toml`
 - `package.json`
 - `[tasks.policy]` inline Bun script in `mise.toml`
-- `.agents/skills/kb-context/SKILL.md`
-- `.agents/skills/kb-quality-gate/SKILL.md`
+- `.agents/skills/app-context/SKILL.md`
+- `.agents/skills/app-quality-gate/SKILL.md`
 
 Load these skills:
 
-- `kb-context`
+- `app-context`
 - `docs-writer`
 - `mise-tasks`
 - `mise-expert` only when touching `[tools]`, `[env]`, setup behavior, or tool
   versions
-- `kb-quality-gate` before declaring implementation complete
+- `app-quality-gate` before declaring implementation complete
 
 ## Implementation constraints
 
@@ -95,7 +95,7 @@ mise tasks validate
 mise tasks --hidden
 bun run lint:mise
 bun run typecheck
-bash .agents/skills/kb-quality-gate/scripts/gate.sh
+bash .agents/skills/app-quality-gate/scripts/gate.sh
 ```
 
 Strict mode means zero policy findings. It is not enough for
@@ -212,7 +212,7 @@ or reset behavior.
 
 ## Completion evidence
 
-Do not bulk-edit checkboxes. Each checked item in `tasks.md` must include an
+Do not bulk-edit checappoxes. Each checked item in `tasks.md` must include an
 `Evidence:` bullet naming the files changed and the commands that verified that
 specific item. The final report must include:
 
@@ -245,14 +245,14 @@ mise run policy check --strict
 Use this prompt if another agent needs to complete the work:
 
 ```txt
-Continue the Mise usage policy refactor in /Users/roalcantara/Work/bun/kb.
+Continue the Mise usage policy refactor in /Users/roalcantara/Work/bun/app.
 
 First read AGENTS.md, assets/guides/MISE_GUIDE.md, the full
 assets/docs/specs/mise-usage/ spec package, mise.toml, package.json, and
 the `[tasks.policy]` run block in mise.toml. Treat assets/docs/specs/normalise-tasks/ as
 historical context only.
 
-Load kb-context, docs-writer, mise-tasks, and kb-quality-gate. Load mise-expert
+Load app-context, docs-writer, mise-tasks, and app-quality-gate. Load mise-expert
 only if you touch [tools], [env], setup behavior, or tool versions.
 
 Phase 1 already exists: mise run policy check reports the current advisory
@@ -268,7 +268,7 @@ still works as expected with the new Usage syntax. For each changed or merged
 task, verify help output and a safe smoke or dry-run path. For unsafe tasks,
 verify metadata, help output, and syntax only.
 
-Do not mark checkboxes complete with a bulk script. Each checked item must have
+Do not mark checappoxes complete with a bulk script. Each checked item must have
 an Evidence bullet naming changed files and commands. The final
 NO_COLOR=1 COLUMNS=120 mise tasks output must byte-for-byte match the expected
 public task surface recorded in handoff.md. Do not edit that expected task
@@ -276,7 +276,7 @@ surface during implementation unless the maintainer explicitly approves the new
 snapshot first.
 
 Before declaring completion, run bun run lint:mise, bun run typecheck, and
-bash .agents/skills/kb-quality-gate/scripts/gate.sh. Update README, AGENTS,
+bash .agents/skills/app-quality-gate/scripts/gate.sh. Update README, AGENTS,
 Cursor guidance, package scripts, and active specs so they reference canonical
 commands.
 ```

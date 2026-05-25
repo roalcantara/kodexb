@@ -2,6 +2,7 @@
 title: Code Style Guide
 description: Coding patterns, 12-Factor, and SOLID principles for kodexb
 ---
+<!-- markdownlint-disable-file -->
 
 # Coding Style Guide
 

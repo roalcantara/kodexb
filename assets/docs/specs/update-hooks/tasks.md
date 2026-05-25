@@ -12,23 +12,23 @@ top-level public Mise task for hooks.
 
 Before editing implementation files, load:
 
-- `.agents/skills/kb-context/SKILL.md`
+- `.agents/skills/app-context/SKILL.md`
 - `mise-expert` when touching `mise.toml`
 - `mise-tasks` when touching Mise task behavior
 - `bash-scripting` if editing shell snippets
-- `.agents/skills/kb-quality-gate/SKILL.md` before declaring completion
+- `.agents/skills/app-quality-gate/SKILL.md` before declaring completion
 
 ## Phase 0 — Baseline and docs review
 
 - [x] 0.1 Capture the starting state.
   - Run `git status --short`.
-  - Run `rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" AGENTS.md README.md assets/guides .cursor .agents/skills/kb-quality-gate .github mise.toml package.json .pre-commit-config.yaml .gitlint --glob '!assets/docs/specs/**'`.
+  - Run `rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" AGENTS.md README.md assets/guides .cursor .agents/skills/app-quality-gate .github mise.toml package.json .pre-commit-config.yaml .gitlint --glob '!assets/docs/specs/**'`.
   - Record the current tool wiring in implementation notes before editing.
   - **Acceptance criteria:**
     - Baseline output is recorded in this task's `Evidence:` bullet.
     - Pre-existing unrelated changes are identified and not reverted.
   - _Requirements: UH-1, UH-5, UH-8_
-  - **Evidence:** `git status --short` shows only untracked `assets/docs/specs/update-hooks/*` files. `rg` baseline confirms 16 files contain old-tool references: README.md (pre-commit, gitlint), .gitlint, mise.toml (pre-commit = "4.4", pre-commit install), .pre-commit-config.yaml, AGENTS.md (gitlint in commit command summaries), assets/guides/DoD.md (pre-commit hooks pass), .cursor/commands/ (commit-all, commit-staged, commit-fixup all reference gitlint/pre-commit), .cursor/rules/gitlint-commit-messages.mdc (full gitlint contract), assets/guides/GIT_GUIDE.md (gitlint reference), .agents/skills/kb-quality-gate/ (SKILL.md mentions gitlint, gate_policy.sh has pre-commit comment), assets/guides/FCIS.guide.md (Pre-Commit Checklist heading only, no tool references). No pre-existing unrelated changes.
+  - **Evidence:** `git status --short` shows only untracked `assets/docs/specs/update-hooks/*` files. `rg` baseline confirms 16 files contain old-tool references: README.md (pre-commit, gitlint), .gitlint, mise.toml (pre-commit = "4.4", pre-commit install), .pre-commit-config.yaml, AGENTS.md (gitlint in commit command summaries), assets/guides/DoD.md (pre-commit hooks pass), .cursor/commands/ (commit-all, commit-staged, commit-fixup all reference gitlint/pre-commit), .cursor/rules/gitlint-commit-messages.mdc (full gitlint contract), assets/guides/GIT_GUIDE.md (gitlint reference), .agents/skills/app-quality-gate/ (SKILL.md mentions gitlint, gate_policy.sh has pre-commit comment), assets/guides/FCIS.guide.md (Pre-Commit Checklist heading only, no tool references). No pre-existing unrelated changes.
 
 ## Phase 1 — Add HK and remove old tool entrypoints
 
@@ -57,7 +57,7 @@ Before editing implementation files, load:
   - Make `commit-msg` call
     `bun tools/hooks/commit_message.script.ts {{commit_msg_file}}`.
   - Make `pre-push` run
-    `bash .agents/skills/kb-quality-gate/scripts/gate.sh` as an exclusive
+    `bash .agents/skills/app-quality-gate/scripts/gate.sh` as an exclusive
     step.
   - **Acceptance criteria:**
     - `mise exec -- hk validate` exits 0.
@@ -150,8 +150,8 @@ Before editing implementation files, load:
   - Update `assets/guides/GIT_COMMITS_GUIDE.md`.
   - Update `assets/guides/GIT_GUIDE.md`.
   - Update `assets/guides/DoD.md`.
-  - Update `.agents/skills/kb-quality-gate/SKILL.md`.
-  - Update `.agents/skills/kb-quality-gate/scripts/gate_policy.sh` comments.
+  - Update `.agents/skills/app-quality-gate/SKILL.md`.
+  - Update `.agents/skills/app-quality-gate/scripts/gate_policy.sh` comments.
   - **Acceptance criteria:**
     - Active docs describe HK as the hook runner and commit-message validator.
     - Active docs no longer instruct users to run gitlint.
@@ -174,7 +174,7 @@ Before editing implementation files, load:
   - Run:
     ```sh
     rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" \
-      AGENTS.md README.md assets/guides .cursor .agents/skills/kb-quality-gate \
+      AGENTS.md README.md assets/guides .cursor .agents/skills/app-quality-gate \
       .github mise.toml package.json \
       --glob '!assets/docs/specs/**'
     ```
@@ -232,7 +232,7 @@ Before editing implementation files, load:
     mise exec -- actionlint
     bun run typecheck
     git diff --check
-    bash .agents/skills/kb-quality-gate/scripts/gate.sh
+    bash .agents/skills/app-quality-gate/scripts/gate.sh
     ```
   - **Acceptance criteria:**
     - All commands exit 0.
@@ -272,9 +272,9 @@ Before editing implementation files, load:
 - **`mise run project prepare --ci`**: exits 0, no hooks installed ✓
 - **`rg -n "hk validate|hk check --all --check|hk run commit-msg" .github/workflows/review.yml`**: all 3 found ✓
 - **`rg -n "hk install" .github/workflows`**: no output ✓
-- **`rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" AGENTS.md README.md assets/guides .cursor .agents/skills/kb-quality-gate .github mise.toml package.json --glob '!assets/docs/specs/**'`**: only 2 intentional references (HK pre-commit concept, not old tool) ✓
+- **`rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" AGENTS.md README.md assets/guides .cursor .agents/skills/app-quality-gate .github mise.toml package.json --glob '!assets/docs/specs/**'`**: only 2 intentional references (HK pre-commit concept, not old tool) ✓
 - **`bun run lint:mise`**: pass ✓
 - **`mise exec -- actionlint`**: pass ✓
 - **`bun run typecheck`**: clean ✓
 - **`git diff --check`**: pass ✓
-- **`bash .agents/skills/kb-quality-gate/scripts/gate.sh`**: All gate stages passed ✓
+- **`bash .agents/skills/app-quality-gate/scripts/gate.sh`**: All gate stages passed ✓

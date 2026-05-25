@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 7 — Detail View: Populate `doc` column — Implementation Plan
 
-> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
 
 **Goal:** Wire `assembleDoc()` into `toKnowledge()` so every `Knowledge` row carries pre-assembled Markdown in its `doc` column, and switch `DetailPageView` to render `entry.doc` instead of client-side assembly.
 
@@ -13,16 +13,16 @@
 
 ## File Map
 
-| File | Action | What changes |
-|---|---|---|
-| `src/core/domain/models/knowledges/schemas/knowledge.schema.ts` | Modify | Add `doc: Type.String()` to `persistFieldsSchema` |
-| `src/core/domain/models/knowledges/factories/knowledge.factory.ts` | Modify | Import `assembleDoc`, call it inside `toKnowledge()` |
-| `src/__tests__/factories/factories.builder.ts` | Modify | Add `doc` defaults to all four Fishery factories |
-| `src/shell/app/db/entry.repository.ts` | Modify | `rowToKnowledge`: add `doc: row.doc`; `rowToParams`: replace `''` with `row.doc` |
-| `src/shell/renderer/components/detail/detail_view.component.tsx` | Modify | Use `entry.doc`, delete `notesToMarkdown()` / `notesToDoc()` / `NoteBlock` |
-| `src/shell/renderer/components/detail/detail_view.component.spec.tsx` | Create | 5 test cases for DetailPageView |
-| `src/core/domain/models/knowledges/detail/doc.assembler.spec.ts` | Modify | Add `toKnowledge()` integration test |
-| `src/__tests__/factories/factories.builder.spec.ts` | Modify | Assert factories produce non-empty `doc` |
+| File                                                                  | Action | What changes                                                                     |
+| --------------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------- |
+| `src/core/domain/models/knowledges/schemas/knowledge.schema.ts`       | Modify | Add `doc: Type.String()` to `persistFieldsSchema`                                |
+| `src/core/domain/models/knowledges/factories/knowledge.factory.ts`    | Modify | Import `assembleDoc`, call it inside `toKnowledge()`                             |
+| `src/__tests__/factories/factories.builder.ts`                        | Modify | Add `doc` defaults to all four Fishery factories                                 |
+| `src/shell/app/db/entry.repository.ts`                                | Modify | `rowToKnowledge`: add `doc: row.doc`; `rowToParams`: replace `''` with `row.doc` |
+| `src/shell/renderer/components/detail/detail_view.component.tsx`      | Modify | Use `entry.doc`, delete `notesToMarkdown()` / `notesToDoc()` / `NoteBlock`       |
+| `src/shell/renderer/components/detail/detail_view.component.spec.tsx` | Create | 5 test cases for DetailPageView                                                  |
+| `src/core/domain/models/knowledges/detail/doc.assembler.spec.ts`      | Modify | Add `toKnowledge()` integration test                                             |
+| `src/__tests__/factories/factories.builder.spec.ts`                   | Modify | Assert factories produce non-empty `doc`                                         |
 
 ---
 
@@ -32,7 +32,7 @@
 
 - [ ] Read `assets/docs/specs/phase-7-detail-view/design.md`
 - [ ] Read `assets/docs/specs/foundation/{requirements,design,roadmap}.md` — V1-4 section
-- [ ] Read `.agents/skills/kb-context/SKILL.md`, `.agents/skills/kb-testing/SKILL.md`
+- [ ] Read `.agents/skills/app-context/SKILL.md`, `.agents/skills/app-testing/SKILL.md`
 
 ---
 
@@ -189,11 +189,11 @@ const taskFactory = Factory.define<TaskKnowledge>(({ sequence }) => ({
   type: 'task',
   key: `Task title ${sequence}`,
   source: minimalEntriesYml,
-  desc: 'Build kb',
-  tags: ['dev', 'kb'],
+  desc: 'Build app',
+  tags: ['dev', 'app'],
   priority: 'high',
   status: 'doing',
-  doc: `# Task ${sequence}\n\n> Build kb`,
+  doc: `# Task ${sequence}\n\n> Build app`,
   createdAt: 1_700_000_000_000,
   updatedAt: 1_700_000_000_000
 }))
@@ -434,7 +434,7 @@ function makeTask(overrides: Partial<RpcKnowledge> = {}): RpcKnowledge {
   return {
     id: 2,
     type: 'task',
-    key: 'Build kb',
+    key: 'Build app',
     source: '/tmp/test.yaml',
     desc: 'Build the app',
     tags: ['dev'],
@@ -495,7 +495,7 @@ describe('DetailPageView', () => {
       const entry = makeTask({ doc: '# Task\n\nDo the thing.' })
       render(<DetailPageView {...baseProps} entry={entry} allEntries={[entry]} />)
 
-      expect(screen.getByText('Build kb')).toBeTruthy()
+      expect(screen.getByText('Build app')).toBeTruthy()
       // BadgeAccessory renders task status/priority pills
       expect(screen.getByText('doing')).toBeTruthy()
       expect(screen.getByText('high')).toBeTruthy()
@@ -510,10 +510,10 @@ describe('DetailPageView', () => {
       })
       render(<DetailPageView {...baseProps} entry={entry} />)
 
-      const linkBtn = screen.getByText('GitHub')
-      expect(linkBtn).toBeTruthy()
+      const linapptn = screen.getByText('GitHub')
+      expect(linapptn).toBeTruthy()
 
-      linkBtn.click()
+      linapptn.click()
       expect(openExternalMock).toHaveBeenCalledWith('https://github.com')
     })
   })

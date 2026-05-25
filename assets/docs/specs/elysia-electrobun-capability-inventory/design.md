@@ -5,7 +5,7 @@
 
 This spec creates a research pipeline for discovering capabilities in the
 upstream Elysia and Electrobun documentation, comparing those capabilities with
-kb's current architecture, and producing a maintainer-reviewable inventory.
+app's current architecture, and producing a maintainer-reviewable inventory.
 
 The inventory is not a backlog by itself. It is the evidence layer that lets the
 project later choose which capabilities are `MUST-HAVE`, `NICE-TO-HAVE`,
@@ -23,8 +23,8 @@ canonical links in the output.
 
 Local comparison sources:
 
-- `.agents/skills/kb-context/SKILL.md`
-- `.agents/skills/kb-rpc/SKILL.md`
+- `.agents/skills/app-context/SKILL.md`
+- `.agents/skills/app-rpc/SKILL.md`
 - `.agents/skills/electrobun-best-practices/SKILL.md`
 - `.cursor/electrobun-skill-routing.md`
 - `assets/guides/SKILLS.yml`
@@ -74,11 +74,11 @@ capabilities:
     pros:
       - Keeps renderer and main RPC types aligned.
     cons:
-      - Requires bridge discipline because kb does not call a normal HTTP server.
+      - Requires bridge discipline because app does not call a normal HTTP server.
     risks: []
     prerequisites: []
-    kb_touchpoints:
-      - .agents/skills/kb-rpc/SKILL.md
+    app_touchpoints:
+      - .agents/skills/app-rpc/SKILL.md
       - src/shell/main/rpc/server.ts
     candidate_stories:
       - Harden Eden bridge response and error contracts.
@@ -105,7 +105,7 @@ short summary, then use one table per ecosystem or area.
 
 Minimum table columns:
 
-| DONE | Ecosystem | Area | Feature     | Current kb usage             | Priority  | Pros                         | Cons             | Candidate story        |
+| DONE | Ecosystem | Area | Feature     | Current app usage            | Priority  | Pros                         | Cons             | Candidate story        |
 | ---- | --------- | ---- | ----------- | ---------------------------- | --------- | ---------------------------- | ---------------- | ---------------------- |
 | ✔    | Elysia    | RPC  | Eden Treaty | Used in renderer-main bridge | Undecided | Typed client/server contract | Bridge is custom | Harden bridge contract |
 
@@ -119,7 +119,7 @@ The research workflow has three passes:
 
 1. **Upstream discovery:** collect capability names, source URLs, and summaries
    from Elysia and Electrobun docs.
-2. **Local comparison:** search the kb repo for current use, partial use,
+2. **Local comparison:** search the app repo for current use, partial use,
    conflicts, or absence.
 3. **Backlog shaping:** add pros, cons, risks, prerequisites, and candidate
    story titles while leaving final priority undecided.
@@ -137,7 +137,7 @@ Maintainers classify capabilities after reviewing `inventory.yml` and
 | `must-have`    | Correctness, security, architectural alignment, or major debt reduction. |
 | `nice-to-have` | Clear value, reasonable effort, not urgent.                              |
 | `postponed`    | Likely useful later, but blocked by timing, roadmap, or prerequisites.   |
-| `meh`          | Interesting, but not worth backlog weight for kb.                        |
+| `meh`          | Interesting, but not worth backlog weight for app.                       |
 | `undecided`    | Research complete, maintainer classification pending.                    |
 
 ## Validation

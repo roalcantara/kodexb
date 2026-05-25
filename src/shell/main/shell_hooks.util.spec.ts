@@ -74,9 +74,13 @@ describe('createDeferredSyncEmit', () => {
 })
 
 describe('createShellHooks', () => {
-  const win = {
-    setSize: mock((_w: number, _h: number) => undefined),
-    minimize: mock(() => undefined)
+  function makeWin(position = { x: 0, y: 0 }) {
+    return {
+      setSize: mock((_w: number, _h: number) => undefined),
+      minimize: mock(() => undefined),
+      getPosition: mock(() => position),
+      setPosition: mock((_x: number, _y: number) => undefined)
+    }
   }
 
   afterEach(() => {
@@ -84,6 +88,7 @@ describe('createShellHooks', () => {
   })
 
   it('resizes and minimizes the window when present', () => {
+    const win = makeWin()
     const hooks = createShellHooks(() => win, {
       openExternal: mock(() => undefined),
       openFileDialog: async () => []
@@ -92,6 +97,44 @@ describe('createShellHooks', () => {
     hooks.hideWindow?.()
     expect(win.setSize).toHaveBeenCalledWith(800, 600)
     expect(win.minimize).toHaveBeenCalledTimes(1)
+  })
+
+  describe('window position hooks', () => {
+    it('reads the native window position', () => {
+      const win = makeWin({ x: 120, y: 240 })
+      const hooks = createShellHooks(() => win, {
+        openExternal: mock(() => undefined),
+        openFileDialog: async () => []
+      })
+      expect(hooks.getWindowPosition?.()).toEqual({ x: 120, y: 240 })
+      expect(win.getPosition).toHaveBeenCalledTimes(1)
+    })
+
+    it('returns null when no native window is available', () => {
+      const hooks = createShellHooks(() => null, {
+        openExternal: mock(() => undefined),
+        openFileDialog: async () => []
+      })
+      expect(hooks.getWindowPosition?.()).toBeNull()
+    })
+
+    it('forwards setWindowPosition to the native window', () => {
+      const win = makeWin()
+      const hooks = createShellHooks(() => win, {
+        openExternal: mock(() => undefined),
+        openFileDialog: async () => []
+      })
+      hooks.setWindowPosition?.(300, 450)
+      expect(win.setPosition).toHaveBeenCalledWith(300, 450)
+    })
+
+    it('silently no-ops setWindowPosition when the window is gone', () => {
+      const hooks = createShellHooks(() => null, {
+        openExternal: mock(() => undefined),
+        openFileDialog: async () => []
+      })
+      expect(() => hooks.setWindowPosition?.(10, 20)).not.toThrow()
+    })
   })
 
   it('maps showOpenDialog to Utils.openFileDialog shape', async () => {
@@ -125,21 +168,30 @@ describe('buildBrowserWindowCreateOptions', () => {
   const frame = factoryFor('rectangle')
   const rpc = { transport: 'test' }
 
-  it('targets the packaged shell renderer', () => {
+  it('targets the packaged shell renderer with the chromeless translucent window', () => {
     const opts = buildBrowserWindowCreateOptions(frame, rpc, 'linux')
     expect(opts.url).toBe(MAIN_WINDOW_RENDERER_URL)
     expect(opts.frame).toEqual(frame)
     expect(opts.rpc).toBe(rpc)
+    expect(opts.title).toBe('kb')
+    // Transparency is requested unconditionally so the rounded `.theme-app-shell`
+    // panel can float on the desktop without a hard window-bounds rectangle
+    // around it; non-darwin compositors that don't support window transparency
+    // will silently render an opaque background.
     expect(opts.transparent).toBe(true)
   })
 
   describe('by platform', () => {
-    it('uses a hidden title bar on macOS', () => {
+    it('hides the native title bar on macOS for the chromeless look', () => {
+      // `'hidden'` removes the title bar and the traffic-light buttons.
+      // The window is undraggable in this mode — window drag is wired
+      // separately through a JS-driven handler over RPC.
       expect(buildBrowserWindowCreateOptions(frame, rpc, 'darwin').titleBarStyle).toBe('hidden')
     })
 
-    it('uses the default title bar elsewhere', () => {
+    it('keeps the default native chrome elsewhere', () => {
       expect(buildBrowserWindowCreateOptions(frame, rpc, 'win32').titleBarStyle).toBe('default')
+      expect(buildBrowserWindowCreateOptions(frame, rpc, 'linux').titleBarStyle).toBe('default')
     })
   })
 })

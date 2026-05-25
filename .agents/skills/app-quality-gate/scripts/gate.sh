@@ -53,7 +53,7 @@ echo ""
 echo "0.5 / Policy (new suppressions + reminders)"
 echo "──────────────────────────────────────────"
 run_check --tee "Policy" \
-  env KB_GATE_EMBEDDED_POLICY=1 bash "$ROOT/.agents/skills/app-quality-gate/scripts/gate_policy.sh"
+  env GATE_EMBEDDED_POLICY=1 bash "$ROOT/.agents/skills/app-quality-gate/scripts/gate_policy.sh"
 
 echo ""
 echo "1 / Lint + Typecheck (typecheck + biome + knip + depcruise + jscpd + ls + ast-grep + mise)"

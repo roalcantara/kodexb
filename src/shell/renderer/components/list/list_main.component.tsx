@@ -6,6 +6,7 @@ import { useListMainEntryKeys } from '../../hooks/list/use_list_main_entry_keys.
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 import { useListSurfaceScrollRestore } from '../../hooks/list/use_list_surface_scroll_restore.hook'
 import { useVirtualListWindow } from '../../hooks/list/use_virtual_list_window.hook'
+import { useWindowDrag } from '../../hooks/list/use_window_drag.hook'
 import { useWindowViewNavKeys } from '../../hooks/list/use_window_view_nav_keys.hook'
 import { DetailPage } from '../../pages/detail/detail.page'
 import { cyclePriority, cycleStatus, getListStats } from '../../rpc/client'
@@ -148,6 +149,8 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
 
   const powertoysClass = viewState === 'detail' ? 'theme-app-shell theme-app-shell--detail-full' : 'theme-app-shell'
 
+  const { onMouseDown: onDragStripeMouseDown } = useWindowDrag()
+
   const closeDetailToList = useCallback(() => {
     p.sel.closeToList()
     focusListSurface(p.listSurfaceRef)
@@ -159,6 +162,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   return (
     <>
       <div className={powertoysClass} role="application" aria-label="Knowledge list">
+        <div className="theme-window-drag-stripe" role="presentation" aria-hidden onMouseDown={onDragStripeMouseDown} />
         <ListSearchFilterChrome
           isFullDetail={isFullDetail}
           showBackWithSearch={showBackWithSearch}
@@ -223,14 +227,14 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
             </div>
           ) : null}
         </div>
-      </div>
 
-      <ListFooter
-        footerStatus={footerStatus}
-        isFullDetail={isFullDetail}
-        detailEntry={detailEntry}
-        closeDetailToList={closeDetailToList}
-      />
+        <ListFooter
+          footerStatus={footerStatus}
+          isFullDetail={isFullDetail}
+          detailEntry={detailEntry}
+          closeDetailToList={closeDetailToList}
+        />
+      </div>
 
       <ListOverlayHosts
         p={p}

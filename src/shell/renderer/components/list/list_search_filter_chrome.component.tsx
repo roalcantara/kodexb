@@ -48,7 +48,9 @@ export function ListSearchFilterChrome({
   pushToast,
   anchorRect
 }: ListSearchFilterChromeProps) {
-  if (isFullDetail) return <div className="theme-window-drag-stripe theme-window-drag-stripe--detail" aria-hidden />
+  // Detail-full mode hides the search chrome entirely; window drag is
+  // handled by the native title bar (see `shell_hooks.util.ts`).
+  if (isFullDetail) return null
 
   return (
     <div className="theme-search">

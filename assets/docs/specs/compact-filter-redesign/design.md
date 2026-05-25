@@ -16,11 +16,11 @@ Normative technical contract for rebuilding the **compact** filter UI (portal un
 ### 1. Portal shell (`FilterDropdown` compact branch)
 
 - Keep **`createPortal(..., document.body)`** and **`compactFilterPortalBox`** for `top`, `left`, `width`, `maxHeight`.
-- The clip node (e.g. `.kb-pt-filter-portal-clip`) **shall** set **`height` and `maxHeight`** to the same **`maxHeight`** value returned by `compactFilterPortalBox` so descendants have a **definite block size** on the main axis.
+- The clip node (e.g. `.app-pt-filter-portal-clip`) **shall** set **`height` and `maxHeight`** to the same **`maxHeight`** value returned by `compactFilterPortalBox` so descendants have a **definite block size** on the main axis.
 
 ### 2. Card interior: CSS grid (three rows)
 
-The dropdown root (e.g. `.kb-pt-filter-dropdown`) **shall** be a **CSS grid** with **three rows** and one column (`minmax(0, 1fr)`):
+The dropdown root (e.g. `.app-pt-filter-dropdown`) **shall** be a **CSS grid** with **three rows** and one column (`minmax(0, 1fr)`):
 
 | Row | Role          | CSS                                                                       |
 | --- | ------------- | ------------------------------------------------------------------------- |
@@ -72,7 +72,7 @@ Extract a small pure module (e.g. `ensure_option_row_visible_in_scroll_root.util
 
 ### 6. CSS class strategy
 
-- Prefer **new BEM suffixes** under existing `kb-pt-filter-*` namespace for the rebuilt subtree (e.g. `.kb-pt-filter-scroll-root`, `.kb-pt-filter-sticky-facets`) so old rules can be deleted in one pass and **Biome/knip** stay clean.
+- Prefer **new BEM suffixes** under existing `app-pt-filter-*` namespace for the rebuilt subtree (e.g. `.app-pt-filter-scroll-root`, `.app-pt-filter-sticky-facets`) so old rules can be deleted in one pass and **Biome/knip** stay clean.
 - Keep **highlight** and **selected** class names compatible with existing list.css tokens **or** migrate both in the same change set with a single source of truth.
 
 ### 7. Files (suggested migration)

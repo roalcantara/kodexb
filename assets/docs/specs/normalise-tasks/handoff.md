@@ -13,8 +13,8 @@ merged into action-driven tasks where safe, complex scripts live in root
 `mise.toml`, and related docs point to canonical commands.
 
 Required context:
-- Read `.agents/skills/kb-context/SKILL.md`.
-- Read `.agents/skills/kb-quality-gate/SKILL.md`.
+- Read `.agents/skills/app-context/SKILL.md`.
+- Read `.agents/skills/app-quality-gate/SKILL.md`.
 - Read `assets/guides/MISE_GUIDE.md`.
 - Read `assets/docs/specs/normalise-tasks/requirements.md`.
 - Read `assets/docs/specs/normalise-tasks/design.md`.
@@ -36,7 +36,7 @@ Workflow:
 9. Update references in README, AGENTS, CLAUDE, package scripts, guides, and
    specs after canonical commands change.
 10. Run phase-specific verification.
-11. Update the ledger and checkboxes in `tasks.md`.
+11. Update the ledger and checappoxes in `tasks.md`.
 12. Run the full quality gate when executable workflow behavior changed.
 13. Commit exactly that phase's files using the suggested commit command.
 
@@ -53,7 +53,7 @@ Verification expectations:
 - `mise run <task> --help` for each task with `usage`.
 - Low-risk smoke commands for migrated dispatch logic.
 - `git diff --check` for touched files.
-- `bash .agents/skills/kb-quality-gate/scripts/gate.sh` before phase
+- `bash .agents/skills/app-quality-gate/scripts/gate.sh` before phase
   completion when executable workflow behavior changed.
 
 Completion:

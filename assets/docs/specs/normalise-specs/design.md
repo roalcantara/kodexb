@@ -103,13 +103,13 @@ approved in the ledger.
 
 Use this lightweight ledger row shape in `tasks.md`:
 
-| Field | Meaning |
-| --- | --- |
-| Layer | `core`, `shared`, `shell/app`, `shell/main`, `renderer`, or `test-helper` |
-| Files | Count or path group touched in the phase |
-| Categories | Testing-guide categories addressed |
-| Exceptions | Approved exception count and reason summary |
-| Verification | Focused command and quality gate result |
+| Field        | Meaning                                                                   |
+| ------------ | ------------------------------------------------------------------------- |
+| Layer        | `core`, `shared`, `shell/app`, `shell/main`, `renderer`, or `test-helper` |
+| Files        | Count or path group touched in the phase                                  |
+| Categories   | Testing-guide categories addressed                                        |
+| Exceptions   | Approved exception count and reason summary                               |
+| Verification | Focused command and quality gate result                                   |
 
 No new runtime data model is required.
 
@@ -135,7 +135,7 @@ Every implementation phase runs:
 1. Focused `bun test` commands for touched directories or files.
 2. `mise run test:spec-audit` when the phase touches co-location or coverage
    expectations and the task exists.
-3. `bash .agents/skills/kb-quality-gate/scripts/gate.sh` before marking the
+3. `bash .agents/skills/app-quality-gate/scripts/gate.sh` before marking the
    phase complete.
 
 The current `test:spec-audit` task checks co-location only. It does not enforce

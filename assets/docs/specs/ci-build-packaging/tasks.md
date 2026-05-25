@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 2 — CI / Build / Packaging Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
 
 **Goal:** Stand up the three GitHub Actions workflows (`review`, `release`, `publish`), three composite actions, `release-it` configuration, env-gated macOS signing, local mirror tasks under `mise run ci:*`, and the supporting documentation needed to ship signed Electrobun builds for macOS arm64 and Linux x64/arm64.
 
@@ -302,7 +302,7 @@ EOF
 /** biome-ignore-all lint/style/useNamingConvention: false positive */
 import type { ElectrobunConfig } from 'electrobun'
 
-const kbIconset = 'assets/icons/kb-logo.iconset'
+const appIconset = 'assets/icons/app-logo.iconset'
 
 const developerId = process.env.ELECTROBUN_DEVELOPER_ID ?? ''
 const appleId     = process.env.ELECTROBUN_APPLEID ?? ''
@@ -317,8 +317,8 @@ const canNotarize = canCodesign
 
 export default {
   app: {
-    name: 'kb',
-    identifier: 'sh.blackboard.kb',
+    name: 'app',
+    identifier: 'sh.blackboard.app',
     version: '0.1.0'
   },
   build: {
@@ -335,7 +335,7 @@ export default {
       'assets/images': 'views/shell/assets/images'
     },
     mac: {
-      icons: kbIconset,
+      icons: appIconset,
       bundleCEF: false,
       codesign: canCodesign,
       notarize: canNotarize,
@@ -348,7 +348,7 @@ export default {
       }
     },
     linux: {
-      icon: `${kbIconset}/icon_256x256.png`,
+      icon: `${appIconset}/icon_256x256.png`,
       bundleCEF: false
     }
   }
@@ -722,7 +722,7 @@ mkdir -p /tmp/junit-test
 cat > /tmp/junit-test/junit.xml <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites tests="42" failures="1" skipped="2" time="3.14">
-  <testsuite name="kb" tests="42" failures="1" skipped="2" time="3.14"/>
+  <testsuite name="app" tests="42" failures="1" skipped="2" time="3.14"/>
 </testsuites>
 EOF
 bash -c '
@@ -763,7 +763,7 @@ on:
     branches: [main]
 
 concurrency:
-  group: kb-${{ github.ref }}
+  group: app-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -998,7 +998,7 @@ on:
     branches: [main]
 
 concurrency:
-  group: kb-release
+  group: app-release
   cancel-in-progress: false
 
 jobs:
@@ -1137,7 +1137,7 @@ git commit -m "$(cat <<'EOF'
 ci: Add release.yml workflow
 
 Triggered on push to main. Concurrency group
-"kb-release" with cancel-in-progress=false (never
+"app-release" with cancel-in-progress=false (never
 interrupt an in-flight release). Adds:
 
 - mise.toml: 4 ci:release tasks (check-squash,
@@ -1191,14 +1191,14 @@ This commit bundles the `ci:publish` mise mirror tasks, the `package-electrobun`
     set -euo pipefail
     case "$usage_target" in
       linux-*)
-        tar czf "kb-${usage_version}-${usage_target}.tar.gz" -C dist .
+        tar czf "app-${usage_version}-${usage_target}.tar.gz" -C dist .
         ;;
       darwin-*)
         DMG="$(find dist -maxdepth 3 -type f -name '*.dmg' | head -n 1)"
         [[ -n "$DMG" ]] || { echo "ERROR: no .dmg under dist/"; exit 1; }
         suffix=""
         [[ -z "${ELECTROBUN_DEVELOPER_ID:-}" ]] && suffix="-unsigned"
-        mv "$DMG" "kb-${usage_version}-${usage_target}${suffix}.dmg"
+        mv "$DMG" "app-${usage_version}-${usage_target}${suffix}.dmg"
         ;;
       *)
         echo "ERROR: unknown target $usage_target"; exit 1
@@ -1274,7 +1274,7 @@ runs:
         VER="${V#v}"
         case "$P" in
           linux)
-            OUT="kb-${VER}-${T}.tar.gz"
+            OUT="app-${VER}-${T}.tar.gz"
             tar czf "$OUT" -C "$D" .
             ;;
           mac)
@@ -1284,9 +1284,9 @@ runs:
               exit 1
             fi
             if [[ -z "$ID" ]]; then
-              OUT="kb-${VER}-${T}-unsigned.dmg"
+              OUT="app-${VER}-${T}-unsigned.dmg"
             else
-              OUT="kb-${VER}-${T}.dmg"
+              OUT="app-${VER}-${T}.dmg"
             fi
             mv "$DMG" "$OUT"
             ;;
@@ -1302,21 +1302,21 @@ runs:
 - [ ] **Step 4: Smoke-test the linux branch of the composite locally**
 
 ```bash
-mkdir -p /tmp/pkg-test/dist && echo dummy > /tmp/pkg-test/dist/kb
+mkdir -p /tmp/pkg-test/dist && echo dummy > /tmp/pkg-test/dist/app
 ( cd /tmp/pkg-test &&
   T=linux-x64 P=linux V=0.1.0 D=dist ID='' bash -c '
     set -euo pipefail
     VER="${V#v}"
-    OUT="kb-${VER}-${T}.tar.gz"
+    OUT="app-${VER}-${T}.tar.gz"
     tar czf "$OUT" -C "$D" .
     echo "archive=$OUT"
   '
 )
-ls /tmp/pkg-test/kb-0.1.0-linux-x64.tar.gz && echo OK
+ls /tmp/pkg-test/app-0.1.0-linux-x64.tar.gz && echo OK
 rm -rf /tmp/pkg-test
 ```
 
-Expected: `archive=kb-0.1.0-linux-x64.tar.gz`, `OK`.
+Expected: `archive=app-0.1.0-linux-x64.tar.gz`, `OK`.
 
 - [ ] **Step 5: Create `.github/workflows/publish.yml`**
 
@@ -1336,7 +1336,7 @@ on:
         type: string
 
 concurrency:
-  group: kb-${{ github.ref_name || inputs.tag }}
+  group: app-${{ github.ref_name || inputs.tag }}
   cancel-in-progress: true
 
 jobs:
@@ -1554,16 +1554,16 @@ jobs:
           ### macOS
 
           1. Download the `.dmg` for your architecture.
-          2. Open it, drag `kb.app` to `/Applications`.
+          2. Open it, drag `app.app` to `/Applications`.
           3. If the build is the unsigned fallback (filename ends with `-unsigned.dmg`), bypass Gatekeeper once:
-             `xattr -d com.apple.quarantine /Applications/kb.app`
+             `xattr -d com.apple.quarantine /Applications/app.app`
 
           ### Linux
 
           1. Download the `.tar.gz` for your architecture.
-          2. `tar xzf kb-*.tar.gz && cd kb-*`
-          3. `chmod +x kb && ./kb`
-          4. (Optional) `cp kb ~/.local/bin/`
+          2. `tar xzf app-*.tar.gz && cd app-*`
+          3. `chmod +x app && ./app`
+          4. (Optional) `cp app ~/.local/bin/`
 
           ## Verify
 
@@ -1593,15 +1593,15 @@ This step runs a real `bun run build:prod` (Electrobun production build), which 
 
 ```bash
 mise run ci:publish --version=0.1.0
-ls kb-0.1.0-* checksums.txt
+ls app-0.1.0-* checksums.txt
 ```
 
-Expected: archive named `kb-0.1.0-<host-target>.tar.gz` (or `.dmg` on macOS) and a populated `checksums.txt` are produced in the repo root. The mac path produces `-unsigned.dmg` because `ELECTROBUN_DEVELOPER_ID` is not set locally.
+Expected: archive named `app-0.1.0-<host-target>.tar.gz` (or `.dmg` on macOS) and a populated `checksums.txt` are produced in the repo root. The mac path produces `-unsigned.dmg` because `ELECTROBUN_DEVELOPER_ID` is not set locally.
 
 - [ ] **Step 8: Clean up the local artifacts (don't commit them)**
 
 ```bash
-rm -f kb-0.1.0-*.tar.gz kb-0.1.0-*.dmg checksums.txt
+rm -f app-0.1.0-*.tar.gz app-0.1.0-*.dmg checksums.txt
 ```
 
 - [ ] **Step 9: Commit**
@@ -1652,7 +1652,7 @@ ls assets/guides/ || mkdir -p assets/guides
 <!-- markdownlint-disable-file -->
 # CI / CD Guide
 
-Operational manual for kb's GitHub Actions pipeline. Pairs with
+Operational manual for app's GitHub Actions pipeline. Pairs with
 [`design.md`](../docs/specs/ci-build-packaging/design.md) (the normative
 contract).
 
@@ -1666,11 +1666,11 @@ contract).
 
 Build targets:
 
-| Target         | Runner             | Artifact                                                            |
-| -------------- | ------------------ | ------------------------------------------------------------------- |
-| `linux-x64`    | `ubuntu-latest`    | `kb-<ver>-linux-x64.tar.gz`                                         |
-| `linux-arm64`  | `ubuntu-24.04-arm` | `kb-<ver>-linux-arm64.tar.gz`                                       |
-| `darwin-arm64` | `macos-latest`     | `kb-<ver>-darwin-arm64.dmg` or `kb-<ver>-darwin-arm64-unsigned.dmg` |
+| Target         | Runner             | Artifact                                                              |
+| -------------- | ------------------ | --------------------------------------------------------------------- |
+| `linux-x64`    | `ubuntu-latest`    | `app-<ver>-linux-x64.tar.gz`                                          |
+| `linux-arm64`  | `ubuntu-24.04-arm` | `app-<ver>-linux-arm64.tar.gz`                                        |
+| `darwin-arm64` | `macos-latest`     | `app-<ver>-darwin-arm64.dmg` or `app-<ver>-darwin-arm64-unsigned.dmg` |
 
 ## Secrets and variables
 
@@ -1714,7 +1714,7 @@ to producing an unsigned `.dmg`.
 #### `RELEASE_SIGNING_SSH_KEY` + `RELEASE_SIGNING_SIGNER_PUB`
 
 ```sh
-ssh-keygen -t ed25519 -C "kb release signing" -f release_signing -N ''
+ssh-keygen -t ed25519 -C "app release signing" -f release_signing -N ''
 gh secret set RELEASE_SIGNING_SSH_KEY < release_signing
 gh variable set RELEASE_SIGNING_SIGNER_PUB < release_signing.pub
 shred -u release_signing release_signing.pub  # macOS: rm -P
@@ -1759,7 +1759,7 @@ mise exec -- actionlint   # validates all .github/workflows/*.yml
 ## Workflow: review.yml
 
 **Trigger:** PR opened / synchronized / reopened / ready-for-review.
-**Concurrency:** `kb-${{ github.ref }}`, cancel-in-progress.
+**Concurrency:** `app-${{ github.ref }}`, cancel-in-progress.
 
 Jobs:
 
@@ -1785,7 +1785,7 @@ Jobs:
 
 ## Workflow: release.yml
 
-**Trigger:** push to `main`. **Concurrency:** `kb-release`,
+**Trigger:** push to `main`. **Concurrency:** `app-release`,
 **cancel-in-progress: false** — never interrupt an in-flight release.
 
 Steps (in order):
@@ -1886,10 +1886,10 @@ Only this job touches the GitHub Release surface.
 
 ### macOS signing fallback
 
-| `ELECTROBUN_DEVELOPER_ID` | Mac leg behavior                                                                  | Artifact filename                    |
-| ------------------------- | --------------------------------------------------------------------------------- | ------------------------------------ |
-| empty / unset             | Build unsigned `.app`, Electrobun produces unsigned `.dmg`, skips notarize/staple | `kb-<ver>-darwin-arm64-unsigned.dmg` |
-| non-empty                 | Full sign + notarize + staple via Electrobun's pipeline                           | `kb-<ver>-darwin-arm64.dmg`          |
+| `ELECTROBUN_DEVELOPER_ID` | Mac leg behavior                                                                  | Artifact filename                     |
+| ------------------------- | --------------------------------------------------------------------------------- | ------------------------------------- |
+| empty / unset             | Build unsigned `.app`, Electrobun produces unsigned `.dmg`, skips notarize/staple | `app-<ver>-darwin-arm64-unsigned.dmg` |
+| non-empty                 | Full sign + notarize + staple via Electrobun's pipeline                           | `app-<ver>-darwin-arm64.dmg`          |
 
 ### Common failures
 
@@ -1930,7 +1930,7 @@ locally (CI-ephemeral keychain, GitHub OIDC token, repo write).
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | Workflow can't find composite action                    | Missing `actions/checkout@v4` step before the `uses: ./.github/...` reference                          |
 | `setup_mode: mise` step fails silently in caching       | Stale `~/.bun/install/cache` key; bump the cache key or delete it via UI                               |
-| Two `release.yml` runs racing                           | Concurrency group is per-`kb-release` and `cancel-in-progress: false` — let one finish                 |
+| Two `release.yml` runs racing                           | Concurrency group is per-`app-release` and `cancel-in-progress: false` — let one finish                |
 | Tag created but no draft release                        | release-it ran with no releasable commits (`chore:` only, etc.) — expected                             |
 | Draft release exists but `publish.yml` doesn't fire     | Trigger is `workflow_run: completed` — only fires when Release completes successfully                  |
 | ARM Linux leg fails with `bash: bun: command not found` | `setup-bun-project` action didn't install on `ubuntu-24.04-arm`; verify mise.toml has `bun = "latest"` |
@@ -1996,7 +1996,7 @@ Find the existing block:
 
 ```sh
 bun run dev       # Build and launch in dev mode (Electrobun window)
-bun run build     # Production build — dist/kb.app (macOS)
+bun run build     # Production build — dist/app.app (macOS)
 bun run test      # Run unit tests
 bun run typecheck # Type-check without emitting
 ```
@@ -2009,7 +2009,7 @@ Replace with:
 
 ```sh
 bun run dev       # Build and launch in dev mode (Electrobun window)
-bun run build     # Production build — dist/kb.app (macOS)
+bun run build     # Production build — dist/app.app (macOS)
 bun run test      # Run unit tests
 bun run typecheck # Type-check without emitting
 bun run lint      # Run the full Phase-1 quality chain
@@ -2045,15 +2045,15 @@ Three workflows handle review, release, and publishing:
 
 Build targets:
 
-| Target         | Runner             | Artifact                                                  |
-| -------------- | ------------------ | --------------------------------------------------------- |
-| `linux-x64`    | `ubuntu-latest`    | `kb-<ver>-linux-x64.tar.gz`                               |
-| `linux-arm64`  | `ubuntu-24.04-arm` | `kb-<ver>-linux-arm64.tar.gz`                             |
-| `darwin-arm64` | `macos-latest`     | `kb-<ver>-darwin-arm64.dmg` (or `-unsigned.dmg` fallback) |
+| Target         | Runner             | Artifact                                                   |
+| -------------- | ------------------ | ---------------------------------------------------------- |
+| `linux-x64`    | `ubuntu-latest`    | `app-<ver>-linux-x64.tar.gz`                               |
+| `linux-arm64`  | `ubuntu-24.04-arm` | `app-<ver>-linux-arm64.tar.gz`                             |
+| `darwin-arm64` | `macos-latest`     | `app-<ver>-darwin-arm64.dmg` (or `-unsigned.dmg` fallback) |
 
 macOS code signing is gated by `ELECTROBUN_DEVELOPER_ID`; if unset, the mac
 leg produces an unsigned `.dmg` that can be installed with
-`xattr -d com.apple.quarantine /Applications/kb.app`.
+`xattr -d com.apple.quarantine /Applications/app.app`.
 
 See the [CI / CD guide][20] for full operational detail (secrets,
 provisioning, troubleshooting, local mirroring).

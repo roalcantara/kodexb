@@ -25,7 +25,7 @@ to own all I/O; the renderer continues to own all UI.
   `updateTask`, `pasteInTerminal`, etc.). This phase only exposes them through
   the new transport; behaviour remains as-is.
 - Adding new RPC capabilities beyond what exists today in
-  `src/shell/main/rpc/requests.ts` and `src/shared/rpc/kb_rpc_schema.ts`.
+  `src/shell/main/rpc/requests.ts` and `src/shared/rpc/app_rpc_schema.ts`.
 - Changing the YAML import pipeline, DB schema, or core validation behaviour.
 
 ---

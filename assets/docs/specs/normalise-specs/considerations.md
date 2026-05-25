@@ -36,7 +36,7 @@ An agent must synthesize from five sections. A single annotated example at the t
 
 ### 5. RSpec mapping table is noise for TypeScript-native agents
 
-Lines 168-188 map every Better Specs guideline to the kb equivalent. This is useful for maintainers transitioning from Rails, but noise for agents who never wrote RSpec. Consider moving it to a collapsible appendix or a separate migration doc.
+Lines 168-188 map every Better Specs guideline to the app equivalent. This is useful for maintainers transitioning from Rails, but noise for agents who never wrote RSpec. Consider moving it to a collapsible appendix or a separate migration doc.
 
 ### 6. `let`/`beforeEach` guidance is scattered
 

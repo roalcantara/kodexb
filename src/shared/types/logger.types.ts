@@ -23,7 +23,7 @@ export type LogProps<L> = {
 }
 export type CreateLoggerOpts = {
   /**
-   * App log verbosity (Logtape `['kb']` lowestLevel).
+   * App log verbosity (Logtape `['app']` lowestLevel).
    * When set with `debug`, `verbosity` wins.
    */
   verbosity?: import('../logging/log_verbosity').LogVerbosity

@@ -4,7 +4,7 @@
 ## Overview
 
 HK becomes the repository's Git lifecycle runner. Mise remains the source of
-truth for tool versions and project commands. The kb quality gate remains the
+truth for tool versions and project commands. The app quality gate remains the
 source of truth for full repository validation.
 
 The migration intentionally does not use HK's built-in
@@ -27,7 +27,7 @@ mise run project prepare
   -> pre-commit install --hook-type commit-msg
 
 .cursor/commands/commit-*
-  -> bash .agents/skills/kb-quality-gate/scripts/gate.sh
+  -> bash .agents/skills/app-quality-gate/scripts/gate.sh
   -> git commit
   -> pre-commit run gitlint --hook-stage commit-msg --commit-msg-filename <tmp>
 ```
@@ -47,14 +47,14 @@ git commit
 
 git push
   -> hk run pre-push
-      -> bash .agents/skills/kb-quality-gate/scripts/gate.sh
+      -> bash .agents/skills/app-quality-gate/scripts/gate.sh
 
 mise run project prepare
   -> bun install
   -> hk install --mise
 
 .cursor/commands/commit-*
-  -> bash .agents/skills/kb-quality-gate/scripts/gate.sh
+  -> bash .agents/skills/app-quality-gate/scripts/gate.sh
   -> git commit
   -> hk run commit-msg <tmp>
 ```
@@ -154,9 +154,9 @@ commit message policy: skipped generated git subject
 commit message policy: skipped dependabot author
 ```
 
-The script detects Dependabot through `KB_HOOK_AUTHOR_NAME`, then
+The script detects Dependabot through `HOOK_AUTHOR_NAME`, then
 `GIT_AUTHOR_NAME`, then `git var GIT_AUTHOR_IDENT`. Tests use
-`KB_HOOK_AUTHOR_NAME` so they are deterministic and do not depend on local Git
+`HOOK_AUTHOR_NAME` so they are deterministic and do not depend on local Git
 identity.
 
 Policy details:
@@ -214,8 +214,8 @@ Replace old-tool references in active guidance:
 - `assets/guides/GIT_GUIDE.md`: remove `.gitlint` as the current policy
   reference.
 - `assets/guides/DoD.md`: replace pre-commit/gitlint hook wording with HK.
-- `.agents/skills/kb-quality-gate/SKILL.md`: replace gitlint wording with HK.
-- `.agents/skills/kb-quality-gate/scripts/gate_policy.sh`: update the comment
+- `.agents/skills/app-quality-gate/SKILL.md`: replace gitlint wording with HK.
+- `.agents/skills/app-quality-gate/scripts/gate_policy.sh`: update the comment
   that says staged diff exists for pre-commit.
 
 Historical specs under `assets/docs/specs/**` may mention the old tools as
@@ -274,7 +274,7 @@ The migration is complete only when all layers pass:
 7. Workflow validation:
    `mise exec -- actionlint`
 8. Current repo gate:
-   `bash .agents/skills/kb-quality-gate/scripts/gate.sh`
+   `bash .agents/skills/app-quality-gate/scripts/gate.sh`
 9. Diff hygiene:
    `git diff --check`
 
@@ -310,7 +310,7 @@ the implementation.
 
 ### Decision: Use HK for lifecycle hooks, not as the full quality gate engine
 
-**Context:** The kb quality gate is already explicit, ordered, and project
+**Context:** The app quality gate is already explicit, ordered, and project
 specific.
 
 **Decision:** HK runs fast pre-commit hygiene, commit-message validation, and

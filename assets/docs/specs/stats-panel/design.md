@@ -14,12 +14,12 @@ No new RPC routes, no new pages, no DB changes. One RPC type extension + one UI 
 
 ## SCOPE DECISIONS
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| Stats location | Settings page section (tab) | Reuses existing navigation; no new page component |
-| DB path + size | Extend `getStats()` RPC | Single call; data is naturally co-located with counts |
-| File size format | Human-readable (KB/MB) computed in renderer | `fs.stat.size` returns bytes; renderer formats |
-| Auto-refresh | Reuse existing `refreshStats()` in sync handler | Already wired; no changes needed |
+| Decision         | Choice                                          | Rationale                                             |
+| ---------------- | ----------------------------------------------- | ----------------------------------------------------- |
+| Stats location   | Settings page section (tab)                     | Reuses existing navigation; no new page component     |
+| DB path + size   | Extend `getStats()` RPC                         | Single call; data is naturally co-located with counts |
+| File size format | Human-readable (app/MB) computed in renderer    | `fs.stat.size` returns bytes; renderer formats        |
+| Auto-refresh     | Reuse existing `refreshStats()` in sync handler | Already wired; no changes needed                      |
 
 ---
 
@@ -49,7 +49,7 @@ Sync completes → syncComplete push message
 
 ### Type extension
 
-**`src/shared/rpc/kb_rpc_schema.ts`**
+**`src/shared/rpc/app_rpc_schema.ts`**
 
 Add to `RpcDbStats`:
 ```ts
@@ -101,26 +101,26 @@ Add a "Stats" section after Display:
 
 ```tsx
 {/* Stats Section */}
-<section className="kb-settingsSection">
-  <h2 className="kb-settingsSection-title">Stats</h2>
-  <div className="kb-settingsRow">
-    <table className="kb-statsTable">
+<section className="app-settingsSection">
+  <h2 className="app-settingsSection-title">Stats</h2>
+  <div className="app-settingsRow">
+    <table className="app-statsTable">
       <tbody>
-        <tr><td>Bookmarks</td><td className="kb-statsCount">{s.stats?.byType?.bookmark ?? 0}</td></tr>
-        <tr><td>Commands</td><td className="kb-statsCount">{s.stats?.byType?.command ?? 0}</td></tr>
-        <tr><td>Cheats</td><td className="kb-statsCount">{s.stats?.byType?.cheat ?? 0}</td></tr>
-        <tr><td>Tasks</td><td className="kb-statsCount">{s.stats?.byType?.task ?? 0}</td></tr>
-        <tr className="kb-statsTotal"><td>Total</td><td className="kb-statsCount">{s.stats?.total ?? 0}</td></tr>
+        <tr><td>Bookmarks</td><td className="app-statsCount">{s.stats?.byType?.bookmark ?? 0}</td></tr>
+        <tr><td>Commands</td><td className="app-statsCount">{s.stats?.byType?.command ?? 0}</td></tr>
+        <tr><td>Cheats</td><td className="app-statsCount">{s.stats?.byType?.cheat ?? 0}</td></tr>
+        <tr><td>Tasks</td><td className="app-statsCount">{s.stats?.byType?.task ?? 0}</td></tr>
+        <tr className="app-statsTotal"><td>Total</td><td className="app-statsCount">{s.stats?.total ?? 0}</td></tr>
       </tbody>
     </table>
   </div>
-  <div className="kb-settingsRow">
+  <div className="app-settingsRow">
     <label>Database Path</label>
-    <div className="kb-settingsValue">{s.stats?.dbPath ?? '—'}</div>
+    <div className="app-settingsValue">{s.stats?.dbPath ?? '—'}</div>
   </div>
-  <div className="kb-settingsRow">
+  <div className="app-settingsRow">
     <label>Database Size</label>
-    <div className="kb-settingsValue">{formatBytes(s.stats?.dbSize ?? 0)}</div>
+    <div className="app-settingsValue">{formatBytes(s.stats?.dbSize ?? 0)}</div>
   </div>
 </section>
 ```
@@ -130,7 +130,7 @@ Add `formatBytes` utility to the settings page (or shared utils):
 function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B'
   const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
+  const sizes = ['B', 'app', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`
 }
@@ -149,19 +149,19 @@ Update `SettingsRpc` if it doesn't already include `stats`/`dbStats`. May not ne
 **`src/shell/renderer/styles/list.css`**
 
 ```css
-.kb-statsTable { width: 100%; border-collapse: collapse; }
-.kb-statsTable td { padding: 6px 12px; font-size: 0.875rem; color: var(--kb-text); }
-.kb-statsCount { text-align: right; font-variant-numeric: tabular-nums; }
-.kb-statsTotal td { border-top: 1px solid var(--kb-border); font-weight: 600; padding-top: 8px; }
+.app-statsTable { width: 100%; border-collapse: collapse; }
+.app-statsTable td { padding: 6px 12px; font-size: 0.875rem; color: var(--app-text); }
+.app-statsCount { text-align: right; font-variant-numeric: tabular-nums; }
+.app-statsTotal td { border-top: 1px solid var(--app-border); font-weight: 600; padding-top: 8px; }
 ```
 
 ---
 
 ## TESTING STRATEGY
 
-| Layer | Approach | File |
-|---|---|---|
-| App.getStats | Assert response includes `dbPath` (matches config) and `dbSize` (≥ 0) | `app.spec.ts` (update) |
-| RPC route | `POST /api/getStats` returns extended response with new fields | `server.spec.ts` (update) |
+| Layer                  | Approach                                                                        | File                              |
+| ---------------------- | ------------------------------------------------------------------------------- | --------------------------------- |
+| App.getStats           | Assert response includes `dbPath` (matches config) and `dbSize` (≥ 0)           | `app.spec.ts` (update)            |
+| RPC route              | `POST /api/getStats` returns extended response with new fields                  | `server.spec.ts` (update)         |
 | Settings stats section | Render settings page, assert Stats section shows type counts, total, path, size | `settings.page.spec.tsx` (update) |
-| formatBytes | Unit test: 0 → "0 B", 1024 → "1 KB", 1048576 → "1 MB" | `settings.page.spec.tsx` (update) |
+| formatBytes            | Unit test: 0 → "0 B", 1024 → "1 app", 1048576 → "1 MB"                          | `settings.page.spec.tsx` (update) |

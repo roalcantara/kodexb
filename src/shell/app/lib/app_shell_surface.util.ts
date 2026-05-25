@@ -1,5 +1,5 @@
 import type { OpenDialogOpts } from '@shared/rpc'
-import type { AppShellHooks } from './app_shell_hooks.types'
+import type { AppShellHooks, WindowPosition } from './app_shell_hooks.types'
 
 export function rejectShellNotImplemented(method: string): Promise<never> {
   return Promise.reject(new Error(`Not implemented: ${method}`))
@@ -48,6 +48,22 @@ export function resizeWindowFor(hooks: AppShellHooks, width: number, height: num
 
 export function hideWindowFor(hooks: AppShellHooks): Promise<void> {
   hooks.hideWindow?.()
+  return Promise.resolve()
+}
+
+/**
+ * Returns the window position or `null` when no native window is bound (preview
+ * server, tests). Renderer treats `null` as "drag unsupported" and disables
+ * the drag stripe instead of throwing.
+ */
+export function getWindowPositionFor(hooks: AppShellHooks): Promise<WindowPosition | null> {
+  const fn = hooks.getWindowPosition
+  if (!fn) return Promise.resolve(null)
+  return Promise.resolve(fn())
+}
+
+export function setWindowPositionFor(hooks: AppShellHooks, x: number, y: number): Promise<void> {
+  hooks.setWindowPosition?.(x, y)
   return Promise.resolve()
 }
 

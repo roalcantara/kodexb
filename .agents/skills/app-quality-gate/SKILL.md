@@ -76,7 +76,7 @@ Runs automatically from `gate.sh` after Stage 0. It **fails** if the working
 tree or index **adds** new inline suppressions under `src/`, `tools/`, or
 `electrobun.config.ts` (`biome-ignore*`, `@ts-expect-error`, `@ts-ignore`,
 `eslint-disable`) unless a maintainer has approved weakening and you export
-`KB_GATE_APPROVED_TOOL_WEAKENING=1` for that gate run (see `AGENTS.md` and
+`GATE_APPROVED_TOOL_WEAKENING=1` for that gate run (see `AGENTS.md` and
 `assets/docs/specs/codebase-quality-audit/requirements.md` R6).
 
 It **warns** when guard configs change (`biome.jsonc`, `knip.jsonc`,
@@ -86,15 +86,15 @@ whether a change tightens or weakens rules; reviewers (and optional
 `CODEOWNERS` on those files) are the backstop. To make guard edits explicitly
 approved in automation, extend `gate_policy.sh` (for example: fail the gate
 when any listed guard file is in the diff unless
-`KB_GATE_APPROVED_TOOL_WEAKENING=1`, or add a dedicated env flag for config-only
+`GATE_APPROVED_TOOL_WEAKENING=1`, or add a dedicated env flag for config-only
 changes) — trade-off: more friction on benign edits (`tsconfig` path tweaks).
 
 It **reminds** (informational) that Electrobun-facing work must follow
 `electrobun-best-practices` + routing (R7); the gate does not statically prove
 compliance—read the skill before shipping.
 
-**Escape hatches:** `KB_GATE_SKIP_POLICY=1` skips the whole policy stage (use
-sparingly, e.g. broken `git` sandbox). `KB_GATE_APPROVED_TOOL_WEAKENING=1`
+**Escape hatches:** `GATE_SKIP_POLICY=1` skips the whole policy stage (use
+sparingly, e.g. broken `git` sandbox). `GATE_APPROVED_TOOL_WEAKENING=1`
 allows the suppression diff check to pass after explicit maintainer sign-off.
 
 ### Stage 1 — Lint + Typecheck
@@ -140,7 +140,7 @@ mise run e2e:preview
 bun tools/preview/server.ts &
 SERVER_PID=$!
 sleep 3
-curl -sf http://localhost:3456/ | grep -q 'kb — preview' && echo PASS || echo FAIL
+curl -sf http://localhost:3456/ | grep -q 'app — preview' && echo PASS || echo FAIL
 kill "$SERVER_PID"
 ```
 

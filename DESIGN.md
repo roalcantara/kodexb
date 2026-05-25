@@ -1,347 +1,166 @@
 ---
-version: alpha
-name: kb — Andromeda Void
-description: >
-  Dark-first knowledge base desktop app. Keyboard-first, search-centred,
-  information-dense. Palette: Andromeda Void — deep space navy canvas with
-  jewel-toned semantic accents. Cosmic but precise.
-
+title: Vivid Gothic Command
+description: Design system for the project
+---
+<!-- markdownlint-disable-file -->
 colors:
-  primary:      "#5ecfbe"
-  bg:           "#0b0e14"
-  surface:      "#121721"
-  border:       "#232936"
-  text:         "#e2e9f5"
-  muted:        "#8892a4"
-  row-hover:    "#1c2537"
-  row-selected: "#0f2535"
-  error:        "#ef4444"
-  warn:         "#f59e0b"
-  color-command:  "#5ecfbe"
-  color-cheat:    "#a855f7"
-  color-task:     "#ffae57"
-  color-bookmark: "#3399ff"
-  priority-urgent-text: "#fca5a5"
-  priority-high-border: "#fb923c"
-  priority-high-text:   "#fdba74"
-  priority-mid-border:  "#fbbf24"
-  priority-mid-text:    "#fde68a"
-  priority-low-border:  "#22c55e"
-  priority-low-text:    "#86efac"
-  status-doing: "#93c5fd"
-  status-done:  "#86efac"
-
+  surface: '#11131e'
+  surface-dim: '#11131e'
+  surface-bright: '#373845'
+  surface-container-lowest: '#0b0e18'
+  surface-container-low: '#191b26'
+  surface-container: '#1d1f2b'
+  surface-container-high: '#272935'
+  surface-container-highest: '#323440'
+  on-surface: '#e1e1f1'
+  on-surface-variant: '#ccc3d3'
+  inverse-surface: '#e1e1f1'
+  inverse-on-surface: '#2e303c'
+  outline: '#968e9c'
+  outline-variant: '#4a4451'
+  surface-tint: '#d7baff'
+  primary: '#d7baff'
+  on-primary: '#411478'
+  primary-container: '#bd93f9'
+  on-primary-container: '#4e2484'
+  inverse-primary: '#714aaa'
+  secondary: '#75d4e8'
+  on-secondary: '#00363e'
+  secondary-container: '#008092'
+  on-secondary-container: '#f8fdff'
+  tertiary: '#ffafd7'
+  on-tertiary: '#620044'
+  tertiary-container: '#fe78c5'
+  on-tertiary-container: '#770054'
+  error: '#ffb4ab'
+  on-error: '#93000a'
+  error-container: '#ef4444'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#eddcff'
+  primary-fixed-dim: '#d7baff'
+  on-primary-fixed: '#290055'
+  on-primary-fixed-variant: '#593090'
+  secondary-fixed: '#a3eeff'
+  secondary-fixed-dim: '#75d4e8'
+  on-secondary-fixed: '#001f25'
+  on-secondary-fixed-variant: '#004e5a'
+  tertiary-fixed: '#ffd8e9'
+  tertiary-fixed-dim: '#ffafd7'
+  on-tertiary-fixed: '#3c0029'
+  on-tertiary-fixed-variant: '#860f60'
+  background: '#11131e'
+  on-background: '#e1e1f1'
+  surface-variant: '#323440'
 typography:
-  title:
-    fontFamily: system-ui, -apple-system, sans-serif
-    fontSize: 1.25rem
-    fontWeight: 600
-    lineHeight: 1.2
-  heading:
-    fontFamily: system-ui, -apple-system, sans-serif
-    fontSize: 0.95rem
-    fontWeight: 600
-    lineHeight: 1.35
-  body-lg:
-    fontFamily: system-ui, -apple-system, sans-serif
-    fontSize: 0.9rem
-    fontWeight: 400
-    lineHeight: 1.6
+  headline-sm:
+    fontFamily: Inter
+    fontSize: 18px
+    fontWeight: '600'
+    lineHeight: 24px
+    letterSpacing: -0.01em
   body-md:
-    fontFamily: system-ui, -apple-system, sans-serif
-    fontSize: 0.85rem
-    fontWeight: 400
-    lineHeight: 1.6
+    fontFamily: Inter
+    fontSize: 14px
+    fontWeight: '400'
+    lineHeight: 20px
   body-sm:
-    fontFamily: system-ui, -apple-system, sans-serif
-    fontSize: 0.8rem
-    fontWeight: 400
-    lineHeight: 1.5
-  label-lg:
-    fontFamily: system-ui, -apple-system, sans-serif
-    fontSize: 0.75rem
-    fontWeight: 400
-    lineHeight: 1
-  label-md:
-    fontFamily: system-ui, -apple-system, sans-serif
-    fontSize: 0.7rem
-    fontWeight: 600
-    lineHeight: 1
-    letterSpacing: 0.04em
-  label-sm:
-    fontFamily: system-ui, -apple-system, sans-serif
-    fontSize: 0.65rem
-    fontWeight: 400
-    lineHeight: 1
-
+    fontFamily: Inter
+    fontSize: 13px
+    fontWeight: '400'
+    lineHeight: 18px
+  label-caps:
+    fontFamily: Inter
+    fontSize: 11px
+    fontWeight: '700'
+    lineHeight: 16px
+    letterSpacing: 0.05em
+  mono-label:
+    fontFamily: JetBrains Mono
+    fontSize: 12px
+    fontWeight: '500'
+    lineHeight: 16px
 rounded:
-  xs: 3px
-  sm: 4px
-  md: 6px
-  lg: 8px
+  sm: 0.125rem
+  DEFAULT: 0.25rem
+  md: 0.375rem
+  lg: 0.5rem
+  xl: 0.75rem
   full: 9999px
-
 spacing:
-  xs:  4px
-  sm:  8px
-  md:  12px
-  lg:  16px
-  xl:  20px
-  xxl: 24px
-
-components:
-  button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.bg}"
-    rounded: "{rounded.md}"
-    padding: 0.45rem 0.85rem
-  button-primary-hover:
-    backgroundColor: "#44b8a8"
-  button-secondary:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.text}"
-    rounded: "{rounded.md}"
-    padding: 0.45rem 0.85rem
-  button-secondary-hover:
-    backgroundColor: "{colors.row-hover}"
-  input:
-    backgroundColor: "{colors.bg}"
-    textColor: "{colors.text}"
-    rounded: "{rounded.md}"
-    padding: 0.4rem 0.5rem
-  toolbar-control:
-    backgroundColor: "{colors.bg}"
-    textColor: "{colors.text}"
-    rounded: "{rounded.md}"
-    padding: 0.35rem 0.6rem
-  pill:
-    backgroundColor: transparent
-    textColor: "{colors.muted}"
-    rounded: "{rounded.sm}"
-    padding: 0.12rem 0.35rem
-  filter-dropdown:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.text}"
-    rounded: "{rounded.lg}"
-    padding: 0.5rem
-  entry-row:
-    backgroundColor: transparent
-    textColor: "{colors.text}"
-    padding: 0.45rem 0.75rem
-  entry-row-hover:
-    backgroundColor: "{colors.row-hover}"
-  entry-row-selected:
-    backgroundColor: "{colors.row-selected}"
-  pill-urgent:
-    backgroundColor: transparent
-    textColor: "{colors.priority-urgent-text}"
-    rounded: "{rounded.sm}"
-    padding: 0.12rem 0.35rem
-  pill-high:
-    backgroundColor: transparent
-    textColor: "{colors.priority-high-text}"
-    rounded: "{rounded.sm}"
-    padding: 0.12rem 0.35rem
-  pill-mid:
-    backgroundColor: transparent
-    textColor: "{colors.priority-mid-text}"
-    rounded: "{rounded.sm}"
-    padding: 0.12rem 0.35rem
-  pill-low:
-    backgroundColor: transparent
-    textColor: "{colors.priority-low-text}"
-    rounded: "{rounded.sm}"
-    padding: 0.12rem 0.35rem
-  pill-doing:
-    backgroundColor: transparent
-    textColor: "{colors.status-doing}"
-    rounded: "{rounded.sm}"
-    padding: 0.12rem 0.35rem
-  pill-done:
-    backgroundColor: transparent
-    textColor: "{colors.status-done}"
-    rounded: "{rounded.sm}"
-    padding: 0.12rem 0.35rem
+  container-padding: 16px
+  item-gap: 4px
+  section-margin: 12px
+  inner-padding-x: 12px
+  inner-padding-y: 8px
 ---
 
-# kb Design System
+## Brand & Style
 
-## Overview
+This design system is a high-octane, Dracula-inspired aesthetic tailored for a command palette launcher. It targets power users, developers, and speed-oriented professionals who demand high legibility and a striking visual identity.
 
-kb is a keyboard-first, information-dense knowledge base viewer for macOS. The design
-language is **Andromeda Void** — a deep space navy canvas where four jewel-toned entry
-types create a living, scannable list. Maximum information density; zero decoration.
-
-The emotional register is **focused precision**: a tool that feels like a high-fidelity
-instrument, not a generic dark editor. The background has a deliberate blue-shift (11°
-hue) that makes the teal, purple, orange, and blue type accents appear to sit above the
-surface — information-hierarchy through colour physics, not drop shadows.
-
-Each entry type has its own accent colour so the list communicates type distribution at
-a glance before a single word is read. Priority and status states use a traffic-light
-hue scale (red → amber → yellow → green) that is readable without colour being the sole
-signal.
-
-Target audience: developers and knowledge workers who live in their terminals and expect
-desktop tools to behave like them.
+The design style leverages a **Vivid Dark Mode** approach, blending **Glassmorphism** with high-contrast, jewel-toned accents. The interface should feel like a premium command center: deeply saturated, precise, and responsive. We avoid pure blacks in favor of rich navy-purples to maintain a "glowing" digital feel. The emotional response is one of focused energy and technical mastery.
 
 ## Colors
 
-Deep space navy base with four jewel-toned type accents. Every surface is one tonal
-step above the last — depth through tone, never shadow.
+The palette is built on the classic Dracula core, optimized for high-density information displays.
 
-- **bg (`#0b0e14`):** The Void. Deepest background. App canvas, input wells, code blocks.
-- **surface (`#121721`):** Station deck. Toolbar, detail panel, dropdown menus.
-- **border (`#232936`):** Titanium hull. All 1 px dividers. Never heavier.
-- **text (`#e2e9f5`):** Starlight white. Primary readable content.
-- **muted (`#8892a4`):** Space dust. Secondary labels, metadata, timestamps. Non-critical only.
-- **primary (`#5ecfbe`):** Supernova Cyan. Interactive affordances — selected-row indicator,
-  primary button fill, links, filter active state.
-- **row-hover (`#1c2537`):** Nebula drift. Subtle hover lift.
-- **row-selected (`#0f2535`):** Cyan-tinted dark. Selected row background.
-- **error (`#ef4444`):** Danger red. Errors, urgent priority, overdue tasks.
-- **warn (`#f59e0b`):** Warning amber. Blocked status.
-
-**Entry type accents** — the soul of the palette. Each type glows its own colour in the list:
-
-| Type     | Colour    | Hex        | Feel                      |
-| -------- | --------- | ---------- | ------------------------- |
-| command  | Cyan      | `#5ecfbe`  | Executable, sharp         |
-| cheat    | Purple    | `#a855f7`  | Reference, jewel-toned    |
-| task     | Orange    | `#ffae57`  | Action, warmth            |
-| bookmark | Blue      | `#3399ff`  | Navigational, photon      |
-
-**Priority hues** (border / text pairs):
-
-| Priority | Border           | Text      |
-| -------- | ---------------- | --------- |
-| urgent   | `{colors.error}` | `#fca5a5` |
-| high     | `#fb923c`        | `#fdba74` |
-| mid      | `#fbbf24`        | `#fde68a` |
-| low      | `#22c55e`        | `#86efac` |
-
-**Status hues:**
-
-| Status | Color            |
-| ------ | ---------------- |
-| todo   | `{colors.muted}` |
-| doing  | `#93c5fd`        |
-| done   | `#86efac`        |
+- **Primary Selection:** Use `#bd93f9` (Lavender) for active selection states and focus rings.
+- **Surface Layering:** The base background is `#282a36`. Use `#44475a` for hovered items or the "Current Line" indicator.
+- **Accents:** Use the jewel-toned functional colors (`#8be9fd`, `#50fa7b`, etc.) to categorize different types of commands (e.g., Cyan for System, Green for Tasks).
+- **Glass Effects:** The main container should utilize the base color at 80% opacity with a 20px backdrop blur to create a sense of depth over the user's desktop or active application.
 
 ## Typography
 
-System font stack only — `system-ui, -apple-system, sans-serif`. No web fonts, no
-download latency, perfect native rendering. San Francisco on macOS.
+We utilize **Inter** for its exceptional clarity in small-scale UI.
 
-Sizes follow a dense scale appropriate for an information tool, not a marketing page.
-The largest text in the app is the settings panel title (`1.25rem`). Everything else
-is `0.65rem`–`0.95rem`.
+- **Hierarchy:** Use `headline-sm` for the main input text. `body-md` is the primary style for search results.
+- **Muted Text:** Use the Secondary Text color (`#6272a4`) for descriptions, paths, and shortcuts to maintain focus on the primary labels.
+- **System Labels:** Use `label-caps` for section headers (e.g., "RECENT COMMANDS").
+- **Shortcuts:** Keyboard shortcuts should use a monospaced font if possible, or `mono-label`, to distinguish them from actionable text.
 
-- **title:** Settings panel and modal headers.
-- **heading:** Entry key, section headings in the detail panel. Semi-bold.
-- **body-lg / body-md:** Main readable content. `1.6` line-height for comfortable scanning.
-- **body-sm:** Code, descriptions, secondary detail fields.
-- **label-lg:** Toolbar hints, row sub-text, metadata values.
-- **label-md:** Section titles, filter section headers. All-caps, tracked. Semi-bold.
-- **label-sm:** Pills and badges. Lowercase forced via CSS.
+## Layout & Spacing
 
-## Layout
+The command palette follows a **Fixed Width, Vertical Stack** model.
 
-Three responsive breakpoints, all driven by window width:
-
-| Width      | CSS class          | Panels visible                      |
-| ---------- | ------------------ | ----------------------------------- |
-| < 1050 px  | `layout--compact`  | List only (default launch: 820 px)  |
-| ≥ 1050 px  | `layout--comfort`  | List + Detail (content)             |
-| ≥ 1300 px  | `layout--expanded` | List + Detail + Metadata sidebar    |
-
-Panel widths:
-
-- **List panel:** ~420 px fixed (implied by 820 − toolbar margins).
-- **Detail panel:** `min(780px, 65vw)` — flex, slides in over 180 ms `ease-out`.
-- **Metadata sidebar:** 220 px fixed, appears at `≥ 1300 px`.
-- **Settings overlay:** `max-width: 720 px`, centred, full-height scroll.
-
-Spacing scale is 4 px base (`xs`), doubling to `sm` (8), `md` (12), `lg` (16), `xl` (20),
-`xxl` (24). Row padding is `0.45rem × 0.75rem` — tight enough for density, generous
-enough for touch targets.
+- **Main Container:** Fixed width between 600px and 680px. Centered at the top-third of the screen.
+- **Density:** High density. Search results should have a compact vertical height to maximize the number of visible options.
+- **Rhythm:** Use an 4px base unit. Result items use `inner-padding-y: 8px` and `inner-padding-x: 12px` to ensure a generous horizontal hit area while maintaining vertical efficiency.
+- **Responsive:** On mobile/small viewports, the palette transitions to a full-width bottom sheet or a full-screen overlay with `container-padding: 16px`.
 
 ## Elevation & Depth
 
-Depth is achieved exclusively through tonal layering. There is one exception: the filter
-dropdown uses `box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45)` to float above the list.
-The modal backdrop is `rgba(0, 0, 0, 0.35)`.
+This system uses **Tonal Layers** combined with **Backdrop Blur** for a modern, sophisticated feel.
 
-No card shadows. No raised buttons. Surfaces sit on top of each other by colour alone.
+- **Main Palette Window:** This is the highest elevation. It uses a 1px border of `#44475a` and a deep, soft shadow (0px 20px 50px rgba(0,0,0,0.5)). The background is a semi-transparent `#282a36`.
+- **Selection State:** No shadow. Instead, the active item uses a solid background of `#44475a` and a left-aligned 4px "accent bar" using the Primary color (`#bd93f9`).
+- **Input Field:** Integrated into the top of the container without a separate background, separated only by a subtle horizontal divider of `#44475a`.
 
 ## Shapes
 
-All interactive controls use `6px` radius (`{rounded.md}`). This is the canonical corner
-for the app: inputs, toolbar buttons, dropdowns, settings fields.
+The shape language is precise and controlled.
 
-- `3px` (`xs`) — inline code spans only.
-- `4px` (`sm`) — pills and badges (small, dense).
-- `6px` (`md`) — all controls, buttons, inputs.
-- `8px` (`lg`) — floating overlays (filter dropdown, OG image container).
-- `9999px` (`full`) — reserved; not currently used.
-
-Do not mix radii within a single component. All four corners of a control must use the
-same value.
+- **Main Container:** Uses `rounded-lg` (8px) to soften the large floating window.
+- **Result Items & Buttons:** Uses `rounded-sm` (4px) to maintain a professional, sharp aesthetic that fits the high-density layout.
+- **KBD/Shortcuts:** Small pills or soft rectangles (4px) that enclose shortcut keys, providing a tactile, mechanical feel.
 
 ## Components
 
-**Toolbar controls** (filter button, sync button, settings button, search input): all
-share the same token — `bg` fill, `border` stroke, `md` radius. They form a unified
-control strip.
+### Input Field
 
-**Primary button** (`button-primary`): accent fill, white text. One per view — the single
-most important action. Currently: Save in Settings.
+The primary search bar is borderless, using a large font size (`headline-sm`). Use the Primary Selection color for the blinking cursor. Placeholder text should be in the Muted color (`#6272a4`).
 
-**Secondary button** (`button-secondary`): surface fill, text colour, border stroke. Used
-alongside primary (Reset, Cancel).
+### Result Items
 
-**Input** (`input`): bg fill, text colour, border stroke, `md` radius. No focus ring colour
-specified in CSS — add `outline: 2px solid {colors.primary}` on focus for WCAG.
+Items consist of an icon (left), title (Primary Text), description (Muted Text), and shortcut (right). On hover or selection, the background changes to `#44475a`.
 
-**Entry row** (`entry-row`): transparent background, full-width, left `3px solid transparent`
-border. On hover: `row-hover` fill. On selected: `row-selected` fill + `accent` left border.
-The left border is the sole selection indicator — do not add additional decorations.
+### Chips & Tags
 
-**Pill / badge** (`pill`): transparent background, `border` stroke by default. Semantic
-variants override border and text colour using the priority/status hue pairs above.
-Always lowercase. Never filled — only the text and border carry the semantic colour.
+Used for categories. They should have a subtle background (15% opacity of the accent color) and a solid text color of that accent (e.g., Pink text on a dark pink tint).
 
-**Filter dropdown** (`filter-dropdown`): surface fill, border stroke, `lg` radius, drop
-shadow. The only floating element with elevation.
+### Keyboard Shortcuts (KBD)
 
-## Do's and Don'ts
+Rendered as small containers with a 1px border of `#6272a4` and `body-sm` mono text. This distinguishes them as non-clickable, reference-only elements.
 
-- **Do** use `{colors.primary}` only for the single most important interactive signal per
-  surface (selected row, primary button, active link). Never use it for decoration.
-- **Do** use `{colors.muted}` only for non-critical secondary text — labels, timestamps,
-  metadata. Never for body copy that the user must read to understand the UI.
-- **Do** maintain 4.5:1 contrast ratio for all body text. `{colors.text}` on `{colors.bg}`
-  is ≈ 12:1. `{colors.muted}` on `{colors.bg}` is ≈ 4.6:1 — use only at `label-lg` or
-  larger; never at `label-sm`.
-- **Do** use the `6px` radius (`{rounded.md}`) for all new interactive controls.
-- **Do** keep all new layout additions within the existing breakpoint system
-  (820 / 1050 / 1300 px). Do not introduce new breakpoints without updating this file.
-- **Don't** introduce new accent colours. Semantic states (priority, status) already
-  consume the full allowable hue range. A new colour needs a new entry in this file first.
-- **Don't** add box-shadows except on floating overlays (dropdowns, modals).
-- **Don't** use more than two font weights (`400` body, `600` heading/label-md) on a
-  single surface.
-- **Don't** use pure white (`#ffffff`) for text — use `{colors.text}` (`#e6e6e6`).
-  Exception: white text on the `button-primary` accent fill only.
+### Progress Bars / Status Indicators
 
-## Known linter deviations
-
-These warnings are expected and intentional; do not treat them as bugs:
-
-- **button-primary contrast (3.32:1):** `#ffffff` on `#4c8bf5` is below WCAG AA. This
-  matches the existing CSS. Future improvement: darken the button fill to `#2563eb` (≈ 4.7:1)
-  or switch to dark text. Not changed here to preserve visual consistency with the live app.
-- **border / error / warn / priority-\*-border unreferenced:** These palette tokens are
-  applied directly as CSS custom properties (`var(--kb-border)`, etc.), not through the
-  DESIGN.md component token system. The component schema has no `borderColor` slot, so
-  wiring them would generate a different warning. They are intentionally palette-only.
+Use the Green (`#50fa7b`) and Orange (`#ffb86c`) accents for task completion and pending states. These should be thin (2px-4px) lines to stay out of the way of the text.

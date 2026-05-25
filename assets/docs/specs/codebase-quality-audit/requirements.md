@@ -4,7 +4,7 @@
 
 ## OVERVIEW
 
-This effort inventories and removes **Biome suppressions** (`biome-ignore`, `biome-ignore-all`) and other **linter or architecture bypasses** across kb, using **refactors and in-file fixes first**. Implementation commits live in **one** clone of the repo (no mixed edits across a second worktree for the same effort). Use an integration branch agreed with maintainers (for example `feat-add-stats-panel` or a dedicated `chore/*` branch off it).
+This effort inventories and removes **Biome suppressions** (`biome-ignore`, `biome-ignore-all`) and other **linter or architecture bypasses** across app, using **refactors and in-file fixes first**. Implementation commits live in **one** clone of the repo (no mixed edits across a second worktree for the same effort). Use an integration branch agreed with maintainers (for example `feat-add-stats-panel` or a dedicated `chore/*` branch off it).
 
 **Non-goal:** Weakening **any** repo quality tool (linters, architecture scanners, duplication thresholds, strict TypeScript for app code, and so on) without maintainer sign-off, per R6.
 
@@ -20,7 +20,7 @@ This effort inventories and removes **Biome suppressions** (`biome-ignore`, `bio
 
 ### R3 — Quality gate
 
-**For every PR** opened from the audit work, **the system SHALL** pass the kb quality gate: `bash .agents/skills/kb-quality-gate/scripts/gate.sh` (or equivalent stages: `bun run lint:fix`, `bun run lint`, `bun test` per DoD).
+**For every PR** opened from the audit work, **the system SHALL** pass the app quality gate: `bash .agents/skills/app-quality-gate/scripts/gate.sh` (or equivalent stages: `bun run lint:fix`, `bun run lint`, `bun test` per DoD).
 
 ### R4 — No behavior drift
 
@@ -32,7 +32,7 @@ This effort inventories and removes **Biome suppressions** (`biome-ignore`, `bio
 
 ### R6 — No silent weakening of quality tools
 
-**The system SHALL NOT** merge any audit PR that **weakens** enforcement of the kb quality stack **unless** a maintainer has given **explicit written approval** in that PR thread. Weakening includes, without limitation: new or broadened `biome.json` `overrides` or rule `off` / lower severity; new `biome-ignore` / `biome-ignore-all`; knip `ignore*` / `ignoreDependencies` / `ignoreBinaries` expansions that hide real issues; dependency-cruiser exceptions beyond documented policy; ast-grep or ls-lint config relaxations; higher jscpd thresholds; or narrowed `tsc` strictness for production `src/`. Use a comment such as `APPROVED: <tool> <change> because <reason>`. Default resolution: **code** (rename, split, types, wrappers), not config.
+**The system SHALL NOT** merge any audit PR that **weakens** enforcement of the app quality stack **unless** a maintainer has given **explicit written approval** in that PR thread. Weakening includes, without limitation: new or broadened `biome.json` `overrides` or rule `off` / lower severity; new `biome-ignore` / `biome-ignore-all`; knip `ignore*` / `ignoreDependencies` / `ignoreBinaries` expansions that hide real issues; dependency-cruiser exceptions beyond documented policy; ast-grep or ls-lint config relaxations; higher jscpd thresholds; or narrowed `tsc` strictness for production `src/`. Use a comment such as `APPROVED: <tool> <change> because <reason>`. Default resolution: **code** (rename, split, types, wrappers), not config.
 
 ### R7 — Electrobun best practices
 

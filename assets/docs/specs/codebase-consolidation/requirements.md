@@ -25,7 +25,7 @@ Adding guards / tests / mise tasks for past findings
 `src/shell/`, `src/shared/logging`, `react`, `react-dom`, `bun:sqlite`,
 `node:fs`, `node:fs/promises`, `node:path`, `node:os`, or any other I/O
 module. Spec files MAY import `bun:test`. This is already enforced by
-`.dependency-cruiser.cjs` rule `no-kb-core-importing-shell`; **R1 SHALL
+`.dependency-cruiser.cjs` rule `no-app-core-importing-shell`; **R1 SHALL
 NOT weaken that rule**.
 
 ### R2 — Pure domain logic lives in `src/core/`
@@ -145,8 +145,8 @@ modules.
 **The system SHALL NOT** change any user-facing behaviour. Validation
 is by green test suite: every task in `tasks.md` ends with
 `bun test <touched-folder>` and the closing track runs `bun test`,
-`bun run typecheck`, `bun run lint`, `bun run build` plus the kb
-quality gate (`bash .agents/skills/kb-quality-gate/scripts/gate.sh`)
+`bun run typecheck`, `bun run lint`, `bun run build` plus the app
+quality gate (`bash .agents/skills/app-quality-gate/scripts/gate.sh`)
 and they all pass.
 
 ### R12 — No weakening of quality tools
@@ -171,7 +171,7 @@ deleted. No commit batches more than one track.
 co-located `.spec.ts(x)` together. When two utils merge, their two
 specs SHALL be merged into one `.spec.ts` placed next to the merged
 util. After implementation,
-`bash .agents/skills/kb-quality-gate/scripts/gate.sh` reports zero
+`bash .agents/skills/app-quality-gate/scripts/gate.sh` reports zero
 missing co-located specs (the spec-audit stage that already runs in
 the gate).
 
@@ -182,6 +182,6 @@ the gate).
 - **A3** — `bun run typecheck` exits zero.
 - **A4** — `bun run lint` exits zero.
 - **A5** — `bun run build` exits zero.
-- **A6** — `bash .agents/skills/kb-quality-gate/scripts/gate.sh` exits zero (with the host-permission caveat already documented in the best-practices audit).
+- **A6** — `bash .agents/skills/app-quality-gate/scripts/gate.sh` exits zero (with the host-permission caveat already documented in the best-practices audit).
 - **A7** — `git log --oneline feat-add-stats-panel..HEAD` lists exactly six commits for this work, each titled `refactor(scope): ...` per [`assets/guides/GIT_COMMITS_GUIDE.md`](../../guides/GIT_COMMITS_GUIDE.md).
-- **A8** — `tasks.md` shows every checkbox checked; each phase's "Verification" line is filled in with the captured command output (commit hash + pass/fail).
+- **A8** — `tasks.md` shows every checappox checked; each phase's "Verification" line is filled in with the captured command output (commit hash + pass/fail).

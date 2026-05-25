@@ -4,17 +4,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>kb prototype — Approach B (PowerToys / Raycast chrome)</title>
+  <title>app prototype — Approach B (PowerToys / Raycast chrome)</title>
   <style>
     :root {
-      --kb-bg: rgba(11, 14, 20, 0.78);
-      --kb-surface: rgba(18, 23, 33, 0.85);
-      --kb-border: #232936;
-      --kb-text: #e2e9f5;
-      --kb-muted: #8892a4;
-      --kb-accent: #5ecfbe;
-      --kb-row-hover: rgba(28, 37, 55, 0.9);
-      --kb-row-selected: rgba(15, 37, 53, 0.95);
+      --app-bg: rgba(11, 14, 20, 0.78);
+      --app-surface: rgba(18, 23, 33, 0.85);
+      --app-border: #232936;
+      --app-text: #e2e9f5;
+      --app-muted: #8892a4;
+      --app-accent: #5ecfbe;
+      --app-row-hover: rgba(28, 37, 55, 0.9);
+      --app-row-selected: rgba(15, 37, 53, 0.95);
       --shell-radius: 12px;
       --bar-height: 44px;
     }
@@ -58,14 +58,14 @@
     }
 
     /* Floating shell: rounded card + frosted fill (matches implementation direction) */
-    .kb-powertoys {
+    .app-powertoys {
       width: min(680px, 100vw - 2rem);
       max-height: min(520px, 85vh);
       display: flex;
       flex-direction: column;
       border-radius: var(--shell-radius);
       overflow: hidden;
-      background: var(--kb-bg);
+      background: var(--app-bg);
       backdrop-filter: blur(48px) saturate(1.35);
       -webkit-backdrop-filter: blur(48px) saturate(1.35);
       border: 1px solid rgba(255, 255, 255, 0.06);
@@ -74,7 +74,7 @@
         0 0 0 1px rgba(0, 0, 0, 0.2) inset;
     }
 
-    .kb-windowDragStripe {
+    .app-windowDragStripe {
       height: 28px;
       min-height: 28px;
       flex-shrink: 0;
@@ -82,21 +82,21 @@
     }
 
     /* ── Approach B: one bordered “segmented” bar (search | filter) ── */
-    .kb-pt-search-wrap {
+    .app-pt-search-wrap {
       padding: 10px 14px 8px;
     }
 
-    .kb-pt-bar {
+    .app-pt-bar {
       display: flex;
       align-items: stretch;
       min-height: var(--bar-height);
-      border: 1px solid var(--kb-border);
+      border: 1px solid var(--app-border);
       border-radius: 8px;
-      background: var(--kb-surface);
+      background: var(--app-surface);
       overflow: hidden;
     }
 
-    .kb-pt-bar input[type="search"] {
+    .app-pt-bar input[type="search"] {
       flex: 1 1 auto;
       min-width: 0;
       height: var(--bar-height);
@@ -105,24 +105,24 @@
       border: none;
       border-radius: 0;
       background: transparent;
-      color: var(--kb-text);
+      color: var(--app-text);
       font-size: 15px;
       outline: none;
     }
 
-    .kb-pt-bar input::placeholder {
+    .app-pt-bar input::placeholder {
       color: #555;
     }
 
-    .kb-pt-bar-divider {
+    .app-pt-bar-divider {
       width: 1px;
       flex-shrink: 0;
-      background: var(--kb-border);
+      background: var(--app-border);
       align-self: stretch;
       margin: 8px 0;
     }
 
-    .kb-pt-bar .kb-pt-filter-chip {
+    .app-pt-bar .app-pt-filter-chip {
       flex: 0 0 auto;
       display: flex;
       align-items: center;
@@ -132,25 +132,25 @@
       border: none;
       border-radius: 0;
       background: transparent;
-      color: var(--kb-muted);
+      color: var(--app-muted);
       font: inherit;
       font-size: 13px;
       cursor: pointer;
       white-space: nowrap;
     }
 
-    .kb-pt-bar .kb-pt-filter-chip:hover {
+    .app-pt-bar .app-pt-filter-chip:hover {
       background: rgba(255, 255, 255, 0.04);
-      color: var(--kb-text);
+      color: var(--app-text);
     }
 
-    .kb-pt-results {
+    .app-pt-results {
       flex: 1;
       overflow-y: auto;
       min-height: 200px;
     }
 
-    .kb-pt-row {
+    .app-pt-row {
       display: grid;
       grid-template-columns: 24px minmax(0, 1fr) min-content;
       align-items: center;
@@ -167,44 +167,44 @@
       cursor: default;
     }
 
-    .kb-pt-row:first-of-type {
+    .app-pt-row:first-of-type {
       border-top: none;
     }
 
-    .kb-pt-row--selected {
+    .app-pt-row--selected {
       background: rgba(51, 153, 255, 0.08);
     }
 
-    .kb-pt-row-icon {
+    .app-pt-row-icon {
       font-size: 15px;
       text-align: center;
     }
 
-    .kb-pt-row-body {
+    .app-pt-row-body {
       min-width: 0;
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
 
-    .kb-pt-row-title {
+    .app-pt-row-title {
       font-size: 13px;
       font-weight: 500;
-      color: var(--kb-text);
+      color: var(--app-text);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .kb-pt-row-subtitle {
+    .app-pt-row-subtitle {
       font-size: 11px;
-      color: var(--kb-muted);
+      color: var(--app-muted);
       display: flex;
       flex-wrap: wrap;
       gap: 4px 6px;
     }
 
-    .kb-pt-chip {
+    .app-pt-chip {
       display: inline-block;
       background: rgba(35, 41, 54, 0.95);
       border-radius: 4px;
@@ -213,13 +213,13 @@
       line-height: 1.25;
     }
 
-    .kb-pt-row-hint {
+    .app-pt-row-hint {
       font-size: 10px;
-      color: var(--kb-accent);
+      color: var(--app-accent);
       flex-shrink: 0;
     }
 
-    .kb-pt-footer {
+    .app-pt-footer {
       padding: 8px 16px;
       display: flex;
       justify-content: space-between;
@@ -237,53 +237,53 @@
     Shell <code>border-radius: 12px</code> + frosted panel. Not implemented in the app yet — preview only.
   </p>
 
-  <div class="kb-powertoys" role="application" aria-label="Prototype">
-    <div class="kb-windowDragStripe" aria-hidden="true" title="Drag region (desktop)"></div>
+  <div class="app-powertoys" role="application" aria-label="Prototype">
+    <div class="app-windowDragStripe" aria-hidden="true" title="Drag region (desktop)"></div>
 
-    <div class="kb-pt-search-wrap">
-      <div class="kb-pt-bar" role="search">
+    <div class="app-pt-search-wrap">
+      <div class="app-pt-bar" role="search">
         <input type="search" placeholder="Search your knowledge base…" value="" aria-label="Search" />
-        <span class="kb-pt-bar-divider" aria-hidden="true"></span>
-        <button type="button" class="kb-pt-filter-chip">All ▾</button>
+        <span class="app-pt-bar-divider" aria-hidden="true"></span>
+        <button type="button" class="app-pt-filter-chip">All ▾</button>
       </div>
     </div>
 
-    <div class="kb-pt-results">
-      <div class="kb-pt-row">
-        <span class="kb-pt-row-icon" aria-hidden="true">◇</span>
-        <div class="kb-pt-row-body">
-          <span class="kb-pt-row-title">https://example.com/docs</span>
-          <span class="kb-pt-row-subtitle">
-            <span class="kb-pt-chip" style="color:#3399ff">bookmark</span>
-            <span class="kb-pt-chip">docs</span>
+    <div class="app-pt-results">
+      <div class="app-pt-row">
+        <span class="app-pt-row-icon" aria-hidden="true">◇</span>
+        <div class="app-pt-row-body">
+          <span class="app-pt-row-title">https://example.com/docs</span>
+          <span class="app-pt-row-subtitle">
+            <span class="app-pt-chip" style="color:#3399ff">bookmark</span>
+            <span class="app-pt-chip">docs</span>
           </span>
         </div>
       </div>
-      <div class="kb-pt-row kb-pt-row--selected">
-        <span class="kb-pt-row-icon" aria-hidden="true">▶</span>
-        <div class="kb-pt-row-body">
-          <span class="kb-pt-row-title">aws ecs update-service …</span>
-          <span class="kb-pt-row-subtitle">
-            <span class="kb-pt-chip" style="color:#5ecfbe">command</span>
-            <span class="kb-pt-chip">aws</span>
-            <span class="kb-pt-chip">serverless</span>
+      <div class="app-pt-row app-pt-row--selected">
+        <span class="app-pt-row-icon" aria-hidden="true">▶</span>
+        <div class="app-pt-row-body">
+          <span class="app-pt-row-title">aws ecs update-service …</span>
+          <span class="app-pt-row-subtitle">
+            <span class="app-pt-chip" style="color:#5ecfbe">command</span>
+            <span class="app-pt-chip">aws</span>
+            <span class="app-pt-chip">serverless</span>
           </span>
         </div>
-        <span class="kb-pt-row-hint">⌘C Copy</span>
+        <span class="app-pt-row-hint">⌘C Copy</span>
       </div>
-      <div class="kb-pt-row">
-        <span class="kb-pt-row-icon" aria-hidden="true">◇</span>
-        <div class="kb-pt-row-body">
-          <span class="kb-pt-row-title">kubectl get pods -A</span>
-          <span class="kb-pt-row-subtitle">
-            <span class="kb-pt-chip" style="color:#5ecfbe">command</span>
-            <span class="kb-pt-chip">k8s</span>
+      <div class="app-pt-row">
+        <span class="app-pt-row-icon" aria-hidden="true">◇</span>
+        <div class="app-pt-row-body">
+          <span class="app-pt-row-title">kubectl get pods -A</span>
+          <span class="app-pt-row-subtitle">
+            <span class="app-pt-chip" style="color:#5ecfbe">command</span>
+            <span class="app-pt-chip">k8s</span>
           </span>
         </div>
       </div>
     </div>
 
-    <div class="kb-pt-footer">
+    <div class="app-pt-footer">
       <span>3992 results</span>
       <span>⌘K · ⌘N · ⌘,</span>
     </div>

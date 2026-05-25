@@ -4,12 +4,14 @@ import type { SyncEmitter } from '../app/app'
 import type { AppShellHooks } from '../app/lib/app_shell_hooks.types'
 import { isUsableWorkArea, resolveInitialFrame, type Size, type WindowFrame } from './window/placement.util'
 
-export const MAIN_WINDOW_DEFAULT_SIZE = { width: 680, height: 420 } as const satisfies Size
+export const MAIN_WINDOW_DEFAULT_SIZE = { width: 680, height: 600 } as const satisfies Size
 export const MAIN_WINDOW_RENDERER_URL = 'views://shell/index.html' as const
 
 export type MainWindowLike = {
   setSize: (width: number, height: number) => void
   minimize: () => void
+  getPosition: () => { x: number; y: number }
+  setPosition: (x: number, y: number) => void
 }
 
 export type ShellHooksUtils = {
@@ -66,6 +68,10 @@ export function createShellHooks(getWin: () => MainWindowLike | null, utils: She
     hideWindow: () => {
       getWin()?.minimize()
     },
+    getWindowPosition: () => getWin()?.getPosition() ?? null,
+    setWindowPosition: (x, y) => {
+      getWin()?.setPosition(x, y)
+    },
     openExternal: url => {
       utils.openExternal(url)
     },
@@ -93,13 +99,31 @@ export function createShellHooks(getWin: () => MainWindowLike | null, utils: She
 
 /**
  * {@link BrowserWindow} constructor options shared by main bootstrap (extracted for tests).
+ *
+ * The window is **chromeless and translucent** so the renderer can paint a
+ * single rounded floating panel (`.theme-app-shell`) using the
+ * `Vivid Gothic Command` palette and let the desktop show through the
+ * outer padding around the panel. See `:root` tokens in
+ * `src/shell/renderer/styles/list.css` and the design system in `DESIGN.md`.
+ *
+ * On darwin:
+ * - `titleBarStyle: 'hidden'` removes the native title bar and the traffic
+ *   light buttons, giving the panel a fully custom chrome look.
+ *
+ * On other platforms we keep the default native chrome.
+ *
+ * Drag: WKWebView does not honor `-webkit-app-region: drag` and Electrobun
+ * does not expose `setMovableByWindowBackground`, so window drag is driven
+ * from the renderer via the `useWindowDrag` hook and the
+ * `getWindowPosition` / `setWindowPosition` RPC routes.
  */
 export function buildBrowserWindowCreateOptions<Rpc>(frame: WindowFrame, rpc: Rpc, platform: NodeJS.Platform) {
+  const isDarwin = platform === 'darwin'
   return {
     title: 'kb',
     url: MAIN_WINDOW_RENDERER_URL,
     frame,
-    titleBarStyle: platform === 'darwin' ? ('hidden' as const) : ('default' as const),
+    titleBarStyle: (isDarwin ? 'hidden' : 'default') as 'hidden' | 'default',
     transparent: true,
     rpc
   }

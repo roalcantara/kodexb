@@ -12,9 +12,9 @@ Adopt additional Biome rules one rule at a time, making every adopted rule pass
 the next rule.
 
 Required context:
-- Read `.agents/skills/kb-context/SKILL.md`.
-- Read `.agents/skills/kb-quality-gate/SKILL.md`.
-- Read `.agents/skills/kb-testing/SKILL.md` for test-rule phases.
+- Read `.agents/skills/app-context/SKILL.md`.
+- Read `.agents/skills/app-quality-gate/SKILL.md`.
+- Read `.agents/skills/app-testing/SKILL.md` for test-rule phases.
 - Use `biome-developer`.
 - Use `subagent-driven-development`.
 - Read `assets/docs/specs/normalise-biome-rules/requirements.md`.
@@ -84,6 +84,6 @@ bun test
 bun run lint
 bun run build
 git diff --check
-bash .agents/skills/kb-quality-gate/scripts/gate.sh
+bash .agents/skills/app-quality-gate/scripts/gate.sh
 ```
 ```

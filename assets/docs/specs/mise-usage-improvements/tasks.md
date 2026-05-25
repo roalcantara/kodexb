@@ -4,7 +4,7 @@
 ## Overview
 
 Use this checklist to implement the full task contract cleanup. Do not bulk-edit
-checkboxes. Mark an item complete only after the item is actually done, and add
+checappoxes. Mark an item complete only after the item is actually done, and add
 an `Evidence:` bullet with changed files and exact commands.
 
 Each task has acceptance criteria. A task is not complete when the file edits
@@ -14,12 +14,12 @@ validation for that contract.
 
 Before editing files, load:
 
-- `.agents/skills/kb-context/SKILL.md`
+- `.agents/skills/app-context/SKILL.md`
 - `mise-tasks`
 - `docs-writer` for Markdown changes
 - `mise-expert` only when touching `[tools]`, `[env]`, setup behavior, or tool
   versions
-- `.agents/skills/kb-quality-gate/SKILL.md` before declaring completion
+- `.agents/skills/app-quality-gate/SKILL.md` before declaring completion
 
 ## Phase 0 — Snapshot and safeguards
 
@@ -256,7 +256,7 @@ Before editing files, load:
   - Run `bun run lint:mise`.
   - Run `mise tasks validate`.
   - Run `bun run typecheck`.
-  - Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+  - Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
   - Run `git diff --check`.
   - **Acceptance criteria:**
     - Every listed final validation command exits 0.

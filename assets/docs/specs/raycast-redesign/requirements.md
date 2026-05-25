@@ -1,9 +1,9 @@
 <!-- markdownlint-disable-file -->
-# kb UX/UI Redesign — Requirements
+# app UX/UI Redesign — Requirements
 
 ## INTRODUCTION
 
-Redesign kb's user interface to match the PowerToys Run aesthetic while adopting
+Redesign app's user interface to match the PowerToys Run aesthetic while adopting
 Raycast's keyboard-driven interaction patterns. The backend (RPC, DB, App) is
 unchanged — this is a CSS + React markup redesign.
 

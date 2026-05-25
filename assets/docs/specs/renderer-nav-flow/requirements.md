@@ -37,7 +37,7 @@ This folder is the **normative** contract for the fix.
 
 ## GLOSSARY
 
-- **List surface:** The focusable results container (`kb-pt-results`) that hosts
+- **List surface:** The focusable results container (`app-pt-results`) that hosts
   vertical arrow navigation.
 - **Renderer-first fix:** ArrowLeft/ArrowRight handling lives on the focused
   React subtree (or a deliberate `tabIndex={-1}` shell), not on a `document`

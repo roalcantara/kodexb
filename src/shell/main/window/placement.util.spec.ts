@@ -25,7 +25,7 @@ describe('centerBoundsInWorkArea', () => {
     const frame = () => centerBoundsInWorkArea(workArea, windowSize)
 
     it('centers the window', () => {
-      expect(frame()).toEqual(factoryFor('rectangle', { overrides: { x: 620, y: 330, width: 680, height: 420 } }))
+      expect(frame()).toEqual(factoryFor('rectangle', { overrides: { x: 620, y: 240, width: 680, height: 600 } }))
     })
   })
 
@@ -34,7 +34,7 @@ describe('centerBoundsInWorkArea', () => {
     const frame = () => centerBoundsInWorkArea(workArea, windowSize)
 
     it('honors the macOS menu-bar offset', () => {
-      expect(frame()).toEqual(factoryFor('rectangle', { overrides: { x: 380, y: 253, width: 680, height: 420 } }))
+      expect(frame()).toEqual(factoryFor('rectangle', { overrides: { x: 380, y: 163, width: 680, height: 600 } }))
     })
   })
 
@@ -54,11 +54,11 @@ describe('centerBoundsInWorkArea', () => {
   })
 
   describe('when window fills the work area', () => {
-    const workArea = factoryFor('rectangle', { overrides: { x: 10, y: 20, width: 680, height: 420 } })
+    const workArea = factoryFor('rectangle', { overrides: { x: 10, y: 20, width: 680, height: 600 } })
     const frame = () => centerBoundsInWorkArea(workArea, windowSize)
 
     it('clamps to work-area origin', () => {
-      expect(frame()).toEqual(factoryFor('rectangle', { overrides: { x: 10, y: 20, width: 680, height: 420 } }))
+      expect(frame()).toEqual(factoryFor('rectangle', { overrides: { x: 10, y: 20, width: 680, height: 600 } }))
     })
   })
 
@@ -119,7 +119,7 @@ describe('resolveInitialFrame', () => {
 
     it('centers the window', () => {
       expect(resolveInitialFrame(display, windowSize)).toEqual(
-        factoryFor('rectangle', { overrides: { x: 620, y: 330, width: 680, height: 420 } })
+        factoryFor('rectangle', { overrides: { x: 620, y: 240, width: 680, height: 600 } })
       )
     })
   })

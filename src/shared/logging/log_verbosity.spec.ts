@@ -8,19 +8,19 @@ function envRecord(entries: [string, string | undefined][]): Record<string, stri
 describe('parseLogVerbosity', () => {
   it('empty or missing → default', () => {
     expect(parseLogVerbosity({})).toBe('default')
-    expect(parseLogVerbosity(envRecord([['KB_LOG', '']]))).toBe('default')
-    expect(parseLogVerbosity(envRecord([['KB_LOG', '   ']]))).toBe('default')
+    expect(parseLogVerbosity(envRecord([['LOG_LEVEL', '']]))).toBe('default')
+    expect(parseLogVerbosity(envRecord([['LOG_LEVEL', '   ']]))).toBe('default')
   })
 
   it('accepts known values case-insensitively', () => {
-    expect(parseLogVerbosity(envRecord([['KB_LOG', 'VERBOSE']]))).toBe('verbose')
-    expect(parseLogVerbosity(envRecord([['KB_LOG', ' Debug ']]))).toBe('debug')
-    expect(parseLogVerbosity(envRecord([['KB_LOG', 'trace']]))).toBe('trace')
+    expect(parseLogVerbosity(envRecord([['LOG_LEVEL', 'VERBOSE']]))).toBe('verbose')
+    expect(parseLogVerbosity(envRecord([['LOG_LEVEL', ' Debug ']]))).toBe('debug')
+    expect(parseLogVerbosity(envRecord([['LOG_LEVEL', 'trace']]))).toBe('trace')
   })
 
   it('unknown value returns default', () => {
-    expect(parseLogVerbosity(envRecord([['KB_LOG', 'yes']]))).toBe('default')
-    expect(parseLogVerbosity(envRecord([['KB_LOG', 'info']]))).toBe('default')
+    expect(parseLogVerbosity(envRecord([['LOG_LEVEL', 'yes']]))).toBe('default')
+    expect(parseLogVerbosity(envRecord([['LOG_LEVEL', 'info']]))).toBe('default')
   })
 })
 

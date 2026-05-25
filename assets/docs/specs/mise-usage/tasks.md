@@ -10,14 +10,14 @@ after current intentional exceptions are encoded.
 
 Before editing executable task behavior, load:
 
-- `.agents/skills/kb-context/SKILL.md`
-- `.agents/skills/kb-quality-gate/SKILL.md`
+- `.agents/skills/app-context/SKILL.md`
+- `.agents/skills/app-quality-gate/SKILL.md`
 - `mise-tasks`
 - `mise-expert` when changing `[tools]`, `[env]`, setup behavior, or tool
   versions
 - `docs-writer` when editing Markdown
 
-Do not bulk-edit checkboxes. Mark an item complete only after the work is done,
+Do not bulk-edit checappoxes. Mark an item complete only after the work is done,
 and add an `Evidence:` bullet under that item with the files changed and
 commands run for that specific item.
 
@@ -203,7 +203,7 @@ surface.
 
 - [x] 5.1 Add the checker to the quality stack.
   - Add it to the relevant lint chain.
-  - Add it to the kb quality gate.
+  - Add it to the app quality gate.
   - _Requirements: MU-8_
 
 - [x] 5.2 Final verification.
@@ -226,7 +226,7 @@ surface.
   - Confirm unsafe release, publish, repository deletion, remote deletion, or
     mutation tasks were not executed without explicit user approval.
   - Run `bun run lint`.
-  - Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+  - Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
   - Record any removed task names and their new action or flag syntax.
   - _Requirements: MU-8_
 

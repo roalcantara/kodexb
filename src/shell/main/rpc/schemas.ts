@@ -136,6 +136,24 @@ export const resizeWindowSchema = Type.Object(
   { additionalProperties: false }
 )
 
+/**
+ * Body for `setWindowPosition` — `x`/`y` are screen coordinates, integer
+ * pixels. Bounds are intentionally generous (multi-monitor setups can put
+ * the window at negative coordinates) but capped to avoid pathological RPC
+ * payloads that would deadlock the native setPosition call.
+ */
+const WINDOW_COORD_MIN = -32_000
+const WINDOW_COORD_MAX = 32_000
+export const setWindowPositionSchema = Type.Object(
+  {
+    x: Type.Integer({ minimum: WINDOW_COORD_MIN, maximum: WINDOW_COORD_MAX }),
+    y: Type.Integer({ minimum: WINDOW_COORD_MIN, maximum: WINDOW_COORD_MAX })
+  },
+  { additionalProperties: false }
+)
+
+export const getWindowPositionSchema = Type.Object({}, { additionalProperties: false })
+
 export const idWithDirSchema = Type.Object(
   {
     id: Type.Integer(),

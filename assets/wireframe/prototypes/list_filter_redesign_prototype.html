@@ -4,21 +4,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>kb — filter dropdown redesign (prototype)</title>
+  <title>app — filter dropdown redesign (prototype)</title>
   <style>
     :root {
-      --kb-bg: #0b0e14;
-      --kb-surface: #121721;
-      --kb-border: #232936;
-      --kb-text: #e2e9f5;
-      --kb-muted: #8892a4;
-      --kb-accent: #5ecfbe;
-      --kb-row-hover: #1c2537;
-      --kb-row-selected: #0f2535;
-      --kb-color-command: #5ecfbe;
-      --kb-color-cheat: #a855f7;
-      --kb-color-task: #ffae57;
-      --kb-color-bookmark: #3399ff;
+      --app-bg: #0b0e14;
+      --app-surface: #121721;
+      --app-border: #232936;
+      --app-text: #e2e9f5;
+      --app-muted: #8892a4;
+      --app-accent: #5ecfbe;
+      --app-row-hover: #1c2537;
+      --app-row-selected: #0f2535;
+      --app-color-command: #5ecfbe;
+      --app-color-cheat: #a855f7;
+      --app-color-task: #ffae57;
+      --app-color-bookmark: #3399ff;
       --bar-h: 38px;
       --radius: 10px;
       --panel-max: 400px;
@@ -38,8 +38,8 @@
         'Segoe UI',
         Roboto,
         sans-serif;
-      background: var(--kb-bg);
-      color: var(--kb-text);
+      background: var(--app-bg);
+      color: var(--app-text);
     }
 
     .shell {
@@ -55,11 +55,11 @@
       align-items: center;
       margin-bottom: 20px;
       padding: 14px 16px;
-      background: var(--kb-surface);
-      border: 1px solid var(--kb-border);
+      background: var(--app-surface);
+      border: 1px solid var(--app-border);
       border-radius: var(--radius);
       font-size: 13px;
-      color: var(--kb-muted);
+      color: var(--app-muted);
     }
 
     .proto-toolbar label {
@@ -67,12 +67,12 @@
       align-items: center;
       gap: 8px;
       cursor: pointer;
-      color: var(--kb-text);
+      color: var(--app-text);
     }
 
     .proto-note {
       font-size: 12px;
-      color: var(--kb-muted);
+      color: var(--app-muted);
       line-height: 1.5;
       margin: 0 0 16px;
     }
@@ -89,7 +89,7 @@
 
     .search-wrap {
       padding: 10px 16px 8px;
-      border-bottom: 1px solid var(--kb-border);
+      border-bottom: 1px solid var(--app-border);
     }
 
     .search-row {
@@ -104,7 +104,7 @@
       border: none;
       border-radius: 6px;
       background: rgba(0, 0, 0, 0.2);
-      color: var(--kb-muted);
+      color: var(--app-muted);
       padding: 0 12px;
       font-size: 15px;
     }
@@ -116,7 +116,7 @@
       border: none;
       border-radius: 6px;
       background: transparent;
-      color: var(--kb-accent);
+      color: var(--app-accent);
       font-size: 13px;
       cursor: default;
     }
@@ -169,8 +169,8 @@
     }
 
     .filter-panel {
-      background: var(--kb-surface);
-      border: 1px solid var(--kb-border);
+      background: var(--app-surface);
+      border: 1px solid var(--app-border);
       border-radius: var(--radius);
       box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
       overflow: hidden;
@@ -184,15 +184,15 @@
       margin: 0;
       padding: 12px 16px;
       border: none;
-      border-bottom: 1px solid var(--kb-border);
+      border-bottom: 1px solid var(--app-border);
       background: transparent;
-      color: var(--kb-text);
+      color: var(--app-text);
       font-size: 14px;
       outline: none;
     }
 
     .filter-panel input[type='search']::placeholder {
-      color: var(--kb-muted);
+      color: var(--app-muted);
     }
 
     .filter-scroll {
@@ -210,7 +210,7 @@
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--kb-muted);
+      color: var(--app-muted);
     }
 
     .sec:first-of-type .sec-title {
@@ -227,7 +227,7 @@
       padding: 9px 16px;
       border: none;
       background: transparent;
-      color: var(--kb-muted);
+      color: var(--app-muted);
       font: inherit;
       font-size: 13px;
       text-align: left;
@@ -235,13 +235,13 @@
     }
 
     .row:hover {
-      background: var(--kb-row-hover);
-      color: var(--kb-text);
+      background: var(--app-row-hover);
+      color: var(--app-text);
     }
 
     .row[data-active='true'] {
       background: linear-gradient(90deg, rgba(94, 207, 190, 0.12), transparent);
-      color: var(--kb-text);
+      color: var(--app-text);
     }
 
     .row .glyph {
@@ -263,53 +263,53 @@
 
     .row .count {
       font-variant-numeric: tabular-nums;
-      color: var(--kb-muted);
+      color: var(--app-muted);
       font-size: 12px;
       text-align: right;
     }
 
     .row[data-active='true'] .count {
-      color: var(--kb-text);
+      color: var(--app-text);
     }
 
     .dot-bookmark {
       background: rgba(51, 153, 255, 0.2);
-      color: var(--kb-color-bookmark);
+      color: var(--app-color-bookmark);
     }
 
     .dot-task {
       background: rgba(255, 174, 87, 0.15);
-      color: var(--kb-color-task);
+      color: var(--app-color-task);
     }
 
     .dot-command {
       background: rgba(94, 207, 190, 0.12);
-      color: var(--kb-color-command);
+      color: var(--app-color-command);
     }
 
     .dot-cheat {
       background: rgba(168, 85, 247, 0.15);
-      color: var(--kb-color-cheat);
+      color: var(--app-color-cheat);
     }
 
     .dot-all {
       background: rgba(94, 207, 190, 0.2);
-      color: var(--kb-accent);
+      color: var(--app-accent);
     }
 
     .footer-hint {
       padding: 10px 16px 12px;
       font-size: 11px;
-      color: var(--kb-muted);
-      border-top: 1px solid var(--kb-border);
+      color: var(--app-muted);
+      border-top: 1px solid var(--app-border);
     }
 
-    kbd {
+    appd {
       font: inherit;
       font-size: 10px;
       padding: 2px 6px;
       border-radius: 4px;
-      border: 1px solid var(--kb-border);
+      border: 1px solid var(--app-border);
       background: rgba(0, 0, 0, 0.25);
     }
   </style>
@@ -318,12 +318,12 @@
 <body>
   <div class="shell">
     <p class="proto-note">
-      <strong>Prototype only</strong> — not wired to the app. Compare placement; sectioned layout + kb tokens match the
+      <strong>Prototype only</strong> — not wired to the app. Compare placement; sectioned layout + app tokens match the
       redesign proposal (Raycast-style grouping, Andromeda Void colors).
     </p>
 
     <div class="proto-toolbar" role="radiogroup" aria-label="Panel placement">
-      <label><input type="radio" name="place" value="center" checked /> Centered under search bar (kb default)</label>
+      <label><input type="radio" name="place" value="center" checked /> Centered under search bar (app default)</label>
       <label><input type="radio" name="place" value="chip" /> Right-anchored (Raycast-like chip tie-in)</label>
     </div>
 

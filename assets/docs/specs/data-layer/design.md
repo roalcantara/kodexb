@@ -38,25 +38,25 @@ schema, repositories, import service` (subject ≤ 50 chars).
 
 ## SCOPE DECISIONS
 
-| Decision                                                                   | Choice                                                             | Rationale                                                                                                                                                                   |
-| -------------------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AppService (`src/shell/app/app.ts`)                                        | **defer to Phase 5**                                               | Heavy `@shared/rpc` coupling. Roadmap puts AppService in Phase 5.                                                                                                           |
-| `task.repository.ts`                                                       | **defer to Phase 9**                                               | No consumer in Phase 4; V1-3 §4 task views work via `findAll(types: ['task'])` + `lib/task_views.util.ts`.                                                                  |
-| RPC response schemas (`schema.types.ts`)                                   | **defer to Phase 5**                                               | Hand-written TypeBox per [`foundation/design.md`][2] Decision 3. No drizzle-typebox.                                                                                        |
-| Migration runner + `tools/db/migrations/` folder                           | **defer until first real schema change** (≥ Phase 9)               | Phase 4 declares all Phase 5–8 columns up-front. Bootstrap-only is enough; runner is YAGNI until needed.                                                                    |
-| `seed.service.ts`                                                          | **drop entirely**                                                  | `ImportService.runOnce(sourcesDir)` is the seed primitive. `createSeededMemoryDb` covers tests via factories. No abstraction layer needed.                                  |
-| `assembleDoc()` integration in import                                      | **defer to Phase 7**                                               | Phase 4 declares the `doc` column (default `''`) but does not populate it. Phase 7 wires `assembleDoc()` into `import.service.ts` when the detail view consumes the column. |
-| Schema columns                                                             | **add all 4 now**: `doc`, `task_order`, `due_date`, `depends_on`   | Nullable / defaulted; inert until consumer phase populates them. Avoids migrations across Phases 5–8.                                                                       |
-| Validation library                                                         | **TypeBox only**                                                   | Zod is removed from the stack ([`foundation/design.md`][3] Decision 2). Phase 4 migrates the last hold-out (`config.schema.ts`).                                            |
-| Test fixtures library                                                      | **Fishery** ([`foundation/design.md`][4] Decision 4)               | drizzle-seed not added.                                                                                                                                                     |
-| Test fixture corpus                                                        | **5 curated YAML files under `fixtures/sample/`**                  | Down from 56. Used **only** by `import.service.spec.ts`. Repository specs use factories.                                                                                    |
-| `minimal/entries.yml`                                                 | **keep unchanged**                                                | Deterministic 4-entry fixture for exact-count and idempotency assertions in `import.service.spec.ts`.                                                                        |
-| `bun:sqlite` vs Drizzle                                                    | **`bun:sqlite` directly** ([`foundation/design.md`][5] Decision 5) | Legacy used Drizzle in 1 of 6 functions. Drop it; use `db.query<KnowledgeRow, [params]>()` for typed prepared statements.                                                   |
-| `DbHandle` shape                                                           | **`type DbHandle = Database`**                                     | Single API surface. No `{ db, raw }` flowing through every signature.                                                                                                       |
-| Commit strategy                                                            | **one atomic commit**                                              | Mirrors Phase 3. Subject `feat(data): Add SQLite schema, repositories, import service`.                                                                                     |
-| Stash topology                                                             | **collapse to single `phase-pending`**                             | Existing `phase-{4..misc-docs}` stashes are nested supersets, not deltas. Conflict-free recovery requires consolidation before Phase 4 work begins.                         |
-| `docs/superpowers/`                                                        | **delete + add to `.gitignore`**                                   | This path is a brainstorming-skill default; kb uses `assets/docs/specs/<slug>/` instead. Never lands in any commit or stash.                                                |
-| Recovery source                                                            | **`~/Work/bun/kb_legacy` worktree at `cc3d08b`**                   | The "phase-4-data-layer" stash's `entry.repository.ts` is truncated to ~80 lines; the legacy version is the complete 193-line implementation.                               |
+| Decision                                         | Choice                                                             | Rationale                                                                                                                                                                   |
+| ------------------------------------------------ | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AppService (`src/shell/app/app.ts`)              | **defer to Phase 5**                                               | Heavy `@shared/rpc` coupling. Roadmap puts AppService in Phase 5.                                                                                                           |
+| `task.repository.ts`                             | **defer to Phase 9**                                               | No consumer in Phase 4; V1-3 §4 task views work via `findAll(types: ['task'])` + `lib/task_views.util.ts`.                                                                  |
+| RPC response schemas (`schema.types.ts`)         | **defer to Phase 5**                                               | Hand-written TypeBox per [`foundation/design.md`][2] Decision 3. No drizzle-typebox.                                                                                        |
+| Migration runner + `tools/db/migrations/` folder | **defer until first real schema change** (≥ Phase 9)               | Phase 4 declares all Phase 5–8 columns up-front. Bootstrap-only is enough; runner is YAGNI until needed.                                                                    |
+| `seed.service.ts`                                | **drop entirely**                                                  | `ImportService.runOnce(sourcesDir)` is the seed primitive. `createSeededMemoryDb` covers tests via factories. No abstraction layer needed.                                  |
+| `assembleDoc()` integration in import            | **defer to Phase 7**                                               | Phase 4 declares the `doc` column (default `''`) but does not populate it. Phase 7 wires `assembleDoc()` into `import.service.ts` when the detail view consumes the column. |
+| Schema columns                                   | **add all 4 now**: `doc`, `task_order`, `due_date`, `depends_on`   | Nullable / defaulted; inert until consumer phase populates them. Avoids migrations across Phases 5–8.                                                                       |
+| Validation library                               | **TypeBox only**                                                   | Zod is removed from the stack ([`foundation/design.md`][3] Decision 2). Phase 4 migrates the last hold-out (`config.schema.ts`).                                            |
+| Test fixtures library                            | **Fishery** ([`foundation/design.md`][4] Decision 4)               | drizzle-seed not added.                                                                                                                                                     |
+| Test fixture corpus                              | **5 curated YAML files under `fixtures/sample/`**                  | Down from 56. Used **only** by `import.service.spec.ts`. Repository specs use factories.                                                                                    |
+| `minimal/entries.yml`                            | **keep unchanged**                                                 | Deterministic 4-entry fixture for exact-count and idempotency assertions in `import.service.spec.ts`.                                                                       |
+| `bun:sqlite` vs Drizzle                          | **`bun:sqlite` directly** ([`foundation/design.md`][5] Decision 5) | Legacy used Drizzle in 1 of 6 functions. Drop it; use `db.query<KnowledgeRow, [params]>()` for typed prepared statements.                                                   |
+| `DbHandle` shape                                 | **`type DbHandle = Database`**                                     | Single API surface. No `{ db, raw }` flowing through every signature.                                                                                                       |
+| Commit strategy                                  | **one atomic commit**                                              | Mirrors Phase 3. Subject `feat(data): Add SQLite schema, repositories, import service`.                                                                                     |
+| Stash topology                                   | **collapse to single `phase-pending`**                             | Existing `phase-{4..misc-docs}` stashes are nested supersets, not deltas. Conflict-free recovery requires consolidation before Phase 4 work begins.                         |
+| `docs/superpowers/`                              | **delete + add to `.gitignore`**                                   | This path is a brainstorming-skill default; app uses `assets/docs/specs/<slug>/` instead. Never lands in any commit or stash.                                               |
+| Recovery source                                  | **`~/Work/bun/app_legacy` worktree at `cc3d08b`**                  | The "phase-4-data-layer" stash's `entry.repository.ts` is truncated to ~80 lines; the legacy version is the complete 193-line implementation.                               |
 
 [2]: ../foundation/design.md
 [3]: ../foundation/design.md
@@ -111,7 +111,7 @@ git stash push -u -m phase-pending -- $(<list of paths NOT committed in Phase 4>
 documenting the new single-stash topology and listing what the next phase
 should expect to find.
 
-> **Note for future phases.** Treat `~/Work/bun/kb_legacy` (commit `cc3d08b`)
+> **Note for future phases.** Treat `~/Work/bun/app_legacy` (commit `cc3d08b`)
 > as the authoritative legacy reference for any code that the stash claims to
 > hold but doesn't fully — see [`foundation/design.md` § REFERENCE
 > IMPLEMENTATION (LEGACY WORKTREE)][6].
@@ -151,8 +151,8 @@ should expect to find.
 | `src/__tests__/helpers/tmp.helper.ts` (was `testing.tmp.ts`)                        | ~20                               | `createTempDir` for filesystem-touching tests. Unchanged behaviour.                                                                                                                                                                        |
 | `src/__tests__/helpers/factory.types.ts` (was `testing.types.ts`)                   | ~25                               | `FactoryBuildOpts`, `WrappedFactoryOpts`, `isFactoryOpts`.                                                                                                                                                                                 |
 | `src/__tests__/helpers/react.helper.ts` (was `testing.react.helper.ts`)             | ~10                               | Carried for Phase 6. No spec exercises it in Phase 4.                                                                                                                                                                                      |
-| `src/__tests__/fixtures/sample/{bookmarks,commands,cheats,tasks,mixed_invalid}.yml` | 5 files, ~140 lines, ~6 KB total  | Curated subset replacing the former 56-file YAML smoke corpus. `minimal/entries.yml` stays for deterministic assertions and idempotency checks.                                               |
-| `src/__tests__/fixtures/config.invalid.yaml` (unchanged)               | unchanged                         | Existing config-failure corpus used by `config.loader.spec.ts`.                                                                                                               |
+| `src/__tests__/fixtures/sample/{bookmarks,commands,cheats,tasks,mixed_invalid}.yml` | 5 files, ~140 lines, ~6 app total | Curated subset replacing the former 56-file YAML smoke corpus. `minimal/entries.yml` stays for deterministic assertions and idempotency checks.                                                                                            |
+| `src/__tests__/fixtures/config.invalid.yaml` (unchanged)                            | unchanged                         | Existing config-failure corpus used by `config.loader.spec.ts`.                                                                                                                                                                            |
 
 ### Net-new files in Phase 4
 
@@ -166,17 +166,17 @@ should expect to find.
 
 ### Modified in Phase 4 (incremental)
 
-| File                                 | Change                                                                                                                                                                                                                                                                                                                                                                                         |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/shared/types/index.ts`          | Re-add `export * from './logger.types'` (reverts the Phase 3 temporary removal).                                                                                                                                                                                                                                                                                                               |
-| `package.json`                       | Declare `@logtape/logtape`, `@logtape/pretty`, `fast-glob`, `fishery` (deps); `happy-dom` (dev). **No** `drizzle-orm`, `drizzle-kit`, `drizzle-typebox`, `drizzle-seed`, `js-yaml`, `@types/js-yaml`. YAML parsing uses `Bun.YAML.parse()` everywhere (already standard in `@core` per `tools/rules/no-bun-in-core.yml`).                                                                      |
-| `tsconfig.json`                      | +6 path aliases (no wildcards — barrel-only public surfaces): `@shared/logging`, `@shell/app`, `@shell/app/db`, `@shell/app/config`, `@shell/app/lib`, `@testing`.                                                                                                                                                                                                                             |
-| `.ls-lint.yml`                       | New rules for `src/__tests__/`, `src/__tests__/factories/`, `src/__tests__/helpers/`, `src/__tests__/fixtures/`, `src/__tests__/fixtures/sample/`. New rule for `src/shell/app/lib/` (`util` / `types`).                                                                                                                                                                                       |
-| `.dependency-cruiser.cjs`            | Verify (or add) the three forbidden-import rules: `renderer→shell/app`, `core→shell`, `shared→shell`.                                                                                                                                                                                                                                                                                          |
-| `.gitignore`                         | Append `docs/superpowers/` (defensive — the path is the brainstorming skill's default and must never resurface).                                                                                                                                                                                                                                                                               |
-| `.agents/skills/kb-context/SKILL.md` | Drop the legacy `seed.ts` row, replace `drizzle-typebox` mention with hand-written TypeBox + `Value.Check`, retarget the migrations sentence to `tools/db/migrations/` (introduced ≥ Phase 9 — see [`foundation/design.md`][7] § Migration mechanism).                                                                                                                                         |
-| `.agents/skills/kb-testing/SKILL.md` | Strip the entire "drizzle-seed (secondary)" subsection (Decision 4); remove the `import { drizzle } from 'drizzle-orm/bun-sqlite'` example; update the `@testing` exports table to drop `minimalEntriesYml`, `seedMinimalFixture`, `readMinimalFixtureEntries`; rewrite `createSeededMemoryDb` example as synchronous (`db: Database`, no `Awaited<>`); fix `@app/app.service` → `@shell/app`. |
-| `.agents/skills/kb-rpc/SKILL.md`     | Replace the `drizzle-typebox` schema-derivation guidance with hand-written TypeBox response schemas (Decision 3); drop the `createSelectSchema` / `createInsertSchema` example; update the response-shape checklist to point at hand-written schemas in `src/shared/rpc/` (Phase 5).                                                                                                           |
+| File                                  | Change                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/shared/types/index.ts`           | Re-add `export * from './logger.types'` (reverts the Phase 3 temporary removal).                                                                                                                                                                                                                                                                                                               |
+| `package.json`                        | Declare `@logtape/logtape`, `@logtape/pretty`, `fast-glob`, `fishery` (deps); `happy-dom` (dev). **No** `drizzle-orm`, `drizzle-kit`, `drizzle-typebox`, `drizzle-seed`, `js-yaml`, `@types/js-yaml`. YAML parsing uses `Bun.YAML.parse()` everywhere (already standard in `@core` per `tools/rules/no-bun-in-core.yml`).                                                                      |
+| `tsconfig.json`                       | +6 path aliases (no wildcards — barrel-only public surfaces): `@shared/logging`, `@shell/app`, `@shell/app/db`, `@shell/app/config`, `@shell/app/lib`, `@testing`.                                                                                                                                                                                                                             |
+| `.ls-lint.yml`                        | New rules for `src/__tests__/`, `src/__tests__/factories/`, `src/__tests__/helpers/`, `src/__tests__/fixtures/`, `src/__tests__/fixtures/sample/`. New rule for `src/shell/app/lib/` (`util` / `types`).                                                                                                                                                                                       |
+| `.dependency-cruiser.cjs`             | Verify (or add) the three forbidden-import rules: `renderer→shell/app`, `core→shell`, `shared→shell`.                                                                                                                                                                                                                                                                                          |
+| `.gitignore`                          | Append `docs/superpowers/` (defensive — the path is the brainstorming skill's default and must never resurface).                                                                                                                                                                                                                                                                               |
+| `.agents/skills/app-context/SKILL.md` | Drop the legacy `seed.ts` row, replace `drizzle-typebox` mention with hand-written TypeBox + `Value.Check`, retarget the migrations sentence to `tools/db/migrations/` (introduced ≥ Phase 9 — see [`foundation/design.md`][7] § Migration mechanism).                                                                                                                                         |
+| `.agents/skills/app-testing/SKILL.md` | Strip the entire "drizzle-seed (secondary)" subsection (Decision 4); remove the `import { drizzle } from 'drizzle-orm/bun-sqlite'` example; update the `@testing` exports table to drop `minimalEntriesYml`, `seedMinimalFixture`, `readMinimalFixtureEntries`; rewrite `createSeededMemoryDb` example as synchronous (`db: Database`, no `Awaited<>`); fix `@app/app.service` → `@shell/app`. |
+| `.agents/skills/app-rpc/SKILL.md`     | Replace the `drizzle-typebox` schema-derivation guidance with hand-written TypeBox response schemas (Decision 3); drop the `createSelectSchema` / `createInsertSchema` example; update the response-shape checklist to point at hand-written schemas in `src/shared/rpc/` (Phase 5).                                                                                                           |
 
 ### Files **deferred** (re-stashed as part of `phase-pending`)
 
@@ -305,7 +305,7 @@ sufficient until concurrent inserts become a Phase 9 concern.
 ## MIGRATION MECHANISM
 
 Phase 4 has **no migrations folder, no migration runner, and no
-`_kb_migrations` table.** The bootstrap-only stage from
+`_app_migrations` table.** The bootstrap-only stage from
 [`foundation/design.md`][7] § Migration mechanism applies. `client.ts`
 runs the three idempotent DDL constants on every open; that is the entire
 mechanism in Phase 4.
@@ -589,8 +589,8 @@ former consumer.
 
 ### Pattern
 
-The canonical kb spec shape (Better Specs §Naming, §Single expectation —
-see [`assets/guides/TESTING_GUIDE.md`][12] and `kb-testing` skill):
+The canonical app spec shape (Better Specs §Naming, §Single expectation —
+see [`assets/guides/TESTING_GUIDE.md`][12] and `app-testing` skill):
 
 ```ts
 import type { Database } from 'bun:sqlite'
@@ -632,7 +632,7 @@ describe('entry.repository', () => {
 })
 ```
 
-Conventions enforced above (`kb-testing` Better Specs table):
+Conventions enforced above (`app-testing` Better Specs table):
 
 - `describe` per unit, inner `describe` per method (`#upsert`, `#findById`).
 - Inner `describe` blocks start with **when / with / without**.
@@ -664,7 +664,7 @@ follow suit (no `await` in the body, no `async` on the `it` callback).
 | `src/__tests__/helpers/tmp.helper.spec.ts`        | renamed               | `createTempDir` produces isolated dirs; cleanup callback removes them.                                                                                      |
 | `src/__tests__/paths.spec.ts`                     | trimmed               | `testingPaths` constants resolve; the `sample/` directory exists.                                                                                           |
 
-Coverage target ≥ 80 % per `kb-quality-gate`. Phase 4 measured: at least the
+Coverage target ≥ 80 % per `app-quality-gate`. Phase 4 measured: at least the
 new `client` / `config.schema` specs plus the rewritten legacy specs all
 green.
 
@@ -677,10 +677,10 @@ green.
 errors per file bundle, so the invalid sample is intentionally one failing file
 alongside four valid sibling files:
 
-| File                | Purpose                                                                                                      | Entries |
-| ------------------- | ------------------------------------------------------------------------------------------------------------ | ------- |
+| File                | Purpose                                                                                                     | Entries |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- | ------- |
 | `bookmarks.yml`     | Bare bookmark, placeholder-search URL, titled links, markdown notes, unusual-but-valid URL shapes           | 3       |
-| `commands.yml`      | Heavy markdown command, shorter command note, titled links                                                   | 3       |
+| `commands.yml`      | Heavy markdown command, shorter command note, titled links                                                  | 3       |
 | `cheats.yml`        | Portuguese text, keyboard glyphs, PlantUML note block                                                       | 3       |
 | `tasks.yml`         | All task statuses, multiple priorities, markdown checklist, `meta.due`                                      | 4       |
 | `mixed_invalid.yml` | One file containing both valid and invalid rows; the invalid row aborts the bundle so siblings still import | 3       |
@@ -855,13 +855,13 @@ Verify these forbidden-import rules exist (add if missing):
 Append at the end of the file:
 
 ```gitignore
-# Brainstorming-skill default path; kb uses assets/docs/specs/ instead.
+# Brainstorming-skill default path; app uses assets/docs/specs/ instead.
 docs/superpowers/
 ```
 
 ---
 
-## VERIFICATION (per [`assets/guides/DoD.md`][9] and [`.agents/skills/kb-quality-gate`][10])
+## VERIFICATION (per [`assets/guides/DoD.md`][9] and [`.agents/skills/app-quality-gate`][10])
 
 1. `bun run lint:fix` (Stage 0).
 2. `bun test` — all green; coverage ≥ 80 %.
@@ -881,7 +881,7 @@ docs/superpowers/
     (Conventional Commits + ≤ 50-char subject).
 
 [9]: ../../../guides/DoD.md
-[10]: ../../../../.agents/skills/kb-quality-gate/SKILL.md
+[10]: ../../../../.agents/skills/app-quality-gate/SKILL.md
 
 ---
 
@@ -901,7 +901,7 @@ docs/superpowers/
 | Commit strategy                    | One atomic commit. Subject `feat(data): Add SQLite schema, repositories, import service`.                                                                                     |
 | Stash strategy                     | Collapse to single `phase-pending`.                                                                                                                                           |
 | `docs/superpowers/`                | Delete + `.gitignore`.                                                                                                                                                        |
-| Recovery source                    | `~/Work/bun/kb_legacy` worktree at `cc3d08b`.                                                                                                                                 |
+| Recovery source                    | `~/Work/bun/app_legacy` worktree at `cc3d08b`.                                                                                                                                |
 
 ---
 

@@ -2,6 +2,7 @@
 title: Definition of Done
 description: Checklist before considering a task complete
 ---
+<!-- markdownlint-disable-file -->
 
 # DEFINITION OF DONE
 

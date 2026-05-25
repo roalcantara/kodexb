@@ -1,9 +1,9 @@
 <!-- markdownlint-disable-file -->
-# kb UX/UI Redesign — Design
+# app UX/UI Redesign — Design
 
 ## OVERVIEW
 
-Redesign kb with **Raycast UX patterns** (search-first, keyboard-driven, ⌘K actions,
+Redesign app with **Raycast UX patterns** (search-first, keyboard-driven, ⌘K actions,
 transient window on hotkey) and **PowerToys Run UI aesthetics** (minimal, flat,
 dark, compact two-line results). The window is resizable — users control the size.
 
@@ -19,16 +19,16 @@ minimal visible chrome, no gradients, clean typography.
 
 ## SCOPE DECISIONS
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| Layout approach | CSS-first redesign | Same components, new styles. No new components, no RPC changes. |
-| Search bar | Centered, prominent, takes focus on open | Raycast/PowerToys pattern — search is THE interaction |
-| Filtering | Compact "Type ▾" chip next to search bar, opens inline dropdown | Raycast-style — replaces the large filter dropdown with 3 sections |
-| Toolbar | Removed — actions moved to CmdK palette + shortcuts | Cleaner, keyboard-first |
-| Result rows | Two-line compact: title + type/tags subtitle. Mini chip pills for badges. | PowerToys density with kb's information richness |
-| Detail panel | Slides in from right, narrows list. Window resizable. | Same pattern as current, just restyled |
-| Footer | Subtle bar with result count + keyboard shortcut hints | Contextual help |
-| Theme | Andromeda Void (existing dark palette) — no changes | Already matches the dark aesthetic |
+| Decision        | Choice                                                                    | Rationale                                                          |
+| --------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Layout approach | CSS-first redesign                                                        | Same components, new styles. No new components, no RPC changes.    |
+| Search bar      | Centered, prominent, takes focus on open                                  | Raycast/PowerToys pattern — search is THE interaction              |
+| Filtering       | Compact "Type ▾" chip next to search bar, opens inline dropdown           | Raycast-style — replaces the large filter dropdown with 3 sections |
+| Toolbar         | Removed — actions moved to CmdK palette + shortcuts                       | Cleaner, keyboard-first                                            |
+| Result rows     | Two-line compact: title + type/tags subtitle. Mini chip pills for badges. | PowerToys density with app's information richness                  |
+| Detail panel    | Slides in from right, narrows list. Window resizable.                     | Same pattern as current, just restyled                             |
+| Footer          | Subtle bar with result count + keyboard shortcut hints                    | Contextual help                                                    |
+| Theme           | Andromeda Void (existing dark palette) — no changes                       | Already matches the dark aesthetic                                 |
 
 ---
 
@@ -41,12 +41,12 @@ minimal visible chrome, no gradients, clean typography.
     └───Escape/←───────└───Escape/←───────┘
 ```
 
-| Key | Action |
-|-----|--------|
-| Enter / → | Advance: List → Split → Detail |
-| ← / Escape | Retreat: Detail → Split → List |
+| Key                 | Action                               |
+| ------------------- | ------------------------------------ |
+| Enter / →           | Advance: List → Split → Detail       |
+| ← / Escape          | Retreat: Detail → Split → List       |
 | ArrowUp / ArrowDown | Navigate between entries (all views) |
-| ✕ Close button | Jump from any view back to List |
+| ✕ Close button      | Jump from any view back to List      |
 
 **Stage 1 — List**: Full-width entry list. Search bar + filter chip at top.
 No detail visible. The default state when the app opens.
@@ -79,16 +79,16 @@ Current: Toolbar → ListArea (with detail panel) → FilterDropdown (overlay)
 New: Search bar + filter chip → Compact list → Detail overlay (conditional) → Footer
 
 ```tsx
-<div className="kb-powertoys">
-  <div className="kb-pt-search">
+<div className="app-powertoys">
+  <div className="app-pt-search">
     <input ref={searchInputRef} ... />
     <FilterChip label={currentFilter} onClick={onFilterClick} />
   </div>
-  <div className="kb-pt-results">
+  <div className="app-pt-results">
     {rows.map(entry => <EntryRow entry={entry} compact />)}
   </div>
   {detailOpen && <DetailPanel ... />}
-  <div className="kb-pt-footer">
+  <div className="app-pt-footer">
     <span>{resultCount} results</span>
     <span>⌘K · ⌘N · ⌘,</span>
   </div>
@@ -112,7 +112,7 @@ Action hint (↵ Open, ⌘C Copy, ⌘E Edit) on the right of the first line.
 ### `list_area.component.tsx` — Remove, inline into list_main
 
 The list area as a separate component is removed. Entry rows render directly
-in `list_main` under `.kb-pt-results`.
+in `list_main` under `.app-pt-results`.
 
 **Initial/empty state**: When no search query is active and no filters are selected,
 show the first N entries (as if searching with no filters — the default behavior).
@@ -155,14 +155,14 @@ Add tags by typing #tagname in search
 - **Tags**: type `#react` in the search bar. Multiple tags: `#react #js` (AND logic)
 - **Filter chip label**: shows "Bookmark, Task" when multi-selected, "All" when none checked
 
-### CSS — New `.kb-powertoys` root class
+### CSS — New `.app-powertoys` root class
 
-All new styles live under `.kb-powertoys` — the existing `.kb-listPage` styles
+All new styles live under `.app-powertoys` — the existing `.app-listPage` styles
 remain untouched for the preview server. New CSS:
 
-- `.kb-pt-search` — search bar + filter chip row
-- `.kb-pt-results` — compact result list
-- `.kb-pt-row` — two-line compact entry row
-- `.kb-pt-chip` — mini pill for tags, badges, type labels
-- `.kb-pt-footer` — subtle bottom bar
-- `.kb-pt-detail` — slide-in detail panel overlay
+- `.app-pt-search` — search bar + filter chip row
+- `.app-pt-results` — compact result list
+- `.app-pt-row` — two-line compact entry row
+- `.app-pt-chip` — mini pill for tags, badges, type labels
+- `.app-pt-footer` — subtle bottom bar
+- `.app-pt-detail` — slide-in detail panel overlay

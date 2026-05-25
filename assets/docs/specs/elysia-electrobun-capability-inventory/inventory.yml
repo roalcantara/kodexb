@@ -7,7 +7,7 @@ sources:
     fetched_at: '2026-05-22'
     notes:
       - LLM bundle (llms-full.txt) fetched successfully; canonical page URLs preserved per capability.
-      - Standard Schema is upstream-only for kb; kb standardises on TypeBox per CLAUDE.md.
+      - Standard Schema is upstream-only for app; app standardises on TypeBox per CLAUDE.md.
       - No unreachable upstream pages during the 2026-05-18 scrape (CE-1.3).
       - Coverage addendum on 2026-05-22 added prominent Elysia pages from llms.txt that were missing from the first pass.
   - id: electrobun
@@ -32,20 +32,20 @@ capabilities:
       evidence:
         - src/shell/main/rpc/server.ts
       confidence: high
-      notes: All kb RPC endpoints are POST routes under `/api/*` via `createRpcServer`.
+      notes: All app RPC endpoints are POST routes under `/api/*` via `createRpcServer`.
     priority: undecided
     priority_signals:
       roi: []
       technical_debt: []
       risk_reduction: []
     pros:
-      - Foundation of kb's typed RPC server.
+      - Foundation of app's typed RPC server.
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/server.ts
-      - .agents/skills/kb-rpc/SKILL.md
+      - .agents/skills/app-rpc/SKILL.md
     candidate_stories: []
     notes: []
   - id: elysia-typebox
@@ -62,24 +62,24 @@ capabilities:
         - src/shell/main/rpc/server.ts
         - src/core/validation/typebox.helper.ts
       confidence: high
-      notes: kb uses `@sinclair/typebox` (`Type.*`) for RPC schemas and core validation, not Elysia's `t.*` builder. Elysia accepts the TypeBox objects as route `body` schemas.
+      notes: app uses `@sinclair/typebox` (`Type.*`) for RPC schemas and core validation, not Elysia's `t.*` builder. Elysia accepts the TypeBox objects as route `body` schemas.
     priority: undecided
     priority_signals:
       roi: []
       technical_debt:
-        - Two TypeBox authoring styles (Elysia `t` vs `@sinclair/typebox`) if kb ever mixes them.
+        - Two TypeBox authoring styles (Elysia `t` vs `@sinclair/typebox`) if app ever mixes them.
       risk_reduction: []
     pros:
-      - TypeBox is kb's sole validation library across transport and core.
+      - TypeBox is app's sole validation library across transport and core.
     cons:
-      - Route schemas do not use Elysia's `t` helper; docs examples may not match kb's pattern verbatim.
+      - Route schemas do not use Elysia's `t` helper; docs examples may not match app's pattern verbatim.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/schemas.ts
       - src/core/validation/typebox.helper.ts
     candidate_stories:
-      - Document kb's TypeBox-only RPC schema pattern in kb-rpc skill examples.
+      - Document app's TypeBox-only RPC schema pattern in app-rpc skill examples.
     notes: []
   - id: elysia-eden-treaty
     ecosystem: elysia
@@ -106,10 +106,10 @@ capabilities:
       - Bridge discipline required because production transport is Electrobun IPC, not HTTP.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/renderer/rpc/client.ts
       - src/shell/main/rpc/server.ts
-      - .agents/skills/kb-rpc/SKILL.md
+      - .agents/skills/app-rpc/SKILL.md
     candidate_stories:
       - Harden Eden bridge response and error contracts.
     notes: []
@@ -131,14 +131,14 @@ capabilities:
       roi: []
       technical_debt: []
       risk_reduction:
-        - Trace hooks could add RPC latency observability if kb adopts them later.
+        - Trace hooks could add RPC latency observability if app adopts them later.
     pros:
       - onError already provides a global error boundary for RPC routes.
     cons:
       - Most lifecycle hooks are unused; trace would add overhead unless adopted deliberately.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/server.ts
     candidate_stories:
       - Add onRequest logging with request IDs for preview-server debugging.
@@ -156,7 +156,7 @@ capabilities:
       evidence:
         - src/shell/main/rpc/server.ts
       confidence: high
-      notes: "`rpcErrorContract` registers global `onError` and normalises failures to `{ error: string }` with HTTP 500."
+      notes: '`rpcErrorContract` registers global `onError` and normalises failures to `{ error: string }` with HTTP 500.'
     priority: undecided
     priority_signals:
       roi: []
@@ -167,7 +167,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/server.ts
       - tools/preview/server.ts
     candidate_stories: []
@@ -195,7 +195,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/server.spec.ts
     candidate_stories: []
     notes: []
@@ -212,7 +212,7 @@ capabilities:
         - src/shell/main/rpc/server.ts
         - src/shell/main/rpc/host.spec.ts
       confidence: high
-      notes: "Only `prefix: '/api'` and named plugin `name: 'kb-rpc-error'` are set. AOT, precompile, strictPath, and serve options are not enabled."
+      notes: "Only `prefix: '/api'` and named plugin `name: 'app-rpc-error'` are set. AOT, precompile, strictPath, and serve options are not enabled."
     priority: undecided
     priority_signals:
       roi: []
@@ -222,7 +222,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/server.ts
     candidate_stories: []
     notes: []
@@ -238,7 +238,7 @@ capabilities:
       evidence:
         - src/shell/main/rpc/server.ts
       confidence: medium
-      notes: kb uses `.use(rpcErrorContract)` for a named error plugin. Deduplication semantics are not exercised or tested explicitly.
+      notes: app uses `.use(rpcErrorContract)` for a named error plugin. Deduplication semantics are not exercised or tested explicitly.
     priority: undecided
     priority_signals:
       roi: []
@@ -249,7 +249,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/server.ts
     candidate_stories: []
     notes: []
@@ -275,7 +275,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/server.ts
     candidate_stories: []
     notes: []
@@ -290,7 +290,7 @@ capabilities:
       status: not-used
       evidence: []
       confidence: high
-      notes: No macro definitions in kb RPC or preview server.
+      notes: No macro definitions in app RPC or preview server.
     priority: undecided
     priority_signals:
       roi: []
@@ -300,10 +300,10 @@ capabilities:
     pros:
       - Could reduce duplication across many similar POST routes.
     cons:
-      - Adds indirection; kb currently favours explicit route definitions.
+      - Adds indirection; app currently favours explicit route definitions.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/server.ts
     candidate_stories:
       - Evaluate a typed-rpc macro for common route patterns after maintainer review.
@@ -319,7 +319,7 @@ capabilities:
       status: not-used
       evidence: []
       confidence: high
-      notes: kb does not mount external fetch handlers into the RPC app.
+      notes: app does not mount external fetch handlers into the RPC app.
     priority: undecided
     priority_signals:
       roi: []
@@ -329,7 +329,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints: []
+    app_touchpoints: []
     candidate_stories: []
     notes: []
   - id: elysia-aot-precompile
@@ -354,10 +354,10 @@ capabilities:
       risk_reduction: []
     pros: []
     cons:
-      - Benefit unverified for kb's small RPC surface.
+      - Benefit unverified for app's small RPC surface.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - tools/preview/server.ts
     candidate_stories:
       - Benchmark AOT/precompile impact on preview-server startup before adoption.
@@ -388,9 +388,9 @@ capabilities:
     risks:
       - May encourage HTTP-first thinking that does not match Electrobun IPC production.
     prerequisites:
-      - "@elysia/openapi package"
+      - '@elysia/openapi package'
       - Preview server remains HTTP-accessible for doc UI
-    kb_touchpoints:
+    app_touchpoints:
       - tools/preview/server.ts
       - src/shell/main/rpc/schemas.ts
     candidate_stories:
@@ -409,7 +409,7 @@ capabilities:
         - src/shell/main/rpc/server.ts
         - src/shell/main/rpc/host.ts
       confidence: high
-      notes: kb uses Electrobun RPC push messages for sync progress, not Elysia WebSockets.
+      notes: app uses Electrobun RPC push messages for sync progress, not Elysia WebSockets.
     priority: undecided
     priority_signals:
       roi:
@@ -420,17 +420,17 @@ capabilities:
       - Built into Elysia without extra WebSocket libraries for HTTP servers.
     cons:
       - Duplicates existing Electrobun bidirectional messaging for production.
-      - kb has not verified whether Electrobun transport encryption claims apply to kb's bridge; treat as unknown.
+      - app has not verified whether Electrobun transport encryption claims apply to app's bridge; treat as unknown.
     risks: []
     prerequisites:
       - HTTP server path (preview server), not Electrobun IPC
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/host.ts
       - src/shell/renderer/rpc/client.ts
     candidate_stories:
       - Stream sync progress via WebSocket on preview server only (if HTTP streaming is needed).
     notes:
-      - Upstream capability only; not an automatic kb adoption candidate.
+      - Upstream capability only; not an automatic app adoption candidate.
   - id: elysia-cors
     ecosystem: elysia
     area: plugins
@@ -453,12 +453,12 @@ capabilities:
       - Simple one-liner for browser-based preview tooling.
     cons:
       - Irrelevant for Electrobun IPC production path.
-      - kb desktop app does not expose a public HTTP API.
+      - app desktop app does not expose a public HTTP API.
     risks: []
     prerequisites:
-      - "@elysia/cors package"
+      - '@elysia/cors package'
       - Browser clients accessing preview server from a different origin
-    kb_touchpoints:
+    app_touchpoints:
       - tools/preview/server.ts
     candidate_stories: []
     notes:
@@ -474,7 +474,7 @@ capabilities:
       status: not-applicable
       evidence: []
       confidence: high
-      notes: kb is a single-user desktop app with no auth layer.
+      notes: app is a single-user desktop app with no auth layer.
     priority: undecided
     priority_signals:
       roi: []
@@ -483,15 +483,15 @@ capabilities:
     pros: []
     cons:
       - Unnecessary overhead for local desktop RPC.
-      - Would imply network-exposed authenticated API surface kb does not have.
+      - Would imply network-exposed authenticated API surface app does not have.
     risks: []
     prerequisites:
       - Multi-user or network-exposed API requirement
-      - "@elysia/jwt package"
-    kb_touchpoints: []
+      - '@elysia/jwt package'
+    app_touchpoints: []
     candidate_stories: []
     notes:
-      - Upstream capability recorded for completeness; not a kb adoption candidate today.
+      - Upstream capability recorded for completeness; not a app adoption candidate today.
   - id: elysia-bearer
     ecosystem: elysia
     area: plugins
@@ -503,7 +503,7 @@ capabilities:
       status: not-applicable
       evidence: []
       confidence: high
-      notes: No Authorization header handling in kb RPC or preview server.
+      notes: No Authorization header handling in app RPC or preview server.
     priority: undecided
     priority_signals:
       roi: []
@@ -515,10 +515,10 @@ capabilities:
     risks: []
     prerequisites:
       - Network-exposed authenticated API
-    kb_touchpoints: []
+    app_touchpoints: []
     candidate_stories: []
     notes:
-      - Upstream HTTP auth helper; conflicts with kb's local-only IPC model.
+      - Upstream HTTP auth helper; conflicts with app's local-only IPC model.
   - id: elysia-html
     ecosystem: elysia
     area: plugins
@@ -542,7 +542,7 @@ capabilities:
       - Conflicts with existing React renderer architecture.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/renderer/
     candidate_stories: []
     notes: []
@@ -570,7 +570,7 @@ capabilities:
       - Electrobun `views://` and `build.copy` already handle packaged assets.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - electrobun.config.ts
       - tools/preview/server.ts
     candidate_stories: []
@@ -586,11 +586,11 @@ capabilities:
       status: not-used
       evidence: []
       confidence: high
-      notes: kb has no scheduled background jobs wired through Elysia.
+      notes: app has no scheduled background jobs wired through Elysia.
     priority: undecided
     priority_signals:
       roi:
-        - Hypothesis — periodic background sync could use cron if kb adds always-on main-process scheduling.
+        - Hypothesis — periodic background sync could use cron if app adds always-on main-process scheduling.
       technical_debt: []
       risk_reduction: []
     pros: []
@@ -598,9 +598,9 @@ capabilities:
       - Adds background scheduling complexity to a desktop app that currently syncs on demand.
     risks: []
     prerequisites:
-      - "@elysia/cron package"
+      - '@elysia/cron package'
       - Defined policy for background sync while app is open
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/app/app.ts
     candidate_stories:
       - Schedule periodic knowledge-base refresh (requires product decision first).
@@ -630,7 +630,7 @@ capabilities:
     risks: []
     prerequisites:
       - HTTP preview server path
-    kb_touchpoints:
+    app_touchpoints:
       - tools/preview/server.ts
     candidate_stories: []
     notes: []
@@ -656,7 +656,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints: []
+    app_touchpoints: []
     candidate_stories: []
     notes: []
   - id: elysia-graphql
@@ -670,7 +670,7 @@ capabilities:
       status: not-applicable
       evidence: []
       confidence: high
-      notes: kb uses a flat POST RPC surface, not GraphQL.
+      notes: app uses a flat POST RPC surface, not GraphQL.
     priority: undecided
     priority_signals:
       roi: []
@@ -681,7 +681,7 @@ capabilities:
       - Significant complexity versus current Eden Treaty RPC model.
     risks: []
     prerequisites: []
-    kb_touchpoints: []
+    app_touchpoints: []
     candidate_stories: []
     notes: []
   - id: elysia-opentelemetry
@@ -696,7 +696,7 @@ capabilities:
       evidence:
         - src/shared/logging/
       confidence: high
-      notes: kb uses `createLogger()` from `@shared/logging`, not OpenTelemetry exporters.
+      notes: app uses `createLogger()` from `@shared/logging`, not OpenTelemetry exporters.
     priority: undecided
     priority_signals:
       roi: []
@@ -706,18 +706,18 @@ capabilities:
       - Standard observability protocol for HTTP services.
     cons:
       - Heavy dependency footprint for a local desktop app.
-      - kb policy favours structured logging over production telemetry pipelines.
+      - app policy favours structured logging over production telemetry pipelines.
     risks: []
     prerequisites:
-      - "@elysia/opentelemetry package"
+      - '@elysia/opentelemetry package'
       - OTLP collector or cloud observability backend
       - Maintainer approval for production telemetry scope
-    kb_touchpoints:
+    app_touchpoints:
       - src/shared/logging/
       - src/shell/main/rpc/server.ts
     candidate_stories: []
     notes:
-      - Upstream capability only; not aligned with kb's current logging approach.
+      - Upstream capability only; not aligned with app's current logging approach.
   - id: elysia-standard-schema
     ecosystem: elysia
     area: validation
@@ -731,27 +731,27 @@ capabilities:
         - package.json
         - src/shell/main/rpc/schemas.ts
       confidence: high
-      notes: kb standardises on TypeBox; `zod` is not a dependency and ast-grep/depcruiser enforce TypeBox-only validation.
+      notes: app standardises on TypeBox; `zod` is not a dependency and ast-grep/depcruiser enforce TypeBox-only validation.
     priority: undecided
     priority_signals:
       roi: []
       technical_debt:
-        - Introducing Zod or other validators would fragment kb's validation surface.
+        - Introducing Zod or other validators would fragment app's validation surface.
       risk_reduction: []
     pros:
       - Flexible for upstream projects using multiple validator libraries.
     cons:
-      - Violates kb TypeBox-only policy (CLAUDE.md, kb-rpc skill).
+      - Violates app TypeBox-only policy (CLAUDE.md, app-rpc skill).
       - Would increase validation surface area and quality-gate risk.
     risks:
       - Non-TypeBox validators may fail ast-grep and dependency-cruiser rules.
     prerequisites: []
-    kb_touchpoints:
-      - .agents/skills/kb-rpc/SKILL.md
+    app_touchpoints:
+      - .agents/skills/app-rpc/SKILL.md
       - src/core/validation/typebox.helper.ts
     candidate_stories: []
     notes:
-      - Recorded as upstream capability; kb should not adopt without explicit policy change.
+      - Recorded as upstream capability; app should not adopt without explicit policy change.
   - id: elysia-integration-drizzle
     ecosystem: elysia
     area: integrations
@@ -765,7 +765,7 @@ capabilities:
         - src/shell/app/db/
         - CLAUDE.md
       confidence: high
-      notes: kb uses `bun:sqlite` with hand-authored SQL repositories; Drizzle is explicitly banned.
+      notes: app uses `bun:sqlite` with hand-authored SQL repositories; Drizzle is explicitly banned.
     priority: undecided
     priority_signals:
       roi: []
@@ -773,16 +773,16 @@ capabilities:
       risk_reduction: []
     pros: []
     cons:
-      - Violates kb no-Drizzle policy and foundation design decisions.
+      - Violates app no-Drizzle policy and foundation design decisions.
     risks:
       - Adding Drizzle would conflict with architecture guards and skills.
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/app/db/
       - assets/docs/specs/foundation/design.md
     candidate_stories: []
     notes:
-      - Upstream integration example only; not a kb adoption candidate.
+      - Upstream integration example only; not a app adoption candidate.
   - id: elysia-integration-better-auth
     ecosystem: elysia
     area: integrations
@@ -802,12 +802,12 @@ capabilities:
       risk_reduction: []
     pros: []
     cons:
-      - Requires network-exposed auth flows kb does not have.
+      - Requires network-exposed auth flows app does not have.
     risks: []
     prerequisites:
       - Network-exposed HTTP server
       - Identity and session storage design
-    kb_touchpoints: []
+    app_touchpoints: []
     candidate_stories: []
     notes: []
   - id: elysia-integration-ai-sdk
@@ -822,7 +822,7 @@ capabilities:
       evidence:
         - src/shell/app/app.ts
       confidence: medium
-      notes: kb has local tag suggestion logic without AI SDK; no Elysia AI integration routes.
+      notes: app has local tag suggestion logic without AI SDK; no Elysia AI integration routes.
     priority: undecided
     priority_signals:
       roi:
@@ -840,13 +840,13 @@ capabilities:
       - Product approval for AI features
       - API keys and provider accounts
       - Privacy review for local knowledge content
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/app/app.ts
     candidate_stories:
       - AI-powered tag suggestions (requires product and privacy review).
       - Natural language knowledge search (requires product and privacy review).
     notes:
-      - Upstream integration; not an automatic kb backlog item.
+      - Upstream integration; not an automatic app backlog item.
   - id: electrobun-browser-window
     ecosystem: electrobun
     area: window
@@ -860,18 +860,18 @@ capabilities:
         - src/shell/main/main.ts
         - src/shell/main/window/state.ts
       confidence: high
-      notes: Main kb window created with `views://shell/index.html`, custom frame, and attached RPC instance.
+      notes: Main app window created with `views://shell/index.html`, custom frame, and attached RPC instance.
     priority: undecided
     priority_signals:
       roi: []
       technical_debt: []
       risk_reduction: []
     pros:
-      - Foundation of kb desktop shell.
+      - Foundation of app desktop shell.
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/main.ts
       - assets/guides/ELECTROBUN.md
     candidate_stories: []
@@ -887,9 +887,9 @@ capabilities:
       status: used
       evidence:
         - src/shell/main/rpc/host.ts
-        - src/shared/rpc/kb_rpc_schema.ts
+        - src/shared/rpc/app_rpc_schema.ts
       confidence: high
-      notes: "`createKbWebviewRpc` registers `rpcCall` and sync push messages; forwards validated payloads to Elysia `RpcApp.handle`."
+      notes: '`createappWebviewRpc` registers `rpcCall` and sync push messages; forwards validated payloads to Elysia `RpcApp.handle`.'
     priority: undecided
     priority_signals:
       roi: []
@@ -901,12 +901,12 @@ capabilities:
       - Custom bridge rules (POST-only, `/api/` prefix) must stay in sync with Eden client.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/host.ts
       - src/shell/main/rpc/host.spec.ts
       - .agents/skills/electrobun-rpc/SKILL.md
     candidate_stories:
-      - Document bridge validation rules alongside kb-rpc skill.
+      - Document bridge validation rules alongside app-rpc skill.
     notes: []
   - id: electrobun-renderer-electroview-rpc
     ecosystem: electrobun
@@ -921,7 +921,7 @@ capabilities:
         - src/shell/renderer/rpc/client.ts
         - src/__tests__/helpers/testing.electrobun_view.mock.ts
       confidence: high
-      notes: Renderer defines `kbWebviewRpc` and wraps Eden Treaty calls through the single `rpcCall` bridge method.
+      notes: Renderer defines `appWebviewRpc` and wraps Eden Treaty calls through the single `rpcCall` bridge method.
     priority: undecided
     priority_signals:
       roi: []
@@ -932,7 +932,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/renderer/rpc/client.ts
       - src/shell/renderer/rpc/client.spec.tsx
     candidate_stories: []
@@ -943,7 +943,7 @@ capabilities:
     feature: Bundled assets (views://)
     source_urls:
       - https://blackboard.sh/electrobun/docs/apis/bundled-assets
-    summary: "`views://` URL scheme for packaged renderer assets via `build.views` and `build.copy`."
+    summary: '`views://` URL scheme for packaged renderer assets via `build.views` and `build.copy`.'
     current_usage:
       status: used
       evidence:
@@ -961,7 +961,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - electrobun.config.ts
     candidate_stories: []
     notes: []
@@ -971,7 +971,7 @@ capabilities:
     feature: Build and bundling
     source_urls:
       - https://blackboard.sh/electrobun/docs/guides/bundling-and-distribution
-    summary: "`electrobun build` with bun entrypoint, views, copy assets, and platform-specific outputs."
+    summary: '`electrobun build` with bun entrypoint, views, copy assets, and platform-specific outputs.'
     current_usage:
       status: used
       evidence:
@@ -990,7 +990,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - electrobun.config.ts
       - mise.toml
     candidate_stories: []
@@ -1017,7 +1017,7 @@ capabilities:
       risk_reduction:
         - Required for Gatekeeper-trusted macOS distribution when maintainers ship releases.
     pros:
-      - Wiring exists in config; no custom signing scripts in kb repo.
+      - Wiring exists in config; no custom signing scripts in app repo.
     cons:
       - Not exercised in default dev/CI paths without credentials.
     risks:
@@ -1025,7 +1025,7 @@ capabilities:
     prerequisites:
       - Apple Developer ID and notarization credentials for macOS releases
       - Windows signing certificate if targeting Windows releases
-    kb_touchpoints:
+    app_touchpoints:
       - electrobun.config.ts
       - mise.toml
     candidate_stories:
@@ -1043,11 +1043,11 @@ capabilities:
       evidence:
         - electrobun.config.ts
       confidence: high
-      notes: No updater configuration or release.baseUrl in kb config.
+      notes: No updater configuration or release.baseUrl in app config.
     priority: undecided
     priority_signals:
       roi:
-        - Essential for distributing updates once kb ships beyond maintainer machines.
+        - Essential for distributing updates once app ships beyond maintainer machines.
       technical_debt: []
       risk_reduction:
         - Reduces manual reinstall burden for users.
@@ -1060,10 +1060,10 @@ capabilities:
       - Static hosting or update server for release artifacts
       - Signed release builds
       - Channel policy (dev/canary/stable)
-    kb_touchpoints:
+    app_touchpoints:
       - electrobun.config.ts
     candidate_stories:
-      - Auto-update kb from canary/stable channels after signing pipeline exists.
+      - Auto-update app from canary/stable channels after signing pipeline exists.
     notes: []
   - id: electrobun-platform
     ecosystem: electrobun
@@ -1078,11 +1078,11 @@ capabilities:
         - electrobun.config.ts
         - src/shell/main/main.ts
       confidence: high
-      notes: kb development targets macOS (darwin title bar branch, primary platform). `electrobun.config.ts` includes linux stub; Windows not configured. No verified Windows/Linux release builds in repo.
+      notes: app development targets macOS (darwin title bar branch, primary platform). `electrobun.config.ts` includes linux stub; Windows not configured. No verified Windows/Linux release builds in repo.
     priority: undecided
     priority_signals:
       roi:
-        - Expands addressable users if kb ships cross-platform.
+        - Expands addressable users if app ships cross-platform.
       technical_debt: []
       risk_reduction: []
     pros:
@@ -1094,11 +1094,11 @@ capabilities:
     prerequisites:
       - Platform CI runners and test hardware
       - Platform-specific signing/notarization as applicable
-    kb_touchpoints:
+    app_touchpoints:
       - electrobun.config.ts
       - src/shell/main/main.ts
     candidate_stories:
-      - Build and smoke-test kb on Windows/Linux (requires platform CI investment).
+      - Build and smoke-test app on Windows/Linux (requires platform CI investment).
     notes: []
   - id: electrobun-global-shortcut
     ecosystem: electrobun
@@ -1123,7 +1123,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/main.ts
     candidate_stories: []
     notes: []
@@ -1145,14 +1145,14 @@ capabilities:
     priority_signals:
       roi: []
       technical_debt:
-        - PATHS helpers might simplify cross-platform data directory resolution if kb expands storage layout.
+        - PATHS helpers might simplify cross-platform data directory resolution if app expands storage layout.
       risk_reduction: []
     pros:
       - Native file picker and external URL handling already integrated in shell hooks.
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/main.ts
       - src/shell/app/lib/app_shell_hooks.types.ts
     candidate_stories:
@@ -1170,11 +1170,11 @@ capabilities:
       evidence:
         - src/shell/main/main.ts
       confidence: high
-      notes: No ApplicationMenu or ContextMenu registration; kb relies on default webview/Electrobun behaviour.
+      notes: No ApplicationMenu or ContextMenu registration; app relies on default webview/Electrobun behaviour.
     priority: undecided
     priority_signals:
       roi:
-        - Could improve macOS-native editing shortcuts and kb-specific commands.
+        - Could improve macOS-native editing shortcuts and app-specific commands.
       technical_debt: []
       risk_reduction: []
     pros:
@@ -1182,12 +1182,12 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/main.ts
       - assets/guides/ELECTROBUN.md
     candidate_stories:
       - Add Edit menu with Cut/Copy/Paste roles.
-      - Add kb-specific application menu entries.
+      - Add app-specific application menu entries.
     notes: []
   - id: electrobun-tray
     ecosystem: electrobun
@@ -1212,7 +1212,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/main.ts
     candidate_stories:
       - Add system tray with quick-search entry point.
@@ -1241,7 +1241,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/main.ts
       - src/shell/main/window/state.ts
     candidate_stories:
@@ -1258,7 +1258,7 @@ capabilities:
       status: not-applicable
       evidence: []
       confidence: high
-      notes: kb has no GPU rendering requirements.
+      notes: app has no GPU rendering requirements.
     priority: undecided
     priority_signals:
       roi: []
@@ -1266,10 +1266,10 @@ capabilities:
       risk_reduction: []
     pros: []
     cons:
-      - Irrelevant to kb's knowledge-management UI.
+      - Irrelevant to app's knowledge-management UI.
     risks: []
     prerequisites: []
-    kb_touchpoints: []
+    app_touchpoints: []
     candidate_stories: []
     notes: []
   - priority_signals:
@@ -1277,16 +1277,16 @@ capabilities:
       technical_debt: []
       risk_reduction: []
     pros:
-      - Validates kb's thin route and extracted schema approach.
+      - Validates app's thin route and extracted schema approach.
     cons:
-      - Upstream layout guidance must stay subordinate to FCIS and kb skill routing.
+      - Upstream layout guidance must stay subordinate to FCIS and app skill routing.
     risks: []
     prerequisites: []
-    kb_touchpoints:
-      - .agents/skills/kb-rpc/SKILL.md
+    app_touchpoints:
+      - .agents/skills/app-rpc/SKILL.md
       - assets/guides/FCIS.guide.md
     candidate_stories:
-      - Cross-check kb-rpc examples against current Elysia best-practice guidance.
+      - Cross-check app-rpc examples against current Elysia best-practice guidance.
     notes: []
     id: elysia-best-practices
     ecosystem: elysia
@@ -1297,9 +1297,9 @@ capabilities:
     summary: Project structure, handler extraction, plugin boundaries, validation placement, and type-safety guidance for larger Elysia apps.
     current_usage:
       evidence:
-        - .agents/skills/kb-rpc/SKILL.md
+        - .agents/skills/app-rpc/SKILL.md
         - src/shell/main/rpc/server.ts
-      notes: kb follows thin RPC handlers and extracted TypeBox schemas, but uses kb-specific FCIS rules instead of adopting upstream project layout wholesale.
+      notes: app follows thin RPC handlers and extracted TypeBox schemas, but uses app-specific FCIS rules instead of adopting upstream project layout wholesale.
       status: partial
       confidence: medium
     priority: undecided
@@ -1314,7 +1314,7 @@ capabilities:
       - Current RPC surface is small enough that benefit is unproven.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/server.ts
       - tsconfig.json
     candidate_stories:
@@ -1347,7 +1347,7 @@ capabilities:
     risks: []
     prerequisites:
       - Benchmark or debugging need for RPC latency
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/server.ts
       - tools/preview/server.ts
     candidate_stories:
@@ -1377,7 +1377,7 @@ capabilities:
     risks: []
     prerequisites:
       - Networked HTTP session model
-    kb_touchpoints: []
+    app_touchpoints: []
     candidate_stories: []
     notes:
       - Prominent upstream HTTP capability recorded for completeness.
@@ -1390,7 +1390,7 @@ capabilities:
     summary: Typed cookie parsing, signing, and mutation on HTTP requests and responses.
     current_usage:
       evidence: []
-      notes: kb does not use browser cookies for its local desktop RPC contract.
+      notes: app does not use browser cookies for its local desktop RPC contract.
       status: not-applicable
       confidence: high
     priority: undecided
@@ -1399,12 +1399,12 @@ capabilities:
       technical_debt: []
       risk_reduction: []
     pros:
-      - Could centralise shared request metadata if kb adds auth or observability.
+      - Could centralise shared request metadata if app adds auth or observability.
     cons:
       - Not needed while handlers remain thin delegates to `App`.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/rpc/server.ts
     candidate_stories: []
     notes: []
@@ -1418,7 +1418,7 @@ capabilities:
     current_usage:
       evidence:
         - src/shell/main/rpc/server.ts
-      notes: kb injects `App` through closure and keeps handler context minimal.
+      notes: app injects `App` through closure and keeps handler context minimal.
       status: not-used
       confidence: high
     priority: undecided
@@ -1431,8 +1431,8 @@ capabilities:
       - Mostly irrelevant to Electrobun IPC production architecture.
     risks: []
     prerequisites:
-      - Decision to expose kb RPC over HTTP
-    kb_touchpoints:
+      - Decision to expose app RPC over HTTP
+    app_touchpoints:
       - tools/preview/server.ts
     candidate_stories: []
     notes:
@@ -1448,7 +1448,7 @@ capabilities:
       evidence:
         - tools/preview/server.ts
         - src/shell/main/rpc/host.ts
-      notes: Production kb does not deploy Elysia as a public HTTP service; preview is local-only.
+      notes: Production app does not deploy Elysia as a public HTTP service; preview is local-only.
       status: not-applicable
       confidence: high
     priority: undecided
@@ -1462,7 +1462,7 @@ capabilities:
       - Would compete with the existing Electrobun preview pipeline.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - tools/preview/server.ts
       - vite.config.ts
     candidate_stories: []
@@ -1478,7 +1478,7 @@ capabilities:
       evidence:
         - tools/preview/server.ts
         - electrobun.config.ts
-      notes: kb uses an Electrobun renderer build plus a custom Bun preview server, not Elysia full-stack dev-server integration.
+      notes: app uses an Electrobun renderer build plus a custom Bun preview server, not Elysia full-stack dev-server integration.
       status: not-used
       confidence: high
     priority: undecided
@@ -1492,7 +1492,7 @@ capabilities:
       - Switching would churn a working Treaty wrapper without clear benefit.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/renderer/rpc/client.ts
     candidate_stories: []
     notes: []
@@ -1516,12 +1516,12 @@ capabilities:
         - Bridge response handling is custom and deserves explicit documentation.
       risk_reduction: []
     pros:
-      - Directly documents the custom Treaty bridge shape kb relies on.
+      - Directly documents the custom Treaty bridge shape app relies on.
     cons:
       - Requires version-aware care because Treaty options can change.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/renderer/rpc/client.ts
       - src/shell/main/rpc/host.ts
     candidate_stories:
@@ -1539,7 +1539,7 @@ capabilities:
     current_usage:
       evidence:
         - src/shell/renderer/rpc/client.ts
-      notes: kb uses a Treaty `fetcher` override, route parameter mapping, and unwraps Treaty result objects.
+      notes: app uses a Treaty `fetcher` override, route parameter mapping, and unwraps Treaty result objects.
       status: used
       confidence: high
     priority: undecided
@@ -1548,13 +1548,13 @@ capabilities:
       technical_debt: []
       risk_reduction: []
     pros:
-      - Could type a preview-only streaming channel if kb adopts Elysia WebSockets.
+      - Could type a preview-only streaming channel if app adopts Elysia WebSockets.
     cons:
       - Duplicates Electrobun push-message transport in production.
     risks: []
     prerequisites:
       - Elysia WebSocket route adoption
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/renderer/rpc/client.ts
     candidate_stories: []
     notes: []
@@ -1582,9 +1582,9 @@ capabilities:
       - Overlaps with the OpenAPI plugin entry and has limited production value for IPC.
     risks: []
     prerequisites:
-      - "@elysiajs/swagger package"
+      - '@elysiajs/swagger package'
       - Preview HTTP endpoint documentation need
-    kb_touchpoints:
+    app_touchpoints:
       - tools/preview/server.ts
     candidate_stories: []
     notes: []
@@ -1607,14 +1607,14 @@ capabilities:
       risk_reduction: []
     pros: []
     cons:
-      - "Same mismatch as GraphQL Yoga: higher complexity than the current typed RPC surface."
+      - 'Same mismatch as GraphQL Yoga: higher complexity than the current typed RPC surface.'
     risks: []
     prerequisites:
       - Product decision to replace or supplement Eden RPC with GraphQL
-    kb_touchpoints: []
+    app_touchpoints: []
     candidate_stories: []
     notes:
-      - Recorded for source coverage; not a kb adoption candidate today.
+      - Recorded for source coverage; not a app adoption candidate today.
     id: elysia-graphql-apollo
     ecosystem: elysia
     area: plugins
@@ -1634,11 +1634,11 @@ capabilities:
       risk_reduction: []
     pros: []
     cons:
-      - Hosted runtime integrations do not match kb desktop-local deployment.
+      - Hosted runtime integrations do not match app desktop-local deployment.
     risks: []
     prerequisites:
-      - Decision to expose kb functionality as a hosted web service
-    kb_touchpoints: []
+      - Decision to expose app functionality as a hosted web service
+    app_touchpoints: []
     candidate_stories: []
     notes:
       - Grouped to avoid one low-fit entry per hosting provider while still recording the prominent integration family.
@@ -1656,7 +1656,7 @@ capabilities:
       evidence:
         - src/shell/main/rpc/host.ts
         - tools/preview/server.ts
-      notes: kb runs Elysia inside Bun/Electrobun and a local preview server, not hosted web frameworks.
+      notes: app runs Elysia inside Bun/Electrobun and a local preview server, not hosted web frameworks.
       status: not-applicable
       confidence: high
     priority: undecided
@@ -1665,11 +1665,11 @@ capabilities:
       technical_debt: []
       risk_reduction: []
     pros:
-      - Matches kb's desktop shell structure.
+      - Matches app's desktop shell structure.
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - assets/guides/ELECTROBUN.md
       - .cursor/electrobun-skill-routing.md
     candidate_stories: []
@@ -1685,7 +1685,7 @@ capabilities:
       evidence:
         - src/shell/main/main.ts
         - src/shell/renderer/rpc/client.ts
-      notes: kb follows the main-process plus packaged renderer split and bridges renderer calls through Electrobun RPC.
+      notes: app follows the main-process plus packaged renderer split and bridges renderer calls through Electrobun RPC.
       status: used
       confidence: high
     priority: undecided
@@ -1701,11 +1701,11 @@ capabilities:
     risks: []
     prerequisites:
       - Windows/Linux test access or CI runners
-    kb_touchpoints:
+    app_touchpoints:
       - electrobun.config.ts
       - assets/guides/CI_GUIDE.md
     candidate_stories:
-      - Create a compatibility matrix for kb release targets.
+      - Create a compatibility matrix for app release targets.
     notes: []
     id: electrobun-compatibility
     ecosystem: electrobun
@@ -1718,7 +1718,7 @@ capabilities:
       evidence:
         - electrobun.config.ts
         - src/shell/main/main.ts
-      notes: kb has macOS-first runtime branches and a Linux config stub; Windows/Linux compatibility is not verified.
+      notes: app has macOS-first runtime branches and a Linux config stub; Windows/Linux compatibility is not verified.
       status: partial
       confidence: medium
     priority: undecided
@@ -1733,7 +1733,7 @@ capabilities:
     risks: []
     prerequisites:
       - Product decision for embedded external content
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/renderer/
     candidate_stories: []
     notes: []
@@ -1747,7 +1747,7 @@ capabilities:
     current_usage:
       evidence:
         - src/shell/renderer
-      notes: kb uses a primary BrowserWindow webview, not nested Electrobun webview tags.
+      notes: app uses a primary BrowserWindow webview, not nested Electrobun webview tags.
       status: not-used
       confidence: high
     priority: undecided
@@ -1763,7 +1763,7 @@ capabilities:
       - Untrusted content could weaken desktop security if adopted without strict rules.
     prerequisites:
       - Security design for embedded remote content
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/renderer/
     candidate_stories: []
     notes: []
@@ -1791,7 +1791,7 @@ capabilities:
       - Renderer already owns most contextual UI behaviour.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/main.ts
       - src/shell/renderer/components/
     candidate_stories:
@@ -1824,7 +1824,7 @@ capabilities:
     risks:
       - Data migration risk if adopted after users have local databases.
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/app/config/
       - src/shell/app/db/
     candidate_stories:
@@ -1859,7 +1859,7 @@ capabilities:
       - Signed release builds
       - Update hosting
       - Release channel policy
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/main.ts
       - electrobun.config.ts
     candidate_stories:
@@ -1885,12 +1885,12 @@ capabilities:
       technical_debt: []
       risk_reduction: []
     pros:
-      - Central to kb renderer-main bridge initialization.
+      - Central to app renderer-main bridge initialization.
     cons:
       - Initialization order matters for RPC availability.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/renderer/rpc/client.ts
     candidate_stories: []
     notes: []
@@ -1904,14 +1904,14 @@ capabilities:
     current_usage:
       evidence:
         - src/shell/renderer/rpc/client.ts
-      notes: "Renderer creates `new Electroview({ rpc: kbWebviewRpc })` after defining RPC handlers."
+      notes: 'Renderer creates `new Electroview({ rpc: appWebviewRpc })` after defining RPC handlers.'
       status: used
       confidence: high
     priority: undecided
   - priority_signals:
       roi: []
       technical_debt:
-        - Custom-frame window dragging should be documented if kb relies on it.
+        - Custom-frame window dragging should be documented if app relies on it.
       risk_reduction: []
     pros:
       - Could improve native feel for the custom window frame.
@@ -1919,11 +1919,11 @@ capabilities:
       - May be unnecessary if current frame mode already handles dragging.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/main.ts
       - src/shell/renderer/styles/list.css
     candidate_stories:
-      - Verify whether kb needs explicit draggable regions for the custom frame.
+      - Verify whether app needs explicit draggable regions for the custom frame.
     notes: []
     id: electrobun-draggable-regions
     ecosystem: electrobun
@@ -1950,7 +1950,7 @@ capabilities:
       - Globals are harder to test than injected values.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - src/shell/main/
       - src/shell/renderer/
     candidate_stories: []
@@ -1980,7 +1980,7 @@ capabilities:
       - Advanced build options add maintenance cost if adopted prematurely.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - electrobun.config.ts
     candidate_stories:
       - Review Electrobun build config options before the first distribution release.
@@ -1995,7 +1995,7 @@ capabilities:
     current_usage:
       evidence:
         - electrobun.config.ts
-      notes: kb config covers app metadata, entrypoints, views, copied assets, macOS signing, and Linux icon/CEF settings, but not all advanced build options.
+      notes: app config covers app metadata, entrypoints, views, copied assets, macOS signing, and Linux icon/CEF settings, but not all advanced build options.
       status: partial
       confidence: high
     priority: undecided
@@ -2009,11 +2009,11 @@ capabilities:
       - Task wrappers already hide most CLI detail from contributors.
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - package.json
       - mise.toml
     candidate_stories:
-      - Document the Electrobun CLI flags actually used by kb tasks.
+      - Document the Electrobun CLI flags actually used by app tasks.
     notes: []
     id: electrobun-cli-args
     ecosystem: electrobun
@@ -2026,7 +2026,7 @@ capabilities:
       evidence:
         - package.json
         - mise.toml
-      notes: kb wraps Electrobun commands through package scripts and mise tasks, but this pass did not enumerate every supported CLI flag.
+      notes: app wraps Electrobun commands through package scripts and mise tasks, but this pass did not enumerate every supported CLI flag.
       status: partial
       confidence: medium
     priority: undecided
@@ -2042,7 +2042,7 @@ capabilities:
     risks: []
     prerequisites:
       - Cross-platform rendering issue or explicit release requirement
-    kb_touchpoints:
+    app_touchpoints:
       - electrobun.config.ts
     candidate_stories:
       - Decide whether CEF bundling is needed for Windows/Linux release targets.
@@ -2057,7 +2057,7 @@ capabilities:
     current_usage:
       evidence:
         - electrobun.config.ts
-      notes: "`bundleCEF: false` is configured for macOS and Linux."
+      notes: '`bundleCEF: false` is configured for macOS and Linux.'
       status: not-used
       confidence: high
     priority: undecided
@@ -2070,7 +2070,7 @@ capabilities:
     cons: []
     risks: []
     prerequisites: []
-    kb_touchpoints:
+    app_touchpoints:
       - electrobun.config.ts
       - assets/icons/
     candidate_stories: []
@@ -2085,8 +2085,8 @@ capabilities:
     current_usage:
       evidence:
         - electrobun.config.ts
-        - assets/icons/kb-logo.iconset
-      notes: Config points macOS and Linux icon settings at the kb iconset.
+        - assets/icons/app-logo.iconset
+      notes: Config points macOS and Linux icon settings at the app iconset.
       status: used
       confidence: high
     priority: undecided

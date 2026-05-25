@@ -7,7 +7,7 @@ Execute in order in **one** repo clone on the agreed integration branch. After e
 ## Phase 0 — Baseline
 
 - [ ] **T0.1** Record `git rev-parse HEAD` and sync with the agreed integration branch (e.g. merge `feat-add-stats-panel`).
-- [ ] **T0.2** Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`; fix any pre-existing failures before suppression work (separate commit if unrelated).
+- [ ] **T0.2** Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`; fix any pre-existing failures before suppression work (separate commit if unrelated).
 - [ ] **T0.3** Re-run `rg "biome-ignore"` and refresh inventory table if new files appeared.
 
 ## Phase 1 — Config and constants

@@ -36,7 +36,7 @@ large it is.
    full path to the SQLite database file.
 
 2. THE system SHALL display the database file size in human-readable format
-   (e.g., "1.2 MB", "340 KB").
+   (e.g., "1.2 MB", "340 app").
 
 3. `App.getStats()` SHALL return `dbPath` (from config) and `dbSize` (from
    `fs.stat`) as part of its response.

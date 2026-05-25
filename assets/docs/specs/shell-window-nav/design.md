@@ -1,6 +1,6 @@
 <!-- markdownlint-disable-file -->
 
-# kb — Shell window chrome, placement, and detail navigation
+# app — Shell window chrome, placement, and detail navigation
 
 ## Summary
 

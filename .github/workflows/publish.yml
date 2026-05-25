@@ -74,9 +74,9 @@ jobs:
     env:
       RELEASE_TAG: ${{ needs.resolve_tag.outputs.tag }}
       ELECTROBUN_DEVELOPER_ID: ${{ secrets.ELECTROBUN_DEVELOPER_ID }}
-      ELECTROBUN_APPLEID:      ${{ secrets.ELECTROBUN_APPLEID }}
-      ELECTROBUN_APPLEIDPASS:  ${{ secrets.ELECTROBUN_APPLEIDPASS }}
-      ELECTROBUN_TEAMID:       ${{ secrets.ELECTROBUN_TEAMID }}
+      ELECTROBUN_APPLEID: ${{ secrets.ELECTROBUN_APPLEID }}
+      ELECTROBUN_APPLEIDPASS: ${{ secrets.ELECTROBUN_APPLEIDPASS }}
+      ELECTROBUN_TEAMID: ${{ secrets.ELECTROBUN_TEAMID }}
     steps:
       - uses: actions/checkout@v4
         if: matrix.platform != 'mac' || env.ELECTROBUN_DEVELOPER_ID != ''
@@ -104,7 +104,7 @@ jobs:
       - name: Import macOS code-signing cert (signed path only)
         if: matrix.target == 'darwin-arm64' && env.ELECTROBUN_DEVELOPER_ID != ''
         env:
-          MAC_CERT_BASE64:   ${{ secrets.MAC_CERTIFICATE_BASE64 }}
+          MAC_CERT_BASE64: ${{ secrets.MAC_CERTIFICATE_BASE64 }}
           MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
         run: |
           set -euo pipefail

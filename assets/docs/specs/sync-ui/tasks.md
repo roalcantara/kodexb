@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 11 — Sync UI — Implementation Plan
 
-> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add a visual progress bar, auto-dismissing completion toast with error details, and concurrent sync prevention to the sync workflow.
 
@@ -34,9 +34,9 @@ type SyncProgressProps = {
 export function SyncProgress({ processed, total }: SyncProgressProps) {
   const pct = total > 0 ? Math.round((processed / total) * 100) : 0
   return (
-    <div className="kb-syncProgress">
-      <progress className="kb-syncProgress-bar" value={processed} max={total} />
-      <span className="kb-syncProgress-label">Processing file {processed} of {total}</span>
+    <div className="app-syncProgress">
+      <progress className="app-syncProgress-bar" value={processed} max={total} />
+      <span className="app-syncProgress-label">Processing file {processed} of {total}</span>
     </div>
   )
 }
@@ -76,27 +76,27 @@ export function SyncToast({ result, onDismiss }: SyncToastProps) {
   const { filesProcessed, inserted, updated, errors } = result
 
   return (
-    <div className="kb-syncToast">
-      <div className="kb-syncToast-body">
-        <span className="kb-syncToast-summary">
+    <div className="app-syncToast">
+      <div className="app-syncToast-body">
+        <span className="app-syncToast-summary">
           {errors.length === 0
             ? `${filesProcessed} files: ${inserted} inserted, ${updated} updated`
             : `Sync completed with ${errors.length} error${errors.length === 1 ? '' : 's'}`}
         </span>
         {errors.length > 0 && (
-          <button type="button" className="kb-syncToast-toggle" onClick={() => setShowErrors(!showErrors)}>
+          <button type="button" className="app-syncToast-toggle" onClick={() => setShowErrors(!showErrors)}>
             View errors ({errors.length})
           </button>
         )}
       </div>
       {showErrors && errors.length > 0 && (
-        <ul className="kb-syncToast-errors">
+        <ul className="app-syncToast-errors">
           {errors.map((err, i) => (
             <li key={i}>{err}</li>
           ))}
         </ul>
       )}
-      <button type="button" className="kb-syncToast-close" onClick={onDismiss} aria-label="Dismiss">
+      <button type="button" className="app-syncToast-close" onClick={onDismiss} aria-label="Dismiss">
         ✕
       </button>
     </div>
@@ -173,21 +173,21 @@ import { SyncToast } from '../shared/sync_toast.component'
 <SyncToast result={p.data.toastResult} onDismiss={p.data.dismissToast} />
 ```
 
-- [ ] **`styles/list.css`**: Add CSS for `.kb-syncProgress`, `.kb-syncToast`, `.kb-syncToast-*`, `@keyframes kb-slideUp`.
+- [ ] **`styles/list.css`**: Add CSS for `.app-syncProgress`, `.app-syncToast`, `.app-syncToast-*`, `@keyframes app-slideUp`.
 
 ```css
-.kb-syncProgress { display: flex; align-items: center; gap: 8px; padding: 4px 12px; background: var(--kb-surface); border-top: 1px solid var(--kb-border); }
-.kb-syncProgress-bar { flex: 1; height: 4px; accent-color: var(--kb-accent); }
-.kb-syncProgress-label { font-size: 0.75rem; color: var(--kb-muted); white-space: nowrap; }
-.kb-syncToast { position: fixed; bottom: 16px; right: 16px; background: var(--kb-surface); border: 1px solid var(--kb-border); border-radius: 6px; padding: 12px 16px; min-width: 320px; max-width: 480px; z-index: 200; animation: kb-slideUp 200ms ease; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-.kb-syncToast-body { display: flex; flex-direction: column; gap: 4px; }
-.kb-syncToast-summary { font-size: 0.875rem; color: var(--kb-text); }
-.kb-syncToast-toggle { background: none; border: none; color: var(--kb-accent); cursor: pointer; padding: 0; font-size: 0.75rem; text-align: left; }
-.kb-syncToast-errors { margin: 8px 0 0; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 4px; max-height: 160px; overflow-y: auto; font-size: 0.75rem; color: var(--kb-muted); list-style: none; }
-.kb-syncToast-errors li { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.kb-syncToast-errors li:last-child { border-bottom: none; }
-.kb-syncToast-close { position: absolute; top: 8px; right: 8px; background: none; border: none; color: var(--kb-muted); cursor: pointer; font-size: 0.875rem; }
-@keyframes kb-slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.app-syncProgress { display: flex; align-items: center; gap: 8px; padding: 4px 12px; background: var(--app-surface); border-top: 1px solid var(--app-border); }
+.app-syncProgress-bar { flex: 1; height: 4px; accent-color: var(--app-accent); }
+.app-syncProgress-label { font-size: 0.75rem; color: var(--app-muted); white-space: nowrap; }
+.app-syncToast { position: fixed; bottom: 16px; right: 16px; background: var(--app-surface); border: 1px solid var(--app-border); border-radius: 6px; padding: 12px 16px; min-width: 320px; max-width: 480px; z-index: 200; animation: app-slideUp 200ms ease; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+.app-syncToast-body { display: flex; flex-direction: column; gap: 4px; }
+.app-syncToast-summary { font-size: 0.875rem; color: var(--app-text); }
+.app-syncToast-toggle { background: none; border: none; color: var(--app-accent); cursor: pointer; padding: 0; font-size: 0.75rem; text-align: left; }
+.app-syncToast-errors { margin: 8px 0 0; padding: 8px; background: rgba(0,0,0,0.2); border-radius: 4px; max-height: 160px; overflow-y: auto; font-size: 0.75rem; color: var(--app-muted); list-style: none; }
+.app-syncToast-errors li { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.app-syncToast-errors li:last-child { border-bottom: none; }
+.app-syncToast-close { position: absolute; top: 8px; right: 8px; background: none; border: none; color: var(--app-muted); cursor: pointer; font-size: 0.875rem; }
+@keyframes app-slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 ```
 
 - [ ] Verify: `bun run typecheck && bun test src/shell/renderer/components/list/`

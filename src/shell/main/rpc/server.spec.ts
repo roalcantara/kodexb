@@ -137,6 +137,64 @@ describe('createRpcServer', () => {
     })
   })
 
+  describe('POST /api/getWindowPosition', () => {
+    describe('when the shell hook returns coordinates', () => {
+      it('returns them as JSON', async () => {
+        const loaded = await loadedFixture()
+        const app = new App(loaded, {}, 'default', {
+          getWindowPosition: () => ({ x: 42, y: 84 })
+        })
+        const rpc = createRpcServer(app)
+        const res = await rpc.handle(postJson('/api/getWindowPosition', {}))
+        expect(res.status).toBe(200)
+        const data = (await res.json()) as { x: number; y: number }
+        expect(data).toEqual({ x: 42, y: 84 })
+      })
+    })
+
+    describe('when no shell hook is wired', () => {
+      it('returns a null-equivalent body', async () => {
+        const loaded = await loadedFixture()
+        const app = new App(loaded, {}, 'default', {})
+        const rpc = createRpcServer(app)
+        const res = await rpc.handle(postJson('/api/getWindowPosition', {}))
+        expect(res.status).toBe(200)
+        // Elysia serialises a `null` return as an empty body; the renderer
+        // bridge (`bridgeFetch` in `src/shell/renderer/rpc/client.ts`)
+        // promotes it back to `null` before Eden Treaty parses. Both
+        // representations are valid on the wire here.
+        const text = await res.text()
+        expect(text === '' || text === 'null').toBe(true)
+      })
+    })
+  })
+
+  describe('POST /api/setWindowPosition', () => {
+    describe('when shell hook is wired', () => {
+      it('forwards x and y to the hook', async () => {
+        const loaded = await loadedFixture()
+        const calls: Array<{ x: number; y: number }> = []
+        const app = new App(loaded, {}, 'default', {
+          setWindowPosition: (x, y) => calls.push({ x, y })
+        })
+        const rpc = createRpcServer(app)
+        const res = await rpc.handle(postJson('/api/setWindowPosition', { x: 220, y: 330 }))
+        expect(res.status).toBe(200)
+        expect(calls).toEqual([{ x: 220, y: 330 }])
+      })
+    })
+
+    describe('when body is missing required coords', () => {
+      it('returns 500 from the validation guard', async () => {
+        const loaded = await loadedFixture()
+        const app = new App(loaded, {}, 'default', {})
+        const rpc = createRpcServer(app)
+        const res = await rpc.handle(postJson('/api/setWindowPosition', { x: 1 }))
+        expect(res.status).toBe(500)
+      })
+    })
+  })
+
   describe('POST /api/quit', () => {
     describe('when shell hook is wired', () => {
       it('invokes the quit hook once', async () => {

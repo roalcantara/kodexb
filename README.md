@@ -27,7 +27,7 @@ bun run lint:fix  # Auto-fix what can be fixed (Biome / Knip / ast-grep)
 
 ## Architecture
 
-**kb** is an [Electrobun][12] desktop app: a **Bun** main process owns the window,
+**app** is an [Electrobun][12] desktop app: a **Bun** main process owns the window,
 database, filesystem, and RPC server; a **React** webview is the UI. Business rules
 live in a pure **functional core**; all I/O stays in the **imperative shell**.
 The renderer never touches SQLite or YAML directly — only typed RPC calls.
@@ -47,7 +47,7 @@ webview bundle runs — the renderer never imports it.
 |    2 | [`src/shell/main/index.ts`](src/shell/main/index.ts) → [`main.ts`](src/shell/main/main.ts)        | `index.ts` only re-exports `./main`; `main.ts` runs `bootstrap()`.                          |
 |    3 | [`config.loader`](src/shell/app/config/config.loader.ts)                                          | `loadConfig()` — paths and settings before any window.                                      |
 |    4 | [`app.ts`](src/shell/app/app.ts)                                                                  | `new App(config, syncEmitter, verbosity, shellHooks)` — DB, import, orchestration.          |
-|    5 | [`rpc/server.ts`](src/shell/main/rpc/server.ts) + [`rpc/host.ts`](src/shell/main/rpc/host.ts)     | `createRpcServer(app)` then IPC bridge (`createKbWebviewRpc`).                              |
+|    5 | [`rpc/server.ts`](src/shell/main/rpc/server.ts) + [`rpc/host.ts`](src/shell/main/rpc/host.ts)     | `createRpcServer(app)` then IPC bridge (`createappWebviewRpc`).                             |
 |    6 | [`main.ts`](src/shell/main/main.ts)                                                               | `new BrowserWindow({ url: 'views://shell/index.html', rpc })` then `show()`.                |
 |    7 | [`index.html`](src/shell/renderer/index.html) → bundled [`index.ts`](src/shell/renderer/index.ts) | Webview loads HTML; script runs the `shell` view entry from `build.views.shell.entrypoint`. |
 |    8 | [`app.tsx`](src/shell/renderer/app.tsx)                                                           | `createRoot(#root).render(<ListPage />)` — first React paint.                               |
@@ -71,7 +71,7 @@ sequenceDiagram
   Entry->>Boot: import ./main → bootstrap()
   Boot->>Cfg: ② loadConfig()
   Boot->>App: ③ new App(...)
-  Boot->>Rpc: ④ createRpcServer(app) + createKbWebviewRpc
+  Boot->>Rpc: ④ createRpcServer(app) + createappWebviewRpc
   Boot->>Win: ⑤ new BrowserWindow + show()
   Win->>Html: ⑥ Load packaged webview
   Html->>Rdx: index.js bundle
@@ -92,7 +92,7 @@ is an **Elysia** HTTP-style API consumed by **Eden Treaty** in the renderer.
 flowchart TB
   subgraph disk["On disk"]
     YAML["YAML knowledge files\n(sources of truth)"]
-    CFG["Config\n(~/.config/kb, etc.)"]
+    CFG["Config\n(~/.config/app, etc.)"]
     DBf["SQLite index\n(derived, rebuildable)"]
   end
 
@@ -234,7 +234,7 @@ route in `rpc/server.ts` must be mirrored there ([`CLAUDE.md`](CLAUDE.md)).
 
 ### Glossary
 
-| Term                        | Layer / location                     | Role in kb                                                                                                                                                                 |
+| Term                        | Layer / location                     | Role in app                                                                                                                                                                |
 | --------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Functional Core (FCIS)**  | `src/core/`                          | Pure functions: entry/knowledge models, YAML validation schemas, parsers, task-view filters, tag ranking, list options. No `fetch`, no `fs`, no `bun:sqlite`.              |
 | **Shared**                  | `src/shared/`                        | Cross-cutting **pure** utilities and types (e.g. RPC payload shapes, `createLogger`, `fireAndForget`). No shell imports.                                                   |
@@ -248,7 +248,7 @@ route in `rpc/server.ts` must be mirrored there ([`CLAUDE.md`](CLAUDE.md)).
 | **Knowledge / entry**       | Core types + DB row                  | Bookmark, command, cheat, or task row; YAML on disk, row in `knowledges`, optional FTS hit.                                                                                |
 | **ImportService**           | `src/shell/app/db/import.service.ts` | Walks sources dir, validates YAML, upserts SQLite, rebuilds FTS — transactional bulk path.                                                                                 |
 | **Repository**              | `src/shell/app/db/*.repository.ts`   | Typed SQL accessors; routes must not import repositories directly (go through **App**).                                                                                    |
-| **Electrobun IPC**          | `rpc/host.ts`                        | Bridges Elysia handlers to the webview RPC channel (`kb-app`).                                                                                                             |
+| **Electrobun IPC**          | `rpc/host.ts`                        | Bridges Elysia handlers to the webview RPC channel (`app-app`).                                                                                                            |
 | **Preview server**          | `tools/preview/server.ts`            | HTTP mirror of production RPC for Playwright / local UI smoke tests.                                                                                                       |
 
 ### Project definitions and agent routing
@@ -289,7 +289,7 @@ Product rules for the list shell (normative for implementation). Full specs: [re
 | **Full detail** + filter **Enter** + **changed**             | Same as commit path, and **also** leave full detail for **list view** (e.g. `closeToList`). **Esc** / toggle / click-outside without that Enter path → close overlay only, **no** forced list view.                                                    |
 | **Palette** — **↑/↓**                                        | Palette internal navigation only (unchanged); **not** main list selection.                                                                                                                                                                             |
 | **Palette** — actions                                        | **Entry-first** sections: This entry → Clipboard → Source → Library → App (see [design](assets/docs/specs/command-palette-filter-ux/design.md)). With **`selectedId === null`**: Library (Sync, New Task) then App (Quit). Headers are non-selectable. |
-| **Implementation**                                           | Prefer **`keydown` capture** on `window` (or one coordinator). Rename legacy **`cmdk_palette`** / **`kb-cmdk-*`** to **`command_palette`** / **`kb-command-palette-*`**.                                                                               |
+| **Implementation**                                           | Prefer **`keydown` capture** on `window` (or one coordinator). Rename legacy **`cmdk_palette`** / **`app-cmdk-*`** to **`command_palette`** / **`app-command-palette-*`**.                                                                             |
 
 ### CI mirror tasks
 
@@ -338,7 +338,6 @@ agent skill wiring, UI smoke checks, and maintenance workflows:
   - [ast-grep][18] — code structural search, lint, rewriting at large scale
   - HK commit-message policy — `bun tools/hooks/commit_message.script.ts`
 
-
 ## CI / CD
 
 Three workflows handle review, release, and publishing:
@@ -364,7 +363,6 @@ leg produces an unsigned `.dmg` that can be installed with
 See the [CI / CD guide][20] for full operational detail (secrets,
 provisioning, troubleshooting, local mirroring).
 
-
 ## ACKNOWLEDGEMENTS
 
 - [Standard Readme][4]
@@ -388,7 +386,6 @@ The project is available as open source under the terms of the [MIT][1] [License
 [5]: https://git-scm.com 'Distributed version control system'
 [6]: https://mise.jdx.dev 'Manages dev tools like node, python, cmake, terraform, and hundreds more'
 [7]: https://github.com/brpylko/hk 'Git hook manager for monorepos'
-[8]: tools/hooks/commit_message.script.ts 'HK commit-message policy script'
 [9]: https://conventionalcommits.org 'Conventional Commits'
 [10]: https://typescriptlang.org
 [11]: https://bun.sh

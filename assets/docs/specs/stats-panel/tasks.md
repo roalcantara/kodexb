@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 12 — Stats Panel — Implementation Plan
 
-> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add a "Stats" section to the Settings page showing entry counts by type, total count, database path, and file size, with auto-refresh after sync.
 
@@ -23,7 +23,7 @@
 
 ## Task 1: Extend `RpcDbStats` type
 
-**Files:** Modify `src/shared/rpc/kb_rpc_schema.ts`
+**Files:** Modify `src/shared/rpc/app_rpc_schema.ts`
 
 - [ ] Add `dbPath: string` and `dbSize: number` to `RpcDbStats`:
 
@@ -86,7 +86,7 @@ async getStats(): Promise<RpcDbStats> {
 function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B'
   const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
+  const sizes = ['B', 'app', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`
 }
@@ -96,26 +96,26 @@ function formatBytes(bytes: number): string {
 
 ```tsx
 {/* Stats Section */}
-<section className="kb-settingsSection">
-  <h2 className="kb-settingsSection-title">Stats</h2>
-  <div className="kb-settingsRow">
-    <table className="kb-statsTable">
+<section className="app-settingsSection">
+  <h2 className="app-settingsSection-title">Stats</h2>
+  <div className="app-settingsRow">
+    <table className="app-statsTable">
       <tbody>
-        <tr><td>Bookmarks</td><td className="kb-statsCount">{s.stats?.byType?.bookmark ?? 0}</td></tr>
-        <tr><td>Commands</td><td className="kb-statsCount">{s.stats?.byType?.command ?? 0}</td></tr>
-        <tr><td>Cheats</td><td className="kb-statsCount">{s.stats?.byType?.cheat ?? 0}</td></tr>
-        <tr><td>Tasks</td><td className="kb-statsCount">{s.stats?.byType?.task ?? 0}</td></tr>
-        <tr className="kb-statsTotal"><td>Total</td><td className="kb-statsCount">{s.stats?.total ?? 0}</td></tr>
+        <tr><td>Bookmarks</td><td className="app-statsCount">{s.stats?.byType?.bookmark ?? 0}</td></tr>
+        <tr><td>Commands</td><td className="app-statsCount">{s.stats?.byType?.command ?? 0}</td></tr>
+        <tr><td>Cheats</td><td className="app-statsCount">{s.stats?.byType?.cheat ?? 0}</td></tr>
+        <tr><td>Tasks</td><td className="app-statsCount">{s.stats?.byType?.task ?? 0}</td></tr>
+        <tr className="app-statsTotal"><td>Total</td><td className="app-statsCount">{s.stats?.total ?? 0}</td></tr>
       </tbody>
     </table>
   </div>
-  <div className="kb-settingsRow">
+  <div className="app-settingsRow">
     <label>Database Path</label>
-    <div className="kb-settingsValue">{s.stats?.dbPath ?? '—'}</div>
+    <div className="app-settingsValue">{s.stats?.dbPath ?? '—'}</div>
   </div>
-  <div className="kb-settingsRow">
+  <div className="app-settingsRow">
     <label>Database Size</label>
-    <div className="kb-settingsValue">{formatBytes(s.stats?.dbSize ?? 0)}</div>
+    <div className="app-settingsValue">{formatBytes(s.stats?.dbSize ?? 0)}</div>
   </div>
 </section>
 ```
@@ -125,10 +125,10 @@ function formatBytes(bytes: number): string {
 - [ ] Add CSS to `styles/list.css`:
 
 ```css
-.kb-statsTable { width: 100%; border-collapse: collapse; }
-.kb-statsTable td { padding: 6px 12px; font-size: 0.875rem; color: var(--kb-text); }
-.kb-statsCount { text-align: right; font-variant-numeric: tabular-nums; }
-.kb-statsTotal td { border-top: 1px solid var(--kb-border); font-weight: 600; padding-top: 8px; }
+.app-statsTable { width: 100%; border-collapse: collapse; }
+.app-statsTable td { padding: 6px 12px; font-size: 0.875rem; color: var(--app-text); }
+.app-statsCount { text-align: right; font-variant-numeric: tabular-nums; }
+.app-statsTotal td { border-top: 1px solid var(--app-border); font-weight: 600; padding-top: 8px; }
 ```
 
 - [ ] Verify: `bun run typecheck && bun test src/shell/renderer/pages/settings/`

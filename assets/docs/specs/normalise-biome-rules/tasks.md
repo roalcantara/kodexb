@@ -10,9 +10,9 @@ commit before moving to the next rule.
 
 Before editing code or configuration, load:
 
-- `.agents/skills/kb-context/SKILL.md`
-- `.agents/skills/kb-testing/SKILL.md` for test-rule phases
-- `.agents/skills/kb-quality-gate/SKILL.md`
+- `.agents/skills/app-context/SKILL.md`
+- `.agents/skills/app-testing/SKILL.md` for test-rule phases
+- `.agents/skills/app-quality-gate/SKILL.md`
 - `biome-developer`
 - `subagent-driven-development`
 - `docs-writer` when editing Markdown
@@ -37,22 +37,22 @@ elapsed time, suspected cause, and smallest proposed split.
 
 ## Rule ledger
 
-| Phase | Rule | Baseline | Final | Config status | Exceptions | Verification |
-| --- | --- | ---: | ---: | --- | --- | --- |
-| 0 | Inventory | Pending refresh | n/a | n/a | n/a | Pending |
-| 1 | `nursery/useConsistentTestIt` | Pending refresh | Pending | Pending | Pending | Pending |
-| 2 | `suspicious/noSkippedTests` | Pending refresh | Pending | Pending | Pending | Pending |
-| 3 | `nursery/noIdenticalTestTitle` | Pending refresh | Pending | Pending | Pending | Pending |
-| 4 | `nursery/useTestHooksInOrder` | Pending refresh | Pending | Pending | Pending | Pending |
-| 5 | `nursery/useTestHooksOnTop` | Pending refresh | Pending | Pending | Pending | Pending |
-| 6 | `complexity/noExcessiveNestedTestSuites` | Pending refresh | Pending | Pending | Pending | Pending |
-| 7 | `nursery/noConditionalExpect` | Pending refresh | Pending | Pending | Pending | Pending |
-| 8 | `suspicious/noConsole` | Pending refresh | Pending | Pending | Pending | Pending |
-| 9 | `style/noProcessEnv` | Pending refresh | Pending | Pending | Pending | Pending |
-| 10 | `a11y/noNoninteractiveElementInteractions` | Pending refresh | Pending | Pending | Pending | Pending |
-| 11 | `suspicious/noImportCycles` | Pending refresh | Pending | Pending | Pending | Pending |
-| 12 | Playwright nursery rules | Pending refresh | Pending | Pending | Pending | Pending |
-| 13 | Closure | n/a | n/a | Pending | Pending | Pending |
+| Phase | Rule                                       |        Baseline |   Final | Config status | Exceptions | Verification |
+| ----- | ------------------------------------------ | --------------: | ------: | ------------- | ---------- | ------------ |
+| 0     | Inventory                                  | Pending refresh |     n/a | n/a           | n/a        | Pending      |
+| 1     | `nursery/useConsistentTestIt`              | Pending refresh | Pending | Pending       | Pending    | Pending      |
+| 2     | `suspicious/noSkippedTests`                | Pending refresh | Pending | Pending       | Pending    | Pending      |
+| 3     | `nursery/noIdenticalTestTitle`             | Pending refresh | Pending | Pending       | Pending    | Pending      |
+| 4     | `nursery/useTestHooksInOrder`              | Pending refresh | Pending | Pending       | Pending    | Pending      |
+| 5     | `nursery/useTestHooksOnTop`                | Pending refresh | Pending | Pending       | Pending    | Pending      |
+| 6     | `complexity/noExcessiveNestedTestSuites`   | Pending refresh | Pending | Pending       | Pending    | Pending      |
+| 7     | `nursery/noConditionalExpect`              | Pending refresh | Pending | Pending       | Pending    | Pending      |
+| 8     | `suspicious/noConsole`                     | Pending refresh | Pending | Pending       | Pending    | Pending      |
+| 9     | `style/noProcessEnv`                       | Pending refresh | Pending | Pending       | Pending    | Pending      |
+| 10    | `a11y/noNoninteractiveElementInteractions` | Pending refresh | Pending | Pending       | Pending    | Pending      |
+| 11    | `suspicious/noImportCycles`                | Pending refresh | Pending | Pending       | Pending    | Pending      |
+| 12    | Playwright nursery rules                   | Pending refresh | Pending | Pending       | Pending    | Pending      |
+| 13    | Closure                                    |             n/a |     n/a | Pending       | Pending    | Pending      |
 
 ## Phase 0 — Refresh Biome baseline
 
@@ -765,7 +765,7 @@ EOF
     bun run lint
     bun run build
     git diff --check
-    bash .agents/skills/kb-quality-gate/scripts/gate.sh
+    bash .agents/skills/app-quality-gate/scripts/gate.sh
     ```
 
   - Record results in the ledger.

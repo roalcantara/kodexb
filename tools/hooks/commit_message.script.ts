@@ -60,7 +60,7 @@ for (const prefix of GENERATED_GIT_PREFIXES) {
 
 // Skip Dependabot authors
 const authorName =
-  process.env.KB_HOOK_AUTHOR_NAME ??
+  process.env.GIT_HOOK_AUTHOR_NAME ??
   process.env.GIT_AUTHOR_NAME ??
   (() => {
     try {

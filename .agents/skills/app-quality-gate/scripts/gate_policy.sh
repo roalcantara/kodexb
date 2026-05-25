@@ -11,8 +11,8 @@ INFO="\033[0;36mℹ\033[0m"
 FAIL="\033[0;31m✘\033[0m"
 PASS="\033[0;32m✔\033[0m"
 
-if [[ "${KB_GATE_SKIP_POLICY:-}" == "1" ]]; then
-  echo -e "  Policy checks … ${INFO} skipped (KB_GATE_SKIP_POLICY=1)"
+if [[ "${GATE_SKIP_POLICY:-}" == "1" ]]; then
+  echo -e "  Policy checks … ${INFO} skipped (GATE_SKIP_POLICY=1)"
   exit 0
 fi
 
@@ -33,15 +33,15 @@ has_new_suppression() {
   return 1
 }
 
-if [[ -z "${KB_GATE_EMBEDDED_POLICY:-}" ]]; then
+if [[ -z "${GATE_EMBEDDED_POLICY:-}" ]]; then
   echo ""
   echo "0.5 / Policy (new suppressions + reminders)"
   echo "──────────────────────────────────────────"
 fi
 
 if has_new_suppression; then
-  if [[ "${KB_GATE_APPROVED_TOOL_WEAKENING:-}" == "1" ]]; then
-    echo -e "  New suppressions in diff … ${WARN} allowed (KB_GATE_APPROVED_TOOL_WEAKENING=1)"
+  if [[ "${GATE_APPROVED_TOOL_WEAKENING:-}" == "1" ]]; then
+    echo -e "  New suppressions in diff … ${WARN} allowed (GATE_APPROVED_TOOL_WEAKENING=1)"
     collect_diff | rg -n "$SUPPRESSION_RX" || true
   else
     echo -e "  New suppressions in diff … ${FAIL}"
@@ -50,7 +50,7 @@ if has_new_suppression; then
     echo "  in src/, tools/, or electrobun.config.ts (working tree or index)."
     echo ""
     echo "  Per AGENTS.md / codebase-quality-audit R6: get maintainer PR approval, then either:"
-    echo "    • Re-run gate with: KB_GATE_APPROVED_TOOL_WEAKENING=1 bash .../gate.sh"
+    echo "    • Re-run gate with: GATE_APPROVED_TOOL_WEAKENING=1 bash .../gate.sh"
     echo "    • Or remove the suppression and fix the root cause."
     echo ""
     collect_diff | rg -n "$SUPPRESSION_RX" || true
@@ -89,8 +89,8 @@ if ((${#touching[@]} > 0)); then
     echo "    - $f"
   done
   echo "    Confirm changes do not weaken tools without maintainer approval (AGENTS.md)."
-  if [[ "${KB_GATE_APPROVED_TOOL_WEAKENING:-}" != "1" ]]; then
-    echo "    (Informational only — set KB_GATE_APPROVED_TOOL_WEAKENING=1 after approval if you hit the suppression check above.)"
+  if [[ "${GATE_APPROVED_TOOL_WEAKENING:-}" != "1" ]]; then
+    echo "    (Informational only — set GATE_APPROVED_TOOL_WEAKENING=1 after approval if you hit the suppression check above.)"
   fi
 else
   echo -e "  Guard configs unchanged … ${PASS}"

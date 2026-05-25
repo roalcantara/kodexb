@@ -2,7 +2,7 @@
 
 # Entry Action Panel — implementation plan
 
-> **For agentic workers:** Implement task-by-task; run tests after each task. Use `kb-testing` and `kb-quality-gate` skills before declaring done.
+> **For agentic workers:** Implement task-by-task; run tests after each task. Use `app-testing` and `app-quality-gate` skills before declaring done.
 
 **Goal:** One renderer **Entry Action Panel** (catalog + executor) for palette and entry shortcuts; **Return** / **⌘Return** in **list, split, and detail** view run primary/secondary actions and record frecency on success (blocked only in text fields per R3).
 
@@ -102,7 +102,7 @@
 - Check: `assets/docs/specs/entry-action-panel/tasks.md` boxes
 
 - [ ] `bun test` on all touched paths.
-- [ ] `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+- [ ] `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
 
 **Suggested commits (Conventional, ≤50 char subject):**
 

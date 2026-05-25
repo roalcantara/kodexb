@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 5 — App Service + Elysia RPC — Tasks
 
-> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement Phase 5 as defined in [`requirements.md`](requirements.md) and [`design.md`](design.md), using the concrete execution detail in [`implementation-plan.md`](implementation-plan.md).
 
@@ -15,7 +15,7 @@
 
 - [ ] Read `assets/docs/specs/app-service-rpc/{requirements,design,implementation-plan}.md`
 - [ ] Read `assets/docs/specs/foundation/{design,roadmap}.md` Phase 5 section
-- [ ] Read `.agents/skills/kb-context/SKILL.md`, `.agents/skills/kb-rpc/SKILL.md`, `.agents/skills/kb-testing/SKILL.md`, `.agents/skills/kb-quality-gate/SKILL.md`
+- [ ] Read `.agents/skills/app-context/SKILL.md`, `.agents/skills/app-rpc/SKILL.md`, `.agents/skills/app-testing/SKILL.md`, `.agents/skills/app-quality-gate/SKILL.md`
 - [ ] Read `.cursor/electrobun-skill-routing.md` then the referenced Electrobun RPC skills (do not guess IPC binding APIs)
 
 ---
@@ -102,7 +102,7 @@ Expected: JSON response (not 404).
 
 ## Task 9: Slim Electrobun schema typing to messages-only
 
-**Files:** Modify `src/shared/rpc/kb_rpc_schema.ts`
+**Files:** Modify `src/shared/rpc/app_rpc_schema.ts`
 
 - [ ] Follow **Implementation Plan Task 10**
 - [ ] Verify: `bun run typecheck`

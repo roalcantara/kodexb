@@ -79,9 +79,9 @@ describe('ListSearchFilterChrome', () => {
   })
 
   describe('when in full detail', () => {
-    it('renders drag stripe', () => {
+    it('renders nothing (parent ListMain owns the window drag stripe)', () => {
       const { container } = renderChrome({ isFullDetail: true })
-      expect(container.querySelector('.theme-window-drag-stripe--detail')).toBeTruthy()
+      expect(container.firstChild).toBeNull()
     })
   })
 })

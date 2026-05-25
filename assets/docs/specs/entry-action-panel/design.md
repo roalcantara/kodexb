@@ -116,7 +116,7 @@ No `entry`-section row (matches palette: cheat uses Clipboard first).
 | ---------- | -------- | ------- | --------------- |
 | `sync`     | Sync     | library | false           |
 | `new-task` | New Task | library | false           |
-| `quit`     | Quit kb  | app     | false           |
+| `quit`     | Quit app | app     | false           |
 
 `quit` shortcut: `⌘Q` on Apple UA, else `Ctrl+Q` (existing `paletteQuitShortcut` logic).
 

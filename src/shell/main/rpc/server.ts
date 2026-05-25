@@ -5,6 +5,7 @@ import {
   configPatchSchema,
   emptyBodySchema,
   getEntryParams,
+  getWindowPositionSchema,
   hideWindowSchema,
   idWithDirSchema,
   idWithReorderDirSchema,
@@ -14,6 +15,7 @@ import {
   openInEditorSchema,
   pasteInTerminalSchema,
   resizeWindowSchema,
+  setWindowPositionSchema,
   showOpenDialogSchema,
   suggestTagsSchema,
   syncInfoSchema,
@@ -78,6 +80,10 @@ export function createRpcServer(appInstance: App) {
     .post('/suggestTags', ({ body }) => appInstance.suggestTags(body.entryId), { body: suggestTagsSchema })
     .post('/resizeWindow', ({ body }) => appInstance.resizeWindow(body.width, body.height), {
       body: resizeWindowSchema
+    })
+    .post('/getWindowPosition', () => appInstance.getWindowPosition(), { body: getWindowPositionSchema })
+    .post('/setWindowPosition', ({ body }) => appInstance.setWindowPosition(body.x, body.y), {
+      body: setWindowPositionSchema
     })
     .post('/hideWindow', () => appInstance.hideWindow(), { body: hideWindowSchema })
     .post('/quit', () => appInstance.quit(), { body: emptyBodySchema })

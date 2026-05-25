@@ -2,8 +2,7 @@
 title: Mise task guidelines
 description: Project policy for mise tasks, usage specs, and automation entrypoints
 ---
-
-# Mise task guidelines
+<!-- markdownlint-disable-file -->
 
 This project uses Mise as the canonical entrypoint for project automation.
 `mise.toml` owns workflows that require orchestration, arguments, setup, safety

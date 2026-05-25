@@ -39,13 +39,13 @@ document capture fires.
 
 ## FILES (EXPECTED TOUCH SET)
 
-| File                                                         | Change                                                                                                                                                                                                                                 |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/shell/renderer/hooks/list/use_view_navigation.hook.ts`  | Remove document-level ArrowRight/Left listener once logic moves; keep reducer + `advance` / `retreat` / `closeToList`.                                                                                                                 |
-| `src/shell/renderer/hooks/list/use_list_selection.hook.ts`   | Extend `onListKeyDown` to call `advance` / `retreat` with the same key rules and input guard.                                                                                                                                          |
-| `src/shell/renderer/components/list/list_main.component.tsx` | Strengthen post-close focus restore (see DECISIONS). Register **`onKeyDown={handleKey}`** on the **`kb-powertoys`** root so ArrowRight/Left still run when focus is inside the shell (e.g. full detail), not only on the list surface. |
-| `src/shell/renderer/utils/list/list_surface_focus.util.ts`   | Optional: add `focusListSurfaceRobust` if logic grows; otherwise keep helpers minimal.                                                                                                                                                 |
-| `src/shell/main/main.ts` (fallback only)                     | Register global shortcuts + RPC/message to renderer — **only** if RNF-4 triggered.                                                                                                                                                     |
+| File                                                         | Change                                                                                                                                                                                                                                  |
+| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/shell/renderer/hooks/list/use_view_navigation.hook.ts`  | Remove document-level ArrowRight/Left listener once logic moves; keep reducer + `advance` / `retreat` / `closeToList`.                                                                                                                  |
+| `src/shell/renderer/hooks/list/use_list_selection.hook.ts`   | Extend `onListKeyDown` to call `advance` / `retreat` with the same key rules and input guard.                                                                                                                                           |
+| `src/shell/renderer/components/list/list_main.component.tsx` | Strengthen post-close focus restore (see DECISIONS). Register **`onKeyDown={handleKey}`** on the **`app-powertoys`** root so ArrowRight/Left still run when focus is inside the shell (e.g. full detail), not only on the list surface. |
+| `src/shell/renderer/utils/list/list_surface_focus.util.ts`   | Optional: add `focusListSurfaceRobust` if logic grows; otherwise keep helpers minimal.                                                                                                                                                  |
+| `src/shell/main/main.ts` (fallback only)                     | Register global shortcuts + RPC/message to renderer — **only** if RNF-4 triggered.                                                                                                                                                      |
 
 ---
 
@@ -75,16 +75,16 @@ document capture fires.
 
 - **`list`:** list panel full width; no detail column; search row visible;
   footer visible.
-- **`split`:** list panel `kb-pt-list-panel--narrow`; detail in `kb-pt-detail`;
+- **`split`:** list panel `app-pt-list-panel--narrow`; detail in `app-pt-detail`;
   search row visible; footer visible.
-- **`detail`:** list panel `kb-pt-list-panel--hidden`; detail uses
-  `kb-pt-detail--full`; **search row hidden** (`kb-pt-search--hidden`) so the
+- **`detail`:** list panel `app-pt-list-panel--hidden`; detail uses
+  `app-pt-detail--full`; **search row hidden** (`app-pt-search--hidden`) so the
   main column uses the vertical space above the footer; **footer stays visible**.
   The main + detail stack **SHALL** use flex `min-height: 0` and `overflow-y:
   auto` on the detail host so long entries scroll while the footer remains
   pinned.
 
-Horizontal navigation (`handleKey`) **SHALL** run on **`kb-powertoys`**
+Horizontal navigation (`handleKey`) **SHALL** run on **`app-powertoys`**
 `onKeyDownCapture` so ArrowLeft/ArrowRight still apply when focus is inside the
 detail body (capture runs before inner handlers consume the event).
 
@@ -109,5 +109,5 @@ detail body (capture runs before inner handlers consume the event).
   may double-advance — remove document listener in the same PR as surface
   handling.
 - **Portaled detail:** if detail renders outside the list subtree, surface-only
-  keys may miss while detail is focused; mitigate with **`kb-powertoys`**
+  keys may miss while detail is focused; mitigate with **`app-powertoys`**
   `onKeyDownCapture` for ArrowLeft/ArrowRight (see LAYOUT).

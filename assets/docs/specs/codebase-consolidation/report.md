@@ -17,7 +17,7 @@ glyph spotted across the renderer. The scan widened to every layer
 3. **File count** — are there single-caller extractions, thin pass-through
    modules, or topic-cohesive utility files that have been split too finely?
 
-The codebase is healthy overall. The kb quality stack (Biome, knip,
+The codebase is healthy overall. The app quality stack (Biome, knip,
 dependency-cruiser, ls-lint, ast-grep, jscpd) is already enforcing the
 big rules. The findings below are about **leaks that the current rules do
 not catch** and **structural drift that the rules permit but do not
@@ -32,19 +32,19 @@ This report is the input to:
 
 ## Baseline metrics
 
-| Metric | Value | Source |
-| --- | --- | --- |
-| Non-spec `.ts(x)` files under `src/` | 219 | `find src -type f \( -name '*.ts' -o -name '*.tsx' \) ! -name '*.spec.*' \| wc -l` |
-| Co-located `.spec.ts(x)` files | 128 | same `find` with `-name '*.spec.*'` |
-| Files in `src/shell/renderer/hooks/list/` (non-spec) | 28 | `ls src/shell/renderer/hooks/list/` |
-| Files in `src/shell/renderer/utils/list/` (non-spec) | 17 | `ls src/shell/renderer/utils/list/` |
-| Files in `src/shell/renderer/components/list/` (non-spec) | 15 | `ls src/shell/renderer/components/list/` |
-| Files in `src/shell/app/lib/` (non-spec) | 13 | `ls src/shell/app/lib/` |
-| Non-component importers of `filter_dropdown.component.tsx` symbols | 13 | grep `from '../../components/list/filter_dropdown.component'` |
-| `TASK_VIEWS` literal arrays defined in source | 3 | grep `['actionable', 'today', 'overdue', 'this_week', 'all_pending', 'all_doing']` |
-| `'◆'` literals in `src/` (excluding specs) | 2 | grep `◆` |
-| `.catch(() => undefined)` fire-and-forget call sites | 34 | grep `\.catch\(\(\) => undefined\)` |
-| `ReturnType<typeof use*>` couplings outside the defining file | 3 | grep `ReturnType<typeof use` |
+| Metric                                                             | Value | Source                                                                             |
+| ------------------------------------------------------------------ | ----- | ---------------------------------------------------------------------------------- |
+| Non-spec `.ts(x)` files under `src/`                               | 219   | `find src -type f \( -name '*.ts' -o -name '*.tsx' \) ! -name '*.spec.*' \| wc -l` |
+| Co-located `.spec.ts(x)` files                                     | 128   | same `find` with `-name '*.spec.*'`                                                |
+| Files in `src/shell/renderer/hooks/list/` (non-spec)               | 28    | `ls src/shell/renderer/hooks/list/`                                                |
+| Files in `src/shell/renderer/utils/list/` (non-spec)               | 17    | `ls src/shell/renderer/utils/list/`                                                |
+| Files in `src/shell/renderer/components/list/` (non-spec)          | 15    | `ls src/shell/renderer/components/list/`                                           |
+| Files in `src/shell/app/lib/` (non-spec)                           | 13    | `ls src/shell/app/lib/`                                                            |
+| Non-component importers of `filter_dropdown.component.tsx` symbols | 13    | grep `from '../../components/list/filter_dropdown.component'`                      |
+| `TASK_VIEWS` literal arrays defined in source                      | 3     | grep `['actionable', 'today', 'overdue', 'this_week', 'all_pending', 'all_doing']` |
+| `'◆'` literals in `src/` (excluding specs)                         | 2     | grep `◆`                                                                           |
+| `.catch(() => undefined)` fire-and-forget call sites               | 34    | grep `\.catch\(\(\) => undefined\)`                                                |
+| `ReturnType<typeof use*>` couplings outside the defining file      | 3     | grep `ReturnType<typeof use`                                                       |
 
 All commands ran from repository root on commit `7e822eb`
 (`fix(tests): Remove unused DOM references`).
@@ -225,12 +225,12 @@ adding behaviour.
 
 `src/shell/renderer/hooks/list/`:
 
-| File | Lines | Callers |
-| --- | --- | --- |
-| `use_compact_filter_overlay.hook.ts` | 129 | 1 (the overlay component) |
-| `use_compact_filter_overlay_focus.hook.ts` | 8 | 1 (the main hook above) |
-| `use_compact_filter_overlay_rows.hook.ts` | 63 | 1 |
-| `use_compact_filter_overlay_scroll.hook.ts` | 28 | 1 |
+| File                                        | Lines | Callers                   |
+| ------------------------------------------- | ----- | ------------------------- |
+| `use_compact_filter_overlay.hook.ts`        | 129   | 1 (the overlay component) |
+| `use_compact_filter_overlay_focus.hook.ts`  | 8     | 1 (the main hook above)   |
+| `use_compact_filter_overlay_rows.hook.ts`   | 63    | 1                         |
+| `use_compact_filter_overlay_scroll.hook.ts` | 28    | 1                         |
 
 `_focus` is an 8-line `setTimeout(focus, 0)` effect — single caller,
 no test value over inlining. `_scroll` is a 28-line resize-observer
@@ -241,25 +241,25 @@ because it carries its own non-trivial memoisation surface.
 
 Current files (each non-spec):
 
-| File | Lines | Concept |
-| --- | --- | --- |
-| `virtual_list_window.util.ts` | 35 | virtual list math |
-| `list_viewport_page_size.util.ts` | 24 | virtual list math |
-| `read_list_scroll_metrics.util.ts` | 22 | virtual list math |
-| `list_page_tab_ring.util.ts` | — | list keyboard |
-| `list_search_typeahead.util.ts` | — | list keyboard |
-| `list_surface_focus.util.ts` | 16 | list keyboard |
-| `schedule_double_raf.util.ts` | 30 | scroll/focus scheduling |
-| `ensure_option_row_visible_in_scroll_root.util.ts` | 123 | scroll/focus scheduling |
-| `list_filter_summary.util.ts` | 13 | list filters |
-| `list_opts_from_filters.util.ts` | 21 | list filters |
-| `list_entries_query.util.ts` | 27 | list filters |
-| `frecency_tier.util.ts` | — | frecency |
-| `record_entry_visit.util.ts` | 5 | frecency / fire-and-forget |
-| `clipboard_copy_toast.util.ts` | — | formatters |
-| `list_footer_status.util.ts` | — | formatters |
-| `list_page_empty_flags.util.ts` | — | page state |
-| `view_reducer.util.ts` | 14 | page state |
+| File                                               | Lines | Concept                    |
+| -------------------------------------------------- | ----- | -------------------------- |
+| `virtual_list_window.util.ts`                      | 35    | virtual list math          |
+| `list_viewport_page_size.util.ts`                  | 24    | virtual list math          |
+| `read_list_scroll_metrics.util.ts`                 | 22    | virtual list math          |
+| `list_page_tab_ring.util.ts`                       | —     | list keyboard              |
+| `list_search_typeahead.util.ts`                    | —     | list keyboard              |
+| `list_surface_focus.util.ts`                       | 16    | list keyboard              |
+| `schedule_double_raf.util.ts`                      | 30    | scroll/focus scheduling    |
+| `ensure_option_row_visible_in_scroll_root.util.ts` | 123   | scroll/focus scheduling    |
+| `list_filter_summary.util.ts`                      | 13    | list filters               |
+| `list_opts_from_filters.util.ts`                   | 21    | list filters               |
+| `list_entries_query.util.ts`                       | 27    | list filters               |
+| `frecency_tier.util.ts`                            | —     | frecency                   |
+| `record_entry_visit.util.ts`                       | 5     | frecency / fire-and-forget |
+| `clipboard_copy_toast.util.ts`                     | —     | formatters                 |
+| `list_footer_status.util.ts`                       | —     | formatters                 |
+| `list_page_empty_flags.util.ts`                    | —     | page state                 |
+| `view_reducer.util.ts`                             | 14    | page state                 |
 
 Each concept has a single coherent API surface. Merging within concepts
 reduces 17 modules to **7 modules** (and matching specs). See `design.md`
@@ -296,28 +296,28 @@ expects utility files under `utils/`. Move them to
 
 ## Out of scope (deliberately)
 
-| Area | Why |
-| --- | --- |
-| Biome suppression removal | Owned by [`../codebase-quality-audit/`](../codebase-quality-audit/). |
-| New guards, tests, mise tasks for past findings | Owned by [`../codebase-best-practices-audit/`](../codebase-best-practices-audit/), already completed. |
-| `src/core/domain/models/entries/schemas/` size | TypeBox schema files are intentionally small; one schema per file is the chosen pattern. |
-| `src/shell/renderer/components/shared/` count (9 files) | Each is a distinct UI primitive; no consolidation candidates found. |
-| `src/shell/renderer/actions/` (8 files) | Each maps to one concrete entry action; cohesion already maximised. |
-| `src/__tests__/factories/` and `src/__tests__/helpers/` | Test-only; structure is already conventional. |
+| Area                                                    | Why                                                                                                   |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Biome suppression removal                               | Owned by [`../codebase-quality-audit/`](../codebase-quality-audit/).                                  |
+| New guards, tests, mise tasks for past findings         | Owned by [`../codebase-best-practices-audit/`](../codebase-best-practices-audit/), already completed. |
+| `src/core/domain/models/entries/schemas/` size          | TypeBox schema files are intentionally small; one schema per file is the chosen pattern.              |
+| `src/shell/renderer/components/shared/` count (9 files) | Each is a distinct UI primitive; no consolidation candidates found.                                   |
+| `src/shell/renderer/actions/` (8 files)                 | Each maps to one concrete entry action; cohesion already maximised.                                   |
+| `src/__tests__/factories/` and `src/__tests__/helpers/` | Test-only; structure is already conventional.                                                         |
 
 ## Closure metrics
 
 After all six tracks land, the report's baseline metrics should change as
 follows (validated by `tasks.md` acceptance criteria):
 
-| Metric | Before | Target |
-| --- | --- | --- |
-| `src/shell/renderer/utils/list/` (non-spec files) | 17 | 7 |
-| `src/shell/renderer/hooks/list/use_compact_filter_overlay_*` (non-spec) | 4 | 2 |
-| `src/shell/renderer/components/list/*.util.ts` (non-spec) | 3 | 0 |
-| Non-component importers of `filter_dropdown.component.tsx` | 13 | 0 |
-| `TASK_VIEWS` array literal definitions | 3 | 1 |
-| `'◆'` literal occurrences in `src/` (non-spec) | 2 | 1 |
-| `.catch(() => undefined)` call sites (non-spec) | 34 | 0 (all routed through `fireAndForget`) |
-| `ReturnType<typeof use*>` couplings across layers | 1 (A8) | 0 |
-| Pure-domain `.util.ts` files in `src/shell/app/lib/` | 5 (A3–A7) | 0 |
+| Metric                                                                  | Before    | Target                                 |
+| ----------------------------------------------------------------------- | --------- | -------------------------------------- |
+| `src/shell/renderer/utils/list/` (non-spec files)                       | 17        | 7                                      |
+| `src/shell/renderer/hooks/list/use_compact_filter_overlay_*` (non-spec) | 4         | 2                                      |
+| `src/shell/renderer/components/list/*.util.ts` (non-spec)               | 3         | 0                                      |
+| Non-component importers of `filter_dropdown.component.tsx`              | 13        | 0                                      |
+| `TASK_VIEWS` array literal definitions                                  | 3         | 1                                      |
+| `'◆'` literal occurrences in `src/` (non-spec)                          | 2         | 1                                      |
+| `.catch(() => undefined)` call sites (non-spec)                         | 34        | 0 (all routed through `fireAndForget`) |
+| `ReturnType<typeof use*>` couplings across layers                       | 1 (A8)    | 0                                      |
+| Pure-domain `.util.ts` files in `src/shell/app/lib/`                    | 5 (A3–A7) | 0                                      |

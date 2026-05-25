@@ -19,10 +19,10 @@ and update this spec before coding around it.
 
 Before any source-code task, load:
 
-- `.agents/skills/kb-context/SKILL.md`
-- `.agents/skills/kb-quality-gate/SKILL.md`
-- `kb-rpc` for RPC work
-- `kb-testing` for test work
+- `.agents/skills/app-context/SKILL.md`
+- `.agents/skills/app-quality-gate/SKILL.md`
+- `app-rpc` for RPC work
+- `app-testing` for test work
 - `electrobun-best-practices` and the routed Electrobun skill for desktop, window, build, or native RPC work
 - `mise-tasks` for `mise.toml` work
 
@@ -35,8 +35,8 @@ For every phase:
 3. Run the phase-specific verification commands.
 4. Compare the phase result against the baseline and previous phase.
 5. Update the phase row in the impact ledger below.
-6. Mark that phase's checkboxes in this file.
-7. Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+6. Mark that phase's checappoxes in this file.
+7. Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
 8. Commit only that phase's files with the suggested commit command.
 9. Continue to the next phase.
 
@@ -54,13 +54,13 @@ cannot run an optional command.
 
 | Metric                 | Command or source                                                                                | Positive impact signal                                                                              |
 | ---------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| Quality gate           | `bash .agents/skills/kb-quality-gate/scripts/gate.sh`                                            | Gate remains green and no quality tool is weakened.                                                 |
+| Quality gate           | `bash .agents/skills/app-quality-gate/scripts/gate.sh`                                           | Gate remains green and no quality tool is weakened.                                                 |
 | Test coverage          | `bun test --coverage`                                                                            | Overall coverage remains stable; touched-file coverage improves or stays above the baseline signal. |
 | Focused test surface   | Phase-specific `bun test ...` command                                                            | New behavior has deterministic focused tests, including rejection paths where relevant.             |
 | Build security         | `bun run build` and `package.json` scripts                                                       | Strict build is the default; any TLS bypass is isolated in the documented fallback.                 |
 | Architecture guards    | `bun run lint:depcruise` and `bun run lint:ast-grep`                                             | New FCIS violations are blocked while current valid imports still pass.                             |
 | RPC contract safety    | RPC schema and host tests                                                                        | Runtime validation and TypeScript contracts cover valid and invalid payloads.                       |
-| Performance benchmark  | `mise run perf run` and `mise run perf compare`                                                   | Preview-server critical paths stay within thresholds or have a recorded blocker/regression.         |
+| Performance benchmark  | `mise run perf run` and `mise run perf compare`                                                  | Preview-server critical paths stay within thresholds or have a recorded blocker/regression.         |
 | Spec coverage backlog  | `mise run test:spec-audit` after phase 7                                                         | Missing non-exempt spec count is visible and does not grow without explanation.                     |
 | Preview/e2e confidence | `mise run e2e:preview` when available                                                            | Renderer-risky phases either pass preview e2e or record the exact blocker.                          |
 | Cohesion               | `wc -l src/shell/renderer/components/list/list_main.component.tsx` and extracted component count | `ListMain` gets smaller while extracted components keep co-located specs.                           |
@@ -70,20 +70,20 @@ cannot run an optional command.
 
 Fill this ledger as part of each phase. Keep entries short and evidence-based.
 
-| Phase                        | Baseline or previous value | Post-phase value | Delta or impact                            |
-| ---------------------------- | -------------------------- | ---------------- | ------------------------------------------ |
-| 0 — Baseline                 | n/a                        | 573 tests, 0 fail, gate all-green, ListMain 375 lines, build had TLS bypass, app_tag_rank 6.25% lines, app_task_yaml 6.67% lines, host.ts 42.5% lines, sync_modal 34.43% lines | Baseline recorded for later comparison.    |
-| 1 — Build security           | build had NODE_TLS_REJECT_UNAUTHORIZED=0 | build strict (no TLS bypass); build:insecure-local as fallback | TLS bypass removed from default; build passes; gate green. |
-| 2 — RPC bridge envelope      | host.ts 42.5% line coverage; bridge forwarded broad request envelope | Host bridge validator rejects non-`/api/`, non-`POST`, malformed payloads; 14 host tests pass | Native/webview bridge is narrow and deterministic; latest perf run passed thresholds. |
-| 3 — Architecture guards      | FCIS rules partly split between prose and ast-grep | dependency-cruiser enforces renderer→app, shared→shell, and route→repository guards | Graph-level FCIS guard classes are executable without weakening ast-grep. |
-| 4 — Preview protocol safety  | Preview fetch accepted any URL parsed by `URL` | Preview fetch returns `null` for malformed, `file:`, `data:`, and `ftp:` URLs | Unsupported protocols no longer reach `fetch`; protocol tests pass. |
-| 5 — RPC contract consistency | Route schemas and shared types could drift silently | TypeBox schema tests cover valid/invalid route bodies; local types derive where layer-safe | Contract drift risk reduced without moving shell schemas into shared. |
-| 6 — Focused coverage pockets | app_tag_rank 6.25%, app_task_yaml 6.67%, host.ts 42.5%, sync_modal 34.43% line signals | Focused app/RPC/renderer tests pass: 104 focused tests, 0 failures | Low-coverage seams now have direct behavior tests. |
-| 7 — Spec audit task          | No repeatable co-located spec report | `mise run test:spec-audit` and `--strict` pass with 0 missing files | Co-located spec policy is machine-checkable and currently clean. |
-| 8 — Electrobun trust docs    | Trusted renderer assumption not local to bootstrap | ELECTROBUN guide and main-window comment document trusted packaged renderer and external-content rules | Future desktop work has explicit sandbox/navigation guidance. |
-| 9 — Preview e2e workflow     | Preview e2e documented but easy to skip silently | TESTING_GUIDE and README require result or exact blocker for renderer-risky changes | Preview e2e remains outside the default gate with reporting guidance. |
-| 10 — List-shell cohesion     | ListMain 375 lines; list-shell concerns concentrated | ListMain 250 lines; 4 list-section components with co-located specs | Composition shell is smaller; remaining suppressions stay in codebase-quality-audit. |
-| 11 — Closure                 | Phase ledger and report were stale | Ledger, report, backlog, benchmark task, and suppression cross-reference updated | Final checks: focused tests pass, spec-audit strict passes, perf run passes thresholds; full gate reaches `lint:ls` then the sandbox reports `bun is unable to write files to tempdir`. |
+| Phase                        | Baseline or previous value                                                             | Post-phase value                                                                                                                                                               | Delta or impact                                                                                                                                                                         |
+| ---------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0 — Baseline                 | n/a                                                                                    | 573 tests, 0 fail, gate all-green, ListMain 375 lines, build had TLS bypass, app_tag_rank 6.25% lines, app_task_yaml 6.67% lines, host.ts 42.5% lines, sync_modal 34.43% lines | Baseline recorded for later comparison.                                                                                                                                                 |
+| 1 — Build security           | build had NODE_TLS_REJECT_UNAUTHORIZED=0                                               | build strict (no TLS bypass); build:insecure-local as fallback                                                                                                                 | TLS bypass removed from default; build passes; gate green.                                                                                                                              |
+| 2 — RPC bridge envelope      | host.ts 42.5% line coverage; bridge forwarded broad request envelope                   | Host bridge validator rejects non-`/api/`, non-`POST`, malformed payloads; 14 host tests pass                                                                                  | Native/webview bridge is narrow and deterministic; latest perf run passed thresholds.                                                                                                   |
+| 3 — Architecture guards      | FCIS rules partly split between prose and ast-grep                                     | dependency-cruiser enforces renderer→app, shared→shell, and route→repository guards                                                                                            | Graph-level FCIS guard classes are executable without weakening ast-grep.                                                                                                               |
+| 4 — Preview protocol safety  | Preview fetch accepted any URL parsed by `URL`                                         | Preview fetch returns `null` for malformed, `file:`, `data:`, and `ftp:` URLs                                                                                                  | Unsupported protocols no longer reach `fetch`; protocol tests pass.                                                                                                                     |
+| 5 — RPC contract consistency | Route schemas and shared types could drift silently                                    | TypeBox schema tests cover valid/invalid route bodies; local types derive where layer-safe                                                                                     | Contract drift risk reduced without moving shell schemas into shared.                                                                                                                   |
+| 6 — Focused coverage pockets | app_tag_rank 6.25%, app_task_yaml 6.67%, host.ts 42.5%, sync_modal 34.43% line signals | Focused app/RPC/renderer tests pass: 104 focused tests, 0 failures                                                                                                             | Low-coverage seams now have direct behavior tests.                                                                                                                                      |
+| 7 — Spec audit task          | No repeatable co-located spec report                                                   | `mise run test:spec-audit` and `--strict` pass with 0 missing files                                                                                                            | Co-located spec policy is machine-checkable and currently clean.                                                                                                                        |
+| 8 — Electrobun trust docs    | Trusted renderer assumption not local to bootstrap                                     | ELECTROBUN guide and main-window comment document trusted packaged renderer and external-content rules                                                                         | Future desktop work has explicit sandbox/navigation guidance.                                                                                                                           |
+| 9 — Preview e2e workflow     | Preview e2e documented but easy to skip silently                                       | TESTING_GUIDE and README require result or exact blocker for renderer-risky changes                                                                                            | Preview e2e remains outside the default gate with reporting guidance.                                                                                                                   |
+| 10 — List-shell cohesion     | ListMain 375 lines; list-shell concerns concentrated                                   | ListMain 250 lines; 4 list-section components with co-located specs                                                                                                            | Composition shell is smaller; remaining suppressions stay in codebase-quality-audit.                                                                                                    |
+| 11 — Closure                 | Phase ledger and report were stale                                                     | Ledger, report, backlog, benchmark task, and suppression cross-reference updated                                                                                               | Final checks: focused tests pass, spec-audit strict passes, perf run passes thresholds; full gate reaches `lint:ls` then the sandbox reports `bun is unable to write files to tempdir`. |
 
 ## Benchmark workflow
 
@@ -135,7 +135,7 @@ EOF
   - _Acceptance criteria: R12.1_
 
 - [x] 0.2 Re-run baseline verification.
-  - Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+  - Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
   - Run `bun test --coverage`.
   - Record exact results in the implementation summary.
   - _Acceptance criteria: R7.5, R12.1_
@@ -228,7 +228,7 @@ EOF
 ```
 
 - [x] 2.1 Add the bridge payload validator.
-  - Load `kb-rpc`, `kb-testing`, `electrobun-best-practices`, and the routed Electrobun RPC skill.
+  - Load `app-rpc`, `app-testing`, `electrobun-best-practices`, and the routed Electrobun RPC skill.
   - Validate `RpcCallParams` before `RpcApp.handle()`.
   - Reject malformed payloads, non-`/api/` paths, and non-`POST` methods.
   - Always send `content-type: application/json` to `RpcApp.handle()`.
@@ -284,7 +284,7 @@ EOF
 
 - [x] 3.2 Document the guard mapping.
   - Add comments in `.dependency-cruiser.cjs`.
-  - Reference the matching FCIS rules in `CLAUDE.md` and `kb-context`.
+  - Reference the matching FCIS rules in `CLAUDE.md` and `app-context`.
   - Do not add broad exceptions or tool weakening.
   - _Acceptance criteria: R1.4, R12.1_
 
@@ -364,7 +364,7 @@ EOF
 ```
 
 - [x] 5.1 Inventory duplicated RPC payload contracts.
-  - Compare `src/shell/main/rpc/schemas.ts` with `src/shared/rpc/kb_rpc_schema.ts`.
+  - Compare `src/shell/main/rpc/schemas.ts` with `src/shared/rpc/app_rpc_schema.ts`.
   - Add a short contract note near the relevant schemas or types.
   - Explain why renderer-imported shared types cannot import shell schemas.
   - _Acceptance criteria: R4.1, R4.4_
@@ -674,7 +674,7 @@ EOF
 ```
 
 - [x] 11.1 Re-run all audit verification.
-  - Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+  - Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
   - Run `bun test --coverage`.
   - Run `mise run test:spec-audit` if phase 7 added it.
   - Run `mise run e2e:preview` if the environment supports it.

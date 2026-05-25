@@ -4,14 +4,14 @@
 ## Copy-paste Prompt
 
 ```txt
-You are implementing the SDD spec in /Users/roalcantara/Work/bun/kb/assets/docs/specs/update-hooks/.
+You are implementing the SDD spec in /Users/roalcantara/Work/bun/app/assets/docs/specs/update-hooks/.
 
 Read these files first, in this order:
-1. /Users/roalcantara/Work/bun/kb/AGENTS.md
-2. /Users/roalcantara/Work/bun/kb/assets/docs/specs/update-hooks/requirements.md
-3. /Users/roalcantara/Work/bun/kb/assets/docs/specs/update-hooks/design.md
-4. /Users/roalcantara/Work/bun/kb/assets/docs/specs/update-hooks/tasks.md
-5. /Users/roalcantara/Work/bun/kb/.agents/skills/kb-quality-gate/SKILL.md
+1. /Users/roalcantara/Work/bun/app/AGENTS.md
+2. /Users/roalcantara/Work/bun/app/assets/docs/specs/update-hooks/requirements.md
+3. /Users/roalcantara/Work/bun/app/assets/docs/specs/update-hooks/design.md
+4. /Users/roalcantara/Work/bun/app/assets/docs/specs/update-hooks/tasks.md
+5. /Users/roalcantara/Work/bun/app/.agents/skills/app-quality-gate/SKILL.md
 
 Implement exactly the plan in tasks.md. Do not redesign it. Do not keep pre-commit, gitlint, .gitlint, or .pre-commit-config.yaml as active tooling. Do not add deprecated wrappers. Do not add a new top-level public Mise task for hooks. Do not install global HK hooks. Use repo-local `hk install --mise` through `mise run project prepare`.
 
@@ -155,12 +155,12 @@ Required validation commands:
 19. `mise run project prepare --ci`
 20. `rg -n "hk validate|hk check --all --check|hk run commit-msg" .github/workflows/review.yml`
 21. `rg -n "hk install" .github/workflows` prints no output.
-22. `rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" AGENTS.md README.md assets/guides .cursor .agents/skills/kb-quality-gate .github mise.toml package.json --glob '!assets/docs/specs/**'` prints no output.
+22. `rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" AGENTS.md README.md assets/guides .cursor .agents/skills/app-quality-gate .github mise.toml package.json --glob '!assets/docs/specs/**'` prints no output.
 23. `bun run lint:mise`
 24. `mise exec -- actionlint`
 25. `bun run typecheck`
 26. `git diff --check`
-27. `bash .agents/skills/kb-quality-gate/scripts/gate.sh`
+27. `bash .agents/skills/app-quality-gate/scripts/gate.sh`
 
 When you finish, summarize:
 - Files changed.
@@ -183,4 +183,4 @@ The implementation should be rejected if:
 - The HK commit-message script accepts a missing body.
 - The invalid fixture output differs from the prompt.
 - CI installs hooks instead of validating HK directly.
-- `tasks.md` checkboxes are marked complete without evidence bullets.
+- `tasks.md` checappoxes are marked complete without evidence bullets.

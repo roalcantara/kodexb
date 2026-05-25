@@ -1,5 +1,5 @@
 <!-- markdownlint-disable-file -->
-# kb — Implementation Roadmap
+# app — Implementation Roadmap
 
 Aligned with [requirements.md](requirements.md) **V1-1 … V1-8** and
 [design.md](design.md).
@@ -164,7 +164,7 @@ jobs:
 
 ```ts
 export default defineConfig({
-  app: { name: 'kb', identifier: 'sh.blackboard.kb', version: '0.1.0' },
+  app: { name: 'app', identifier: 'sh.blackboard.app', version: '0.1.0' },
   build: { main: './src/shell/main/main.ts' },
   // darwin-arm64 only for Phase 1; add more targets in a later phase
   mac: {

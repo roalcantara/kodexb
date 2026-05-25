@@ -7,9 +7,10 @@
   "scripts": {
     "start": "electrobun dev",
     "dev": "electrobun dev --watch",
-    "dev:verbose": "KB_LOG=verbose electrobun dev --watch",
-    "dev:debug": "KB_LOG=debug electrobun dev --watch",
-    "dev:trace": "KB_LOG=trace electrobun dev --watch",
+    "dev:cef": "KB_RENDERER=cef electrobun dev --watch",
+    "dev:verbose": "LOG_LEVEL=verbose electrobun dev --watch",
+    "dev:debug": "LOG_LEVEL=debug electrobun dev --watch",
+    "dev:trace": "LOG_LEVEL=trace electrobun dev --watch",
     "dev:kill": "mise run dev:kill",
     "build": "electrobun build",
     "build:prod": "electrobun build --env=stable",
@@ -55,6 +56,7 @@
   },
   "dependencies": {
     "@elysiajs/eden": "^1.4.9",
+    "@logtape/elysia": "npm:@jsr/logtape__elysia",
     "@logtape/logtape": "^2.1.1",
     "@logtape/pretty": "^2.1.1",
     "@sinclair/typebox": "^0.34.49",

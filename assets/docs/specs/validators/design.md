@@ -78,7 +78,7 @@ exclusively via `tsconfig.json` `compilerOptions.paths`. Bun resolves these
 natively; Biome's import-organizer respects them; `dependency-cruiser`
 resolves them via its `tsConfig` option.
 
-**Rationale:** kb is not a monorepo. The nested `package.json` files were
+**Rationale:** app is not a monorepo. The nested `package.json` files were
 acting purely as bare-import declarations — a heavyweight mechanism for a
 lightweight need. tsconfig `paths` is the standard approach and gives a
 single source of truth.
@@ -185,12 +185,12 @@ src/core/domain/models/entries/
 
 ## NAMING CONVENTION (REINFORCED)
 
-| Suffix         | Contains                                                                        | Imports                                          |
-| -------------- | ------------------------------------------------------------------------------- | ------------------------------------------------ |
-| `*.schema.ts`  | TypeBox shape definitions only — `Type.Object`, `Type.Union`, etc.              | `@sinclair/typebox`                              |
-| `*.parser.ts`  | Pure functions: `unknown → DomainType` (coercion + normalization + messages)    | `*.schema.ts`, `validation/typebox.helper.ts`    |
-| `*.factory.ts` | High-level constructors that compose parsers + apply schema validation          | `*.parser.ts`, `*.schema.ts`, helpers            |
-| `*.guard.ts`   | Type guards (`isX(v): v is X`)                                                  | `*.schema.ts`, `validation/typebox.helper.ts`    |
+| Suffix         | Contains                                                                     | Imports                                       |
+| -------------- | ---------------------------------------------------------------------------- | --------------------------------------------- |
+| `*.schema.ts`  | TypeBox shape definitions only — `Type.Object`, `Type.Union`, etc.           | `@sinclair/typebox`                           |
+| `*.parser.ts`  | Pure functions: `unknown → DomainType` (coercion + normalization + messages) | `*.schema.ts`, `validation/typebox.helper.ts` |
+| `*.factory.ts` | High-level constructors that compose parsers + apply schema validation       | `*.parser.ts`, `*.schema.ts`, helpers         |
+| `*.guard.ts`   | Type guards (`isX(v): v is X`)                                               | `*.schema.ts`, `validation/typebox.helper.ts` |
 
 ---
 
@@ -463,16 +463,16 @@ Error message format is preserved exactly. Existing tests asserting
 
 ### Pattern 7 — `type-fest` aggressive application
 
-| Site                                                                                   | Before                                                  | After                                       |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------- |
-| `parsers/source_document.parser.ts` element values                                     | `unknown`                                               | `JsonValue`                                 |
-| `parsers/source_document.parser.ts` `Object.entries(... as ...)`                       | `Record<string, unknown>`                               | `UnknownRecord`                             |
-| `parsers/source_document.parser.ts` YAML parse output                                  | `Record<string, unknown> \| null`                       | `JsonObject \| null`                        |
-| `schemas/entry.schema.ts:47`                                                           | `export type SourceRow = Record<string, unknown>`       | `export type SourceRow = UnknownRecord`     |
-| `schemas/source_row_min.schema.ts:12`                                                  | `raw is Record<string, unknown>`                        | `raw is UnknownRecord`                      |
-| `types/note_fragments.types.ts:7`                                                      | `Record<string, string> \| Record<string, string>[]`    | KEEP CONCRETE — values typed as strings     |
-| `shared/types/env.types.ts:1`                                                          | `Record<string, string>`                                | KEEP CONCRETE — values ARE strings          |
-| All exported `Static<typeof X>` in `entry.schema.ts`, `task.schema.ts`, `base.schema.ts`, `source_row_min.schema.ts`, `knowledge.schema.ts` | `Static<typeof X>`                                      | `Simplify<Static<typeof X>>`                |
+| Site                                                                                                                                        | Before                                               | After                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------- |
+| `parsers/source_document.parser.ts` element values                                                                                          | `unknown`                                            | `JsonValue`                             |
+| `parsers/source_document.parser.ts` `Object.entries(... as ...)`                                                                            | `Record<string, unknown>`                            | `UnknownRecord`                         |
+| `parsers/source_document.parser.ts` YAML parse output                                                                                       | `Record<string, unknown> \| null`                    | `JsonObject \| null`                    |
+| `schemas/entry.schema.ts:47`                                                                                                                | `export type SourceRow = Record<string, unknown>`    | `export type SourceRow = UnknownRecord` |
+| `schemas/source_row_min.schema.ts:12`                                                                                                       | `raw is Record<string, unknown>`                     | `raw is UnknownRecord`                  |
+| `types/note_fragments.types.ts:7`                                                                                                           | `Record<string, string> \| Record<string, string>[]` | KEEP CONCRETE — values typed as strings |
+| `shared/types/env.types.ts:1`                                                                                                               | `Record<string, string>`                             | KEEP CONCRETE — values ARE strings      |
+| All exported `Static<typeof X>` in `entry.schema.ts`, `task.schema.ts`, `base.schema.ts`, `source_row_min.schema.ts`, `knowledge.schema.ts` | `Static<typeof X>`                                   | `Simplify<Static<typeof X>>`            |
 
 **Rule:** `UnknownRecord` only where value type is genuinely unknown.
 `Record<string, X>` where `X` is concrete stays concrete.
@@ -609,7 +609,7 @@ Piecemeal doc updates can introduce contradictions.
 partial state.
 
 **Verification:** `rg -i "\\bzod\\b" assets/docs/specs/foundation/
-.agents/skills/kb-context/ .agents/skills/kb-rpc/` returns zero matches.
+.agents/skills/app-context/ .agents/skills/app-rpc/` returns zero matches.
 
 ### Risk 9 — Amend safety
 
@@ -649,8 +649,8 @@ find src -name package.json -type f # zero results
 
 # 5. Doc consistency
 rg -i "\\bzod\\b" assets/docs/specs/foundation/ \
-                  .agents/skills/kb-context/ \
-                  .agents/skills/kb-rpc/        # zero matches
+                  .agents/skills/app-context/ \
+                  .agents/skills/app-rpc/        # zero matches
 
 # 6. Knip baseline preserved
 bunx knip > /tmp/knip-after.txt
@@ -669,7 +669,7 @@ git stash list | wc -l                          # → 6 (unchanged)
 
 Amend HEAD commit `33c3a63` (`feat(core): Add domain types, schemas,
 parsers`). Created in the current conversation; never pushed; branch has no
-upstream tracking. Amend safety is satisfied per the kb git-safety protocol.
+upstream tracking. Amend safety is satisfied per the app git-safety protocol.
 
 ### Updated commit message (post-amend)
 
@@ -690,7 +690,7 @@ Workspace: flat layout — all dependencies in root package.json.
 Path aliases (@core, @shared/*) resolved via tsconfig paths.
 
 Updates foundation specs (design.md Decision 2, requirements.md,
-roadmap.md) and kb-context, kb-rpc skills to reflect TypeBox-only
+roadmap.md) and app-context, app-rpc skills to reflect TypeBox-only
 direction.
 ```
 

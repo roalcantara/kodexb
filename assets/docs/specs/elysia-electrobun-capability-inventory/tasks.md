@@ -9,8 +9,8 @@ backlog work, but it must not make final priority decisions on their behalf.
 
 Before starting, load:
 
-- `.agents/skills/kb-context/SKILL.md`
-- `.agents/skills/kb-rpc/SKILL.md`
+- `.agents/skills/app-context/SKILL.md`
+- `.agents/skills/app-rpc/SKILL.md`
 - `.agents/skills/electrobun-best-practices/SKILL.md`
 - `docs-writer`
 - `subagent-driven-development`
@@ -30,14 +30,14 @@ For each phase:
 
 ## Task ledger
 
-| Phase | Goal                                             | Status | Verification                                                   |
-| ----- | ------------------------------------------------ | ------ | -------------------------------------------------------------- |
-| 0     | Confirm research scope and schema                | Done   | YAML scaffold validated 2026-05-18                             |
-| 1     | Inventory Elysia capabilities                    | Done   | 41 Elysia entries; coverage addendum 2026-05-22                |
-| 2     | Inventory Electrobun capabilities                | Done   | 28 Electrobun entries; coverage addendum 2026-05-22           |
-| 3     | Compare capabilities with kb usage               | Done   | Evidence statuses refreshed; unknowns marked 2026-05-22       |
-| 4     | Render report and backlog candidates             | Done   | `report.md` generated from `inventory.yml` 2026-05-22         |
-| 5     | Review completeness and hand off priority review | Done   | YAML parse + neutrality + diff checks 2026-05-22              |
+| Phase | Goal                                             | Status | Verification                                            |
+| ----- | ------------------------------------------------ | ------ | ------------------------------------------------------- |
+| 0     | Confirm research scope and schema                | Done   | YAML scaffold validated 2026-05-18                      |
+| 1     | Inventory Elysia capabilities                    | Done   | 41 Elysia entries; coverage addendum 2026-05-22         |
+| 2     | Inventory Electrobun capabilities                | Done   | 28 Electrobun entries; coverage addendum 2026-05-22     |
+| 3     | Compare capabilities with app usage              | Done   | Evidence statuses refreshed; unknowns marked 2026-05-22 |
+| 4     | Render report and backlog candidates             | Done   | `report.md` generated from `inventory.yml` 2026-05-22   |
+| 5     | Review completeness and hand off priority review | Done   | YAML parse + neutrality + diff checks 2026-05-22        |
 
 ## Phase 0 — Confirm scope and schema
 
@@ -133,9 +133,9 @@ priorities.
   - Do not assign `must-have`, `nice-to-have`, `postponed`, or `meh`.
   - _Acceptance criteria: CE-2.1, CE-3.1, CE-3.3, CE-4.1_
 
-## Phase 3 — Compare capabilities with kb usage
+## Phase 3 — Compare capabilities with app usage
 
-**Goal:** Mark what kb already uses and identify conflicts or prerequisites.
+**Goal:** Mark what app already uses and identify conflicts or prerequisites.
 
 - [x] 3.1 Check Elysia usage locally.
   - Execute exactly:
@@ -144,7 +144,7 @@ priorities.
     rg -n "Elysia|treaty|@elysia|eden|TypeBox|onError|error\\(|openapi|cors|jwt|bearer|opentelemetry|ai-sdk" src tools package.json assets/guides .agents/skills
     ```
 
-  - Set `current_usage.status: used` only when the capability is fully adopted in kb.
+  - Set `current_usage.status: used` only when the capability is fully adopted in app.
   - Set `current_usage.confidence` to `low` when evidence is ambiguous.
   - _Acceptance criteria: CE-2.2, CE-2.3, CE-2.4, CE-5.1_
 
@@ -155,8 +155,8 @@ priorities.
     rg -n "Electrobun|BrowserWindow|BrowserView|Electroview|defineRPC|tray|menu|native|notar|sign|window|view" src tools package.json assets/guides .agents/skills .cursor
     ```
 
-  - Set `current_usage.status: used` only when the capability is fully adopted in kb.
-  - Record conflicts with kb-specific Electrobun guidance.
+  - Set `current_usage.status: used` only when the capability is fully adopted in app.
+  - Record conflicts with app-specific Electrobun guidance.
   - _Acceptance criteria: CE-2.2, CE-2.3, CE-2.4, CE-5.2, CE-5.3_
 
 - [x] 3.3 Record prerequisites.
@@ -177,7 +177,7 @@ priorities.
     - `Area`
     - `Feature`
     - `Source`
-    - `Current kb usage`
+    - `Current app usage`
     - `Priority`
     - `Pros`
     - `Cons`
@@ -233,7 +233,7 @@ priorities.
     const doc = YAML.parse(await Bun.file('assets/docs/specs/elysia-electrobun-capability-inventory/inventory.yml').text())
     const issues = []
     for (const c of doc.capabilities ?? []) {
-      for (const k of ['source_urls','pros','cons','risks','prerequisites','kb_touchpoints','candidate_stories','notes']) {
+      for (const k of ['source_urls','pros','cons','risks','prerequisites','app_touchpoints','candidate_stories','notes']) {
         if (!Array.isArray(c[k])) issues.push(`${c.id}.${k} is ${typeof c[k]}`)
       }
     }

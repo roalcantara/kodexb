@@ -2,8 +2,7 @@
 title: Git guidelines (extended)
 description: Git usage and commit message background; Conventional Commits detail
 ---
-
-# GIT GUIDELINES
+<!-- markdownlint-disable-file -->
 
 For day-to-day commit format, prefer **`assets/docs/guides/GIT_COMMITS_GUIDE.md`** and `.cursor/rules/git-commits.mdc` (single source of truth for this repo).
 

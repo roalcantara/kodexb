@@ -124,7 +124,7 @@ without repeating policy fields.
 ### R5 — Optional companion surfaces
 
 **User story:** As a maintainer, I want optional companion copy to stay
-surface-specific, so that concise `CLAUDE.md` bullets and richer `kb-context`
+surface-specific, so that concise `CLAUDE.md` bullets and richer `app-context`
 tables can differ without inventing duplicate skill entries.
 
 #### Acceptance criteria
@@ -134,16 +134,16 @@ tables can differ without inventing duplicate skill entries.
    appear in the generated `CLAUDE.md` optional companion list.
 
 2. WHEN `policy.type` is `optional`
-   THEN `policy.surfaces.kb_context_optional` SHALL be present when the skill
-   must appear in the generated `kb-context` optional companion table.
+   THEN `policy.surfaces.app_context_optional` SHALL be present when the skill
+   must appear in the generated `app-context` optional companion table.
 
 3. WHEN `mise run skill sync` rewrites `CLAUDE.md`
    THEN the task SHALL use `policy.surfaces.claude_optional` for optional
    companion bullets.
 
 4. WHEN `mise run skill sync` rewrites
-   `.agents/skills/kb-context/SKILL.md`
-   THEN the task SHALL use `policy.surfaces.kb_context_optional` for the
+   `.agents/skills/app-context/SKILL.md`
+   THEN the task SHALL use `policy.surfaces.app_context_optional` for the
    optional companion table.
 
 ### R6 — Routed skills
@@ -176,7 +176,7 @@ or reference-only skills by accident.
 
 **User story:** As a maintainer, I want blocked skills to explain why they are
 not used and where to redirect when relevant, so that agents do not route to
-skills that contradict kb.
+skills that contradict app.
 
 #### Acceptance criteria
 
@@ -188,7 +188,7 @@ skills that contradict kb.
    `policy.redirect_to` SHALL list the project guides or skills to use
    instead.
 
-3. WHEN a blocked skill is incompatible with kb
+3. WHEN a blocked skill is incompatible with app
    THEN `policy.reason` SHALL describe the incompatibility category.
 
 4. IF `policy.type` is `blocked`
@@ -224,7 +224,7 @@ state.
 ### R9 — Generated documentation consistency
 
 **User story:** As an agent, I want generated routing snippets to come from
-`SKILLS.yml`, so that `CLAUDE.md`, `kb-context`, and Cursor routing docs remain
+`SKILLS.yml`, so that `CLAUDE.md`, `app-context`, and Cursor routing docs remain
 consistent after registry edits.
 
 #### Acceptance criteria
@@ -293,7 +293,7 @@ interpretation.
    THEN `bun run lint:mise` SHALL pass.
 
 5. WHEN changed files are checked for whitespace errors
-   THEN `git diff --check -- assets/guides/SKILLS.yml assets/guides/SKILLS.md mise.toml CLAUDE.md .agents/skills/kb-context/SKILL.md .cursor/electrobun-skill-routing.md` SHALL pass.
+   THEN `git diff --check -- assets/guides/SKILLS.yml assets/guides/SKILLS.md mise.toml CLAUDE.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md` SHALL pass.
 
 6. WHEN the repository is searched for obsolete schema fields
    THEN no active automation SHALL reference skill-level `source`, `install`,
@@ -312,7 +312,7 @@ interpretation.
 - A6: Electrobun routing lives under `policy.routing.electrobun`.
 - A7: Route notes derive `project`, `owned`, or `global only` from `location`.
 - A8: Generated snippets in `CLAUDE.md`,
-  `.agents/skills/kb-context/SKILL.md`, and
+  `.agents/skills/app-context/SKILL.md`, and
   `.cursor/electrobun-skill-routing.md` are refreshed from `SKILLS.yml`.
 - A9: The project skill set in `skills-lock.json` is represented by
   `location: project` entries in `SKILLS.yml`.

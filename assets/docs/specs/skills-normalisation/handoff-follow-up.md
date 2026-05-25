@@ -8,7 +8,7 @@ single `mise run skill <action>` task, but review found a few consistency gaps.
 ## Handoff prompt
 
 ```markdown
-You are working in `/Users/roalcantara/Work/bun/kb`.
+You are working in `/Users/roalcantara/Work/bun/app`.
 
 Goal: Finish the skills-normalisation follow-up so the implementation, docs,
 and actual Skills CLI project state all agree.
@@ -34,7 +34,7 @@ However, a code review found these remaining issues:
 
 Before editing:
 
-1. Read `.agents/skills/kb-context/SKILL.md`.
+1. Read `.agents/skills/app-context/SKILL.md`.
 2. Because this touches `mise.toml`, use the `mise-tasks` skill if available.
 3. Because this writes Markdown, use the docs-writing guidance available in
    this repo/session.
@@ -98,7 +98,7 @@ Those were no longer present in `skills-lock.json` or `SKILLS.yml`.
 
 Choose one consistent resolution:
 
-- If these skills are still recommended for kb, re-add them to
+- If these skills are still recommended for app, re-add them to
   `skills-lock.json` and `assets/guides/SKILLS.yml` as `location: project`, and
   restore the Electrobun routing/docs rows.
 - If they are no longer recommended, remove them from the actual project skill
@@ -126,7 +126,7 @@ Required wording changes:
 
 ```toml
 [tasks.skill]
-description = "Validate, generate, install, and report kb skill registry artifacts."
+description = "Validate, generate, install, and report app skill registry artifacts."
 usage = '''
 arg "<action>" help="Skill registry action" {
   choices "validate" "sync" "install" "all" "report"
@@ -167,14 +167,14 @@ mise run skill report --json
 mise run skill sync
 mise run skill all --dry-run
 bun run lint:mise
-git diff --check -- assets/guides/SKILLS.yml assets/guides/SKILLS.md mise.toml CLAUDE.md AGENTS.md README.md .agents/skills/kb-context/SKILL.md .cursor/electrobun-skill-routing.md .cursor/rules/electrobun-skills.mdc assets/docs/specs/skills-normalisation/requirements.md assets/docs/specs/skills-normalisation/handoff.md assets/docs/specs/skills-normalisation/handoff-follow-up.md
+git diff --check -- assets/guides/SKILLS.yml assets/guides/SKILLS.md mise.toml CLAUDE.md AGENTS.md README.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md .cursor/rules/electrobun-skills.mdc assets/docs/specs/skills-normalisation/requirements.md assets/docs/specs/skills-normalisation/handoff.md assets/docs/specs/skills-normalisation/handoff-follow-up.md
 ```
 
 Also run these consistency checks and report the result:
 
 ```bash
 skills list --json
-rg -n "mise run (skills:sync|link:skills)|approved linked|linked companions|choices \"validate\" \"sync\" \"link\"" README.md .cursor/rules/electrobun-skills.mdc assets/docs/specs/skills-normalisation/handoff.md assets/docs/specs/skills-normalisation/requirements.md assets/guides/SKILLS.md AGENTS.md CLAUDE.md .agents/skills/kb-context/SKILL.md .cursor/electrobun-skill-routing.md mise.toml
+rg -n "mise run (skills:sync|link:skills)|approved linked|linked companions|choices \"validate\" \"sync\" \"link\"" README.md .cursor/rules/electrobun-skills.mdc assets/docs/specs/skills-normalisation/handoff.md assets/docs/specs/skills-normalisation/requirements.md assets/guides/SKILLS.md AGENTS.md CLAUDE.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md mise.toml
 ```
 
 Expected outcome:

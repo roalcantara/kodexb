@@ -13,8 +13,8 @@ and create one commit.
 
 Before editing mise tasks, load:
 
-- `.agents/skills/kb-context/SKILL.md`
-- `.agents/skills/kb-quality-gate/SKILL.md`
+- `.agents/skills/app-context/SKILL.md`
+- `.agents/skills/app-quality-gate/SKILL.md`
 - `mise-tasks`
 - `mise-expert` when editing `[tools]`, `[env]`, setup behavior, or tool-version
   assumptions
@@ -28,9 +28,9 @@ For every phase:
 2. Inspect current commands before editing.
 3. Implement only that phase.
 4. Run the phase-specific verification commands.
-5. Update the task inventory ledger and checkboxes in this file.
+5. Update the task inventory ledger and checappoxes in this file.
 6. Run `git diff --check` for touched files.
-7. Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh` when executable
+7. Run `bash .agents/skills/app-quality-gate/scripts/gate.sh` when executable
    workflow behavior changed.
 8. Commit exactly that phase's files with the suggested commit command.
 
@@ -42,16 +42,16 @@ verification path.
 
 Fill this ledger during phase 1 and keep it updated.
 
-| Phase | Area | Canonical shape | Compatibility wrappers | Verification |
-| --- | --- | --- | --- | --- |
-| 0 | Mise guide | Policy documented in MISE_GUIDE.md | n/a | git diff --check clean |
-| 1 | Task and script inventory | 27 mise tasks, 50 package scripts classified | See below | Pending |
-| 2 | Existing action tasks | skill and perf use usage args; wrappers delegate cleanly | Hidden wrappers: skills:validate, skills:sync, link:skills | Gate green |
-| 3 | CI task families | ci:review, ci:release, ci:publish kept separate for safety | Different safety profiles make merging risky | Gate green |
-| 4 | Repo/admin task families | repo:setup/repo:prune separate (destructive vs setup); ci:reset-branch kept separate | Destructive commands need explicit names | Gate green |
-| 5 | Package scripts | Complex compound scripts (lint, lint:fix) kept for dev muscle memory; simple aliases preserved | n/a | Gate green |
-| 6 | Docs and agent references | README, guides already use canonical commands from skills-normalisation pass | Old wrappers documented as deprecated | Gate green |
-| 7 | Closure | All task policy checks recorded; gate green; 27 mise tasks, 50 package scripts inventoried | Deprecated wrappers listed above | Final gate green |
+| Phase | Area                      | Canonical shape                                                                                | Compatibility wrappers                                     | Verification           |
+| ----- | ------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------------------- |
+| 0     | Mise guide                | Policy documented in MISE_GUIDE.md                                                             | n/a                                                        | git diff --check clean |
+| 1     | Task and script inventory | 27 mise tasks, 50 package scripts classified                                                   | See below                                                  | Pending                |
+| 2     | Existing action tasks     | skill and perf use usage args; wrappers delegate cleanly                                       | Hidden wrappers: skills:validate, skills:sync, link:skills | Gate green             |
+| 3     | CI task families          | ci:review, ci:release, ci:publish kept separate for safety                                     | Different safety profiles make merging risky               | Gate green             |
+| 4     | Repo/admin task families  | repo:setup/repo:prune separate (destructive vs setup); ci:reset-branch kept separate           | Destructive commands need explicit names                   | Gate green             |
+| 5     | Package scripts           | Complex compound scripts (lint, lint:fix) kept for dev muscle memory; simple aliases preserved | n/a                                                        | Gate green             |
+| 6     | Docs and agent references | README, guides already use canonical commands from skills-normalisation pass                   | Old wrappers documented as deprecated                      | Gate green             |
+| 7     | Closure                   | All task policy checks recorded; gate green; 27 mise tasks, 50 package scripts inventoried     | Deprecated wrappers listed above                           | Final gate green       |
 
 ## Phase 0 — Update mise guide policy
 
@@ -411,7 +411,7 @@ EOF
   - _Acceptance criteria: NT-7.1, NT-7.2, NT-7.3, NT-7.4_
 
 - [x] 7.2 Run final project verification.
-  - Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+  - Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
   - Record any environment blockers exactly.
   - _Acceptance criteria: NT-7.5_
 

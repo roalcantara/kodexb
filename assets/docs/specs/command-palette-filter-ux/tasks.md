@@ -12,7 +12,7 @@ Ordered verification. Requirements: [requirements.md](requirements.md). Design: 
 ## T2 — Rename (`cmdk` → `command_palette`)
 
 - [x] Rename files and symbols per [design.md](design.md) migration table; update imports and CSS.
-- [x] `rg cmdk_palette|CmdkPalette|kb-cmdk` returns no hits in `src/` (except intentional historical comments if any — prefer zero).
+- [x] `rg cmdk_palette|CmdkPalette|app-cmdk` returns no hits in `src/` (except intentional historical comments if any — prefer zero).
 
 ## T3 — Shortcuts and mutual exclusion
 

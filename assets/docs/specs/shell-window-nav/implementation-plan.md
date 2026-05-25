@@ -1,14 +1,14 @@
 # Shell window chrome, placement, and detail navigation — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
 
 **Goal:** Ship centered frameless (or best fallback) main window on macOS first, with ArrowLeft reliably retreating from full detail to split; Linux best-effort parity afterward.
 
-**Architecture:** Pure placement helper in `src/shell/main/window/` for `x`/`y`; `main.ts` uses `Screen.getPrimaryDisplay()` from `electrobun/bun` before `show()`. Renderer adds a `window` `keydown` capture listener that forwards ArrowLeft/ArrowRight to existing `handleKey` when modals are closed, alongside the existing React capture on `kb-powertoys`.
+**Architecture:** Pure placement helper in `src/shell/main/window/` for `x`/`y`; `main.ts` uses `Screen.getPrimaryDisplay()` from `electrobun/bun` before `show()`. Renderer adds a `window` `keydown` capture listener that forwards ArrowLeft/ArrowRight to existing `handleKey` when modals are closed, alongside the existing React capture on `app-powertoys`.
 
 **Tech stack:** Bun, Electrobun (`electrobun/bun`), React 19, `bun:test`, Playwright preview E2E.
 
-**Canonical path:** This file lives next to the feature design under `assets/docs/specs/shell-window-nav/` (kb does not use `docs/superpowers/`).
+**Canonical path:** This file lives next to the feature design under `assets/docs/specs/shell-window-nav/` (app does not use `docs/superpowers/`).
 
 ---
 
@@ -108,10 +108,10 @@ try {
 }
 
 win = new BrowserWindow({
-  title: 'kb',
+  title: 'app',
   url: 'views://shell/index.html',
   frame: initialFrame,
-  rpc: kbWebviewRpc
+  rpc: appWebviewRpc
 })
 ```
 
@@ -157,16 +157,16 @@ If runtime throws or window is unusable, revert to `titleBarStyle: 'hiddenInset'
 
 - [ ] **Step 2: Renderer drag region**
 
-In shell header / `list.css`, add a top strip (e.g. `.kb-windowDrag`) with:
+In shell header / `list.css`, add a top strip (e.g. `.app-windowDrag`) with:
 
 ```css
-.kb-windowDrag {
+.app-windowDrag {
   -webkit-app-region: drag;
 }
-.kb-windowDrag button,
-.kb-windowDrag input,
-.kb-pt-search,
-.kb-pt-results {
+.app-windowDrag button,
+.app-windowDrag input,
+.app-pt-search,
+.app-pt-results {
   -webkit-app-region: no-drag;
 }
 ```

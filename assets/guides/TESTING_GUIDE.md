@@ -2,8 +2,7 @@
 title: Testing guidelines
 description: Bun test runner, factories, table-driven tests, FCIS-friendly patterns
 ---
-
-# Testing Guidelines
+<!-- markdownlint-disable-file -->
 
 Cursor rule (detailed patterns): `.cursor/rules/testing.mdc`
 
@@ -291,11 +290,11 @@ describe('centerBoundsInWorkArea', () => {
     const frame = () => centerBoundsInWorkArea(workArea, windowSize)
 
     it('centers the window', () => {
-      expect(frame()).toEqual({ x: 620, y: 330, width: 680, height: 420 })
+      expect(frame()).toEqual({ x: 620, y: 240, width: 680, height: 600 })
     })
 
     it('preserves the requested size', () => {
-      expect(frame()).toMatchObject({ width: 680, height: 420 })
+      expect(frame()).toMatchObject({ width: 680, height: 600 })
     })
   })
 })
@@ -306,9 +305,9 @@ describe('centerBoundsInWorkArea', () => {
     it('centers the window', () => {
       const frame = centerBoundsInWorkArea(
         { x: 0, y: 0, width: 1920, height: 1080 },
-        { width: 680, height: 420 }
+        { width: 680, height: 600 }
       )
-      expect(frame).toEqual({ x: 620, y: 330, width: 680, height: 420 })
+      expect(frame).toEqual({ x: 620, y: 240, width: 680, height: 600 })
     })
   })
 })
@@ -428,7 +427,7 @@ describe('centerBoundsInWorkArea', () => {
     const frame = () => subject(workArea, windowSize)
 
     it('centers the window', () => {
-      expect(frame()).toEqual({ x: 620, y: 330, width: 680, height: 420 })
+      expect(frame()).toEqual({ x: 620, y: 240, width: 680, height: 600 })
     })
   })
 })

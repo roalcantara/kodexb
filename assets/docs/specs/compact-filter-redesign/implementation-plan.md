@@ -2,7 +2,7 @@
 
 # Compact filter overlay rebuild — implementation plan
 
-> **For agentic workers:** Implement task-by-task in order. Use checkboxes in [tasks.md](tasks.md) for verification gates. Requirements: [requirements.md](requirements.md). Design: [design.md](design.md).
+> **For agentic workers:** Implement task-by-task in order. Use checappoxes in [tasks.md](tasks.md) for verification gates. Requirements: [requirements.md](requirements.md). Design: [design.md](design.md).
 
 **Goal:** Rebuild the compact (⌘K) filter overlay so Types/Tags are scrollable and the keyboard-highlighted row is always fully visible, with the same visual design and unchanged filter/RPC semantics.
 
@@ -25,7 +25,7 @@
 | `src/shell/renderer/components/list/filter_dropdown.component.tsx`                    | Portal `height` + `maxHeight` (verify present)                                  |
 | `src/shell/renderer/styles/list.css`                                                  | Replace compact-portal flex/pinned-split rules with grid + scroll-root + sticky |
 
-**Delete / stop using:** `.kb-pt-filter-dropdown-pinned`, `.kb-pt-filter-dropdown-scroll` as **sibling** scrollers; `data-compact-filter-scroll-region` → rename to `data-compact-filter-scroll-root` (one attribute, one scrollport).
+**Delete / stop using:** `.app-pt-filter-dropdown-pinned`, `.app-pt-filter-dropdown-scroll` as **sibling** scrollers; `data-compact-filter-scroll-region` → rename to `data-compact-filter-scroll-root` (one attribute, one scrollport).
 
 ---
 
@@ -102,20 +102,20 @@ Delete `pinnedSectionRows` / `scrollSectionRows` split in `useCompactFilterState
 - [ ] **Step 2: New JSX structure**
 
 ```tsx
-<div className="kb-pt-filter-dropdown" ...>
-  <input ref={searchInputRef} className="kb-pt-filter-search" ... />
+<div className="app-pt-filter-dropdown" ...>
+  <input ref={searchInputRef} className="app-pt-filter-search" ... />
   <motion-free div
-    className="kb-pt-filter-scroll-root"
+    className="app-pt-filter-scroll-root"
     data-compact-filter-scroll-root
     ref={scrollRootRef}
   >
-    <motion-free div className="kb-pt-filter-sticky-facets">
+    <motion-free div className="app-pt-filter-sticky-facets">
       <CompactFilterSectionList sectionedRows={facetSectionRows} ... />
     </motion-free>
     <CompactFilterSectionList sectionedRows={scrollableSectionRows} ... />
-    {filterRows.length === 0 ? <motion-free div className="kb-pt-filter-empty">...</motion-free> : null}
+    {filterRows.length === 0 ? <motion-free div className="app-pt-filter-empty">...</motion-free> : null}
   </motion-free>
-  <button type="button" className="kb-pt-filter-option kb-pt-filter-option--footer" ...>Close</button>
+  <button type="button" className="app-pt-filter-option app-pt-filter-option--footer" ...>Close</button>
 </motion-free>
 ```
 
@@ -132,7 +132,7 @@ const rowIdsKey = useMemo(() => filterRows.map(r => r.id).join('\0'), [filterRow
 
 useLayoutEffect(() => {
   const root = scrollRootRef.current
-  const searchRoot = searchInputRef.current?.closest('.kb-pt-filter-dropdown')
+  const searchRoot = searchInputRef.current?.closest('.app-pt-filter-dropdown')
   if (!root || !searchRoot) return
   const options = Array.from(root.querySelectorAll<HTMLElement>('[data-compact-filter-row]'))
   const el = options[highlightIndex]
@@ -158,7 +158,7 @@ Remove duplicate scroll effect that only used `searchInputRef` if fully replaced
 
 - ArrowUp/Down: highlight only; **do not** `focus()` rows (R5 — search keeps focus).
 - Keep `suppressNextArrowDownFromSearch`, Tab-from-search toggle, Enter on row suppress.
-- `compactFilterOptionNodes` should query within `.kb-pt-filter-dropdown` (unchanged).
+- `compactFilterOptionNodes` should query within `.app-pt-filter-dropdown` (unchanged).
 
 ---
 
@@ -166,7 +166,7 @@ Remove duplicate scroll effect that only used `searchInputRef` if fully replaced
 
 **Files:**
 
-- Modify: `src/shell/renderer/styles/list.css` (compact portal block ~`.kb-pt-filter-portal-clip`)
+- Modify: `src/shell/renderer/styles/list.css` (compact portal block ~`.app-pt-filter-portal-clip`)
 
 - [ ] **Step 1: Portal clip**
 
@@ -175,7 +175,7 @@ Keep `height` + `maxHeight` on clip (R7). Clip: `display: flex; flex-direction: 
 - [ ] **Step 2: Card grid (3 rows)**
 
 ```css
-.kb-pt-filter-portal-clip > .kb-pt-filter-dropdown {
+.app-pt-filter-portal-clip > .app-pt-filter-dropdown {
   flex: 1 1 0;
   min-height: 0;
   display: grid;
@@ -185,11 +185,11 @@ Keep `height` + `maxHeight` on clip (R7). Clip: `display: flex; flex-direction: 
   /* drop old flex-column-only hacks for pinned/scroll siblings */
 }
 
-.kb-pt-filter-portal-clip > .kb-pt-filter-dropdown > .kb-pt-filter-search {
+.app-pt-filter-portal-clip > .app-pt-filter-dropdown > .app-pt-filter-search {
   /* row 1 — not in scroll root */
 }
 
-.kb-pt-filter-portal-clip > .kb-pt-filter-dropdown > .kb-pt-filter-scroll-root {
+.app-pt-filter-portal-clip > .app-pt-filter-dropdown > .app-pt-filter-scroll-root {
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
@@ -198,26 +198,26 @@ Keep `height` + `maxHeight` on clip (R7). Clip: `display: flex; flex-direction: 
   padding-bottom: 12px;
 }
 
-.kb-pt-filter-portal-clip > .kb-pt-filter-dropdown > .kb-pt-filter-sticky-facets {
+.app-pt-filter-portal-clip > .app-pt-filter-dropdown > .app-pt-filter-sticky-facets {
   position: sticky;
   top: 0;
   z-index: 1;
   background: rgba(18, 23, 33, 0.98);
-  box-shadow: 0 1px 0 var(--kb-border);
+  box-shadow: 0 1px 0 var(--app-border);
 }
 
-.kb-pt-filter-portal-clip > .kb-pt-filter-dropdown > .kb-pt-filter-option--footer {
+.app-pt-filter-portal-clip > .app-pt-filter-dropdown > .app-pt-filter-option--footer {
   flex-shrink: 0; /* grid row 3 */
 }
 ```
 
 - [ ] **Step 3: Remove obsolete rules**
 
-Delete selectors for `.kb-pt-filter-dropdown-pinned`, `.kb-pt-filter-dropdown-scroll` as flex children, duplicate grid on dropdown that fought row 2, and any `quick-sticky` experiment classes no longer in TSX.
+Delete selectors for `.app-pt-filter-dropdown-pinned`, `.app-pt-filter-dropdown-scroll` as flex children, duplicate grid on dropdown that fought row 2, and any `quick-sticky` experiment classes no longer in TSX.
 
 - [ ] **Step 4: Keep highlight tokens**
 
-Retain `.kb-pt-filter-dropdown .kb-pt-filter-option--highlight` (accent rail + tint) per R6.
+Retain `.app-pt-filter-dropdown .app-pt-filter-option--highlight` (accent rail + tint) per R6.
 
 ---
 
@@ -278,7 +278,7 @@ bun test src/shell/renderer/components/list/compact_filter_overlay.component.spe
 - [ ] Confirm compact portal clip style includes **`height: maxHeight`** and **`maxHeight`** (R7).
 
 ```tsx
-<div className="kb-pt-filter-portal-clip" style={{ top, left, width, height: maxHeight, maxHeight }}>
+<div className="app-pt-filter-portal-clip" style={{ top, left, width, height: maxHeight, maxHeight }}>
 ```
 
 ---
@@ -298,7 +298,7 @@ bun test src/shell/renderer/components/list/compact_filter_overlay.component.spe
 ## Task 7: Quality gate
 
 ```bash
-bash .agents/skills/kb-quality-gate/scripts/gate.sh
+bash .agents/skills/app-quality-gate/scripts/gate.sh
 ```
 
 Or minimum:

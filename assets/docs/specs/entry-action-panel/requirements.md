@@ -2,7 +2,7 @@
 
 # Entry Action Panel — requirements
 
-Central **entry action catalog** and **executor** for kb (Raycast Action Panel *pattern*, no Raycast dependency). **Return** and **⌘Return** run **primary** and **secondary** entry actions in **List**, **Split**, and **Detail** view whenever an entry is in context and focus is not in a text field (decision **A**). Successful entry actions **shall** record frecency via existing `recordEntryVisit` RPC.
+Central **entry action catalog** and **executor** for app (Raycast Action Panel *pattern*, no Raycast dependency). **Return** and **⌘Return** run **primary** and **secondary** entry actions in **List**, **Split**, and **Detail** view whenever an entry is in context and focus is not in a text field (decision **A**). Successful entry actions **shall** record frecency via existing `recordEntryVisit` RPC.
 
 Normative contract: [design.md](design.md). List ordering and score model: [list-frecency-sort/requirements.md](../list-frecency-sort/requirements.md).
 
@@ -82,4 +82,4 @@ After implementation, a visit **shall** be recorded when the user successfully:
 
 ## R10 — Quality gate
 
-- Implementation **shall** pass **`bash .agents/skills/kb-quality-gate/scripts/gate.sh`** before merge.
+- Implementation **shall** pass **`bash .agents/skills/app-quality-gate/scripts/gate.sh`** before merge.

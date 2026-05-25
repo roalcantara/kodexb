@@ -30,7 +30,7 @@ The current hook stack is:
 - `AGENTS.md`, `README.md`, `assets/guides/DoD.md`,
   `assets/guides/GIT_GUIDE.md`, `assets/guides/GIT_COMMITS_GUIDE.md`,
   `.cursor/rules/gitlint-commit-messages.mdc`, and
-  `.agents/skills/kb-quality-gate/SKILL.md` reference the old stack.
+  `.agents/skills/app-quality-gate/SKILL.md` reference the old stack.
 
 The current `pre-commit` config does not define general `pre-commit` file
 checks. In practice, this repo currently uses `pre-commit` as a wrapper around
@@ -61,7 +61,7 @@ checks. In practice, this repo currently uses `pre-commit` as a wrapper around
 
 ## Out of Scope
 
-- Replacing the kb quality gate with HK.
+- Replacing the app quality gate with HK.
 - Changing Conventional Commit policy beyond the explicit release-it fix in
   this spec.
 - Adding deprecated wrappers for `pre-commit` or `gitlint`.
@@ -113,7 +113,7 @@ checks. In practice, this repo currently uses `pre-commit` as a wrapper around
 5. WHEN `hk.pkl` defines `commit-msg`, THEN it SHALL call the repo-local commit
    message policy script and SHALL pass HK's `{{commit_msg_file}}` value to it.
 6. WHEN `hk.pkl` defines `pre-push`, THEN it SHALL run
-   `bash .agents/skills/kb-quality-gate/scripts/gate.sh` as an exclusive step.
+   `bash .agents/skills/app-quality-gate/scripts/gate.sh` as an exclusive step.
 7. WHEN HK steps call project tools, THEN they SHALL use tools provided by Mise
    instead of assuming globally installed dependencies.
 
@@ -194,7 +194,7 @@ checks. In practice, this repo currently uses `pre-commit` as a wrapper around
    canonical implementation.
 8. WHEN `assets/guides/DoD.md`,
    `assets/guides/GIT_GUIDE.md`, and
-   `.agents/skills/kb-quality-gate/SKILL.md` mention commit hooks, THEN they
+   `.agents/skills/app-quality-gate/SKILL.md` mention commit hooks, THEN they
    SHALL refer to HK.
 
 ## Requirement UH-6: Release commit compatibility
@@ -232,6 +232,6 @@ checks. In practice, this repo currently uses `pre-commit` as a wrapper around
    include an `Evidence:` bullet with changed files and exact commands.
 3. WHEN the implementation is complete, THEN no checklist item in `tasks.md`
    SHALL be checked without evidence.
-4. WHEN `bash .agents/skills/kb-quality-gate/scripts/gate.sh` is run, THEN it
+4. WHEN `bash .agents/skills/app-quality-gate/scripts/gate.sh` is run, THEN it
    SHALL exit 0.
 5. WHEN `git diff --check` is run, THEN it SHALL exit 0.

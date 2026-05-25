@@ -1,224 +1,359 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>kb — Navigation Simulator</title>
+  <title>app — Navigation Simulator</title>
   <style>
-    :root { --bg: #0b0e14; --surface: #121721; --border: #232936; --text: #e2e9f5; --muted: #8892a4; --accent: #5ecfbe; --blue: #3399ff; }
-    body { margin: 0; background: var(--bg); color: var(--text); font: 14px system-ui, sans-serif; display: flex; justify-content: center; padding-top: 60px; }
-    .container { width: 680px; }
-    .state { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-bottom: 16px; }
-    .state h2 { margin: 0 0 8px; font-size: 18px; }
-    .state-label { font-size: 13px; color: var(--muted); }
-    .state-label span { color: var(--accent); font-weight: 600; }
-    .transitions { display: flex; gap: 16px; margin: 16px 0; }
-    .transition { background: rgba(51,153,255,0.08); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; flex: 1; }
-    .transition h3 { font-size: 13px; margin: 0 0 4px; color: var(--muted); }
-    .transition .key { color: var(--accent); font-weight: 600; font-family: monospace; }
-    .transition .to { color: var(--blue); }
-    .transition .noop { color: #555; }
-    .event-log { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; max-height: 300px; overflow-y: auto; }
-    .event-log h3 { margin: 0 0 8px; font-size: 14px; color: var(--muted); }
-    .event { font-size: 12px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-family: monospace; color: var(--muted); }
-    .event .from { color: var(--blue); }
-    .event .via { color: var(--accent); }
-    .event .to { color: var(--blue); }
-    .event .detail { color: #555; }
-    .controls { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
-    .controls button { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 8px 16px; font-size: 13px; cursor: pointer; }
-    .controls button:hover { border-color: var(--accent); }
-    .controls button:active { background: rgba(94,207,190,0.1); }
-    .stats { font-size: 11px; color: var(--muted); margin-top: 8px; }
-    .pass { color: #5ecfbe; }
-    .fail { color: #ef4444; }
+    :root {
+      --bg: #0b0e14;
+      --surface: #121721;
+      --border: #232936;
+      --text: #e2e9f5;
+      --muted: #8892a4;
+      --accent: #5ecfbe;
+      --blue: #3399ff;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 14px system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding-top: 60px;
+    }
+
+    .container {
+      width: 680px;
+    }
+
+    .state {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .state h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .state-label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .state-label span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .transitions {
+      display: flex;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .transition {
+      background: rgba(51, 153, 255, 0.08);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 16px;
+      flex: 1;
+    }
+
+    .transition h3 {
+      font-size: 13px;
+      margin: 0 0 4px;
+      color: var(--muted);
+    }
+
+    .transition .key {
+      color: var(--accent);
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    .transition .to {
+      color: var(--blue);
+    }
+
+    .transition .noop {
+      color: #555;
+    }
+
+    .event-log {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .event-log h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .event {
+      font-size: 12px;
+      padding: 3px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      font-family: monospace;
+      color: var(--muted);
+    }
+
+    .event .from {
+      color: var(--blue);
+    }
+
+    .event .via {
+      color: var(--accent);
+    }
+
+    .event .to {
+      color: var(--blue);
+    }
+
+    .event .detail {
+      color: #555;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .controls button {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 8px 16px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .controls button:hover {
+      border-color: var(--accent);
+    }
+
+    .controls button:active {
+      background: rgba(94, 207, 190, 0.1);
+    }
+
+    .stats {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .pass {
+      color: #5ecfbe;
+    }
+
+    .fail {
+      color: #ef4444;
+    }
   </style>
 </head>
+
 <body>
-<div class="container">
-  <div class="state" id="state-panel">
-    <h2 id="view-heading">View: LIST</h2>
-    <div class="state-label">detailEntry: <span id="detail-value">null</span></div>
-    <div id="transitions-container"></div>
+  <div class="container">
+    <div class="state" id="state-panel">
+      <h2 id="view-heading">View: LIST</h2>
+      <div class="state-label">detailEntry: <span id="detail-value">null</span></div>
+      <div id="transitions-container"></div>
+    </div>
+
+    <div class="controls">
+      <button onclick="pressKey('ArrowRight')">→ (ArrowRight)</button>
+      <button onclick="pressKey('ArrowLeft')">← (ArrowLeft)</button>
+      <button onclick="pressKey('Enter')">↵ (Enter)</button>
+      <button onclick="pressKey('Escape')">Esc (Escape)</button>
+      <button onclick="pressKey('Meta+[')">⌘[</button>
+      <button onclick="pressKey('Ctrl+[')">Ctrl+[</button>
+      <button onclick="closeToList()">✕ Close to List</button>
+      <button onclick="autoTest()" style="background:rgba(94,207,190,0.1);border-color:var(--accent);">▶ Auto
+        Test</button>
+      <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <div class="event-log" id="event-log">
+      <h3>Event Log</h3>
+      <div id="events"></div>
+      <div class="stats" id="test-result"></div>
+    </div>
   </div>
 
-  <div class="controls">
-    <button onclick="pressKey('ArrowRight')">→ (ArrowRight)</button>
-    <button onclick="pressKey('ArrowLeft')">← (ArrowLeft)</button>
-    <button onclick="pressKey('Enter')">↵ (Enter)</button>
-    <button onclick="pressKey('Escape')">Esc (Escape)</button>
-    <button onclick="pressKey('Meta+[')">⌘[</button>
-    <button onclick="pressKey('Ctrl+[')">Ctrl+[</button>
-    <button onclick="closeToList()">✕ Close to List</button>
-    <button onclick="autoTest()" style="background:rgba(94,207,190,0.1);border-color:var(--accent);">▶ Auto Test</button>
-    <button onclick="clearLog()">Clear Log</button>
-  </div>
+  <script>
+    // State machine — identical logic to useViewNavigation
+    let viewState = 'list'  // 'list' | 'split' | 'detail'
+    let detailEntry = null  // non-null = some entry selected
+    let events = []
+    let eventCount = 0
 
-  <div class="event-log" id="event-log">
-    <h3>Event Log</h3>
-    <div id="events"></div>
-    <div class="stats" id="test-result"></div>
-  </div>
-</div>
-
-<script>
-  // State machine — identical logic to useViewNavigation
-  let viewState = 'list'  // 'list' | 'split' | 'detail'
-  let detailEntry = null  // non-null = some entry selected
-  let events = []
-  let eventCount = 0
-
-  function advanceView() {
-    const from = viewState
-    if (viewState === 'list') {
-      detailEntry = 1  // mock entry
-      viewState = 'split'
-    } else if (viewState === 'split') {
-      viewState = 'detail'
+    function advanceView() {
+      const from = viewState
+      if (viewState === 'list') {
+        detailEntry = 1  // mock entry
+        viewState = 'split'
+      } else if (viewState === 'split') {
+        viewState = 'detail'
+      }
+      // detail: no-op
+      if (from !== viewState || detailEntry) {
+        logEvent(from, viewState, detailEntry ? 'advance' : 'no-op (already detail)')
+      }
+      render()
     }
-    // detail: no-op
-    if (from !== viewState || detailEntry) {
-      logEvent(from, viewState, detailEntry ? 'advance' : 'no-op (already detail)')
-    }
-    render()
-  }
 
-  function retreatView() {
-    const from = viewState
-    if (viewState === 'detail') {
-      viewState = 'split'
-    } else if (viewState === 'split') {
+    function retreatView() {
+      const from = viewState
+      if (viewState === 'detail') {
+        viewState = 'split'
+      } else if (viewState === 'split') {
+        detailEntry = null
+        viewState = 'list'
+      }
+      // list: no-op
+      if (from !== viewState || !detailEntry) {
+        logEvent(from, viewState, 'retreat')
+      }
+      render()
+    }
+
+    function closeToList() {
+      const from = viewState
       detailEntry = null
       viewState = 'list'
+      logEvent(from, 'list', 'close (X)')
+      render()
     }
-    // list: no-op
-    if (from !== viewState || !detailEntry) {
-      logEvent(from, viewState, 'retreat')
+
+    function logEvent(from, to, action) {
+      eventCount++
+      const e = { from, to, action, detailEntry: detailEntry, n: eventCount }
+      events.push(e)
     }
-    render()
-  }
 
-  function closeToList() {
-    const from = viewState
-    detailEntry = null
-    viewState = 'list'
-    logEvent(from, 'list', 'close (X)')
-    render()
-  }
-
-  function logEvent(from, to, action) {
-    eventCount++
-    const e = { from, to, action, detailEntry: detailEntry, n: eventCount }
-    events.push(e)
-  }
-
-  function pressKey(key) {
-    switch (key) {
-      case 'ArrowRight': advanceView(); break
-      case 'ArrowLeft': case 'Escape':
-        if (detailEntry !== null) retreatView(); break
-      case 'Enter': advanceView(); break
-      case 'Meta+[': case 'Ctrl+[':
-        if (detailEntry !== null) retreatView(); break
+    function pressKey(key) {
+      switch (key) {
+        case 'ArrowRight': advanceView(); break
+        case 'ArrowLeft': case 'Escape':
+          if (detailEntry !== null) retreatView(); break
+        case 'Enter': advanceView(); break
+        case 'Meta+[': case 'Ctrl+[':
+          if (detailEntry !== null) retreatView(); break
+      }
+      updateEventLog()
     }
-    updateEventLog()
-  }
 
-  function clearLog() {
-    events = []
-    eventCount = 0
-    document.getElementById('test-result').innerHTML = ''
-    updateEventLog()
-  }
+    function clearLog() {
+      events = []
+      eventCount = 0
+      document.getElementById('test-result').innerHTML = ''
+      updateEventLog()
+    }
 
-  function updateEventLog() {
-    const el = document.getElementById('events')
-    el.innerHTML = events.map(e =>
-      `<div class="event">${e.n}. <span class="from">${e.from}</span> <span class="via">→${e.action}→</span> <span class="to">${e.to}</span> <span class="detail">(detailEntry=${e.detailEntry ?? 'null'})</span></div>`
-    ).join('\n')
-    el.scrollTop = el.scrollHeight
-  }
+    function updateEventLog() {
+      const el = document.getElementById('events')
+      el.innerHTML = events.map(e =>
+        `<div class="event">${e.n}. <span class="from">${e.from}</span> <span class="via">→${e.action}→</span> <span class="to">${e.to}</span> <span class="detail">(detailEntry=${e.detailEntry ?? 'null'})</span></div>`
+      ).join('\n')
+      el.scrollTop = el.scrollHeight
+    }
 
-  function render() {
-    document.getElementById('view-heading').textContent = 'View: ' + viewState.toUpperCase()
-    document.getElementById('detail-value').textContent = detailEntry ?? 'null'
+    function render() {
+      document.getElementById('view-heading').textContent = 'View: ' + viewState.toUpperCase()
+      document.getElementById('detail-value').textContent = detailEntry ?? 'null'
 
-    const transitions = [
-      { key: '→ / Enter', to: viewState === 'list' ? 'Split' : viewState === 'split' ? 'Detail' : 'no-op', variant: viewState === 'detail' ? 'noop' : 'advance' },
-      { key: '← / Escape', to: viewState === 'detail' ? 'Split' : viewState === 'split' ? 'List' : 'no-op', variant: viewState === 'list' ? 'noop' : 'retreat' },
-      { key: '✕', to: 'List', variant: 'advance' }
-    ]
-    document.getElementById('transitions-container').innerHTML =
-      '<div class="transitions">' +
-      transitions.map(t =>
-        `<div class="transition">
+      const transitions = [
+        { key: '→ / Enter', to: viewState === 'list' ? 'Split' : viewState === 'split' ? 'Detail' : 'no-op', variant: viewState === 'detail' ? 'noop' : 'advance' },
+        { key: '← / Escape', to: viewState === 'detail' ? 'Split' : viewState === 'split' ? 'List' : 'no-op', variant: viewState === 'list' ? 'noop' : 'retreat' },
+        { key: '✕', to: 'List', variant: 'advance' }
+      ]
+      document.getElementById('transitions-container').innerHTML =
+        '<div class="transitions">' +
+        transitions.map(t =>
+          `<div class="transition">
           <h3>Press <span class="key">${t.key}</span> → <span class="${t.variant === 'noop' ? 'noop' : 'to'}">${t.to}</span></h3>
         </div>`
-      ).join('') +
-      '</div>'
-  }
-
-  // Auto-test: verify the exact bug scenario
-  function autoTest() {
-    clearLog()
-    viewState = 'list'; detailEntry = null
-    let passed = 0, failed = 0
-
-    function assert(condition, msg) {
-      if (condition) { passed++; events.push({ from: 'TEST', to: 'PASS', action: msg, detailEntry: null, n: ++eventCount }) }
-      else { failed++; events.push({ from: 'TEST', to: 'FAIL', action: msg, detailEntry: null, n: ++eventCount }) }
+        ).join('') +
+        '</div>'
     }
 
-    // Test 1: ArrowRight opens split
-    advanceView()
-    assert(viewState === 'split' && detailEntry !== null, 'ArrowRight: list → split')
+    // Auto-test: verify the exact bug scenario
+    function autoTest() {
+      clearLog()
+      viewState = 'list'; detailEntry = null
+      let passed = 0, failed = 0
 
-    // Test 2: ArrowLeft closes
-    retreatView()
-    assert(viewState === 'list' && detailEntry === null, 'ArrowLeft: split → list')
+      function assert(condition, msg) {
+        if (condition) { passed++; events.push({ from: 'TEST', to: 'PASS', action: msg, detailEntry: null, n: ++eventCount }) }
+        else { failed++; events.push({ from: 'TEST', to: 'FAIL', action: msg, detailEntry: null, n: ++eventCount }) }
+      }
 
-    // Test 3: ArrowRight opens again (the bug!)
-    advanceView()
-    assert(viewState === 'split' && detailEntry !== null, 'ArrowRight again: list → split (was the bug)')
+      // Test 1: ArrowRight opens split
+      advanceView()
+      assert(viewState === 'split' && detailEntry !== null, 'ArrowRight: list → split')
 
-    // Test 4: Escape closes
-    retreatView()
-    assert(viewState === 'list' && detailEntry === null, 'Escape: split → list')
+      // Test 2: ArrowLeft closes
+      retreatView()
+      assert(viewState === 'list' && detailEntry === null, 'ArrowLeft: split → list')
 
-    // Test 5: ArrowRight opens again
-    advanceView()
-    assert(viewState === 'split' && detailEntry !== null, 'ArrowRight 3rd: list → split')
+      // Test 3: ArrowRight opens again (the bug!)
+      advanceView()
+      assert(viewState === 'split' && detailEntry !== null, 'ArrowRight again: list → split (was the bug)')
 
-    // Test 6: X closes from split
-    closeToList()
-    assert(viewState === 'list' && detailEntry === null, 'X button: split → list')
+      // Test 4: Escape closes
+      retreatView()
+      assert(viewState === 'list' && detailEntry === null, 'Escape: split → list')
 
-    // Test 7: ArrowRight opens from list again
-    advanceView()
-    assert(viewState === 'split' && detailEntry !== null, 'ArrowRight after X: list → split')
+      // Test 5: ArrowRight opens again
+      advanceView()
+      assert(viewState === 'split' && detailEntry !== null, 'ArrowRight 3rd: list → split')
 
-    // Test 8: Enter advances to detail from split
-    advanceView()
-    assert(viewState === 'detail' && detailEntry !== null, 'Enter: split → detail')
+      // Test 6: X closes from split
+      closeToList()
+      assert(viewState === 'list' && detailEntry === null, 'X button: split → list')
 
-    // Test 9: Escape from detail goes to split (not list)
-    retreatView()
-    assert(viewState === 'split' && detailEntry !== null, 'Escape: detail → split')
+      // Test 7: ArrowRight opens from list again
+      advanceView()
+      assert(viewState === 'split' && detailEntry !== null, 'ArrowRight after X: list → split')
 
-    // Test 10: Escape from split goes to list
-    retreatView()
-    assert(viewState === 'list' && detailEntry === null, 'Escape: split → list')
+      // Test 8: Enter advances to detail from split
+      advanceView()
+      assert(viewState === 'detail' && detailEntry !== null, 'Enter: split → detail')
 
-    // Test 11: No-op on list
-    retreatView()
-    assert(viewState === 'list' && detailEntry === null, 'Retreat on list: no-op')
+      // Test 9: Escape from detail goes to split (not list)
+      retreatView()
+      assert(viewState === 'split' && detailEntry !== null, 'Escape: detail → split')
 
-    updateEventLog()
-    document.getElementById('test-result').innerHTML =
-      `<span class="pass">${passed} passed</span>, <span class="fail">${failed} failed</span>`
+      // Test 10: Escape from split goes to list
+      retreatView()
+      assert(viewState === 'list' && detailEntry === null, 'Escape: split → list')
+
+      // Test 11: No-op on list
+      retreatView()
+      assert(viewState === 'list' && detailEntry === null, 'Retreat on list: no-op')
+
+      updateEventLog()
+      document.getElementById('test-result').innerHTML =
+        `<span class="pass">${passed} passed</span>, <span class="fail">${failed} failed</span>`
+      render()
+    }
+
     render()
-  }
-
-  render()
-</script>
+  </script>
 </body>
+
 </html>

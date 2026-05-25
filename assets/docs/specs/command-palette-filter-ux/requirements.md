@@ -16,7 +16,7 @@ Normative behavior for keyboard-first **command palette** (⌘P) and **filter ov
 
 - When the palette opens, the system **shall** save the **previously focused** `HTMLElement` and **shall** restore that focus after the palette closes via **Esc** or after running an action that closes the palette.
 - While the palette is open, **ArrowUp** / **ArrowDown** **shall** keep **current** behavior: they move the **palette** action selection (including from the search input), **not** the main list selection.
-- When **`selectedId` is null**, the palette **shall** list **global** actions only: **Sync**, **New Task**, **Quit kb**, in that order, under **Library** then **App** section headers per [design.md](design.md).
+- When **`selectedId` is null**, the palette **shall** list **global** actions only: **Sync**, **New Task**, **Quit app**, in that order, under **Library** then **App** section headers per [design.md](design.md).
 - When **`selectedId` is non-null**, the palette **shall** build actions from the row **`rows.find(id === selectedId)`** in **entry-first** order and section grouping defined in [design.md](design.md) (This entry → Clipboard → Source → Library → App).
 - **Clipboard** with a row selected **shall** expose exactly one **Copy** action; payload and toast rules **shall** match [design.md](design.md) (single `entry.key` vs `entry.doc` table; quoted preview toast; empty and failure cases). List **⌘C** / **Ctrl+C** (when not typing in an input or contenteditable) **shall** use the same payload and success toasts for the selected row.
 - Each action **shall** expose a **`section`** discriminator for rendering; section headers **shall** be non-selectable and **shall not** receive keyboard highlight.
@@ -38,7 +38,7 @@ Normative behavior for keyboard-first **command palette** (⌘P) and **filter ov
 
 ## R5 — Naming and discoverability
 
-- All legacy **`cmdk_palette`** / **`CmdkPalette`** / **`kb-cmdk-*`** identifiers **shall** be renamed per `design.md` migration table.
+- All legacy **`cmdk_palette`** / **`CmdkPalette`** / **`app-cmdk-*`** identifiers **shall** be renamed per `design.md` migration table.
 - Footer and toolbar shortcut hints **shall** show **⌘P** for palette and **⌘K** for filter after implementation.
 
 ## R6 — Keyboard delivery

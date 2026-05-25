@@ -24,15 +24,15 @@ Required reading (in this order):
 - `assets/guides/FCIS.guide.md` (pure-core / imperative-shell rules).
 - `assets/guides/DoD.md` (Definition of Done).
 - `assets/guides/GIT_COMMITS_GUIDE.md` (Conventional Commits, ≤ 50-char subject).
-- `.agents/skills/kb-context/SKILL.md`.
-- `.agents/skills/kb-quality-gate/SKILL.md`.
-- `.agents/skills/kb-testing/SKILL.md`.
+- `.agents/skills/app-context/SKILL.md`.
+- `.agents/skills/app-quality-gate/SKILL.md`.
+- `.agents/skills/app-testing/SKILL.md`.
 
 Required skills:
 - Use `subagent-driven-development` for the orchestration loop.
-- Use `kb-context` always.
-- Use `kb-quality-gate` before each track commit.
-- Use `kb-testing` for spec moves and merges.
+- Use `app-context` always.
+- Use `app-quality-gate` before each track commit.
+- Use `app-testing` for spec moves and merges.
 - Use `systematic-debugging` if a track's tests go unexpectedly red.
 - Use `solid-principles` and `dry-principle` when judging whether a
   merge in Track D needs further splitting.
@@ -46,12 +46,12 @@ Workflow:
    a. Dispatch one implementer subagent scoped to that track only.
    b. Hand the subagent the full track section from `tasks.md` plus
       this handoff's "Subagent rules" block below.
-   c. Tick checkboxes in `tasks.md` as the subagent completes each
+   c. Tick checappoxes in `tasks.md` as the subagent completes each
       sub-step. Do this incrementally so progress is visible.
    d. Run the track's "Track close" verification commands.
    e. Update the track's "Verification" line in `tasks.md` with the
       actual command output (commit SHA + key counts).
-   f. Run `bash .agents/skills/kb-quality-gate/scripts/gate.sh`.
+   f. Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
    g. Run a spec-compliance review with a fresh subagent (no shared
       context with the implementer).
    h. Run a code-quality review with another fresh subagent.
@@ -66,7 +66,7 @@ Workflow:
    bun run lint
    bun run build
    git diff --check
-   bash .agents/skills/kb-quality-gate/scripts/gate.sh
+   bash .agents/skills/app-quality-gate/scripts/gate.sh
    ```
 
    Record the result in `tasks.md` Phase F "Verification".
@@ -135,11 +135,11 @@ Track-by-track checkpoints (mirror these in PR description):
 
 Completion:
 The work is complete only when:
-- every checkbox in `tasks.md` is ticked;
+- every checappox in `tasks.md` is ticked;
 - every track's "Verification" line carries a real commit SHA and the
   measured acceptance numbers;
 - `bun test`, `bun run typecheck`, `bun run lint`, `bun run build`,
-  and `bash .agents/skills/kb-quality-gate/scripts/gate.sh` all pass;
+  and `bash .agents/skills/app-quality-gate/scripts/gate.sh` all pass;
 - `git log --oneline feat-add-stats-panel..HEAD` shows exactly six
   commits, in order A → B → C → E → D → F;
 - the closure metrics in `report.md` match the actual repo state.

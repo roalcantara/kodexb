@@ -153,7 +153,7 @@ git diff --check
 Before declaring final completion:
 
 ```sh
-bash .agents/skills/kb-quality-gate/scripts/gate.sh
+bash .agents/skills/app-quality-gate/scripts/gate.sh
 ```
 
 Dangerous tasks must be validated through metadata, help output, or dry-run
@@ -169,7 +169,7 @@ paths, not by executing destructive behavior.
 6. Verify every changed or merged task through help output and safe smoke or
    dry-run paths.
 7. Add the checker to `bun run lint`.
-8. Add the checker to the kb quality gate.
+8. Add the checker to the app quality gate.
 9. Consider a small project skill only if agents continue to need routing help.
 
 ## Decision: Implement locally instead of handing off

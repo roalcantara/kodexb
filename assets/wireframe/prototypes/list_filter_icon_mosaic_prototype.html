@@ -4,20 +4,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>kb — filter icon picks (mosaic prototype)</title>
+  <title>app — filter icon picks (mosaic prototype)</title>
   <style>
     :root {
-      --kb-bg: #0b0e14;
-      --kb-surface: #121721;
-      --kb-border: #232936;
-      --kb-text: #e2e9f5;
-      --kb-muted: #8892a4;
-      --kb-accent: #5ecfbe;
-      --kb-row-hover: #1c2537;
+      --app-bg: #0b0e14;
+      --app-surface: #121721;
+      --app-border: #232936;
+      --app-text: #e2e9f5;
+      --app-muted: #8892a4;
+      --app-accent: #5ecfbe;
+      --app-row-hover: #1c2537;
       --radius: 10px;
       /* One tile for every filter icon: readable currentColor strokes + full-color SVGs on dark UI */
-      --kb-filter-icon-tile: linear-gradient(180deg, rgba(245, 248, 255, 0.94), rgba(220, 228, 240, 0.9));
-      --kb-filter-icon-tile-border: rgba(35, 41, 54, 0.55);
+      --app-filter-icon-tile: linear-gradient(180deg, rgba(245, 248, 255, 0.94), rgba(220, 228, 240, 0.9));
+      --app-filter-icon-tile-border: rgba(35, 41, 54, 0.55);
     }
 
     * {
@@ -28,8 +28,8 @@
       margin: 0;
       padding: 24px;
       font-family: ui-sans-serif, system-ui, sans-serif;
-      background: var(--kb-bg);
-      color: var(--kb-text);
+      background: var(--app-bg);
+      color: var(--app-text);
       line-height: 1.45;
     }
 
@@ -41,7 +41,7 @@
 
     .note {
       font-size: 12px;
-      color: var(--kb-muted);
+      color: var(--app-muted);
       max-width: 720px;
       margin-bottom: 24px;
     }
@@ -63,14 +63,14 @@
 
     th,
     td {
-      border: 1px solid var(--kb-border);
+      border: 1px solid var(--app-border);
       padding: 10px 12px;
       text-align: left;
       vertical-align: middle;
     }
 
     th {
-      color: var(--kb-muted);
+      color: var(--app-muted);
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -87,8 +87,8 @@
       width: 32px;
       height: 32px;
       border-radius: 8px;
-      background: var(--kb-filter-icon-tile);
-      border: 1px solid var(--kb-filter-icon-tile-border);
+      background: var(--app-filter-icon-tile);
+      border: 1px solid var(--app-filter-icon-tile-border);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
       vertical-align: middle;
     }
@@ -103,7 +103,7 @@
     .basename {
       font-family: ui-monospace, monospace;
       font-size: 12px;
-      color: var(--kb-accent);
+      color: var(--app-accent);
     }
 
     h2 {
@@ -113,8 +113,8 @@
 
     .panel {
       max-width: 400px;
-      background: var(--kb-surface);
-      border: 1px solid var(--kb-border);
+      background: var(--app-surface);
+      border: 1px solid var(--app-border);
       border-radius: var(--radius);
       overflow: hidden;
     }
@@ -123,9 +123,9 @@
       width: 100%;
       padding: 12px 14px;
       border: none;
-      border-bottom: 1px solid var(--kb-border);
+      border-bottom: 1px solid var(--app-border);
       background: transparent;
-      color: var(--kb-text);
+      color: var(--app-text);
       font-size: 14px;
     }
 
@@ -141,7 +141,7 @@
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--kb-muted);
+      color: var(--app-muted);
     }
 
     .row {
@@ -153,7 +153,7 @@
       padding: 8px 14px;
       border: none;
       background: transparent;
-      color: var(--kb-muted);
+      color: var(--app-muted);
       font: inherit;
       font-size: 13px;
       text-align: left;
@@ -161,8 +161,8 @@
     }
 
     .row:hover {
-      background: var(--kb-row-hover);
-      color: var(--kb-text);
+      background: var(--app-row-hover);
+      color: var(--app-text);
     }
 
     .row .icon-slot {
@@ -180,16 +180,16 @@
     .row .count {
       font-variant-numeric: tabular-nums;
       font-size: 12px;
-      color: var(--kb-muted);
+      color: var(--app-muted);
     }
 
     .row:hover .count {
-      color: var(--kb-text);
+      color: var(--app-text);
     }
 
     .row--on {
       /* Selection: ✓ only — no teal row tint (differs from current list.css prototype) */
-      color: var(--kb-text);
+      color: var(--app-text);
     }
 
     .row-mark {
@@ -203,7 +203,7 @@
     }
 
     .row--on .row-mark {
-      color: var(--kb-text);
+      color: var(--app-text);
     }
 
     .row-mark--off {
@@ -229,7 +229,7 @@
       margin: 0 0 8px;
       font-size: 12px;
       font-weight: 600;
-      color: var(--kb-text);
+      color: var(--app-text);
     }
 
     .panel-caption+.panel {
@@ -436,9 +436,9 @@
       ['../../images/sheets.svg', 'All pending', 'sheets.svg', 'Queued lines (avoid backlog.svg raster)'],
       ['../../images/build.svg', 'All doing', 'build.svg', 'currentColor; active / in-progress work'],
       ['../../images/bookmark.svg', 'Type: Bookmarks', 'bookmark.svg', 'Same as ENTRY_TYPE_DEFAULT_SVG_BASENAME'],
-      ['../../images/terminal.svg', 'Type: Commands', 'terminal.svg', 'Kb default for command'],
-      ['../../images/markdown.svg', 'Type: Cheats', 'markdown.svg', 'Kb default for cheat'],
-      ['../../images/checklist.svg', 'Type: Tasks', 'checklist.svg', 'Kb default for task'],
+      ['../../images/terminal.svg', 'Type: Commands', 'terminal.svg', 'app default for command'],
+      ['../../images/markdown.svg', 'Type: Cheats', 'markdown.svg', 'app default for cheat'],
+      ['../../images/checklist.svg', 'Type: Tasks', 'checklist.svg', 'app default for task'],
       ['../../images/hash.svg', 'Tags (each)', 'hash.svg', 'Literal # tag chip metaphor']
     ]
     const tbody = document.getElementById('legend')
