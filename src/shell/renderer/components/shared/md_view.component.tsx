@@ -1,3 +1,4 @@
+import { fireAndForget } from '@shared/utils'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 
@@ -17,7 +18,7 @@ export function MdView({ markdown, onOpenExternal }: MdViewProps) {
               type="button"
               className="kb-mdView-link"
               onClick={() => {
-                if (href) Promise.resolve(onOpenExternal?.(href)).catch(() => undefined)
+                if (href) fireAndForget(Promise.resolve(onOpenExternal?.(href)))
               }}
               title={href}
             >

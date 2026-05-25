@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { mkdir, rename } from 'node:fs/promises'
 import path from 'node:path'
+import { loadWindowStateFrom, windowStatePathForConfigFile } from './load_window_state.util'
 
 export type WindowBounds = {
   x: number
@@ -9,11 +10,11 @@ export type WindowBounds = {
   height: number
 }
 
-/** `window-state.json` next to `config.yaml` (same directory as the resolved config file). */
-export function windowStatePathForConfigFile(configPath: string): string {
-  return path.join(path.dirname(configPath), 'window-state.json')
-}
-
+/**
+ * Validate the bounds of a window.
+ * @param b - The bounds to validate by checking if all fields are finite and dimensions are strictly positive.
+ * @returns `true` if the bounds are valid, `false` otherwise.
+ */
 export function validateBounds(b: WindowBounds): boolean {
   return (
     Number.isFinite(b.x) &&
@@ -25,6 +26,11 @@ export function validateBounds(b: WindowBounds): boolean {
   )
 }
 
+/**
+ * Parse the window state JSON.
+ * @param text - The text to parse.
+ * @returns The window state or `null` if the text is not valid JSON.
+ */
 export function parseWindowStateJson(text: string): WindowBounds | null {
   let raw: unknown
   try {
@@ -45,31 +51,36 @@ export function parseWindowStateJson(text: string): WindowBounds | null {
   return validateBounds(bounds) ? bounds : null
 }
 
-/** Read persisted bounds synchronously (for use before `BrowserWindow` construction). */
-export function loadWindowStateSync(configPath: string): WindowBounds | null {
-  const filePath = windowStatePathForConfigFile(configPath)
-  if (!existsSync(filePath)) return null
-  try {
-    const text = readFileSync(filePath, 'utf8')
-    return parseWindowStateJson(text)
-  } catch {
-    return null
-  }
-}
+/**
+ * Read persisted bounds synchronously for use before `BrowserWindow` construction.
+ * @param configPath - The path to the config file.
+ * @returns The window state or `null` if the file does not exist or the text is not valid JSON.
+ */
+export const loadWindowStateSync = (configPath: string): WindowBounds | null =>
+  loadWindowStateFrom(configPath, parseWindowStateJson, filePath => {
+    if (!existsSync(filePath)) return null
+    return readFileSync(filePath, 'utf8')
+  })
 
-export async function loadWindowState(configPath: string): Promise<WindowBounds | null> {
-  const filePath = windowStatePathForConfigFile(configPath)
-  const f = Bun.file(filePath)
-  if (!(await f.exists())) return null
-  try {
-    const text = await f.text()
-    return parseWindowStateJson(text)
-  } catch {
-    return null
-  }
-}
+/**
+ * Read persisted bounds asynchronously for use before `BrowserWindow` construction.
+ * @param configPath - The path to the config file.
+ * @returns The window state or `null` if the file does not exist or the text is not valid JSON.
+ */
+export const loadWindowStateAsync = (configPath: string): Promise<WindowBounds | null> =>
+  loadWindowStateFrom(configPath, parseWindowStateJson, async filePath => {
+    const f = Bun.file(filePath)
+    if (!(await f.exists())) return null
+    return f.text()
+  })
 
-export async function saveWindowState(configPath: string, bounds: WindowBounds): Promise<void> {
+/**
+ * Save the window state to a file.
+ * @param configPath - The path to the config file.
+ * @param bounds - The bounds to save.
+ * @returns The window state or `null` if the file does not exist or the text is not valid JSON.
+ */
+export const saveWindowState = async (configPath: string, bounds: WindowBounds): Promise<void> => {
   const filePath = windowStatePathForConfigFile(configPath)
   await mkdir(path.dirname(filePath), { recursive: true })
   const tmp = `${filePath}.tmp`

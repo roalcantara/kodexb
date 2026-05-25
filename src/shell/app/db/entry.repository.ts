@@ -1,6 +1,7 @@
 import type { Database } from 'bun:sqlite'
 import type { UnknownRecord } from 'type-fest'
 import type { EntryType, Knowledge } from '../../../core'
+import type { FindAllOpts } from '../../../core/helpers/list_opts/find_all_opts.types'
 import type { KnowledgeRow } from './schema'
 
 export type KnowledgeWithFrecency = Knowledge & {
@@ -15,13 +16,7 @@ type KnowledgeRowWithFrecency = KnowledgeRow & {
 
 const FRECENCY_SELECT_SQL = 'COALESCE(f.frecency_score, 0) AS frecency_score, COALESCE(f.visit_count, 0) AS visit_count'
 
-export type FindAllOpts = {
-  query?: string
-  tags?: string[]
-  types?: EntryType[]
-  limit?: number
-  offset?: number
-}
+export type { FindAllOpts }
 
 export type DbStats = {
   total: number

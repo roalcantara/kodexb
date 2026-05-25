@@ -43,6 +43,13 @@ export const TASK_PRIORITY_VALUES = ['low', 'mid', 'high', 'urgent'] as const
 /** Task status literals — single owner for schema/runtime values (see `task.schema`). */
 export const TASK_STATUS_VALUES = ['todo', 'doing', 'done'] as const
 
+export const ENTRY_TYPE_GLYPH: Record<(typeof ENTRY_TYPE_VALUES)[number], string> = {
+  bookmark: '◆',
+  command: '▸',
+  cheat: '~',
+  task: '✓'
+} as const
+
 /** Default icon names per entry key (renderer maps these to brand icons). */
 export const DEFAULT_ENTRY_ICONS: Record<EntryKey, string> = {
   command: 'terminal',

@@ -25,6 +25,232 @@ bun run lint      # Run the full Phase-1 quality chain
 bun run lint:fix  # Auto-fix what can be fixed (Biome / Knip / ast-grep)
 ```
 
+## Architecture
+
+**kb** is an [Electrobun][12] desktop app: a **Bun** main process owns the window,
+database, filesystem, and RPC server; a **React** webview is the UI. Business rules
+live in a pure **functional core**; all I/O stays in the **imperative shell**.
+The renderer never touches SQLite or YAML directly — only typed RPC calls.
+
+Normative detail: [`assets/docs/specs/foundation/design.md`](assets/docs/specs/foundation/design.md) ·
+layer rules: [`assets/guides/FCIS.guide.md`](assets/guides/FCIS.guide.md).
+
+### Startup sequence (which file runs first?)
+
+Electrobun starts the **Bun main process** first; the **React webview** loads only after
+`main.ts` creates the window. `app.ts` is constructed on the main side **before** the
+webview bundle runs — the renderer never imports it.
+
+| Step | File(s)                                                                                           | What happens                                                                                |
+| ---: | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+|    1 | [`electrobun.config.ts`](electrobun.config.ts) `build.bun.entrypoint`                             | Declares the Bun entry: [`src/shell/main/index.ts`](src/shell/main/index.ts).               |
+|    2 | [`src/shell/main/index.ts`](src/shell/main/index.ts) → [`main.ts`](src/shell/main/main.ts)        | `index.ts` only re-exports `./main`; `main.ts` runs `bootstrap()`.                          |
+|    3 | [`config.loader`](src/shell/app/config/config.loader.ts)                                          | `loadConfig()` — paths and settings before any window.                                      |
+|    4 | [`app.ts`](src/shell/app/app.ts)                                                                  | `new App(config, syncEmitter, verbosity, shellHooks)` — DB, import, orchestration.          |
+|    5 | [`rpc/server.ts`](src/shell/main/rpc/server.ts) + [`rpc/host.ts`](src/shell/main/rpc/host.ts)     | `createRpcServer(app)` then IPC bridge (`createKbWebviewRpc`).                              |
+|    6 | [`main.ts`](src/shell/main/main.ts)                                                               | `new BrowserWindow({ url: 'views://shell/index.html', rpc })` then `show()`.                |
+|    7 | [`index.html`](src/shell/renderer/index.html) → bundled [`index.ts`](src/shell/renderer/index.ts) | Webview loads HTML; script runs the `shell` view entry from `build.views.shell.entrypoint`. |
+|    8 | [`app.tsx`](src/shell/renderer/app.tsx)                                                           | `createRoot(#root).render(<ListPage />)` — first React paint.                               |
+|    9 | [`rpc/client.ts`](src/shell/renderer/rpc/client.ts)                                               | Eden Treaty calls (e.g. list entries) — **after** mount, over IPC to step 5.                |
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant EB as Electrobun
+  participant Entry as main/index.ts
+  participant Boot as main/main.ts
+  participant Cfg as config.loader
+  participant App as app/app.ts
+  participant Rpc as rpc/server + host
+  participant Win as BrowserWindow
+  participant Html as views/shell/index.html
+  participant Rdx as renderer/index.ts
+  participant React as renderer/app.tsx
+
+  EB->>Entry: ① Load Bun entrypoint
+  Entry->>Boot: import ./main → bootstrap()
+  Boot->>Cfg: ② loadConfig()
+  Boot->>App: ③ new App(...)
+  Boot->>Rpc: ④ createRpcServer(app) + createKbWebviewRpc
+  Boot->>Win: ⑤ new BrowserWindow + show()
+  Win->>Html: ⑥ Load packaged webview
+  Html->>Rdx: index.js bundle
+  Rdx->>React: ⑦ import app.tsx → render ListPage
+  Note over React,Rpc: ⑧ UI calls Eden Treaty → IPC → Elysia → App (see list flow below)
+```
+
+**Takeaway:** `main.ts` always runs before `app.tsx`. `app.ts` runs on the **main**
+process during bootstrap; `app.tsx` runs in the **webview** once the window loads HTML.
+
+### Process model (runtime)
+
+Two OS processes cooperate: Electrobun’s **main** (Bun) and the **webview**
+(Chromium). They talk over Electrobun IPC; the app-level contract on top of that
+is an **Elysia** HTTP-style API consumed by **Eden Treaty** in the renderer.
+
+```mermaid
+flowchart TB
+  subgraph disk["On disk"]
+    YAML["YAML knowledge files\n(sources of truth)"]
+    CFG["Config\n(~/.config/kb, etc.)"]
+    DBf["SQLite index\n(derived, rebuildable)"]
+  end
+
+  subgraph main["Electrobun main — Bun (boot order ①→⑤)"]
+    ENTRY["① index.ts → main.ts\nbootstrap()"]
+    BOOT["⑤ BrowserWindow\nshortcuts, dialogs"]
+    RPC["④ rpc/server.ts + host.ts\nElysia → IPC"]
+    APP["③ App (AppService)\norchestration"]
+    IMP["ImportService\nYAML → validate → upsert"]
+    REPO["db/*.repository.ts\nbun:sqlite + FTS5"]
+    CORE["src/core/\npure domain"]
+  end
+
+  subgraph webview["BrowserWindow webview — React (⑥→⑧)"]
+    HTML["⑥ index.html → index.ts"]
+    REACT["⑦ app.tsx\nmount ListPage"]
+    UI["pages · components · hooks"]
+    CLIENT["⑧ rpc/client.ts\nEden Treaty"]
+  end
+
+  ENTRY -->|"② loadConfig"| CFG
+  ENTRY --> APP
+  APP --> RPC
+  RPC --> BOOT
+  BOOT -->|"⑥ load views://shell/index.html"| HTML
+  HTML --> REACT
+  REACT --> UI
+  UI --> CLIENT
+  CLIENT <-->|"IPC (typed routes)"| RPC
+
+  YAML --> IMP
+  IMP --> REPO
+  REPO --> DBf
+  APP --> REPO
+  APP --> CORE
+```
+
+Numbers **①–⑧** match [Startup sequence](#startup-sequence-which-file-runs-first) above.
+Arrows inside the main box are **construction order**; YAML → import and UI → client
+are **runtime data paths** after boot.
+
+### FCIS layers (code layout)
+
+This diagram shows **import / dependency** direction (who may call whom in code), not
+**process startup order** — see [Startup sequence](#startup-sequence-which-file-runs-first).
+Imports are enforced so **core** and **shared** stay free of I/O; the **renderer**
+cannot import `shell/app` (use `@rpc/client` instead).
+
+```mermaid
+flowchart LR
+  subgraph forbidden["Forbidden edges"]
+    R2A["renderer → shell/app"]
+    C2S["core → shell"]
+    SH2S["shared → shell"]
+  end
+
+  subgraph renderer["Renderer — src/shell/renderer/"]
+    R["React 19 UI\npages · components · hooks"]
+  end
+
+  subgraph main_proc["Main — src/shell/main/"]
+    M["Window lifecycle\nRPC host"]
+  end
+
+  subgraph shell_app["Shell app — src/shell/app/"]
+    A["App class\nconfig · import · db"]
+  end
+
+  subgraph shared["Shared — src/shared/"]
+    S["Types · logging helpers\nfire-and-forget utils"]
+  end
+
+  subgraph core["Core — src/core/"]
+    K["Domain models\nvalidation · parsers\npure filters & rules"]
+  end
+
+  R -->|"Eden Treaty only"| M
+  M --> A
+  A --> K
+  A --> S
+  R -.->|"✗"| A
+  K -.->|"✗"| shell_app
+```
+
+### Typical flow: open the list and load entries
+
+Runs **after** startup step ⑧ (React mounted, Eden Treaty ready). Enough detail to
+see who calls whom; not every route is shown.
+
+```mermaid
+sequenceDiagram
+  actor User
+  participant UI as React list shell
+  participant RPC as Eden Treaty client
+  participant Ely as Elysia rpc/server
+  participant App as App
+  participant Repo as entry.repository
+  participant DB as bun:sqlite
+
+  User->>UI: Open app / change filters
+  UI->>RPC: list / getListStats / …
+  RPC->>Ely: POST /api/… (IPC)
+  Ely->>Ely: TypeBox validate body/query
+  Ely->>App: list(opts) / getListStats()
+  App->>Repo: prepared SQL + FTS
+  Repo->>DB: SELECT / MATCH
+  DB-->>Repo: rows
+  Repo-->>App: Knowledge rows
+  App-->>Ely: JSON-shaped result
+  Ely-->>RPC: response
+  RPC-->>UI: typed data
+  UI-->>User: Render rows, footer, overlays
+```
+
+Side paths (same pattern): **sync** hits `App.sync` → `ImportService`; **tasks**
+and **config** use their routes; **open external / dialog / terminal** go through
+`App` into Electrobun `Utils` hooks registered in `main.ts`.
+
+### Sync path: YAML → index
+
+The index is disposable; re-import rebuilds it. IDs are stable (`crc32(type:key)`).
+
+```mermaid
+flowchart LR
+  Y["YAML files"]
+  P["js-yaml parse"]
+  V["TypeBox validate\n(core schemas)"]
+  D["Pure assembleDoc /\nderive fields"]
+  U["ImportService\n(transaction)"]
+  SQL["upsert knowledges +\nrebuild FTS5"]
+  Y --> P --> V --> D --> U --> SQL
+```
+
+### Preview server (development)
+
+`tools/preview/server.ts` runs the **same Elysia `RpcApp`** over HTTP so you can
+exercise list/filter behaviour in a browser without the full desktop shell. Any new
+route in `rpc/server.ts` must be mirrored there ([`CLAUDE.md`](CLAUDE.md)).
+
+### Glossary
+
+| Term                        | Layer / location                     | Role in kb                                                                                                                                                                 |
+| --------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Functional Core (FCIS)**  | `src/core/`                          | Pure functions: entry/knowledge models, YAML validation schemas, parsers, task-view filters, tag ranking, list options. No `fetch`, no `fs`, no `bun:sqlite`.              |
+| **Shared**                  | `src/shared/`                        | Cross-cutting **pure** utilities and types (e.g. RPC payload shapes, `createLogger`, `fireAndForget`). No shell imports.                                                   |
+| **Imperative Shell — app**  | `src/shell/app/`                     | **App** orchestrator, config load/save, **ImportService**, `bun:sqlite` repositories, OG fetch, shell-only helpers. All durable I/O except native UI.                      |
+| **Imperative Shell — main** | `src/shell/main/`                    | Electrobun boot: **BrowserWindow**, global shortcuts, native dialogs/external open, **Elysia** `createRpcServer`, IPC **host** wiring sync progress events to the webview. |
+| **Renderer**                | `src/shell/renderer/`                | React UI: pages (`list`, `detail`, `settings`), components, hooks. Calls **`@rpc/client`** (Eden Treaty) only.                                                             |
+| **App / AppService**        | `src/shell/app/app.ts`               | Facade used by every Elysia route: list/query entries, sync, config, tasks, previews, tag suggest, window resize, etc.                                                     |
+| **RpcApp**                  | `src/shell/main/rpc/server.ts`       | Exported Elysia app type — single source of truth for main↔renderer API (replaces a hand-written shared schema).                                                           |
+| **Eden Treaty**             | `src/shell/renderer/rpc/client.ts`   | Type-safe RPC client generated from `RpcApp`; `treaty` + thin wrappers (`getList`, `getEntry`, …).                                                                         |
+| **TypeBox (`t.*`)**         | Routes + `src/core/**/**.schema.ts`  | Sole validation library (transport + domain + config). **Zod is not used.**                                                                                                |
+| **Knowledge / entry**       | Core types + DB row                  | Bookmark, command, cheat, or task row; YAML on disk, row in `knowledges`, optional FTS hit.                                                                                |
+| **ImportService**           | `src/shell/app/db/import.service.ts` | Walks sources dir, validates YAML, upserts SQLite, rebuilds FTS — transactional bulk path.                                                                                 |
+| **Repository**              | `src/shell/app/db/*.repository.ts`   | Typed SQL accessors; routes must not import repositories directly (go through **App**).                                                                                    |
+| **Electrobun IPC**          | `rpc/host.ts`                        | Bridges Elysia handlers to the webview RPC channel (`kb-app`).                                                                                                             |
+| **Preview server**          | `tools/preview/server.ts`            | HTTP mirror of production RPC for Playwright / local UI smoke tests.                                                                                                       |
+
 ### Project definitions and agent routing
 
 The canonical engineering and agent definitions are split by purpose:
@@ -83,17 +309,17 @@ See the [CI / CD guide][20] for the full task table.
 Run `mise tasks ls` for the live task list. These tasks cover local setup,
 agent skill wiring, UI smoke checks, and maintenance workflows:
 
-| Task                       | Use when                                                                                                                                                                                                                          |
-| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `mise run project setup`           | Installing tool versions, dependencies, and hooks after cloning.                                                                                                                                                                  |
-| `mise run prepare`         | Refreshing Bun dependencies and commit hooks without reinstalling tools.                                                                                                                                                          |
-| `mise run skill sync`      | Rewriting generated skill routing snippets from `assets/guides/SKILLS.yml`.                                                                                                                                                       |
-| `mise run skill install`   | Restoring Skills CLI-managed project skills from `skills-lock.json`.                                                                                                                                                              |
-| `mise run test e2e-preview` | Running Playwright smoke tests. Required for list navigation, filter, task sheet, or preview tooling changes.|
-| `mise run project icons`     | Auditing SVG contrast against the list shell background; use `--fix` only for curated safe replacements.                                                                                                                   |
-| `mise run project repo setup`      | Creating the GitHub repo and required CI secrets / variables. |
-| `mise run project repo prune`      | Deleting the GitHub repo, releases, and tags for a reset. Use with care. |
-| `mise run project repo reset`      | Rebuilding the CI fix branch from the scripted recovery path. |
+| Task                          | Use when                                                                                                      |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `mise run project setup`      | Installing tool versions, dependencies, and hooks after cloning.                                              |
+| `mise run prepare`            | Refreshing Bun dependencies and commit hooks without reinstalling tools.                                      |
+| `mise run skill sync`         | Rewriting generated skill routing snippets from `assets/guides/SKILLS.yml`.                                   |
+| `mise run skill install`      | Restoring Skills CLI-managed project skills from `skills-lock.json`.                                          |
+| `mise run test e2e-preview`   | Running Playwright smoke tests. Required for list navigation, filter, task sheet, or preview tooling changes. |
+| `mise run project icons`      | Auditing SVG contrast against the list shell background; use `--fix` only for curated safe replacements.      |
+| `mise run project repo setup` | Creating the GitHub repo and required CI secrets / variables.                                                 |
+| `mise run project repo prune` | Deleting the GitHub repo, releases, and tags for a reset. Use with care.                                      |
+| `mise run project repo reset` | Rebuilding the CI fix branch from the scripted recovery path.                                                 |
 
 ### DEPENDENCIES
 

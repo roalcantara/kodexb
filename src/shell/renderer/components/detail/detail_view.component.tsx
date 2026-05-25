@@ -1,4 +1,5 @@
 import type { PreviewImageResult, RpcKnowledge } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
 import { getIcon } from '../../utils/shared/get_icon.util'
 import { BadgeAccessory } from '../shared/badge_accessory.component'
 import { MdView } from '../shared/md_view.component'
@@ -148,7 +149,7 @@ export function DetailPageView({
                       type="button"
                       className="kb-detailPage-link"
                       onClick={() => {
-                        Promise.resolve(onOpenExternal(linkUrl)).catch(() => undefined)
+                        fireAndForget(Promise.resolve(onOpenExternal(linkUrl)))
                       }}
                       title={linkUrl}
                     >

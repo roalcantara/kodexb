@@ -1,3 +1,4 @@
+import { fireAndForget } from '@shared/utils'
 import { type RefObject, useEffect } from 'react'
 
 export type ListSentinelPaginationArgs = {
@@ -25,7 +26,7 @@ export function useListSentinelPagination({
       entries => {
         const hit = entries.some(en => en.isIntersecting)
         if (!hit || !hasMore || loading) return
-        fetchMore().catch(() => undefined)
+        fireAndForget(fetchMore())
       },
       { root, rootMargin: '120px', threshold: 0 }
     )

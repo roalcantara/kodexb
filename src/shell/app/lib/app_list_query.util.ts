@@ -1,9 +1,9 @@
+import { filterKnowledgeByTaskView } from '../../../core/domain/models/knowledges/task_views/filter_by_view.util'
+import { DEFAULT_LIST_PAGE_SIZE, stableListCacheKey, toFindAllOpts } from '../../../core/helpers/list_opts'
 import type { ListOpts, RpcListEntry } from '../../../shared/rpc'
 import type { LoadedConfig } from '../config/config.loader'
 import type { openDatabase } from '../db/client'
 import { findAll } from '../db/entry.repository'
-import { DEFAULT_LIST_PAGE_SIZE, stableListCacheKey, toFindAllOpts } from './app_list_opts.util'
-import { filterKnowledgeByTaskView } from './task_views.util'
 
 type DbRaw = ReturnType<typeof openDatabase>['raw']
 

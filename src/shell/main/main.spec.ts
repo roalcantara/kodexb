@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'bun:test'
 
-describe('main bootstrap', () => {
-  it('is exercised in runtime (Electrobun) — no-op in CI', () => {
-    // The bootstrap is tested implicitly by `bun run dev` / `bun run build`.
-    // This test exists as a pointer — import `src/shell/main/main.ts` in an
-    // Electrobun environment to exercise the actual native window creation.
-    expect(true).toBe(true)
+/**
+ * `main.ts` is the Electrobun entry (top-level `await bootstrap()`). Importing it in
+ * `bun test` would spawn native windows. Bootstrap helpers are extracted to
+ * `kb_shell_hooks.util.ts` and covered in `kb_shell_hooks.util.spec.ts`.
+ */
+describe('main entry', () => {
+  it('keeps bootstrap side effects out of the test runner', async () => {
+    const util = await import('./kb_shell_hooks.util')
+    expect(util.MAIN_WINDOW_DEFAULT_SIZE).toEqual({ width: 680, height: 420 })
+    expect(util.MAIN_WINDOW_RENDERER_URL).toBe('views://shell/index.html')
   })
 })

@@ -1,4 +1,5 @@
 import type { RpcImportResult, RpcSyncProgressPayload } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react'
 import type { SyncModalModel } from '../../components/shared/sync_modal.component'
 
@@ -51,8 +52,8 @@ export function listSyncMessageHandlers(deps: ListSyncMessageHandlerDeps) {
       } else if (result.errors.length > 0) {
         pushToast(`Sync finished with ${result.errors.length} error(s).`, 'error')
       }
-      refreshStats().catch(() => undefined)
-      refreshList(false).catch(() => undefined)
+      fireAndForget(refreshStats())
+      fireAndForget(refreshList(false))
     }
   }
 }

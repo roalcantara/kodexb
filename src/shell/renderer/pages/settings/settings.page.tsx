@@ -1,4 +1,5 @@
 import type { RpcGetConfigPayload } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
 
 import { useSettingsPage } from '../../hooks/settings/use_settings_page.hook'
 
@@ -66,7 +67,7 @@ export function SettingsPage({ onCloseRequest, onConfigSaved, rpc = defaultRpc }
           <button
             type="button"
             className="kb-settings-browse"
-            onClick={() => s.pickDatabaseFile().catch(() => undefined)}
+            onClick={() => fireAndForget(s.pickDatabaseFile())}
             aria-label="Browse for database file"
           >
             Browse
@@ -78,7 +79,7 @@ export function SettingsPage({ onCloseRequest, onConfigSaved, rpc = defaultRpc }
           <button
             type="button"
             className="kb-settings-browse"
-            onClick={() => s.pickSourcesDir().catch(() => undefined)}
+            onClick={() => fireAndForget(s.pickSourcesDir())}
             aria-label="Browse for sources folder"
           >
             Browse
@@ -178,10 +179,10 @@ export function SettingsPage({ onCloseRequest, onConfigSaved, rpc = defaultRpc }
           Actions
         </h2>
         <div className="kb-settings-actionRow">
-          <button type="button" className="kb-settings-primary" onClick={() => s.onSave().catch(() => undefined)}>
+          <button type="button" className="kb-settings-primary" onClick={() => fireAndForget(s.onSave())}>
             Save
           </button>
-          <button type="button" className="kb-settings-secondary" onClick={() => s.onReset().catch(() => undefined)}>
+          <button type="button" className="kb-settings-secondary" onClick={() => fireAndForget(s.onReset())}>
             Reset to defaults
           </button>
           {s.savedFlash ? (

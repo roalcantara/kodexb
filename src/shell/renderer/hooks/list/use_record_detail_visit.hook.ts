@@ -1,6 +1,6 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import { useEffect, useRef } from 'react'
-import { recordEntryVisitFireAndForget } from '../../utils/list/record_entry_visit.util'
+import { recordEntryVisitFireAndForget } from '../../utils/list/list_frecency.util'
 
 /** Records a frecency visit when detail/split shows a new entry id. */
 export function useRecordDetailVisit(detailEntry: RpcKnowledge | null): void {

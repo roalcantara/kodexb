@@ -1,6 +1,6 @@
+import type { EntryType } from '@core/domain/types/entry.types'
 import type { TaskView } from '@shared/rpc'
 import type { RefObject } from 'react'
-import type { EntryTypeOption } from './filter_dropdown.component'
 import { FilterDropdown } from './filter_dropdown.component'
 
 export type ListSearchFilterChromeProps = {
@@ -17,10 +17,10 @@ export type ListSearchFilterChromeProps = {
   onToggleFilter: () => void
   filterOpen: boolean
   stats: import('@shared/rpc').ListStats | null
-  types: EntryTypeOption[]
+  types: EntryType[]
   tags: string[]
   taskView: TaskView | undefined
-  onFilterChange: (next: { types: EntryTypeOption[]; tags: string[]; taskView?: TaskView }) => void
+  onFilterChange: (next: { types: EntryType[]; tags: string[]; taskView?: TaskView }) => void
   onFilterClose: () => void
   pushToast: (msg: string, type: 'success' | 'error') => void
   anchorRect: DOMRect | null

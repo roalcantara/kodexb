@@ -1,4 +1,5 @@
 import type { RpcKnowledge } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
 import { useEffect, useState } from 'react'
 
 import { DetailPageView } from '../../components/detail/detail_view.component'
@@ -56,7 +57,7 @@ export function DetailPage({
       allEntries={allEntries}
       onClose={onClose}
       onSelectEntry={onSelectEntry}
-      onOpenExternal={url => Promise.resolve(defaultOpenExternal(url)).catch(() => undefined)}
+      onOpenExternal={url => fireAndForget(Promise.resolve(defaultOpenExternal(url)))}
     />
   )
 }

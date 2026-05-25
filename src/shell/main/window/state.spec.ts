@@ -3,7 +3,13 @@ import path from 'node:path'
 
 import { createTempDir, factoryFor } from '@testing'
 
-import { loadWindowState, loadWindowStateSync, parseWindowStateJson, saveWindowState, validateBounds } from './state'
+import {
+  loadWindowStateAsync,
+  loadWindowStateSync,
+  parseWindowStateJson,
+  saveWindowState,
+  validateBounds
+} from './state'
 
 describe('validateBounds', () => {
   describe('with non-positive dimensions', () => {
@@ -55,7 +61,7 @@ describe('loadWindowState / saveWindowState', () => {
     it('returns null', async () => {
       tmp = await createTempDir()
       const cfg = path.join(tmp.dir, 'config.yaml')
-      expect(await loadWindowState(cfg)).toBeNull()
+      expect(await loadWindowStateAsync(cfg)).toBeNull()
       expect(loadWindowStateSync(cfg)).toBeNull()
     })
   })
@@ -66,7 +72,7 @@ describe('loadWindowState / saveWindowState', () => {
       const cfg = path.join(tmp.dir, 'config.yaml')
       const statePath = path.join(tmp.dir, 'window-state.json')
       await Bun.write(statePath, '{broken')
-      expect(await loadWindowState(cfg)).toBeNull()
+      expect(await loadWindowStateAsync(cfg)).toBeNull()
       expect(loadWindowStateSync(cfg)).toBeNull()
     })
   })
@@ -78,7 +84,7 @@ describe('loadWindowState / saveWindowState', () => {
       tmp = await createTempDir()
       const cfg = path.join(tmp.dir, 'config.yaml')
       await saveWindowState(cfg, bounds)
-      expect(await loadWindowState(cfg)).toEqual(bounds)
+      expect(await loadWindowStateAsync(cfg)).toEqual(bounds)
       expect(loadWindowStateSync(cfg)).toEqual(bounds)
     })
   })

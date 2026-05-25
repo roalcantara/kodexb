@@ -1,6 +1,6 @@
 import { type RefObject, useEffect, useState } from 'react'
 import { DEFAULT_LIST_ROW_HEIGHT_PX, DEFAULT_VIEWPORT_LIST_PAGE_SIZE } from '../../constants/ui.const'
-import { listViewportPageSize } from '../../utils/list/list_viewport_page_size.util'
+import { listViewportPageSize } from '../../utils/list/virtual_list.util'
 
 function measuredRowHeight(root: HTMLElement): number {
   const row = root.querySelector<HTMLElement>('.kb-entryRow')

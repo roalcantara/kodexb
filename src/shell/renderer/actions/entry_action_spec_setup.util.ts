@@ -19,7 +19,7 @@ export function installEntryActionPanelDepsMock(): EntryActionPanelDeps {
 
 export function installRecordEntryVisitMock(): ReturnType<typeof mock<(id: number) => void>> {
   const recordEntryVisitFireAndForget = mock<(id: number) => void>()
-  mock.module('../utils/list/record_entry_visit.util', () => ({
+  mock.module('../utils/list/list_frecency.util', () => ({
     recordEntryVisitFireAndForget
   }))
   return recordEntryVisitFireAndForget

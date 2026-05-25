@@ -1,4 +1,6 @@
-import type { EntryType } from '../../../core'
+import { ENTRY_TYPE_VALUES } from '../../../core/domain/constants/entry.const'
+import { TASK_VIEW_ORDER } from '../../../core/domain/models/knowledges/task_views/task_view_order.const'
+import type { EntryType } from '../../../core/domain/types/entry.types'
 import type { ListOpts, ListStats, TaskView } from '../../../shared/rpc'
 import type { LoadedConfig } from '../config/config.loader'
 import type { openDatabase } from '../db/client'
@@ -7,9 +9,9 @@ import { countKnowledgeForOpts } from './app_list_query.util'
 
 type DbRaw = ReturnType<typeof openDatabase>['raw']
 
-const ENTRY_TYPES: EntryType[] = ['bookmark', 'command', 'cheat', 'task']
+const ENTRY_TYPES = ENTRY_TYPE_VALUES
 
-const TASK_VIEW_KEYS: TaskView[] = ['actionable', 'today', 'overdue', 'this_week', 'all_pending', 'all_doing']
+const TASK_VIEW_KEYS = TASK_VIEW_ORDER
 
 export type ListStatsFilterInput = Partial<Pick<ListOpts, 'query' | 'types' | 'tags' | 'taskView'>>
 

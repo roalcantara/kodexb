@@ -1,4 +1,5 @@
 import type { RpcKnowledge } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
 import { useCallback } from 'react'
 import { resolveCurrentEntry } from '../../../../core/helpers/entry_action/resolve_current_entry.util'
 import { buildEntryActionPanel } from '../../actions/build_entry_action_panel.util'
@@ -11,7 +12,7 @@ import {
   keyTargetIsTextField
 } from '../../actions/entry_action_shortcuts.util'
 import { executePanelAction } from '../../actions/execute_entry_action.util'
-import type { ViewState } from '../../utils/list/view_reducer.util'
+import type { ViewState } from '../../utils/list/list_page_state.util'
 
 export type EntryActionKeysOpts = {
   disabled: boolean
@@ -57,7 +58,7 @@ export function useEntryActionKeys(opts: EntryActionKeysOpts): (e: KeyboardEvent
       if (!action) return
 
       e.preventDefault()
-      executePanelAction(action, entry, { ...actionCtx, entry }).catch(() => undefined)
+      fireAndForget(executePanelAction(action, entry, { ...actionCtx, entry }))
     },
     [disabled, viewState, rows, selectedId, detailEntry, detailPanelHasFocus, actionCtx, entryPanelDeps]
   )

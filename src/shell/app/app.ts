@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import glob from 'fast-glob'
 import type { Entry, Knowledge, TaskEntry } from '../../core'
 import { toKnowledge } from '../../core'
+import { rankSuggestedTags } from '../../core/domain/models/knowledges/tags/rank_suggested_tags.util'
 import { createLogger, type KbLogVerbosity } from '../../shared/logging'
 import type {
   ConfigPatch,
@@ -38,7 +39,6 @@ import {
   showOpenDialogFor
 } from './lib/app_shell_surface.util'
 import { runSourceImportSync } from './lib/app_sync.util'
-import { rankSuggestedTags } from './lib/app_tag_rank.util'
 import { removeTaskFromYaml, writeTaskToYaml } from './lib/app_task_yaml.util'
 
 export type SyncEmitter = {

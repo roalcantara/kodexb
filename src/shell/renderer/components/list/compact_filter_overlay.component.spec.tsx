@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'bun:test'
+import type { EntryType } from '@core/domain/types/entry.types'
 import type { ListStats, TaskView } from '@shared/rpc'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { sampleListStats } from '../../../../__tests__/fixtures/list_stats.fixture'
 import { CompactFilterOverlay } from './compact_filter_overlay.component'
-import type { EntryTypeOption } from './filter_dropdown.component'
 
 const noop = () => undefined
 const stats = sampleListStats()
@@ -12,7 +12,7 @@ const stats = sampleListStats()
 function renderOverlay(
   props: Partial<{
     stats: ListStats
-    types: EntryTypeOption[]
+    types: EntryType[]
     tags: string[]
   }> = {}
 ) {
@@ -61,7 +61,7 @@ describe('CompactFilterOverlay', () => {
     it('allows Tab to toggle highlighted option', async () => {
       const user = userEvent.setup()
       let lastTags: string[] = []
-      const onChange = (next: { types: EntryTypeOption[]; tags: string[]; taskView?: TaskView }) => {
+      const onChange = (next: { types: EntryType[]; tags: string[]; taskView?: TaskView }) => {
         lastTags = next.tags
       }
       const statsWithTags: ListStats = { ...stats, tags: { brew: 2 } }

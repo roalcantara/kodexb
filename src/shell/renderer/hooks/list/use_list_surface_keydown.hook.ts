@@ -1,7 +1,7 @@
 import type { Dispatch, KeyboardEvent as ReactKeyboardEvent, RefObject, SetStateAction } from 'react'
 import { useCallback } from 'react'
 
-import { focusSearchInputCaretAt, listSearchTypeaheadAction } from '../../utils/list/list_search_typeahead.util'
+import { focusSearchInputCaretAt, listSearchTypeaheadAction } from '../../utils/list/list_keyboard.util'
 
 export type ListSurfaceKeydownDeps = {
   setSearch: Dispatch<SetStateAction<string>>

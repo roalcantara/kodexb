@@ -1,7 +1,6 @@
 import { type RefObject, useEffect, useLayoutEffect, useMemo, useState } from 'react'
 import { DEFAULT_LIST_ROW_HEIGHT_PX } from '../../constants/ui.const'
-import { type ListScrollMetrics, readListScrollMetrics } from '../../utils/list/read_list_scroll_metrics.util'
-import { virtualListWindow } from '../../utils/list/virtual_list_window.util'
+import { type ListScrollMetrics, readListScrollMetrics, virtualListWindow } from '../../utils/list/virtual_list.util'
 
 export function useVirtualListWindow(
   total: number,

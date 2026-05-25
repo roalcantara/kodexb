@@ -1,12 +1,13 @@
+import type { EntryType } from '@core/domain/types/entry.types'
 import type { RpcListEntry, TaskView } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { EntryTypeOption } from '../../components/list/filter_dropdown.component'
 import { listMatchCount } from '../../rpc/client'
-import { listOptsFromListFilters, loadListRows } from '../../utils/list/list_entries_query.util'
+import { listOptsFromListFilters, loadListRows } from '../../utils/list/list_filters.util'
 
 export type ListPageRowsInput = {
   debouncedSearch: string
-  types: EntryTypeOption[]
+  types: EntryType[]
   tags: string[]
   taskView?: TaskView
   pageSize: number
@@ -72,7 +73,7 @@ export function useListPageRows(input: ListPageRowsInput) {
   )
 
   useEffect(() => {
-    refreshList(false).catch(() => undefined)
+    fireAndForget(refreshList(false))
   }, [refreshList])
 
   return { rows, loading, hasMore, refreshList, matchTotal }

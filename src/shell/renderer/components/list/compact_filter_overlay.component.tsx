@@ -1,8 +1,8 @@
 import type { CompactFilterOverlayHookProps } from '../../hooks/list/use_compact_filter_overlay.hook'
 import { useCompactFilterOverlay } from '../../hooks/list/use_compact_filter_overlay.hook'
+import type { FilterRow } from '../../utils/list/compact_filter_overlay_build_rows.util'
+import { filterRowIconBasename } from '../../utils/list/filter_row_icon_basename.util'
 import { brandSvgAssetUrl } from '../../utils/shared/brand_icon_url.util'
-import type { FilterRow } from './compact_filter_overlay_build_rows.util'
-import { filterRowIconBasename } from './filter_row_icon_basename.util'
 
 export type CompactFilterOverlayProps = CompactFilterOverlayHookProps & {
   pushToast?: (msg: string, type: 'success' | 'error') => void

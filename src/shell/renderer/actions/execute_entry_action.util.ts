@@ -1,6 +1,6 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import { entryActionRecordsVisit } from '../../../core/helpers/entry_action/entry_action_records_visit.util'
-import { recordEntryVisitFireAndForget } from '../utils/list/record_entry_visit.util'
+import { recordEntryVisitFireAndForget } from '../utils/list/list_frecency.util'
 import { buildEntryActionPanel } from './build_entry_action_panel.util'
 import type { EntryAction, EntryActionContext } from './entry_action_panel.types'
 import { actionById } from './entry_action_panel_resolve.util'

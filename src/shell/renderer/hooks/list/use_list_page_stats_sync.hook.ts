@@ -1,4 +1,5 @@
 import type { ListStats, RpcDbStats } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { SyncModalModel } from '../../components/shared/sync_modal.component'
 import { getListStats, getStats, getSyncInfo, setSyncMessageHandlers, syncRpc } from '../../rpc/client'
@@ -44,14 +45,12 @@ export function useListPageStatsSync({ refreshList, pushToast }: UseListPageStat
     const d = await getStats()
     setDbStats(d)
     if (s.total === 0) {
-      getSyncInfo()
-        .then(setSyncInfo)
-        .catch(() => undefined)
+      fireAndForget(getSyncInfo().then(setSyncInfo))
     }
   }, [])
 
   useEffect(() => {
-    refreshStats().catch(() => undefined)
+    fireAndForget(refreshStats())
   }, [refreshStats])
 
   useEffect(() => {

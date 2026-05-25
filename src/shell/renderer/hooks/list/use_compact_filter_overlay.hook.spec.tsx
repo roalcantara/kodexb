@@ -31,5 +31,13 @@ describe('useCompactFilterOverlay', () => {
       expect(result.current.search).toBe('')
       expect(result.current.filterRows.length).toBeGreaterThan(0)
     })
+
+    it('mounts focus and scroll effects without throwing', () => {
+      const onChange = mock<CompactFilterOverlayHookProps['onChange']>(() => undefined)
+      const onClose = mock<() => void>(() => undefined)
+      expect(() =>
+        renderHook(() => useCompactFilterOverlay({ stats, types: [], tags: [], onChange, onClose }))
+      ).not.toThrow()
+    })
   })
 })

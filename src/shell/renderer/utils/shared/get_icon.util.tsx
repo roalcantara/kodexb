@@ -1,3 +1,4 @@
+import { ENTRY_TYPE_GLYPH } from '@core/domain/constants/entry.const'
 import type { RpcKnowledge } from '@shared/rpc'
 import type { ReactNode } from 'react'
 
@@ -7,26 +8,13 @@ import { ENTRY_TYPE_DEFAULT_SVG_BASENAME } from '../../constants/entry_type_icon
 import { TAG_BRAND_GLYPHS } from '../../constants/icons.const'
 import { TAG_BRAND_SVG_BASENAME } from '../../constants/tag_brand_svg_map.const'
 
-function typeGlyphChar(entry: RpcKnowledge): string {
-  switch (entry.type) {
-    case 'bookmark':
-      return '◆'
-    case 'command':
-      return '▸'
-    case 'cheat':
-      return '~'
-    case 'task':
-      return '✓'
-  }
-}
-
 /**
  * Row icon: bookmarks use **favicon first**, then tag brand SVG, then
  * `bookmark.svg`. Other types use tag brand SVG when mapped, else default type SVGs.
  */
 export function getIcon(entry: RpcKnowledge): ReactNode {
   const title = entry.tags.length > 0 ? entry.tags.join(', ') : entry.type
-  const fallback = typeGlyphChar(entry)
+  const fallback = ENTRY_TYPE_GLYPH[entry.type]
   if (entry.type === 'bookmark') {
     return <BookmarkEntryIcon entry={entry} fallbackChar={fallback} key={entry.key} title={title} />
   }

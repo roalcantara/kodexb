@@ -1,3 +1,4 @@
+import { fireAndForget } from '@shared/utils'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 import { SettingsPage } from '../../pages/settings/settings.page'
 import { CommandPalette } from '../actions/command_palette.component'
@@ -25,7 +26,7 @@ export function ListOverlayHosts({ p, showSettings, setShowSettings, focusMainSe
             onConfigSaved={cfg => {
               const ps = Number.parseInt(cfg.display.pageSize, 10)
               if (Number.isFinite(ps) && ps > 0) p.data.setPageSize(ps)
-              p.data.refreshList(false).catch(() => undefined)
+              fireAndForget(p.data.refreshList(false))
             }}
           />
         </div>

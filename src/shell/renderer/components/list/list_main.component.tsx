@@ -1,3 +1,4 @@
+import { fireAndForget } from '@shared/utils'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { useFilterDropdownStats } from '../../hooks/list/use_filter_dropdown_stats.hook'
@@ -8,9 +9,10 @@ import { useVirtualListWindow } from '../../hooks/list/use_virtual_list_window.h
 import { useWindowViewNavKeys } from '../../hooks/list/use_window_view_nav_keys.hook'
 import { DetailPage } from '../../pages/detail/detail.page'
 import { cyclePriority, cycleStatus, getListStats } from '../../rpc/client'
-import { listFilterSummary } from '../../utils/list/list_filter_summary.util'
-import { formatListFooterStatus } from '../../utils/list/list_footer_status.util'
-import { focusListSurface } from '../../utils/list/list_surface_focus.util'
+import { listFilterSummary } from '../../utils/list/list_filters.util'
+import { formatListFooterStatus } from '../../utils/list/list_formatters.util'
+import { focusListSurface } from '../../utils/list/list_keyboard.util'
+import { scheduleDoubleRaf } from '../../utils/list/list_scroll.util'
 import { ListFooter } from './list_footer.component'
 import { ListOverlayHosts } from './list_overlay_hosts.component'
 import { ListResultsBody } from './list_results_body.component'
@@ -43,15 +45,11 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   }, [p.flags.emptyDb])
 
   const handleCycleStatus = (id: number) => {
-    cycleStatus(id, 'forward')
-      .then(() => p.data.refreshList(false).catch(() => undefined))
-      .catch(() => undefined)
+    fireAndForget(cycleStatus(id, 'forward').then(() => p.data.refreshList(false)))
   }
 
   const handleCyclePriority = (id: number) => {
-    cyclePriority(id, 'forward')
-      .then(() => p.data.refreshList(false).catch(() => undefined))
-      .catch(() => undefined)
+    fireAndForget(cyclePriority(id, 'forward').then(() => p.data.refreshList(false)))
   }
 
   const detailEntry = p.sel.detailEntry
@@ -101,9 +99,9 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
       if (!surface) return
       surface.focus({ preventScroll: true })
       if (document.activeElement === surface) return
-      if (++attempts < 2) requestAnimationFrame(tryFocus)
+      if (++attempts < 2) scheduleDoubleRaf(tryFocus)
     }
-    queueMicrotask(() => requestAnimationFrame(() => requestAnimationFrame(tryFocus)))
+    scheduleDoubleRaf(tryFocus)
   }, [detailEntry, p.listSurfaceRef])
 
   const onSelectEntry = useCallback(
@@ -131,11 +129,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   }
 
   const focusMainSearch = useCallback(() => {
-    queueMicrotask(() => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => p.searchInputRef.current?.focus({ preventScroll: true }))
-      })
-    })
+    scheduleDoubleRaf(() => p.searchInputRef.current?.focus({ preventScroll: true }))
   }, [p.searchInputRef])
 
   const viewNavKeysDisabled = showSettings || p.taskSheetVisible || p.palette.open

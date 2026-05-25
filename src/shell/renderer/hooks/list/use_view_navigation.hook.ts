@@ -1,13 +1,14 @@
 import type { RpcKnowledge } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
 import type { MutableRefObject, RefObject } from 'react'
 import { useCallback, useReducer, useRef } from 'react'
 import { resolveCurrentEntry } from '../../../../core/helpers/entry_action/resolve_current_entry.util'
 import { copyTextForEntry } from '../../../../core/index.ts'
 import type { EntryActionContext } from '../../actions/entry_action_panel.types'
 import { executeEntryAction } from '../../actions/execute_entry_action.util'
-import { clipboardCopiedToastMessage } from '../../utils/list/clipboard_copy_toast.util'
-import { scheduleFocusSearchInputSelectAll } from '../../utils/list/schedule_double_raf.util'
-import { type ViewState, viewReducer } from '../../utils/list/view_reducer.util'
+import { clipboardCopiedToastMessage } from '../../utils/list/list_formatters.util'
+import { type ViewState, viewReducer } from '../../utils/list/list_page_state.util'
+import { scheduleFocusSearchInputSelectAll } from '../../utils/list/list_scroll.util'
 
 export type { ViewState }
 
@@ -105,7 +106,7 @@ function tryCopyShortcut(
       })
     : r.find(row => row.id === sid)
   if (entry && actionCtx) {
-    executeEntryAction(entry, 'copy', { ...actionCtx, entry }).catch(() => undefined)
+    fireAndForget(executeEntryAction(entry, 'copy', { ...actionCtx, entry }))
   } else if (entry) {
     const content = copyTextForEntry(entry)
     const msg = clipboardCopiedToastMessage(content)

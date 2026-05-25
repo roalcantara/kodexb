@@ -1,6 +1,6 @@
+import type { EntryType } from '@core/domain/types/entry.types'
 import type { ListOpts, ListStats, TaskView } from '@shared/rpc'
 import { useEffect, useState } from 'react'
-import type { EntryTypeOption } from '../../components/list/filter_dropdown.component'
 
 export type ScopedListStatsFetch = (
   body: Partial<Pick<ListOpts, 'query' | 'tags' | 'types' | 'taskView'>>
@@ -12,7 +12,7 @@ export function useFilterDropdownStats(
     filterOpen: boolean
     baseStats: ListStats | null
     debouncedSearch: string
-    types: EntryTypeOption[]
+    types: EntryType[]
     tags: string[]
     taskView?: TaskView
   }

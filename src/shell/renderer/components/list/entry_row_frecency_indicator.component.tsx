@@ -1,4 +1,4 @@
-import { frecencyDisplayTier } from '../../utils/list/frecency_tier.util'
+import { frecencyDisplayTier } from '../../utils/list/list_frecency.util'
 
 const FRECENCY_BAR_COUNT = 3
 

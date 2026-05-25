@@ -5,7 +5,7 @@ import { cleanup, render } from '@testing-library/react'
 
 const recordEntryVisitFireAndForget = mock<(id: number) => void>()
 
-mock.module('../../utils/list/record_entry_visit.util', () => ({
+mock.module('../../utils/list/list_frecency.util', () => ({
   recordEntryVisitFireAndForget
 }))
 

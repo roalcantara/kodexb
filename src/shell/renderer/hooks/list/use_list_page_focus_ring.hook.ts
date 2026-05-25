@@ -2,7 +2,7 @@ import type { RpcKnowledge } from '@shared/rpc'
 import type { KeyboardEvent as ReactKeyboardEvent, RefObject } from 'react'
 import { useCallback, useEffect } from 'react'
 
-import { listPageFocusRingElements, tryApplyListPageTabRing } from '../../utils/list/list_page_tab_ring.util'
+import { listPageFocusRingElements, tryApplyListPageTabRing } from '../../utils/list/list_keyboard.util'
 
 export type ListPageFocusRingDeps = {
   showSettings: boolean

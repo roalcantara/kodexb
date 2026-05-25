@@ -1,4 +1,4 @@
-import { effectiveListPageSize } from '../../utils/list/list_viewport_page_size.util'
+import { effectiveListPageSize } from '../../utils/list/virtual_list.util'
 import { useListPageFilters } from './use_list_page_filters.hook'
 import { useListPageRows } from './use_list_page_rows.hook'
 import { useListPageStatsSync } from './use_list_page_stats_sync.hook'

@@ -1,13 +1,12 @@
+import { sortedTags } from '@core/domain/models/knowledges/tags/sorted_tags.util'
+import type { EntryType } from '@core/domain/types/entry.types'
 import type { ListStats, TaskView } from '@shared/rpc'
 import { useMemo } from 'react'
-
 import {
   buildFilterRows,
   type FilterRow,
   groupFilterRowsIntoSections
-} from '../../components/list/compact_filter_overlay_build_rows.util'
-import type { EntryTypeOption } from '../../components/list/filter_dropdown.component'
-import { sortedTags } from '../../components/list/filter_dropdown.component'
+} from '../../utils/list/compact_filter_overlay_build_rows.util'
 
 const FACET_SECTION_TITLES = new Set(['Quick', 'Task views'])
 
@@ -40,7 +39,7 @@ function splitFacetAndScrollSections(blocks: SectionedBlock[]): {
 
 export function useCompactFilterOverlayRows(
   stats: ListStats,
-  types: EntryTypeOption[],
+  types: EntryType[],
   tags: string[],
   taskView: TaskView | undefined,
   search: string

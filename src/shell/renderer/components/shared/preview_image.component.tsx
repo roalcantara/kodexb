@@ -1,4 +1,5 @@
 import type { PreviewImageResult } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
 import { useEffect, useMemo, useState } from 'react'
 
 const YOUTUBE_ID_RE = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/
@@ -42,7 +43,7 @@ function PreviewImageFigure({
           type="button"
           className="kb-previewImage-open"
           onClick={() => {
-            openUrl(url).catch(() => undefined)
+            fireAndForget(openUrl(url))
           }}
         >
           ▶ Open on YouTube

@@ -1,7 +1,7 @@
+import { countTasksByView } from '../../../core/domain/models/knowledges/task_views/count_by_view.util'
 import type { ListStats } from '../../../shared/rpc'
 import type { openDatabase } from '../db/client'
 import { findAll, getDbStats, getTagCounts, type KnowledgeWithFrecency } from '../db/entry.repository'
-import { countTasksByView } from './task_views.util'
 
 type TaskKnowledgeRow = Extract<KnowledgeWithFrecency, { type: 'task' }>
 

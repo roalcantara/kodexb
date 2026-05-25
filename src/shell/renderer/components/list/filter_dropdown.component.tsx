@@ -1,3 +1,8 @@
+import { ENTRY_TYPE_VALUES } from '@core/domain/constants/entry.const'
+import { sortedTags } from '@core/domain/models/knowledges/tags/sorted_tags.util'
+import { showTaskSection } from '@core/domain/models/knowledges/task_views/show_task_section.util'
+import { TASK_VIEW_ORDER } from '@core/domain/models/knowledges/task_views/task_view_order.const'
+import type { EntryType } from '@core/domain/types/entry.types'
 import type { ListStats, TaskView } from '@shared/rpc'
 import { useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -15,28 +20,6 @@ import {
 } from '../../constants/layout.const'
 import { CompactFilterOverlay } from './compact_filter_overlay.component'
 import { FilterDropdownTags } from './filter_dropdown_tags.component'
-
-const ENTRY_TYPES = ['bookmark', 'command', 'cheat', 'task'] as const
-export type EntryTypeOption = (typeof ENTRY_TYPES)[number]
-
-const TASK_VIEWS: TaskView[] = ['actionable', 'today', 'overdue', 'this_week', 'all_pending', 'all_doing']
-
-export function sortedTags(
-  tags: Record<string, number>,
-  q: string,
-  selectedTags: string[] = []
-): Array<{ tag: string; count: number }> {
-  const needle = q.trim().toLowerCase()
-  return Object.entries(tags)
-    .filter(([t, count]) => count > 0 || selectedTags.includes(t))
-    .filter(([t]) => needle === '' || t.toLowerCase().includes(needle))
-    .map(([tag, count]) => ({ tag, count }))
-    .sort((a, b) => (a.count === b.count ? a.tag.localeCompare(b.tag) : b.count - a.count))
-}
-
-export function showTaskSection(types: EntryTypeOption[]): boolean {
-  return types.length === 0 || types.includes('task')
-}
 
 /**
  * Positions the compact filter portal under the anchor vertically, and **horizontally
@@ -73,19 +56,19 @@ export function compactFilterPortalBox(
 
 type PanelProps = {
   stats: ListStats
-  types: EntryTypeOption[]
+  types: EntryType[]
   tags: string[]
   taskView?: TaskView
   tagQ: string
   setTagQ: (v: string) => void
-  onChange: (next: { types: EntryTypeOption[]; tags: string[]; taskView?: TaskView }) => void
+  onChange: (next: { types: EntryType[]; tags: string[]; taskView?: TaskView }) => void
   style: { top: number; left: number; width: number }
 }
 
 function FilterDropdownPanel({ stats, types, tags, taskView, tagQ, setTagQ, onChange, style }: PanelProps) {
   const tagRows = useMemo(() => sortedTags(stats.tags, tagQ, tags), [stats.tags, tagQ, tags])
 
-  const pickType = (t: EntryTypeOption) => {
+  const pickType = (t: EntryType) => {
     const only = types.length === 1 && types[0] === t ? [] : [t]
     onChange({ types: only, tags, taskView: only.includes('task') ? taskView : undefined })
   }
@@ -116,7 +99,7 @@ function FilterDropdownPanel({ stats, types, tags, taskView, tagQ, setTagQ, onCh
       {showTaskSection(types) ? (
         <section className="kb-filterSection">
           <div className="kb-filterSection-title">Task views</div>
-          {TASK_VIEWS.map(v => (
+          {TASK_VIEW_ORDER.map(v => (
             <button
               key={v}
               type="button"
@@ -130,7 +113,7 @@ function FilterDropdownPanel({ stats, types, tags, taskView, tagQ, setTagQ, onCh
       ) : null}
       <section className="kb-filterSection">
         <div className="kb-filterSection-title">Types</div>
-        {ENTRY_TYPES.map(t => (
+        {ENTRY_TYPE_VALUES.map(t => (
           <button
             key={t}
             type="button"
@@ -150,10 +133,10 @@ export type FilterDropdownProps = {
   open: boolean
   anchorRect: DOMRect | null
   stats: ListStats
-  types: EntryTypeOption[]
+  types: EntryType[]
   tags: string[]
   taskView?: TaskView
-  onChange: (next: { types: EntryTypeOption[]; tags: string[]; taskView?: TaskView }) => void
+  onChange: (next: { types: EntryType[]; tags: string[]; taskView?: TaskView }) => void
   onClose: () => void
   compact?: boolean
   pushToast?: (msg: string, type: 'success' | 'error') => void

@@ -1,12 +1,13 @@
+import type { EntryType } from '@core/domain/types/entry.types'
 import type { RpcKnowledge, TaskView } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { EntryActionContext } from '../../actions/entry_action_panel.types'
 import { defaultEntryActionPanelDeps } from '../../actions/entry_action_panel_deps.util'
-import type { EntryTypeOption } from '../../components/list/filter_dropdown.component'
 import { deleteTask, hideWindow, reorderTask } from '../../rpc/client'
-import { listPageEmptyFlags } from '../../utils/list/list_page_empty_flags.util'
-import { focusListSurface } from '../../utils/list/list_surface_focus.util'
-import { scheduleDoubleRaf } from '../../utils/list/schedule_double_raf.util'
+import { focusListSurface } from '../../utils/list/list_keyboard.util'
+import { listPageEmptyFlags } from '../../utils/list/list_page_state.util'
+import { scheduleDoubleRaf } from '../../utils/list/list_scroll.util'
 import { useActionToast } from '../shared/use_action_toast.hook'
 import { useCommandPalette } from './use_command_palette.hook'
 import { useListFilterOverlay } from './use_list_filter_overlay.hook'
@@ -118,7 +119,7 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     sel.selectFirst()
     focusListSurface(listSurfaceRef)
   }
-  const onFilterChange = (next: { types: EntryTypeOption[]; tags: string[]; taskView?: TaskView }) => {
+  const onFilterChange = (next: { types: EntryType[]; tags: string[]; taskView?: TaskView }) => {
     data.setTypes(next.types)
     data.setTags(next.tags)
     data.setTaskView(next.taskView)
@@ -134,14 +135,12 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
   const handleCloseTaskSheet = useCallback(() => {
     setTaskSheetEntry(null)
     setTaskSheetOpen(false)
-    data.refreshList(false).catch(() => undefined)
+    fireAndForget(data.refreshList(false))
   }, [data.refreshList])
 
   const handleRequestDelete = useCallback(
     (entry: RpcKnowledge) => {
-      deleteTask(entry.id)
-        .then(() => data.refreshList(false).catch(() => undefined))
-        .catch(() => undefined)
+      fireAndForget(deleteTask(entry.id).then(() => data.refreshList(false)))
     },
     [data.refreshList]
   )
@@ -149,17 +148,13 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
   useTaskKeyboard({
     selectedId: sel.selectedId,
     rows: data.rows,
-    onRefresh: () => data.refreshList(false).catch(() => undefined),
+    onRefresh: () => fireAndForget(data.refreshList(false)),
     onNewTask: handleNewTask,
     onRequestDelete: handleRequestDelete
   })
 
   const dragDrop = useTaskDragDrop(data.rows, id => {
-    reorderTask(id.entryId, id.dir)
-      .then(() => {
-        data.refreshList(false).catch(() => undefined)
-      })
-      .catch(() => undefined)
+    fireAndForget(reorderTask(id.entryId, id.dir).then(() => data.refreshList(false)))
   })
 
   return {
