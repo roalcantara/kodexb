@@ -75,12 +75,12 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
 
   const listPanelClass =
     detailEntry === null
-      ? 'kb-pt-list-panel'
+      ? 'theme-list-panel'
       : viewState === 'split'
-        ? 'kb-pt-list-panel kb-pt-list-panel--narrow'
-        : 'kb-pt-list-panel kb-pt-list-panel--hidden'
+        ? 'theme-list-panel theme-list-panel--narrow'
+        : 'theme-list-panel theme-list-panel--hidden'
   const detailPanelClass =
-    detailEntry === null ? '' : viewState === 'detail' ? 'kb-pt-detail kb-pt-detail--full' : 'kb-pt-detail'
+    detailEntry === null ? '' : viewState === 'detail' ? 'theme-detail theme-detail--full' : 'theme-detail'
 
   useListSurfaceScrollRestore(p.listSurfaceRef, detailEntry)
 
@@ -118,7 +118,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
 
   const filterSummary = listFilterSummary(p.data.types, p.data.tags, p.data.taskView)
   const filterActive = p.data.taskView !== undefined || p.data.types.length > 0 || p.data.tags.length > 0
-  const filterChipCls = `kb-pt-filter-chip${filterActive ? ' kb-pt-filter-chip--active' : ''}`
+  const filterChipCls = `theme-filter-chip${filterActive ? ' theme-filter-chip--active' : ''}`
 
   const toggleFilter = () => {
     if (p.filter.filterOpen) {
@@ -146,7 +146,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
     detailScrollActive: detailEntry !== null
   })
 
-  const powertoysClass = viewState === 'detail' ? 'kb-powertoys kb-powertoys--detail-full' : 'kb-powertoys'
+  const powertoysClass = viewState === 'detail' ? 'theme-app-shell theme-app-shell--detail-full' : 'theme-app-shell'
 
   const closeDetailToList = useCallback(() => {
     p.sel.closeToList()
@@ -185,7 +185,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           anchorRect={p.filter.anchorRect}
         />
 
-        <div className="kb-pt-main">
+        <div className="theme-main">
           <div className={listPanelClass}>
             <ListResultsBody
               listSurfaceRef={p.listSurfaceRef}

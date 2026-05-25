@@ -1,6 +1,6 @@
 export type {
   ConfigPatch,
-  KbDesktopRpcSchema,
+  DesktopRpcSchema,
   ListOpts,
   ListStats,
   OpenDialogOpts,
@@ -17,4 +17,4 @@ export type {
   TaskCreateInput,
   TaskUpdateInput,
   TaskView
-} from './kb_rpc_schema'
+} from './desktop_rpc_schema'

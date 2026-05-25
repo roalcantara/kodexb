@@ -1,11 +1,11 @@
 import type { Database } from 'bun:sqlite'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { createLogger, type LogVerbosity } from '@shared/logging'
+import type { RpcSyncFileResult, RpcSyncProgressPayload } from '@shared/rpc'
 import glob from 'fast-glob'
 import type { Entry, Knowledge } from '../../../core'
 import { isValidSourceRowMin, parseSourceFile, toKnowledge } from '../../../core'
-import { createLogger, type KbLogVerbosity } from '../../../shared/logging'
-import type { RpcSyncFileResult, RpcSyncProgressPayload } from '../../../shared/rpc'
 import { openDatabase } from './client'
 import { rebuildFts, upsert } from './entry.repository'
 
@@ -28,7 +28,7 @@ export class ImportService {
   private readonly dbPath: string
   private readonly log: ReturnType<typeof createLogger>
 
-  constructor(dbPath: string, verbosity: KbLogVerbosity = 'default') {
+  constructor(dbPath: string, verbosity: LogVerbosity = 'default') {
     this.dbPath = dbPath
     this.log = createLogger({ verbosity })
   }

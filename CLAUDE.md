@@ -67,18 +67,18 @@ see `.ls-lint.yml`). The full canonical suffix vocabulary lives in
 
 ## Skills to load
 
-Load these at the start of any kb task:
+Load these at the start of any project task:
 
-- `kb-context` — always (architecture + naming + design system)
-- `kb-rpc` — when touching Elysia routes or the Eden Treaty client
-- `kb-testing` — when writing or modifying tests
-- `kb-quality-gate` — before marking anything done
+- `app-context` — always (architecture + naming + design system)
+- `app-rpc` — when touching Elysia routes or the Eden Treaty client
+- `app-testing` — when writing or modifying tests
+- `app-quality-gate` — before marking anything done
 
 Optional companion skills for narrower situations:
 
 <!-- skills:optional-companions:start -->
 - `systematic-debugging` - before fixing failing tests, gate failures, or unexpected behavior
-- `elysia` - for Elysia route mechanics, after kb-rpc
+- `elysia` - for Elysia route mechanics, after app-rpc
 - `receiving-code-review` - when applying review feedback
 - `requesting-code-review` - when preparing a review handoff or PR
 - `mise-tasks` - when editing mise.toml or task orchestration
@@ -91,7 +91,7 @@ Optional companion skills for narrower situations:
 - `react:components` - when translating design artifacts into renderer components
 - `stitch-design` - for design intake or prototypes, under the prototype gate
 - `using-git-worktrees` - only when isolated parallel work is requested or approved
-- `verification-before-completion` - as a reminder; kb-quality-gate remains the executable authority
+- `verification-before-completion` - as a reminder; app-quality-gate remains the executable authority
 <!-- skills:optional-companions:end -->
 
 Skill adoption and routing rationale lives in
@@ -112,17 +112,17 @@ in this repo. Use `requirements.md`, `design.md`, `tasks.md`, and optional
 Do not create `docs/superpowers/`. That path is a common external skill
 default and is gitignored in this repo to prevent drift.
 
-For tests, kb rules override generic Superpowers examples: follow
+For tests, project rules override generic Superpowers examples: follow
 [`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md), use
 `bun:test`, prefer `it(...)`, and follow the repo's Better Specs and Fishery
 guidance.
 
 For completion, use the phase-specific `mise run validate ...` command when
 one is provided. Otherwise run
-`bash .agents/skills/kb-quality-gate/scripts/gate.sh`. Generic examples such
+`bash .agents/skills/app-quality-gate/scripts/gate.sh`. Generic examples such
 as `npm test` are not sufficient.
 
-Subagent prompts must include these kb overrides explicitly because subagents
+Subagent prompts must include these project overrides explicitly because subagents
 may not inherit the controller's full context.
 
 ## Reference docs
@@ -135,7 +135,7 @@ with this `CLAUDE.md`, **the guides win** — open a PR to fix `CLAUDE.md`.
 - [`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md) — bun:test, Better Specs, no-mock rule
 - [`assets/guides/FISHERY_GUIDE.md`](assets/guides/FISHERY_GUIDE.md) — `factoryFor` usage and registry
 - [`assets/guides/FCIS.guide.md`](assets/guides/FCIS.guide.md) — pure core / imperative shell rules
-- [`assets/guides/DoD.md`](assets/guides/DoD.md) — Definition of Done (gated by `kb-quality-gate`)
+- [`assets/guides/DoD.md`](assets/guides/DoD.md) — Definition of Done (gated by `app-quality-gate`)
 - [`assets/guides/GIT_COMMITS_GUIDE.md`](assets/guides/GIT_COMMITS_GUIDE.md) — Conventional Commits, ≤ 50-char subject
 - [`assets/guides/MISE_GUIDE.md`](assets/guides/MISE_GUIDE.md) — when to use `mise run` vs `bun run`
 - [`assets/guides/SKILLS.md`](assets/guides/SKILLS.md) — skill adoption ledger, routing rationale, optional companions

@@ -115,9 +115,9 @@ describe('toKnowledge() with assembleDoc integration', () => {
     ['command', 'commands:\n  git status:\n    desc: Show status\n    tags: [git]', 'git status'],
     ['cheat', 'cheats:\n  Math:\n    desc: Formulas\n    tags: [math]\n    notes:\n      - md: Formulas', 'Formulas'],
     ['task', 'tasks:\n  Build app:\n    desc: Do it\n    tags: [dev]\n    status: todo', 'Build app']
-  ])('produces non-empty doc', (type, yamlContent, expectedText) => {
+  ])('produces non-empty doc', (type, sourceBody, expectedText) => {
     it(`for a ${type} entry`, () => {
-      const entries = parseSourceFile(SOURCE, yamlContent)
+      const entries = parseSourceFile(SOURCE, sourceBody)
       const entry = entries[0]
       if (!entry) throw new Error('Expected at least one entry')
       const knowledge = toKnowledge(entry, NOW_MS)

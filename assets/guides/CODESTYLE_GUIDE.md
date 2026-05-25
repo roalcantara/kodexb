@@ -178,6 +178,76 @@ is a lint error, not a review comment.
 3. **Discoverability** — `find src -name "*.service.ts"` gives you every service.
 4. **Rails-style** — Convention over configuration: know the folder, know the suffix, done.
 
+## Identifier Naming (product- and format-agnostic)
+
+Identifiers must describe **what role something plays**, not which product owns the
+codebase or which on-disk format happens to back it today. The repo directory and
+some external strings (bundle id, default config path, log category) still carry
+the historical `kb` codename, but **code-level names** stay neutral.
+
+### What stays neutral
+
+| Surface                   | Rule                                                                                 |
+| ------------------------- | ------------------------------------------------------------------------------------ |
+| Files / folders           | No `kb_*`, `kb-*`, `*_yaml*`, `*Yaml*` segments. Name after the role.                |
+| TypeScript symbols        | No `Kb*`, `createKb*`, `*Yaml` identifiers. Use `Shell*`, `Webview*`, `*Source*`.    |
+| SQL aliases / CTE names   | No `kb_*` aliases. Name after the column or join role (`tag_row`, not `kb_tag_row`). |
+| Elysia plugin `name`      | No `kb-*` plugin names. Use the contract role (`rpc-error`).                         |
+| CSS custom properties     | `--theme-<role>` (e.g. `--theme-bg`, `--theme-text-muted`).                          |
+| CSS class names           | `.theme-<object>[-<part>][--<modifier>]`, e.g. `.theme-entry-row--selected`.         |
+| Agent skill IDs / folders | `app-<role>` (`app-context`, `app-rpc`, `app-testing`, `app-quality-gate`).          |
+| Log lines / UI copy       | Format-agnostic wording ("source file", not "YAML file") when the format may change. |
+
+### What stays as-is (strings, not identifiers)
+
+Cheap-to-change literals can keep `kb` / `yaml`. They are not in scope for this rule:
+
+- Bundle / distribution identifiers: `electrobun.config.ts` `app.name: 'kb'`,
+  `identifier: 'sh.blackboard.kb'`, artifact names like `kb-${version}-*.dmg`.
+- Default config path `~/.config/kb/config.yaml` (a runtime value).
+- Logtape category `['kb']` (a runtime namespace string).
+- Test / fixture filenames ending in `.yaml` / `.yml` when the test is about that
+  file on disk.
+- Glob literals `**/*.{yaml,yml}` in import services (extensions stay in the
+  constant value, not in the API name).
+- `package.json` `"name": "kb"` and the repo directory name.
+
+### Canonical lexicon
+
+| Domain            | Old (product / format coupled)                                | New (role-based, neutral)                                            |
+| ----------------- | ------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Main process      | `kb_shell_hooks.util.ts`, `createKbShellHooks`                | `shell_hooks.util.ts`, `createShellHooks`                            |
+| Main process      | `createKbLateEmit`                                            | `createDeferredSyncEmit`                                             |
+| RPC bridge        | `createKbWebviewRpc`, `KbWebviewRpc`                          | `createWebviewRpc`, `WebviewRpc`                                     |
+| RPC schema        | `KbDesktopRpcSchema`, `kb_rpc_schema.ts`                      | `DesktopRpcSchema`, `desktop_rpc_schema.ts`                          |
+| Logging           | `KbLogVerbosity`, `kb_log_verbosity.ts`                       | `LogVerbosity`, `log_verbosity.ts`                                   |
+| Logging           | `parseKbLogVerbosity`, `isKbLogVerbosity`, `kbLowestLevel`    | `parseLogVerbosity`, `isLogVerbosity`, `lowestLevelForVerbosity`     |
+| Elysia plugin     | `name: 'kb-rpc-error'`                                        | `name: 'rpc-error'`                                                  |
+| SQL alias         | `kb_tag_row`                                                  | `tag_row`                                                            |
+| Source write-back | `app_task_yaml.util.ts`, `writeTaskToYaml`, `taskToYamlShape` | `app_task_source.util.ts`, `writeTaskToSource`, `taskToSourceRecord` |
+| CSS tokens        | `--kb-bg`, `--kb-color-task`                                  | `--theme-bg`, `--theme-entry-color-task`                             |
+| CSS classes       | `.kb-entryRow`, `.kb-pt-filter-option`                        | `.theme-entry-row`, `.theme-compact-filter-option`                   |
+| Assets            | `assets/icons/kb-logo.*`                                      | `assets/icons/app-logo.*`                                            |
+| Skills            | `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`       | `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`          |
+
+### CSS naming: two layers, kebab-case
+
+1. **Tokens** — CSS custom properties only, named after the **role**:
+   `--theme-bg`, `--theme-surface`, `--theme-border`, `--theme-text`,
+   `--theme-text-muted`, `--theme-accent`, `--theme-row-hover`,
+   `--theme-row-selected`, `--theme-danger`, `--theme-warn`,
+   `--theme-entry-color-<type>`.
+2. **Classes** — `theme-` prefix + **object** + optional element / modifier in
+   kebab-case BEM:
+   `.theme-list-page`, `.theme-toolbar`, `.theme-entry-row`,
+   `.theme-entry-row--selected`, `.theme-detail-panel`,
+   `.theme-compact-filter-option`. Decode opaque legacy segments such as `pt`
+   to explicit object names (e.g. `kb-pt-filter-option` →
+   `theme-compact-filter-option`) when renaming.
+
+The visual spec name ("Andromeda Void") may appear in prose comments; **only**
+identifiers carry the `theme-*` prefix.
+
 ## Folder Naming Conventions
 
 nouns, not verbs (widely used pattern)
@@ -237,14 +307,14 @@ window state. Has no business logic — delegates everything to `AppService`.
 
 Grouped into concern sub-folders — the folder provides context so prefixes drop from filenames:
 
-| File pattern              | Purpose                                                         |
-| ------------------------- | --------------------------------------------------------------- |
-| `main.ts`                 | Entry point — initialises window, loads config, starts RPC host |
-| `*.helper.ts`             | Process-level helpers (e.g. error dialogs)                      |
-| `rpc/host.ts`             | RPC host definition (binds the typed schema to the process)     |
-| `rpc/requests.ts`         | RPC handler implementations — thin delegation to `AppService`   |
-| `rpc/schemas.ts`          | Aggregate TypeBox schemas for validating all RPC payloads           |
-| `window/state.ts`         | Persists and restores window bounds between sessions            |
+| File pattern      | Purpose                                                         |
+| ----------------- | --------------------------------------------------------------- |
+| `main.ts`         | Entry point — initialises window, loads config, starts RPC host |
+| `*.helper.ts`     | Process-level helpers (e.g. error dialogs)                      |
+| `rpc/host.ts`     | RPC host definition (binds the typed schema to the process)     |
+| `rpc/requests.ts` | RPC handler implementations — thin delegation to `AppService`   |
+| `rpc/schemas.ts`  | Aggregate TypeBox schemas for validating all RPC payloads       |
+| `window/state.ts` | Persists and restores window bounds between sessions            |
 
 ### `src/shell/renderer/` — UI layer
 

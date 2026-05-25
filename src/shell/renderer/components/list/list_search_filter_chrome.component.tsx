@@ -48,14 +48,14 @@ export function ListSearchFilterChrome({
   pushToast,
   anchorRect
 }: ListSearchFilterChromeProps) {
-  if (isFullDetail) return <div className="kb-windowDragStripe kb-windowDragStripe--detail" aria-hidden />
+  if (isFullDetail) return <div className="theme-window-drag-stripe theme-window-drag-stripe--detail" aria-hidden />
 
   return (
-    <div className="kb-pt-search">
-      <div className="kb-pt-search-wrap kb-pt-search-wrap--withBack">
+    <div className="theme-search">
+      <div className="theme-search-wrap theme-search-wrap--with-back">
         <button
           type="button"
-          className={`kb-pt-back${showBackWithSearch ? '' : ' kb-pt-back--inactive'}`}
+          className={`theme-search-back${showBackWithSearch ? '' : ' theme-search-back--inactive'}`}
           aria-label="Back to list"
           title={showBackWithSearch ? 'Back to list (Escape)' : undefined}
           aria-hidden={!showBackWithSearch}
@@ -66,7 +66,7 @@ export function ListSearchFilterChrome({
         >
           ←
         </button>
-        <search className="kb-pt-bar">
+        <search className="theme-search-bar">
           <input
             ref={searchInputRef}
             type="search"
@@ -84,7 +84,7 @@ export function ListSearchFilterChrome({
             }}
             aria-label="Search"
           />
-          <span aria-hidden className="kb-pt-bar-divider" />
+          <span aria-hidden className="theme-search-bar-divider" />
           <button ref={filterButtonRef} type="button" className={filterChipCls} onClick={onToggleFilter}>
             {filterSummary} ▾
           </button>

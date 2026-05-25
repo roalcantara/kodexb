@@ -1,7 +1,7 @@
 import type { Database } from 'bun:sqlite'
+import type { FindAllOpts } from '@core/helpers/list_opts/find_all_opts.types'
 import type { UnknownRecord } from 'type-fest'
 import type { EntryType, Knowledge } from '../../../core'
-import type { FindAllOpts } from '../../../core/helpers/list_opts/find_all_opts.types'
 import type { KnowledgeRow } from './schema'
 
 export type KnowledgeWithFrecency = Knowledge & {
@@ -81,7 +81,7 @@ function toFts5MatchQuery(input: string): string {
 function sqlKnowHasEveryTag(aliasTable: string, tags: string[]): { clause: string; params: string[] } {
   if (tags.length === 0) return { clause: '', params: [] }
   const clause = tags
-    .map(() => `EXISTS (SELECT 1 FROM json_each(${aliasTable}.tags) AS kb_tag_row WHERE kb_tag_row.value = ?)`)
+    .map(() => `EXISTS (SELECT 1 FROM json_each(${aliasTable}.tags) AS tag_row WHERE tag_row.value = ?)`)
     .join(' AND ')
   return { clause, params: [...tags] }
 }

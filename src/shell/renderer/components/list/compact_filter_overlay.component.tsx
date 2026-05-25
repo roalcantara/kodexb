@@ -27,14 +27,14 @@ function CompactFilterSectionList({
   return (
     <>
       {sectionedRows.map(block => {
-        const headingId = `kb-pt-filter-sec-${block.title.replace(/\s+/g, '-').toLowerCase()}`
+        const headingId = `theme-filter-section-${block.title.replace(/\s+/g, '-').toLowerCase()}`
         const sectionClass =
           block.title === 'Task views'
-            ? 'kb-pt-filter-section-block kb-pt-filter-section-block--task-views'
-            : 'kb-pt-filter-section-block'
+            ? 'theme-filter-dropdown-section-block theme-filter-dropdown-section-block--task-views'
+            : 'theme-filter-dropdown-section-block'
         return (
           <section key={block.title} className={sectionClass} aria-labelledby={headingId}>
-            <div id={headingId} className="kb-pt-filter-section">
+            <div id={headingId} className="theme-filter-dropdown-section">
               {block.title}
             </div>
             {block.entries.map(({ row, index: i }) => {
@@ -54,18 +54,18 @@ function CompactFilterSectionList({
                   }}
                   aria-selected={i === highlightIndex}
                   aria-label={`${row.label}${countLabel}`}
-                  className={`kb-pt-filter-option${row.isOn ? ' kb-pt-filter-option--selected' : ''}${i === highlightIndex ? ' kb-pt-filter-option--highlight' : ''}`}
+                  className={`theme-compact-filter-option${row.isOn ? ' theme-compact-filter-option--selected' : ''}${i === highlightIndex ? ' theme-compact-filter-option--highlight' : ''}`}
                   tabIndex={-1}
                   onClick={() => pickRow(i, row)}
                 >
-                  <span className="kb-pt-filter-option-mark" aria-hidden="true">
+                  <span className="theme-compact-filter-option-mark" aria-hidden="true">
                     {row.isOn ? '✓' : '\u00a0'}
                   </span>
-                  <span className="kb-pt-filter-option-icon-slot" aria-hidden="true">
+                  <span className="theme-compact-filter-option-icon" aria-hidden="true">
                     <img src={brandSvgAssetUrl(iconBasename)} alt="" width={20} height={20} decoding="async" />
                   </span>
-                  <span className="kb-pt-filter-option-label">{row.label}</span>
-                  <span className="kb-pt-filter-option-count">{row.count === undefined ? '' : row.count}</span>
+                  <span className="theme-compact-filter-option-label">{row.label}</span>
+                  <span className="theme-compact-filter-option-count">{row.count === undefined ? '' : row.count}</span>
                 </button>
               )
             })}
@@ -92,7 +92,7 @@ export function CompactFilterOverlay(props: CompactFilterOverlayProps) {
 
   return (
     <div
-      className="kb-pt-filter-dropdown"
+      className="theme-filter-dropdown"
       onMouseDown={e => e.stopPropagation()}
       onKeyDown={handleKeyDown}
       role="listbox"
@@ -100,15 +100,15 @@ export function CompactFilterOverlay(props: CompactFilterOverlayProps) {
     >
       <input
         ref={searchInputRef}
-        className="kb-pt-filter-search"
+        className="theme-filter-dropdown-search"
         type="search"
         placeholder="Search filters…"
         value={search}
         onChange={e => setSearch(e.target.value)}
         spellCheck={false}
       />
-      <div ref={scrollRootRef} className="kb-pt-filter-scroll-root" data-compact-filter-scroll-root>
-        <div className="kb-pt-filter-sticky-facets">
+      <div ref={scrollRootRef} className="theme-filter-scroll-root" data-compact-filter-scroll-root>
+        <div className="theme-filter-sticky-facets">
           <CompactFilterSectionList
             sectionedRows={facetSectionRows}
             highlightIndex={highlightIndex}
@@ -120,9 +120,13 @@ export function CompactFilterOverlay(props: CompactFilterOverlayProps) {
           highlightIndex={highlightIndex}
           pickRow={pickRow}
         />
-        {filterRows.length === 0 ? <div className="kb-pt-filter-empty">No matching filters</div> : null}
+        {filterRows.length === 0 ? <div className="theme-filter-dropdown-empty">No matching filters</div> : null}
       </div>
-      <button type="button" className="kb-pt-filter-option kb-pt-filter-option--footer" onClick={props.onClose}>
+      <button
+        type="button"
+        className="theme-compact-filter-option theme-compact-filter-option--footer"
+        onClick={props.onClose}
+      >
         Close
       </button>
     </div>

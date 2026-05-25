@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# kb quality gate — run all stages sequentially, exit 1 on first failure.
-# Mirrors the stage list in `.agents/skills/kb-quality-gate/SKILL.md`.
+# Project quality gate — run all stages sequentially, exit 1 on first failure.
+# Mirrors the stage list in `.agents/skills/app-quality-gate/SKILL.md`.
 set -eu -o pipefail
 
 ROOT="$(git rev-parse --show-toplevel)"
@@ -42,8 +42,8 @@ run_check() {
 }
 
 echo ""
-echo "kb Quality Gate"
-echo "═══════════════"
+echo "Quality Gate"
+echo "════════════"
 
 echo ""
 echo "0 / Autofix (knip + ast-grep + biome + typecheck)"
@@ -53,7 +53,7 @@ echo ""
 echo "0.5 / Policy (new suppressions + reminders)"
 echo "──────────────────────────────────────────"
 run_check --tee "Policy" \
-  env KB_GATE_EMBEDDED_POLICY=1 bash "$ROOT/.agents/skills/kb-quality-gate/scripts/gate_policy.sh"
+  env KB_GATE_EMBEDDED_POLICY=1 bash "$ROOT/.agents/skills/app-quality-gate/scripts/gate_policy.sh"
 
 echo ""
 echo "1 / Lint + Typecheck (typecheck + biome + knip + depcruise + jscpd + ls + ast-grep + mise)"

@@ -15,7 +15,7 @@ workflows must move behind Mise tasks.
 
 Use this workflow before creating or changing project automation:
 
-1. Load the `kb-context` skill.
+1. Load the `app-context` skill.
 2. Load `mise-tasks` before editing `mise.toml` tasks, task arguments,
    dependencies, or task dispatch.
 3. Load `mise-expert` when changing `[tools]`, `[env]`, setup behavior, or tool
@@ -241,7 +241,7 @@ mise run policy check
 Before declaring implementation complete, run the repository quality gate:
 
 ```sh
-bash .agents/skills/kb-quality-gate/scripts/gate.sh
+bash .agents/skills/app-quality-gate/scripts/gate.sh
 ```
 
 Future work may replace the direct gate script entrypoint with a canonical Mise

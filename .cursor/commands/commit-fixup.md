@@ -26,7 +26,7 @@ description: Gate until green before amend; HK commit-message policy after; no p
 2. **Run the quality gate** on the current tree:
 
    ```bash
-   bash .agents/skills/kb-quality-gate/scripts/gate.sh
+   bash .agents/skills/app-quality-gate/scripts/gate.sh
    ```
 
 3. **While the gate fails:** apply fixes (stage 0 already runs `bun run lint:fix`; fix the rest manually), **`git add`** the touched paths, then **run `gate.sh` again**. Repeat until the gate passes or you are blocked.

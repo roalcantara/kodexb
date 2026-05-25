@@ -132,4 +132,3 @@ automation belongs in `mise.toml`.
    mode when available instead of executing the dangerous action.
 5. WHEN each phase completes, THEN the full quality gate SHALL pass or the exact
    blocker SHALL be recorded.
-

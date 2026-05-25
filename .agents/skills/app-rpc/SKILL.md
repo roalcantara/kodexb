@@ -1,7 +1,7 @@
 ---
-name: kb-rpc
+name: app-rpc
 description: >
-  Load this skill whenever working on the RPC layer of the kb codebase —
+  Load this skill whenever working on the RPC layer of this codebase —
   adding a new endpoint, modifying an existing route, updating TypeBox
   schemas, wiring the Eden Treaty client in the renderer, or syncing the
   preview server. RPC changes are cross-cutting: a route added to server.ts
@@ -12,17 +12,17 @@ description: >
   in the Elysia route or in AppService.
 ---
 
-# kb RPC Patterns (Elysia + Eden Treaty)
+# App RPC Patterns (Elysia + Eden Treaty)
 
 ## Stack
 
-| Layer       | Package                        | Purpose                             |
-|-------------|--------------------------------|-------------------------------------|
-| Server      | `elysia`                       | Route definition, validation, IoC   |
-| Validation  | `elysia` → `t` (TypeBox)       | Runtime validation at transport     |
-| Client      | `@elysiajs/eden` (Treaty)      | Auto-generated type-safe client     |
-| DB          | `bun:sqlite`                   | Typed prepared statements           |
-| Domain      | `@sinclair/typebox`            | Core invariants, config validation  |
+| Layer      | Package                   | Purpose                            |
+| ---------- | ------------------------- | ---------------------------------- |
+| Server     | `elysia`                  | Route definition, validation, IoC  |
+| Validation | `elysia` → `t` (TypeBox)  | Runtime validation at transport    |
+| Client     | `@elysiajs/eden` (Treaty) | Auto-generated type-safe client    |
+| DB         | `bun:sqlite`              | Typed prepared statements          |
+| Domain     | `@sinclair/typebox`       | Core invariants, config validation |
 
 **Rule:** TypeBox is the sole validation library — `t.*` from elysia/TypeBox in
 routes, `Type.Object` + `Value.Check` in core/config. **No Zod, no Drizzle, no

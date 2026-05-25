@@ -61,19 +61,19 @@ describe('DetailPage', () => {
 
     it('renders entry type label', () => {
       renderDetail()
-      expect(document.querySelector('.kb-detailPage-type')?.textContent).toBe('bookmark')
+      expect(document.querySelector('.theme-detail-page-type')?.textContent).toBe('bookmark')
     })
 
     it('renders tag chips', () => {
       renderDetail()
-      const tags = document.querySelectorAll('.kb-detailPage-tags .kb-pill')
+      const tags = document.querySelectorAll('.theme-detail-page-tags .theme-pill')
       expect(tags.length).toBe(2)
       expect(tags[0]?.textContent).toBe('#bun')
     })
 
     it('renders links section', () => {
       renderDetail()
-      const link = document.querySelector('.kb-detailPage-link')
+      const link = document.querySelector('.theme-detail-page-link')
       expect(link).not.toBeNull()
       expect(link?.getAttribute('title')).toBe('https://bun.sh/docs')
     })
@@ -81,7 +81,7 @@ describe('DetailPage', () => {
     it('calls onOpenExternal on link click', async () => {
       onOpenExternal.mockClear()
       renderDetail()
-      const link = document.querySelector('button.kb-detailPage-link') as HTMLButtonElement
+      const link = document.querySelector('button.theme-detail-page-link') as HTMLButtonElement
       expect(link).not.toBeNull()
       await userEvent.click(link)
       expect(onOpenExternal).toHaveBeenCalledTimes(1)
@@ -90,14 +90,14 @@ describe('DetailPage', () => {
 
     it('renders markdown notes', () => {
       renderDetail()
-      const body = document.querySelector('.kb-detailPage-body')
+      const body = document.querySelector('.theme-detail-page-body')
       expect(body).not.toBeNull()
       expect(body?.textContent).toContain('Fast JS runtime')
     })
 
     it('does not show badges section', () => {
       renderDetail()
-      expect(document.querySelector('.kb-detailPage-badges')).toBeNull()
+      expect(document.querySelector('.theme-detail-page-badges')).toBeNull()
     })
   })
 
@@ -120,7 +120,7 @@ describe('DetailPage', () => {
   describe('with a task entry', () => {
     it('shows task badges', () => {
       renderDetail(task)
-      const badges = document.querySelector('.kb-detailPage-badges')
+      const badges = document.querySelector('.theme-detail-page-badges')
       expect(badges).not.toBeNull()
       expect(badges?.textContent).toContain('high')
       expect(badges?.textContent).toContain('doing')

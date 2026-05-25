@@ -1,9 +1,9 @@
+import { copyTextForEntry } from '@core'
+import { resolveCurrentEntry } from '@core/helpers/entry_action/resolve_current_entry.util'
 import type { RpcKnowledge } from '@shared/rpc'
 import { fireAndForget } from '@shared/utils'
-import type { MutableRefObject, RefObject } from 'react'
+import type { RefObject } from 'react'
 import { useCallback, useReducer, useRef } from 'react'
-import { resolveCurrentEntry } from '../../../../core/helpers/entry_action/resolve_current_entry.util'
-import { copyTextForEntry } from '../../../../core/index.ts'
 import type { EntryActionContext } from '../../actions/entry_action_panel.types'
 import { executeEntryAction } from '../../actions/execute_entry_action.util'
 import { clipboardCopiedToastMessage } from '../../utils/list/list_formatters.util'
@@ -42,7 +42,7 @@ type ViewNavigationDepsSnapshot = {
 }
 
 type ViewNavigationKeyCtx = {
-  depsRef: MutableRefObject<ViewNavigationDepsSnapshot>
+  depsRef: RefObject<ViewNavigationDepsSnapshot>
   advance: () => void
   retreat: () => void
   searchInputRef?: RefObject<HTMLInputElement | null>

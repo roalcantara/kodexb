@@ -39,7 +39,7 @@ describe('DependencyGraph', () => {
   describe('when entry has no dependencies', () => {
     it('renders nothing', () => {
       render(<DependencyGraph entry={setup} allEntries={[setup]} onSelectEntry={() => undefined} />)
-      expect(document.querySelector('.kb-dependencyGraph')).toBeNull()
+      expect(document.querySelector('.theme-dependency-graph')).toBeNull()
     })
   })
 

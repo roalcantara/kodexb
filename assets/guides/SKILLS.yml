@@ -1,30 +1,30 @@
 schema_version: 3
-description: Project skill registry for kb. This file drives validation, generated routing snippets, and consistency
+description: Project skill registry. This file drives validation, generated routing snippets, and consistency
   checks against skills-lock.json.
 locations:
   owned: Project-authored skill committed under .agents/skills/<skill-id>.
   project: External skill managed by the Skills CLI, recorded in skills-lock.json, and restored into .agents/skills/<skill-id>.
   global: Global-only companion used from $HOME/.agents/skills/<skill-id> when available.
 skills:
-  kb-context:
+  app-context:
     location: owned
     rationale: Mandatory project orientation. It defines FCIS, allowed RPC shape, guide routing, and the project quality workflow.
     policy:
       type: required
       usage:
-        summary: Always load at the start of any kb task.
+        summary: Always load at the start of any project task.
         when:
           load:
-            - any kb task
+            - any project task
           avoid: []
-  kb-rpc:
+  app-rpc:
     location: owned
     rationale: Canonical app-level RPC guidance for Elysia, Eden Treaty, and TypeBox. It prevents drift toward unsupported
       schema or ORM patterns.
     policy:
       type: required
       usage:
-        summary: Load when touching kb app-level RPC.
+        summary: Load when touching app-level RPC.
         when:
           load:
             - src/shell/main/rpc
@@ -32,7 +32,7 @@ skills:
             - preview server route mirrors
           avoid:
             - native Electrobun IPC without app-level RPC changes
-  kb-testing:
+  app-testing:
     location: owned
     rationale: Canonical testing workflow for co-located Bun specs, harnesses, and Electron/Electrobun-shaped test boundaries.
     policy:
@@ -46,7 +46,7 @@ skills:
             - fixture or factory changes
           avoid:
             - documentation-only edits with no test impact
-  kb-quality-gate:
+  app-quality-gate:
     location: owned
     rationale: Executable completion gate. Prefer this over generic verification checklists when declaring work complete or
       preparing commits.
@@ -185,7 +185,7 @@ skills:
             - custom React-only UI controls
   electrobun-rpc:
     location: project
-    rationale: Use for native Electrobun IPC only. App-level kb RPC remains owned by kb-rpc.
+    rationale: Use for native Electrobun IPC only. App-level RPC remains owned by app-rpc.
     policy:
       type: routed
       usage:
@@ -208,7 +208,7 @@ skills:
             note: native IPC transport only
   electrobun-dev:
     location: project
-    rationale: Supports development-cycle troubleshooting without replacing kb's project workflow.
+    rationale: Supports development-cycle troubleshooting without replacing the project workflow.
     policy:
       type: routed
       usage:
@@ -252,7 +252,7 @@ skills:
               - distribution failures
   electrobun-platform:
     location: project
-    rationale: Supports platform-specific desktop behavior while keeping kb guides authoritative.
+    rationale: Supports platform-specific desktop behavior while keeping the project guides authoritative.
     policy:
       type: routed
       usage:
@@ -289,7 +289,7 @@ skills:
             - app feature implementation with no packaging concern
   electrobun-sdlc:
     location: project
-    rationale: Useful for larger Electrobun feature planning, while kb's specs, prototype gate, and quality gate remain canonical.
+    rationale: Useful for larger Electrobun feature planning, while the project's specs, prototype gate, and quality gate remain canonical.
     policy:
       type: routed
       usage:
@@ -299,7 +299,7 @@ skills:
             - End-to-end Electrobun feature pipeline
             - multi-agent SDLC
           avoid:
-            - replacing kb specs, prototype gate, or quality gate
+            - replacing project specs, prototype gate, or quality gate
       routing:
         electrobun:
           - order: 80
@@ -308,7 +308,7 @@ skills:
               - multi-agent SDLC
   electrobun-workflow:
     location: project
-    rationale: Useful for framework workflow questions but does not replace kb's feature/spec workflow.
+    rationale: Useful for framework workflow questions but does not replace the project's feature/spec workflow.
     policy:
       type: routed
       usage:
@@ -327,7 +327,7 @@ skills:
               - lifecycle between dev/build/ship
   electrobun-kitchen-sink:
     location: project
-    rationale: Reference examples only. Do not copy patterns without reconciling them with kb guides.
+    rationale: Reference examples only. Do not copy patterns without reconciling them with the project guides.
     policy:
       type: routed
       usage:
@@ -338,7 +338,7 @@ skills:
             - defineTest
             - upstream Electrobun test harness
           avoid:
-            - copying examples without adapting to kb conventions
+            - copying examples without adapting to project conventions
       routing:
         electrobun:
           - order: 100
@@ -348,7 +348,7 @@ skills:
               - upstream Electrobun test harness
   electrobun-testing:
     location: project
-    rationale: Useful for framework-specific testing patterns, with kb-testing as the project authority.
+    rationale: Useful for framework-specific testing patterns, with app-testing as the project authority.
     policy:
       type: routed
       usage:
@@ -358,7 +358,7 @@ skills:
             - Electrobun's own test framework patterns
             - defineTest
           avoid:
-            - normal kb Bun specs that are covered by kb-testing
+            - normal project Bun specs that are covered by app-testing
       routing:
         electrobun:
           - order: 110
@@ -388,7 +388,7 @@ skills:
               - WGSL
   electrobun-milady:
     location: project
-    rationale: Helpful as upstream context for the milady repository, but not part of kb's normal feature workflow.
+    rationale: Helpful as upstream context for the milady repository, but not part of the project's normal feature workflow.
     policy:
       type: routed
       usage:
@@ -398,7 +398,7 @@ skills:
             - milady-ai/milady repo PRs
             - Electrobun conventions
           avoid:
-            - kb app feature implementation unless upstream milady context is needed
+            - project app feature implementation unless upstream milady context is needed
       routing:
         electrobun:
           - order: 130
@@ -418,7 +418,7 @@ skills:
             - streaming native IPC
             - advanced Electrobun IPC after electrobun-rpc
           avoid:
-            - normal kb app-level RPC
+            - normal project app-level RPC
   bun-development:
     location: project
     rationale: Useful for Bun implementation details while the project Bun guide remains authoritative.
@@ -464,25 +464,25 @@ skills:
             - straightforward edits with no failure mode
       surfaces:
         claude_optional: before fixing failing tests, gate failures, or unexpected behavior
-        kb_context_optional: Investigating failing tests, gate failures, regressions, or unexpected behavior.
+        app_context_optional: Investigating failing tests, gate failures, regressions, or unexpected behavior.
   elysia:
     location: global
     rationale: Useful for route mechanics, TypeBox route schemas, handler typing, and app.handle() testing. Do not follow
-      generic scaffolding that conflicts with kb.
+      generic scaffolding that conflicts with the project.
     policy:
       type: optional
       usage:
-        summary: Elysia route mechanics under kb-rpc.
+        summary: Elysia route mechanics under app-rpc.
         when:
           load:
             - Elysia route mechanics
             - TypeBox route schemas
             - app.handle() testing
           avoid:
-            - generic scaffolding that conflicts with kb-rpc
+            - generic scaffolding that conflicts with app-rpc
       surfaces:
-        claude_optional: for Elysia route mechanics, after kb-rpc
-        kb_context_optional: Checking Elysia route mechanics after loading kb-rpc.
+        claude_optional: for Elysia route mechanics, after app-rpc
+        app_context_optional: Checking Elysia route mechanics after loading app-rpc.
   receiving-code-review:
     location: global
     rationale: Useful when review feedback is ambiguous, broad, or likely to require careful sequencing.
@@ -498,7 +498,7 @@ skills:
             - self-contained edits with no review context
       surfaces:
         claude_optional: when applying review feedback
-        kb_context_optional: Applying review feedback, especially when feedback is ambiguous or broad.
+        app_context_optional: Applying review feedback, especially when feedback is ambiguous or broad.
   requesting-code-review:
     location: global
     rationale: Useful for preparing reviewable summaries and surfacing residual risks.
@@ -515,7 +515,7 @@ skills:
             - private scratch work with no review recipient
       surfaces:
         claude_optional: when preparing a review handoff or PR
-        kb_context_optional: Preparing a review handoff, PR, or larger completed change for scrutiny.
+        app_context_optional: Preparing a review handoff, PR, or larger completed change for scrutiny.
   mise-tasks:
     location: global
     rationale: Useful for mise task definitions, dependencies, aliases, arguments, and multi-step workflow orchestration.
@@ -533,7 +533,7 @@ skills:
             - runtime feature implementation with no task changes
       surfaces:
         claude_optional: when editing mise.toml or task orchestration
-        kb_context_optional: Editing mise.toml, task dependencies, or multi-step project workflows.
+        app_context_optional: Editing mise.toml, task dependencies, or multi-step project workflows.
   mise-expert:
     location: global
     rationale: Useful for tool versions and environment setup questions that are broader than task orchestration.
@@ -550,7 +550,7 @@ skills:
             - ordinary task wiring covered by mise-tasks
       surfaces:
         claude_optional: when editing mise tool versions or environment setup
-        kb_context_optional: Editing mise tool versions or environment setup.
+        app_context_optional: Editing mise tool versions or environment setup.
   ast-grep:
     location: global
     rationale: The quality stack already uses ast-grep, so this skill is useful for structural search and rewrite rules.
@@ -567,7 +567,7 @@ skills:
             - text-only searches where rg is enough
       surfaces:
         claude_optional: for structural search or rewrite rules
-        kb_context_optional: Authoring or debugging structural search and rewrite rules.
+        app_context_optional: Authoring or debugging structural search and rewrite rules.
   knip:
     location: global
     rationale: Useful for resolving knip findings and deciding whether unused symbols should be removed, exported, or configured.
@@ -584,7 +584,7 @@ skills:
             - deleting public API without project context
       surfaces:
         claude_optional: for unused exports, files, or dependencies
-        kb_context_optional: Resolving unused exports, files, dependencies, or knip configuration findings.
+        app_context_optional: Resolving unused exports, files, dependencies, or knip configuration findings.
   jscpd:
     location: global
     rationale: Useful for duplication reports and for deciding whether a shared abstraction is worth the added indirection.
@@ -600,7 +600,7 @@ skills:
             - extracting incidental similarity that worsens clarity
       surfaces:
         claude_optional: for duplication reports and extraction judgment
-        kb_context_optional: Investigating duplication reports and planning small shared abstractions.
+        app_context_optional: Investigating duplication reports and planning small shared abstractions.
   dry-principle:
     location: global
     rationale: Useful for review judgment around duplication, subordinate to FCIS, CODESTYLE_GUIDE.md, and small-module rules.
@@ -616,7 +616,7 @@ skills:
             - forcing abstraction over clearer repetition
       surfaces:
         claude_optional: when deciding whether duplication warrants extraction
-        kb_context_optional: Deciding whether duplication warrants extraction.
+        app_context_optional: Deciding whether duplication warrants extraction.
   solid-principles:
     location: global
     rationale: Useful for class and module design review, subordinate to FCIS and existing project architecture rules.
@@ -633,10 +633,10 @@ skills:
             - overriding FCIS boundaries or local module conventions
       surfaces:
         claude_optional: for class or module design review
-        kb_context_optional: Reviewing class or module design.
+        app_context_optional: Reviewing class or module design.
   react:components:
     location: global
-    rationale: Useful for component translation, but its Vite/npm assumptions must be adapted to kb's renderer, Bun, and
+    rationale: Useful for component translation, but its Vite/npm assumptions must be adapted to the project's renderer, Bun, and
       guide stack.
     policy:
       type: optional
@@ -647,10 +647,10 @@ skills:
             - translating design artifacts into React components
             - adapting component structure
           avoid:
-            - bypassing kb renderer conventions
+            - bypassing project renderer conventions
       surfaces:
         claude_optional: when translating design artifacts into renderer components
-        kb_context_optional: Translating design artifacts into renderer components, adapted to kb conventions.
+        app_context_optional: Translating design artifacts into renderer components, adapted to project conventions.
   stitch-design:
     location: global
     rationale: Useful for design intake and prototypes. Production src changes still require explicit prototype approval first.
@@ -667,7 +667,7 @@ skills:
             - production src changes without explicit prototype approval
       surfaces:
         claude_optional: for design intake or prototypes, under the prototype gate
-        kb_context_optional: Design intake or prototypes, only under the prototype gate.
+        app_context_optional: Design intake or prototypes, only under the prototype gate.
   using-git-worktrees:
     location: global
     rationale: Useful for isolated parallel work, but worktrees should not be created automatically in the normal desktop session.
@@ -683,10 +683,10 @@ skills:
             - normal single-worktree tasks
       surfaces:
         claude_optional: only when isolated parallel work is requested or approved
-        kb_context_optional: Isolated parallel work, only when requested or approved.
+        app_context_optional: Isolated parallel work, only when requested or approved.
   verification-before-completion:
     location: global
-    rationale: Helpful as a final reminder, but the executable authority is kb-quality-gate plus the relevant project guide
+    rationale: Helpful as a final reminder, but the executable authority is app-quality-gate plus the relevant project guide
       checks.
     policy:
       type: optional
@@ -697,10 +697,10 @@ skills:
             - final verification reminders
             - completion claims
           avoid:
-            - replacing kb-quality-gate
+            - replacing app-quality-gate
       surfaces:
-        claude_optional: as a reminder; kb-quality-gate remains the executable authority
-        kb_context_optional: Final reminder only; kb-quality-gate is the executable authority.
+        claude_optional: as a reminder; app-quality-gate remains the executable authority
+        app_context_optional: Final reminder only; app-quality-gate is the executable authority.
   agent-electrobun:
     location: global
     rationale: Useful for inspecting a running Electrobun app, but not a replacement for project tests or gates.
@@ -717,7 +717,7 @@ skills:
             - replacing project tests or quality gates
   bash-scripting:
     location: global
-    rationale: Useful for shell-heavy work, but kb should still prefer mise tasks over ad-hoc standalone scripts.
+    rationale: Useful for shell-heavy work, but the project should still prefer mise tasks over ad-hoc standalone scripts.
     policy:
       type: reference
       usage:
@@ -730,7 +730,7 @@ skills:
             - replacing mise tasks with standalone scripts
   bdd-gherkin-specification:
     location: global
-    rationale: Useful for acceptance-language discovery, but kb does not currently use Gherkin as its canonical test format.
+    rationale: Useful for acceptance-language discovery, but the project does not currently use Gherkin as its canonical test format.
     policy:
       type: reference
       usage:
@@ -753,7 +753,7 @@ skills:
             - BDD pattern questions
             - explicit BDD material
           avoid:
-            - default kb test workflow
+            - default project test workflow
   bdd-principles:
     location: global
     rationale: Good conceptual background for BDD, but too broad to project-route by default.
@@ -783,7 +783,7 @@ skills:
   elysiajs:
     location: global
     rationale: Broad Elysia guidance can help check APIs, but it suggests Zod, Valibot, Drizzle, Better Auth, WebSockets,
-      deployment scaffolds, and online lookup that conflict with kb defaults.
+      deployment scaffolds, and online lookup that conflict with project defaults.
     policy:
       type: reference
       usage:
@@ -791,9 +791,9 @@ skills:
         when:
           load:
             - upstream Elysia API checks
-            - framework reference after kb-rpc
+            - framework reference after app-rpc
           avoid:
-            - Zod, Valibot, Drizzle, Better Auth, WebSockets, or deployment scaffolds that conflict with kb
+            - Zod, Valibot, Drizzle, Better Auth, WebSockets, or deployment scaffolds that conflict with the project
   formatter-development:
     location: global
     rationale: Targets formatter implementation, not this repo's formatting workflow.
@@ -805,7 +805,7 @@ skills:
           load:
             - formatter implementation work
           avoid:
-            - normal Biome formatting usage in kb
+            - normal Biome formatting usage in the project
   playwright-bdd-gherkin-syntax:
     location: global
     rationale: Current preview and e2e workflows do not require Gherkin-backed Playwright syntax.
@@ -830,7 +830,7 @@ skills:
             - broad QA planning
             - supplemental QA thinking
           avoid:
-            - replacing kb-quality-gate, DoD.md, or TESTING_GUIDE.md
+            - replacing app-quality-gate, DoD.md, or TESTING_GUIDE.md
   domain-name-brainstormer:
     location: global
     rationale: Product naming and domain brainstorming are unrelated to this repo's implementation and governance workflow.
@@ -838,25 +838,25 @@ skills:
       type: blocked
       reason: unrelated_to_project_workflow
       avoid:
-        - any kb implementation or governance task
+        - any project implementation or governance task
   functional-core-imperative-shell:
     location: global
-    rationale: kb already has FCIS as a project architecture rule, and the global skill's mandatory comments do not match
+    rationale: The project already has FCIS as an architecture rule, and the global skill's mandatory comments do not match
       current source conventions.
     policy:
       type: blocked
       reason: covered_by_project_guides
       redirect_to:
         - assets/guides/FCIS.guide.md
-        - .agents/skills/kb-context/SKILL.md
+        - .agents/skills/app-context/SKILL.md
       avoid:
         - direct adoption
-        - mandatory comments that do not match kb conventions
+        - mandatory comments that do not match project conventions
   stitch-loop:
     location: global
-    rationale: Its autonomous website iteration workflow does not match kb's desktop app and gated implementation process.
+    rationale: Its autonomous website iteration workflow does not match the project's desktop app and gated implementation process.
     policy:
       type: blocked
       reason: incompatible_workflow
       avoid:
-        - any kb implementation task
+        - any project implementation task

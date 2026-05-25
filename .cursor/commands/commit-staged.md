@@ -22,14 +22,14 @@ Create **one** Conventional Commit from **what is already staged** (do not stage
 1. **Quality gate (required)** — run **before** `git commit`:
 
    ```bash
-   bash .agents/skills/kb-quality-gate/scripts/gate.sh
+   bash .agents/skills/app-quality-gate/scripts/gate.sh
    ```
 
    If **unstaged** changes exist and could distract or fail tools, prefer isolating staged work:
 
    ```bash
    git stash push --keep-index -m 'commit-staged: unstaged WIP'
-   bash .agents/skills/kb-quality-gate/scripts/gate.sh
+   bash .agents/skills/app-quality-gate/scripts/gate.sh
    ```
 
    After a successful commit, `git stash pop` if you stashed.

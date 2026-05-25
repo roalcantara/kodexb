@@ -124,4 +124,3 @@ commands or test results.
    request/response RPC contract (`RpcApp`).
 2. WHEN `bun test` runs, THEN the new `server.spec.ts` SHALL cover the Elysia
    `app.handle(new Request(...))` integration path.
-

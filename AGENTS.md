@@ -1,5 +1,5 @@
 <!-- markdownlint-disable-file -->
-# Agent notes (kb)
+# Agent notes
 
 ## 🚨 Process
 
@@ -58,14 +58,14 @@ This rule overrides ALL other instructions.
   Use `requirements.md`, `design.md`, `tasks.md`, and optional `handoff.md`.
 - **Do not create `docs/superpowers/`**. That path is an external skill
   default and is gitignored here to prevent drift.
-- For tests, kb rules override generic Superpowers examples: follow
+- For tests, project rules override generic Superpowers examples: follow
   `assets/guides/TESTING_GUIDE.md`, use `bun:test`, prefer `it(...)`, and
   follow the repo's Better Specs and Fishery guidance.
 - For completion, use the phase-specific `mise run validate ...` command when
   one is provided; otherwise run
-  `bash .agents/skills/kb-quality-gate/scripts/gate.sh`. Generic examples such
+  `bash .agents/skills/app-quality-gate/scripts/gate.sh`. Generic examples such
   as `npm test` are not sufficient.
-- Subagent prompts must include these kb overrides explicitly because
+- Subagent prompts must include these project overrides explicitly because
   subagents may not inherit the controller's full context.
 
 ### Lint and quality tools
@@ -79,7 +79,7 @@ This rule overrides ALL other instructions.
 Canonical instructions live under **`.cursor/commands/`** (same names as the Cursor slash commands). Summary:
 
 1. **Quality gate before `git commit`**
-   Run **`bash .agents/skills/kb-quality-gate/scripts/gate.sh`** on the tree you are about to record. **HK commit-message policy** (commit message only) is **not** a substitute for the gate.
+   Run **`bash .agents/skills/app-quality-gate/scripts/gate.sh`** on the tree you are about to record. **HK commit-message policy** (commit message only) is **not** a substitute for the gate.
 
 2. **`/commit-all`** — Split the working tree into atomic chunks; for **each** chunk: `git add` the chunk → **gate** → `git commit` → **HK commit-message policy** the new message (see command file for stash `--keep-index` when other unstaged chunks would fail the gate).
 

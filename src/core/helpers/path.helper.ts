@@ -1,4 +1,4 @@
-import type { Env } from '../../shared/types'
+import type { Env } from '@shared/types'
 
 const HOME_TILDE_RE = /^~/
 const ENV_BRACES_RE = /\$\{([A-Za-z_][A-Za-z0-9_]*)\}/g

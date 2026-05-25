@@ -1,7 +1,7 @@
 ---
-name: kb-testing
+name: app-testing
 description: >
-  Use when writing or modifying any test in the kb codebase — unit specs,
+  Use when writing or modifying any test in this codebase — unit specs,
   integration specs, renderer component specs, Elysia RPC handler tests, or
   pure FCIS core/domain specs. Triggers on: adding a function/component
   without a co-located spec, fixing a flaky test, lowering coverage,
@@ -11,7 +11,7 @@ description: >
   factories where domain validation matters) compound fast.
 ---
 
-# kb Testing Conventions
+# App Testing Conventions
 
 ## Overview
 
@@ -25,7 +25,7 @@ this skill ever disagrees, the guides win:
 - [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md) — pure
   core specs: no setup, no mocks, no async.
 
-The kb test contract in one sentence: **`bun:test` only, co-located specs,
+The test contract in one sentence: **`bun:test` only, co-located specs,
 real implementations with controlled inputs, factories from `@testing`,
 in-memory SQLite, ≥ 80% coverage.**
 
@@ -96,7 +96,7 @@ the canonical list; the rules that bite most often:
 
 ## Table-driven tests
 
-The canonical kb shape (matches `TESTING_GUIDE.md` §Recommended Patterns):
+The canonical project shape (matches `TESTING_GUIDE.md` §Recommended Patterns):
 
 ```ts
 import { describe, it, expect } from 'bun:test'
@@ -330,7 +330,7 @@ bun test --coverage
 
 Coverage only instruments imported files; orphan source files won't appear
 even when uncovered. Inspect the file list, don't trust the percentage
-alone. New code without a co-located spec is flagged by **kb-quality-gate**
+alone. New code without a co-located spec is flagged by **app-quality-gate**
 and blocks the gate.
 
 ## Common Mistakes

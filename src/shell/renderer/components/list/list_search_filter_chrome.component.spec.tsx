@@ -31,7 +31,7 @@ function renderChrome(overrides: Partial<Parameters<typeof ListSearchFilterChrom
     onSearchChange: () => undefined,
     onSearchArrowDown: () => undefined,
     filterButtonRef: createRef<HTMLButtonElement>(),
-    filterChipCls: 'kb-pt-filter-chip',
+    filterChipCls: 'theme-filter-chip',
     filterSummary: 'All entries',
     onToggleFilter: () => undefined,
     filterOpen: false,
@@ -81,7 +81,7 @@ describe('ListSearchFilterChrome', () => {
   describe('when in full detail', () => {
     it('renders drag stripe', () => {
       const { container } = renderChrome({ isFullDetail: true })
-      expect(container.querySelector('.kb-windowDragStripe--detail')).toBeTruthy()
+      expect(container.querySelector('.theme-window-drag-stripe--detail')).toBeTruthy()
     })
   })
 })

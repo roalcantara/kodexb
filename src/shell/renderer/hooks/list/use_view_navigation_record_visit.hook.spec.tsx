@@ -1,6 +1,6 @@
 import { beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test'
+import { rpcBookmarkRow } from '@testing/helpers/rpc_knowledge_test_row.util'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { rpcBookmarkRow } from '../../../../__tests__/helpers/rpc_knowledge_test_row.util'
 import {
   installEntryActionPanelDepsMock,
   installRecordEntryVisitMock,

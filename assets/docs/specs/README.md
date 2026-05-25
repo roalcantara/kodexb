@@ -38,4 +38,4 @@ When an AI skill or template says to write under `docs/superpowers/`, use the `s
 - [Mise usage policy](mise-usage/design.md) — executable policy for Mise task shape, embedded Usage specs, package scripts, and automation entrypoints; [requirements](mise-usage/requirements.md), [tasks](mise-usage/tasks.md), [handoff](mise-usage/handoff.md).
 - [Mise usage improvements](mise-usage-improvements/design.md) — final Mise task contract cleanup, nested command surface, package script pruning, CI updates, and command validation matrix; [requirements](mise-usage-improvements/requirements.md), [tasks](mise-usage-improvements/tasks.md), [handoff](mise-usage-improvements/handoff.md).
 
-Also documented in [`CLAUDE.md`](../../../CLAUDE.md) (reference docs) and [`.agents/skills/kb-context/SKILL.md`](../../../.agents/skills/kb-context/SKILL.md).
+Also documented in [`CLAUDE.md`](../../../CLAUDE.md) (reference docs) and [`.agents/skills/app-context/SKILL.md`](../../../.agents/skills/app-context/SKILL.md).

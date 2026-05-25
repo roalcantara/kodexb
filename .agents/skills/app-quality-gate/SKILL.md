@@ -1,7 +1,7 @@
 ---
-name: kb-quality-gate
+name: app-quality-gate
 description: >
-  Use when about to declare any kb feature, phase, or task complete — before
+  Use when about to declare any project feature, phase, or task complete — before
   commit, before PR, before reporting "done", or whenever asked "is this
   ready?". Triggers on: finishing a task, marking a roadmap phase complete,
   requesting review, claiming a fix. Also load it on every "small" change —
@@ -9,7 +9,7 @@ description: >
   phase's foundation.
 ---
 
-# kb Quality Gate
+# App Quality Gate
 
 ## Overview
 
@@ -39,7 +39,7 @@ Run the bundled script — it executes every stage in order and exits non-zero
 on the first failure:
 
 ```bash
-bash .agents/skills/kb-quality-gate/scripts/gate.sh
+bash .agents/skills/app-quality-gate/scripts/gate.sh
 ```
 
 If any stage fails, fix it, then re-run from Stage 0. Do NOT skip ahead.
@@ -69,7 +69,7 @@ fix backlog unless you tighten `package.json` later. `jscpd` reads
 ### Stage 0.5 — Policy (suppressions + guard reminders)
 
 ```bash
-bash .agents/skills/kb-quality-gate/scripts/gate_policy.sh
+bash .agents/skills/app-quality-gate/scripts/gate_policy.sh
 ```
 
 Runs automatically from `gate.sh` after Stage 0. It **fails** if the working
@@ -116,7 +116,7 @@ style guard passed (including FCIS — `dependency-cruiser` enforces "no
 bun test
 ```
 
-Zero failures, zero skipped. Use the **kb-testing** skill for fixture and
+Zero failures, zero skipped. Use the **app-testing** skill for fixture and
 spec patterns. Coverage check:
 
 ```bash
@@ -153,16 +153,16 @@ Confirms every Elysia route added in this change has a matching mirror in
 bun run build
 ```
 
-Per DoD §4: must produce `dist/kb.app` for macOS. Skip this stage only if
-`build:prod` is unavailable in the current environment (e.g. Linux runner
-without macOS toolchain) — but never skip on a developer machine before a
-release commit.
+Per DoD §4: must produce the macOS bundle (`dist/kb.app` — runtime app name).
+Skip this stage only if `build:prod` is unavailable in the current
+environment (e.g. Linux runner without macOS toolchain) — but never skip on
+a developer machine before a release commit.
 
 ## Definition of Done
 
 [`assets/guides/DoD.md`](../../../assets/guides/DoD.md) is the canonical list.
-Read it once per phase and tick each item. The kb-specific extras the guide
-does not fully spell out:
+Read it once per phase and tick each item. The project-specific extras the
+guide does not fully spell out:
 
 - Every new Elysia route is mirrored in `tools/preview/server.ts`.
 - `dependency-cruiser` reports zero violations — in particular no
@@ -185,17 +185,17 @@ Non-negotiable bits:
 
 ## Common Mistakes
 
-| Failure                           | Likely cause                                               | Fix                                                 |
-| --------------------------------- | ---------------------------------------------------------- | --------------------------------------------------- |
-| Manual fixing biome/knip/ast-grep | Ran `bun run lint` before `bun run lint:fix`               | Re-run with `lint:fix` first; many auto-correct     |
-| `knip` unused export              | Added a helper not imported anywhere                       | Use it or delete it                                 |
-| dep-cruiser violation             | Renderer imported from `src/shell/app/`                    | Route through Eden Treaty client only               |
-| dep-cruiser violation             | `core/` imported from `src/shell/` or `src/shared/logging` | Pass the dep in as a parameter (FCIS rule)          |
-| TypeBox / validation drift        | Used `z.*` or non–TypeBox shapes in an Elysia route        | Use `t.*` / TypeBox only; `zod` is not a dependency |
-| Coverage < 80%                    | New branch/function not exercised                          | Add spec cases for uncovered paths                  |
-| Preview-server route missing      | Added Elysia route but forgot to mirror                    | Add matching `case` in `tools/preview/server.ts`    |
-| Subject line > 50 chars           | Wrote subject in 72-char "body width" mode                 | Rewrite — HK's commit-message-policy will reject the commit anyway     |
-| `console.log` in `src/`           | Debug statement left in                                    | Delete; logging goes through `@shared/logging`      |
+| Failure                           | Likely cause                                               | Fix                                                                |
+| --------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------ |
+| Manual fixing biome/knip/ast-grep | Ran `bun run lint` before `bun run lint:fix`               | Re-run with `lint:fix` first; many auto-correct                    |
+| `knip` unused export              | Added a helper not imported anywhere                       | Use it or delete it                                                |
+| dep-cruiser violation             | Renderer imported from `src/shell/app/`                    | Route through Eden Treaty client only                              |
+| dep-cruiser violation             | `core/` imported from `src/shell/` or `src/shared/logging` | Pass the dep in as a parameter (FCIS rule)                         |
+| TypeBox / validation drift        | Used `z.*` or non–TypeBox shapes in an Elysia route        | Use `t.*` / TypeBox only; `zod` is not a dependency                |
+| Coverage < 80%                    | New branch/function not exercised                          | Add spec cases for uncovered paths                                 |
+| Preview-server route missing      | Added Elysia route but forgot to mirror                    | Add matching `case` in `tools/preview/server.ts`                   |
+| Subject line > 50 chars           | Wrote subject in 72-char "body width" mode                 | Rewrite — HK's commit-message-policy will reject the commit anyway |
+| `console.log` in `src/`           | Debug statement left in                                    | Delete; logging goes through `@shared/logging`                     |
 
 ## Red Flags — STOP and re-run the gate
 

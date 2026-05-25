@@ -8,13 +8,13 @@ describe('MdView', () => {
   describe('when rendering markdown', () => {
     it('renders a paragraph', () => {
       render(<MdView markdown="Hello world" />)
-      const p = document.querySelector('.kb-mdView p')
+      const p = document.querySelector('.theme-md-view p')
       expect(p?.textContent).toBe('Hello world')
     })
 
     it('renders fenced code block with language class', () => {
       render(<MdView markdown={'```ts\nconst x = 1\n```'} />)
-      const code = document.querySelector('.kb-mdView code')
+      const code = document.querySelector('.theme-md-view code')
       expect(code).not.toBeNull()
       const hasLangClass = Array.from(code?.classList ?? []).some(c => c.startsWith('language-'))
       expect(hasLangClass).toBe(true)
@@ -32,7 +32,7 @@ describe('MdView', () => {
           }}
         />
       )
-      await userEvent.click(document.querySelector('.kb-mdView-link') as HTMLButtonElement)
+      await userEvent.click(document.querySelector('.theme-md-view-link') as HTMLButtonElement)
       expect(opened).toBe('https://example.com/docs')
     })
   })

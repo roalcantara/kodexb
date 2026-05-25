@@ -1,7 +1,7 @@
 import { treaty } from '@elysiajs/eden'
 import type {
   ConfigPatch,
-  KbDesktopRpcSchema,
+  DesktopRpcSchema,
   ListOpts,
   ListStats,
   OpenDialogOpts,
@@ -31,7 +31,7 @@ const syncListeners: {
 
 /**
  * Electrobun-side webview RPC instance. Used for:
- *   - request bridge: `kbWebviewRpc.request.rpcCall({...})` reaches the main
+ *   - request bridge: `webviewRpc.request.rpcCall({...})` reaches the main
  *     process and is forwarded into `RpcApp.handle(request)`.
  *   - push messages: `syncProgress`, `syncComplete` from `App.sync` emitters.
  *
@@ -39,7 +39,7 @@ const syncListeners: {
  * time for `tools/preview/mock_electroview.ts`, which proxies `rpcCall`
  * through native `fetch` against the same `RpcApp` exposed over HTTP.
  */
-const kbWebviewRpc = Electroview.defineRPC<KbDesktopRpcSchema>({
+const webviewRpc = Electroview.defineRPC<DesktopRpcSchema>({
   maxRequestTime: RPC_TIMEOUT_MS,
   handlers: {
     requests: {},
@@ -54,11 +54,11 @@ const kbWebviewRpc = Electroview.defineRPC<KbDesktopRpcSchema>({
   }
 })
 
-new Electroview({ rpc: kbWebviewRpc })
+new Electroview({ rpc: webviewRpc })
 
 type RpcCallRequest = (params: RpcCallParams) => Promise<RpcCallResponse>
 
-const rpcCall = (kbWebviewRpc.request as unknown as { rpcCall: RpcCallRequest }).rpcCall
+const rpcCall = (webviewRpc.request as unknown as { rpcCall: RpcCallRequest }).rpcCall
 
 /**
  * Eden Treaty `fetcher` override — every Treaty call (e.g. `rpc.api.list.post(...)`)

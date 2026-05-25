@@ -61,4 +61,3 @@ The work is complete when every phase in `tasks.md` is checked, canonical task
 commands are documented, retained wrappers and exceptions are recorded, and the
 final quality gate result or exact blocker is captured.
 ```
-

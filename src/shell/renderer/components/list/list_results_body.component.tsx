@@ -50,7 +50,7 @@ export function ListResultsBody({
   return (
     <div
       ref={listSurfaceRef}
-      className="kb-pt-results"
+      className="theme-results"
       tabIndex={0}
       data-list-selection={selectedId === null ? 'false' : 'true'}
       onKeyDown={onKeyDown}
@@ -58,9 +58,9 @@ export function ListResultsBody({
       aria-label="Entries"
     >
       {emptyDb ? (
-        <div className="kb-pt-empty">
+        <div className="theme-empty-state">
           <p>No entries yet</p>
-          <div className="kb-pt-empty-detail">
+          <div className="theme-empty-state-detail">
             {syncInfo ? (
               <p>
                 Sources: <code>{syncInfo.sourcesDir}</code>
@@ -68,7 +68,7 @@ export function ListResultsBody({
             ) : null}
             {syncInfo ? (
               <p>
-                {syncInfo.fileCount} YAML file{syncInfo.fileCount === 1 ? '' : 's'} found
+                {syncInfo.fileCount} source file{syncInfo.fileCount === 1 ? '' : 's'} found
               </p>
             ) : null}
             <button ref={emptySyncButtonRef} type="button" onClick={onSync}>
@@ -78,12 +78,12 @@ export function ListResultsBody({
         </div>
       ) : null}
       {noResults ? (
-        <div className="kb-pt-empty">
+        <div className="theme-empty-state">
           <p>No results for this search.</p>
         </div>
       ) : null}
       {emptyList ? (
-        <div className="kb-pt-empty">
+        <div className="theme-empty-state">
           <p>No entries match the current filters.</p>
         </div>
       ) : null}
@@ -104,7 +104,7 @@ export function ListResultsBody({
         />
       ))}
       {virtualWindow.paddingBottom > 0 ? <div style={{ height: virtualWindow.paddingBottom }} aria-hidden /> : null}
-      {hasMore && rows.length > 0 ? <div ref={listSentinelRef} className="kb-listSentinel" aria-hidden /> : null}
+      {hasMore && rows.length > 0 ? <div ref={listSentinelRef} className="theme-list-sentinel" aria-hidden /> : null}
     </div>
   )
 }

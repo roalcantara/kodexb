@@ -23,7 +23,7 @@ describe('compactFilterOverlayKeyboard', () => {
     describe('when row count mismatches', () => {
       it('skips scrolling', () => {
         document.body.innerHTML = `
-        <div class="kb-pt-filter-dropdown">
+        <div class="theme-filter-dropdown">
           <input type="search" />
           <div data-compact-filter-scroll-root>
             <button type="button" data-compact-filter-row>one</button>

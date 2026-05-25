@@ -133,4 +133,3 @@ quality gate.
 If `bun run build` is not runnable on the current host, the implementer must
 record the exact blocker and run the closest supported build-smoke command
 already used by the repository.
-

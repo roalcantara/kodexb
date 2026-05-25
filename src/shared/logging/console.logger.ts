@@ -1,9 +1,9 @@
 import { getLogger } from '@logtape/logtape'
 import type { ConsoleMethod, CreateLoggerOpts, LogProps, PhaseLabel } from '../types/logger.types'
-import type { KbLogVerbosity } from './kb_log_verbosity'
+import type { LogVerbosity } from './log_verbosity'
 import { syncLogging } from './logtape.adapter'
 
-function resolveVerbosity(opts: CreateLoggerOpts): KbLogVerbosity {
+function resolveVerbosity(opts: CreateLoggerOpts): LogVerbosity {
   if (opts.verbosity !== undefined) return opts.verbosity
   if (opts.debug === true) return 'debug'
   return 'default'

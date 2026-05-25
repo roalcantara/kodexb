@@ -90,7 +90,7 @@ describe('ListResultsBody', () => {
       })
 
       expect(screen.getByText(EXAMPLE_URL_RE)).toBeTruthy()
-      expect(container.querySelector('.kb-listSentinel')).toBeTruthy()
+      expect(container.querySelector('.theme-list-sentinel')).toBeTruthy()
     })
   })
 })

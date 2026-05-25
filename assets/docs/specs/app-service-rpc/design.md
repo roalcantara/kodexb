@@ -149,4 +149,3 @@ These are handled in the renderer via `Electroview.defineRPC({ handlers: { messa
   client is invoked and errors surface consistently.
 - **Preview:** smoke test via `bun tools/preview/server.ts` plus a `curl` POST
   to `/api/getStats`.
-

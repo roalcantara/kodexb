@@ -26,7 +26,7 @@ export type CreateLoggerOpts = {
    * App log verbosity (Logtape `['kb']` lowestLevel).
    * When set with `debug`, `verbosity` wins.
    */
-  verbosity?: import('../logging/kb_log_verbosity').KbLogVerbosity
+  verbosity?: import('../logging/log_verbosity').LogVerbosity
   /** @deprecated Prefer `verbosity`. `true` is treated as `verbosity: 'debug'`. */
   debug?: boolean
 }

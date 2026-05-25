@@ -20,7 +20,9 @@ describe('PreviewImage', () => {
         />
       )
       await waitFor(() =>
-        expect(document.querySelector('.kb-previewImage img')?.getAttribute('src')).toBe('https://img.example/a.png')
+        expect(document.querySelector('.theme-preview-image img')?.getAttribute('src')).toBe(
+          'https://img.example/a.png'
+        )
       )
     })
   })
@@ -28,14 +30,14 @@ describe('PreviewImage', () => {
   describe('when RPC fails', () => {
     it('hides the container', async () => {
       render(<PreviewImage url="https://example.com" fetchImage={() => Promise.reject(new Error('no image'))} />)
-      await waitFor(() => expect(document.querySelector('.kb-previewImage')).toBeNull())
+      await waitFor(() => expect(document.querySelector('.theme-preview-image')).toBeNull())
     })
   })
 
   describe('with a YouTube URL', () => {
     it('renders thumbnail and button', () => {
       render(<PreviewImage url="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />)
-      expect(document.querySelector('.kb-previewImage img')?.getAttribute('src')).toContain('dQw4w9WgXcQ')
+      expect(document.querySelector('.theme-preview-image img')?.getAttribute('src')).toContain('dQw4w9WgXcQ')
       expect(screen.getByText('▶ Open on YouTube')).not.toBeNull()
     })
   })

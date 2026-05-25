@@ -1,8 +1,5 @@
-import {
-  previewImageFromHtml,
-  youtubePreviewImage
-} from '../../../core/domain/models/knowledges/preview/preview_image.parser'
-import type { PreviewImageResult } from '../../../shared/rpc'
+import { previewImageFromHtml, youtubePreviewImage } from '@core/domain/models/knowledges/preview/preview_image.parser'
+import type { PreviewImageResult } from '@shared/rpc'
 import { OG_FETCH_TIMEOUT_MS } from './app_entry_preview.util'
 
 function isWebUrl(parsed: URL): boolean {

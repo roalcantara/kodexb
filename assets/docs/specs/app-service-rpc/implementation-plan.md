@@ -623,7 +623,7 @@ git commit -m "chore(rpc): quality gate after Phase 5"
 
 **Two execution options:**
 
-1. **Subagent-driven (recommended)** — Fresh subagent per task; review between tasks.  
+1. **Subagent-driven (recommended)** — Fresh subagent per task; review between tasks.
 2. **Inline execution** — One agent runs tasks in order with human checkpoints after Tasks 4, 6, 8, 12.
 
 **Which approach do you want?** (Reply in chat; the next implementing agent should declare the same at kickoff.)

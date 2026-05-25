@@ -1,7 +1,7 @@
+import { resolveCurrentEntry } from '@core/helpers/entry_action/resolve_current_entry.util'
 import type { RpcKnowledge } from '@shared/rpc'
 import { fireAndForget } from '@shared/utils'
 import { useCallback } from 'react'
-import { resolveCurrentEntry } from '../../../../core/helpers/entry_action/resolve_current_entry.util'
 import { buildEntryActionPanel } from '../../actions/build_entry_action_panel.util'
 import type { EntryActionContext } from '../../actions/entry_action_panel.types'
 import type { EntryActionPanelDeps } from '../../actions/entry_action_panel_deps.util'

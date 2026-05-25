@@ -265,8 +265,8 @@ The canonical engineering and agent definitions are split by purpose:
 | [Electrobun routing][25] | Which Electrobun skill to read for desktop shell, build, platform, RPC, and automation work.              |
 
 Skill routing follows one rule of thumb: project-specific guidance wins. Load
-`kb-context` for any kb task, then add narrower skills such as `kb-rpc`,
-`kb-testing`, `kb-quality-gate`, or the routed Electrobun skill when the work
+`app-context` for any project task, then add narrower skills such as `app-rpc`,
+`app-testing`, `app-quality-gate`, or the routed Electrobun skill when the work
 calls for them.
 
 `mise run skill install` restores Skills CLI-managed project skills from

@@ -62,10 +62,10 @@ export type ListScrollMetrics = {
 
 /**
  * Measures the first rendered list row inside `root`.
- * Compact PowerToys-style rows use `.kb-pt-row`; legacy rows use `.kb-entryRow`.
+ * Compact PowerToys-style rows use `.theme-list-row`; legacy rows use `.theme-entry-row`.
  */
 export function readListScrollMetrics(root: HTMLElement): ListScrollMetrics {
-  const row = root.querySelector<HTMLElement>('.kb-pt-row, .kb-entryRow')
+  const row = root.querySelector<HTMLElement>('.theme-list-row, .theme-entry-row')
   const measuredRowHeight = row?.getBoundingClientRect().height ?? 0
   return {
     scrollTop: root.scrollTop,

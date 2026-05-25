@@ -1,4 +1,4 @@
-import type { OpenDialogOpts } from '../../../shared/rpc'
+import type { OpenDialogOpts } from '@shared/rpc'
 
 /** Optional native hooks (mutate after `BrowserWindow` construction). */
 export type AppShellHooks = {

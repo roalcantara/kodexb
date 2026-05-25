@@ -160,14 +160,14 @@ playwright-report
 
 # Skills CLI project materializations; restored from skills-lock.json.
 .agents/skills/*
-!.agents/skills/kb-context/
-!.agents/skills/kb-context/**
-!.agents/skills/kb-quality-gate/
-!.agents/skills/kb-quality-gate/**
-!.agents/skills/kb-rpc/
-!.agents/skills/kb-rpc/**
-!.agents/skills/kb-testing/
-!.agents/skills/kb-testing/**
+!.agents/skills/app-context/
+!.agents/skills/app-context/**
+!.agents/skills/app-quality-gate/
+!.agents/skills/app-quality-gate/**
+!.agents/skills/app-rpc/
+!.agents/skills/app-rpc/**
+!.agents/skills/app-testing/
+!.agents/skills/app-testing/**
 .claude/skills/*
 
 # code coverage
@@ -215,4 +215,5 @@ tools/benchmarks/results/latest.json
 # Graphify cache
 graphify-out/cache/
 
-build
+# Electrobun build output (top-level only; tools/build/ is source)
+/build

@@ -12,14 +12,14 @@ export function BrandIconOrGlyph({ basename, title, fallbackChar }: BrandIconOrG
   const [broken, setBroken] = useState(false)
   if (broken) {
     return (
-      <span className="kb-entryGlyph" title={title}>
+      <span className="theme-entry-glyph" title={title}>
         {fallbackChar}
       </span>
     )
   }
   return (
     <img
-      className="kb-entryGlyph kb-entryGlyphImg"
+      className="theme-entry-glyph theme-entry-glyph-img"
       src={brandSvgAssetUrl(basename)}
       alt=""
       aria-label={title}

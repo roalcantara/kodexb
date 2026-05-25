@@ -1,5 +1,5 @@
+import type { EntryActionId } from '@core/helpers/entry_action/entry_action_ids.const'
 import type { RpcKnowledge } from '@shared/rpc'
-import type { EntryActionId } from '../../../core/helpers/entry_action/entry_action_ids.const'
 
 export type EntryActionSection = 'entry' | 'clipboard' | 'source' | 'library' | 'app'
 

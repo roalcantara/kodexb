@@ -32,12 +32,12 @@ describe('listPageTabRing', () => {
         <button type="button" id="sync">sync</button>
         <button type="button" id="settings">settings</button>
         <div id="list" tabindex="0">list</div>
-        <aside class="kb-detailPanel kb-detailPanel--visible">
+        <aside class="theme-detail-panel theme-detail-panel--visible">
           <button type="button" id="detailBtn">detail-btn</button>
         </aside>
-        <div class="kb-filterStack">
+        <div class="theme-filter-stack">
           <button type="button" id="backdrop">backdrop</button>
-          <section class="kb-filterDrop"><input id="filterQ" type="text" /></section>
+          <section class="theme-filter-drop"><input id="filterQ" type="text" /></section>
         </div>
       `
 

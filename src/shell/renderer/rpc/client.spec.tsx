@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { RpcSyncProgressPayload } from '@shared/rpc'
-import { factoryFor } from '../../../__tests__/factories/factories.builder'
+import { factoryFor } from '@testing/factories/factories.builder'
 import {
   getElectrobunMessageHandler,
   type RpcCallParams,
   setRpcCallHandler
-} from '../../../__tests__/helpers/testing.electrobun_view.mock'
+} from '@testing/helpers/testing.electrobun_view.mock'
 
 const rpcCallMock = mock<(params: RpcCallParams) => Promise<{ status: number; body: string }>>()
 

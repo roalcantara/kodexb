@@ -49,13 +49,13 @@ export function Toolbar({
     onSearchArrowDown?.()
   }
   return (
-    <header className="kb-toolbar">
-      <button ref={filterButtonRef} type="button" className="kb-toolbar-filter" onClick={onFilterClick}>
+    <header className="theme-toolbar">
+      <button ref={filterButtonRef} type="button" className="theme-toolbar-filter" onClick={onFilterClick}>
         kb {filterLabel} ({resultCount}) ▼
       </button>
       <input
         ref={searchInputRef}
-        className="kb-toolbar-search"
+        className="theme-toolbar-search"
         type="search"
         placeholder="Search your knowledge base…"
         value={search}
@@ -67,11 +67,11 @@ export function Toolbar({
         onKeyDown={onSearchKeyDown}
         aria-label="Search"
       />
-      <button ref={syncButtonRef} type="button" className="kb-toolbar-sync" onClick={onSync} disabled={syncing}>
+      <button ref={syncButtonRef} type="button" className="theme-toolbar-sync" onClick={onSync} disabled={syncing}>
         {syncing ? `⟳ Sync${syncHint}` : '↺ Sync'}
       </button>
       {onNewTask === undefined ? null : (
-        <button ref={newTaskButtonRef} type="button" className="kb-toolbar-sync" onClick={onNewTask}>
+        <button ref={newTaskButtonRef} type="button" className="theme-toolbar-sync" onClick={onNewTask}>
           + New Task
         </button>
       )}
@@ -79,14 +79,14 @@ export function Toolbar({
         <button
           ref={settingsButtonRef}
           type="button"
-          className="kb-toolbar-settings"
+          className="theme-toolbar-settings"
           onClick={onSettings}
           aria-label="Settings"
         >
           ⚙
         </button>
       )}
-      <button type="button" className="kb-toolbar-hint" onClick={onCmdK} title="Action palette (⌘K)">
+      <button type="button" className="theme-toolbar-hint" onClick={onCmdK} title="Action palette (⌘K)">
         ⌘K
       </button>
     </header>

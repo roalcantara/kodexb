@@ -3,10 +3,10 @@ import fs, { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import type { Knowledge } from '../../../core'
-import { removeTaskFromYaml, taskToYamlShape, writeTaskToYaml } from './app_task_yaml.util'
+import { removeTaskFromSource, taskToSourceRecord, writeTaskToSource } from './app_task_source.util'
 
 let tmpDir = ''
-let yamlPath = ''
+let sourcePath = ''
 
 function stubLog() {
   return { error: () => undefined } as unknown as ReturnType<typeof import('../../../shared/logging').createLogger>
@@ -16,7 +16,7 @@ function makeTask(overrides: Partial<Knowledge> = {}): Knowledge {
   return {
     type: 'task',
     id: 1,
-    key: 'Build kb',
+    key: 'Build app',
     desc: 'Build the knowledge base app',
     source: '/tmp/test.yaml',
     doc: '',
@@ -34,26 +34,26 @@ function makeTask(overrides: Partial<Knowledge> = {}): Knowledge {
 
 beforeEach(async () => {
   tmpDir = await mkdtemp(join(tmpdir(), 'kb-test-'))
-  yamlPath = join(tmpDir, 'test.yaml')
+  sourcePath = join(tmpDir, 'test.yaml')
 })
 
 afterEach(async () => {
   await rm(tmpDir, { recursive: true, force: true })
 })
 
-describe('taskToYamlShape', () => {
+describe('taskToSourceRecord', () => {
   it('includes desc', () => {
-    const shape = taskToYamlShape(makeTask({ desc: 'A description' }))
+    const shape = taskToSourceRecord(makeTask({ desc: 'A description' }))
     expect(shape.desc).toBe('A description')
   })
 
   it('includes tags', () => {
-    const shape = taskToYamlShape(makeTask({ tags: ['dev'] }))
+    const shape = taskToSourceRecord(makeTask({ tags: ['dev'] }))
     expect(shape.tags).toEqual(['dev'])
   })
 
   it('includes task-specific fields', () => {
-    const shape = taskToYamlShape(makeTask())
+    const shape = taskToSourceRecord(makeTask())
     expect(shape.status).toBe('doing')
     expect(shape.priority).toBe('high')
     expect(shape.task_order).toBe(1)
@@ -62,30 +62,30 @@ describe('taskToYamlShape', () => {
   })
 
   it('omits optional task fields when absent', () => {
-    const shape = taskToYamlShape(makeTask({ priority: undefined, dueDate: undefined, dependsOn: [] }))
+    const shape = taskToSourceRecord(makeTask({ priority: undefined, dueDate: undefined, dependsOn: [] }))
     expect(shape).not.toHaveProperty('priority')
     expect(shape).not.toHaveProperty('due')
     expect(shape).not.toHaveProperty('depends_on')
   })
 
   it('omits empty tags', () => {
-    const shape = taskToYamlShape(makeTask({ tags: [] }))
+    const shape = taskToSourceRecord(makeTask({ tags: [] }))
     expect(shape).not.toHaveProperty('tags')
   })
 })
 
-describe('writeTaskToYaml', () => {
-  it('creates a new YAML file with task', async () => {
-    await writeTaskToYaml(stubLog(), yamlPath, makeTask())
-    const content = await fs.readFile(yamlPath, 'utf-8')
+describe('writeTaskToSource', () => {
+  it('creates a new source file with task', async () => {
+    await writeTaskToSource(stubLog(), sourcePath, makeTask())
+    const content = await fs.readFile(sourcePath, 'utf-8')
     const parsed = Bun.YAML.parse(content) as Record<string, unknown>
-    expect(parsed.tasks).toHaveProperty('Build kb')
+    expect(parsed.tasks).toHaveProperty('Build app')
   })
 
-  it('appends to existing YAML file', async () => {
-    await fs.writeFile(yamlPath, 'tasks:\n  existing: { desc: old }\n', 'utf-8')
-    await writeTaskToYaml(stubLog(), yamlPath, makeTask({ key: 'New task' }))
-    const content = await fs.readFile(yamlPath, 'utf-8')
+  it('appends to existing source file', async () => {
+    await fs.writeFile(sourcePath, 'tasks:\n  existing: { desc: old }\n', 'utf-8')
+    await writeTaskToSource(stubLog(), sourcePath, makeTask({ key: 'New task' }))
+    const content = await fs.readFile(sourcePath, 'utf-8')
     const parsed = Bun.YAML.parse(content) as Record<string, unknown>
     const tasks = parsed.tasks as Record<string, unknown>
     expect(tasks).toHaveProperty('existing')
@@ -93,12 +93,12 @@ describe('writeTaskToYaml', () => {
   })
 })
 
-describe('removeTaskFromYaml', () => {
-  it('removes a task from YAML file', async () => {
-    await writeTaskToYaml(stubLog(), yamlPath, makeTask({ key: 'Keep me' }))
-    await writeTaskToYaml(stubLog(), yamlPath, makeTask({ key: 'Remove me' }))
-    await removeTaskFromYaml(stubLog(), 'Remove me', yamlPath)
-    const content = await fs.readFile(yamlPath, 'utf-8')
+describe('removeTaskFromSource', () => {
+  it('removes a task from source file', async () => {
+    await writeTaskToSource(stubLog(), sourcePath, makeTask({ key: 'Keep me' }))
+    await writeTaskToSource(stubLog(), sourcePath, makeTask({ key: 'Remove me' }))
+    await removeTaskFromSource(stubLog(), 'Remove me', sourcePath)
+    const content = await fs.readFile(sourcePath, 'utf-8')
     const parsed = Bun.YAML.parse(content) as Record<string, unknown>
     const tasks = parsed.tasks as Record<string, unknown>
     expect(tasks).toHaveProperty('Keep me')
@@ -106,8 +106,8 @@ describe('removeTaskFromYaml', () => {
   })
 
   it('deletes file when last task is removed', async () => {
-    await writeTaskToYaml(stubLog(), yamlPath, makeTask())
-    await removeTaskFromYaml(stubLog(), 'Build kb', yamlPath)
-    await expect(fs.access(yamlPath)).rejects.toThrow()
+    await writeTaskToSource(stubLog(), sourcePath, makeTask())
+    await removeTaskFromSource(stubLog(), 'Build app', sourcePath)
+    await expect(fs.access(sourcePath)).rejects.toThrow()
   })
 })

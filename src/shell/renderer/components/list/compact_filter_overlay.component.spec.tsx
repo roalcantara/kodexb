@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'bun:test'
 import type { EntryType } from '@core/domain/types/entry.types'
 import type { ListStats, TaskView } from '@shared/rpc'
+import { sampleListStats } from '@testing/fixtures/list_stats.fixture'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { sampleListStats } from '../../../../__tests__/fixtures/list_stats.fixture'
 import { CompactFilterOverlay } from './compact_filter_overlay.component'
 
 const noop = () => undefined
@@ -98,7 +98,7 @@ describe('CompactFilterOverlay', () => {
       await user.keyboard('{ArrowUp}')
       await user.keyboard('{ArrowDown}')
       expect(document.activeElement).toBe(input)
-      expect(allOption.className).toContain('kb-pt-filter-option--highlight')
+      expect(allOption.className).toContain('theme-compact-filter-option--highlight')
     })
   })
 
@@ -106,15 +106,15 @@ describe('CompactFilterOverlay', () => {
     it('marks All row selected when no filters', () => {
       renderOverlay()
       const allOption = screen.getByRole('option', { name: new RegExp(`^All entries, ${stats.total} matches$`) })
-      expect(allOption.className).toContain('kb-pt-filter-option--selected')
-      expect(allOption.className).toContain('kb-pt-filter-option--highlight')
+      expect(allOption.className).toContain('theme-compact-filter-option--selected')
+      expect(allOption.className).toContain('theme-compact-filter-option--highlight')
     })
 
     it('highlights active facet row when type filter is on', () => {
       renderOverlay({ types: ['bookmark'] })
       const bookmarkOption = screen.getByRole('option', { name: BOOKMARK_OPTION_RE })
-      expect(bookmarkOption.className).toContain('kb-pt-filter-option--selected')
-      expect(bookmarkOption.className).toContain('kb-pt-filter-option--highlight')
+      expect(bookmarkOption.className).toContain('theme-compact-filter-option--selected')
+      expect(bookmarkOption.className).toContain('theme-compact-filter-option--highlight')
     })
 
     it('shows list icon on All row', () => {
@@ -127,7 +127,7 @@ describe('CompactFilterOverlay', () => {
     it('does not mark All selected when type filter is on', () => {
       renderOverlay({ types: ['bookmark'] })
       const allOption = screen.getByRole('option', { name: new RegExp(`^All entries, ${stats.total} matches$`) })
-      expect(allOption.className).not.toContain('kb-pt-filter-option--selected')
+      expect(allOption.className).not.toContain('theme-compact-filter-option--selected')
     })
   })
 
@@ -157,12 +157,12 @@ describe('CompactFilterOverlay', () => {
   describe('with task views', () => {
     it('adds task-views section for tiled icons', () => {
       renderOverlay()
-      expect(document.querySelector('.kb-pt-filter-section-block--task-views')).toBeTruthy()
+      expect(document.querySelector('.theme-filter-dropdown-section-block--task-views')).toBeTruthy()
     })
 
     it('omits task-views section when type filter hides task views', () => {
       renderOverlay({ types: ['bookmark'] })
-      expect(document.querySelector('.kb-pt-filter-section-block--task-views')).toBeNull()
+      expect(document.querySelector('.theme-filter-dropdown-section-block--task-views')).toBeNull()
     })
   })
 })

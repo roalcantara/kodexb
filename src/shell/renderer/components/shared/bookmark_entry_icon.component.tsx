@@ -52,7 +52,7 @@ export function BookmarkEntryIcon({ entry, title, fallbackChar }: BookmarkEntryI
       <img
         alt=""
         aria-label={title}
-        className="kb-entryGlyph kb-entryFavicon"
+        className="theme-entry-glyph theme-entry-favicon"
         decoding="async"
         loading="lazy"
         referrerPolicy="no-referrer"

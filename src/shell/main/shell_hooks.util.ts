@@ -1,6 +1,5 @@
+import type { RpcSyncProgressPayload } from '@shared/rpc'
 import type { Display } from 'electrobun/bun'
-
-import type { RpcSyncProgressPayload } from '../../shared/rpc'
 import type { SyncEmitter } from '../app/app'
 import type { AppShellHooks } from '../app/lib/app_shell_hooks.types'
 import { isUsableWorkArea, resolveInitialFrame, type Size, type WindowFrame } from './window/placement.util'
@@ -13,7 +12,7 @@ export type MainWindowLike = {
   minimize: () => void
 }
 
-export type KbShellHooksUtils = {
+export type ShellHooksUtils = {
   openExternal: (url: string) => void
   openFileDialog: (opts: {
     startingFolder?: string
@@ -38,19 +37,19 @@ export function computeInitialFrameFromDisplay(
 }
 
 /**
- * Forward sync events to the webview RPC once {@link getKbRpc} returns a transport.
+ * Forward sync events to the webview RPC once {@link getWebviewRpc} returns a transport.
  */
-export function createKbLateEmit<Rpc>(
-  getKbRpc: () => Rpc | null,
+export function createDeferredSyncEmit<Rpc>(
+  getWebviewRpc: () => Rpc | null,
   mkSyncEmitter: (rpc: Rpc) => Required<SyncEmitter>
 ): Required<SyncEmitter> {
   return {
     syncProgress: (payload: RpcSyncProgressPayload) => {
-      const rpc = getKbRpc()
+      const rpc = getWebviewRpc()
       if (rpc) mkSyncEmitter(rpc).syncProgress(payload)
     },
     syncComplete: result => {
-      const rpc = getKbRpc()
+      const rpc = getWebviewRpc()
       if (rpc) mkSyncEmitter(rpc).syncComplete(result)
     }
   }
@@ -59,7 +58,7 @@ export function createKbLateEmit<Rpc>(
 /**
  * Native shell hooks for window chrome, dialogs, and external URLs (inject Electrobun `Utils` from main).
  */
-export function createKbShellHooks(getWin: () => MainWindowLike | null, utils: KbShellHooksUtils): AppShellHooks {
+export function createShellHooks(getWin: () => MainWindowLike | null, utils: ShellHooksUtils): AppShellHooks {
   return {
     resizeWindow: (width, height) => {
       getWin()?.setSize(width, height)

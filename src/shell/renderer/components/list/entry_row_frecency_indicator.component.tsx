@@ -19,13 +19,13 @@ export function EntryRowFrecencyIndicator({
   const label = visitCount === 1 ? 'Used once' : `Used ${visitCount} times`
 
   return (
-    <span className="kb-pt-frecency" title={label} role="img" aria-label={label}>
+    <span className="theme-frecency" title={label} role="img" aria-label={label}>
       {Array.from({ length: FRECENCY_BAR_COUNT }, (_, i) => {
         const barKey = `frecency-bar-${i + 1}`
         return (
           <span
             key={barKey}
-            className={i < tier ? 'kb-pt-frecency-bar kb-pt-frecency-bar--on' : 'kb-pt-frecency-bar'}
+            className={i < tier ? 'theme-frecency-bar theme-frecency-bar--on' : 'theme-frecency-bar'}
             aria-hidden
           />
         )

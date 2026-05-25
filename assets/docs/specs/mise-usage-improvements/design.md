@@ -174,4 +174,3 @@ dry-run modes. Destructive execution requires separate user approval for the
 exact command.
 
 **Rationale:** The contract must be proven without making validation dangerous.
-

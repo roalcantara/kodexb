@@ -22,7 +22,7 @@ describe('ListFooter', () => {
       const { container } = render(
         <ListFooter footerStatus="done" isFullDetail={false} detailEntry={null} closeDetailToList={() => undefined} />
       )
-      const keys = container.querySelector('.kb-pt-footer-keys')
+      const keys = container.querySelector('.theme-footer-keys')
       expect(keys).toBeTruthy()
       expect(keys?.textContent).toContain('N')
     })
@@ -38,7 +38,7 @@ describe('ListFooter', () => {
           closeDetailToList={() => undefined}
         />
       )
-      const keys = container.querySelector('.kb-pt-footer-keys')
+      const keys = container.querySelector('.theme-footer-keys')
       expect(keys?.textContent).toContain('scroll')
     })
   })

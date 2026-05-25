@@ -90,12 +90,12 @@ describe('listViewportPageSize', () => {
 })
 
 describe('readListScrollMetrics', () => {
-  describe('when .kb-pt-row is present', () => {
+  describe('when .theme-list-row is present', () => {
     it('uses its measured height', () => {
       const root = document.createElement('div')
       const row = document.createElement('button')
       row.type = 'button'
-      row.className = 'kb-pt-row'
+      row.className = 'theme-list-row'
       root.appendChild(row)
       mockRowHeight(row, 56)
       const m = readListScrollMetrics(root)
@@ -103,12 +103,12 @@ describe('readListScrollMetrics', () => {
     })
   })
 
-  describe('when no .kb-pt-row but .kb-entryRow exists', () => {
-    it('uses .kb-entryRow height', () => {
+  describe('when no .theme-list-row but .theme-entry-row exists', () => {
+    it('uses .theme-entry-row height', () => {
       const root = document.createElement('div')
       const row = document.createElement('button')
       row.type = 'button'
-      row.className = 'kb-entryRow'
+      row.className = 'theme-entry-row'
       root.appendChild(row)
       mockRowHeight(row, 44)
       const m = readListScrollMetrics(root)
@@ -117,15 +117,15 @@ describe('readListScrollMetrics', () => {
   })
 
   describe('when multiple rows exist', () => {
-    it('prefers first .kb-pt-row in document order', () => {
+    it('prefers first .theme-list-row in document order', () => {
       const root = document.createElement('div')
       const a = document.createElement('button')
       a.type = 'button'
-      a.className = 'kb-pt-row'
+      a.className = 'theme-list-row'
       mockRowHeight(a, 48)
       const b = document.createElement('button')
       b.type = 'button'
-      b.className = 'kb-pt-row'
+      b.className = 'theme-list-row'
       mockRowHeight(b, 72)
       root.append(a, b)
       const m = readListScrollMetrics(root)

@@ -87,4 +87,3 @@ git diff --check
 bash .agents/skills/kb-quality-gate/scripts/gate.sh
 ```
 ```
-

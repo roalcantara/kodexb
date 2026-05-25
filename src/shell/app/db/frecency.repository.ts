@@ -1,5 +1,5 @@
 import type { Database } from 'bun:sqlite'
-import { bumpFrecency, type FrecencyState } from '../../../core/helpers/frecency/bump_frecency.util'
+import { bumpFrecency, type FrecencyState } from '@core/helpers/frecency/bump_frecency.util'
 import type { EntryFrecencyRow } from './schema'
 
 const SELECT_FRECENCY_SQL = 'SELECT visit_count, last_visited_at, frecency_score FROM entry_frecency WHERE entry_id = ?'

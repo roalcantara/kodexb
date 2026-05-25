@@ -60,7 +60,7 @@ Cover: square work area + even size; odd work area width; window larger than wor
 
 - [ ] **Step 3: Run tests**
 
-Run: `bun test src/shell/main/window/placement.util.spec.ts`  
+Run: `bun test src/shell/main/window/placement.util.spec.ts`
 Expected: all pass.
 
 - [ ] **Step 4: Commit**
@@ -119,7 +119,7 @@ Adjust `wa` access to match real `Screen` API from Step 1.
 
 - [ ] **Step 3: Run typecheck**
 
-Run: `bun run typecheck`  
+Run: `bun run typecheck`
 Expected: clean.
 
 - [ ] **Step 4: Manual smoke (macOS)**
@@ -234,8 +234,8 @@ Render a test harness with `useWindowViewNavKeys`, `disabled: false`, mock `hand
 
 - [ ] **Step 4: Run tests**
 
-Run: `bun test src/shell/renderer/hooks/list/use_window_view_nav_keys.hook.spec.tsx`  
-Run: `bun test`  
+Run: `bun test src/shell/renderer/hooks/list/use_window_view_nav_keys.hook.spec.tsx`
+Run: `bun test`
 Expected: all pass.
 
 - [ ] **Step 5: Commit**
@@ -251,18 +251,18 @@ git commit -m "feat(renderer): window capture for view nav keys"
 
 - [ ] **Step 1: E2E**
 
-Run: `bunx playwright test e2e/preview_list_nav.e2e.spec.ts` (or `mise run` equivalent if defined).  
+Run: `bunx playwright test e2e/preview_list_nav.e2e.spec.ts` (or `mise run` equivalent if defined).
 Expected: pass.
 
 - [ ] **Step 2: Full test + lint**
 
-Run: `bun test`  
-Run: `bun run lint:biome`  
+Run: `bun test`
+Run: `bun run lint:biome`
 Expected: clean.
 
 - [ ] **Step 3: Electrobun manual (macOS)**
 
-Full detail → ArrowLeft → split with focus inside detail body (click markdown first).  
+Full detail → ArrowLeft → split with focus inside detail body (click markdown first).
 Palette open → ArrowLeft must not change view state.
 
 - [ ] **Step 4: Final commit** (if only doc tweaks remain)

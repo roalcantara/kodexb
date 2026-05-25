@@ -71,19 +71,19 @@ export function DetailPageView({
 }: DetailPageViewProps) {
   if (loading) {
     return (
-      <article className="kb-detailPage">
-        <p className="kb-empty">Loading entry…</p>
+      <article className="theme-detail-page">
+        <p className="theme-list-empty">Loading entry…</p>
       </article>
     )
   }
 
   if (!entry) {
     return (
-      <article className="kb-detailPage">
-        <button type="button" className="kb-detailPage-close" onClick={onClose} aria-label="Close detail">
+      <article className="theme-detail-page">
+        <button type="button" className="theme-detail-page-close" onClick={onClose} aria-label="Close detail">
           ✕
         </button>
-        <p className="kb-empty">Entry not found.</p>
+        <p className="theme-list-empty">Entry not found.</p>
       </article>
     )
   }
@@ -93,30 +93,30 @@ export function DetailPageView({
   const url = primaryUrl(entry)
 
   return (
-    <article className="kb-detailPage">
-      <div className="kb-detailPage-main">
-        <section className="kb-detailPage-content">
-          <header className="kb-detailPage-header">
-            <div className="kb-detailPage-headerRow">
-              <span className="kb-detailPage-icon">{getIcon(entry)}</span>
-              <span className="kb-detailPage-type">{entry.type}</span>
-              <button type="button" className="kb-detailPage-close" onClick={onClose} aria-label="Close detail">
+    <article className="theme-detail-page">
+      <div className="theme-detail-page-main">
+        <section className="theme-detail-page-content">
+          <header className="theme-detail-page-header">
+            <div className="theme-detail-page-header-row">
+              <span className="theme-detail-page-icon">{getIcon(entry)}</span>
+              <span className="theme-detail-page-type">{entry.type}</span>
+              <button type="button" className="theme-detail-page-close" onClick={onClose} aria-label="Close detail">
                 ✕
               </button>
             </div>
-            <h1 className="kb-detailPage-key">{entry.key}</h1>
-            {entry.desc ? <p className="kb-detailPage-desc">{entry.desc}</p> : null}
+            <h1 className="theme-detail-page-key">{entry.key}</h1>
+            {entry.desc ? <p className="theme-detail-page-desc">{entry.desc}</p> : null}
             {entry.tags.length > 0 ? (
-              <div className="kb-detailPage-tags">
+              <div className="theme-detail-page-tags">
                 {entry.tags.map(t => (
-                  <span key={t} className="kb-pill kb-pill--muted">
+                  <span key={t} className="theme-pill theme-pill--muted">
                     #{t}
                   </span>
                 ))}
               </div>
             ) : null}
             {entry.type === 'task' ? (
-              <div className="kb-detailPage-badges">
+              <div className="theme-detail-page-badges">
                 <BadgeAccessory entry={entry} allEntries={allEntries} />
               </div>
             ) : null}
@@ -130,7 +130,7 @@ export function DetailPageView({
           </header>
 
           {md ? (
-            <section className="kb-detailPage-body">
+            <section className="theme-detail-page-body">
               <MdView markdown={md} onOpenExternal={onOpenExternal} />
             </section>
           ) : null}
@@ -140,21 +140,21 @@ export function DetailPageView({
           ) : null}
 
           {links.length > 0 ? (
-            <section className="kb-detailPage-links">
-              <h2 className="kb-detailPage-sectionTitle">Links</h2>
-              <ul className="kb-detailPage-linkList">
+            <section className="theme-detail-page-links">
+              <h2 className="theme-detail-page-section-title">Links</h2>
+              <ul className="theme-detail-page-link-list">
                 {links.map(({ title, url: linkUrl }) => (
                   <li key={linkUrl}>
                     <button
                       type="button"
-                      className="kb-detailPage-link"
+                      className="theme-detail-page-link"
                       onClick={() => {
                         fireAndForget(Promise.resolve(onOpenExternal(linkUrl)))
                       }}
                       title={linkUrl}
                     >
                       {title}
-                      <span className="kb-detailPage-linkArrow"> ↗</span>
+                      <span className="theme-detail-page-link-arrow"> ↗</span>
                     </button>
                   </li>
                 ))}

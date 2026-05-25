@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
+import { factoryFor } from '@testing/factories/factories.builder'
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { factoryFor } from '../../../../__tests__/factories/factories.builder'
 
 import { DetailPanel } from './detail_panel.component'
 
@@ -35,16 +35,16 @@ describe('DetailPanel', () => {
           loadEntry={pendingLoad}
         />
       )
-      const aside = document.querySelector('aside.kb-detailPanel')
-      expect(aside?.classList.contains('kb-detailPanel--visible')).toBe(true)
+      const aside = document.querySelector('aside.theme-detail-panel')
+      expect(aside?.classList.contains('theme-detail-panel--visible')).toBe(true)
     })
   })
 
   describe('when entry is null', () => {
     it('has no visible class', () => {
       render(<DetailPanel entryId={null} allEntries={[]} onClose={() => undefined} onSelectEntry={noopSelect} />)
-      const aside = document.querySelector('aside.kb-detailPanel')
-      expect(aside?.classList.contains('kb-detailPanel--visible')).toBe(false)
+      const aside = document.querySelector('aside.theme-detail-panel')
+      expect(aside?.classList.contains('theme-detail-panel--visible')).toBe(false)
     })
   })
 
@@ -62,8 +62,8 @@ describe('DetailPanel', () => {
           loadEntry={loadEntry}
         />
       )
-      await waitFor(() => expect(document.querySelector('button.kb-detailPage-close')).not.toBeNull())
-      const btn = document.querySelector('button.kb-detailPage-close') as HTMLButtonElement
+      await waitFor(() => expect(document.querySelector('button.theme-detail-page-close')).not.toBeNull())
+      const btn = document.querySelector('button.theme-detail-page-close') as HTMLButtonElement
       await userEvent.click(btn)
       expect(closed).toBe(true)
     })

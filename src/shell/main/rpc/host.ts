@@ -1,11 +1,11 @@
-import { BrowserView } from 'electrobun/bun'
 import type {
-  KbDesktopRpcSchema,
+  DesktopRpcSchema,
   RpcCallParams,
   RpcCallResponse,
   RpcImportResult,
   RpcSyncProgressPayload
-} from '../../../shared/rpc'
+} from '@shared/rpc'
+import { BrowserView } from 'electrobun/bun'
 
 import type { SyncEmitter } from '../../app/app'
 import type { RpcApp } from './server'
@@ -91,19 +91,19 @@ async function forwardToRpcApp(rpc: RequestHandler, params: RpcCallParams): Prom
  *   - the single `rpcCall` request handler that forwards to `RpcApp.handle`
  *   - typed `send.syncProgress` / `send.syncComplete` push messages
  *
- * Assign the returned `kbWebviewRpc` as `BrowserWindow({ rpc })` so that
+ * Assign the returned `webviewRpc` as `BrowserWindow({ rpc })` so that
  * Electrobun attaches its transport to the same instance.
  */
-export function createKbWebviewRpc(rpcApp: RpcApp, maxRequestTime = DEFAULT_RPC_TIMEOUT_MS) {
+export function createWebviewRpc(rpcApp: RpcApp, maxRequestTime = DEFAULT_RPC_TIMEOUT_MS) {
   // The Electrobun handler typing has an open-ended `_?: (method, params) => any`
   // fallback that widens every keyed handler to `(params?: unknown) => unknown`.
   // Cast the typed handler through `unknown` so the schema-typed signature
   // survives without losing the rest of the per-method types.
   const requests = {
     rpcCall: (params: RpcCallParams) => forwardToRpcApp(rpcApp, params)
-  } as unknown as Parameters<typeof BrowserView.defineRPC<KbDesktopRpcSchema>>[0]['handlers']['requests']
+  } as unknown as Parameters<typeof BrowserView.defineRPC<DesktopRpcSchema>>[0]['handlers']['requests']
 
-  return BrowserView.defineRPC<KbDesktopRpcSchema>({
+  return BrowserView.defineRPC<DesktopRpcSchema>({
     maxRequestTime,
     handlers: {
       requests,
@@ -118,7 +118,7 @@ export function createKbWebviewRpc(rpcApp: RpcApp, maxRequestTime = DEFAULT_RPC_
  * channel. Calling `send.*` before the transport is attached is a no-op
  * (Electrobun queues messages once the view is wired).
  */
-export function createSyncEmitter(webviewRpc: ReturnType<typeof createKbWebviewRpc>): Required<SyncEmitter> {
+export function createSyncEmitter(webviewRpc: ReturnType<typeof createWebviewRpc>): Required<SyncEmitter> {
   const send = webviewRpc.send as {
     syncProgress: (payload: RpcSyncProgressPayload) => void
     syncComplete: (payload: RpcImportResult) => void

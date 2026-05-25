@@ -1,4 +1,4 @@
-import { crc32 } from '../../../../../shared/utils'
+import { crc32 } from '@shared/utils'
 import { parse } from '../../../../validation'
 import type { EntryType } from '../../../types/entry.types'
 import type { Entry } from '../../entries/schemas/entry.schema'

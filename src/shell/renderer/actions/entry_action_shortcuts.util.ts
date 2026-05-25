@@ -1,6 +1,6 @@
-import type { EntryActionShortcutKind } from '../../../core/helpers/entry_action/entry_action_shortcut_key.util'
-import { entryActionShortcutFromKey } from '../../../core/helpers/entry_action/entry_action_shortcut_key.util'
-import type { ViewStateForEntry } from '../../../core/helpers/entry_action/resolve_current_entry.util'
+import type { EntryActionShortcutKind } from '@core/helpers/entry_action/entry_action_shortcut_key.util'
+import { entryActionShortcutFromKey } from '@core/helpers/entry_action/entry_action_shortcut_key.util'
+import type { ViewStateForEntry } from '@core/helpers/entry_action/resolve_current_entry.util'
 
 export type EntryActionShortcutsFocusState = {
   viewState: ViewStateForEntry

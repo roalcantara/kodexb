@@ -1,9 +1,8 @@
 import fs from 'node:fs/promises'
-import glob from 'fast-glob'
-import type { Entry, Knowledge, TaskEntry } from '../../core'
-import { toKnowledge } from '../../core'
-import { rankSuggestedTags } from '../../core/domain/models/knowledges/tags/rank_suggested_tags.util'
-import { createLogger, type KbLogVerbosity } from '../../shared/logging'
+import type { Entry, Knowledge, TaskEntry } from '@core'
+import { toKnowledge } from '@core'
+import { rankSuggestedTags } from '@core/domain/models/knowledges/tags/rank_suggested_tags.util'
+import { createLogger, type LogVerbosity } from '@shared/logging'
 import type {
   ConfigPatch,
   ListOpts,
@@ -17,7 +16,8 @@ import type {
   RpcSyncProgressPayload,
   TaskCreateInput,
   TaskUpdateInput
-} from '../../shared/rpc'
+} from '@shared/rpc'
+import glob from 'fast-glob'
 import type { LoadedConfig } from './config/config.loader'
 import { saveConfig } from './config/config.loader'
 import { openDatabase } from './db/client'
@@ -39,7 +39,7 @@ import {
   showOpenDialogFor
 } from './lib/app_shell_surface.util'
 import { runSourceImportSync } from './lib/app_sync.util'
-import { removeTaskFromYaml, writeTaskToYaml } from './lib/app_task_yaml.util'
+import { removeTaskFromSource, writeTaskToSource } from './lib/app_task_source.util'
 
 export type SyncEmitter = {
   syncProgress?: (payload: RpcSyncProgressPayload) => void
@@ -60,7 +60,7 @@ export class App {
   constructor(
     loaded: LoadedConfig,
     emit: SyncEmitter = {},
-    verbosity: KbLogVerbosity = 'default',
+    verbosity: LogVerbosity = 'default',
     shellHooks: AppShellHooks = {}
   ) {
     this.loaded = loaded
@@ -216,7 +216,7 @@ export class App {
     } as Entry
     const knowledge = toKnowledge(entry, now)
     upsert(raw, knowledge)
-    await writeTaskToYaml(this.log, this.loaded.writeTarget, knowledge)
+    await writeTaskToSource(this.log, this.loaded.writeTarget, knowledge)
     this.invalidateListCache()
     return knowledge
   }
@@ -227,7 +227,7 @@ export class App {
     const merged = { ...existing, ...patch, updatedAt: Date.now() }
     const { raw } = this.getDb()
     upsert(raw, merged)
-    await writeTaskToYaml(this.log, merged.source, merged)
+    await writeTaskToSource(this.log, merged.source, merged)
     this.invalidateListCache()
     return merged
   }
@@ -237,7 +237,7 @@ export class App {
     if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
     const { raw } = this.getDb()
     deleteById(raw, id)
-    await removeTaskFromYaml(this.log, existing.key, existing.source)
+    await removeTaskFromSource(this.log, existing.key, existing.source)
     this.invalidateListCache()
   }
 
@@ -271,7 +271,7 @@ export class App {
     const writes = affected.map(async ({ id: affectedId }) => {
       const entry = findById(raw, affectedId)
       if (entry) {
-        await writeTaskToYaml(this.log, entry.source, entry)
+        await writeTaskToSource(this.log, entry.source, entry)
         return entry
       }
       return null

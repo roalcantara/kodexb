@@ -105,4 +105,3 @@ domains just because a few rules in that group are useful.
 5. IF any command becomes unexpectedly slow, THEN the implementer SHALL stop
    and report the command, elapsed time, suspected cause, and smallest
    proposed split.
-

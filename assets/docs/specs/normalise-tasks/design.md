@@ -151,4 +151,3 @@ families.
 
 **Rationale:** It gives the repository a clear target while preserving safe
 handoff between active agents and current docs.
-

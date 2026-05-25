@@ -8,9 +8,9 @@ alwaysApply: true
 When a task may involve **Electrobun** (desktop shell, webview/renderer, typed RPC, `electrobun.config.ts`, `electrobun build` / `dev`, or native app packaging):
 
 1. Open **`.cursor/electrobun-skill-routing.md`** and use its table to choose skills.
-2. Load each needed guide with the **Read** tool at  
-   **`<repo>/.agents/skills/<skill-id>/SKILL.md`**  
-   (replace `<skill-id>` with the slug from the table, e.g. `electrobun-rpc`).  
+2. Load each needed guide with the **Read** tool at
+   **`<repo>/.agents/skills/<skill-id>/SKILL.md`**
+   (replace `<skill-id>` with the slug from the table, e.g. `electrobun-rpc`).
    If a routed project skill is missing there, run `mise run skill install`
    (Skills CLI-managed project skills are defined in `assets/guides/SKILLS.yml`
    and `skills-lock.json`). For global-only skills, read from
@@ -18,6 +18,6 @@ When a task may involve **Electrobun** (desktop shell, webview/renderer, typed R
 
 If nothing matches, read **`electrobun-plugin-guide`** first, then narrow.
 
-Prefer repo guides for **kb-specific** wiring: `assets/guides/ELECTROBUN.md`, `assets/docs/specs/foundation/design.md`.
+Prefer repo guides for **project-specific** wiring: `assets/guides/ELECTROBUN.md`, `assets/docs/specs/foundation/design.md`.
 
 Do **not** rely on memory alone for Electrobun APIs when a skill covers the topic—read the skill, then implement.

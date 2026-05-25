@@ -1,19 +1,19 @@
 ---
-name: kb-context
-description: Load this skill at the start of ANY task touching the kb codebase — adding features, writing tests, reviewing code, planning phases, fixing bugs, or running the QA gate. It defines the FCIS architecture (core/shell/renderer layer rules), the Elysia + Eden Treaty RPC bridge, naming conventions, and the Andromeda Void design system. Without it you risk importing across the wrong layer boundary, using the wrong validation library, or naming files inconsistently.
+name: app-context
+description: Load this skill at the start of ANY task touching this codebase — adding features, writing tests, reviewing code, planning phases, fixing bugs, or running the QA gate. It defines the FCIS architecture (core/shell/renderer layer rules), the Elysia + Eden Treaty RPC bridge, naming conventions, and the Andromeda Void design system. Without it you risk importing across the wrong layer boundary, using the wrong validation library, or naming files inconsistently.
 ---
 
-# kb — project context
+# Project context
 
 ## When to load
 
-At the start of **any** kb task: features, tests, reviews, planning, bugs, or
-quality gate. This skill is the fastest way to avoid FCIS boundary mistakes,
+At the start of **any** project task: features, tests, reviews, planning, bugs,
+or quality gate. This skill is the fastest way to avoid FCIS boundary mistakes,
 wrong validation, and naming drift.
 
 ## Skill locations
 
-- **kb-specific skills** (this file, `kb-rpc`, `kb-testing`, `kb-quality-gate`):
+- **Project-owned skills** (this file, `app-rpc`, `app-testing`, `app-quality-gate`):
   read from **`<repo>/.agents/skills/<skill-id>/SKILL.md`** (this repository).
 - **Project skill ledger**:
   [`assets/guides/SKILLS.md`](../../../assets/guides/SKILLS.md) records which
@@ -21,7 +21,7 @@ wrong validation, and naming drift.
   kept as optional global companions. [`assets/guides/SKILLS.yml`](../../../assets/guides/SKILLS.yml)
   is the structured registry used by `mise run skill validate`,
   `mise run skill sync`, and `mise run skill install`.
-- **Electrobun skills** adopted for kb: same folder (e.g.
+- **Electrobun skills** adopted for the project: same folder (e.g.
   `electrobun-best-practices`, `electrobun-rpc`). The
   [`.cursor/electrobun-skill-routing.md`](../../../.cursor/electrobun-skill-routing.md)
   table lists which to open for each topic.
@@ -50,8 +50,8 @@ and `CLAUDE.md` disagree, **CLAUDE.md wins** — open a PR to fix the skill.
 
 - **Canonical root:** [`assets/docs/specs/<feature-slug>/`](../../../assets/docs/specs/) — `requirements.md`, `design.md`, `tasks.md`, optional `implementation-plan.md`, prototypes. Index: [`assets/docs/specs/README.md`](../../../assets/docs/specs/README.md).
 - **Superpowers adaptation:** when a Superpowers skill mentions `docs/superpowers/specs` or `docs/superpowers/plans`, use the `spec-driven-development` skill shape instead and map the output to `assets/docs/specs/<scope>/`. Use `requirements.md`, `design.md`, `tasks.md`, and optional `handoff.md`.
-- **`docs/superpowers/`** is **not used** in kb; it is **gitignored** (some external skills default there). Always redirect new specs into `assets/docs/specs/`.
-- **Subagent prompts:** include the kb path, testing, and validation overrides explicitly because subagents may not inherit this skill's full context.
+- **`docs/superpowers/`** is **not used** in this project; it is **gitignored** (some external skills default there). Always redirect new specs into `assets/docs/specs/`.
+- **Subagent prompts:** include the project path, testing, and validation overrides explicitly because subagents may not inherit this skill's full context.
 
 ## FCIS directory layout
 
@@ -119,8 +119,9 @@ Use `createLogger()` from `@shared/logging`. Never `console.*` in `src/`.
 
 ## Design system — Andromeda Void
 
-kb's renderer follows **Andromeda Void** — a dark-first, glassy, minimal chrome
-with electric cyan accents. When building UI:
+The renderer follows **Andromeda Void** — a dark-first, glassy, minimal chrome
+with electric cyan accents. The implementation uses `theme-*` tokens and
+classes; "Andromeda Void" is the visual spec name only. When building UI:
 
 - **Background**: deep charcoal / near-black base (`#0a0a0b` family), **not**
   pure `#000000`.
@@ -138,15 +139,15 @@ Full tokens and patterns:
 
 ## Deep dives (open as needed)
 
-| Topic              | Guide                                                                                              |
-| ------------------ | -------------------------------------------------------------------------------------------------- |
-| Architecture + RPC | [`assets/docs/specs/foundation/design.md`](../../../assets/docs/specs/foundation/design.md)        |
-| FCIS layer rules   | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md)                              |
-| Naming + SOLID     | [`assets/guides/CODESTYLE_GUIDE.md`](../../../assets/guides/CODESTYLE_GUIDE.md)                    |
-| Electrobun wiring  | [`assets/guides/ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md)                              |
-| Testing            | [`assets/guides/TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md) + **kb-testing** skill |
-| Factories          | [`assets/guides/FISHERY_GUIDE.md`](../../../assets/guides/FISHERY_GUIDE.md)                        |
-| DoD / gate         | [`assets/guides/DoD.md`](../../../assets/guides/DoD.md) + **kb-quality-gate** skill                |
+| Topic              | Guide                                                                                               |
+| ------------------ | --------------------------------------------------------------------------------------------------- |
+| Architecture + RPC | [`assets/docs/specs/foundation/design.md`](../../../assets/docs/specs/foundation/design.md)         |
+| FCIS layer rules   | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md)                               |
+| Naming + SOLID     | [`assets/guides/CODESTYLE_GUIDE.md`](../../../assets/guides/CODESTYLE_GUIDE.md)                     |
+| Electrobun wiring  | [`assets/guides/ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md)                               |
+| Testing            | [`assets/guides/TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md) + **app-testing** skill |
+| Factories          | [`assets/guides/FISHERY_GUIDE.md`](../../../assets/guides/FISHERY_GUIDE.md)                         |
+| DoD / gate         | [`assets/guides/DoD.md`](../../../assets/guides/DoD.md) + **app-quality-gate** skill                |
 
 ## Gotchas
 
@@ -166,33 +167,33 @@ Full tokens and patterns:
 
 ## Companion skills
 
-| Skill               | When                                                                                       |
-| ------------------- | ------------------------------------------------------------------------------------------ |
-| **kb-rpc**          | Touching `rpc/server.ts`, `rpc/schemas.ts`, Eden client, or preview server routes.         |
-| **kb-testing**      | Writing or changing any spec.                                                              |
-| **kb-quality-gate** | Before declaring work done or committing.                                                  |
-| **electrobun-***    | Per [`.cursor/electrobun-skill-routing.md`](../../../.cursor/electrobun-skill-routing.md). |
+| Skill                | When                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------ |
+| **app-rpc**          | Touching `rpc/server.ts`, `rpc/schemas.ts`, Eden client, or preview server routes.         |
+| **app-testing**      | Writing or changing any spec.                                                              |
+| **app-quality-gate** | Before declaring work done or committing.                                                  |
+| **electrobun-***     | Per [`.cursor/electrobun-skill-routing.md`](../../../.cursor/electrobun-skill-routing.md). |
 
-Optional companions stay subordinate to kb-specific skills and guides:
+Optional companions stay subordinate to project-owned skills and guides:
 
 <!-- skills:optional-companions:start -->
-| Skill | When |
-| --- | --- |
-| **systematic-debugging** | Investigating failing tests, gate failures, regressions, or unexpected behavior. |
-| **elysia** | Checking Elysia route mechanics after loading kb-rpc. |
-| **receiving-code-review** | Applying review feedback, especially when feedback is ambiguous or broad. |
-| **requesting-code-review** | Preparing a review handoff, PR, or larger completed change for scrutiny. |
-| **mise-tasks** | Editing mise.toml, task dependencies, or multi-step project workflows. |
-| **mise-expert** | Editing mise tool versions or environment setup. |
-| **ast-grep** | Authoring or debugging structural search and rewrite rules. |
-| **knip** | Resolving unused exports, files, dependencies, or knip configuration findings. |
-| **jscpd** | Investigating duplication reports and planning small shared abstractions. |
-| **dry-principle** | Deciding whether duplication warrants extraction. |
-| **solid-principles** | Reviewing class or module design. |
-| **react:components** | Translating design artifacts into renderer components, adapted to kb conventions. |
-| **stitch-design** | Design intake or prototypes, only under the prototype gate. |
-| **using-git-worktrees** | Isolated parallel work, only when requested or approved. |
-| **verification-before-completion** | Final reminder only; kb-quality-gate is the executable authority. |
+| Skill                              | When                                                                                   |
+| ---------------------------------- | -------------------------------------------------------------------------------------- |
+| **systematic-debugging**           | Investigating failing tests, gate failures, regressions, or unexpected behavior.       |
+| **elysia**                         | Checking Elysia route mechanics after loading app-rpc.                                 |
+| **receiving-code-review**          | Applying review feedback, especially when feedback is ambiguous or broad.              |
+| **requesting-code-review**         | Preparing a review handoff, PR, or larger completed change for scrutiny.               |
+| **mise-tasks**                     | Editing mise.toml, task dependencies, or multi-step project workflows.                 |
+| **mise-expert**                    | Editing mise tool versions or environment setup.                                       |
+| **ast-grep**                       | Authoring or debugging structural search and rewrite rules.                            |
+| **knip**                           | Resolving unused exports, files, dependencies, or knip configuration findings.         |
+| **jscpd**                          | Investigating duplication reports and planning small shared abstractions.              |
+| **dry-principle**                  | Deciding whether duplication warrants extraction.                                      |
+| **solid-principles**               | Reviewing class or module design.                                                      |
+| **react:components**               | Translating design artifacts into renderer components, adapted to project conventions. |
+| **stitch-design**                  | Design intake or prototypes, only under the prototype gate.                            |
+| **using-git-worktrees**            | Isolated parallel work, only when requested or approved.                               |
+| **verification-before-completion** | Final reminder only; app-quality-gate is the executable authority.                     |
 <!-- skills:optional-companions:end -->
 
 ---

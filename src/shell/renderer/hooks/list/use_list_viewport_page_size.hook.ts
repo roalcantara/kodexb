@@ -3,7 +3,7 @@ import { DEFAULT_LIST_ROW_HEIGHT_PX, DEFAULT_VIEWPORT_LIST_PAGE_SIZE } from '../
 import { listViewportPageSize } from '../../utils/list/virtual_list.util'
 
 function measuredRowHeight(root: HTMLElement): number {
-  const row = root.querySelector<HTMLElement>('.kb-entryRow')
+  const row = root.querySelector<HTMLElement>('.theme-entry-row')
   const height = row?.getBoundingClientRect().height ?? 0
   return height > 0 ? height : DEFAULT_LIST_ROW_HEIGHT_PX
 }

@@ -1,7 +1,7 @@
+import { DEFAULTS } from '@core/constants/defaults.const'
 import { type Static, Type } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 import { err, ok, type Result } from 'neverthrow'
-import { DEFAULTS } from '../../../core/constants/defaults.const'
 
 export const PAGE_SIZE_SMALL = 25
 export const PAGE_SIZE_MEDIUM = 50

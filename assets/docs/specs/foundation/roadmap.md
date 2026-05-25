@@ -38,7 +38,7 @@ sequencing, delivery value, and recommended skills only.
 
 `bun run dev` opens an Electrobun window. Build pipeline produces `.app` on macOS.
 
-**Skills:** `kb-context`, `electrobun-core`, `electrobun-config`, `mise-expert`, `mise-tasks`
+**Skills:** `app-context`, `electrobun-core`, `electrobun-config`, `mise-expert`, `mise-tasks`
 
 ---
 
@@ -203,7 +203,7 @@ export default defineConfig({
 | `GH_TOKEN`                | PAT for release-it to bypass branch protection      |
 | `RELEASE_SIGNING_SSH_KEY` | SSH key for signed commits (from release.yml)       |
 
-**Skills:** `kb-context`, `kb-quality-gate`, `electrobun-distribution`,
+**Skills:** `app-context`, `app-quality-gate`, `electrobun-distribution`,
 `electrobun-build`, `electrobun-config`
 
 ---
@@ -213,7 +213,7 @@ export default defineConfig({
 Pure parsers, validators, id derivation, and doc assembly ported from KodexB.
 No I/O. Full unit test coverage.
 
-**Skills:** `kb-context`, `kb-testing`, `bun-development`
+**Skills:** `app-context`, `app-testing`, `bun-development`
 
 ---
 
@@ -222,7 +222,7 @@ No I/O. Full unit test coverage.
 Drizzle + SQLite schema. Import service reads YAML → upserts → FTS5. drizzle-seed
 fixtures for integration tests.
 
-**Skills:** `kb-context`, `kb-testing`, `bun-development`
+**Skills:** `app-context`, `app-testing`, `bun-development`
 
 ---
 
@@ -244,7 +244,7 @@ contract:
 
 TypeBox is the sole validation library across core and transport.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-rpc`, `electrobun-rpc-patterns`
 
 ---
@@ -254,7 +254,7 @@ TypeBox is the sole validation library across core and transport.
 Searchable, filterable list of all knowledge entries. Type filters, tag filters,
 task view presets. Priority/status/overdue badges. Brand icons. Keyboard navigation.
 
-**Skills:** `kb-context`, `kb-testing`, `electrobun-dev`
+**Skills:** `app-context`, `app-testing`, `electrobun-dev`
 
 ---
 
@@ -264,7 +264,7 @@ Enter on a selected entry opens the detail panel (180 ms slide-in, window expand
 to 1200 px). Markdown with syntax highlighting. OG image / YouTube thumbnail.
 Task dependency graph. Metadata sidebar at ≥ 1300 px.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-dev`, `electrobun-window-management`
 
 ---
@@ -274,7 +274,7 @@ Task dependency graph. Metadata sidebar at ≥ 1300 px.
 Auto-create platform directories and default config on first launch. Settings panel
 (paths, apps, display). Config reload without restart.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-dev`, `electrobun-platform`
 
 ---
@@ -284,7 +284,7 @@ Auto-create platform directories and default config on first launch. Settings pa
 Create/edit/delete tasks from the UI. YAML write-back. Status and priority cycling.
 Reorder. Dependency management with circular-dep rejection.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-dev`
 
 ---
@@ -294,7 +294,7 @@ Reorder. Dependency management with circular-dep rejection.
 ⌘K palette with context-sensitive primary action per type. Copy submenu. Open in
 editor. AI tag suggestions. Task-specific actions.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-dev`, `electrobun-native-ui`
 
 ---
@@ -304,7 +304,7 @@ editor. AI tag suggestions. Task-specific actions.
 Progress bar in toolbar while sync runs. Completion toast with counts and errors.
 Concurrent sync prevention.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-dev`
 
 ---
@@ -313,7 +313,7 @@ Concurrent sync prevention.
 
 Entry counts by type. Total count. Database path and size. Auto-refresh after sync.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-dev`
 
 ---
@@ -341,7 +341,7 @@ Each pending phase follows this Superpowers workflow:
 6. /executing-plans        One task at a time
    /test-driven-development  RED → GREEN → REFACTOR per task
 7. /finishing-a-development-branch
-   ↳ runs kb-quality-gate (gate.sh must exit 0 before merge)
+   ↳ runs app-quality-gate (gate.sh must exit 0 before merge)
 8.  Evaluate in preview server: bun tools/preview/server.ts
 9. Go to 1 for next phase
 ```
@@ -350,8 +350,8 @@ When Superpowers skills mention `docs/superpowers/specs` or
 `docs/superpowers/plans`, use the `spec-driven-development` shape in
 `assets/docs/specs/<slug>/` instead.
 
-The `kb-quality-gate` skill is the gate for step 7. Running
-`.agents/skills/kb-quality-gate/scripts/gate.sh` is how
+The `app-quality-gate` skill is the gate for step 7. Running
+`.agents/skills/app-quality-gate/scripts/gate.sh` is how
 `finishing-a-development-branch` verifies the phase is done.
 
 ---

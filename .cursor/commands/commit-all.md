@@ -33,7 +33,7 @@ For **each** chunk:
 2. **Quality gate (required)** — run **before** `git commit` so the tree you are about to record is green:
 
    ```bash
-   bash .agents/skills/kb-quality-gate/scripts/gate.sh
+   bash .agents/skills/app-quality-gate/scripts/gate.sh
    ```
 
    The gate runs on the **whole repository** (staged + unstaged). If **other chunks** still sit unstaged and would fail the gate, either:

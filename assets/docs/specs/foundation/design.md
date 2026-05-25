@@ -353,11 +353,11 @@ and `cache_miss` are emitted at debug level.
 ```tree
 .
 ├── .agents/
-│   └── skills/                  # Project-specific agent skills
-│       ├── kb-context/SKILL.md  # Always-loaded project context
-│       ├── kb-rpc/SKILL.md      # Elysia + Eden Treaty patterns
-│       ├── kb-testing/SKILL.md  # Testing conventions
-│       └── kb-quality-gate/     # DoD gate + gate.sh script
+│   └── skills/                   # Project-specific agent skills
+│       ├── app-context/SKILL.md  # Always-loaded project context
+│       ├── app-rpc/SKILL.md      # Elysia + Eden Treaty patterns
+│       ├── app-testing/SKILL.md  # Testing conventions
+│       └── app-quality-gate/     # DoD gate + gate.sh script
 ├── assets/
 │   └── docs/                    # design.md, requirements.md, roadmap.md
 ├── docs/
@@ -617,7 +617,7 @@ System font stack. No web fonts. No drop-shadows except floating overlays.
 | Renderer       | React Testing Library + Happy-DOM; Eden Treaty via context double                |
 | Import service | Real YAML fixtures in `src/__tests__/fixtures/sample/` (5 curated files, ~10 KB) |
 
-See `kb-testing` skill for patterns and gotchas.
+See `app-testing` skill for patterns and gotchas.
 
 ---
 

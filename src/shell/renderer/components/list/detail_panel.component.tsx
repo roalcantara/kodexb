@@ -1,5 +1,4 @@
 import type { RpcKnowledge } from '@shared/rpc'
-
 import { DetailPage } from '../../pages/detail/detail.page'
 
 export type DetailPanelProps = {
@@ -13,7 +12,7 @@ export type DetailPanelProps = {
 export function DetailPanel({ entryId, allEntries, onClose, onSelectEntry, loadEntry }: DetailPanelProps) {
   const visible = entryId !== null
   return (
-    <aside className={`kb-detailPanel${visible ? ' kb-detailPanel--visible' : ''}`} aria-label="Entry detail">
+    <aside className={`theme-detail-panel${visible ? ' theme-detail-panel--visible' : ''}`} aria-label="Entry detail">
       {visible ? (
         <DetailPage
           entryId={entryId}

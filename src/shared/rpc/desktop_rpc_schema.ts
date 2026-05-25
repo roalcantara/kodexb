@@ -154,7 +154,7 @@ export type RpcCallResponse = {
 }
 
 /**
- * Electrobun combined RPC schema for kb (post-Phase 5).
+ * Electrobun combined RPC schema (post-Phase 5).
  *
  * - `bun.requests.rpcCall` — single Eden bridge method. Every renderer
  *   `/api/*` call funnels here so the main process can dispatch through the
@@ -165,7 +165,7 @@ export type RpcCallResponse = {
  *
  * See `assets/guides/ELECTROBUN.md` for the official mapping.
  */
-export type KbDesktopRpcSchema = ElectrobunRPCSchema & {
+export type DesktopRpcSchema = ElectrobunRPCSchema & {
   bun: RPCSchema<{
     requests: {
       rpcCall: { params: RpcCallParams; response: RpcCallResponse }

@@ -1,12 +1,12 @@
 import type { RpcImportResult, RpcSyncProgressPayload } from '@shared/rpc'
 import { fireAndForget } from '@shared/utils'
-import type { Dispatch, MutableRefObject, SetStateAction } from 'react'
+import type { Dispatch, RefObject, SetStateAction } from 'react'
 import type { SyncModalModel } from '../../components/shared/sync_modal.component'
 
 export type ListSyncMessageHandlerDeps = {
   setSyncUi: Dispatch<SetStateAction<SyncModalModel>>
   setSyncing: (v: boolean) => void
-  syncModalOpenRef: MutableRefObject<boolean>
+  syncModalOpenRef: RefObject<boolean>
   pushToast: (message: string, type?: 'success' | 'error') => void
   refreshStats: () => Promise<void>
   refreshList: (append: boolean) => Promise<void>

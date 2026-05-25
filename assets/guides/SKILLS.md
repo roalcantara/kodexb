@@ -1,13 +1,13 @@
 # Project Skill Guide
 
-This guide explains how kb classifies agent skills and how the project keeps
-that classification consistent. The structured source of truth is
-[`SKILLS.yml`](SKILLS.yml); this Markdown file is the human-facing explanation
-of the same policy.
+This guide explains how the project classifies agent skills and how the
+project keeps that classification consistent. The structured source of truth
+is [`SKILLS.yml`](SKILLS.yml); this Markdown file is the human-facing
+explanation of the same policy.
 
 Run `mise run skill validate` after editing `SKILLS.yml`. Run
 `mise run skill sync` to refresh generated snippets in `CLAUDE.md`,
-`.agents/skills/kb-context/SKILL.md`, and
+`.agents/skills/app-context/SKILL.md`, and
 `.cursor/electrobun-skill-routing.md`. Run `mise run skill install` to restore
 project-managed external skills from `skills-lock.json` through the Skills CLI.
 
@@ -16,19 +16,19 @@ project-managed external skills from `skills-lock.json` through the Skills CLI.
 `SKILLS.yml` keeps one `skills:` entry per relevant skill. Each entry has a
 single `location`, a `rationale`, and one discriminated `policy.type`.
 
-| Field | Meaning |
-| --- | --- |
-| `location: owned` | Project-authored skill committed under `.agents/skills/<skill-id>`. These skills are not managed by `skills-lock.json`. |
+| Field               | Meaning                                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `location: owned`   | Project-authored skill committed under `.agents/skills/<skill-id>`. These skills are not managed by `skills-lock.json`.  |
 | `location: project` | External skill managed by the Skills CLI, recorded in `skills-lock.json`, and restored into `.agents/skills/<skill-id>`. |
-| `location: global` | Global-only companion used from `$HOME/.agents/skills/<skill-id>` when available. |
+| `location: global`  | Global-only companion used from `$HOME/.agents/skills/<skill-id>` when available.                                        |
 
-| Policy type | Meaning |
-| --- | --- |
-| `required` | Standing project skill for its domain. |
-| `routed` | Skill selected by generated routing tables, such as Electrobun routing. |
-| `optional` | Companion skill loaded for specific situations when it does not conflict with kb guidance. |
-| `reference` | Upstream reference only; useful for reading, not project routing. |
-| `blocked` | Do not use directly in kb. Redirect to the listed project guide when present. |
+| Policy type | Meaning                                                                                         |
+| ----------- | ----------------------------------------------------------------------------------------------- |
+| `required`  | Standing project skill for its domain.                                                          |
+| `routed`    | Skill selected by generated routing tables, such as Electrobun routing.                         |
+| `optional`  | Companion skill loaded for specific situations when it does not conflict with project guidance. |
+| `reference` | Upstream reference only; useful for reading, not project routing.                               |
+| `blocked`   | Do not use directly in this project. Redirect to the listed project guide when present.         |
 
 Usable policies define `policy.usage.summary`,
 `policy.usage.when.load`, and `policy.usage.when.avoid`. Blocked policies do
@@ -50,14 +50,14 @@ The registry and lock file must agree:
 - `location: owned` and `location: global` entries must not appear in
   `skills-lock.json`.
 - The Skills CLI owns how project skills are materialized under
-  `.agents/skills/`; kb does not model copy versus symlink in `SKILLS.yml`.
+  `.agents/skills/`; the project does not model copy versus symlink in `SKILLS.yml`.
 
 ## Decision Rules
 
 Apply these rules before adopting or invoking a skill:
 
-1. kb-specific instructions win over generic skill advice.
-2. `CLAUDE.md`, `AGENTS.md`, and `.agents/skills/kb-context/SKILL.md` define
+1. Project-specific instructions win over generic skill advice.
+2. `CLAUDE.md`, `AGENTS.md`, and `.agents/skills/app-context/SKILL.md` define
    the standing workflow.
 3. `assets/guides/` define the project style, testing, runtime, and quality
    expectations.
@@ -73,51 +73,51 @@ project-specific situation.
 
 ## Current Project Skills
 
-| Skill | Location | Policy | Rationale |
-| --- | --- | --- | --- |
-| `kb-context` | `owned` | `required` | Mandatory project orientation and guide routing. |
-| `kb-rpc` | `owned` | `required` | Canonical app-level Elysia, Eden Treaty, and TypeBox RPC guidance. |
-| `kb-testing` | `owned` | `required` | Canonical testing workflow for co-located Bun specs and harnesses. |
-| `kb-quality-gate` | `owned` | `required` | Executable completion and commit-readiness gate. |
-| `electrobun-best-practices` | `project` | `required` | Baseline for desktop stack work before narrower Electrobun skills. |
-| `electrobun-plugin-guide` | `project` | `routed` | Entry point when the right Electrobun skill is unclear. |
-| `electrobun-config` | `project` | `routed` | Electrobun configuration, build views, and asset wiring. |
-| `electrobun-core` | `project` | `routed` | Main process, windows, views, and lifecycle behavior. |
-| `electrobun-window-management` | `project` | `required` | Multi-window and BrowserView orchestration. |
-| `electrobun-native-ui` | `project` | `required` | Menus, dialogs, tray, shortcuts, and clipboard behavior. |
-| `electrobun-rpc` | `project` | `routed` | Native Electrobun IPC only; app-level RPC remains `kb-rpc`. |
-| `electrobun-dev` | `project` | `routed` | Electrobun dev server, hot reload, and devtools workflow. |
-| `electrobun-build` | `project` | `routed` | Electrobun build pipeline and CI build behavior. |
-| `electrobun-platform` | `project` | `routed` | macOS, Windows, Linux, CEF, and platform differences. |
-| `electrobun-distribution` | `project` | `required` | Packaging, signing, notarization, and distribution artifacts. |
-| `electrobun-sdlc` | `project` | `routed` | Electrobun feature lifecycle guidance, subordinate to kb specs and gate. |
-| `electrobun-workflow` | `project` | `routed` | Electrobun dev/build/ship workflow questions. |
-| `electrobun-kitchen-sink` | `project` | `routed` | Upstream examples and `defineTest` reference, adapted to kb rules. |
-| `electrobun-testing` | `project` | `routed` | Electrobun-specific test framework patterns, with `kb-testing` as authority. |
-| `electrobun-webgpu` | `project` | `routed` | WebGPU, `GpuWindow`, and WGSL work only. |
-| `electrobun-milady` | `project` | `routed` | Upstream milady repository conventions. |
-| `electrobun` | `project` | `reference` | Broad upstream Electrobun overview. |
-| `electrobun-rpc-patterns` | `project` | `optional` | Advanced native IPC patterns after the base RPC boundary is understood. |
-| `bun-development` | `project` | `optional` | Bun implementation details alongside the project Bun guide. |
-| `bun-runtime` | `project` | `optional` | Bun runtime, package manager, and test-runner behavior. |
+| Skill                          | Location  | Policy      | Rationale                                                                     |
+| ------------------------------ | --------- | ----------- | ----------------------------------------------------------------------------- |
+| `app-context`                  | `owned`   | `required`  | Mandatory project orientation and guide routing.                              |
+| `app-rpc`                      | `owned`   | `required`  | Canonical app-level Elysia, Eden Treaty, and TypeBox RPC guidance.            |
+| `app-testing`                  | `owned`   | `required`  | Canonical testing workflow for co-located Bun specs and harnesses.            |
+| `app-quality-gate`             | `owned`   | `required`  | Executable completion and commit-readiness gate.                              |
+| `electrobun-best-practices`    | `project` | `required`  | Baseline for desktop stack work before narrower Electrobun skills.            |
+| `electrobun-plugin-guide`      | `project` | `routed`    | Entry point when the right Electrobun skill is unclear.                       |
+| `electrobun-config`            | `project` | `routed`    | Electrobun configuration, build views, and asset wiring.                      |
+| `electrobun-core`              | `project` | `routed`    | Main process, windows, views, and lifecycle behavior.                         |
+| `electrobun-window-management` | `project` | `required`  | Multi-window and BrowserView orchestration.                                   |
+| `electrobun-native-ui`         | `project` | `required`  | Menus, dialogs, tray, shortcuts, and clipboard behavior.                      |
+| `electrobun-rpc`               | `project` | `routed`    | Native Electrobun IPC only; app-level RPC remains `app-rpc`.                  |
+| `electrobun-dev`               | `project` | `routed`    | Electrobun dev server, hot reload, and devtools workflow.                     |
+| `electrobun-build`             | `project` | `routed`    | Electrobun build pipeline and CI build behavior.                              |
+| `electrobun-platform`          | `project` | `routed`    | macOS, Windows, Linux, CEF, and platform differences.                         |
+| `electrobun-distribution`      | `project` | `required`  | Packaging, signing, notarization, and distribution artifacts.                 |
+| `electrobun-sdlc`              | `project` | `routed`    | Electrobun feature lifecycle guidance, subordinate to project specs and gate. |
+| `electrobun-workflow`          | `project` | `routed`    | Electrobun dev/build/ship workflow questions.                                 |
+| `electrobun-kitchen-sink`      | `project` | `routed`    | Upstream examples and `defineTest` reference, adapted to project rules.       |
+| `electrobun-testing`           | `project` | `routed`    | Electrobun-specific test framework patterns, with `app-testing` as authority. |
+| `electrobun-webgpu`            | `project` | `routed`    | WebGPU, `GpuWindow`, and WGSL work only.                                      |
+| `electrobun-milady`            | `project` | `routed`    | Upstream milady repository conventions.                                       |
+| `electrobun`                   | `project` | `reference` | Broad upstream Electrobun overview.                                           |
+| `electrobun-rpc-patterns`      | `project` | `optional`  | Advanced native IPC patterns after the base RPC boundary is understood.       |
+| `bun-development`              | `project` | `optional`  | Bun implementation details alongside the project Bun guide.                   |
+| `bun-runtime`                  | `project` | `optional`  | Bun runtime, package manager, and test-runner behavior.                       |
 
 ## Optional Companion Matrix
 
-| Situation | Optional companion skills |
-| --- | --- |
-| Failing tests, regressions, unclear behavior | `systematic-debugging` |
-| Structural search or repository rules | `ast-grep` |
-| Elysia route mechanics under kb RPC | `elysia`, after `kb-rpc` |
-| Unused exports, files, or dependencies | `knip` |
-| Duplication findings and extraction judgment | `jscpd`, `dry-principle` |
-| FCIS placement or purity questions | `FCIS.guide.md`, `kb-context`; do not use raw `functional-core-imperative-shell` comments |
-| `mise.toml`, task wiring, tool versions | `mise-tasks`, `mise-expert` |
-| Review preparation or review feedback | `requesting-code-review`, `receiving-code-review` |
-| Design or prototype intake | `stitch-design`, only under the prototype gate |
-| React component translation from a design artifact | `react:components`, adapted to kb's renderer and guide stack |
-| Isolated parallel development | `using-git-worktrees`, only when requested or approved |
-| Final verification reminder | `verification-before-completion`; `kb-quality-gate` remains executable authority |
-| Running Electrobun app inspection | `agent-electrobun`, never as a replacement for tests or gates |
+| Situation                                          | Optional companion skills                                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Failing tests, regressions, unclear behavior       | `systematic-debugging`                                                                     |
+| Structural search or repository rules              | `ast-grep`                                                                                 |
+| Elysia route mechanics under project RPC           | `elysia`, after `app-rpc`                                                                  |
+| Unused exports, files, or dependencies             | `knip`                                                                                     |
+| Duplication findings and extraction judgment       | `jscpd`, `dry-principle`                                                                   |
+| FCIS placement or purity questions                 | `FCIS.guide.md`, `app-context`; do not use raw `functional-core-imperative-shell` comments |
+| `mise.toml`, task wiring, tool versions            | `mise-tasks`, `mise-expert`                                                                |
+| Review preparation or review feedback              | `requesting-code-review`, `receiving-code-review`                                          |
+| Design or prototype intake                         | `stitch-design`, only under the prototype gate                                             |
+| React component translation from a design artifact | `react:components`, adapted to the project's renderer and guide stack                      |
+| Isolated parallel development                      | `using-git-worktrees`, only when requested or approved                                     |
+| Final verification reminder                        | `verification-before-completion`; `app-quality-gate` remains executable authority          |
+| Running Electrobun app inspection                  | `agent-electrobun`, never as a replacement for tests or gates                              |
 
 ## Reference-Only Skills
 
@@ -136,13 +136,13 @@ calls for them, but they are not project routing defaults:
 
 ## Blocked Skills
 
-Blocked skills must not be used directly in kb:
+Blocked skills must not be used directly in this project:
 
-| Skill | Reason | Use instead |
-| --- | --- | --- |
-| `domain-name-brainstormer` | Product naming and domain brainstorming are unrelated to this repo's workflow. | No replacement. |
-| `functional-core-imperative-shell` | kb already defines FCIS, and the global skill's mandatory comments do not match source conventions. | `assets/guides/FCIS.guide.md`, `.agents/skills/kb-context/SKILL.md` |
-| `stitch-loop` | Its autonomous website iteration loop does not match kb's desktop app and gated implementation process. | `stitch-design` only under the prototype gate. |
+| Skill                              | Reason                                                                                                           | Use instead                                                          |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `domain-name-brainstormer`         | Product naming and domain brainstorming are unrelated to this repo's workflow.                                   | No replacement.                                                      |
+| `functional-core-imperative-shell` | The project already defines FCIS, and the global skill's mandatory comments do not match source conventions.     | `assets/guides/FCIS.guide.md`, `.agents/skills/app-context/SKILL.md` |
+| `stitch-loop`                      | Its autonomous website iteration loop does not match the project's desktop app and gated implementation process. | `stitch-design` only under the prototype gate.                       |
 
 ## Updating Skills
 
@@ -154,6 +154,6 @@ Use this workflow when changing the registry:
 4. Run `mise run skill install` when project-managed external skills must be
    restored from `skills-lock.json`.
 5. Review `assets/guides/SKILLS.md`, `CLAUDE.md`,
-   `.agents/skills/kb-context/SKILL.md`, and
+   `.agents/skills/app-context/SKILL.md`, and
    `.cursor/electrobun-skill-routing.md` together when the change affects
    routing or optional companion guidance.

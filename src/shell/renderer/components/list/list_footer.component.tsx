@@ -9,17 +9,17 @@ export type ListFooterProps = {
 
 export function ListFooter({ footerStatus, isFullDetail, detailEntry, closeDetailToList }: ListFooterProps) {
   return (
-    <div className="kb-pt-footer">
+    <div className="theme-footer">
       <span>{footerStatus}</span>
-      <span className="kb-pt-footer-right">
-        <span className="kb-pt-footer-keys">
+      <span className="theme-footer-right">
+        <span className="theme-footer-keys">
           <span
-            className={`kb-pt-footer-keysPrefix${isFullDetail ? '' : ' kb-pt-footer-keysPrefix--inactive'}`}
+            className={`theme-footer-keys-prefix${isFullDetail ? '' : ' theme-footer-keys-prefix--inactive'}`}
             aria-hidden={!isFullDetail}
           >
             <button
               type="button"
-              className="kb-pt-footer-keyBack"
+              className="theme-footer-key-back"
               aria-label="Back to list"
               title="Back to list (Escape)"
               tabIndex={isFullDetail ? 0 : -1}
@@ -29,7 +29,7 @@ export function ListFooter({ footerStatus, isFullDetail, detailEntry, closeDetai
             >
               ⎋
             </button>
-            <span className="kb-pt-footer-keysSep" aria-hidden>
+            <span className="theme-footer-keys-sep" aria-hidden>
               {' · '}
             </span>
           </span>

@@ -3,7 +3,7 @@ import type { Knowledge } from '../../../core'
 
 type AppLog = ReturnType<typeof import('../../../shared/logging').createLogger>
 
-export async function writeTaskToYaml(log: AppLog, filePath: string, task: Knowledge): Promise<void> {
+export async function writeTaskToSource(log: AppLog, filePath: string, task: Knowledge): Promise<void> {
   try {
     let doc: Record<string, unknown> = {}
     try {
@@ -13,17 +13,17 @@ export async function writeTaskToYaml(log: AppLog, filePath: string, task: Knowl
       if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e
     }
     const tasks = (doc.tasks ?? {}) as Record<string, unknown>
-    tasks[task.key] = taskToYamlShape(task)
+    tasks[task.key] = taskToSourceRecord(task)
     doc.tasks = tasks
     const tmpPath = `${filePath}.tmp`
     await fs.writeFile(tmpPath, Bun.YAML.stringify(doc), 'utf-8')
     await fs.rename(tmpPath, filePath)
   } catch (err) {
-    log.error(['YAML write-back failed', task.key, filePath, err])
+    log.error(['Source write-back failed', task.key, filePath, err])
   }
 }
 
-export async function removeTaskFromYaml(log: AppLog, key: string, filePath: string): Promise<void> {
+export async function removeTaskFromSource(log: AppLog, key: string, filePath: string): Promise<void> {
   try {
     const content = await fs.readFile(filePath, 'utf-8')
     const doc = Bun.YAML.parse(content) as Record<string, unknown>
@@ -38,11 +38,11 @@ export async function removeTaskFromYaml(log: AppLog, key: string, filePath: str
       await fs.rename(tmpPath, filePath)
     }
   } catch (err) {
-    log.error(['YAML remove failed', key, filePath, err])
+    log.error(['Source remove failed', key, filePath, err])
   }
 }
 
-export function taskToYamlShape(task: Knowledge): Record<string, unknown> {
+export function taskToSourceRecord(task: Knowledge): Record<string, unknown> {
   const shape: Record<string, unknown> = {}
   if (task.desc) shape.desc = task.desc
   if (task.tags && task.tags.length > 0) shape.tags = task.tags

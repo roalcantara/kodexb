@@ -1,6 +1,6 @@
+import { copyTextForEntry } from '@core'
+import type { EntryActionId } from '@core/helpers/entry_action/entry_action_ids.const'
 import type { RpcKnowledge } from '@shared/rpc'
-import type { EntryActionId } from '../../../core/helpers/entry_action/entry_action_ids.const'
-import { copyTextForEntry } from '../../../core/index.ts'
 import { clipboardCopiedToastMessage } from '../utils/list/list_formatters.util'
 import type { EntryAction, EntryActionContext } from './entry_action_panel.types'
 import type { EntryActionPanelDeps } from './entry_action_panel_deps.util'

@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
-import type { KbLogVerbosity } from '../../../shared/logging'
-import type { RpcImportResult, RpcSyncProgressPayload } from '../../../shared/rpc'
+import type { LogVerbosity } from '@shared/logging'
+import type { RpcImportResult, RpcSyncProgressPayload } from '@shared/rpc'
 import { ImportService } from '../db/import.service'
 
 type AppLog = ReturnType<typeof import('../../../shared/logging').createLogger>
@@ -17,7 +17,7 @@ export async function runSourceImportSync(args: {
   invalidateListCache: () => void
   emit: SyncEmitHandlers
   log: AppLog
-  verbosity: KbLogVerbosity
+  verbosity: LogVerbosity
 }): Promise<RpcImportResult> {
   const { sourcesDir, dbPath, closeDb, invalidateListCache, emit, log, verbosity } = args
   closeDb()

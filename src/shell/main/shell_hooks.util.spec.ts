@@ -4,11 +4,11 @@ import { factoryFor } from '@testing'
 import {
   buildBrowserWindowCreateOptions,
   computeInitialFrameFromDisplay,
-  createKbLateEmit,
-  createKbShellHooks,
+  createDeferredSyncEmit,
+  createShellHooks,
   MAIN_WINDOW_DEFAULT_SIZE,
   MAIN_WINDOW_RENDERER_URL
-} from './kb_shell_hooks.util'
+} from './shell_hooks.util'
 import { SAFE_FALLBACK_X, SAFE_FALLBACK_Y } from './window/placement.util'
 
 describe('computeInitialFrameFromDisplay', () => {
@@ -46,13 +46,13 @@ describe('computeInitialFrameFromDisplay', () => {
   })
 })
 
-describe('createKbLateEmit', () => {
+describe('createDeferredSyncEmit', () => {
   it('no-ops when the webview RPC is not ready', () => {
     const mkSyncEmitter = mock((_rpc: unknown) => ({
       syncProgress: mock(() => undefined),
       syncComplete: mock(() => undefined)
     }))
-    const emit = createKbLateEmit(() => null, mkSyncEmitter)
+    const emit = createDeferredSyncEmit(() => null, mkSyncEmitter)
     emit.syncProgress({ processed: 1, total: 2 })
     expect(mkSyncEmitter).not.toHaveBeenCalled()
   })
@@ -62,7 +62,7 @@ describe('createKbLateEmit', () => {
     const syncComplete = mock((_result: unknown) => undefined)
     const rpc = { id: 'rpc-1' }
     const mkSyncEmitter = mock(() => ({ syncProgress, syncComplete }))
-    const emit = createKbLateEmit(() => rpc, mkSyncEmitter)
+    const emit = createDeferredSyncEmit(() => rpc, mkSyncEmitter)
     const payload = { processed: 2, total: 5 }
     const result = { filesProcessed: 5, inserted: 1, updated: 0, errors: [] as string[] }
     emit.syncProgress(payload)
@@ -73,7 +73,7 @@ describe('createKbLateEmit', () => {
   })
 })
 
-describe('createKbShellHooks', () => {
+describe('createShellHooks', () => {
   const win = {
     setSize: mock((_w: number, _h: number) => undefined),
     minimize: mock(() => undefined)
@@ -84,7 +84,7 @@ describe('createKbShellHooks', () => {
   })
 
   it('resizes and minimizes the window when present', () => {
-    const hooks = createKbShellHooks(() => win, {
+    const hooks = createShellHooks(() => win, {
       openExternal: mock(() => undefined),
       openFileDialog: async () => []
     })
@@ -96,7 +96,7 @@ describe('createKbShellHooks', () => {
 
   it('maps showOpenDialog to Utils.openFileDialog shape', async () => {
     const openFileDialog = mock(async () => ['/picked/file.md'])
-    const hooks = createKbShellHooks(() => null, {
+    const hooks = createShellHooks(() => null, {
       openExternal: mock(() => undefined),
       openFileDialog
     })
@@ -115,7 +115,7 @@ describe('createKbShellHooks', () => {
 
   it('opens absolute editor paths as file:// URLs', () => {
     const openExternal = mock((_url: string) => undefined)
-    const hooks = createKbShellHooks(() => null, { openExternal, openFileDialog: async () => [] })
+    const hooks = createShellHooks(() => null, { openExternal, openFileDialog: async () => [] })
     hooks.openInEditor?.('/tmp/note.md', 'Code')
     expect(openExternal).toHaveBeenCalledWith('file:///tmp/note.md')
   })

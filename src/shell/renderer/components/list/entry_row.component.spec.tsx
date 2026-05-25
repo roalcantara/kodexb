@@ -55,7 +55,7 @@ describe('EntryRow', () => {
     it('shows selected styling', () => {
       render(<EntryRow entry={bookmarkGithub} allEntries={[bookmarkGithub]} selected onSelect={() => undefined} />)
       const btn = screen.getByRole('button')
-      expect(btn.classList.contains('kb-entryRow--selected')).toBe(true)
+      expect(btn.classList.contains('theme-entry-row--selected')).toBe(true)
     })
   })
 
@@ -86,9 +86,9 @@ describe('EntryRow', () => {
           maxFrecencyScore={3}
         />
       )
-      expect(document.querySelectorAll('.kb-pt-chip--task')).toHaveLength(1)
-      expect(document.querySelector('.kb-pt-chip--todo')).not.toBeNull()
-      expect(document.querySelector('.kb-pt-chip--high')).not.toBeNull()
+      expect(document.querySelectorAll('.theme-type-chip--task')).toHaveLength(1)
+      expect(document.querySelector('.theme-type-chip--todo')).not.toBeNull()
+      expect(document.querySelector('.theme-type-chip--high')).not.toBeNull()
     })
 
     it('shows frecency bars when visited', () => {
@@ -103,7 +103,7 @@ describe('EntryRow', () => {
         />
       )
       expect(screen.getByLabelText('Used 4 times')).toBeTruthy()
-      expect(document.querySelectorAll('.kb-pt-frecency-bar--on')).toHaveLength(3)
+      expect(document.querySelectorAll('.theme-frecency-bar--on')).toHaveLength(3)
     })
   })
 })

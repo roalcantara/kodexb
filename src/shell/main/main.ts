@@ -1,25 +1,25 @@
+import { createLogger, parseLogVerbosity } from '@shared/logging'
 import { BrowserWindow, GlobalShortcut, Screen, Utils } from 'electrobun/bun'
-import { createLogger, parseKbLogVerbosity } from '../../shared/logging'
 import { App } from '../app/app'
 import { loadConfig } from '../app/config/config.loader'
 import { reportConfigLoadErrorAndExit } from './helpers/error.helper'
+import { createSyncEmitter, createWebviewRpc } from './rpc/host'
+import { createRpcServer } from './rpc/server'
 import {
   buildBrowserWindowCreateOptions,
   computeInitialFrameFromDisplay,
-  createKbLateEmit,
-  createKbShellHooks,
+  createDeferredSyncEmit,
+  createShellHooks,
   MAIN_WINDOW_DEFAULT_SIZE
-} from './kb_shell_hooks.util'
-import { createKbWebviewRpc, createSyncEmitter } from './rpc/host'
-import { createRpcServer } from './rpc/server'
+} from './shell_hooks.util'
 
-type KbWebviewRpc = ReturnType<typeof createKbWebviewRpc>
+type WebviewRpc = ReturnType<typeof createWebviewRpc>
 
 /**
  * Bootstrap the main window.
  */
 async function bootstrap() {
-  const verbosity = parseKbLogVerbosity()
+  const verbosity = parseLogVerbosity()
   const logger = createLogger({ verbosity })
   const config = await loadConfig().catch(async err => {
     await reportConfigLoadErrorAndExit(err, {
@@ -30,11 +30,11 @@ async function bootstrap() {
     throw err
   })
 
-  let kbWebviewRpc: KbWebviewRpc | null = null
-  let win: BrowserWindow<KbWebviewRpc> | null = null
+  let webviewRpc: WebviewRpc | null = null
+  let win: BrowserWindow<WebviewRpc> | null = null
 
   const shellHooks = {
-    ...createKbShellHooks(() => win, {
+    ...createShellHooks(() => win, {
       openExternal: url => Utils.openExternal(url),
       openFileDialog: opts => Utils.openFileDialog(opts)
     }),
@@ -42,11 +42,11 @@ async function bootstrap() {
       Utils.quit()
     }
   }
-  const lateEmit = createKbLateEmit(() => kbWebviewRpc, createSyncEmitter)
+  const lateEmit = createDeferredSyncEmit(() => webviewRpc, createSyncEmitter)
 
   const app = new App(config, lateEmit, verbosity, shellHooks)
   const rpcApp = createRpcServer(app)
-  kbWebviewRpc = createKbWebviewRpc(rpcApp)
+  webviewRpc = createWebviewRpc(rpcApp)
 
   // The main window loads trusted packaged renderer content at views://shell/index.html (bundled by Electrobun, no external origin).
   // Any future external or third-party webview must use sandbox: true,
@@ -54,7 +54,7 @@ async function bootstrap() {
   const mainWin = new BrowserWindow(
     buildBrowserWindowCreateOptions(
       computeInitialFrameFromDisplay(Screen.getPrimaryDisplay(), logger, MAIN_WINDOW_DEFAULT_SIZE),
-      kbWebviewRpc,
+      webviewRpc,
       process.platform
     )
   )

@@ -1,4 +1,4 @@
-import type { OpenDialogOpts } from '../../../shared/rpc'
+import type { OpenDialogOpts } from '@shared/rpc'
 import type { AppShellHooks } from './app_shell_hooks.types'
 
 export function rejectShellNotImplemented(method: string): Promise<never> {

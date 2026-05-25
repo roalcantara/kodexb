@@ -9,14 +9,14 @@ export type MdViewProps = {
 
 export function MdView({ markdown, onOpenExternal }: MdViewProps) {
   return (
-    <div className="kb-mdView">
+    <div className="theme-md-view">
       <ReactMarkdown
         rehypePlugins={[rehypeHighlight]}
         components={{
           a: ({ href, children }) => (
             <button
               type="button"
-              className="kb-mdView-link"
+              className="theme-md-view-link"
               onClick={() => {
                 if (href) fireAndForget(Promise.resolve(onOpenExternal?.(href)))
               }}

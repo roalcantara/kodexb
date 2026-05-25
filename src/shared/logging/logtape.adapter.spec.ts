@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'bun:test'
-import { kbLowestLevel } from './logtape.adapter'
+import { lowestLevelForVerbosity } from './logtape.adapter'
 
-describe('kbLowestLevel', () => {
+describe('lowestLevelForVerbosity', () => {
   it('maps verbosity to Logtape level', () => {
-    expect(kbLowestLevel('default')).toBe('warning')
-    expect(kbLowestLevel('verbose')).toBe('info')
-    expect(kbLowestLevel('debug')).toBe('debug')
-    expect(kbLowestLevel('trace')).toBe('trace')
+    expect(lowestLevelForVerbosity('default')).toBe('warning')
+    expect(lowestLevelForVerbosity('verbose')).toBe('info')
+    expect(lowestLevelForVerbosity('debug')).toBe('debug')
+    expect(lowestLevelForVerbosity('trace')).toBe('trace')
   })
 })
