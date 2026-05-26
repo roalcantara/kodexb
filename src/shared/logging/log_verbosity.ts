@@ -11,6 +11,21 @@
  */
 export type LogVerbosity = 'default' | 'verbose' | 'debug' | 'trace'
 
+/** Logtape `lowestLevel` values used by main and renderer configuration. */
+export type LogtapeLevel = 'trace' | 'debug' | 'info' | 'warning' | 'error' | 'fatal'
+
+const LOWEST_BY_VERBOSITY: Record<LogVerbosity, LogtapeLevel> = {
+  default: 'warning',
+  verbose: 'info',
+  debug: 'debug',
+  trace: 'trace'
+}
+
+/** Map `LOG_LEVEL` verbosity to Logtape `lowestLevel` (shared by main and renderer). */
+export function lowestLogtapeLevelForVerbosity(verbosity: LogVerbosity): LogtapeLevel {
+  return LOWEST_BY_VERBOSITY[verbosity]
+}
+
 const LEVELS: readonly LogVerbosity[] = ['default', 'verbose', 'debug', 'trace'] as const
 
 export function isLogVerbosity(value: string): value is LogVerbosity {

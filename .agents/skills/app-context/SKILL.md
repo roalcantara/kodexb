@@ -115,7 +115,8 @@ Machine-checked: **Biome** (snake_case on every dot-separated segment) +
 
 ## Logging
 
-Use `createLogger()` from `@shared/logging`. Never `console.*` in `src/`.
+Use `getLogger(['kb', '<area>', ...])` from `@shared/logging`. Never `console.*` in `src/`.
+See `assets/guides/LOGGING_GUIDE.md` + the `app-logging` skill for full reference.
 
 ## Design system — Andromeda Void
 

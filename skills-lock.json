@@ -13,6 +13,12 @@
       "skillPath": "skills/bun-runtime/SKILL.md",
       "computedHash": "bdac3d20723a536f7160ca2c08f369101b73e67a0f5f2a951910056716156c3c"
     },
+    "daisyui": {
+      "source": "saadeghi/daisyui",
+      "sourceType": "github",
+      "skillPath": "skills/daisyui/SKILL.md",
+      "computedHash": "5f63c0f20f3e6cb7d804e168122c3b047cb65c9db6a31534661dafc9b9bd6764"
+    },
     "dotenv": {
       "source": "dotenv",
       "sourceType": "node_modules",
@@ -148,6 +154,12 @@
       "sourceType": "github",
       "skillPath": ".claude/plugins/electrobun-dev/skills/electrobun-workflow/SKILL.md",
       "computedHash": "aeb513a576c86bcc8bcb7df4ebd4f58e6773c62227a199f3b76bf74bbeaf63c5"
+    },
+    "feedback-mastery": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/feedback-mastery/SKILL.md",
+      "computedHash": "d21080a65800d23edac34b85fcbff6db8a95f86c72695ee2c597fed101ec905b"
     },
     "logtape": {
       "source": "@jsr/logtape__logtape",

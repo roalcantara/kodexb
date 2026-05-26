@@ -43,7 +43,11 @@ src/shell/renderer/  React UI. Calls main via Eden Treaty client ONLY.
   end-to-end specs. No drizzle-seed. See
   [`assets/guides/FISHERY_GUIDE.md`](assets/guides/FISHERY_GUIDE.md) and
   [`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md).
-- **Logging**: use `createLogger()` from `@shared/logging`. Never `console.*` in `src/`.
+- **Logging**: use `getLogger(['kb', '<area>', ...])` from `@shared/logging`. Never `console.*` in `src/`.
+  Use `configureMainLogging()` at main entry; `configureRendererLogging()` at renderer entry.
+  Use `repositoryStmts(db, 'Noun', { ...sql })` for DB instrumentation.
+  Use `withContext(...)` when adding per-request metadata.
+  See `assets/guides/LOGGING_GUIDE.md` for canonical reference.
 - **Every new Elysia route** must also appear in `tools/preview/server.ts`.
 - **Every new file** in `src/` needs a co-located `.spec.ts(x)`.
 - **Exports**: unused exports are a knip error — delete or use before committing.

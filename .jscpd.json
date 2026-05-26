@@ -16,6 +16,7 @@
     ".cursor/commands/**",
     "**/tmp/**",
     "**/.superpowers/**",
+    ".agents/skills/**",
     "src/shell/app/db/import.service.spec.ts"
   ]
 }

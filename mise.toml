@@ -1195,49 +1195,159 @@ HK_PKL_BACKEND = "pklr"
         ;;
     esac
   ''' }
-"app" = { description = "Manage app-specific tasks", usage = '''
-    flag "--stop" help="Stop the orphan watcher"
-    flag "--check" help="Check the app is running"
-    flag "--quit" help="Quit the macOS app bundle cleanly"
-    flag "--kill" help="Or kill the whole tree"
-    cmd "gates" help="Run the quality and policy gates" {
-      flag "--quality" help="Run the quality gate"
-      flag "--policy" help="Run the policy gate"
+"app" = { description = "Manage Electrobun dev lifecycle and gates", usage = '''
+    flag "--stop" help="Stop the electrobun dev --watch process only"
+    flag "--check" help="Print whether kb-dev or the watcher is running"
+    flag "--quit" help="Quit kb-dev via AppleScript (graceful)"
+    flag "--kill" help="Quit kb-dev, kill its process tree, and stop the watcher"
+    cmd "gates" help="Run quality and/or policy gates" {
+      flag "--quality" help="Run the full app quality gate"
+      flag "--policy" help="Run embedded policy checks only"
+    }
+    cmd "start" help="Start dev (package.json dev script; includes --watch)" {
+      arg "[level]" help="Log level preset" {
+        choices "verbose" "debug" "trace"
+      }
+      flag "--cef" help="Use CEF renderer (ELECTROBUN_RENDERER=cef)"
+      flag "--open-devtools" help="Print CEF DevTools URLs for kb renderer (Cmd+click; requires --cef)"
+      flag "--force" help="Tear down any running kb-dev and watcher before start"
     }
   ''', run = '''
     #!/usr/bin/env bash
     set -euo pipefail
-    if [[ "${usage_stop:-false}" == "true" ]]; then
-      echo "app: stopping orphan watcher..."
-      pkill -f "electrobun dev --watch"
-      echo "app: orphan watcher stopped!"
-    fi
-    if [[ "${usage_check:-false}" == "true" ]]; then
-      echo "app: checking if app is running..."
-      if pgrep -fl 'kb-dev|blackboard.kb'; then
-        echo "app: is running!"
+
+    app_stop_watcher() {
+      if pkill -f "electrobun dev --watch" 2>/dev/null; then
+        echo "app: stopped electrobun dev --watch"
       else
-        echo "app: is not running!"
+        echo "app: no electrobun dev --watch process found"
       fi
-    fi
-    if [[ "${usage_quit:-false}" == "true" ]]; then
-      echo "app: quitting app..."
-      osascript -e 'quit app "kb-dev"'
-      echo "app: app quit!"
-    fi
-    if [[ "${usage_kill:-false}" == "true" ]]; then
-      echo "app: killing app..."
-      pkill -f 'kb-dev.app'
-      echo "app: app killed!"
-    fi
-    if [[ "${usage_quality:-false}" == "true" ]]; then
-      echo "app: checking quality gate..."
-      .agents/skills/app-quality-gate/scripts/gate.sh
-    fi
-    if [[ "${usage_policy:-false}" == "true" ]]; then
-      echo "app: checking policy..."
-      .agents/skills/app-quality-gate/scripts/gate_policy.sh
-    fi
+    }
+
+    app_teardown() {
+      echo "app: tearing down kb-dev and watcher..."
+      osascript -e 'quit app "kb-dev"' 2>/dev/null || true
+      sleep 0.5
+      pkill -f 'kb-dev.app' 2>/dev/null || true
+      app_stop_watcher
+      echo "app: teardown complete"
+    }
+
+    app_print_devtools_link_when_ready() {
+      echo "app: waiting for CEF DevTools ..."
+      for _ in $(seq 1 120); do
+        if curl -sf http://127.0.0.1:9222/json/version >/dev/null 2>&1; then
+          # #region agent log
+          bun -e "const t=await fetch('http://127.0.0.1:9222/json/list').then(r=>r.json());const fs=require('node:fs');fs.appendFileSync('/Users/roalcantara/Work/bun/kb/.cursor/debug-98e08a.log',JSON.stringify({sessionId:'98e08a',hypothesisId:'A',location:'mise.toml:app_print_devtools',message:'cef_json_list',data:{targets:t},timestamp:Date.now()})+'\n')" 2>/dev/null || true
+          # #endregion
+          echo "app: kb UI is the kb-dev window (Dock). DevTools below inspect the renderer only."
+          echo "app: Cmd+click the kb inspector URL (not the target list) to debug views://shell in Cursor Browser:"
+          inspector_url="$(curl -sf http://127.0.0.1:9222/json/list | bun -e "
+            const targets = await Bun.stdin.json();
+            const kb = targets.find((t) => String(t.url ?? '').includes('views://shell'));
+            if (!kb?.webSocketDebuggerUrl) process.exit(1);
+            const ws = String(kb.webSocketDebuggerUrl).replace(/^ws:\\/\\//, '');
+            console.log('http://127.0.0.1:9222/devtools/inspector.html?ws=' + ws);
+          " 2>/dev/null || true)"
+          if [[ -n "${inspector_url:-}" ]]; then
+            echo "${inspector_url}"
+          else
+            echo "http://localhost:9222"
+            echo "app: open the target titled kb (views://shell/index.html), not the blank inspector chrome"
+          fi
+          echo "app: or use Run and Debug → Attach to kb renderer (CEF) in .vscode/launch.json"
+          return 0
+        fi
+        sleep 1
+      done
+      echo "app: DevTools did not become ready within 120s" >&2
+      return 1
+    }
+
+  case "${usage_cmd:-}" in
+    gates)
+      ran=false
+      if [[ "${usage_quality:-false}" == "true" ]]; then
+        ran=true
+        echo "app gates: running quality gate..."
+        bash .agents/skills/app-quality-gate/scripts/gate.sh
+      fi
+      if [[ "${usage_policy:-false}" == "true" ]]; then
+        ran=true
+        echo "app gates: running policy gate..."
+        GATE_EMBEDDED_POLICY=1 bash .agents/skills/app-quality-gate/scripts/gate_policy.sh
+      fi
+      if [[ "$ran" != "true" ]]; then
+        echo "app gates: pass --quality and/or --policy" >&2
+        exit 2
+      fi
+      ;;
+    start)
+      if [[ "${usage_force:-false}" == "true" ]]; then
+        app_teardown
+      fi
+      if [[ "${usage_open_devtools:-false}" == "true" ]]; then
+        if [[ "${usage_cef:-false}" != "true" ]]; then
+          echo "app: --open-devtools requires --cef (DevTools listen on http://localhost:9222)" >&2
+          exit 2
+        fi
+        app_print_devtools_link_when_ready &
+      fi
+      start_env=()
+      start_label="bun run dev"
+      if [[ "${usage_cef:-false}" == "true" ]]; then
+        start_env+=(ELECTROBUN_RENDERER=cef)
+        start_label="ELECTROBUN_RENDERER=cef ${start_label}"
+      fi
+      case "${usage_level:-}" in
+        verbose|debug|trace)
+          start_env+=(LOG_LEVEL="${usage_level}")
+          start_label="LOG_LEVEL=${usage_level} ${start_label}"
+          ;;
+      esac
+      echo "app: starting (${start_label})..."
+      if [[ "${usage_cef:-false}" == "true" || -n "${usage_level:-}" ]]; then
+        exec env "${start_env[@]}" bun run dev
+      else
+        exec bun run dev
+      fi
+      ;;
+    "")
+      handled=false
+      if [[ "${usage_stop:-false}" == "true" ]]; then
+        handled=true
+        app_stop_watcher
+      fi
+      if [[ "${usage_check:-false}" == "true" ]]; then
+        handled=true
+        echo "app: process check (kb-dev | electrobun dev):"
+        if pgrep -fl 'kb-dev|electrobun dev' >/dev/null; then
+          pgrep -fl 'kb-dev|electrobun dev'
+        else
+          echo "app: nothing running"
+        fi
+      fi
+      if [[ "${usage_quit:-false}" == "true" ]]; then
+        handled=true
+        echo "app: quitting kb-dev..."
+        osascript -e 'quit app "kb-dev"' || exit 1
+        echo "app: quit sent"
+      fi
+      if [[ "${usage_kill:-false}" == "true" ]]; then
+        handled=true
+        app_teardown
+      fi
+      if [[ "$handled" != "true" ]]; then
+        echo "app: pass a subcommand (start, gates) or a flag (--stop, --check, --quit, --kill)" >&2
+        echo "app: run 'mise run app --help' for usage" >&2
+        exit 2
+      fi
+      ;;
+    *)
+      echo "app: unknown subcommand '${usage_cmd}'" >&2
+      exit 2
+      ;;
+  esac
   ''' }
 "policy" = { description = "Check Mise task policy and usage specs", quiet = true, usage = '''
     cmd "check" {
@@ -1258,6 +1368,7 @@ HK_PKL_BACKEND = "pklr"
     const COMPLEX_SCRIPT_PATTERN = /(&&|\|\||;|\||>|<|\bmkdir\b|\brm\b|\btee\b)/
     const TABLE_TASK_PATTERN = /^\[tasks\."?([^"\]]+)"?\]/gm
     const EXPECTED_PUBLIC_TASKS = [
+      ['app', 'Manage Electrobun dev lifecycle and gates'],
       ['ci', 'Run review, release, and publish CI workflows'],
       ['docker', 'Build, run, and test the Docker image'],
       ['lint', 'Run lint, strict lint, fix, report, and graph workflows'],
@@ -1268,7 +1379,7 @@ HK_PKL_BACKEND = "pklr"
       ['test', 'Run unit, CI, e2e preview, spec audit, and style checks'],
     ] as const
     const EXPECTED_PACKAGE_SCRIPTS = [
-      'start', 'dev', 'dev:verbose', 'dev:debug', 'dev:trace', 'dev:kill',
+      'start', 'dev', 'dev:cef', 'dev:verbose', 'dev:debug', 'dev:trace', 'dev:kill',
       'build', 'build:prod', 'build:insecure-local', 'test', 'typecheck',
       'lint', 'lint:strict', 'lint:fix', 'lint:biome', 'lint:biome:strict',
       'lint:biome:fix', 'lint:biome:format', 'lint:mise', 'lint:knip',
@@ -1847,7 +1958,6 @@ else if (ACTION === "report") { await report(); if (!validateOk) process.exit(1)
 
 if (!ok) process.exit(1)
 ''' }
-
 # mise run docker build
 # mise run docker build --nocache --platform amd64
 # mise run docker build --nocache --tag next

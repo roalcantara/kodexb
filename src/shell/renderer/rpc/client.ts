@@ -17,9 +17,12 @@ import type {
   TaskCreateInput,
   TaskUpdateInput
 } from '@shared/rpc'
+import { getLogger } from '@shared/logging'
 import { Electroview } from 'electrobun/view'
 
 import type { RpcApp } from './rpc_app.types'
+
+const rpcClientLog = getLogger(['kb', 'ui', 'rpc-client'])
 
 const RPC_TIMEOUT_MS = 60_000
 const BRIDGE_ORIGIN = 'http://kb.local'
@@ -70,13 +73,34 @@ const rpcCall = (webviewRpc.request as unknown as { rpcCall: RpcCallRequest }).r
 async function bridgeFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url
   const parsed = new URL(url, BRIDGE_ORIGIN)
+  const method = init?.method ?? 'POST'
+  const path = `${parsed.pathname}${parsed.search}`
   const bodyText = await readInitBody(init?.body)
   const headers = extractHeaders(init?.headers)
+  const requestId = headers?.['x-request-id'] ?? headers?.['X-Request-Id']
+
+  rpcClientLog.info('→ {method} {path}', { method, path, requestId })
+
+  if (rpcClientLog.isEnabledFor('debug') && bodyText !== undefined) {
+    const preview =
+      bodyText.length > 2048 ? `${bodyText.slice(0, 2048)}…(truncated)` : bodyText
+    rpcClientLog.debug('Request body', { body: preview })
+  }
+
+  const startedAt = performance.now()
   const result = await rpcCall({
-    path: `${parsed.pathname}${parsed.search}`,
-    method: init?.method ?? 'POST',
+    path,
+    method,
     body: bodyText,
     headers
+  })
+  const durationMs = Math.round((performance.now() - startedAt) * 10) / 10
+
+  rpcClientLog.info('← {status} {path} in {durationMs}ms', {
+    status: result.status,
+    path,
+    durationMs,
+    requestId
   })
   // Eden Treaty calls `Response.json()` unconditionally; an empty body
   // (`App.openExternal` returns `void`) breaks that parser. Default empty

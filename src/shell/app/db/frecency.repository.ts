@@ -1,5 +1,6 @@
 import type { Database } from 'bun:sqlite'
 import { bumpFrecency, type FrecencyState } from '@core/helpers/frecency/bump_frecency.util'
+import { repositoryStmts } from '@shared/logging'
 import type { EntryFrecencyRow } from './schema'
 
 const SELECT_FRECENCY_SQL = 'SELECT visit_count, last_visited_at, frecency_score FROM entry_frecency WHERE entry_id = ?'
@@ -25,13 +26,19 @@ function rowToState(row: EntryFrecencyRow): FrecencyState {
 
 /** Records one visit for an existing knowledge row; no-op when id is missing. */
 export function recordEntryVisit(db: Database, entryId: number, nowMs = Date.now()): boolean {
-  const exists = db.query<{ one: 1 } | null, [number]>(KNOWLEDGE_EXISTS_SQL).get(entryId)
+  const stmts = repositoryStmts(db, 'Frecency', {
+    select: SELECT_FRECENCY_SQL,
+    upsert: UPSERT_FRECENCY_SQL,
+    exists: KNOWLEDGE_EXISTS_SQL
+  })
+
+  const exists = stmts.exists.get(entryId)
   if (!exists) return false
 
-  const row = db.query<EntryFrecencyRow, [number]>(SELECT_FRECENCY_SQL).get(entryId)
+  const row = stmts.select.get(entryId) as EntryFrecencyRow | undefined
   const previous = row ? rowToState(row) : null
   const next = bumpFrecency(previous, nowMs)
 
-  db.query(UPSERT_FRECENCY_SQL).run(entryId, next.visitCount, next.lastVisitedAt, next.frecencyScore)
+  stmts.upsert.run(entryId, next.visitCount, next.lastVisitedAt, next.frecencyScore)
   return true
 }

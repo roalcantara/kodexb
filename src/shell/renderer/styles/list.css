@@ -2,6 +2,7 @@
 /* Editorial typography per `DESIGN.md`. Georgia is system on macOS/Windows;
  * Inter and JetBrains Mono are pulled from Google Fonts. */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&amp;family=Google+Sans+Display:wght@400;500;700&amp;family=Google+Sans+Text:wght@400;500;700&amp;display=swap');
 
 :root {
   color-scheme: dark;
@@ -9,9 +10,9 @@
    * Material-style token map. The `--theme-*` names below are the semantic
    * subset the renderer uses; each is sourced from the YAML so the design
    * system stays the single source of truth. */
-  --theme-bg: #11131e;
+  --theme-bg: transparent;
   /* background */
-  --theme-surface: #1d1f2b;
+  --theme-surface: #1E1F2B;
   /* surface-container */
   --theme-border: #4a4451;
   /* outline-variant */
@@ -21,7 +22,7 @@
   /* on-surface-variant */
   --theme-accent: #d7baff;
   /* primary */
-  --theme-row-hover: #272935;
+  --theme-row-hover: ##22232F;
   /* surface-container-high */
   --theme-row-selected: #323440;
   /* surface-container-highest */
@@ -39,6 +40,8 @@
   /* Dracula green */
   --theme-entry-color-bookmark: #d7baff;
   /* primary (lavender) */
+  --app-color-google-ai-green: #34a853;
+  /* Google brand green (AI / success accent) */
 }
 
 /* The BrowserWindow is created with `transparent: true` and (on macOS)
@@ -1622,7 +1625,7 @@ body {
   background: var(--theme-surface);
   border-radius: var(--theme-shell-radius);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
 }
 
 /* Slim drag affordance at the top of the chromeless shell. The native NSWindow
@@ -1646,7 +1649,6 @@ body {
 
 .theme-search-wrap {
   padding: 12px 20px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* PowerToys-style: back control + bar; left inset matches .theme-list-row horizontal padding for icon alignment */
@@ -1728,7 +1730,6 @@ body {
 }
 
 .theme-search-bar input[type='search']:focus-visible {
-  box-shadow: 0 0 0 1px rgba(215, 186, 255, 0.35);
   border-radius: 4px;
 }
 
@@ -1745,14 +1746,9 @@ body {
   font-style: italic;
 }
 
-/* Hairline only — not a full-height panel border */
-.theme-search-bar-divider {
-  width: 1px;
-  flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.08);
-  align-self: stretch;
-  margin: 10px 0;
-}
+
+
+
 
 .theme-search-bar .theme-filter-chip {
   -webkit-app-region: no-drag;
@@ -1768,22 +1764,20 @@ body {
   color: var(--theme-text-muted);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 300;
   letter-spacing: 0.01em;
   cursor: pointer;
   white-space: nowrap;
   transition: background-color 120ms ease;
 }
-
 .theme-search-bar .theme-filter-chip:hover {
   background: rgba(255, 255, 255, 0.08);
   color: var(--theme-text);
 }
-
 .theme-filter-chip--active {
   color: var(--theme-accent);
   background: rgba(215, 186, 255, 0.1);
-  font-weight: 600;
+  font-weight: 300;
 }
 
 /* Filter dropdown overlay */
@@ -1951,8 +1945,6 @@ body {
 /* Results */
 .theme-results {
   -webkit-app-region: no-drag;
-  flex: 1;
-  overflow-y: auto;
 }
 
 .theme-list-row {
@@ -1962,9 +1954,8 @@ body {
   align-items: center;
   column-gap: 14px;
   padding: 18px 20px;
-  min-height: 64px;
+  min-height: 90px;
   border: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
   cursor: pointer;
   background: transparent;
   color: inherit;
@@ -1976,17 +1967,19 @@ body {
     box-shadow 120ms ease;
 }
 
-.theme-list-row:first-child {
-  border-top: none;
-}
-
 .theme-list-row--selected {
   /* `bg-primary/5` + 4px primary accent bar on the left, per the mockup.
    * `inset` shadow preserves the row layout (no width shift like a border would).
    * Padding stays constant so keyboard navigation doesn't reflow neighbouring
    * rows when selection moves. */
-  background: rgba(215, 186, 255, 0.06);
-  box-shadow: inset 4px 0 0 var(--theme-accent);
+  background: #242530;
+  box-shadow: inset 2px 0 0 var(--theme-accent);
+  border-bottom-color: #d7baff0d;
+  border-bottom-width: 0.55556px;
+  border-bottom-style: solid;
+  border-top-color: #d7baff0d;
+  border-top-width: 0.55556px;
+  border-top-style: solid;
 }
 
 .theme-list-row-icon {
@@ -2024,9 +2017,10 @@ body {
 }
 
 .theme-list-row-title {
-  color: var(--theme-text);
+  color: #e1e1f1b3;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 200;
   line-height: 1.45;
   white-space: nowrap;
   overflow: hidden;
@@ -2036,39 +2030,15 @@ body {
 
 .theme-list-row-subtitle {
   color: var(--theme-text-muted);
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.35;
   margin: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 10px;
+  gap: 10px 10px;
   row-gap: 4px;
-}
-
-.theme-list-row-hint {
-  grid-column: 3;
-  font-size: 10px;
-  line-height: 1.2;
-  flex-shrink: 0;
-  align-self: center;
-  padding-left: 4px;
-}
-
-.theme-list-row-hint--bookmark {
-  color: var(--theme-entry-color-bookmark);
-}
-
-.theme-list-row-hint--command {
-  color: var(--theme-entry-color-command);
-}
-
-.theme-list-row-hint--cheat {
-  color: var(--theme-entry-color-cheat);
-}
-
-.theme-list-row-hint--task {
-  color: var(--theme-entry-color-task);
+  padding-top: 8px;
 }
 
 .theme-list-row-trailing {
@@ -2104,80 +2074,6 @@ body {
 
 .theme-frecency-bar:nth-child(3).theme-frecency-bar--on {
   height: 8px;
-}
-
-/* Chips — italic semantic-colored labels with a leading `#`, per DESIGN.md
- * ("italic, jewel-toned, no background tile"). The `::before` content is
- * decorative and not announced by screen readers. */
-.theme-type-chip {
-  display: inline-flex;
-  align-items: center;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 0;
-  color: var(--theme-text-muted);
-  font-size: 12px;
-  font-weight: 500;
-  font-style: italic;
-  line-height: 1.35;
-  letter-spacing: 0.01em;
-}
-
-.theme-type-chip::before {
-  content: '#';
-  margin-right: 1px;
-  opacity: 0.85;
-}
-
-.theme-type-chip--bookmark {
-  color: var(--theme-entry-color-bookmark);
-  font-weight: 600;
-}
-
-.theme-type-chip--command {
-  color: var(--theme-entry-color-command);
-  font-weight: 600;
-}
-
-.theme-type-chip--cheat {
-  color: var(--theme-entry-color-cheat);
-  font-weight: 600;
-}
-
-.theme-type-chip--task {
-  color: var(--theme-entry-color-task);
-  font-weight: 600;
-}
-
-.theme-type-chip--urgent,
-.theme-type-chip--overdue {
-  color: var(--theme-danger);
-}
-
-.theme-type-chip--high {
-  color: var(--theme-warn);
-}
-
-.theme-type-chip--mid {
-  color: var(--theme-text-muted);
-}
-
-.theme-type-chip--low {
-  color: var(--theme-text-muted);
-  opacity: 0.6;
-}
-
-.theme-type-chip--todo {
-  color: var(--theme-text-muted);
-}
-
-.theme-type-chip--doing {
-  color: var(--theme-entry-color-command);
-}
-
-.theme-type-chip--done {
-  color: var(--theme-entry-color-task);
 }
 
 /* Footer — fixed row height; ⎋ prefix always mounted (visibility) so layout does not shift. */

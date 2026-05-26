@@ -434,6 +434,15 @@ Run with `bun run lint:ls`. Included in the `bun run lint` compound check.
 
 To add a new folder under `assets/wireframe/`, add a matching entry in `.ls-lint.yml` before committing.
 
+## Logging
+
+- Use `getLogger(['kb', '<area>', ...])` from `@shared/logging`.
+- Categories follow `['kb', '<area>', '<sub-area>']` convention.
+- Never use `console.*` in `src/`.
+- DB queries: use `repositoryStmts(db, 'Noun', { ...sql })`.
+- RPC logging: handled automatically by `rpcCommonPlugins`.
+- See `assets/guides/LOGGING_GUIDE.md` for the canonical reference.
+
 ## Behavior
 
 - **Mocking** — Only in tests. Never mock or stub data in dev/prod code.

@@ -1,5 +1,6 @@
 import type { ElectrobunConfig } from 'electrobun'
 import packageJson from './package.json'
+import { rendererLogEnvPlugin } from './tools/build/renderer_log_env.plugin'
 import { tsconfigPathsPlugin } from './tools/build/tsconfig_paths.plugin'
 
 const appIconset = 'assets/icons/app-logo.iconset'
@@ -18,7 +19,7 @@ const canNotarize = canCodesign && appleId.length > 0 && appleIdPass.length > 0 
  * Opt-in CEF renderer for dev-time debugging. WKWebView (the default native
  * macOS renderer) only exposes Apple's Safari Web Inspector — Apple does not
  * expose Chrome DevTools Protocol — so Chromium-based debuggers (Cursor
- * Browser, Chrome, Edge) cannot connect to it. Setting `KB_RENDERER=cef`
+ * Browser, Chrome, Edge) cannot connect to it. Setting `ELECTROBUN_RENDERER=cef`
  * bundles CEF and switches the default renderer; CEF then exposes Chrome
  * DevTools at `http://localhost:9222` for any Chromium browser to attach to.
  *
@@ -26,7 +27,7 @@ const canNotarize = canCodesign && appleId.length > 0 && appleIdPass.length > 0 
  * `bun run dev:cef` script (or set the env var manually) when you want to
  * debug the renderer from Cursor Browser.
  */
-const useCef = process.env.KB_RENDERER === 'cef'
+const useCef = process.env.ELECTROBUN_RENDERER === 'cef'
 
 export default {
   app: {
@@ -44,7 +45,7 @@ export default {
       shell: {
         entrypoint: 'src/shell/renderer/index.ts',
         tsconfig: tsconfigPath,
-        plugins: [pathsPlugin]
+        plugins: [pathsPlugin, rendererLogEnvPlugin()]
       }
     },
     copy: {

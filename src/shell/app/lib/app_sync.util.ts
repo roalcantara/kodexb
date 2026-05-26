@@ -1,9 +1,8 @@
 import fs from 'node:fs/promises'
-import type { LogVerbosity } from '@shared/logging'
 import type { RpcImportResult, RpcSyncProgressPayload } from '@shared/rpc'
 import { ImportService } from '../db/import.service'
 
-type AppLog = ReturnType<typeof import('../../../shared/logging').createLogger>
+type AppLog = ReturnType<typeof import('../../../shared/logging').getLogger>
 
 export type SyncEmitHandlers = {
   syncProgress?: (payload: RpcSyncProgressPayload) => void
@@ -17,9 +16,8 @@ export async function runSourceImportSync(args: {
   invalidateListCache: () => void
   emit: SyncEmitHandlers
   log: AppLog
-  verbosity: LogVerbosity
 }): Promise<RpcImportResult> {
-  const { sourcesDir, dbPath, closeDb, invalidateListCache, emit, log, verbosity } = args
+  const { sourcesDir, dbPath, closeDb, invalidateListCache, emit, log } = args
   closeDb()
   if (dbPath !== ':memory:') {
     try {
@@ -38,7 +36,7 @@ export async function runSourceImportSync(args: {
       /* not found */
     }
   }
-  const importer = new ImportService(dbPath, verbosity)
+  const importer = new ImportService(dbPath)
   invalidateListCache()
   const result = await importer.run(sourcesDir, {
     onProgress: (payload: RpcSyncProgressPayload) => {
@@ -46,6 +44,10 @@ export async function runSourceImportSync(args: {
     }
   })
   emit.syncComplete?.(result)
-  log.phase('import', `sync_complete files=${result.filesProcessed}`, 0)
+  log.info('{phase} label={label} dur_ms={dur_ms}', {
+    phase: 'import',
+    label: `sync_complete files=${result.filesProcessed}`,
+    dur_ms: '0.00'
+  })
   return result
 }

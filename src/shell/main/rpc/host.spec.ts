@@ -1,6 +1,10 @@
-import { describe, expect, it, mock } from 'bun:test'
+import { beforeAll, describe, expect, it, mock } from 'bun:test'
+import { configureMainLogging, rpcErrorContract } from '@shared/logging'
 import { Elysia, t } from 'elysia'
-import { rpcErrorContract } from './server'
+
+beforeAll(() => {
+  configureMainLogging()
+})
 
 mock.module('electrobun/bun', () => ({
   BrowserView: {}

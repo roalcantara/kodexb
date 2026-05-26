@@ -61,6 +61,26 @@ skills:
             - quality gate failures
           avoid:
             - exploratory reading with no change yet
+  app-logging:
+    location: owned
+    rationale: Canonical structured logging skill with LogTape, LOG_LEVEL dial, and DB/RPC instrumentation. Prevents
+      console.* drift and category misconfiguration.
+    policy:
+      type: required
+      usage:
+        summary: Load when writing or modifying logging code, categories, or verbosity configuration.
+        when:
+          load:
+            - getLogger
+            - configureMainLogging
+            - configureRendererLogging
+            - repositoryStmts
+            - LOG_LEVEL
+            - log level
+            - verbosity
+            - structured logging
+          avoid:
+            - documentation-only edits with no logging code change
   electrobun-best-practices:
     location: project
     rationale: Baseline for desktop stack work and the first stop before narrower Electrobun skills.

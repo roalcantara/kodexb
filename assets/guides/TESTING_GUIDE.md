@@ -928,6 +928,25 @@ equivalent coverage.
 A maintainer-triggered CI workflow for preview e2e may be added later, but
 the default gate must remain fast and portable.
 
+## Asserting on log output
+
+To assert on log records in tests, use a fixture `Sink`:
+
+```ts
+import { configureSync } from '@logtape/logtape'
+import type { LogRecord, Sink } from '@logtape/logtape'
+
+const records: LogRecord[] = []
+const fixtureSink: Sink = (record) => { records.push(record) }
+configureSync({
+  reset: true,
+  sinks: { fixture: fixtureSink },
+  loggers: [{ category: ['kb'], sinks: ['fixture'], lowestLevel: 'debug' }],
+})
+```
+
+Then filter `records` by category/message in your assertions.
+
 ## References
 
 - [Bun Test Runner][0]

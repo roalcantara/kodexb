@@ -1,10 +1,15 @@
-import { afterEach, describe, expect, it } from 'bun:test'
+import { afterEach, beforeAll, describe, expect, it } from 'bun:test'
 import { join } from 'node:path'
+import { configureMainLogging } from '@shared/logging'
 import { createTempDir, factoryFor, type TempDir, testingPaths } from '@testing'
 import { App } from '../../app/app'
 import type { LoadedConfig } from '../../app/config/config.loader'
 import { ImportService } from '../../app/db/import.service'
 import { createRpcServer } from './server'
+
+beforeAll(() => {
+  configureMainLogging()
+})
 
 const API = 'http://local/api'
 

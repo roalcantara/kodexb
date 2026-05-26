@@ -1,4 +1,5 @@
 import type { Database } from 'bun:sqlite'
+import { repositoryStmts } from '@shared/logging'
 import type { Knowledge } from '../../../core'
 import { rowToKnowledge } from './entry.repository'
 import type { KnowledgeRow } from './schema'
@@ -15,8 +16,23 @@ const FIND_NEIGHBOR_SQL = `SELECT id, task_order FROM knowledges
 
 const SET_TASK_ORDER_SQL = 'UPDATE knowledges SET task_order = ? WHERE id = ? AND type = ?'
 
+const FIND_DEPENDENCIES_SQL = 'SELECT * FROM knowledges WHERE id IN ('
+
+const FIND_DEPENDENTS_SQL = 'SELECT * FROM knowledges WHERE type = ? AND depends_on IS NOT NULL'
+
+function initStmts(db: Database) {
+  return repositoryStmts(db, 'Task', {
+    maxOrder: MAX_TASK_ORDER_SQL,
+    deps: FIND_DEPS_SQL,
+    taskOrder: FIND_TASK_ORDER_SQL,
+    setOrder: SET_TASK_ORDER_SQL,
+    dependents: FIND_DEPENDENTS_SQL
+  })
+}
+
 export function maxTaskOrder(db: Database): number {
-  const row = db.query<{ max_order: number }, [string]>(MAX_TASK_ORDER_SQL).get('task')
+  const s = initStmts(db)
+  const row = s.maxOrder.get('task') as { max_order: number } | undefined
   return row ? row.max_order + 1 : 0
 }
 
@@ -32,7 +48,8 @@ function parseDependsOnJson(raw: string | null): number[] | null {
 }
 
 function readTaskDependencyIds(db: Database, taskRowId: number): number[] {
-  const row = db.query<{ depends_on: string | null }, [number, string]>(FIND_DEPS_SQL).get(taskRowId, 'task')
+  const s = initStmts(db)
+  const row = s.deps.get(taskRowId, 'task') as { depends_on: string | null } | undefined
   return parseDependsOnJson(row?.depends_on ?? null) ?? []
 }
 
@@ -60,7 +77,8 @@ export function updateTaskOrder(
   taskId: number,
   dir: 'up' | 'down'
 ): Array<{ id: number; taskOrder: number }> {
-  const current = db.query<{ task_order: number | null }, [number, string]>(FIND_TASK_ORDER_SQL).get(taskId, 'task')
+  const s = initStmts(db)
+  const current = s.taskOrder.get(taskId, 'task') as { task_order: number | null } | undefined
 
   if (current?.task_order == null) return []
 
@@ -75,8 +93,8 @@ export function updateTaskOrder(
   if (!neighbor) return []
 
   db.transaction(() => {
-    db.query(SET_TASK_ORDER_SQL).run(neighbor.task_order, taskId, 'task')
-    db.query(SET_TASK_ORDER_SQL).run(current.task_order, neighbor.id, 'task')
+    s.setOrder.run(neighbor.task_order, taskId, 'task')
+    s.setOrder.run(current.task_order, neighbor.id, 'task')
   })()
 
   return [
@@ -88,15 +106,14 @@ export function updateTaskOrder(
 export function findDependencies(db: Database, dependsOn: number[]): Knowledge[] {
   if (!dependsOn || dependsOn.length === 0) return []
   const placeholders = dependsOn.map(() => '?').join(',')
-  const sql = `SELECT * FROM knowledges WHERE id IN (${placeholders})`
+  const sql = `${FIND_DEPENDENCIES_SQL}${placeholders})`
   const rows = db.query<KnowledgeRow, number[]>(sql).all(...dependsOn)
   return rows.map(row => rowToKnowledge(row))
 }
 
 export function findDependents(db: Database, taskId: number): Knowledge[] {
-  const rows = db
-    .query<KnowledgeRow, [string]>('SELECT * FROM knowledges WHERE type = ? AND depends_on IS NOT NULL')
-    .all('task')
+  const s = initStmts(db)
+  const rows = s.dependents.all('task') as KnowledgeRow[]
   return rows
     .filter(row => {
       if (!row.depends_on) return false

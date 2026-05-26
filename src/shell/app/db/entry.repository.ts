@@ -1,5 +1,6 @@
 import type { Database } from 'bun:sqlite'
 import type { FindAllOpts } from '@core/helpers/list_opts/find_all_opts.types'
+import { repositoryStmts } from '@shared/logging'
 import type { UnknownRecord } from 'type-fest'
 import type { EntryType, Knowledge } from '../../../core'
 import type { KnowledgeRow } from './schema'
@@ -63,9 +64,32 @@ ON CONFLICT(id) DO UPDATE SET
 
 const FIND_BY_ID_SQL = 'SELECT * FROM knowledges WHERE id = ?'
 
+const EXISTS_BY_ID_SQL = 'SELECT 1 AS one FROM knowledges WHERE id = ?'
+
 const TAG_COUNT_SQL = `SELECT json_each.value AS tag, COUNT(*) AS cnt
 FROM knowledges, json_each(knowledges.tags) AS json_each
 GROUP BY json_each.value`
+
+const STATS_BY_TYPE_SQL = 'SELECT type, COUNT(*) as count FROM knowledges GROUP BY type'
+
+const DELETE_BY_ID_SQL = 'DELETE FROM knowledges WHERE id = ?'
+
+const REBUILD_FTS_SQL = 'INSERT INTO knowledges_fts(knowledges_fts) VALUES(?)'
+
+// `rebuildFts` lives outside the bag because the FTS virtual table is not
+// present in every test fixture (e.g., `task.repository.spec.ts` builds the
+// `knowledges` table directly). Bagging it would force a prepare at every
+// call site and crash before any non-FTS work could run.
+function initStmts(db: Database) {
+  return repositoryStmts(db, 'Knowledge', {
+    upsert: UPSERT_SQL,
+    existsById: EXISTS_BY_ID_SQL,
+    findById: FIND_BY_ID_SQL,
+    tagCounts: TAG_COUNT_SQL,
+    statsByType: STATS_BY_TYPE_SQL,
+    deleteById: DELETE_BY_ID_SQL
+  })
+}
 
 const FTS_SPACE_RE = /\s+/g
 const DOUBLE_QUOTE_RE = /"/g
@@ -169,13 +193,14 @@ function rowToParams(
 }
 
 export function upsert(db: Database, row: Knowledge): 'inserted' | 'updated' {
-  const exists = db.query<{ one: 1 } | null, [number]>('SELECT 1 AS one FROM knowledges WHERE id = ?').get(row.id)
-  db.query(UPSERT_SQL).run(...rowToParams(row))
+  const s = initStmts(db)
+  const exists = s.existsById.get(row.id) as { one: 1 } | null
+  s.upsert.run(...rowToParams(row))
   return exists ? 'updated' : 'inserted'
 }
 
 export function rebuildFts(db: Database): void {
-  db.query('INSERT INTO knowledges_fts(knowledges_fts) VALUES(?)').run('rebuild')
+  db.query(REBUILD_FTS_SQL).run('rebuild')
 }
 
 function findAllRowsFts(
@@ -256,14 +281,14 @@ export function findAll(db: Database, opts: FindAllOpts = {}): KnowledgeWithFrec
 }
 
 export function findById(db: Database, id: number): Knowledge | null {
-  const row = db.query<KnowledgeRow, [number]>(FIND_BY_ID_SQL).get(id)
+  const s = initStmts(db)
+  const row = s.findById.get(id) as KnowledgeRow | null
   return row ? rowToKnowledge(row) : null
 }
 
 export function getDbStats(db: Database): DbStats {
-  const rows = db
-    .query<{ type: string; count: number }, []>('SELECT type, COUNT(*) as count FROM knowledges GROUP BY type')
-    .all()
+  const s = initStmts(db)
+  const rows = s.statsByType.all() as Array<{ type: string; count: number }>
 
   const byType: Record<string, number> = {}
   let total = 0
@@ -276,7 +301,8 @@ export function getDbStats(db: Database): DbStats {
 }
 
 export function getTagCounts(db: Database): Record<string, number> {
-  const rows = db.query<{ tag: string; cnt: number }, []>(TAG_COUNT_SQL).all()
+  const s = initStmts(db)
+  const rows = s.tagCounts.all() as Array<{ tag: string; cnt: number }>
   const out: Record<string, number> = {}
   for (const row of rows) {
     if (row.tag) out[row.tag] = row.cnt
@@ -285,6 +311,7 @@ export function getTagCounts(db: Database): Record<string, number> {
 }
 
 export function deleteById(db: Database, id: number): boolean {
-  const result = db.query('DELETE FROM knowledges WHERE id = ?').run(id)
+  const s = initStmts(db)
+  const result = s.deleteById.run(id)
   return result.changes > 0
 }

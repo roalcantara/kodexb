@@ -237,7 +237,7 @@ route in `rpc/server.ts` must be mirrored there ([`CLAUDE.md`](CLAUDE.md)).
 | Term                        | Layer / location                     | Role in app                                                                                                                                                                |
 | --------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Functional Core (FCIS)**  | `src/core/`                          | Pure functions: entry/knowledge models, YAML validation schemas, parsers, task-view filters, tag ranking, list options. No `fetch`, no `fs`, no `bun:sqlite`.              |
-| **Shared**                  | `src/shared/`                        | Cross-cutting **pure** utilities and types (e.g. RPC payload shapes, `createLogger`, `fireAndForget`). No shell imports.                                                   |
+| **Shared**                  | `src/shared/`                        | Cross-cutting **pure** utilities and types (e.g. RPC payload shapes, `getLogger`, `fireAndForget`). No shell imports.                                                   |
 | **Imperative Shell — app**  | `src/shell/app/`                     | **App** orchestrator, config load/save, **ImportService**, `bun:sqlite` repositories, OG fetch, shell-only helpers. All durable I/O except native UI.                      |
 | **Imperative Shell — main** | `src/shell/main/`                    | Electrobun boot: **BrowserWindow**, global shortcuts, native dialogs/external open, **Elysia** `createRpcServer`, IPC **host** wiring sync progress events to the webview. |
 | **Renderer**                | `src/shell/renderer/`                | React UI: pages (`list`, `detail`, `settings`), components, hooks. Calls **`@rpc/client`** (Eden Treaty) only.                                                             |
@@ -303,6 +303,18 @@ mise run ci release --notes     # preview only the next CHANGELOG entry
 ```
 
 See the [CI / CD guide][20] for the full task table.
+
+### Debug logging
+
+Enable verbose request tracing and SQL logging:
+
+```sh
+LOG_LEVEL=verbose bun run dev   # RPC start/complete lines
+LOG_LEVEL=debug bun run dev     # + SQL queries with duration
+LOG_LEVEL=trace bun run dev     # + SQL bind values, row data
+```
+
+See `assets/guides/LOGGING_GUIDE.md` for the full reference.
 
 ### Miscellaneous mise tasks
 

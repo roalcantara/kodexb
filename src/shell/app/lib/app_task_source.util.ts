@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import type { Knowledge } from '../../../core'
 
-type AppLog = ReturnType<typeof import('../../../shared/logging').createLogger>
+type AppLog = ReturnType<typeof import('../../../shared/logging').getLogger>
 
 export async function writeTaskToSource(log: AppLog, filePath: string, task: Knowledge): Promise<void> {
   try {
@@ -19,7 +19,11 @@ export async function writeTaskToSource(log: AppLog, filePath: string, task: Kno
     await fs.writeFile(tmpPath, Bun.YAML.stringify(doc), 'utf-8')
     await fs.rename(tmpPath, filePath)
   } catch (err) {
-    log.error(['Source write-back failed', task.key, filePath, err])
+    log.error('Source write-back failed key={key} path={path} error={error}', {
+      key: task.key,
+      path: filePath,
+      error: String(err)
+    })
   }
 }
 
@@ -38,7 +42,11 @@ export async function removeTaskFromSource(log: AppLog, key: string, filePath: s
       await fs.rename(tmpPath, filePath)
     }
   } catch (err) {
-    log.error(['Source remove failed', key, filePath, err])
+    log.error('Source remove failed key={key} path={path} error={error}', {
+      key,
+      path: filePath,
+      error: String(err)
+    })
   }
 }
 

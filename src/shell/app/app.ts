@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import type { Entry, Knowledge, TaskEntry } from '@core'
 import { toKnowledge } from '@core'
 import { rankSuggestedTags } from '@core/domain/models/knowledges/tags/rank_suggested_tags.util'
-import { createLogger, type LogVerbosity } from '@shared/logging'
+import { getLogger, type LogVerbosity } from '@shared/logging'
 import type {
   ConfigPatch,
   ListOpts,
@@ -50,7 +50,7 @@ export type SyncEmitter = {
 
 /** Single orchestrator for DB, import, and config. RPC handlers delegate here only. */
 export class App {
-  private readonly log: ReturnType<typeof createLogger>
+  private readonly log: ReturnType<typeof getLogger>
   private loaded: LoadedConfig
   private db: ReturnType<typeof openDatabase> | null = null
   private readonly listCache = new Map<string, RpcListEntry[]>()
@@ -62,13 +62,13 @@ export class App {
   constructor(
     loaded: LoadedConfig,
     emit: SyncEmitter = {},
-    verbosity: LogVerbosity = 'default',
+    _verbosity: LogVerbosity = 'default',
     shellHooks: AppShellHooks = {}
   ) {
     this.loaded = loaded
     this.emit = emit
     this.shellHooks = shellHooks
-    this.log = createLogger({ verbosity })
+    this.log = getLogger(['kb', 'app'])
   }
 
   private getDb() {
@@ -138,8 +138,7 @@ export class App {
       closeDb: () => this.closeDb(),
       invalidateListCache: () => this.invalidateListCache(),
       emit: this.emit,
-      log: this.log,
-      verbosity: this.log.verbosity
+      log: this.log
     })
   }
 

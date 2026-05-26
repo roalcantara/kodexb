@@ -699,6 +699,27 @@ import — `task_views.types.ts` (1-line literal union) is added in Phase 4.
 
 ---
 
+## Decision: Observability
+
+**Context:** kb debug and operational visibility was limited to `console.*`
+with no per-request correlation or SQL tracing.
+
+**Decision:** Adopt LogTape as the structured logging backbone with
+a `LOG_LEVEL` environment-variable dial. Main process logging uses
+`AsyncLocalStorage` for per-request context; renderer uses independent
+configuration. DB instrumentation uses a typed statement wrapper.
+
+**Outcome:** Debug logging is controllable via a single env var.
+RPC requests are correlated by `requestId`. SQL queries are timed and
+logged only when enabled. Default verbosity is unchanged.
+
+**Roadmap items (deferred):** OpenTelemetry export, Sentry sink, file
+sink, SQLite sink, renderer→main ferry, field-level redaction.
+
+**Reference:** `assets/docs/specs/debugging/design.md`
+
+---
+
 ## REFERENCES
 
 [1]: https://bun.sh 'Bun'

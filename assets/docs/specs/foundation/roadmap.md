@@ -27,6 +27,7 @@ sequencing, delivery value, and recommended skills only.
 |  10   | Actions System (⌘K)            | V1-8         | ✔ done |
 |  11   | Sync UI                        | V1-2         | ✔ done |
 |  12   | Stats Panel                    | V1-5         | ✔ done |
+|  13   | Debug Logging                  | DBG-1-8      | ✔ done |
 
 ---
 

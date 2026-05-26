@@ -1,7 +1,7 @@
 import type { Database } from 'bun:sqlite'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { createLogger, type LogVerbosity } from '@shared/logging'
+import { getLogger } from '@shared/logging'
 import type { RpcSyncFileResult, RpcSyncProgressPayload } from '@shared/rpc'
 import glob from 'fast-glob'
 import type { Entry, Knowledge } from '../../../core'
@@ -26,11 +26,11 @@ function formatBundleError(filePath: string, message: string): string {
 
 export class ImportService {
   private readonly dbPath: string
-  private readonly log: ReturnType<typeof createLogger>
+  private readonly log: ReturnType<typeof getLogger>
 
-  constructor(dbPath: string, verbosity: LogVerbosity = 'default') {
+  constructor(dbPath: string) {
     this.dbPath = dbPath
-    this.log = createLogger({ verbosity })
+    this.log = getLogger(['kb', 'app', 'sync'])
   }
 
   private async loadParsedSourceBundles(sourcesDir: string): Promise<ParsedSourceBundle[]> {
@@ -93,7 +93,11 @@ export class ImportService {
       })()
 
       result.filesProcessed += 1
-      this.log.phase('import', bundle.filePath, performance.now() - t0)
+      this.log.info('{phase} label={label} dur_ms={dur_ms}', {
+        phase: 'import',
+        label: bundle.filePath,
+        dur_ms: (performance.now() - t0).toFixed(2)
+      })
       return {
         path: bundle.filePath,
         label,

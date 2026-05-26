@@ -18,7 +18,7 @@ describe('computeInitialFrameFromDisplay', () => {
 
   describe('when the primary display work area is missing', () => {
     it('logs a fallback hint and returns the safe frame', () => {
-      const debug = mock((_args: unknown[]) => undefined)
+      const debug = mock((_message: string) => undefined)
       const frame = computeInitialFrameFromDisplay(null, { debug }, MAIN_WINDOW_DEFAULT_SIZE)
       expect(debug).toHaveBeenCalledTimes(1)
       expect(frame).toEqual(
@@ -37,7 +37,7 @@ describe('computeInitialFrameFromDisplay', () => {
   describe('when the work area is usable', () => {
     it('centers the default window size', () => {
       const workArea = factoryFor('rectangle', { overrides: { x: 0, y: 25, width: 1440, height: 875 } })
-      const debug = mock((_args: unknown[]) => undefined)
+      const debug = mock((_message: string) => undefined)
       const frame = computeInitialFrameFromDisplay({ workArea } as never, { debug }, MAIN_WINDOW_DEFAULT_SIZE)
       expect(debug).not.toHaveBeenCalled()
       expect(frame.width).toBe(MAIN_WINDOW_DEFAULT_SIZE.width)

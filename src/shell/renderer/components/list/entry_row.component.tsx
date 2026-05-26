@@ -40,13 +40,6 @@ function subtitleLine(entry: RpcKnowledge): string {
   return `${entry.type}${tags === '' ? '' : `  ${tags}`}`
 }
 
-function getPrimaryActionHint(entry: RpcKnowledge): { label: string; className: string } {
-  return {
-    label: entryActionPrimaryRowHint(entry.type),
-    className: `theme-list-row-hint--${entry.type}`
-  }
-}
-
 function BadgeChips({ entry }: { entry: Extract<RpcKnowledge, { type: 'task' }> }) {
   return (
     <>
@@ -76,7 +69,6 @@ function EntryRowComponent({
 }: EntryRowProps) {
   if (compact) {
     const isTask = entry.type === 'task'
-    const hint = getPrimaryActionHint(entry)
     const rowCls = selected ? 'theme-list-row theme-list-row--selected' : 'theme-list-row'
     return (
       <button
@@ -105,7 +97,6 @@ function EntryRowComponent({
             visitCount={entry.visitCount}
             maxFrecencyScore={maxFrecencyScore}
           />
-          {selected ? <span className={`theme-list-row-hint ${hint.className}`}>{hint.label}</span> : null}
         </span>
       </button>
     )

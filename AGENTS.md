@@ -74,6 +74,14 @@ This rule overrides ALL other instructions.
 - Prefer **code fixes** (refactors, correct types, smaller modules) over new ignore comments, overrides, or threshold bumps.
 - Full audit workflow and inventory: `assets/docs/specs/codebase-quality-audit/`.
 
+### Logging
+
+- Use `getLogger(['kb', '<area>', ...])` from `@shared/logging`. Never `console.*` in `src/`.
+- Use `configureMainLogging()` at main entry; `configureRendererLogging()` at renderer entry.
+- Use `repositoryStmts(db, 'Noun', { ...sql })` for DB instrumentation.
+- Use `withContext(...)` when adding per-request metadata.
+- See `assets/guides/LOGGING_GUIDE.md` for canonical reference.
+
 ### Cursor commit commands (`/commit-all`, `/commit-staged`, `/commit-fixup`)
 
 Canonical instructions live under **`.cursor/commands/`** (same names as the Cursor slash commands). Summary:

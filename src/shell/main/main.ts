@@ -1,4 +1,4 @@
-import { createLogger, parseLogVerbosity } from '@shared/logging'
+import { configureMainLogging, getLogger, parseLogVerbosity } from '@shared/logging'
 import { BrowserWindow, GlobalShortcut, Screen, Utils } from 'electrobun/bun'
 import { App } from '../app/app'
 import { loadConfig } from '../app/config/config.loader'
@@ -20,12 +20,13 @@ type WebviewRpc = ReturnType<typeof createWebviewRpc>
  */
 async function bootstrap() {
   const verbosity = parseLogVerbosity()
-  const logger = createLogger({ verbosity })
+  configureMainLogging()
+  const logger = getLogger(['kb', 'main'])
   const config = await loadConfig().catch(async err => {
     await reportConfigLoadErrorAndExit(err, {
       showMessageBox: Utils.showMessageBox,
       exit: Utils.quit,
-      logError: e => logger.error([e])
+      logError: e => logger.error(String(e))
     })
     throw err
   })

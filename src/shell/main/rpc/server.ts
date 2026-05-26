@@ -1,3 +1,4 @@
+import { rpcCommonPlugins } from '@shared/logging'
 import { Elysia } from 'elysia'
 
 import type { App } from '../../app/app'
@@ -24,29 +25,19 @@ import {
   taskUpdateSchema
 } from './schemas'
 
-const HTTP_INTERNAL_ERROR = 500
-
-/**
- * Elysia plugin: every uncaught error surfaces as `{ error: string }` with
- * HTTP 500 — matches preview behaviour and the pre-Elysia transport.
- * Exported so test fixtures can reuse the exact same contract without
- * duplicating the handler body.
- */
-export const rpcErrorContract = new Elysia({ name: 'rpc-error' }).onError({ as: 'global' }, ({ error, set }) => {
-  const message = error instanceof Error ? error.message : String(error)
-  set.status = HTTP_INTERNAL_ERROR
-  return { error: message }
-})
-
 /**
  * Single source of truth for the main ↔ renderer transport contract.
  *
  * Routes are POST `/api/<method>` with TypeBox-validated JSON bodies. Each
  * handler delegates to `App` and returns a JSON-serialisable value.
+ *
+ * The error contract (`{ error: string }`/HTTP 500 envelope) and the request
+ * lifecycle logger ship together via `rpcCommonPlugins`; the preview server
+ * mounts the same bundle so renderer ↔ main and preview share one transport.
  */
 export function createRpcServer(appInstance: App) {
   return new Elysia({ prefix: '/api' })
-    .use(rpcErrorContract)
+    .use(rpcCommonPlugins)
     .post('/list', ({ body }) => appInstance.list(body), { body: listOptsSchema })
     .post('/listMatchCount', ({ body }) => appInstance.listMatchCount(body), { body: listOptsSchema })
     .post('/getListStats', ({ body }) => appInstance.getListStats(body), { body: listStatsFilterSchema })

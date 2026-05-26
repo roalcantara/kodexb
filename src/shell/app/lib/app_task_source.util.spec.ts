@@ -9,7 +9,7 @@ let tmpDir = ''
 let sourcePath = ''
 
 function stubLog() {
-  return { error: () => undefined } as unknown as ReturnType<typeof import('../../../shared/logging').createLogger>
+  return { error: () => undefined } as unknown as ReturnType<typeof import('../../../shared/logging').getLogger>
 }
 
 function makeTask(overrides: Partial<Knowledge> = {}): Knowledge {

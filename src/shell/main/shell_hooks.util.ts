@@ -29,11 +29,11 @@ export type ShellHooksUtils = {
  */
 export function computeInitialFrameFromDisplay(
   primary: Display | null | undefined,
-  log: { debug: (args: unknown[]) => void },
+  log: { debug: (message: string) => void },
   size: Size = MAIN_WINDOW_DEFAULT_SIZE
 ): WindowFrame {
   if (!isUsableWorkArea(primary?.workArea)) {
-    log.debug(['window placement: primary display work area unavailable; using safe fallback (100,100)'])
+    log.debug('window placement: primary display work area unavailable; using safe fallback (100,100)')
   }
   return resolveInitialFrame(primary ?? null, size)
 }
