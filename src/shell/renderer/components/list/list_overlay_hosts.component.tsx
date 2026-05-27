@@ -20,7 +20,7 @@ export function ListOverlayHosts({ p, showSettings, setShowSettings, focusMainSe
         <TaskSheet key={p.taskSheetEntry?.id ?? 'new'} entry={p.taskSheetEntry} onClose={p.onCloseTaskSheet} />
       ) : null}
       {showSettings ? (
-        <div className="theme-settings-host">
+        <div className="cmp-settings-host">
           <SettingsPage
             onCloseRequest={() => setShowSettings(false)}
             onConfigSaved={cfg => {

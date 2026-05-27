@@ -3,6 +3,7 @@ import { describe, expect, it } from 'bun:test'
 import { DEFAULT_LIST_ROW_HEIGHT_PX, DEFAULT_VIEWPORT_LIST_PAGE_SIZE } from '../../constants/ui.const'
 import {
   effectiveListPageSize,
+  listSentinelSpacers,
   listViewportPageSize,
   readListScrollMetrics,
   virtualListWindow
@@ -89,13 +90,58 @@ describe('listViewportPageSize', () => {
   })
 })
 
+describe('listSentinelSpacers', () => {
+  describe('with a full first page', () => {
+    it('places sentinel before the end of the loaded window', () => {
+      const virtualWindow = virtualListWindow({
+        total: 50,
+        scrollTop: 0,
+        viewportHeight: 600,
+        rowHeight: 48,
+        overscan: 10
+      })
+      expect(
+        listSentinelSpacers({
+          totalRows: 50,
+          rowHeight: 48,
+          virtualWindow,
+          prefetchItemIndex: 30
+        })
+      ).toEqual({
+        beforeSentinel: 336,
+        afterSentinel: 20 * 48
+      })
+    })
+  })
+
+  describe('with fewer rows than prefetch index', () => {
+    it('places sentinel at the end', () => {
+      const virtualWindow = virtualListWindow({
+        total: 10,
+        scrollTop: 0,
+        viewportHeight: 600,
+        rowHeight: 48,
+        overscan: 10
+      })
+      const spacers = listSentinelSpacers({
+        totalRows: 10,
+        rowHeight: 48,
+        virtualWindow,
+        prefetchItemIndex: 30
+      })
+      expect(spacers.beforeSentinel).toBe(0)
+      expect(spacers.afterSentinel).toBe(0)
+    })
+  })
+})
+
 describe('readListScrollMetrics', () => {
-  describe('when .theme-list-row is present', () => {
+  describe('when .cmp-list-row is present', () => {
     it('uses its measured height', () => {
       const root = document.createElement('div')
       const row = document.createElement('button')
       row.type = 'button'
-      row.className = 'theme-list-row'
+      row.className = 'cmp-list-row'
       root.appendChild(row)
       mockRowHeight(row, 56)
       const m = readListScrollMetrics(root)
@@ -103,12 +149,12 @@ describe('readListScrollMetrics', () => {
     })
   })
 
-  describe('when no .theme-list-row but .theme-entry-row exists', () => {
-    it('uses .theme-entry-row height', () => {
+  describe('when no .cmp-list-row but .cmp-entry-row exists', () => {
+    it('uses .cmp-entry-row height', () => {
       const root = document.createElement('div')
       const row = document.createElement('button')
       row.type = 'button'
-      row.className = 'theme-entry-row'
+      row.className = 'cmp-entry-row'
       root.appendChild(row)
       mockRowHeight(row, 44)
       const m = readListScrollMetrics(root)
@@ -117,15 +163,15 @@ describe('readListScrollMetrics', () => {
   })
 
   describe('when multiple rows exist', () => {
-    it('prefers first .theme-list-row in document order', () => {
+    it('prefers first .cmp-list-row in document order', () => {
       const root = document.createElement('div')
       const a = document.createElement('button')
       a.type = 'button'
-      a.className = 'theme-list-row'
+      a.className = 'cmp-list-row'
       mockRowHeight(a, 48)
       const b = document.createElement('button')
       b.type = 'button'
-      b.className = 'theme-list-row'
+      b.className = 'cmp-list-row'
       mockRowHeight(b, 72)
       root.append(a, b)
       const m = readListScrollMetrics(root)

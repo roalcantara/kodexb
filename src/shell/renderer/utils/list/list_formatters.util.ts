@@ -31,15 +31,15 @@ export function formatListFooterStatus(i: ListFooterStatusInput): string {
     return 'Loading results…'
   }
   if (i.matchTotal === null) {
-    return i.showing === 1 ? `${i.showing} result` : `${i.showing} results`
+    const n = i.showing
+    const entryWord = n === 1 ? 'entry' : 'entries'
+    return `${n.toLocaleString()} ${entryWord}`
   }
 
   const total = i.matchTotal
-  const showing = i.showing
-  const ps = Math.max(1, i.pageSize)
-  const totalPages = total === 0 ? 1 : Math.max(1, Math.ceil(total / ps))
-  const currentPage = total === 0 ? 1 : Math.min(totalPages, Math.max(1, Math.ceil(showing / ps)))
-  const resultsWord = total === 1 ? 'result' : 'results'
-  const entryWord = showing === 1 ? 'entry' : 'entries'
-  return `${total} ${resultsWord} | showing ${showing} ${entryWord} (page ${currentPage} of ${totalPages})`
+  const entryWord = total === 1 ? 'entry' : 'entries'
+  if (i.showing < total) {
+    return `${total.toLocaleString()} total ${entryWord} • Showing ${i.showing.toLocaleString()}`
+  }
+  return `${total.toLocaleString()} total ${entryWord}`
 }

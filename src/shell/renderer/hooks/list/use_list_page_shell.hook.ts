@@ -15,7 +15,7 @@ import { useListPageData } from './use_list_page_data.hook'
 import { useListSelection } from './use_list_selection.hook'
 import { useListSentinelPagination } from './use_list_sentinel_pagination.hook'
 import { useListSurfaceKeyDown } from './use_list_surface_keydown.hook'
-import { useListViewportPageSize } from './use_list_viewport_page_size.hook'
+import { useListSurfaceWheelScroll } from './use_list_surface_wheel_scroll.hook'
 import { useTaskDragDrop } from './use_task_drag_drop.hook'
 import { useTaskKeyboard } from './use_task_keyboard.hook'
 
@@ -27,9 +27,8 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
   const syncButtonRef = useRef<HTMLButtonElement>(null)
   const settingsButtonRef = useRef<HTMLButtonElement>(null)
   const newTaskButtonRef = useRef<HTMLButtonElement>(null)
-  const pageSize = useListViewportPageSize(listSurfaceRef)
   const { toasts: actionToasts, pushToast, dismissToast: dismissActionToast } = useActionToast()
-  const data = useListPageData({ pageSizeOverride: pageSize, pushToast })
+  const data = useListPageData({ pushToast })
   const filter = useListFilterOverlay()
   const onLeaveListUpward = useCallback(() => {
     searchInputRef.current?.focus()
@@ -112,6 +111,19 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     setFilterOpen: filter.setFilterOpen,
     shortcutsBlocked: showSettings || taskSheetVisible,
     entryPanelDeps
+  })
+
+  const listPanelWheelActive =
+    !showSettings &&
+    !taskSheetVisible &&
+    !filter.filterOpen &&
+    !palette.open &&
+    !data.syncUi.open &&
+    (sel.detailEntry === null || sel.viewState === 'split')
+
+  useListSurfaceWheelScroll({
+    scrollRootRef: listSurfaceRef,
+    active: listPanelWheelActive
   })
 
   const flags = listPageEmptyFlags(data)

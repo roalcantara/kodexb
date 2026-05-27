@@ -22,7 +22,7 @@ export function scrollCompactFilterHighlightIntoView(
   highlightIndex: number,
   rowsRevisionKey = ''
 ) {
-  const dropdown = searchInputRef.current?.closest('.theme-filter-dropdown')
+  const dropdown = searchInputRef.current?.closest('.cmp-filter-dropdown')
   const options = compactFilterOptionNodes(dropdown)
   if (rowsRevisionKey) {
     const expected = rowsRevisionKey.split('\0').length

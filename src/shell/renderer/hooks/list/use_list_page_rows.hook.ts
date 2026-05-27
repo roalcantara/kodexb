@@ -20,10 +20,15 @@ export function useListPageRows(input: ListPageRowsInput) {
   const [hasMore, setHasMore] = useState(false)
   const [loading, setLoading] = useState(true)
   const [matchTotal, setMatchTotal] = useState<number | null>(null)
+  const matchTotalRef = useRef<number | null>(null)
 
   useEffect(() => {
     rowsRef.current = rows
   }, [rows])
+
+  useEffect(() => {
+    matchTotalRef.current = matchTotal
+  }, [matchTotal])
 
   const refreshList = useCallback(
     async (append: boolean) => {
@@ -46,8 +51,10 @@ export function useListPageRows(input: ListPageRowsInput) {
             append: true,
             priorLen
           })
+          const loaded = priorLen + next.length
           setRows(r => [...r, ...next])
-          setHasMore(next.length === pageSize)
+          const total = matchTotalRef.current
+          setHasMore(total === null ? next.length === pageSize : loaded < total)
         } else {
           const [next, total] = await Promise.all([
             loadListRows({
@@ -63,7 +70,8 @@ export function useListPageRows(input: ListPageRowsInput) {
           ])
           setRows(next)
           setMatchTotal(total)
-          setHasMore(next.length === pageSize)
+          matchTotalRef.current = total
+          setHasMore(next.length === pageSize && next.length < total)
         }
       } finally {
         setLoading(false)

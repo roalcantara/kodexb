@@ -1,0 +1,35 @@
+/* ── Confirm dialog ─────────────────────────────────────────────── */
+
+.cmp-confirm-dialog {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.5rem;
+  margin-bottom: 0.25rem;
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.cmp-confirm-dialog-label {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-main);
+}
+
+.cmp-confirm-dialog-btn {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--color-outline-variant);
+  background: transparent;
+  color: var(--color-text-main);
+}
+
+.cmp-confirm-dialog-btn-danger {
+  border-color: var(--color-error);
+  color: var(--color-priority-urgent-text);
+}

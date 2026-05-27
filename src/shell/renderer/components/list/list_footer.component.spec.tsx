@@ -18,18 +18,18 @@ describe('ListFooter', () => {
   })
 
   describe('when rendering', () => {
-    it('shows keyboard shortcuts span', () => {
+    it('shows keyboard shortcut chips', () => {
       const { container } = render(
         <ListFooter footerStatus="done" isFullDetail={false} detailEntry={null} closeDetailToList={() => undefined} />
       )
-      const keys = container.querySelector('.theme-footer-keys')
+      const keys = container.querySelector('.cmp-footer-keys')
       expect(keys).toBeTruthy()
-      expect(keys?.textContent).toContain('N')
+      expect(container.querySelectorAll('.cmp-kbd').length).toBeGreaterThanOrEqual(8)
     })
   })
 
   describe('when detail is open', () => {
-    it('shows scroll hint', () => {
+    it('shows scroll shortcut chips', () => {
       const { container } = render(
         <ListFooter
           footerStatus="done"
@@ -38,8 +38,7 @@ describe('ListFooter', () => {
           closeDetailToList={() => undefined}
         />
       )
-      const keys = container.querySelector('.theme-footer-keys')
-      expect(keys?.textContent).toContain('scroll')
+      expect(container.querySelectorAll('.cmp-kbd').length).toBeGreaterThanOrEqual(10)
     })
   })
 })

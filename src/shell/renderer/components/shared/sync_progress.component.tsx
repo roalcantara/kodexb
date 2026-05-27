@@ -9,13 +9,13 @@ function SyncProgressComponent({ processed, total }: SyncProgressProps) {
   const hasProgress = total > 0 && processed >= 0
 
   return (
-    <div className="theme-sync-progress">
+    <div className="cmp-sync-progress">
       {hasProgress ? (
-        <progress className="theme-sync-progress-bar" value={processed} max={total} />
+        <progress className="cmp-sync-progress-bar" value={processed} max={total} />
       ) : (
-        <progress className="theme-sync-progress-bar theme-sync-progress-bar--indeterminate" />
+        <progress className="cmp-sync-progress-bar cmp-sync-progress-bar--indeterminate" />
       )}
-      <span className="theme-sync-progress-label">
+      <span className="cmp-sync-progress-label">
         {hasProgress ? `Processing file ${processed} of ${total}` : 'Syncing…'}
       </span>
     </div>

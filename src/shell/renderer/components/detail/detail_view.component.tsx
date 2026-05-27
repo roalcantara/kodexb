@@ -71,19 +71,19 @@ export function DetailPageView({
 }: DetailPageViewProps) {
   if (loading) {
     return (
-      <article className="theme-detail-page">
-        <p className="theme-list-empty">Loading entry…</p>
+      <article className="cmp-detail-page">
+        <p className="cmp-list-empty">Loading entry…</p>
       </article>
     )
   }
 
   if (!entry) {
     return (
-      <article className="theme-detail-page">
-        <button type="button" className="theme-detail-page-close" onClick={onClose} aria-label="Close detail">
+      <article className="cmp-detail-page">
+        <button type="button" className="cmp-detail-page-close" onClick={onClose} aria-label="Close detail">
           ✕
         </button>
-        <p className="theme-list-empty">Entry not found.</p>
+        <p className="cmp-list-empty">Entry not found.</p>
       </article>
     )
   }
@@ -93,30 +93,30 @@ export function DetailPageView({
   const url = primaryUrl(entry)
 
   return (
-    <article className="theme-detail-page">
-      <div className="theme-detail-page-main">
-        <section className="theme-detail-page-content">
-          <header className="theme-detail-page-header">
-            <div className="theme-detail-page-header-row">
-              <span className="theme-detail-page-icon">{getIcon(entry)}</span>
-              <span className="theme-detail-page-type">{entry.type}</span>
-              <button type="button" className="theme-detail-page-close" onClick={onClose} aria-label="Close detail">
+    <article className="cmp-detail-page">
+      <div className="cmp-detail-page-main">
+        <section className="cmp-detail-page-content">
+          <header className="cmp-detail-page-header">
+            <div className="cmp-detail-page-header-row">
+              <span className="cmp-detail-page-icon">{getIcon(entry)}</span>
+              <span className="cmp-detail-page-type">{entry.type}</span>
+              <button type="button" className="cmp-detail-page-close" onClick={onClose} aria-label="Close detail">
                 ✕
               </button>
             </div>
-            <h1 className="theme-detail-page-key">{entry.key}</h1>
-            {entry.desc ? <p className="theme-detail-page-desc">{entry.desc}</p> : null}
+            <h1 className="cmp-detail-page-key">{entry.key}</h1>
+            {entry.desc ? <p className="cmp-detail-page-desc">{entry.desc}</p> : null}
             {entry.tags.length > 0 ? (
-              <div className="theme-detail-page-tags">
+              <div className="cmp-detail-page-tags">
                 {entry.tags.map(t => (
-                  <span key={t} className="theme-pill theme-pill--muted">
+                  <span key={t} className="cmp-pill cmp-pill--muted">
                     #{t}
                   </span>
                 ))}
               </div>
             ) : null}
             {entry.type === 'task' ? (
-              <div className="theme-detail-page-badges">
+              <div className="cmp-detail-page-badges">
                 <BadgeAccessory entry={entry} allEntries={allEntries} />
               </div>
             ) : null}
@@ -130,7 +130,7 @@ export function DetailPageView({
           </header>
 
           {md ? (
-            <section className="theme-detail-page-body">
+            <section className="cmp-detail-page-body">
               <MdView markdown={md} onOpenExternal={onOpenExternal} />
             </section>
           ) : null}
@@ -140,21 +140,21 @@ export function DetailPageView({
           ) : null}
 
           {links.length > 0 ? (
-            <section className="theme-detail-page-links">
-              <h2 className="theme-detail-page-section-title">Links</h2>
-              <ul className="theme-detail-page-link-list">
+            <section className="cmp-detail-page-links">
+              <h2 className="cmp-detail-page-section-title">Links</h2>
+              <ul className="cmp-detail-page-link-list">
                 {links.map(({ title, url: linkUrl }) => (
                   <li key={linkUrl}>
                     <button
                       type="button"
-                      className="theme-detail-page-link"
+                      className="cmp-detail-page-link"
                       onClick={() => {
                         fireAndForget(Promise.resolve(onOpenExternal(linkUrl)))
                       }}
                       title={linkUrl}
                     >
                       {title}
-                      <span className="theme-detail-page-link-arrow"> ↗</span>
+                      <span className="cmp-detail-page-link-arrow"> ↗</span>
                     </button>
                   </li>
                 ))}

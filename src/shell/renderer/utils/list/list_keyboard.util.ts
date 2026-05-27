@@ -71,12 +71,12 @@ export function listPageFocusRingElements(refs: ListPageFocusRingRefs, ctx: List
   if (listPageRoot === null) return chain
 
   if (detailOpen) {
-    const detail = listPageRoot.querySelector<HTMLElement>('aside.theme-detail-panel--visible')
+    const detail = listPageRoot.querySelector<HTMLElement>('aside.cmp-detail-panel--visible')
     if (detail !== null) chain.push(...collectTabOrderedFocusables(detail))
   }
 
   if (filterOpen) {
-    const filterStack = listPageRoot.querySelector<HTMLElement>('.theme-filter-stack')
+    const filterStack = listPageRoot.querySelector<HTMLElement>('.cmp-filter-stack')
     if (filterStack !== null) chain.push(...collectTabOrderedFocusables(filterStack))
   }
 

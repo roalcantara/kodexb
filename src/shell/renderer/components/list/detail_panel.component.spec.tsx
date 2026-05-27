@@ -35,16 +35,16 @@ describe('DetailPanel', () => {
           loadEntry={pendingLoad}
         />
       )
-      const aside = document.querySelector('aside.theme-detail-panel')
-      expect(aside?.classList.contains('theme-detail-panel--visible')).toBe(true)
+      const aside = document.querySelector('aside.cmp-detail-panel')
+      expect(aside?.classList.contains('cmp-detail-panel--visible')).toBe(true)
     })
   })
 
   describe('when entry is null', () => {
     it('has no visible class', () => {
       render(<DetailPanel entryId={null} allEntries={[]} onClose={() => undefined} onSelectEntry={noopSelect} />)
-      const aside = document.querySelector('aside.theme-detail-panel')
-      expect(aside?.classList.contains('theme-detail-panel--visible')).toBe(false)
+      const aside = document.querySelector('aside.cmp-detail-panel')
+      expect(aside?.classList.contains('cmp-detail-panel--visible')).toBe(false)
     })
   })
 
@@ -62,8 +62,8 @@ describe('DetailPanel', () => {
           loadEntry={loadEntry}
         />
       )
-      await waitFor(() => expect(document.querySelector('button.theme-detail-page-close')).not.toBeNull())
-      const btn = document.querySelector('button.theme-detail-page-close') as HTMLButtonElement
+      await waitFor(() => expect(document.querySelector('button.cmp-detail-page-close')).not.toBeNull())
+      const btn = document.querySelector('button.cmp-detail-page-close') as HTMLButtonElement
       await userEvent.click(btn)
       expect(closed).toBe(true)
     })

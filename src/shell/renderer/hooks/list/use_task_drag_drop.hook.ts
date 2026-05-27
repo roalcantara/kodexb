@@ -20,14 +20,14 @@ export function useTaskDragDrop(rows: RpcKnowledge[], onReorder: (args: DragDrop
           dragIdRef.current = entry.id
           const el = e.currentTarget as HTMLElement
           requestAnimationFrame(() => {
-            el.classList.add('theme-entry-row--dragging')
+            el.classList.add('cmp-entry-row--dragging')
           })
         },
         onDragEnd: (e: DragEvent) => {
           dragIdRef.current = null
           setDragOverId(null)
           const el = e.currentTarget as HTMLElement
-          el.classList.remove('theme-entry-row--dragging')
+          el.classList.remove('cmp-entry-row--dragging')
         },
         onDragOver: (e: DragEvent) => {
           e.preventDefault()

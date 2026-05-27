@@ -6,7 +6,10 @@
   "private": true,
   "scripts": {
     "start": "electrobun dev",
+    "predev": "mise run -q app styles",
     "dev": "electrobun dev --watch",
+    "prebuild": "mise run -q app styles",
+    "prebuild:prod": "mise run -q app styles",
     "dev:cef": "ELECTROBUN_RENDERER=cef bun run dev",
     "dev:verbose": "LOG_LEVEL=verbose bun run dev",
     "dev:debug": "LOG_LEVEL=debug bun run dev",
@@ -30,6 +33,7 @@
     "lint:jscpd": "bunx jscpd . --noTips --reporters console",
     "lint:ls": "bunx @ls-lint/ls-lint",
     "lint:hadolint": "mise exec -- hadolint Dockerfile",
+    "lint:renderer-css": "bash tools/scripts/check_renderer_css_tokens.sh",
     "lint:ast-grep": "mise exec -- ast-grep scan src tools --report-style=rich --error --globs '!graphify-out/**'",
     "lint:ast-grep:fix": "mise exec -- ast-grep scan src tools --update-all --globs '!graphify-out/**'",
     "e2e:preview:install": "bunx playwright install chromium",
@@ -41,6 +45,7 @@
     "@happy-dom/global-registrator": "^20.9.0",
     "@playwright/test": "^1.60.0",
     "@release-it/conventional-changelog": "^9",
+    "@tailwindcss/cli": "^4.3.0",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/bun": "latest",
@@ -52,6 +57,7 @@
     "jscpd": "^4.2.3",
     "knip": "^6.14.2",
     "release-it": "^20.0.1",
+    "tailwindcss": "^4.3.0",
     "typescript": "^5"
   },
   "dependencies": {

@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+
+@source './**/*.{ts,tsx,css}';
+@source '../**/*.{ts,tsx}';
+
+@import 'highlight.js/styles/github-dark.min.css';
+
+@import './theme.css';
+
+@import './components/action_toast.css';
+@import './components/app_shell.css';
+@import './components/command_palette.css';
+@import './components/compact_filter.css';
+@import './components/confirm_dialog.css';
+@import './components/detail_panel.css';
+@import './components/entry_row.css';
+@import './components/footer.css';
+@import './components/list_row.css';
+@import './components/settings.css';
+@import './components/sync.css';
+@import './components/task_sheet.css';

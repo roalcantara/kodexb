@@ -43,11 +43,14 @@ describe('EntryRow', () => {
       expect(img.getAttribute('src')).not.toContain('icons.duckduckgo.com')
     })
 
-    it('shows title combining key and description', () => {
+    it('shows title from description and meta from key', () => {
       render(
         <EntryRow entry={bookmarkGithub} allEntries={[bookmarkGithub]} selected={false} onSelect={() => undefined} />
       )
-      expect(screen.getByRole('button').textContent).toContain(bookmarkGithub.key)
+      const btn = screen.getByRole('button')
+      expect(btn.textContent).toContain('Example repository')
+      expect(btn.textContent).toContain(bookmarkGithub.key)
+      expect(document.querySelector('.semantic-url')).not.toBeNull()
     })
   })
 
@@ -55,7 +58,7 @@ describe('EntryRow', () => {
     it('shows selected styling', () => {
       render(<EntryRow entry={bookmarkGithub} allEntries={[bookmarkGithub]} selected onSelect={() => undefined} />)
       const btn = screen.getByRole('button')
-      expect(btn.classList.contains('theme-entry-row--selected')).toBe(true)
+      expect(btn.classList.contains('cmp-entry-row--selected')).toBe(true)
     })
   })
 
@@ -75,7 +78,7 @@ describe('EntryRow', () => {
       }
     }) as RpcKnowledge
 
-    it('shows one type chip for task entries', () => {
+    it('shows three-line stack with hash tags for task entries', () => {
       render(
         <EntryRow
           entry={listRow(taskCompact)}
@@ -86,9 +89,10 @@ describe('EntryRow', () => {
           maxFrecencyScore={3}
         />
       )
-      expect(document.querySelectorAll('.theme-type-chip--task')).toHaveLength(1)
-      expect(document.querySelector('.theme-type-chip--todo')).not.toBeNull()
-      expect(document.querySelector('.theme-type-chip--high')).not.toBeNull()
+      expect(document.querySelector('.cmp-list-row-meta')).not.toBeNull()
+      expect(document.querySelector('.cmp-list-row-title')?.textContent).toBe('Release checklist')
+      expect(document.querySelectorAll('.cmp-tag')).toHaveLength(3)
+      expect(document.querySelector('.cmp-tag--type-task')).not.toBeNull()
     })
 
     it('shows frecency bars when visited', () => {
@@ -103,7 +107,20 @@ describe('EntryRow', () => {
         />
       )
       expect(screen.getByLabelText('Used 4 times')).toBeTruthy()
-      expect(document.querySelectorAll('.theme-frecency-bar--on')).toHaveLength(3)
+      expect(document.querySelectorAll('.cmp-frecency-bar--on')).toHaveLength(3)
+    })
+
+    it('applies selected list row class', () => {
+      render(
+        <EntryRow
+          entry={listRow(bookmarkGithub)}
+          allEntries={[bookmarkGithub]}
+          selected
+          onSelect={() => undefined}
+          compact
+        />
+      )
+      expect(screen.getByRole('button').classList.contains('cmp-list-row--selected')).toBe(true)
     })
   })
 })

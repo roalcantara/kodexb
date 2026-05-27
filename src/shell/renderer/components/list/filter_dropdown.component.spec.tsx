@@ -78,9 +78,9 @@ describe('FilterDropdown', () => {
           onClose={noop}
         />
       )
-      expect(document.body.querySelector('.theme-filter-stack--compact-portal')).toBeTruthy()
-      expect(document.body.querySelector('.theme-filter-portal-clip')).toBeTruthy()
-      expect(document.body.querySelector('.theme-filter-portal-clip .theme-filter-dropdown')).toBeTruthy()
+      expect(document.body.querySelector('.cmp-filter-stack--compact-portal')).toBeTruthy()
+      expect(document.body.querySelector('.cmp-filter-portal-clip')).toBeTruthy()
+      expect(document.body.querySelector('.cmp-filter-portal-clip .cmp-filter-dropdown')).toBeTruthy()
       unmount()
     })
   })

@@ -1,7 +1,7 @@
 import type { RpcListEntry } from '@shared/rpc'
 import type { KeyboardEventHandler, RefObject } from 'react'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
-import type { useVirtualListWindow } from '../../hooks/list/use_virtual_list_window.hook'
+import type { ListSentinelSpacers, VirtualListWindow } from '../../utils/list/virtual_list.util'
 import { EntryRow } from './entry_row.component'
 
 export type ListResultsBodyProps = {
@@ -17,7 +17,8 @@ export type ListResultsBodyProps = {
   emptySyncButtonRef: RefObject<HTMLButtonElement | null>
   rows: RpcListEntry[]
   visibleRows: RpcListEntry[]
-  virtualWindow: ReturnType<typeof useVirtualListWindow>
+  virtualWindow: VirtualListWindow
+  sentinelSpacers: ListSentinelSpacers | null
   hasMore: boolean
   maxFrecencyScore: number
   onSelectEntry: (id: number) => void
@@ -40,6 +41,7 @@ export function ListResultsBody({
   rows,
   visibleRows,
   virtualWindow,
+  sentinelSpacers,
   hasMore,
   maxFrecencyScore,
   onSelectEntry,
@@ -50,7 +52,7 @@ export function ListResultsBody({
   return (
     <div
       ref={listSurfaceRef}
-      className="theme-results"
+      className="cmp-results custom-scrollbar"
       tabIndex={0}
       data-list-selection={selectedId === null ? 'false' : 'true'}
       onKeyDown={onKeyDown}
@@ -58,9 +60,9 @@ export function ListResultsBody({
       aria-label="Entries"
     >
       {emptyDb ? (
-        <div className="theme-empty-state">
+        <div className="cmp-empty-state">
           <p>No entries yet</p>
-          <div className="theme-empty-state-detail">
+          <div className="cmp-empty-state-detail">
             {syncInfo ? (
               <p>
                 Sources: <code>{syncInfo.sourcesDir}</code>
@@ -78,12 +80,12 @@ export function ListResultsBody({
         </div>
       ) : null}
       {noResults ? (
-        <div className="theme-empty-state">
+        <div className="cmp-empty-state">
           <p>No results for this search.</p>
         </div>
       ) : null}
       {emptyList ? (
-        <div className="theme-empty-state">
+        <div className="cmp-empty-state">
           <p>No entries match the current filters.</p>
         </div>
       ) : null}
@@ -103,8 +105,19 @@ export function ListResultsBody({
           compact
         />
       ))}
-      {virtualWindow.paddingBottom > 0 ? <div style={{ height: virtualWindow.paddingBottom }} aria-hidden /> : null}
-      {hasMore && rows.length > 0 ? <div ref={listSentinelRef} className="theme-list-sentinel" aria-hidden /> : null}
+      {hasMore && sentinelSpacers !== null ? (
+        <>
+          {sentinelSpacers.beforeSentinel > 0 ? (
+            <div style={{ height: sentinelSpacers.beforeSentinel }} aria-hidden />
+          ) : null}
+          <div ref={listSentinelRef} className="cmp-list-sentinel" aria-hidden />
+          {sentinelSpacers.afterSentinel > 0 ? (
+            <div style={{ height: sentinelSpacers.afterSentinel }} aria-hidden />
+          ) : null}
+        </>
+      ) : virtualWindow.paddingBottom > 0 ? (
+        <div style={{ height: virtualWindow.paddingBottom }} aria-hidden />
+      ) : null}
     </div>
   )
 }

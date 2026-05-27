@@ -36,12 +36,12 @@ function PreviewImageFigure({
   openUrl: (url: string) => Promise<void>
 }) {
   return (
-    <figure className="theme-preview-image">
+    <figure className="cmp-preview-image">
       <img src={imageUrl} alt="" />
       {youtubeImage ? (
         <button
           type="button"
-          className="theme-preview-image-open"
+          className="cmp-preview-image-open"
           onClick={() => {
             fireAndForget(openUrl(url))
           }}
@@ -105,11 +105,7 @@ export function PreviewImage({ url, fetchImage = defaultFetchImage, openUrl = de
   if (hidden) return null
   if (loading)
     return (
-      <div
-        className="theme-preview-image theme-preview-image--skeleton"
-        role="status"
-        aria-label="Loading preview image"
-      />
+      <div className="cmp-preview-image cmp-preview-image--skeleton" role="status" aria-label="Loading preview image" />
     )
   if (!imageUrl) return null
 

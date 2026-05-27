@@ -61,7 +61,7 @@ export function useVirtualListWindow(
     })
   }, [metrics.rowHeight, scrollRootRef, selectedEntryId, selectedIndex])
 
-  return useMemo(
+  const window = useMemo(
     () =>
       virtualListWindow({
         total,
@@ -71,4 +71,6 @@ export function useVirtualListWindow(
       }),
     [metrics, total]
   )
+
+  return { window, rowHeight: metrics.rowHeight }
 }

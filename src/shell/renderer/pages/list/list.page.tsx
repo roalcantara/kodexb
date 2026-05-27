@@ -20,7 +20,7 @@ export function ListPage() {
   })
 
   return (
-    <div ref={listPageRef} className="theme-list-page" onKeyDownCapture={onListPageKeyDownCapture}>
+    <div ref={listPageRef} className="cmp-list-page" onKeyDownCapture={onListPageKeyDownCapture}>
       <ListMain p={p} showSettings={showSettings} setShowSettings={setShowSettings} />
     </div>
   )

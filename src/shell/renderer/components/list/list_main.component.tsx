@@ -14,6 +14,7 @@ import { listFilterSummary } from '../../utils/list/list_filters.util'
 import { formatListFooterStatus } from '../../utils/list/list_formatters.util'
 import { focusListSurface } from '../../utils/list/list_keyboard.util'
 import { scheduleDoubleRaf } from '../../utils/list/list_scroll.util'
+import { listSentinelSpacers } from '../../utils/list/virtual_list.util'
 import { ListFooter } from './list_footer.component'
 import { ListOverlayHosts } from './list_overlay_hosts.component'
 import { ListResultsBody } from './list_results_body.component'
@@ -76,12 +77,12 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
 
   const listPanelClass =
     detailEntry === null
-      ? 'theme-list-panel'
+      ? 'cmp-list-panel'
       : viewState === 'split'
-        ? 'theme-list-panel theme-list-panel--narrow'
-        : 'theme-list-panel theme-list-panel--hidden'
+        ? 'cmp-list-panel cmp-list-panel--narrow'
+        : 'cmp-list-panel cmp-list-panel--hidden'
   const detailPanelClass =
-    detailEntry === null ? '' : viewState === 'detail' ? 'theme-detail theme-detail--full' : 'theme-detail'
+    detailEntry === null ? '' : viewState === 'detail' ? 'cmp-detail cmp-detail--full' : 'cmp-detail'
 
   useListSurfaceScrollRestore(p.listSurfaceRef, detailEntry)
 
@@ -114,12 +115,21 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   )
 
   const selectedIndex = p.data.rows.findIndex(e => e.id === p.sel.selectedId)
-  const virtualWindow = useVirtualListWindow(p.data.rows.length, p.listSurfaceRef, selectedIndex, p.sel.selectedId)
+  const { window: virtualWindow, rowHeight } = useVirtualListWindow(
+    p.data.rows.length,
+    p.listSurfaceRef,
+    selectedIndex,
+    p.sel.selectedId
+  )
   const visibleRows = p.data.rows.slice(virtualWindow.startIndex, virtualWindow.endIndex)
+  const sentinelSpacers =
+    p.data.hasMore && p.data.rows.length > 0
+      ? listSentinelSpacers({ totalRows: p.data.rows.length, rowHeight, virtualWindow })
+      : null
 
   const filterSummary = listFilterSummary(p.data.types, p.data.tags, p.data.taskView)
   const filterActive = p.data.taskView !== undefined || p.data.types.length > 0 || p.data.tags.length > 0
-  const filterChipCls = `theme-filter-chip${filterActive ? ' theme-filter-chip--active' : ''}`
+  const filterChipCls = `cmp-filter-chip${filterActive ? ' cmp-filter-chip--active' : ''}`
 
   const toggleFilter = () => {
     if (p.filter.filterOpen) {
@@ -147,7 +157,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
     detailScrollActive: detailEntry !== null
   })
 
-  const powertoysClass = viewState === 'detail' ? 'theme-app-shell theme-app-shell--detail-full' : 'theme-app-shell'
+  const powertoysClass = viewState === 'detail' ? 'cmp-app-shell cmp-app-shell--detail-full' : 'cmp-app-shell'
 
   const { onMouseDown: onDragStripeMouseDown } = useWindowDrag()
 
@@ -162,7 +172,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   return (
     <>
       <div className={powertoysClass} role="application" aria-label="Knowledge list">
-        <div className="theme-window-drag-stripe" role="presentation" aria-hidden onMouseDown={onDragStripeMouseDown} />
+        <div className="cmp-window-drag-stripe" role="presentation" aria-hidden onMouseDown={onDragStripeMouseDown} />
         <ListSearchFilterChrome
           isFullDetail={isFullDetail}
           showBackWithSearch={showBackWithSearch}
@@ -189,7 +199,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           anchorRect={p.filter.anchorRect}
         />
 
-        <div className="theme-main">
+        <div className="cmp-main">
           <div className={listPanelClass}>
             <ListResultsBody
               listSurfaceRef={p.listSurfaceRef}
@@ -205,6 +215,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
               rows={p.data.rows}
               visibleRows={visibleRows}
               virtualWindow={virtualWindow}
+              sentinelSpacers={sentinelSpacers}
               hasMore={p.data.hasMore}
               maxFrecencyScore={maxFrecencyScore}
               onSelectEntry={onSelectEntry}

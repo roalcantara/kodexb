@@ -3,16 +3,16 @@ import type { TaskSheetFormState } from '../../hooks/list/use_task_sheet.hook'
 import { useTaskSheet } from '../../hooks/list/use_task_sheet.hook'
 
 const STATUS_CLASS: Record<string, string> = {
-  todo: 'theme-pill theme-pill--todo',
-  doing: 'theme-pill theme-pill--doing',
-  done: 'theme-pill theme-pill--done'
+  todo: 'cmp-pill cmp-pill--todo',
+  doing: 'cmp-pill cmp-pill--doing',
+  done: 'cmp-pill cmp-pill--done'
 }
 
 const PRIORITY_CLASS: Record<string, string> = {
-  urgent: 'theme-pill theme-pill--urgent',
-  high: 'theme-pill theme-pill--high',
-  mid: 'theme-pill theme-pill--mid',
-  low: 'theme-pill theme-pill--low'
+  urgent: 'cmp-pill cmp-pill--urgent',
+  high: 'cmp-pill cmp-pill--high',
+  mid: 'cmp-pill cmp-pill--mid',
+  low: 'cmp-pill cmp-pill--low'
 }
 
 export type TaskSheetInnerProps = {
@@ -40,18 +40,18 @@ function StatusPriorityRow({
   disabled: boolean
 }) {
   return (
-    <div className="theme-task-sheet--row">
-      <div className="theme-task-sheet--field">
+    <div className="cmp-task-sheet--row">
+      <div className="cmp-task-sheet--field">
         <label htmlFor="task-sheet-status">Status</label>
         <button
           id="task-sheet-status"
           type="button"
-          className={STATUS_CLASS[status] ?? 'theme-pill'}
+          className={STATUS_CLASS[status] ?? 'cmp-pill'}
           onClick={onCycleStatus}
           disabled={disabled}
           style={{
             cursor: disabled ? 'default' : 'pointer',
-            border: '1px solid var(--theme-border)',
+            border: '1px solid var(--cmp-border)',
             background: 'transparent',
             fontSize: '0.75rem',
             padding: '0.2rem 0.5rem'
@@ -60,17 +60,17 @@ function StatusPriorityRow({
           {status}
         </button>
       </div>
-      <div className="theme-task-sheet--field">
+      <div className="cmp-task-sheet--field">
         <label htmlFor="task-sheet-priority">Priority</label>
         <button
           id="task-sheet-priority"
           type="button"
-          className={PRIORITY_CLASS[priority] ?? 'theme-pill'}
+          className={PRIORITY_CLASS[priority] ?? 'cmp-pill'}
           onClick={onCyclePriority}
           disabled={disabled}
           style={{
             cursor: disabled ? 'default' : 'pointer',
-            border: '1px solid var(--theme-border)',
+            border: '1px solid var(--cmp-border)',
             background: 'transparent',
             fontSize: '0.75rem',
             padding: '0.2rem 0.5rem'
@@ -85,11 +85,11 @@ function StatusPriorityRow({
 
 function DependsOnPicker({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   return (
-    <div className="theme-task-sheet--field">
+    <div className="cmp-task-sheet--field">
       <label htmlFor="ts-deps">Depends on (IDs)</label>
       <input
         id="ts-deps"
-        className="theme-task-sheet--input"
+        className="cmp-task-sheet--input"
         type="text"
         value={value}
         onChange={e => onChange(e.target.value)}
@@ -110,19 +110,19 @@ function TaskSheetInner({
   onCyclePriority
 }: TaskSheetInnerProps) {
   return (
-    <div className="theme-modal" role="dialog" aria-label={entry ? 'Edit task' : 'New task'}>
-      <div className="theme-task-sheet">
+    <div className="cmp-modal" role="dialog" aria-label={entry ? 'Edit task' : 'New task'}>
+      <div className="cmp-task-sheet">
         <h2 style={{ margin: '0 0 1rem', fontSize: '1.1rem' }}>{entry ? 'Edit task' : 'New task'}</h2>
 
         {form.error ? (
-          <div style={{ color: 'var(--theme-danger)', marginBottom: '0.75rem', fontSize: '0.85rem' }}>{form.error}</div>
+          <div style={{ color: 'var(--cmp-danger)', marginBottom: '0.75rem', fontSize: '0.85rem' }}>{form.error}</div>
         ) : null}
 
-        <div className="theme-task-sheet--field">
+        <div className="cmp-task-sheet--field">
           <label htmlFor="ts-key">Key</label>
           <input
             id="ts-key"
-            className="theme-task-sheet--input"
+            className="cmp-task-sheet--input"
             type="text"
             value={form.key}
             onChange={e => onSet('key', e.target.value)}
@@ -131,11 +131,11 @@ function TaskSheetInner({
           />
         </div>
 
-        <div className="theme-task-sheet--field">
+        <div className="cmp-task-sheet--field">
           <label htmlFor="ts-desc">Description</label>
           <textarea
             id="ts-desc"
-            className="theme-task-sheet--textarea"
+            className="cmp-task-sheet--textarea"
             value={form.desc}
             onChange={e => onSet('desc', e.target.value)}
             placeholder="Task description"
@@ -151,22 +151,22 @@ function TaskSheetInner({
           disabled={!entry}
         />
 
-        <div className="theme-task-sheet--field">
+        <div className="cmp-task-sheet--field">
           <label htmlFor="ts-due">Due date</label>
           <input
             id="ts-due"
-            className="theme-task-sheet--input"
+            className="cmp-task-sheet--input"
             type="date"
             value={form.dueDateStr}
             onChange={e => onSet('dueDateStr', e.target.value)}
           />
         </div>
 
-        <div className="theme-task-sheet--field">
+        <div className="cmp-task-sheet--field">
           <label htmlFor="ts-tags">Tags</label>
           <input
             id="ts-tags"
-            className="theme-task-sheet--input"
+            className="cmp-task-sheet--input"
             type="text"
             value={form.tags}
             onChange={e => onSet('tags', e.target.value)}
@@ -176,16 +176,16 @@ function TaskSheetInner({
 
         <DependsOnPicker value={form.dependsOn} onChange={v => onSet('dependsOn', v)} />
 
-        <div className="theme-task-sheet--actions">
+        <div className="cmp-task-sheet--actions">
           <button
             type="button"
-            className="theme-task-sheet--btn theme-task-sheet--btn-primary"
+            className="cmp-task-sheet--btn cmp-task-sheet--btn-primary"
             onClick={onSave}
             disabled={form.saving || !form.key.trim()}
           >
             {form.saving ? 'Saving…' : 'Save'}
           </button>
-          <button type="button" className="theme-task-sheet--btn" onClick={onCancel} disabled={form.saving}>
+          <button type="button" className="cmp-task-sheet--btn" onClick={onCancel} disabled={form.saving}>
             Cancel
           </button>
         </div>

@@ -25,27 +25,27 @@ export function SyncToast({ result, onDismiss }: SyncToastProps) {
   const { filesProcessed, inserted, updated, errors } = result
 
   return (
-    <div className="theme-sync-toast">
-      <div className="theme-sync-toast-body">
-        <span className="theme-sync-toast-summary">
+    <div className="cmp-sync-toast">
+      <div className="cmp-sync-toast-body">
+        <span className="cmp-sync-toast-summary">
           {errors.length === 0
             ? `${filesProcessed} files: ${inserted} inserted, ${updated} updated`
             : `Sync completed with ${errors.length} error${errors.length === 1 ? '' : 's'}`}
         </span>
         {errors.length > 0 && (
-          <button type="button" className="theme-sync-toast-toggle" onClick={() => setShowErrors(!showErrors)}>
+          <button type="button" className="cmp-sync-toast-toggle" onClick={() => setShowErrors(!showErrors)}>
             View errors ({errors.length})
           </button>
         )}
       </div>
       {showErrors && errors.length > 0 && (
-        <ul className="theme-sync-toast-errors">
+        <ul className="cmp-sync-toast-errors">
           {errors.map(err => (
             <li key={err}>{err}</li>
           ))}
         </ul>
       )}
-      <button type="button" className="theme-sync-toast-close" onClick={onDismiss} aria-label="Dismiss">
+      <button type="button" className="cmp-sync-toast-close" onClick={onDismiss} aria-label="Dismiss">
         ✕
       </button>
     </div>

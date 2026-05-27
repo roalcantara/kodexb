@@ -1,166 +1,264 @@
 ---
-title: Vivid Gothic Command
-description: Design system for the project
+version: 1.1
+name: kb — Andromeda Void
+description: |
+  Dark-first knowledge base desktop app. Keyboard-first, search-centred, information-dense. Palette: Andromeda Void — deep space navy canvas with jewel-toned semantic accents. Cosmic but precise.
+colors:
+  primary: '#5ecfbe'
+  bg: '#1e1f2b'
+  surface: '#252733'
+  border: '#2d2f3d'
+  text: '#e2e9f5'
+  muted: '#8892a4'
+  row-hover: '#2a2c3a'
+  row-selected: '#252733'
+  error: '#ef4444'
+  warn: '#f59e0b'
+  color-command: '#5ecfbe'
+  color-cheat: '#a855f7'
+  color-task: '#ffae57'
+  color-url: '#3399ff'
+  priority-urgent-text: '#fca5a5'
+  priority-high-border: '#fb923c'
+  priority-high-text: '#fdba74'
+  priority-mid-border: '#fbbf24'
+  priority-mid-text: '#fde68a'
+  priority-low-border: '#22c55e'
+  priority-low-text: '#86efac'
+  status-doing: '#93c5fd'
+  status-done: '#86efac'
+  surface-dim: '#11121e'
+  surface-bright: '#373845'
+  surface-container-lowest: '#0c0d19'
+  surface-container-low: '#1a1b27'
+  surface-container: '#1e1f2b'
+  surface-container-high: '#282935'
+  surface-container-highest: '#333441'
+  on-surface: '#e2e1f2'
+  on-surface-variant: '#bcc9c5'
+  inverse-surface: '#e2e1f2'
+  inverse-on-surface: '#2f2f3c'
+  outline: '#869390'
+  outline-variant: '#3d4946'
+  surface-tint: '#69d9c8'
+  on-primary: '#003731'
+  primary-container: '#5ecfbe'
+  on-primary-container: '#00564d'
+  inverse-primary: '#006b5f'
+  secondary: '#ddb7ff'
+  on-secondary: '#490080'
+  secondary-container: '#6f00be'
+  on-secondary-container: '#d6a9ff'
+  tertiary: '#ffd0a5'
+  on-tertiary: '#4a2800'
+  tertiary-container: '#fcac55'
+  on-tertiary-container: '#714100'
+  on-error: '#690005'
+  error-container: '#93000a'
+  on-error-container: '#ffdad6'
+  primary-fixed: '#86f6e4'
+  primary-fixed-dim: '#69d9c8'
+  on-primary-fixed: '#00201c'
+  on-primary-fixed-variant: '#005047'
+  secondary-fixed: '#f0dbff'
+  secondary-fixed-dim: '#ddb7ff'
+  on-secondary-fixed: '#2c0051'
+  on-secondary-fixed-variant: '#6900b3'
+  tertiary-fixed: '#ffdcbe'
+  tertiary-fixed-dim: '#ffb86f'
+  on-tertiary-fixed: '#2c1600'
+  on-tertiary-fixed-variant: '#693c00'
+  background: '#11121e'
+  on-background: '#e2e1f2'
+  surface-variant: '#333441'
+  text-main: '#e2e9f5'
+  text-muted: '#8892a4'
+  url: '#3399ff'
+  priority-urgent: '#fca5a5'
+  priority-high: '#fb923c'
+  priority-low: '#22c55e'
+typography:
+  title:
+    fontFamily: system-ui, -apple-system, sans-serif
+    fontSize: 1.25rem
+    fontWeight: 600
+    lineHeight: 1.2
+  heading:
+    fontFamily: system-ui, -apple-system, sans-serif
+    fontSize: 0.95rem
+    fontWeight: 600
+    lineHeight: 1.35
+  body-lg:
+    fontFamily: system-ui, -apple-system, sans-serif
+    fontSize: 0.9rem
+    fontWeight: 400
+    lineHeight: 1.6
+  body-md:
+    fontFamily: system-ui, -apple-system, sans-serif
+    fontSize: 0.85rem
+    fontWeight: 400
+    lineHeight: 1.6
+  body-sm:
+    fontFamily: system-ui, -apple-system, sans-serif
+    fontSize: 0.8rem
+    fontWeight: 400
+    lineHeight: 1.5
+  label-lg:
+    fontFamily: system-ui, -apple-system, sans-serif
+    fontSize: 0.75rem
+    fontWeight: 400
+    lineHeight: 1
+  label-md:
+    fontFamily: system-ui, -apple-system, sans-serif
+    fontSize: 0.7rem
+    fontWeight: 600
+    lineHeight: 1
+    letterSpacing: 0.04em
+  label-sm:
+    fontFamily: system-ui, -apple-system, sans-serif
+    fontSize: 0.65rem
+    fontWeight: 400
+    lineHeight: 1
+  code:
+    fontFamily: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace
+    fontSize: 0.85rem
+    fontWeight: 400
+    lineHeight: 1.4
+  headline-lg:
+    fontFamily: Inter
+    fontSize: 1.25rem
+    fontWeight: '600'
+    lineHeight: '1.2'
+  heading-md:
+    fontFamily: Inter
+    fontSize: 0.95rem
+    fontWeight: '600'
+    lineHeight: '1.35'
+semantic_styles:
+  command:
+    typography: '{typography.code}'
+    textColor: '{colors.color-command}'
+    description: Executable terminal commands. Sharp, monospace, cyan.
+  url:
+    typography: '{typography.body-md}'
+    textColor: '{colors.color-url}'
+    textDecoration: underline
+    description: Navigational external links. Blueish and underlined.
+  cheat:
+    typography: '{typography.body-sm}'
+    textColor: '{colors.muted}'
+    description: Reference material and subtitles. Thinner, muted sans-serif font
+      that recedes in hierarchy.
+  task_characteristic:
+    typography: '{typography.body-sm}'
+    textColor: '{colors.color-task}'
+    icon: clock
+    description: Temporal characteristics of tasks. Warm orange with intuitive time-based
+      indicators.
+rounded:
+  xs: 3px
+  sm: 4px
+  md: 6px
+  lg: 8px
+  full: 9999px
+  DEFAULT: 0.25rem
+  xl: 0.75rem
+spacing:
+  xs: 4px
+  sm: 8px
+  md: 12px
+  lg: 16px
+  xl: 20px
+  xxl: 24px
+components:
+  button-primary:
+    backgroundColor: '{colors.primary}'
+    textColor: '#ffffff'
+    rounded: '{rounded.md}'
+    padding: 0.45rem 0.85rem
+  entry-row:
+    backgroundColor: transparent
+    textColor: '{colors.text}'
+    padding: 0.45rem 0.75rem
+  entry-row-selected:
+    backgroundColor: '{colors.row-selected}'
+    borderLeft: 2px solid {colors.color-cheat}
 ---
 <!-- markdownlint-disable-file -->
-colors:
-  surface: '#11131e'
-  surface-dim: '#11131e'
-  surface-bright: '#373845'
-  surface-container-lowest: '#0b0e18'
-  surface-container-low: '#191b26'
-  surface-container: '#1d1f2b'
-  surface-container-high: '#272935'
-  surface-container-highest: '#323440'
-  on-surface: '#e1e1f1'
-  on-surface-variant: '#ccc3d3'
-  inverse-surface: '#e1e1f1'
-  inverse-on-surface: '#2e303c'
-  outline: '#968e9c'
-  outline-variant: '#4a4451'
-  surface-tint: '#d7baff'
-  primary: '#d7baff'
-  on-primary: '#411478'
-  primary-container: '#bd93f9'
-  on-primary-container: '#4e2484'
-  inverse-primary: '#714aaa'
-  secondary: '#75d4e8'
-  on-secondary: '#00363e'
-  secondary-container: '#008092'
-  on-secondary-container: '#f8fdff'
-  tertiary: '#ffafd7'
-  on-tertiary: '#620044'
-  tertiary-container: '#fe78c5'
-  on-tertiary-container: '#770054'
-  error: '#ffb4ab'
-  on-error: '#93000a'
-  error-container: '#ef4444'
-  on-error-container: '#ffdad6'
-  primary-fixed: '#eddcff'
-  primary-fixed-dim: '#d7baff'
-  on-primary-fixed: '#290055'
-  on-primary-fixed-variant: '#593090'
-  secondary-fixed: '#a3eeff'
-  secondary-fixed-dim: '#75d4e8'
-  on-secondary-fixed: '#001f25'
-  on-secondary-fixed-variant: '#004e5a'
-  tertiary-fixed: '#ffd8e9'
-  tertiary-fixed-dim: '#ffafd7'
-  on-tertiary-fixed: '#3c0029'
-  on-tertiary-fixed-variant: '#860f60'
-  background: '#11131e'
-  on-background: '#e1e1f1'
-  surface-variant: '#323440'
-typography:
-  headline-sm:
-    fontFamily: Inter
-    fontSize: 18px
-    fontWeight: '600'
-    lineHeight: 24px
-    letterSpacing: -0.01em
-  body-md:
-    fontFamily: Inter
-    fontSize: 14px
-    fontWeight: '400'
-    lineHeight: 20px
-  body-sm:
-    fontFamily: Inter
-    fontSize: 13px
-    fontWeight: '400'
-    lineHeight: 18px
-  label-caps:
-    fontFamily: Inter
-    fontSize: 11px
-    fontWeight: '700'
-    lineHeight: 16px
-    letterSpacing: 0.05em
-  mono-label:
-    fontFamily: JetBrains Mono
-    fontSize: 12px
-    fontWeight: '500'
-    lineHeight: 16px
-rounded:
-  sm: 0.125rem
-  DEFAULT: 0.25rem
-  md: 0.375rem
-  lg: 0.5rem
-  xl: 0.75rem
-  full: 9999px
-spacing:
-  container-padding: 16px
-  item-gap: 4px
-  section-margin: 12px
-  inner-padding-x: 12px
-  inner-padding-y: 8px
----
 
-## Brand & Style
+# kb Design System: Andromeda Void
 
-This design system is a high-octane, Dracula-inspired aesthetic tailored for a command palette launcher. It targets power users, developers, and speed-oriented professionals who demand high legibility and a striking visual identity.
+## Semantic Typography
 
-The design style leverages a **Vivid Dark Mode** approach, blending **Glassmorphism** with high-contrast, jewel-toned accents. The interface should feel like a premium command center: deeply saturated, precise, and responsive. We avoid pure blacks in favor of rich navy-purples to maintain a "glowing" digital feel. The emotional response is one of focused energy and technical mastery.
+This system uses specific typographic treatments to convey entry types and metadata characteristics at a glance.
 
-## Colors
+- **Commands**: Styled with `typography.code` in `{colors.color-command}` **_(Supernova Cyan)_**. Used for raw executable strings.
+- **URLs**: Styled with `typography.body-md` in `{colors.color-url}` **_(Photon Blue)_** with a standard underline.
+- **Cheats / Subtitles**: Styled with `typography.body-sm` in `{colors.muted}` **_(Muted Lavender/Grey)_**. These use a thinner weight and recede visually to provide secondary context.
+- **Task Characteristics**: Styled with `typography.body-sm` in `{colors.color-task}` **_(Solar Orange)_**. Often prepended with a clock icon to signify temporal relevance.
 
-The palette is built on the classic Dracula core, optimized for high-density information displays.
+## Visual Rhythm
 
-- **Primary Selection:** Use `#bd93f9` (Lavender) for active selection states and focus rings.
-- **Surface Layering:** The base background is `#282a36`. Use `#44475a` for hovered items or the "Current Line" indicator.
-- **Accents:** Use the jewel-toned functional colors (`#8be9fd`, `#50fa7b`, etc.) to categorize different types of commands (e.g., Cyan for System, Green for Tasks).
-- **Glass Effects:** The main container should utilize the base color at 80% opacity with a 20px backdrop blur to create a sense of depth over the user's desktop or active application.
+The interface prioritizes razor-thin precision. Selection indicators are `2px` vertical lines on the left edge of the active row, carrying the semantic color of the item type. No heavy borders or box shadows are used for internal list structure.
 
-## Typography
+## Design Rationale
 
-We utilize **Inter** for its exceptional clarity in small-scale UI.
+The **Andromeda Void** design system is built on the philosophy of **Focused Precision**. It’s designed to feel less like a generic editor and more like a high-fidelity instrument for developers who live in their terminals.
 
-- **Hierarchy:** Use `headline-sm` for the main input text. `body-md` is the primary style for search results.
-- **Muted Text:** Use the Secondary Text color (`#6272a4`) for descriptions, paths, and shortcuts to maintain focus on the primary labels.
-- **System Labels:** Use `label-caps` for section headers (e.g., "RECENT COMMANDS").
-- **Shortcuts:** Keyboard shortcuts should use a monospaced font if possible, or `mono-label`, to distinguish them from actionable text.
+Here is the **summary** of the core design rationale and concepts:
 
-## Layout & Spacing
+1. **Color Physics & Depth**
 
-The command palette follows a **Fixed Width, Vertical Stack** model.
+   - **The Foundation:**
+     - We use a deep matte charcoal `(#121721 / #1e1f2b)` rather than pure black.
+     - This `"Andromeda"` base has a subtle blue-shift that allows the jewel-toned accents to sit `"above"` the surface through color contrast alone.
 
-- **Main Container:** Fixed width between 600px and 680px. Centered at the top-third of the screen.
-- **Density:** High density. Search results should have a compact vertical height to maximize the number of visible options.
-- **Rhythm:** Use an 4px base unit. Result items use `inner-padding-y: 8px` and `inner-padding-x: 12px` to ensure a generous horizontal hit area while maintaining vertical efficiency.
-- **Responsive:** On mobile/small viewports, the palette transitions to a full-width bottom sheet or a full-screen overlay with `container-padding: 16px`.
+   - **Tonal Layering:**
+     - We strictly avoid shadows and gradients.
+     - Depth is achieved exclusively through tonal steps—surfaces sit on top of each other by being one step lighter or darker, maintaining a flat but multi-dimensional technical feel.
 
-## Elevation & Depth
+2. **Semantic Hierarchy** *(The Jewel Tones)*
 
-This system uses **Tonal Layers** combined with **Backdrop Blur** for a modern, sophisticated feel.
+Every entry type has a dedicated `"photon"` color, allowing the user to understand the distribution of information at a glance before reading a single word:
 
-- **Main Palette Window:** This is the highest elevation. It uses a 1px border of `#44475a` and a deep, soft shadow (0px 20px 50px rgba(0,0,0,0.5)). The background is a semi-transparent `#282a36`.
-- **Selection State:** No shadow. Instead, the active item uses a solid background of `#44475a` and a left-aligned 4px "accent bar" using the Primary color (`#bd93f9`).
-- **Input Field:** Integrated into the top of the container without a separate background, separated only by a subtle horizontal divider of `#44475a`.
+  - **Commands:** `(Supernova Cyan - #5ecfbe)`
 
-## Shapes
+    - Sharp and executable.
+    - Uses monospace typography to signal its technical nature.
 
-The shape language is precise and controlled.
+  - **Cheats/Subtitles:** `(Muted Lavender/Grey)`
 
-- **Main Container:** Uses `rounded-lg` (8px) to soften the large floating window.
-- **Result Items & Buttons:** Uses `rounded-sm` (4px) to maintain a professional, sharp aesthetic that fits the high-density layout.
-- **KBD/Shortcuts:** Small pills or soft rectangles (4px) that enclose shortcut keys, providing a tactile, mechanical feel.
+    - Recedes in the hierarchy using a thinner, sans-serif weight to provide context without competing for attention.
 
-## Components
+  - **Tasks:** `(Solar Orange - #ffae57)`
 
-### Input Field
+    - Conveys urgency and time.
+    - Paired with temporal icons `(clocks)` to make the state intuitive.
 
-The primary search bar is borderless, using a large font size (`headline-sm`). Use the Primary Selection color for the blinking cursor. Placeholder text should be in the Muted color (`#6272a4`).
+  - **Bookmarks:** `(Photon Blue - #3399ff)`
 
-### Result Items
+    - Signals navigational links.
+    - These are the only elements with an underline, mimicking standard web affordances but refined for a console UI.
 
-Items consist of an icon (left), title (Primary Text), description (Muted Text), and shortcut (right). On hover or selection, the background changes to `#44475a`.
+3. **Native Precision**
 
-### Chips & Tags
+   - **Typography:**
+     - We use a native macOS system font stack **_(San Francisco)_**.
+     - This ensures zero-latency rendering and a `"built-for-Mac"` feel.
+     - Sizes are kept tight `(0.65rem to 1.25rem)` to maximize information density.
 
-Used for categories. They should have a subtle background (15% opacity of the accent color) and a solid text color of that accent (e.g., Pink text on a dark pink tint).
+   - **Geometry:**
+     - A consistent `6px` radius `(rounded-md)` is applied to all interactive controls, striking a balance between technical sharpness and modern approachability.
 
-### Keyboard Shortcuts (KBD)
+2. **Interactive Clarity**
 
-Rendered as small containers with a 1px border of `#6272a4` and `body-sm` mono text. This distinguishes them as non-clickable, reference-only elements.
+   - **The Selection Rail:**
+     - A razor-thin `purple` line on the left is the only indicator of an active row.
+     - This avoids the `"heavy"` feel of traditional highlights and keeps the focus on the content.
 
-### Progress Bars / Status Indicators
+   - **Keyboard-First Layout:**
+     - Everything is designed around a fixed-width list panel that facilitates rapid vertical scanning, identical to the mental model of a **CLI** or **command palette**.
 
-Use the Green (`#50fa7b`) and Orange (`#ffb86c`) accents for task completion and pending states. These should be thin (2px-4px) lines to stay out of the way of the text.
+## Conclusion
+
+This system ensures that **kb** is scannable, information-dense, and unmistakably professional.

@@ -120,6 +120,18 @@ collection of the same kind (e.g. `rpc.host.schemas.ts` exports many schemas).
 | `.component.tsx`         | Reusable UI component                           | `entry_row.component.tsx`            |
 | `.hook.ts` / `.hook.tsx` | Custom React hook (file must start with `use_`) | `use_list_selection.hook.ts`         |
 
+#### Renderer styles (`.css`)
+
+Tailwind v4 partials live under `src/shell/renderer/styles/`. See
+[`STYLING_GUIDE.md`](STYLING_GUIDE.md) for the full pipeline.
+
+| Location             | Basename pattern                | Example                         |
+| -------------------- | ------------------------------- | ------------------------------- |
+| `styles/`            | `app`, `theme`, optional `list` | `theme.css`                     |
+| `styles/components/` | snake_case surface name         | `entry_row.css`, `list_row.css` |
+
+Generated output (`styles/generated/app.css`) is gitignored; run `mise run app styles` after CSS edits.
+
 #### Test files
 
 | Suffix         | Purpose                 | Placement                        |

@@ -103,6 +103,12 @@ ls:
   src/shell/renderer/components/shared:
     .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
 
+  src/shell/renderer/styles:
+    .css: regex:^(app|theme|list)$
+
+  src/shell/renderer/styles/components:
+    .css: regex:^[a-z][a-z0-9_]*$
+
   # ── Core: directory↔suffix contract ─────────────────────────────────────────
   src/core/helpers:
     .ts: regex:^([a-z][a-z0-9_]*\.helper(\.spec)?|index)$

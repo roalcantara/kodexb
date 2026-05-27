@@ -11,16 +11,16 @@ export type BadgeAccessoryProps = {
 }
 
 const PRIORITY_CLASS: Record<string, string> = {
-  urgent: 'theme-pill theme-pill--urgent',
-  high: 'theme-pill theme-pill--high',
-  mid: 'theme-pill theme-pill--mid',
-  low: 'theme-pill theme-pill--low'
+  urgent: 'cmp-pill cmp-pill--urgent',
+  high: 'cmp-pill cmp-pill--high',
+  mid: 'cmp-pill cmp-pill--mid',
+  low: 'cmp-pill cmp-pill--low'
 }
 
 const STATUS_CLASS: Record<string, string> = {
-  todo: 'theme-pill theme-pill--todo',
-  doing: 'theme-pill theme-pill--doing',
-  done: 'theme-pill theme-pill--done'
+  todo: 'cmp-pill cmp-pill--todo',
+  doing: 'cmp-pill cmp-pill--doing',
+  done: 'cmp-pill cmp-pill--done'
 }
 
 function formatDueShort(ms: number | undefined | null): string {
@@ -33,7 +33,7 @@ function formatDueShort(ms: number | undefined | null): string {
 function bookmarkPill(hasUrl: boolean) {
   if (!hasUrl) return null
   return (
-    <span className="theme-pill theme-pill--muted" title="Has URL">
+    <span className="cmp-pill cmp-pill--muted" title="Has URL">
       ↗
     </span>
   )
@@ -41,7 +41,7 @@ function bookmarkPill(hasUrl: boolean) {
 
 function commandPill() {
   return (
-    <span className="theme-pill theme-pill--muted" title="Command">
+    <span className="cmp-pill cmp-pill--muted" title="Command">
       &gt;_
     </span>
   )
@@ -49,7 +49,7 @@ function commandPill() {
 
 function cheatPill() {
   return (
-    <span className="theme-pill theme-pill--muted" title="Cheat">
+    <span className="cmp-pill cmp-pill--muted" title="Cheat">
       ~
     </span>
   )
@@ -68,9 +68,9 @@ function taskPills(
   const dueDate = entry.dueDate
   const dueStr = typeof dueDate === 'number' ? formatDueShort(dueDate) : ''
 
-  const statusCls = `${STATUS_CLASS[status] ?? 'theme-pill'}${onCycleStatus ? ' theme-pill--clickable' : ''}`
+  const statusCls = `${STATUS_CLASS[status] ?? 'cmp-pill'}${onCycleStatus ? ' cmp-pill--clickable' : ''}`
   const priCls =
-    pri === undefined ? '' : `${PRIORITY_CLASS[pri] ?? 'theme-pill'}${onCyclePriority ? ' theme-pill--clickable' : ''}`
+    pri === undefined ? '' : `${PRIORITY_CLASS[pri] ?? 'cmp-pill'}${onCyclePriority ? ' cmp-pill--clickable' : ''}`
 
   return (
     <>
@@ -102,9 +102,9 @@ function taskPills(
       ) : (
         <span className={statusCls}>{status}</span>
       )}
-      {overdue ? <span className="theme-pill theme-pill--overdue">overdue</span> : null}
-      {blocked ? <span className="theme-pill theme-pill--blocked">blocked</span> : null}
-      {dueStr === '' ? null : <span className="theme-pill theme-pill--due">{dueStr}</span>}
+      {overdue ? <span className="cmp-pill cmp-pill--overdue">overdue</span> : null}
+      {blocked ? <span className="cmp-pill cmp-pill--blocked">blocked</span> : null}
+      {dueStr === '' ? null : <span className="cmp-pill cmp-pill--due">{dueStr}</span>}
     </>
   )
 }
@@ -112,16 +112,16 @@ function taskPills(
 function BadgeAccessoryComponent({ entry, allEntries = [], onCycleStatus, onCyclePriority }: BadgeAccessoryProps) {
   if (entry.type === 'bookmark') {
     const hasUrl = entry.key.startsWith('http://') || entry.key.startsWith('https://')
-    return <span className="theme-badge-row">{bookmarkPill(hasUrl)}</span>
+    return <span className="cmp-badge-row">{bookmarkPill(hasUrl)}</span>
   }
   if (entry.type === 'command') {
-    return <span className="theme-badge-row">{commandPill()}</span>
+    return <span className="cmp-badge-row">{commandPill()}</span>
   }
   if (entry.type === 'cheat') {
-    return <span className="theme-badge-row">{cheatPill()}</span>
+    return <span className="cmp-badge-row">{cheatPill()}</span>
   }
   if (isTaskKnowledge(entry)) {
-    return <span className="theme-badge-row">{taskPills(entry, allEntries, onCycleStatus, onCyclePriority)}</span>
+    return <span className="cmp-badge-row">{taskPills(entry, allEntries, onCycleStatus, onCyclePriority)}</span>
   }
   return null
 }

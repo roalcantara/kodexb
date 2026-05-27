@@ -51,6 +51,10 @@ src/shell/renderer/  React UI. Calls main via Eden Treaty client ONLY.
 - **Every new Elysia route** must also appear in `tools/preview/server.ts`.
 - **Every new file** in `src/` needs a co-located `.spec.ts(x)`.
 - **Exports**: unused exports are a knip error — delete or use before committing.
+- **Renderer styling**: Tailwind v4 via `src/shell/renderer/styles/` (`app.css`, `theme.css`,
+  `components/*.css`); Andromeda Void tokens in `@theme`; JSX uses `cmp-*` and `.semantic-*`
+  helpers — not inline utility strings. Build with `mise run app styles`; see
+  [`assets/guides/STYLING_GUIDE.md`](assets/guides/STYLING_GUIDE.md).
 
 ## Naming conventions
 
@@ -136,6 +140,7 @@ of truth for every convention in this file. If the guides ever disagree
 with this `CLAUDE.md`, **the guides win** — open a PR to fix `CLAUDE.md`.
 
 - [`assets/guides/CODESTYLE_GUIDE.md`](assets/guides/CODESTYLE_GUIDE.md) — naming, FCIS layout, SOLID
+- [`assets/guides/STYLING_GUIDE.md`](assets/guides/STYLING_GUIDE.md) — Tailwind v4, Andromeda Void, renderer CSS partials
 - [`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md) — bun:test, Better Specs, no-mock rule
 - [`assets/guides/FISHERY_GUIDE.md`](assets/guides/FISHERY_GUIDE.md) — `factoryFor` usage and registry
 - [`assets/guides/FCIS.guide.md`](assets/guides/FCIS.guide.md) — pure core / imperative shell rules

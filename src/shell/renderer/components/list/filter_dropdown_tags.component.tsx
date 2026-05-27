@@ -8,14 +8,14 @@ export type FilterDropdownTagsProps = {
 
 export function FilterDropdownTags({ tagRows, selectedTags, onToggle }: FilterDropdownTagsProps) {
   return (
-    <section className="theme-filter-section">
-      <div className="theme-filter-section-title">Tags</div>
-      <div className="theme-filter-tag-list">
+    <section className="cmp-filter-section">
+      <div className="cmp-filter-section-title">Tags</div>
+      <div className="cmp-filter-tag-list">
         {tagRows.map(({ tag, count }) => (
           <button
             key={tag}
             type="button"
-            className={selectedTags.includes(tag) ? 'theme-filter-row theme-filter-row--on' : 'theme-filter-row'}
+            className={selectedTags.includes(tag) ? 'cmp-filter-row cmp-filter-row--on' : 'cmp-filter-row'}
             onClick={() => onToggle(tag)}
           >
             #{tag} ({count})

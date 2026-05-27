@@ -1,2 +1,2 @@
-import './styles/list.css'
+import './styles/generated/app.css'
 import './app.tsx'

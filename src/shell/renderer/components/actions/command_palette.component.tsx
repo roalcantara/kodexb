@@ -44,7 +44,7 @@ function PaletteContent({
 }) {
   return (
     <div
-      className="theme-modal"
+      className="cmp-modal"
       role="dialog"
       onClick={e => {
         if (e.target === e.currentTarget) onClose()
@@ -53,10 +53,10 @@ function PaletteContent({
         if (e.key === 'Escape') onClose()
       }}
     >
-      <div className="theme-command-palette">
+      <div className="cmp-command-palette">
         <input
           ref={inputRef}
-          className="theme-command-palette-search"
+          className="cmp-command-palette-search"
           type="text"
           placeholder="Type an action..."
           value={search}
@@ -87,9 +87,9 @@ function PaletteContent({
             }
           }}
         />
-        <div className="theme-command-palette-list" role="listbox" aria-label="Command palette actions">
+        <div className="cmp-command-palette-list" role="listbox" aria-label="Command palette actions">
           {filtered.length === 0 ? (
-            <div className="theme-command-palette-empty">No matching actions</div>
+            <div className="cmp-command-palette-empty">No matching actions</div>
           ) : (
             filtered.map((action, i) => {
               const prev = i > 0 ? filtered[i - 1] : undefined
@@ -97,7 +97,7 @@ function PaletteContent({
               return (
                 <Fragment key={action.id}>
                   {showHeader ? (
-                    <div className="theme-command-palette-section" role="presentation">
+                    <div className="cmp-command-palette-section" role="presentation">
                       {COMMAND_PALETTE_SECTION_LABEL[action.section]}
                     </div>
                   ) : null}
@@ -105,7 +105,7 @@ function PaletteContent({
                     role="option"
                     aria-selected={i === selectedIndex}
                     tabIndex={-1}
-                    className={`theme-command-palette-action${i === selectedIndex ? ' theme-command-palette-action--selected' : ''}`}
+                    className={`cmp-command-palette-action${i === selectedIndex ? ' cmp-command-palette-action--selected' : ''}`}
                     onClick={() => {
                       action.handler()
                       onClose()
@@ -119,7 +119,7 @@ function PaletteContent({
                     }}
                   >
                     <span>{action.label}</span>
-                    {action.shortcut ? <span className="theme-command-palette-shortcut">{action.shortcut}</span> : null}
+                    {action.shortcut ? <span className="cmp-command-palette-shortcut">{action.shortcut}</span> : null}
                   </div>
                 </Fragment>
               )

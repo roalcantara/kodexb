@@ -26,6 +26,26 @@ export type ListSearchFilterChromeProps = {
   anchorRect: DOMRect | null
 }
 
+function SearchMagnifierIcon() {
+  return (
+    <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" role="presentation" aria-hidden>
+      <path
+        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function FilterChevronIcon() {
+  return (
+    <svg fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" role="presentation" aria-hidden>
+      <path d="M19.5 8.25l-7.5 7.5-7.5-7.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export function ListSearchFilterChrome({
   isFullDetail,
   showBackWithSearch,
@@ -48,16 +68,14 @@ export function ListSearchFilterChrome({
   pushToast,
   anchorRect
 }: ListSearchFilterChromeProps) {
-  // Detail-full mode hides the search chrome entirely; window drag is
-  // handled by the native title bar (see `shell_hooks.util.ts`).
   if (isFullDetail) return null
 
   return (
-    <div className="theme-search">
-      <div className="theme-search-wrap theme-search-wrap--with-back">
+    <div className="cmp-search">
+      <div className="cmp-search-wrap cmp-search-wrap--with-back">
         <button
           type="button"
-          className={`theme-search-back${showBackWithSearch ? '' : ' theme-search-back--inactive'}`}
+          className={`cmp-search-back${showBackWithSearch ? '' : ' cmp-search-back--inactive'}`}
           aria-label="Back to list"
           title={showBackWithSearch ? 'Back to list (Escape)' : undefined}
           aria-hidden={!showBackWithSearch}
@@ -68,7 +86,10 @@ export function ListSearchFilterChrome({
         >
           ←
         </button>
-        <search className="theme-search-bar">
+        <search className="cmp-search-bar">
+          <span className="cmp-search-magnifier" aria-hidden>
+            <SearchMagnifierIcon />
+          </span>
           <input
             ref={searchInputRef}
             type="search"
@@ -86,9 +107,12 @@ export function ListSearchFilterChrome({
             }}
             aria-label="Search"
           />
-          <span aria-hidden className="theme-search-bar-divider" />
+          <span aria-hidden className="cmp-search-bar-divider" />
           <button ref={filterButtonRef} type="button" className={filterChipCls} onClick={onToggleFilter}>
-            {filterSummary} ▾
+            <span>{filterSummary}</span>
+            <span className="cmp-filter-chip-chevron">
+              <FilterChevronIcon />
+            </span>
           </button>
         </search>
       </div>

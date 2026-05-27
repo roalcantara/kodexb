@@ -1,14 +1,10 @@
-import { effectiveListPageSize } from '../../utils/list/virtual_list.util'
 import { useListPageFilters } from './use_list_page_filters.hook'
 import { useListPageRows } from './use_list_page_rows.hook'
 import { useListPageStatsSync } from './use_list_page_stats_sync.hook'
 
-export function useListPageData(opts: {
-  pageSizeOverride?: number
-  pushToast: (message: string, type?: 'success' | 'error') => void
-}) {
+export function useListPageData(opts: { pushToast: (message: string, type?: 'success' | 'error') => void }) {
   const filters = useListPageFilters()
-  const pageSize = effectiveListPageSize(opts.pageSizeOverride, filters.pageSize)
+  const pageSize = filters.pageSize
   const { rows, loading, hasMore, refreshList, matchTotal } = useListPageRows({
     debouncedSearch: filters.debouncedSearch,
     types: filters.types,

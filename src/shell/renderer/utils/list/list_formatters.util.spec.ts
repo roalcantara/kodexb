@@ -51,8 +51,8 @@ describe('formatListFooterStatus', () => {
     })
   })
 
-  describe('with plural results and entries', () => {
-    it('shows full status with correct page', () => {
+  describe('with more rows available', () => {
+    it('shows total and loaded count', () => {
       expect(
         formatListFooterStatus({
           matchTotal: 3667,
@@ -60,12 +60,12 @@ describe('formatListFooterStatus', () => {
           pageSize: 50,
           loading: false
         })
-      ).toBe('3667 results | showing 50 entries (page 1 of 74)')
+      ).toBe('3,667 total entries • Showing 50')
     })
   })
 
   describe('with singular counts', () => {
-    it('uses singular form for result and entry', () => {
+    it('uses singular entry label', () => {
       expect(
         formatListFooterStatus({
           matchTotal: 1,
@@ -73,20 +73,12 @@ describe('formatListFooterStatus', () => {
           pageSize: 50,
           loading: false
         })
-      ).toBe('1 result | showing 1 entry (page 1 of 1)')
+      ).toBe('1 total entry')
     })
   })
 
-  describe('when more rows are loaded', () => {
-    it('advances current page', () => {
-      expect(
-        formatListFooterStatus({
-          matchTotal: 100,
-          showing: 50,
-          pageSize: 50,
-          loading: false
-        })
-      ).toBe('100 results | showing 50 entries (page 1 of 2)')
+  describe('when all matches are loaded', () => {
+    it('shows total only', () => {
       expect(
         formatListFooterStatus({
           matchTotal: 100,
@@ -94,20 +86,7 @@ describe('formatListFooterStatus', () => {
           pageSize: 50,
           loading: false
         })
-      ).toBe('100 results | showing 100 entries (page 2 of 2)')
-    })
-  })
-
-  describe('with zero page size', () => {
-    it('uses minimum page size of 1', () => {
-      expect(
-        formatListFooterStatus({
-          matchTotal: 10,
-          showing: 5,
-          pageSize: 0,
-          loading: false
-        })
-      ).toBe('10 results | showing 5 entries (page 5 of 10)')
+      ).toBe('100 total entries')
     })
   })
 
@@ -120,7 +99,20 @@ describe('formatListFooterStatus', () => {
           pageSize: 50,
           loading: false
         })
-      ).toBe('0 results | showing 0 entries (page 1 of 1)')
+      ).toBe('0 total entries')
+    })
+  })
+
+  describe('without match total', () => {
+    it('shows loaded count only', () => {
+      expect(
+        formatListFooterStatus({
+          matchTotal: null,
+          showing: 12,
+          pageSize: 50,
+          loading: false
+        })
+      ).toBe('12 entries')
     })
   })
 })

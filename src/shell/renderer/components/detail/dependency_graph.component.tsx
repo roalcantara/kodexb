@@ -25,19 +25,19 @@ function DependencyRow({
     <li>
       <button
         type="button"
-        className="theme-dependency-row"
+        className="cmp-dependency-row"
         disabled={!entry}
         onClick={() => {
           if (entry) onSelectEntry(entry.id)
         }}
       >
-        <span className="theme-dependency-row-key">{label}</span>
+        <span className="cmp-dependency-row-key">{label}</span>
         {entry ? (
           <BadgeAccessory entry={entry} allEntries={[entry]} />
         ) : (
-          <span className="theme-pill theme-pill--muted">missing</span>
+          <span className="cmp-pill cmp-pill--muted">missing</span>
         )}
-        {entry && statusText(entry) ? <span className="theme-sr-only">{statusText(entry)}</span> : null}
+        {entry && statusText(entry) ? <span className="cmp-sr-only">{statusText(entry)}</span> : null}
       </button>
     </li>
   )
@@ -57,10 +57,10 @@ export function DependencyGraph({ entry, allEntries, onSelectEntry }: Dependency
   if (blockedBy.length === 0 && blocking.length === 0) return null
 
   return (
-    <section className="theme-dependency-graph">
-      <h2 className="theme-detail-page-section-title">Dependencies</h2>
+    <section className="cmp-dependency-graph">
+      <h2 className="cmp-detail-page-section-title">Dependencies</h2>
       {blockedBy.length > 0 ? (
-        <div className="theme-dependency-graph-group">
+        <div className="cmp-dependency-graph-group">
           <h3>Blocked by</h3>
           <ul>
             {blockedBy.map(dep => (
@@ -70,7 +70,7 @@ export function DependencyGraph({ entry, allEntries, onSelectEntry }: Dependency
         </div>
       ) : null}
       {blocking.length > 0 ? (
-        <div className="theme-dependency-graph-group">
+        <div className="cmp-dependency-graph-group">
           <h3>Blocking</h3>
           <ul>
             {blocking.map(row => (

@@ -87,28 +87,28 @@ function FilterDropdownPanel({ stats, types, tags, taskView, tagQ, setTagQ, onCh
 
   return (
     <section
-      className="theme-filter-drop"
+      className="cmp-filter-drop"
       style={style}
       onMouseDown={e => e.stopPropagation()}
       aria-label="Filter options"
     >
       <input
-        className="theme-filter-search"
+        className="cmp-filter-search"
         placeholder="Search filters…"
         value={tagQ}
         onChange={e => setTagQ(e.target.value)}
       />
-      <button type="button" className="theme-filter-all" onClick={clearAll}>
+      <button type="button" className="cmp-filter-all" onClick={clearAll}>
         All ({stats.total})
       </button>
       {showTaskSection(types) ? (
-        <section className="theme-filter-section">
-          <div className="theme-filter-section-title">Task views</div>
+        <section className="cmp-filter-section">
+          <div className="cmp-filter-section-title">Task views</div>
           {TASK_VIEW_ORDER.map(v => (
             <button
               key={v}
               type="button"
-              className={taskView === v ? 'theme-filter-row theme-filter-row--on' : 'theme-filter-row'}
+              className={taskView === v ? 'cmp-filter-row cmp-filter-row--on' : 'cmp-filter-row'}
               onClick={() => pickTaskView(v)}
             >
               {TASK_VIEW_LABEL[v]} ({stats.taskViews[v]})
@@ -116,13 +116,13 @@ function FilterDropdownPanel({ stats, types, tags, taskView, tagQ, setTagQ, onCh
           ))}
         </section>
       ) : null}
-      <section className="theme-filter-section">
-        <div className="theme-filter-section-title">Types</div>
+      <section className="cmp-filter-section">
+        <div className="cmp-filter-section-title">Types</div>
         {ENTRY_TYPE_VALUES.map(t => (
           <button
             key={t}
             type="button"
-            className={types.includes(t) ? 'theme-filter-row theme-filter-row--on' : 'theme-filter-row'}
+            className={types.includes(t) ? 'cmp-filter-row cmp-filter-row--on' : 'cmp-filter-row'}
             onClick={() => pickType(t)}
           >
             {TYPE_FILTER_LABEL[t]} ({stats[t]})
@@ -174,9 +174,9 @@ export function FilterDropdown({
     const { top, left, width, maxHeight } = compactFilterPortalBox(anchorRect, vw, vh)
 
     return createPortal(
-      <div className="theme-filter-stack theme-filter-stack--compact-portal">
-        <button type="button" className="theme-filter-backdrop" aria-label="Close filters" onClick={onClose} />
-        <div className="theme-filter-portal-clip" style={{ top, left, width, height: maxHeight, maxHeight }}>
+      <div className="cmp-filter-stack cmp-filter-stack--compact-portal">
+        <button type="button" className="cmp-filter-backdrop" aria-label="Close filters" onClick={onClose} />
+        <div className="cmp-filter-portal-clip" style={{ top, left, width, height: maxHeight, maxHeight }}>
           <CompactFilterOverlay
             stats={stats}
             types={types}
@@ -201,8 +201,8 @@ export function FilterDropdown({
   const width = Math.min(anchorRect.width, FILTER_DROPDOWN_MAX_WIDTH_PX)
 
   return (
-    <div className="theme-filter-stack">
-      <button type="button" className="theme-filter-backdrop" aria-label="Close filters" onClick={onClose} />
+    <div className="cmp-filter-stack">
+      <button type="button" className="cmp-filter-backdrop" aria-label="Close filters" onClick={onClose} />
       <FilterDropdownPanel
         stats={stats}
         types={types}

@@ -2,6 +2,7 @@ import {
   DEFAULT_LIST_ROW_HEIGHT_PX,
   DEFAULT_VIEWPORT_LIST_PAGE_SIZE,
   LIST_OVERSCAN_ROWS,
+  LIST_PREFETCH_VISIBLE_ITEM_INDEX,
   MAX_VIEWPORT_LIST_PAGE_SIZE
 } from '../../constants/ui.const'
 
@@ -53,6 +54,38 @@ export function effectiveListPageSize(viewportCap: number | undefined, configPag
   return Math.min(viewportCap, configPageSize)
 }
 
+export type ListSentinelSpacers = {
+  beforeSentinel: number
+  afterSentinel: number
+}
+
+/**
+ * Positions the infinite-scroll sentinel before the end of the loaded window so the
+ * next page loads when the user reaches `prefetchItemIndex` (not only at the bottom).
+ */
+export function listSentinelSpacers(args: {
+  totalRows: number
+  rowHeight: number
+  virtualWindow: VirtualListWindow
+  prefetchItemIndex?: number
+}): ListSentinelSpacers {
+  const rh = args.rowHeight > 0 ? args.rowHeight : DEFAULT_LIST_ROW_HEIGHT_PX
+  const total = args.totalRows
+  if (total <= 0) return { beforeSentinel: 0, afterSentinel: 0 }
+
+  const prefetchAt = args.prefetchItemIndex ?? LIST_PREFETCH_VISIBLE_ITEM_INDEX
+  const sentinelAfterRow = Math.min(total - 1, Math.max(0, prefetchAt - 1))
+  const sentinelOffsetPx = (sentinelAfterRow + 1) * rh
+
+  const { startIndex, endIndex, paddingTop } = args.virtualWindow
+  const renderedBottomPx = paddingTop + (endIndex - startIndex) * rh
+
+  return {
+    beforeSentinel: Math.max(0, sentinelOffsetPx - renderedBottomPx),
+    afterSentinel: Math.max(0, total * rh - sentinelOffsetPx)
+  }
+}
+
 /** Metrics read from a list scroll root for virtual window + scroll-into-view math. */
 export type ListScrollMetrics = {
   scrollTop: number
@@ -62,10 +95,10 @@ export type ListScrollMetrics = {
 
 /**
  * Measures the first rendered list row inside `root`.
- * Compact PowerToys-style rows use `.theme-list-row`; legacy rows use `.theme-entry-row`.
+ * Compact PowerToys-style rows use `.cmp-list-row`; legacy rows use `.cmp-entry-row`.
  */
 export function readListScrollMetrics(root: HTMLElement): ListScrollMetrics {
-  const row = root.querySelector<HTMLElement>('.theme-list-row, .theme-entry-row')
+  const row = root.querySelector<HTMLElement>('.cmp-list-row, .cmp-entry-row')
   const measuredRowHeight = row?.getBoundingClientRect().height ?? 0
   return {
     scrollTop: root.scrollTop,

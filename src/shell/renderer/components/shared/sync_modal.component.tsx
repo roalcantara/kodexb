@@ -40,26 +40,26 @@ function SyncModalFileLog({
   logEndRef: RefObject<HTMLDivElement | null>
 }) {
   return (
-    <div className="theme-sync-modal-log" role="log" aria-live="polite" aria-relevant="additions">
+    <div className="cmp-sync-modal-log" role="log" aria-live="polite" aria-relevant="additions">
       {fileLog.map(f => (
         <div
           key={`${f.path}-${f.label}`}
-          className={`theme-sync-modal-file-row${f.ok ? '' : ' theme-sync-modal-file-row--error'}`}
+          className={`cmp-sync-modal-file-row${f.ok ? '' : ' cmp-sync-modal-file-row--error'}`}
         >
-          <div className="theme-sync-modal-file-main">
-            <span className="theme-sync-modal-file-name">{f.label}</span>
-            <span className="theme-sync-modal-file-stat">{fileSummary(f)}</span>
+          <div className="cmp-sync-modal-file-main">
+            <span className="cmp-sync-modal-file-name">{f.label}</span>
+            <span className="cmp-sync-modal-file-stat">{fileSummary(f)}</span>
           </div>
           {!f.ok && f.error ? (
-            <div className="theme-sync-modal-file-error">
+            <div className="cmp-sync-modal-file-error">
               <button
                 type="button"
-                className="theme-sync-modal-link-btn"
+                className="cmp-sync-modal-link-btn"
                 onClick={() => setExpandedPath(expandedPath === f.path ? null : f.path)}
               >
                 {expandedPath === f.path ? 'Hide details' : 'Inspect error'}
               </button>
-              {expandedPath === f.path ? <pre className="theme-sync-modal-error-detail">{f.error}</pre> : null}
+              {expandedPath === f.path ? <pre className="cmp-sync-modal-error-detail">{f.error}</pre> : null}
             </div>
           ) : null}
         </div>
@@ -71,9 +71,9 @@ function SyncModalFileLog({
 
 function SyncModalSummary({ summary }: { summary: RpcImportResult }) {
   return (
-    <div className="theme-sync-modal-summary">
-      <h3 className="theme-sync-modal-summary-title">Sync finished</h3>
-      <ul className="theme-sync-modal-summary-list">
+    <div className="cmp-sync-modal-summary">
+      <h3 className="cmp-sync-modal-summary-title">Sync finished</h3>
+      <ul className="cmp-sync-modal-summary-list">
         <li>Files processed: {summary.filesProcessed}</li>
         <li>Rows inserted: {summary.inserted}</li>
         <li>Rows updated: {summary.updated}</li>
@@ -82,7 +82,7 @@ function SyncModalSummary({ summary }: { summary: RpcImportResult }) {
         </li>
       </ul>
       {summary.errors.length > 0 ? (
-        <ul className="theme-sync-modal-summary-errors">
+        <ul className="cmp-sync-modal-summary-errors">
           {summary.errors.map(err => (
             <li key={err}>{err}</li>
           ))}
@@ -113,35 +113,35 @@ export function SyncModal({ model, onDismiss }: SyncModalProps) {
   const showDismiss = model.phase === 'done' || model.phase === 'failed'
 
   return (
-    <div className="theme-sync-modal-backdrop" role="presentation">
-      <div className="theme-sync-modal" role="dialog" aria-modal="true" aria-labelledby="theme-sync-modal-title">
-        <h2 id="theme-sync-modal-title" className="theme-sync-modal-title">
+    <div className="cmp-sync-modal-backdrop" role="presentation">
+      <div className="cmp-sync-modal" role="dialog" aria-modal="true" aria-labelledby="cmp-sync-modal-title">
+        <h2 id="cmp-sync-modal-title" className="cmp-sync-modal-title">
           Sync sources
         </h2>
 
         {model.phase === 'preparing' ? (
-          <p className="theme-sync-modal-muted">Reading source folder…</p>
+          <p className="cmp-sync-modal-muted">Reading source folder…</p>
         ) : (
           <>
-            <div className="theme-sync-modal-path-block">
-              <span className="theme-sync-modal-label">Folder</span>
-              <code className="theme-sync-modal-path">{model.sourcesDir || '—'}</code>
+            <div className="cmp-sync-modal-path-block">
+              <span className="cmp-sync-modal-label">Folder</span>
+              <code className="cmp-sync-modal-path">{model.sourcesDir || '—'}</code>
             </div>
-            <p className="theme-sync-modal-count">
+            <p className="cmp-sync-modal-count">
               <strong>{model.totalFiles}</strong> source file{model.totalFiles === 1 ? '' : 's'} to process
             </p>
           </>
         )}
 
-        <div className="theme-sync-modal-progress-row">
-          <progress className="theme-sync-modal-bar" value={processedBar} max={totalBar} />
-          <span className="theme-sync-modal-progress-label">
+        <div className="cmp-sync-modal-progress-row">
+          <progress className="cmp-sync-modal-bar" value={processedBar} max={totalBar} />
+          <span className="cmp-sync-modal-progress-label">
             {model.phase === 'preparing' ? 'Not started' : `${model.processed} / ${model.totalFiles} processed`}
           </span>
         </div>
 
         {model.phase === 'failed' && model.failMessage ? (
-          <p className="theme-sync-modal-error-banner" role="alert">
+          <p className="cmp-sync-modal-error-banner" role="alert">
             {model.failMessage}
           </p>
         ) : null}
@@ -158,8 +158,8 @@ export function SyncModal({ model, onDismiss }: SyncModalProps) {
         {model.phase === 'done' && model.summary ? <SyncModalSummary summary={model.summary} /> : null}
 
         {showDismiss ? (
-          <div className="theme-sync-modal-actions">
-            <button type="button" className="theme-sync-modal-primary-btn" onClick={onDismiss}>
+          <div className="cmp-sync-modal-actions">
+            <button type="button" className="cmp-sync-modal-primary-btn" onClick={onDismiss}>
               Close
             </button>
           </div>

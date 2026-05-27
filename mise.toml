@@ -1153,6 +1153,10 @@ HK_PKL_BACKEND = "pklr"
       fi
     }
 
+    run_renderer_css_tokens() {
+      bun run lint:renderer-css
+    }
+
     case "${usage_cmd:-check}" in
       check)
         e=0
@@ -1165,6 +1169,7 @@ HK_PKL_BACKEND = "pklr"
         want "${usage_ls:-false}" && { run_ls || e=1; }
         want "${usage_hadolint:-false}" && { run_hadolint || e=1; }
         want "${usage_ast_grep:-false}" && { run_ast_grep || e=1; }
+        run_renderer_css_tokens || e=1
         exit "$e"
         ;;
       fix)
@@ -1201,6 +1206,9 @@ HK_PKL_BACKEND = "pklr"
     flag "--check" help="Print whether kb-dev or the watcher is running"
     flag "--quit" help="Quit kb-dev via AppleScript (graceful)"
     flag "--kill" help="Quit kb-dev, kill its process tree, and stop the watcher"
+    cmd "styles" help="Compile Tailwind v4 renderer CSS" {
+      flag "--watch" help="Rebuild when sources change (dev)"
+    }
     cmd "gates" help="Run quality and/or policy gates" {
       flag "--quality" help="Run the full app quality gate"
       flag "--policy" help="Run embedded policy checks only"
@@ -1216,6 +1224,19 @@ HK_PKL_BACKEND = "pklr"
   ''', run = '''
     #!/usr/bin/env bash
     set -euo pipefail
+
+    APP_STYLES_INPUT="src/shell/renderer/styles/app.css"
+    APP_STYLES_OUTPUT="src/shell/renderer/styles/generated/app.css"
+
+    app_styles_once() {
+      mkdir -p src/shell/renderer/styles/generated
+      bunx @tailwindcss/cli -i "$APP_STYLES_INPUT" -o "$APP_STYLES_OUTPUT" --minify
+    }
+
+    app_styles_watch() {
+      mkdir -p src/shell/renderer/styles/generated
+      bunx @tailwindcss/cli -i "$APP_STYLES_INPUT" -o "$APP_STYLES_OUTPUT" --watch
+    }
 
     app_stop_watcher() {
       if pkill -f "electrobun dev --watch" 2>/dev/null; then
@@ -1266,6 +1287,13 @@ HK_PKL_BACKEND = "pklr"
     }
 
   case "${usage_cmd:-}" in
+    styles)
+      if [[ "${usage_watch:-false}" == "true" ]]; then
+        app_styles_watch
+      else
+        app_styles_once
+      fi
+      ;;
     gates)
       ran=false
       if [[ "${usage_quality:-false}" == "true" ]]; then
@@ -1307,6 +1335,10 @@ HK_PKL_BACKEND = "pklr"
           ;;
       esac
       echo "app: starting (${start_label})..."
+      app_styles_once
+      app_styles_watch &
+      tw_pid=$!
+      trap 'kill "$tw_pid" 2>/dev/null || true' EXIT INT TERM
       if [[ "${usage_cef:-false}" == "true" || -n "${usage_level:-}" ]]; then
         exec env "${start_env[@]}" bun run dev
       else

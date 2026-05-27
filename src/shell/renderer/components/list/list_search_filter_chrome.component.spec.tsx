@@ -31,7 +31,7 @@ function renderChrome(overrides: Partial<Parameters<typeof ListSearchFilterChrom
     onSearchChange: () => undefined,
     onSearchArrowDown: () => undefined,
     filterButtonRef: createRef<HTMLButtonElement>(),
-    filterChipCls: 'theme-filter-chip',
+    filterChipCls: 'cmp-filter-chip',
     filterSummary: 'All entries',
     onToggleFilter: () => undefined,
     filterOpen: false,
@@ -82,6 +82,14 @@ describe('ListSearchFilterChrome', () => {
     it('renders nothing (parent ListMain owns the window drag stripe)', () => {
       const { container } = renderChrome({ isFullDetail: true })
       expect(container.firstChild).toBeNull()
+    })
+  })
+
+  describe('search chrome structure', () => {
+    it('shows magnifier and filter chevron affordances', () => {
+      const { container } = renderChrome()
+      expect(container.querySelector('.cmp-search-magnifier')).not.toBeNull()
+      expect(container.querySelector('.cmp-filter-chip-chevron')).not.toBeNull()
     })
   })
 })

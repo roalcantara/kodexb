@@ -19,7 +19,7 @@ export type ListPageFocusRingDeps = {
 /**
  * Tab order: toolbar (filter → search → sync → settings) → list surface → when
  * detail is open, focusables inside the detail panel → when the filter sheet is
- * open, focusables inside `.theme-filter-stack` — then wraps (Shift+Tab reverses).
+ * open, focusables inside `.cmp-filter-stack` — then wraps (Shift+Tab reverses).
  */
 export function useListPageFocusRing(deps: ListPageFocusRingDeps) {
   const {

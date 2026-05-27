@@ -45,6 +45,7 @@ function renderBody(overrides: Partial<Parameters<typeof ListResultsBody>[0]> = 
     rows: [],
     visibleRows: [],
     virtualWindow: { startIndex: 0, endIndex: 0, paddingTop: 0, paddingBottom: 0 },
+    sentinelSpacers: null,
     hasMore: false,
     maxFrecencyScore: 0,
     onSelectEntry: () => undefined,
@@ -86,11 +87,12 @@ describe('ListResultsBody', () => {
         rows: [bookmark],
         visibleRows: [bookmark],
         hasMore: true,
+        sentinelSpacers: { beforeSentinel: 0, afterSentinel: 0 },
         maxFrecencyScore: 2
       })
 
       expect(screen.getByText(EXAMPLE_URL_RE)).toBeTruthy()
-      expect(container.querySelector('.theme-list-sentinel')).toBeTruthy()
+      expect(container.querySelector('.cmp-list-sentinel')).toBeTruthy()
     })
   })
 })

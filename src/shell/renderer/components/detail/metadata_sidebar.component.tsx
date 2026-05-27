@@ -3,7 +3,7 @@ import type { RpcKnowledge } from '@shared/rpc'
 function Field({ label, value }: { label: string; value?: string | number | null }) {
   if (value === undefined || value === null || value === '') return null
   return (
-    <div className="theme-metadata-field">
+    <div className="cmp-metadata-field">
       <dt>{label}</dt>
       <dd>{value}</dd>
     </div>
@@ -32,7 +32,7 @@ export function MetadataSidebar({ entry }: MetadataSidebarProps) {
   const taskOrder = entry.type === 'task' ? entry.taskOrder : undefined
 
   return (
-    <aside className="theme-metadata-sidebar" aria-label="Entry metadata">
+    <aside className="cmp-metadata-sidebar" aria-label="Entry metadata">
       <h2>Metadata</h2>
       <dl>
         <Field label="Type" value={entry.type} />

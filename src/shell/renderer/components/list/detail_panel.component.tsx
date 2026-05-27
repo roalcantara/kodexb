@@ -12,7 +12,7 @@ export type DetailPanelProps = {
 export function DetailPanel({ entryId, allEntries, onClose, onSelectEntry, loadEntry }: DetailPanelProps) {
   const visible = entryId !== null
   return (
-    <aside className={`theme-detail-panel${visible ? ' theme-detail-panel--visible' : ''}`} aria-label="Entry detail">
+    <aside className={`cmp-detail-panel${visible ? ' cmp-detail-panel--visible' : ''}`} aria-label="Entry detail">
       {visible ? (
         <DetailPage
           entryId={entryId}
