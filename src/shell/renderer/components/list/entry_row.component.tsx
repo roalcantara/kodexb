@@ -1,4 +1,3 @@
-import { entryActionPrimaryRowHint } from '@core/helpers/entry_action/entry_action_row_hint.util'
 import type { RpcKnowledge, RpcListEntry } from '@shared/rpc'
 import { memo } from 'react'
 import { getIcon } from '../../utils/shared/get_icon.util'

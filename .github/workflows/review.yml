@@ -44,6 +44,8 @@ jobs:
         run: mise exec -- hk validate
       - name: Check HK hook steps
         run: mise exec -- hk check --all --check
+      - name: HK CI profile (parity; keeps existing lint job until parity proven)
+        run: mise exec -- hk check --all --profile ci --check
       - name: Validate HEAD commit message
         run: |
           tmp="$(mktemp)"

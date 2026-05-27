@@ -1,10 +1,6 @@
 import { configureSync, getConsoleSink } from '@logtape/logtape'
 import { getPrettyFormatter } from '@logtape/pretty'
-import {
-  type LogtapeLevel,
-  lowestLogtapeLevelForVerbosity,
-  parseLogVerbosity
-} from './log_verbosity'
+import { type LogtapeLevel, lowestLogtapeLevelForVerbosity, parseLogVerbosity } from './log_verbosity'
 import { RENDERER_BUILD_ENV } from './renderer_build_env'
 
 /**

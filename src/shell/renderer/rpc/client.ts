@@ -1,4 +1,5 @@
 import { treaty } from '@elysiajs/eden'
+import { getLogger, RPC_LOG_PREVIEW_MAX_LEN } from '@shared/logging'
 import type {
   ConfigPatch,
   DesktopRpcSchema,
@@ -17,7 +18,6 @@ import type {
   TaskCreateInput,
   TaskUpdateInput
 } from '@shared/rpc'
-import { getLogger } from '@shared/logging'
 import { Electroview } from 'electrobun/view'
 
 import type { RpcApp } from './rpc_app.types'
@@ -83,7 +83,7 @@ async function bridgeFetch(input: RequestInfo | URL, init?: RequestInit): Promis
 
   if (rpcClientLog.isEnabledFor('debug') && bodyText !== undefined) {
     const preview =
-      bodyText.length > 2048 ? `${bodyText.slice(0, 2048)}…(truncated)` : bodyText
+      bodyText.length > RPC_LOG_PREVIEW_MAX_LEN ? `${bodyText.slice(0, RPC_LOG_PREVIEW_MAX_LEN)}…(truncated)` : bodyText
     rpcClientLog.debug('Request body', { body: preview })
   }
 

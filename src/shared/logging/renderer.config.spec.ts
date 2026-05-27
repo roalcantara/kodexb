@@ -15,8 +15,7 @@ describe('rendererLoggingLowestLevelFromEnv', () => {
     { logLevel: 'DEBUG', expected: 'debug' as const }
   ])('when LOG_LEVEL is $logLevel', ({ logLevel, expected }) => {
     it(`maps to "${expected}"`, () => {
-      const env =
-        logLevel === undefined ? {} : envRecord([['LOG_LEVEL', logLevel]])
+      const env = logLevel === undefined ? {} : envRecord([['LOG_LEVEL', logLevel]])
       expect(rendererLoggingLowestLevelFromEnv(env)).toBe(expected)
     })
   })

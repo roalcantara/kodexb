@@ -27,8 +27,7 @@ describe('rendererLogEnvPlugin', () => {
     const result = await Bun.build({
       entrypoints: [rendererBuildEnv],
       plugins: [rendererLogEnvPlugin()],
-      target: 'browser',
-      write: false
+      target: 'browser'
     })
     expect(result.success).toBe(true)
     const text = await result.outputs[0]?.text()

@@ -3,7 +3,8 @@ import { getLogger, withContext } from './logger'
 
 const rpcLog = getLogger(['kb', 'rpc'])
 
-const PARAMS_MAX_LEN = 2048
+/** Max chars for RPC parameter/body previews in debug logs (main + renderer). */
+export const RPC_LOG_PREVIEW_MAX_LEN = 2048
 const OK_STATUS = 200
 const DURATION_PRECISION = 10
 
@@ -17,7 +18,7 @@ type RequestContext = {
 function inspectParams(input: { body?: unknown; query?: unknown }): string {
   const result = input.body === undefined ? (input.query ?? {}) : input.body
   const text = Bun.inspect(result, { depth: 3 })
-  return text.length > PARAMS_MAX_LEN ? `${text.slice(0, PARAMS_MAX_LEN)}…(truncated)` : text
+  return text.length > RPC_LOG_PREVIEW_MAX_LEN ? `${text.slice(0, RPC_LOG_PREVIEW_MAX_LEN)}…(truncated)` : text
 }
 
 /**

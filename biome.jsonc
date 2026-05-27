@@ -18,7 +18,10 @@
       "!.opencode",
       "!.agents",
       "!graphify-out",
-      "!.venv"
+      "!tmp",
+      "!.venv",
+      "!.worktrees",
+      "!.opencode"
     ]
   },
   "formatter": {

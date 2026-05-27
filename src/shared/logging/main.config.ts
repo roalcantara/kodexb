@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { configureSync, getConsoleSink, getLogger } from '@logtape/logtape'
 import { getPrettyFormatter } from '@logtape/pretty'
-import { lowestLogtapeLevelForVerbosity, parseLogVerbosity } from './log_verbosity'
+import { type LogVerbosity, lowestLogtapeLevelForVerbosity, parseLogVerbosity } from './log_verbosity'
 
 let configured = false
 
