@@ -841,11 +841,30 @@ Write specs as behavior documentation.
 
 ## Enforcement
 
-`mise run test spec-audit` checks co-located spec coverage only. Better Specs
-style is currently enforced by review, the normalise-specs ledger, and the
-quality gate's existing lint/type/test checks. Add an explicit ast-grep or
-audit guard only after a manual cleanup proves the rule has low false-positive
-risk.
+Several TESTING_GUIDE and FISHERY_GUIDE rules are **machine-checked** on every
+`mise run lint check` and quality gate run:
+
+| Check                                                 | Command / tool                                         | Rule                                           |
+| ----------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------- |
+| No `const context = describe`                         | `bun run lint:spec-guide`, ast-grep `no-context-alias` | § Bun: nested describe                         |
+| Use `it()`, not `test()`                              | `lint:spec-guide`, ast-grep `no-test-fn-in-specs`      | § Bun                                          |
+| No `it('should …')` descriptions                      | `lint:spec-guide`                                      | § Better Specs                                 |
+| No local `makeBinding` / `makeShortcut` / … factories | `lint:spec-guide`                                      | [FISHERY_GUIDE §Promotion](./FISHERY_GUIDE.md) |
+
+```bash
+# Spec-style guard only (also runs inside mise run lint check)
+bun run lint:spec-guide
+```
+
+**Not yet automated** (review + ledger until false-positive risk is low):
+
+- `mock.module` for renderer RPC boundaries (discouraged; prefer injectable clients)
+- Inline knowledge-shaped object literals where `factoryFor` exists
+- Better Specs phrasing beyond the `should` prefix ban
+
+`mise run test spec-audit` checks co-located spec coverage. Better Specs style
+beyond the guards above is enforced by review, the normalise-specs ledger, and
+the quality gate's lint/type/test checks.
 
 ## File Structure
 
@@ -880,13 +899,14 @@ bun run test:watch
 `tsconfig.json` maps **`@testing`** to [`src/__tests__/index.ts`](../../src/__tests__/index.ts).
 Use it for Fishery factories, fixture paths, temp dirs, and seeded in-memory DBs.
 
-| Export                                                                    | Role                                                                                      |
-| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `factoryFor`                                                              | Typed defaults for `Env`, `RawConfig`, `LoadedConfig`, geometry, and `Knowledge` variants |
-| `testingPaths`, `minimalEntriesYml`                                       | Absolute paths under `src/__tests__/fixtures/`                                            |
-| `createSeededMemoryDb`, `seedMinimalFixture`, `readMinimalFixtureEntries` | Minimal YAML → `:memory:` SQLite + FTS                                                    |
-| `createTempDir`                                                           | `mkdtemp` + `cleanup()` for disk-backed integration                                       |
-| `createFactoryFor`                                                        | Low-level wrapper when you add a new factory module                                       |
+| Export                                                                    | Role                                                                                                                                                                                |
+| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `factoryFor`                                                              | Typed defaults for `Env`, `RawConfig`, `LoadedConfig`, geometry, `Knowledge` variants, `Binding`, `BindingRef`, and named variants (`binding:goToFile`, `shortcut:vscodeKeymap`, …) |
+| `bindingsCacheSample`, `bindingRefFixture`, `bindingRefsForApps`          | Shared binding-ref scenarios for shortcuts/collision specs                                                                                                                          |
+| `testingPaths`, `minimalEntriesYml`                                       | Absolute paths under `src/__tests__/fixtures/`                                                                                                                                      |
+| `createSeededMemoryDb`, `seedMinimalFixture`, `readMinimalFixtureEntries` | Minimal YAML → `:memory:` SQLite + FTS                                                                                                                                              |
+| `createTempDir`                                                           | `mkdtemp` + `cleanup()` for disk-backed integration                                                                                                                                 |
+| `createFactoryFor`                                                        | Low-level wrapper when you add a new factory module                                                                                                                                 |
 
 Keep DB specs on **`:memory:`** and avoid mocks for internal code; see [Definition of Done](./DoD.md).
 
@@ -910,20 +930,57 @@ to exit non-zero when missing specs exist.
 
 ## Preview e2e workflow
 
-`mise run test e2e-preview` runs Playwright tests against the preview server.
-It requires Chromium (install once with `bun run e2e:preview:install`) and
-a useful preview database. It is intentionally **not** part of the default
-quality gate for speed and portability.
+### Feature and refactor acceptance
+
+Release-facing features MUST satisfy [`e2e/requirements.md` R11](../docs/specs/e2e/requirements.md#r11---cross-feature-e2e-acceptance):
+
+- Add Gherkin scenarios under `assets/features/e2e/` with `@spec:<slug>`.
+- Update `assets/docs/specs/e2e/fixture-manifest.md` and `step-catalog.md`.
+- Add an e2e task in the feature `tasks.md` or `assets/docs/specs/e2e/tasks.md`.
+- Record `mise run test e2e --smoke` / `--regression` evidence before beta.
+
+KB is migrating from legacy Playwright specs to Playwright BDD + Gherkin. Two
+entrypoints exist during the transition:
+
+| Command                               | Status         | Purpose                                                         |
+| ------------------------------------- | -------------- | --------------------------------------------------------------- |
+| `mise run test e2e` / `bun run e2e`   | **Active**     | Full BDD suite (`bddgen` + all `@e2e` scenarios, no tag filter) |
+| `mise run test e2e-preview`           | **Legacy**     | Runs `e2e/preview_list_nav.e2e.spec.ts`; may skip on empty DB   |
+| `mise run test e2e --smoke`           | **Active**     | P0 Gherkin smoke only (`@smoke`)                                |
+| `mise run test e2e --regression`      | **Active**     | Scenarios tagged `@regression` (includes smoke-tagged rows)     |
+| `mise run test e2e --debug`           | **Active**     | Playwright UI for the BDD suite                                 |
+| `mise run test e2e --metrics-report`  | **Active**     | Writes `tmp/e2e/metrics/latest.json`                            |
+| `mise run test e2e --metrics-compare` | **Active**     | Compares latest metrics to `quality-baseline.json`              |
+| `mise run test e2e --write-baseline`  | **Maintainer** | Refreshes `assets/docs/specs/e2e/quality-baseline.json`         |
+
+Equivalent `package.json` scripts: `e2e` (full suite), `e2e:smoke`, `e2e:regression`, `e2e:metrics-report`,
+`e2e:metrics-compare`, `e2e:write-baseline`. Regenerate specs with `bun run e2e:bddgen`
+before the first run or after editing `.feature` files (`e2e/.generated/` is gitignored).
+
+Install Chromium once with `bun run e2e:preview:install`. BDD smoke SHALL use
+isolated config via `APP_CONFIG_PATH` and the seed in
+[`fixture-manifest.md`](../docs/specs/e2e/fixture-manifest.md) — not the
+developer's `~/.config/kb` database.
+
+Preview e2e is intentionally **not** part of the default quality gate for speed
+and portability. Release prep SHOULD run `mise run test e2e --smoke`; full
+`--regression` is opt-in before merge or on a schedule. Gate stage 3 remains
+HTTP smoke on plain preview (see T6.2 rationale in `assets/docs/specs/e2e/tasks.md`).
 
 **When to run:**
 
-- Changes touching list navigation, filters, task sheet, or preview tooling
+- Changes touching list navigation, filters, task sheet, preview tooling, or
+  Gherkin features under `assets/features/e2e/`
 - Renderer component refactors with structural changes
+- Before claiming e2e task completion in `assets/docs/specs/e2e/tasks.md`
 
-**Reporting:** Include `mise run test e2e-preview` results in the implementation
-notes. If it cannot run, report the exact blocker (missing Chromium, empty
-preview database, port conflict) rather than treating the default gate as
+**Reporting:** Include the appropriate e2e command results in implementation
+notes. If a command cannot run, report the exact blocker (missing Chromium,
+missing `playwright-bdd`, seed failure) rather than treating the default gate as
 equivalent coverage.
+
+See also [`BDD_GUIDE.md`](BDD_GUIDE.md) and
+[`assets/docs/specs/e2e/design.md`](../docs/specs/e2e/design.md).
 
 A maintainer-triggered CI workflow for preview e2e may be added later, but
 the default gate must remain fast and portable.

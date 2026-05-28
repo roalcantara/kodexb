@@ -32,8 +32,12 @@ export function isLogVerbosity(value: string): value is LogVerbosity {
   return (LEVELS as readonly string[]).includes(value)
 }
 
+function defaultLogEnv(): Record<string, string | undefined> {
+  return typeof process === 'undefined' ? {} : process.env
+}
+
 /** Read `LOG_LEVEL` from env; empty or invalid → `default`. */
-export function parseLogVerbosity(env: Record<string, string | undefined> = process.env): LogVerbosity {
+export function parseLogVerbosity(env: Record<string, string | undefined> = defaultLogEnv()): LogVerbosity {
   const raw = env.LOG_LEVEL?.trim().toLowerCase()
   if (!raw) return 'default'
   return isLogVerbosity(raw) ? raw : 'default'

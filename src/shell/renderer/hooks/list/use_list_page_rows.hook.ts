@@ -13,6 +13,7 @@ export type ListPageRowsInput = {
   pageSize: number
 }
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: tracked in codebase-quality-audit
 export function useListPageRows(input: ListPageRowsInput) {
   const { debouncedSearch, types, tags, taskView, pageSize } = input
   const [rows, setRows] = useState<RpcListEntry[]>([])

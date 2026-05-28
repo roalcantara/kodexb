@@ -194,6 +194,14 @@ HK_PKL_BACKEND = "pklr"
       flag "--update-ledger" help="Update normalise-specs Phase 12 audit block"
     }
     cmd "e2e-preview" {}
+    cmd "e2e" {
+      flag "--smoke" help="P0 Gherkin smoke (@smoke) only"
+      flag "--regression" help="P0+P1 Gherkin regression (@regression) only"
+      flag "--debug" help="Playwright debug UI for BDD suite"
+      flag "--metrics-report" help="Write tmp/e2e/metrics/latest.json from JUnit + scenario scores"
+      flag "--metrics-compare" help="Compare latest metrics to quality-baseline.json"
+      flag "--write-baseline" help="Maintainer: refresh quality-baseline.json from latest run"
+    }
   ''', run = '''
     #!/usr/bin/env bun
     import { existsSync, mkdirSync } from 'node:fs'
@@ -425,6 +433,32 @@ HK_PKL_BACKEND = "pklr"
         break
       case 'e2e-preview':
         runInherit(['bun', 'run', 'e2e:preview'])
+        break
+      case 'e2e': {
+        const smoke = process.env.usage_smoke === 'true'
+        const regression = process.env.usage_regression === 'true'
+        const debug = process.env.usage_debug === 'true'
+        const metricsReport = process.env.usage_metrics_report === 'true' || process.env['usage_metrics-report'] === 'true'
+        const metricsCompare = process.env.usage_metrics_compare === 'true' || process.env['usage_metrics-compare'] === 'true'
+        const writeBaseline = process.env.usage_write_baseline === 'true' || process.env['usage_write-baseline'] === 'true'
+        if (metricsReport) {
+          runInherit(['bun', 'tools/e2e/e2e_metrics.script.ts', 'report'])
+        } else if (metricsCompare) {
+          runInherit(['bun', 'tools/e2e/e2e_metrics.script.ts', 'compare'])
+        } else if (writeBaseline) {
+          runInherit(['bun', 'tools/e2e/e2e_metrics.script.ts', 'write-baseline'])
+        } else if (smoke) {
+          runInherit(['bun', 'run', 'e2e:smoke'])
+        } else if (regression) {
+          runInherit(['bun', 'run', 'e2e:regression'])
+        } else if (debug) {
+          runInherit(['bun', 'run', 'e2e:bddgen'])
+          runInherit(['bunx', 'playwright', 'test', '--ui'])
+        } else {
+          runInherit(['bun', 'run', 'e2e'])
+        }
+        break
+      }
       default:
         die(`test: unknown action ${ACTION}`, 2)
     }
@@ -1157,6 +1191,10 @@ HK_PKL_BACKEND = "pklr"
       bun run lint:renderer-css
     }
 
+    run_spec_testing_guide() {
+      bun run lint:spec-guide
+    }
+
     case "${usage_cmd:-check}" in
       check)
         e=0
@@ -1170,6 +1208,7 @@ HK_PKL_BACKEND = "pklr"
         want "${usage_hadolint:-false}" && { run_hadolint || e=1; }
         want "${usage_ast_grep:-false}" && { run_ast_grep || e=1; }
         run_renderer_css_tokens || e=1
+        run_spec_testing_guide || e=1
         exit "$e"
         ;;
       fix)

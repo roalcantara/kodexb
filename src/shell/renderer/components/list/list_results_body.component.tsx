@@ -27,6 +27,7 @@ export type ListResultsBodyProps = {
   onCyclePriority: (id: number) => void
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: tracked in codebase-quality-audit
 export function ListResultsBody({
   listSurfaceRef,
   listSentinelRef,

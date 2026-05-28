@@ -15,6 +15,7 @@ export function useListSurfaceWheelScroll(args: {
   useEffect(() => {
     if (!active) return
 
+    // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: tracked in codebase-quality-audit
     const onWheel = (e: WheelEvent) => {
       const root = scrollRootRef.current
       if (root === null || root.scrollHeight <= root.clientHeight) return

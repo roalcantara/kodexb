@@ -18,6 +18,7 @@
       "!.opencode",
       "!.agents",
       "!graphify-out",
+      "!e2e/.generated",
       "!tmp",
       "!.venv",
       "!.worktrees",
@@ -222,11 +223,14 @@
   },
   "overrides": [
     {
-      "includes": ["src/__tests__/helpers/**/*.ts"],
+      "includes": ["src/__tests__/**/*.ts"],
       "linter": {
         "rules": {
           "suspicious": {
             "noMisplacedAssertion": "off"
+          },
+          "nursery": {
+            "noExcessiveLinesPerFile": "off"
           }
         }
       }
@@ -299,6 +303,37 @@
                 "skipBlankLines": true
               }
             }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["e2e/screenplay/**/*.ts", "e2e/steps/**/*.ts", "e2e/support/**/*.ts"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noExcessiveClassesPerFile": "off",
+            "useConsistentMethodSignatures": "off"
+          },
+          "performance": {
+            "noAwaitInLoops": "off",
+            "useTopLevelRegex": "off"
+          },
+          "correctness": {
+            "noUnusedPrivateClassMembers": "off",
+            "noUnusedFunctionParameters": "off"
+          },
+          "style": {
+            "noMagicNumbers": "off",
+            "useConsistentTypeDefinitions": "off",
+            "noDefaultExport": "off",
+            "useConsistentMemberAccessibility": "off"
+          },
+          "suspicious": {
+            "useAwait": "off"
+          },
+          "security": {
+            "noSecrets": "off"
           }
         }
       }

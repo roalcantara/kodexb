@@ -157,6 +157,10 @@ tmp
 # Playwright default output dirs (HTML report is under tmp/ via playwright.config)
 test-results
 playwright-report
+e2e/.generated/
+e2e/.fixture-paths.json
+tmp/e2e/
+tmp/playwright-report/
 
 # Superpowers brainstorm scratch (local only)
 .superpowers/

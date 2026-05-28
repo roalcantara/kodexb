@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "bdd-gherkin-specification": {
+      "source": "jzallen/fred_simulations",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/bdd/SKILL.md",
+      "computedHash": "63c9ad22a306ef2a00d402b3cce63d3fc105ae83c29dbca3c55012b3c75f9052"
+    },
     "brainstorming": {
       "source": "obra/superpowers",
       "sourceType": "github",
@@ -18,6 +24,18 @@
       "sourceType": "github",
       "skillPath": "skills/bun-runtime/SKILL.md",
       "computedHash": "bdac3d20723a536f7160ca2c08f369101b73e67a0f5f2a951910056716156c3c"
+    },
+    "cucumber-best-practices": {
+      "source": "thebushidocollective/han",
+      "sourceType": "github",
+      "skillPath": "plugins/tools/cucumber/skills/cucumber-best-practices/SKILL.md",
+      "computedHash": "437f305d83d4998c21602bd2d02bedeaa23e5a6c02d6af46b81b8c32a78e8d72"
+    },
+    "cucumber-gherkin": {
+      "source": "el-feo/ai-context",
+      "sourceType": "github",
+      "skillPath": "plugins/ruby-rails/skills/cucumber-gherkin/SKILL.md",
+      "computedHash": "cb66eb8475078648059ebbbd797af112f9eee063938afcf6c499e6fa5f4cd0fc"
     },
     "daisyui": {
       "source": "saadeghi/daisyui",
@@ -195,6 +213,18 @@
       "source": "@jsr/logtape__logtape",
       "sourceType": "node_modules",
       "computedHash": "7a80fc13106b2c64d49c11935b8bab0b1feb5b79b49a0ed636de61e68a294bb5"
+    },
+    "playwright-bdd-gherkin-syntax": {
+      "source": "thebushidocollective/han",
+      "sourceType": "github",
+      "skillPath": "plugins/tools/playwright-bdd/skills/playwright-bdd-gherkin-syntax/SKILL.md",
+      "computedHash": "a70cde008482ca9b4c7074267b0afde6a67beb2e992be130db2e43a9a202d839"
+    },
+    "playwright-bdd-step-definitions": {
+      "source": "thebushidocollective/han",
+      "sourceType": "github",
+      "skillPath": "plugins/tools/playwright-bdd/skills/playwright-bdd-step-definitions/SKILL.md",
+      "computedHash": "fc5a982a1a61501be2f2af710ff6081bf6707384b9d839f46cfc45ab5bc38407"
     },
     "receiving-code-review": {
       "source": "obra/superpowers",

@@ -29,6 +29,9 @@ export function useListPageStatsSync({ refreshList, pushToast }: UseListPageStat
   const [syncUi, setSyncUi] = useState<SyncModalModel>(initialModal)
   const [syncInfo, setSyncInfo] = useState<{ sourcesDir: string; fileCount: number } | null>(null)
   const syncModalOpenRef = useRef(false)
+  const syncHandlersRef = useRef<ReturnType<typeof listSyncMessageHandlers>>(
+    {} as ReturnType<typeof listSyncMessageHandlers>
+  )
 
   useEffect(() => {
     syncModalOpenRef.current = syncUi.open
@@ -62,8 +65,12 @@ export function useListPageStatsSync({ refreshList, pushToast }: UseListPageStat
       refreshStats,
       refreshList
     })
+    syncHandlersRef.current = handlers
     setSyncMessageHandlers(handlers)
-    return () => setSyncMessageHandlers({})
+    return () => {
+      syncHandlersRef.current = {} as ReturnType<typeof listSyncMessageHandlers>
+      setSyncMessageHandlers({})
+    }
   }, [refreshList, refreshStats, pushToast])
 
   const onSync = useCallback(async () => {
@@ -87,16 +94,22 @@ export function useListPageStatsSync({ refreshList, pushToast }: UseListPageStat
         summary: null,
         failMessage: null
       })
-      syncRpc().catch((err: unknown) => {
-        setSyncing(false)
-        const msg = err instanceof Error ? err.message : String(err)
-        setSyncUi(prev => ({
-          ...prev,
-          phase: 'failed',
-          failMessage: msg
-        }))
-        pushToast(msg, 'error')
-      })
+      fireAndForget(
+        syncRpc()
+          .then(result => {
+            syncHandlersRef.current.onComplete?.(result)
+          })
+          .catch((err: unknown) => {
+            setSyncing(false)
+            const msg = err instanceof Error ? err.message : String(err)
+            setSyncUi(prev => ({
+              ...prev,
+              phase: 'failed',
+              failMessage: msg
+            }))
+            pushToast(msg, 'error')
+          })
+      )
     } catch (err) {
       setSyncing(false)
       const msg = err instanceof Error ? err.message : String(err)

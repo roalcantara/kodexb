@@ -17,7 +17,7 @@ function WheelHarness({ active }: { active: boolean }) {
     if (!root) return
     Object.defineProperty(root, 'clientHeight', { value: 100, configurable: true })
     Object.defineProperty(root, 'scrollHeight', { value: 400, configurable: true })
-  }, [])
+  }, [scrollRootRef.current])
 
   return (
     <div>

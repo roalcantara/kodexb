@@ -36,6 +36,14 @@ Skills > Implementation
 
 This rule overrides ALL other instructions.
 
+### E2e acceptance (features and refactors)
+
+Release-facing features and user-visible refactors MUST declare e2e acceptance
+criteria in their spec (`requirements.md` + `tasks.md`) and update
+[`assets/docs/specs/e2e/fixture-manifest.md`](assets/docs/specs/e2e/fixture-manifest.md)
+and [`step-catalog.md`](assets/docs/specs/e2e/step-catalog.md) when adding
+Gherkin scenarios. Policy: [`e2e/requirements.md` R11](assets/docs/specs/e2e/requirements.md#r11---cross-feature-e2e-acceptance).
+
 ### Skill routing ledger
 
 - The project skill registry and adoption rationale live in

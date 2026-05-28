@@ -17,6 +17,7 @@ import { scheduleDoubleRaf } from '../../utils/list/list_scroll.util'
 import { listSentinelSpacers } from '../../utils/list/virtual_list.util'
 import { ListFooter } from './list_footer.component'
 import { ListOverlayHosts } from './list_overlay_hosts.component'
+import { ListQuickActions } from './list_quick_actions.component'
 import { ListResultsBody } from './list_results_body.component'
 import { ListSearchFilterChrome } from './list_search_filter_chrome.component'
 
@@ -27,6 +28,7 @@ export type ListMainProps = {
 }
 
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: shell composition remains tracked in codebase-quality-audit
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: shell composition remains tracked in codebase-quality-audit
 export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   const maxFrecencyScore = useMemo(() => Math.max(0, ...p.data.rows.map(row => row.frecencyScore)), [p.data.rows])
   const emptySyncButtonRef = useRef<HTMLButtonElement>(null)
@@ -198,6 +200,18 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           pushToast={p.pushToast}
           anchorRect={p.filter.anchorRect}
         />
+
+        {isFullDetail ? null : (
+          <ListQuickActions
+            syncButtonRef={p.syncButtonRef}
+            newTaskButtonRef={p.newTaskButtonRef}
+            settingsButtonRef={p.settingsButtonRef}
+            syncing={p.data.syncing}
+            onSync={p.data.onSync}
+            onNewTask={p.onNewTask}
+            onOpenSettings={() => setShowSettings(true)}
+          />
+        )}
 
         <div className="cmp-main">
           <div className={listPanelClass}>

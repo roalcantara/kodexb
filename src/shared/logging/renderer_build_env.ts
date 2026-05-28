@@ -1,3 +1,5 @@
+const buildTimeEnv: Record<string, string | undefined> = typeof process === 'undefined' ? {} : process.env
+
 /**
  * Environment snapshot taken when Electrobun builds the `shell` view bundle.
  *
@@ -8,6 +10,6 @@
  * Restart dev after changing `LOG_LEVEL` so the view is rebuilt.
  */
 export const RENDERER_BUILD_ENV: Readonly<Record<string, string | undefined>> = {
-  LOG_LEVEL: process.env.LOG_LEVEL,
-  NODE_ENV: process.env.NODE_ENV
+  LOG_LEVEL: buildTimeEnv.LOG_LEVEL,
+  NODE_ENV: buildTimeEnv.NODE_ENV
 }

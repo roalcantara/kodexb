@@ -44,7 +44,12 @@ Use this order when choosing how to create test data:
 
 Promotion is cheap and encouraged. When a local builder appears in a second
 file, or when a test shape starts representing a real project concept, promote
-it into `src/__tests__/factories/factories.builder.ts`.
+it into `src/__tests__/factories/factories.builder.ts` (or a co-located helper
+under `src/__tests__/helpers/` when the shape is composite, e.g.
+`testing.bindings.util.ts`).
+
+`bun run lint:spec-guide` fails if specs reintroduce banned `makeBinding`,
+`makeShortcut`, and similar local factories — see [TESTING_GUIDE §Enforcement](./TESTING_GUIDE.md#enforcement).
 
 ## Do / Don't
 
