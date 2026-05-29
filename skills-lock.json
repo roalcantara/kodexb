@@ -209,6 +209,18 @@
       "skillPath": "skills/finishing-a-development-branch/SKILL.md",
       "computedHash": "932d23af11a3eb2b758f5b1d9aec7b6d28ddd26658328414f87f34dff7179d19"
     },
+    "jobs-to-be-done": {
+      "source": "pmprompt/claude-plugin-product-management",
+      "sourceType": "github",
+      "skillPath": "skills/jobs-to-be-done/SKILL.md",
+      "computedHash": "3f9b72ef53477e35d7904ddac1c642d77b4ec6b7ac8992792689f51258aafeb0"
+    },
+    "lean-startup": {
+      "source": "getagentseal/founder-playbook",
+      "sourceType": "github",
+      "skillPath": "lean-startup/SKILL.md",
+      "computedHash": "0985a2701938f4b744296aa3d62d69ce884cf1e6a4757574768d82f311abc4b7"
+    },
     "logtape": {
       "source": "@jsr/logtape__logtape",
       "sourceType": "node_modules",
