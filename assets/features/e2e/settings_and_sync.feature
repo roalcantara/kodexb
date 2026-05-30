@@ -32,6 +32,7 @@ Feature: Settings and sync
     Then sync reports completion
     And the knowledge list includes "Synced Release Link"
 
+  @spec:sync
   Scenario: Sync reports invalid source files without losing valid entries
     Given the fixture sources include an invalid source file
     When I run sync

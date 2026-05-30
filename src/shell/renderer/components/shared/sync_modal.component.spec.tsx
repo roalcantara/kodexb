@@ -17,6 +17,10 @@ function renderSyncModal(model: SyncModalModel) {
   return render(<SyncModal model={model} onDismiss={() => undefined} />)
 }
 
+function makeFileLog(path: string, label: string, ok: boolean, inserted = 0, updated = 0, error = '') {
+  return { path, label, ok, inserted, updated, error }
+}
+
 describe('SyncModal', () => {
   describe('when closed', () => {
     it('renders nothing', () => {
@@ -41,7 +45,7 @@ describe('SyncModal', () => {
         sourcesDir: '/tmp/src',
         totalFiles: 10,
         processed: 5,
-        fileLog: [{ path: 'a.yaml', label: 'A', ok: true, inserted: 1, updated: 0, error: '' }]
+        fileLog: [makeFileLog('a.yaml', 'A', true, 1, 0)]
       })
       expect(screen.getByText('5 / 10 processed')).toBeTruthy()
     })

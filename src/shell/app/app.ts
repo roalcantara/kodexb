@@ -17,7 +17,6 @@ import type {
   TaskCreateInput,
   TaskUpdateInput
 } from '@shared/rpc'
-import glob from 'fast-glob'
 import type { LoadedConfig } from './config/config.loader'
 import { saveConfig } from './config/config.loader'
 import { type BindingRef, listAllBindings, listBindingsByChord } from './db/binding.repository'
@@ -43,7 +42,9 @@ import {
   showOpenDialogFor
 } from './lib/app_shell_surface.util'
 import { runSourceImportSync } from './lib/app_sync.util'
-import { removeTaskFromSource, writeTaskToSource } from './lib/app_task_source.util'
+import { getSyncInfoForSourcesDir } from './lib/app_sync_info.util'
+import { removeTaskFromSource, resolveCreateTaskTags, writeTaskToSource } from './lib/app_task_source.util'
+import { SyncDatabaseBusyError } from './lib/sync_database_busy.error'
 
 export type SyncEmitter = {
   syncProgress?: (payload: RpcSyncProgressPayload) => void
@@ -58,6 +59,7 @@ export class App {
   private readonly listCache = new Map<string, RpcListEntry[]>()
   private listStatsCache: ListStats | null = null
   private dbStatsCache: RpcDbStats | null = null
+  private syncInFlight = false
   private readonly emit: SyncEmitter
   private readonly shellHooks: AppShellHooks
 
@@ -74,6 +76,9 @@ export class App {
   }
 
   private getDb() {
+    if (this.syncInFlight) {
+      throw new SyncDatabaseBusyError()
+    }
     if (!this.db) {
       this.db = openDatabase(this.loaded.database.path)
     }
@@ -147,17 +152,23 @@ export class App {
     return Promise.resolve(buildListStatsForFilters(raw, this.loaded, filters))
   }
 
-  sync(sourcesDir?: string): Promise<RpcImportResult> {
+  async sync(sourcesDir?: string): Promise<RpcImportResult> {
     const dir = sourcesDir ?? this.loaded.sources.path
     const dbPath = this.loaded.database.path
-    return runSourceImportSync({
-      sourcesDir: dir,
-      dbPath,
-      closeDb: () => this.closeDb(),
-      invalidateListCache: () => this.invalidateListCache(),
-      emit: this.emit,
-      log: this.log
-    })
+    this.syncInFlight = true
+    try {
+      return await runSourceImportSync({
+        sourcesDir: dir,
+        dbPath,
+        closeDb: () => this.closeDb(),
+        invalidateListCache: () => this.invalidateListCache(),
+        emit: this.emit,
+        log: this.log
+      })
+    } finally {
+      this.syncInFlight = false
+      this.closeDb()
+    }
   }
 
   async getStats(): Promise<RpcDbStats> {
@@ -189,16 +200,8 @@ export class App {
     })
   }
 
-  async getSyncInfo(): Promise<{ sourcesDir: string; fileCount: number }> {
-    const sourcesDir = this.loaded.sources.path
-    let fileCount = 0
-    try {
-      const files = await glob('**/*.{yaml,yml}', { cwd: sourcesDir, absolute: true })
-      fileCount = files.length
-    } catch {
-      fileCount = 0
-    }
-    return { sourcesDir, fileCount }
+  getSyncInfo(): Promise<{ sourcesDir: string; fileCount: number }> {
+    return getSyncInfoForSourcesDir(this.loaded.sources.path)
   }
 
   async applyConfigPatch(patch: ConfigPatch): Promise<RpcGetConfigPayload> {
@@ -348,12 +351,4 @@ export class App {
   quit(): Promise<void> {
     return quitFor(this.shellHooks)
   }
-}
-
-/** Domain tags require at least one valid tag; UI may submit none on create. */
-function resolveCreateTaskTags(tags: string[] | undefined): string[] {
-  const normalized = (tags ?? [])
-    .map(tag => tag.trim().toLowerCase().replaceAll('-', '_'))
-    .filter(tag => tag.length > 0)
-  return normalized.length > 0 ? normalized : ['task']
 }

@@ -1,0 +1,19 @@
+bookmarks:
+  sync-partial-alpha:
+    desc: Sync Partial Alpha
+    tags: [valid, sample]
+  broken-bookmark:
+    tags: [InvalidTag]
+  https://valid.example.com/last:
+    desc: Valid bookmark after the broken row — should still import
+    tags: [valid, after]
+
+commands:
+  https://another.example.com/cmd:
+    desc: Valid command before
+    tags: [valid]
+  broken-command:
+    tags: [AlsoInvalid]
+  https://another.example.com/cmd-after:
+    desc: Valid command after
+    tags: [valid]

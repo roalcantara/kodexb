@@ -149,6 +149,34 @@ Do not reuse the same phrase under different keywords.
 | sync reports the invalid file                           | Then    | `SyncModal.reportsInvalidFile()`         | N     |
 | the knowledge list still includes valid fixture entries | Then    | `EntryList.includesCoreFixtureEntries()` | N     |
 
+## Sync resilience steps (`@spec:sync`)
+
+Normative for [`sync/requirements.md`](../sync/requirements.md). Implement in
+`e2e/steps/` when adding `sync_resilience.feature`.
+
+| Step                                                   | Keyword | Task / question                               | Weak? |
+| ------------------------------------------------------ | ------- | --------------------------------------------- | ----- |
+| the fixture sources include the sync resilience corpus | Given   | `WriteSyncResilienceFixtureSources`           | N     | Copies `src/__tests__/fixtures/sync/*` into isolated sources |
+| sync finishes within 60 seconds                        | Then    | `SyncModal.finishesWithinMs(60000)`           | N     | Fails on hang                                                |
+| sync modal lists failed file {string}                  | Then    | `SyncModal.listsFailedFile(basename)`         | N     | `ok: false` row visible                                      |
+| sync error detail mentions {string}                    | Then    | `SyncModal.errorDetailContains(text)`         | N     | Inspect error or summary                                     |
+| sync reports partial import from {string}              | Then    | `SyncModal.fileShowsPartialSuccess(basename)` | N     | `ok: true` with errors in summary                            |
+| the knowledge list includes {string} after sync        | Then    | `EntryList.includesTitle(title)`              | N     | Valid row from partial file                                  |
+
+Reuse **Settings and sync** steps `I run sync` and `sync reports completion` where applicable.
+
+## Sync modal error UX steps (`@spec:sync` Phase 7)
+
+Normative for [`sync/requirements.md` SY-7](../sync/requirements.md#requirement-sy-7-sync-modal-error-readability-follow-up).
+
+| Step                                               | Keyword | Task / question                               | Weak? |
+| -------------------------------------------------- | ------- | --------------------------------------------- | ----- |
+| sync summary shows at least {int} file with errors | Then    | `SyncModal.showsAtLeastNFilesWithErrors(n)`   | N     |
+| sync summary shows file totals                     | Then    | `SyncModal.showsFileTotalsStrip()`            | N     | Verifies processed / imported / with errors present |
+| I expand sync errors for file {string}             | When    | `SyncModal.expandErrorsForFile(basename)`     | N     |
+| sync error accordion for {string} shows {string}   | Then    | `SyncModal.accordionContains(basename, text)` | N     |
+| the first sync error row is visible                | Then    | `SyncModal.firstErrorRowInView()`             | N     |
+
 ## Frecency steps
 
 | Step                                               | Keyword | Task / question                                 | Weak? |

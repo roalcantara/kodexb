@@ -136,8 +136,8 @@
   border: 1px solid var(--color-outline-variant);
   border-radius: 8px;
   padding: 20px;
-  min-width: min(420px, 100%);
-  max-width: 560px;
+  box-sizing: border-box;
+  width: min(var(--sync-modal-width, 560px), 100%);
   max-height: min(80vh, 640px);
   display: flex;
   flex-direction: column;
@@ -217,7 +217,9 @@
 .cmp-sync-modal-log {
   flex: 1;
   min-height: 120px;
+  min-width: 0;
   max-height: 280px;
+  overflow-x: hidden;
   overflow-y: auto;
   border: 1px solid var(--color-outline-variant);
   border-radius: 6px;
@@ -228,6 +230,7 @@
 }
 
 .cmp-sync-modal-file-row {
+  min-width: 0;
   padding: 6px 8px;
   border-radius: 4px;
   background: color-mix(in srgb, var(--color-outline-variant) 25%, transparent);
@@ -235,7 +238,22 @@
 }
 
 .cmp-sync-modal-file-row--error {
-  border-left: 3px solid var(--color-error);
+  border-left: 4px solid var(--color-error);
+  background: color-mix(in srgb, var(--color-error) 8%, transparent);
+}
+
+.cmp-sync-modal-file-row--interactive {
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+}
+
+.cmp-sync-modal-file-row--interactive:focus-visible {
+  outline: 2px solid var(--color-primary);
+  border-radius: 4px;
 }
 
 .cmp-sync-modal-file-main {
@@ -243,6 +261,7 @@
   justify-content: space-between;
   gap: 8px;
   align-items: baseline;
+  min-width: 0;
 }
 
 .cmp-sync-modal-file-name {
@@ -254,6 +273,17 @@
   color: var(--color-on-surface-variant);
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+.cmp-sync-modal-chevron {
+  font-size: 0.6875rem;
+  color: var(--color-on-surface-variant);
+  transition: transform 150ms ease;
+  flex-shrink: 0;
+}
+
+.cmp-sync-modal-chevron--expanded {
+  transform: rotate(90deg);
 }
 
 .cmp-sync-modal-file-error {
@@ -275,12 +305,20 @@
 
 .cmp-sync-modal-error-detail {
   margin: 0;
-  font-size: 0.6875rem;
+  padding: 8px;
+  box-sizing: border-box;
+  max-width: 100%;
+  font-size: 0.8125rem;
   color: var(--color-on-surface-variant);
   white-space: pre-wrap;
-  max-height: 120px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-height: min(40vh, 240px);
+  overflow-x: hidden;
   overflow-y: auto;
   width: 100%;
+  border-top: 1px solid var(--color-outline-variant);
+  margin-top: 6px;
 }
 
 .cmp-sync-modal-summary {
@@ -292,6 +330,29 @@
   margin: 0 0 8px;
   font-size: 0.9375rem;
   color: var(--color-text-main);
+}
+
+.cmp-sync-modal-stats-strip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8125rem;
+  color: var(--color-on-surface-variant);
+  flex-wrap: wrap;
+}
+
+.cmp-sync-modal-stats-dot {
+  color: var(--color-outline);
+}
+
+.cmp-sync-modal-stats-error-count {
+  color: var(--color-error);
+}
+
+.cmp-sync-modal-stats-rows {
+  font-size: 0.75rem;
+  color: var(--color-on-surface-variant);
+  margin-top: 2px;
 }
 
 .cmp-sync-modal-summary-list {

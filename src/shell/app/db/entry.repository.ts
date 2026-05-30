@@ -42,8 +42,23 @@ export type DbStats = {
 // present in every test fixture (e.g., `task.repository.spec.ts` builds the
 // `knowledges` table directly). Bagging it would force a prepare at every
 // call site and crash before any non-FTS work could run.
-function initStmts(db: Database) {
-  return repositoryStmts(db, 'Knowledge', {
+type KnowledgeStmts = ReturnType<
+  typeof repositoryStmts<{
+    upsert: string
+    existsById: string
+    findById: string
+    tagCounts: string
+    statsByType: string
+    deleteById: string
+  }>
+>
+
+const knowledgeStmtsByDb = new WeakMap<Database, KnowledgeStmts>()
+
+function initStmts(db: Database): KnowledgeStmts {
+  const cached = knowledgeStmtsByDb.get(db)
+  if (cached) return cached
+  const stmts = repositoryStmts(db, 'Knowledge', {
     upsert: UPSERT_SQL,
     existsById: EXISTS_BY_ID_SQL,
     findById: FIND_BY_ID_SQL,
@@ -51,6 +66,8 @@ function initStmts(db: Database) {
     statsByType: STATS_BY_TYPE_SQL,
     deleteById: DELETE_BY_ID_SQL
   })
+  knowledgeStmtsByDb.set(db, stmts)
+  return stmts
 }
 
 function toFts5MatchQuery(input: string): string {

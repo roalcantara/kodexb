@@ -1,5 +1,8 @@
 import type { RpcImportResult, RpcSyncFileResult } from '@shared/rpc'
-import { type RefObject, useEffect, useRef, useState } from 'react'
+import type { CSSProperties, RefObject } from 'react'
+import { buildFileLogViews, type FileLogRowView } from './sync_modal_errors.util'
+import { SYNC_MODAL_WIDTH_PX } from './sync_modal_layout.const'
+import { useSyncModalExpansion } from './use_sync_modal_expansion.hook'
 
 export type SyncModalPhase = 'preparing' | 'active' | 'done' | 'failed'
 
@@ -30,37 +33,65 @@ function fileSummary(f: RpcSyncFileResult): string {
 
 function SyncModalFileLog({
   fileLog,
+  summaryErrors,
   expandedPath,
   setExpandedPath,
   logEndRef
 }: {
   fileLog: RpcSyncFileResult[]
+  summaryErrors: string[]
   expandedPath: string | null
   setExpandedPath: (path: string | null) => void
   logEndRef: RefObject<HTMLDivElement | null>
 }) {
+  const views = buildFileLogViews(fileLog, summaryErrors)
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, path: string) => {
+    if (e.key === 'ArrowRight' || e.key === 'Enter') {
+      e.preventDefault()
+      setExpandedPath(path)
+    } else if (e.key === 'ArrowLeft' || e.key === 'Escape') {
+      e.preventDefault()
+      setExpandedPath(null)
+    }
+  }
+
   return (
     <div className="cmp-sync-modal-log" role="log" aria-live="polite" aria-relevant="additions">
-      {fileLog.map(f => (
+      {views.map(view => (
         <div
-          key={`${f.path}-${f.label}`}
-          className={`cmp-sync-modal-file-row${f.ok ? '' : ' cmp-sync-modal-file-row--error'}`}
+          key={`${view.path}-${view.label}`}
+          className={`cmp-sync-modal-file-row${view.hasIssues ? ' cmp-sync-modal-file-row--error' : ''}`}
         >
-          <div className="cmp-sync-modal-file-main">
-            <span className="cmp-sync-modal-file-name">{f.label}</span>
-            <span className="cmp-sync-modal-file-stat">{fileSummary(f)}</span>
-          </div>
-          {!f.ok && f.error ? (
-            <div className="cmp-sync-modal-file-error">
-              <button
-                type="button"
-                className="cmp-sync-modal-link-btn"
-                onClick={() => setExpandedPath(expandedPath === f.path ? null : f.path)}
-              >
-                {expandedPath === f.path ? 'Hide details' : 'Inspect error'}
-              </button>
-              {expandedPath === f.path ? <pre className="cmp-sync-modal-error-detail">{f.error}</pre> : null}
+          {view.hasIssues ? (
+            <button
+              type="button"
+              className="cmp-sync-modal-file-row--interactive"
+              onClick={() => setExpandedPath(expandedPath === view.path ? null : view.path)}
+              onKeyDown={e => handleKeyDown(e, view.path)}
+              aria-expanded={expandedPath === view.path}
+              aria-controls={`error-detail-${view.path.replace(/\//g, '-')}`}
+            >
+              <div className="cmp-sync-modal-file-main">
+                <span className="cmp-sync-modal-file-name">{view.label}</span>
+                <span className="cmp-sync-modal-file-stat">{fileSummary(view)}</span>
+                <span
+                  className={`cmp-sync-modal-chevron${expandedPath === view.path ? ' cmp-sync-modal-chevron--expanded' : ''}`}
+                >
+                  ▸
+                </span>
+              </div>
+            </button>
+          ) : (
+            <div className="cmp-sync-modal-file-main">
+              <span className="cmp-sync-modal-file-name">{view.label}</span>
+              <span className="cmp-sync-modal-file-stat">{fileSummary(view)}</span>
             </div>
+          )}
+          {view.hasIssues && expandedPath === view.path ? (
+            <pre id={`error-detail-${view.path.replace(/\//g, '-')}`} className="cmp-sync-modal-error-detail">
+              {view.issues.join('\n')}
+            </pre>
           ) : null}
         </div>
       ))}
@@ -69,111 +100,143 @@ function SyncModalFileLog({
   )
 }
 
-function SyncModalSummary({ summary }: { summary: RpcImportResult }) {
+function SyncModalSummary({ summary, fileLogViews }: { summary: RpcImportResult; fileLogViews: FileLogRowView[] }) {
+  const importedCount = fileLogViews.filter(r => r.ok && !r.hasIssues).length
+  const withErrorsCount = fileLogViews.filter(r => r.hasIssues).length
+
   return (
     <div className="cmp-sync-modal-summary">
       <h3 className="cmp-sync-modal-summary-title">Sync finished</h3>
-      <ul className="cmp-sync-modal-summary-list">
-        <li>Files processed: {summary.filesProcessed}</li>
-        <li>Rows inserted: {summary.inserted}</li>
-        <li>Rows updated: {summary.updated}</li>
-        <li>
-          Errors: {summary.errors.length} ({summary.errors.length === 0 ? 'none' : 'see log above'})
-        </li>
-        <li>
-          Collision warnings: {summary.warnings.length} ({summary.warnings.length === 0 ? 'none' : 'see below'})
-        </li>
-      </ul>
-      {summary.errors.length > 0 ? (
-        <ul className="cmp-sync-modal-summary-errors">
-          {summary.errors.map(err => (
-            <li key={err}>{err}</li>
-          ))}
-        </ul>
-      ) : null}
+      <div className="cmp-sync-modal-stats-strip">
+        <span>
+          Files processed: <strong>{summary.filesProcessed}</strong>
+        </span>
+        <span className="cmp-sync-modal-stats-dot">·</span>
+        <span>
+          Imported: <strong>{importedCount}</strong>
+        </span>
+        <span className="cmp-sync-modal-stats-dot">·</span>
+        <span className={withErrorsCount > 0 ? 'cmp-sync-modal-stats-error-count' : ''}>
+          With errors: <strong>{withErrorsCount}</strong>
+        </span>
+      </div>
+      <div className="cmp-sync-modal-stats-rows">
+        Rows inserted: {summary.inserted} · updated: {summary.updated}
+      </div>
       {summary.warnings.length > 0 ? (
-        <ul className="cmp-sync-modal-summary-warnings">
-          {summary.warnings.map(warning => (
-            <li key={warning}>{warning}</li>
-          ))}
-        </ul>
+        <div className="cmp-sync-modal-summary-warnings">{summary.warnings.join(' · ')}</div>
       ) : null}
     </div>
   )
 }
 
-export function SyncModal({ model, onDismiss }: SyncModalProps) {
-  const [expandedPath, setExpandedPath] = useState<string | null>(null)
-  const logEndRef = useRef<HTMLDivElement>(null)
+function SyncModalSourceHeader({ model }: { model: SyncModalModel }) {
+  if (model.phase === 'preparing') {
+    return <p className="cmp-sync-modal-muted">Reading source folder…</p>
+  }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: keep log tail in view while rows append; Biome treats fileLog/processed as redundant to open/phase but both advance during active sync
-  useEffect(() => {
-    if (!model.open || model.phase !== 'active') return
-    logEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-  }, [model.fileLog.length, model.open, model.phase, model.processed])
+  return (
+    <>
+      <div className="cmp-sync-modal-path-block">
+        <span className="cmp-sync-modal-label">Folder</span>
+        <code className="cmp-sync-modal-path">{model.sourcesDir || '—'}</code>
+      </div>
+      <p className="cmp-sync-modal-count">
+        <strong>{model.totalFiles}</strong> source file{model.totalFiles === 1 ? '' : 's'} to process
+      </p>
+    </>
+  )
+}
 
-  useEffect(() => {
-    if (!model.open) setExpandedPath(null)
-  }, [model.open])
-
-  if (!model.open) return null
-
+function SyncModalDialogBody({
+  model,
+  views,
+  expandedPath,
+  setExpandedPath,
+  logEndRef,
+  onDismiss
+}: {
+  model: SyncModalModel
+  views: FileLogRowView[]
+  expandedPath: string | null
+  setExpandedPath: (path: string | null) => void
+  logEndRef: RefObject<HTMLDivElement | null>
+  onDismiss: () => void
+}) {
   const totalBar = Math.max(1, model.totalFiles)
   const processedBar = model.phase === 'preparing' ? 0 : Math.min(model.processed, totalBar)
   const showDismiss = model.phase === 'done' || model.phase === 'failed'
+  const showFileLog = model.phase === 'active' || model.phase === 'done'
+
+  return (
+    <>
+      <SyncModalSourceHeader model={model} />
+
+      <div className="cmp-sync-modal-progress-row">
+        <progress className="cmp-sync-modal-bar" value={processedBar} max={totalBar} />
+        <span className="cmp-sync-modal-progress-label">
+          {model.phase === 'preparing' ? 'Not started' : `${model.processed} / ${model.totalFiles} processed`}
+        </span>
+      </div>
+
+      {model.phase === 'failed' && model.failMessage ? (
+        <p className="cmp-sync-modal-error-banner" role="alert">
+          {model.failMessage}
+        </p>
+      ) : null}
+
+      {showFileLog ? (
+        <SyncModalFileLog
+          fileLog={model.fileLog}
+          summaryErrors={model.summary?.errors ?? []}
+          expandedPath={expandedPath}
+          setExpandedPath={setExpandedPath}
+          logEndRef={logEndRef}
+        />
+      ) : null}
+
+      {model.phase === 'done' && model.summary ? (
+        <SyncModalSummary summary={model.summary} fileLogViews={views} />
+      ) : null}
+
+      {showDismiss ? (
+        <div className="cmp-sync-modal-actions">
+          <button type="button" className="cmp-sync-modal-primary-btn" onClick={onDismiss}>
+            Close
+          </button>
+        </div>
+      ) : null}
+    </>
+  )
+}
+
+export function SyncModal({ model, onDismiss }: SyncModalProps) {
+  const { expandedPath, setExpandedPath, views, logEndRef } = useSyncModalExpansion(model)
+
+  if (!model.open) return null
+
+  const modalStyle = { '--sync-modal-width': `${SYNC_MODAL_WIDTH_PX}px` } as CSSProperties
 
   return (
     <div className="cmp-sync-modal-backdrop" role="presentation">
-      <div className="cmp-sync-modal" role="dialog" aria-modal="true" aria-labelledby="cmp-sync-modal-title">
+      <div
+        className="cmp-sync-modal"
+        style={modalStyle}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cmp-sync-modal-title"
+      >
         <h2 id="cmp-sync-modal-title" className="cmp-sync-modal-title">
           Sync sources
         </h2>
-
-        {model.phase === 'preparing' ? (
-          <p className="cmp-sync-modal-muted">Reading source folder…</p>
-        ) : (
-          <>
-            <div className="cmp-sync-modal-path-block">
-              <span className="cmp-sync-modal-label">Folder</span>
-              <code className="cmp-sync-modal-path">{model.sourcesDir || '—'}</code>
-            </div>
-            <p className="cmp-sync-modal-count">
-              <strong>{model.totalFiles}</strong> source file{model.totalFiles === 1 ? '' : 's'} to process
-            </p>
-          </>
-        )}
-
-        <div className="cmp-sync-modal-progress-row">
-          <progress className="cmp-sync-modal-bar" value={processedBar} max={totalBar} />
-          <span className="cmp-sync-modal-progress-label">
-            {model.phase === 'preparing' ? 'Not started' : `${model.processed} / ${model.totalFiles} processed`}
-          </span>
-        </div>
-
-        {model.phase === 'failed' && model.failMessage ? (
-          <p className="cmp-sync-modal-error-banner" role="alert">
-            {model.failMessage}
-          </p>
-        ) : null}
-
-        {model.phase === 'active' || model.phase === 'done' ? (
-          <SyncModalFileLog
-            fileLog={model.fileLog}
-            expandedPath={expandedPath}
-            setExpandedPath={setExpandedPath}
-            logEndRef={logEndRef}
-          />
-        ) : null}
-
-        {model.phase === 'done' && model.summary ? <SyncModalSummary summary={model.summary} /> : null}
-
-        {showDismiss ? (
-          <div className="cmp-sync-modal-actions">
-            <button type="button" className="cmp-sync-modal-primary-btn" onClick={onDismiss}>
-              Close
-            </button>
-          </div>
-        ) : null}
+        <SyncModalDialogBody
+          model={model}
+          views={views}
+          expandedPath={expandedPath}
+          setExpandedPath={setExpandedPath}
+          logEndRef={logEndRef}
+          onDismiss={onDismiss}
+        />
       </div>
     </div>
   )

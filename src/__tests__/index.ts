@@ -1,4 +1,5 @@
 export { factoryFor } from './factories/factories.builder'
+export { syncFixtureDir } from './fixtures/sync'
 export { rpcBookmarkRow } from './helpers/rpc_knowledge_test_row.util'
 export { bindingRefFixture, bindingRefsForApps, bindingsCacheSample } from './helpers/testing.bindings.util'
 export { createFactoryFor } from './helpers/testing.factory'

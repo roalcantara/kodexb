@@ -7,8 +7,25 @@ import {
   SettingsShowsSourcesPath
 } from '../screenplay/settings.question'
 import { ChangePageSize, OpenSettings, ResetSettings, SaveSettings } from '../screenplay/settings.task'
-import { SyncReportsCompletion, SyncReportsInvalidFile } from '../screenplay/sync.question'
-import { RunSync, WriteFixtureBookmark, WriteInvalidFixtureSource } from '../screenplay/sync.task'
+import {
+  SyncModalAccordionContains,
+  SyncModalErrorDetailContains,
+  SyncModalFileShowsPartialSuccess,
+  SyncModalFinishesWithinMs,
+  SyncModalFirstErrorRowInView,
+  SyncModalListsFailedFile,
+  SyncModalShowsAtLeastNbrFilesWithErrors,
+  SyncModalShowsFileTotalsStrip,
+  SyncReportsCompletion,
+  SyncReportsInvalidFile
+} from '../screenplay/sync.question'
+import {
+  RunSync,
+  SyncModalExpandErrorsForFile,
+  WriteFixtureBookmark,
+  WriteInvalidFixtureSource,
+  WriteSyncResilienceFixtureSources
+} from '../screenplay/sync.task'
 import { EntryListIncludesTitle } from '../screenplay/task_crud.question'
 import { Given, Then, When } from '../support/fixtures.support'
 
@@ -82,4 +99,48 @@ Then('sync reports the invalid file', async ({ actor }) => {
 
 Then('the knowledge list still includes valid fixture entries', async ({ actor }) => {
   await actor.asksWhether(EntryListIncludesTitle.named('Release Bookmark'))
+})
+
+Given('the fixture sources include the sync resilience corpus', async ({ actor }) => {
+  await actor.attemptsTo(WriteSyncResilienceFixtureSources.now())
+})
+
+Then('sync finishes within 60 seconds', async ({ actor }) => {
+  await actor.asksWhether(SyncModalFinishesWithinMs.within(60_000))
+})
+
+Then('sync modal lists failed file {string}', async ({ actor }, basename: string) => {
+  await actor.asksWhether(SyncModalListsFailedFile.named(basename))
+})
+
+Then('sync error detail mentions {string}', async ({ actor }, text: string) => {
+  await actor.asksWhether(SyncModalErrorDetailContains.text(text))
+})
+
+Then('sync reports partial import from {string}', async ({ actor }, basename: string) => {
+  await actor.asksWhether(SyncModalFileShowsPartialSuccess.named(basename))
+})
+
+Then('the knowledge list includes {string} after sync', async ({ actor }, title: string) => {
+  await actor.asksWhether(EntryListIncludesTitle.named(title))
+})
+
+Then('sync summary shows at least {int} file with errors', async ({ actor }, n: number) => {
+  await actor.asksWhether(SyncModalShowsAtLeastNbrFilesWithErrors.showsAtLeastNbrFilesWithErrors(n))
+})
+
+Then('sync summary shows file totals', async ({ actor }) => {
+  await actor.asksWhether(SyncModalShowsFileTotalsStrip.now())
+})
+
+When('I expand sync errors for file {string}', async ({ actor }, basename: string) => {
+  await actor.attemptsTo(SyncModalExpandErrorsForFile.expandErrorsForFile(basename))
+})
+
+Then('sync error accordion for {string} shows {string}', async ({ actor }, basename: string, text: string) => {
+  await actor.asksWhether(SyncModalAccordionContains.accordionContains(basename, text))
+})
+
+Then('the first sync error row is visible', async ({ actor }) => {
+  await actor.asksWhether(SyncModalFirstErrorRowInView.now())
 })

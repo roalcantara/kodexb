@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { cpSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { expect } from '@playwright/test'
 import type { Actor, Performable } from './actor.ability'
@@ -38,6 +38,23 @@ export class WriteInvalidFixtureSource implements Performable {
   }
 }
 
+export class WriteSyncResilienceFixtureSources implements Performable {
+  static now(): WriteSyncResilienceFixtureSources {
+    return new WriteSyncResilienceFixtureSources()
+  }
+
+  async performAs(actor: Actor): Promise<void> {
+    const { sourcesPath } = loadFixturePaths()
+    const sourceDir = path.join(import.meta.dirname, '..', '..', 'src', '__tests__', 'fixtures', 'sync')
+    const targetDir = path.join(sourcesPath, 'sync')
+    mkdirSync(targetDir, { recursive: true })
+    const files = readdirSync(sourceDir).filter(f => f.endsWith('.yml'))
+    for (const file of files) {
+      cpSync(path.join(sourceDir, file), path.join(targetDir, file))
+    }
+  }
+}
+
 export class RunSync implements Performable {
   static now(): RunSync {
     return new RunSync()
@@ -51,5 +68,20 @@ export class RunSync implements Performable {
       const failed = actor.page.locator('.cmp-sync-modal-error-banner')
       await expect(finished.or(failed)).toBeVisible()
     }, 60_000)
+  }
+}
+
+export class SyncModalExpandErrorsForFile implements Performable {
+  private constructor(private readonly basename: string) {}
+
+  static expandErrorsForFile(basename: string): SyncModalExpandErrorsForFile {
+    return new SyncModalExpandErrorsForFile(basename)
+  }
+
+  async performAs(actor: Actor): Promise<void> {
+    const row = actor.page.locator('.cmp-sync-modal-file-row--error button', { hasText: this.basename })
+    await expect(row).toBeVisible()
+    await row.click()
+    await actor.page.waitForTimeout(200)
   }
 }

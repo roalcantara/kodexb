@@ -116,5 +116,34 @@ describe('useListPageStatsSync', () => {
       })
       await waitFor(() => expect(getListStatsMock).toHaveBeenCalledTimes(1))
     })
+
+    it('calls onComplete only once even if triggered by both push and RPC', async () => {
+      let onComplete: ((result: RpcImportResult) => void) | undefined
+      setSyncMessageHandlersMock.mockImplementation((handlers: { onProgress?: unknown; onComplete?: unknown }) => {
+        onComplete = handlers.onComplete as typeof onComplete
+      })
+      const refreshListMock = mock(() => Promise.resolve())
+      function HarnessWithMock() {
+        const { stats } = useListPageStatsSync({
+          refreshList: refreshListMock,
+          pushToast: pushToastMock
+        })
+        return (
+          <div>
+            <span data-testid="total">{stats?.total ?? 'pending'}</span>
+          </div>
+        )
+      }
+      render(<HarnessWithMock />)
+      await waitFor(() => expect(screen.getByTestId('total').textContent).toBe('4'))
+      if (onComplete === undefined) throw new Error('onComplete not registered')
+      const result = { filesProcessed: 1, inserted: 1, updated: 0, errors: [], warnings: [] }
+      const doComplete = onComplete
+      act(() => {
+        doComplete(result)
+        doComplete(result)
+      })
+      await waitFor(() => expect(refreshListMock).toHaveBeenCalledTimes(1))
+    })
   })
 })

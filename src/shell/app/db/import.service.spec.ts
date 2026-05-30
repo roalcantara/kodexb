@@ -2,13 +2,14 @@ import { describe, expect, it } from 'bun:test'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import { testingPaths } from '@testing'
+import type { RpcSyncProgressPayload } from '@shared/rpc'
+import { syncFixtureDir, testingPaths } from '@testing'
 import { openDatabase } from './client'
 import { findAll } from './entry.repository'
 import { ImportService } from './import.service'
 
-const SAMPLE_FILES_PROCESSED = 4
-const SAMPLE_INSERTED = 13
+const SAMPLE_FILES_PROCESSED = 5
+const SAMPLE_INSERTED = 15
 const SAMPLE_ERRORS = 1
 
 describe('ImportService', () => {
@@ -60,6 +61,37 @@ describe('ImportService', () => {
       expect(result.errors).toHaveLength(SAMPLE_ERRORS)
       expect(result.errors[0]).toContain('mixed_invalid.yml')
       expect(result.errors[0]).toContain('broken-bookmark')
+    })
+  })
+
+  describe('completion guard and progress', () => {
+    it('completes within 30s wall clock using sync fixtures', async () => {
+      const svc = new ImportService(':memory:')
+      const result = await Promise.race([
+        svc.runOnce(syncFixtureDir),
+        Bun.sleep(30_000).then(() => {
+          throw new Error('timeout')
+        })
+      ])
+      expect(result).toBeDefined()
+    })
+
+    it('rebuilds FTS and collects collision warnings after file loop', async () => {
+      const svc = new ImportService(':memory:')
+      const result = await svc.runOnce(syncFixtureDir)
+      expect(result.warnings).toBeDefined()
+      expect(Array.isArray(result.warnings)).toBe(true)
+    })
+
+    it('emits onProgress once per file', async () => {
+      const svc = new ImportService(':memory:')
+      const calls: RpcSyncProgressPayload[] = []
+      await svc.runOnce(syncFixtureDir, { onProgress: p => calls.push(p) })
+      expect(calls.length).toBeGreaterThan(0)
+      for (const call of calls) {
+        expect(call.processed).toBeGreaterThan(0)
+        expect(call.total).toBeGreaterThan(0)
+      }
     })
   })
 

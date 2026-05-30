@@ -47,6 +47,21 @@ Optional harness-only files (not part of initial seed; written by Given steps):
 | `bookmarks/synced.yml` | `Given the fixture sources include a new bookmark named …` |
 | `sources/invalid.yml`  | `Given the fixture sources include an invalid source file` |
 
+### Sync resilience corpus (`@spec:sync`)
+
+Copied from `src/__tests__/fixtures/sync/` when the scenario uses
+`Given the fixture sources include the sync resilience corpus`:
+
+| File                      | Role                                          |
+| ------------------------- | --------------------------------------------- |
+| `partial_valid.yml`       | Valid + invalid + valid rows; partial import  |
+| `devbox_like.yml`         | Tag/key validation failure (production class) |
+| `malformed_yaml.yml`      | Document-level skip                           |
+| `all_entries_invalid.yml` | File with zero commits                        |
+
+Valid bookmark title to assert after sync (in `partial_valid.yml`):
+**`Sync Partial Alpha`** (implementer MUST match fixture `desc` / list title).
+
 ## Entries (initial seed)
 
 ### Bookmarks

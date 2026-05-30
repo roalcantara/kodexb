@@ -683,7 +683,7 @@ alongside four valid sibling files:
 | `commands.yml`      | Heavy markdown command, shorter command note, titled links                                                  | 3       |
 | `cheats.yml`        | Portuguese text, keyboard glyphs, PlantUML note block                                                       | 3       |
 | `tasks.yml`         | All task statuses, multiple priorities, markdown checklist, `meta.due`                                      | 4       |
-| `mixed_invalid.yml` | One file containing both valid and invalid rows; the invalid row aborts the bundle so siblings still import | 3       |
+| `mixed_invalid.yml` | One file containing both valid and invalid rows; entry-level error isolation imports valid siblings while skipping invalid rows with errors | 2–3       |
 
 Total target: 13 valid imported entries plus 1 expected file-level error.
 

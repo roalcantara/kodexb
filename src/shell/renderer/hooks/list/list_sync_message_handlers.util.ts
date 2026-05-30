@@ -16,6 +16,7 @@ export type ListSyncMessageHandlerDeps = {
 /** Handlers passed to `setSyncMessageHandlers` (main → renderer sync push). */
 export function listSyncMessageHandlers(deps: ListSyncMessageHandlerDeps) {
   const { setSyncUi, setSyncing, syncModalOpenRef, pushToast, refreshStats, refreshList } = deps
+  let completed = false
 
   return {
     onProgress: (p: RpcSyncProgressPayload) => {
@@ -32,6 +33,8 @@ export function listSyncMessageHandlers(deps: ListSyncMessageHandlerDeps) {
       })
     },
     onComplete: (result: RpcImportResult) => {
+      if (completed) return
+      completed = true
       setSyncing(false)
       const modalWasOpen = syncModalOpenRef.current
       setSyncUi(prev => {

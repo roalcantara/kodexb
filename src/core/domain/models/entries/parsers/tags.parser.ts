@@ -1,9 +1,11 @@
 import type { JsonValue } from 'type-fest'
 import { safeParse, TypeBoxValidationError } from '../../../../validation/typebox.helper'
+import { PATTERNS } from '../../../constants/entry.const'
 import { tagsSchema } from '../schemas/tags.schema'
 
 export const normalizeKnowledgeTag = (item: string): string => item.trim().toLowerCase().replaceAll('-', '_')
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: intentional raw-tag validation rejects case-only changes (devbox_like SY-3)
 export function parseTagsFromSource(raw: JsonValue | undefined): string[] {
   if (!Array.isArray(raw)) {
     throw new TypeBoxValidationError([
@@ -22,8 +24,35 @@ export function parseTagsFromSource(raw: JsonValue | undefined): string[] {
 
   for (const el of raw) {
     if (typeof el !== 'string') continue
+    const rawTrimmed = el.trim()
+    if (!rawTrimmed) continue
     const n = normalizeKnowledgeTag(el)
-    if (n.length === 0 || seen.has(n)) continue
+    if (!PATTERNS.tag.test(rawTrimmed)) {
+      if (PATTERNS.tag.test(n)) {
+        if (!n.includes('_')) {
+          throw new TypeBoxValidationError([
+            {
+              path: '/tags',
+              message: `Invalid tag "${rawTrimmed}"`,
+              schema: {},
+              value: el,
+              type: 0
+            } as never
+          ])
+        }
+      } else {
+        throw new TypeBoxValidationError([
+          {
+            path: '/tags',
+            message: `Invalid tag "${rawTrimmed}"`,
+            schema: {},
+            value: el,
+            type: 0
+          } as never
+        ])
+      }
+    }
+    if (seen.has(n)) continue
     seen.add(n)
     out.push(n)
   }

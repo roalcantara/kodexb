@@ -5,14 +5,16 @@ import { getLogger } from '@shared/logging'
 import type { RpcImportResult, RpcSyncFileResult, RpcSyncProgressPayload } from '@shared/rpc'
 import glob from 'fast-glob'
 import type { Entry } from '../../../core'
-import { parseSourceFile } from '../../../core'
+import { parseSourceFileResilient } from '../../../core/domain/models/entries/parsers/parse_source_file_resilient.parser'
 import { listAllBindings } from './binding.repository'
 import { openDatabase } from './client'
 import { rebuildFts } from './entry.repository'
 import { upsertKnowledgeBundleInTransaction } from './import_bundle_persist.util'
 import { hardCollisionWarningMessages } from './import_collision_warnings.util'
 
-type ParsedSourceBundle = { filePath: string; items: Entry[] } | { filePath: string; error: string }
+type ParsedSourceBundle =
+  | { filePath: string; items: Entry[]; parseErrors?: string[] }
+  | { filePath: string; error: string }
 
 function formatBundleError(filePath: string, message: string): string {
   const trimmed = message.trimStart()
@@ -35,15 +37,23 @@ export class ImportService {
   }
 
   private async loadParsedSourceBundleForPath(filePath: string): Promise<ParsedSourceBundle> {
+    let content: string
     try {
-      const content = await fs.readFile(filePath, 'utf-8')
-      return { filePath, items: parseSourceFile(filePath, content) }
+      content = await fs.readFile(filePath, 'utf-8')
     } catch (err) {
       return {
         filePath,
         error: err instanceof Error ? err.message : String(err)
       }
     }
+
+    const { entries, errors } = parseSourceFileResilient(filePath, content)
+    if (entries.length === 0 && errors.length > 0) {
+      const firstError = errors.at(0) ?? 'parse failed with no error detail'
+      return { filePath, error: firstError }
+    }
+
+    return { filePath, items: entries, parseErrors: errors.length > 0 ? errors : undefined }
   }
 
   private persistParsedSourceBundle(
@@ -69,6 +79,13 @@ export class ImportService {
     const now = Date.now()
     let insertedInFile = 0
     let updatedInFile = 0
+
+    if (bundle.parseErrors) {
+      for (const err of bundle.parseErrors) {
+        result.errors.push(formatBundleError(bundle.filePath, err))
+      }
+    }
+
     try {
       db.transaction(() => {
         const counts = upsertKnowledgeBundleInTransaction(db, bundle, result, now)
@@ -108,27 +125,36 @@ export class ImportService {
     options?: { onProgress?: (payload: RpcSyncProgressPayload) => void }
   ): Promise<RpcImportResult> {
     const { raw: db } = openDatabase(this.dbPath)
-    const result: RpcImportResult = {
-      filesProcessed: 0,
-      inserted: 0,
-      updated: 0,
-      errors: [],
-      warnings: []
+    try {
+      const result: RpcImportResult = {
+        filesProcessed: 0,
+        inserted: 0,
+        updated: 0,
+        errors: [],
+        warnings: []
+      }
+
+      const bundles = await this.loadParsedSourceBundles(sourcesDir)
+      const total = bundles.length
+
+      const processBundleAt = async (index: number): Promise<void> => {
+        if (index >= bundles.length) return
+        const bundle = bundles[index]
+        if (!bundle) return
+        const recentFile = this.persistParsedSourceBundle(db, bundle, result)
+        options?.onProgress?.({ processed: index + 1, total, recentFile })
+        await Bun.sleep(0)
+        await processBundleAt(index + 1)
+      }
+
+      await processBundleAt(0)
+
+      rebuildFts(db)
+      result.warnings = hardCollisionWarningMessages(listAllBindings(db))
+      return result
+    } finally {
+      db.close(true)
     }
-
-    const bundles = await this.loadParsedSourceBundles(sourcesDir)
-    const total = bundles.length
-    let processed = 0
-
-    for (const bundle of bundles) {
-      const recentFile = this.persistParsedSourceBundle(db, bundle, result)
-      processed += 1
-      options?.onProgress?.({ processed, total, recentFile })
-    }
-
-    rebuildFts(db)
-    result.warnings = hardCollisionWarningMessages(listAllBindings(db))
-    return result
   }
 
   run(
