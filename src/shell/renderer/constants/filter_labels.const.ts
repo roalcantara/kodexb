@@ -9,9 +9,10 @@ export const TASK_VIEW_LABEL: Record<TaskView, string> = {
   all_doing: 'All Doing'
 }
 
-export const TYPE_FILTER_LABEL: Record<'bookmark' | 'command' | 'cheat' | 'task', string> = {
+export const TYPE_FILTER_LABEL: Record<'bookmark' | 'command' | 'cheat' | 'shortcut' | 'task', string> = {
   bookmark: 'Bookmark',
   command: 'Command',
   cheat: 'Cheat',
+  shortcut: 'Shortcut',
   task: 'Task'
 }

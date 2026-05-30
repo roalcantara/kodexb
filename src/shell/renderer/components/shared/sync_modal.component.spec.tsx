@@ -56,9 +56,28 @@ describe('SyncModal', () => {
         sourcesDir: '/tmp/src',
         totalFiles: 3,
         processed: 3,
-        summary: { filesProcessed: 3, inserted: 5, updated: 2, errors: [] }
+        summary: { filesProcessed: 3, inserted: 5, updated: 2, errors: [], warnings: [] }
       })
       expect(screen.getByText('Sync finished')).toBeTruthy()
+    })
+
+    it('lists collision warnings', () => {
+      renderSyncModal({
+        ...baseModel,
+        open: true,
+        phase: 'done',
+        sourcesDir: '/tmp/src',
+        totalFiles: 3,
+        processed: 3,
+        summary: {
+          filesProcessed: 3,
+          inserted: 5,
+          updated: 2,
+          errors: [],
+          warnings: ['hard collision: cmd+space between app-a and app-b (A / B)']
+        }
+      })
+      expect(screen.getByText('hard collision: cmd+space between app-a and app-b (A / B)')).toBeTruthy()
     })
   })
 

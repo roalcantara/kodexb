@@ -2,7 +2,23 @@ import type { Database } from 'bun:sqlite'
 import type { FindAllOpts } from '@core/helpers/list_opts/find_all_opts.types'
 import { repositoryStmts } from '@shared/logging'
 import type { UnknownRecord } from 'type-fest'
-import type { EntryType, Knowledge } from '../../../core'
+import type { EntryType, Knowledge, ShortcutKnowledge } from '../../../core'
+import {
+  DEFAULT_QUERY_LIMIT,
+  DELETE_BY_ID_SQL,
+  DOUBLE_QUOTE_RE,
+  EXISTS_BY_ID_SQL,
+  FIND_BY_ID_SQL,
+  FRECENCY_JOIN_SQL,
+  FRECENCY_SELECT_SQL,
+  FTS_SPACE_RE,
+  ORDER_BY_FRECENCY_TAIL_SQL,
+  REBUILD_FTS_SQL,
+  STATS_BY_TYPE_SQL,
+  TAG_COUNT_SQL,
+  UPSERT_SQL
+} from './entry_repository.const'
+import { rowToParams } from './entry_upsert_params.util'
 import type { KnowledgeRow } from './schema'
 
 export type KnowledgeWithFrecency = Knowledge & {
@@ -15,66 +31,12 @@ type KnowledgeRowWithFrecency = KnowledgeRow & {
   visit_count: number
 }
 
-const FRECENCY_SELECT_SQL = 'COALESCE(f.frecency_score, 0) AS frecency_score, COALESCE(f.visit_count, 0) AS visit_count'
-
 export type { FindAllOpts }
 
 export type DbStats = {
   total: number
   byType: Record<string, number>
 }
-
-const DEFAULT_QUERY_LIMIT = 50
-
-const FRECENCY_JOIN_SQL = 'LEFT JOIN entry_frecency f ON f.entry_id = k.id'
-
-const ORDER_BY_FRECENCY_TAIL_SQL = `
-      ORDER BY COALESCE(f.frecency_score, 0) DESC,
-               k.task_order ASC NULLS LAST,
-               k.updated_at DESC,
-               k.id DESC`
-
-const UPSERT_SQL = `
-INSERT INTO knowledges (
-  id, type, key, source, desc, tags, links, notes, doc,
-  priority, status, due_date, task_order, depends_on, meta,
-  created_at, updated_at
-) VALUES (
-  ?, ?, ?, ?, ?, ?, ?, ?, ?,
-  ?, ?, ?, ?, ?, ?,
-  ?, ?
-)
-ON CONFLICT(id) DO UPDATE SET
-  type        = excluded.type,
-  key         = excluded.key,
-  source      = excluded.source,
-  desc        = excluded.desc,
-  tags        = excluded.tags,
-  links       = excluded.links,
-  notes       = excluded.notes,
-  doc         = excluded.doc,
-  priority    = excluded.priority,
-  status      = excluded.status,
-  due_date    = excluded.due_date,
-  task_order  = excluded.task_order,
-  depends_on  = excluded.depends_on,
-  meta        = excluded.meta,
-  updated_at  = excluded.updated_at
-`
-
-const FIND_BY_ID_SQL = 'SELECT * FROM knowledges WHERE id = ?'
-
-const EXISTS_BY_ID_SQL = 'SELECT 1 AS one FROM knowledges WHERE id = ?'
-
-const TAG_COUNT_SQL = `SELECT json_each.value AS tag, COUNT(*) AS cnt
-FROM knowledges, json_each(knowledges.tags) AS json_each
-GROUP BY json_each.value`
-
-const STATS_BY_TYPE_SQL = 'SELECT type, COUNT(*) as count FROM knowledges GROUP BY type'
-
-const DELETE_BY_ID_SQL = 'DELETE FROM knowledges WHERE id = ?'
-
-const REBUILD_FTS_SQL = 'INSERT INTO knowledges_fts(knowledges_fts) VALUES(?)'
 
 // `rebuildFts` lives outside the bag because the FTS virtual table is not
 // present in every test fixture (e.g., `task.repository.spec.ts` builds the
@@ -90,9 +52,6 @@ function initStmts(db: Database) {
     deleteById: DELETE_BY_ID_SQL
   })
 }
-
-const FTS_SPACE_RE = /\s+/g
-const DOUBLE_QUOTE_RE = /"/g
 
 function toFts5MatchQuery(input: string): string {
   const raw = input.trim()
@@ -147,49 +106,16 @@ export function rowToKnowledge(row: KnowledgeRow): Knowledge {
     }
   }
 
-  return base as Knowledge
-}
+  if (row.type === 'shortcut') {
+    return {
+      ...base,
+      type: 'shortcut',
+      bindings: parseJson<ShortcutKnowledge['bindings']>(row.bindings, []),
+      ...(row.platform ? { platform: row.platform as ShortcutKnowledge['platform'] } : {})
+    }
+  }
 
-function rowToParams(
-  row: Knowledge
-): [
-  number,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string | null,
-  string | null,
-  number | null,
-  number | null,
-  string,
-  string,
-  number,
-  number
-] {
-  return [
-    row.id,
-    row.type,
-    row.key,
-    row.source,
-    row.desc,
-    JSON.stringify(row.tags),
-    JSON.stringify(row.links ?? []),
-    JSON.stringify(row.notes ?? []),
-    row.doc,
-    'priority' in row ? (row.priority ?? null) : null,
-    'status' in row ? (row.status ?? null) : null,
-    'dueDate' in row ? (row.dueDate ?? null) : null,
-    'taskOrder' in row ? (row.taskOrder ?? null) : null,
-    'dependsOn' in row ? JSON.stringify(row.dependsOn ?? []) : JSON.stringify([]),
-    JSON.stringify(row.meta ?? {}),
-    row.createdAt,
-    row.updatedAt
-  ]
+  return base as Knowledge
 }
 
 export function upsert(db: Database, row: Knowledge): 'inserted' | 'updated' {

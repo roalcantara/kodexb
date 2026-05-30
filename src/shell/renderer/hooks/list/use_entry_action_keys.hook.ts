@@ -14,6 +14,18 @@ import {
 import { executePanelAction } from '../../actions/execute_entry_action.util'
 import type { ViewState } from '../../utils/list/list_page_state.util'
 
+/**
+ * The shortcut keymap and chord-detail surfaces own their own Enter / mod+Enter
+ * semantics (open chord detail, reveal source). Defer to their local row
+ * handlers when focus is inside one — otherwise the window-level entry-action
+ * handler intercepts the keystroke first and runs the parent shortcut entry's
+ * primary action instead.
+ */
+export function targetOwnsEnter(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false
+  return target.closest('.cmp-shortcut-keymap, .cmp-chord-detail') !== null
+}
+
 export type EntryActionKeysOpts = {
   disabled: boolean
   viewState: ViewState
@@ -34,6 +46,7 @@ export function useEntryActionKeys(opts: EntryActionKeysOpts): (e: KeyboardEvent
       if (disabled) return
       const kind = entryActionKindFromKeyboardEvent(e)
       if (!kind) return
+      if (targetOwnsEnter(e.target)) return
       if (
         !entryActionShortcutsAllowed({
           viewState,

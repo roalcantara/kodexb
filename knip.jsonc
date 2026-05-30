@@ -8,11 +8,13 @@
     "src/shared/utils/index.ts",
     "src/**/*.spec.ts",
     "src/**/*.spec.tsx",
-    "e2e/**/*.e2e.spec.ts"
+    "e2e/support/fixtures.support.ts",
+    "e2e/steps/**/*.ts",
+    "e2e/support/preview_with_fixture.support.ts",
+    "tools/e2e/**/*.ts"
   ],
-  "project": ["src/**/*.ts", "src/shell/renderer/**/*.tsx", "e2e/**/*.ts"],
+  "project": ["src/**/*.ts", "src/shell/renderer/**/*.tsx", "e2e/**/*.ts", "tools/e2e/**/*.ts"],
   "ignoreExportsUsedInFile": true,
-  "ignoreDependencies": ["@types/three"],
-  "ignoreBinaries": ["mise"],
-  "ignore": ["src/shell/renderer/styles/generated/**"]
+  "ignoreDependencies": ["@types/three", "tailwindcss", "@tailwindcss/cli"],
+  "ignoreBinaries": ["mise"]
 }

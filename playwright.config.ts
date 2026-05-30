@@ -9,6 +9,7 @@ const bddTestDir = defineBddConfig({
   features: 'assets/features/e2e/**/*.feature',
   steps: ['e2e/support/fixtures.support.ts', 'e2e/steps/**/*.ts'],
   outputDir: 'e2e/.generated',
+  tags: 'not @todo',
   disableWarnings: { importTestFrom: true }
 })
 

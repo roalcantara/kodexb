@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Shortcuts — Overlay Variant A (Raycast Compact)</title>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --surface: #121721;
+      --surface-2: #0f141d;
+      --border: #232936;
+      --text: #e2e9f5;
+      --muted: #8892a4;
+      --footer: #555;
+      --primary: #5ecfbe;
+      --row-hover: #1c2537;
+      --row-selected: #0f2535;
+      --backdrop: rgba(0, 0, 0, 0.35);
+      --shadow-overlay: 0 8px 24px rgba(0, 0, 0, 0.45);
+      --chip-bg: #1a1f2a;
+      --warn: #ef4444;
+      --soft: #6b7180;
+      --gold: #ffae57;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+    .frame {
+      width: 760px;
+      max-width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+    }
+    .titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .titlebar .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent-fg);
+      display: inline-block;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    .titlebar .close {
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .search .mode-chip {
+      font-size: 10px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--chip-bg);
+      border-radius: 4px;
+      padding: 3px 7px;
+    }
+    .search input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 16px;
+      padding: 4px 0;
+    }
+    .search .input-hint {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .filter-chip__caret {
+      color: var(--muted);
+      font-size: 9px;
+    }
+    .filter-chip__label--all { color: var(--muted); }
+
+    /* centred modal dropdown, like the settings overlay pattern in DESIGN.md */
+    .filter-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: var(--backdrop);
+      z-index: 100;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 13vh;
+    }
+    .filter-modal {
+      width: 480px;
+      max-width: calc(100% - 48px);
+      max-height: 70vh;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: var(--shadow-overlay);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .filter-modal__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-modal__title {
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .filter-modal__hint {
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+    .filter-modal__hint b { color: var(--text); font-weight: 400; }
+    .filter-modal__search {
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filter-modal__search input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .filter-modal__list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px 0;
+    }
+    .filter-modal__item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 18px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      border-left: 3px solid transparent;
+    }
+    .filter-modal__item:hover { background: var(--row-hover); }
+    .filter-modal__item--selected {
+      background: var(--row-selected);
+      border-left-color: var(--primary);
+    }
+    .filter-modal__item--header {
+      padding: 10px 18px 4px;
+      font-size: 0.7rem;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: default;
+      font-weight: 600;
+    }
+    .filter-modal__item--header:hover { background: transparent; }
+    .filter-modal__count {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .filter-modal__item--selected .filter-modal__count { color: var(--text); }
+    .filter-modal__sep {
+      height: 1px;
+      background: var(--border);
+      margin: 6px 0;
+    }
+    .glyph-globals { color: var(--gold); }
+    .glyph-app     { color: var(--muted); }
+    .rows {
+      max-height: 520px;
+      overflow-y: auto;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 200px 16px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .row:first-child { border-top: none; }
+    .row { border-left: 3px solid transparent; }
+    .row:hover { background: var(--row-hover); }
+    .row--selected {
+      background: var(--row-selected);
+      border-left-color: var(--primary);
+    }
+    .row__scope {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.3px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .row__scope b {
+      color: var(--text);
+      font-weight: 500;
+    }
+    .row__icon {
+      text-align: center;
+      font-size: 13px;
+      line-height: 1;
+    }
+    .row__icon--warn { color: var(--warn); }
+    .row__icon--soft { color: var(--soft); opacity: 0.6; }
+    .row__action {
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .row__chord {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .kbd-step {
+      display: inline-flex;
+      gap: 2px;
+    }
+    .kbd-sep {
+      color: var(--footer);
+      padding: 0 2px;
+      font-size: 10px;
+    }
+    .kbd {
+      display: inline-block;
+      min-width: 22px;
+      height: 22px;
+      line-height: 20px;
+      padding: 0 6px;
+      text-align: center;
+      background: var(--chip-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-size: 11px;
+      font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+    }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      color: var(--footer);
+      font-size: 11px;
+    }
+    .footer__keys { display: flex; gap: 14px; }
+    .footer__msg--warn { color: var(--warn); }
+    .footer__msg--ok { color: var(--muted); }
+    .footer__keys b { color: var(--muted); font-weight: 400; }
+    .group-banner {
+      padding: 6px 16px;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-transform: uppercase;
+      background: var(--surface-2);
+      border-top: 1px solid var(--border);
+    }
+    .legend {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="frame">
+      <div class="titlebar">
+        <span><span class="dot"></span>Keyboard Shortcuts</span>
+        <span class="close">✕</span>
+      </div>
+      <div class="search">
+        <span class="mode-chip">text</span>
+        <input value="" placeholder="Search by keys or action…" />
+        <span class="filter-chip" title="⌘K to toggle">
+          <span class="filter-chip__label filter-chip__label--all">All</span>
+          <span class="filter-chip__caret">▾</span>
+        </span>
+        <span class="input-hint">⌘K filter · ⇧⇥ mode · Esc close</span>
+      </div>
+      <div class="rows">
+        <!-- Empty input + frecency-sorted: the user's most-touched bindings first -->
+        <div class="row row--selected">
+          <span class="row__scope"><b>vscode</b> · local</span>
+          <span class="row__icon"></span>
+          <span class="row__action">Go to File</span>
+          <span class="row__chord">
+            <span class="kbd-step"><span class="kbd">⌘</span><span class="kbd">P</span></span>
+          </span>
+        </div>
+        <div class="row">
+          <span class="row__scope"><b>macos</b> · global</span>
+          <span class="row__icon"></span>
+          <span class="row__action">Spotlight</span>
+          <span class="row__chord">
+            <span class="kbd-step"><span class="kbd">⌘</span><span class="kbd">␣</span></span>
+          </span>
+        </div>
+        <div class="row">
+          <span class="row__scope"><b>amethyst</b> · global</span>
+          <span class="row__icon row__icon--warn" title="Hard collision: also global elsewhere">⚠</span>
+          <span class="row__action">Throw window to main pane</span>
+          <span class="row__chord">
+            <span class="kbd-step"><span class="kbd">⌃</span><span class="kbd">⌥</span><span class="kbd">⏎</span></span>
+          </span>
+        </div>
+        <div class="row">
+          <span class="row__scope"><b>vscode</b> · local</span>
+          <span class="row__icon row__icon--soft" title="Soft advisory: same chord in other apps">·</span>
+          <span class="row__action">Show All Commands</span>
+          <span class="row__chord">
+            <span class="kbd-step"><span class="kbd">⌘</span><span class="kbd">⇧</span><span class="kbd">P</span></span>
+          </span>
+        </div>
+        <div class="row">
+          <span class="row__scope"><b>zsh</b> · local</span>
+          <span class="row__icon"></span>
+          <span class="row__action">Move to start of line</span>
+          <span class="row__chord">
+            <span class="kbd-step"><span class="kbd">⌃</span><span class="kbd">A</span></span>
+          </span>
+        </div>
+        <div class="row">
+          <span class="row__scope"><b>zsh</b> · local</span>
+          <span class="row__icon"></span>
+          <span class="row__action">Reverse incremental search</span>
+          <span class="row__chord">
+            <span class="kbd-step"><span class="kbd">⌃</span><span class="kbd">R</span></span>
+          </span>
+        </div>
+        <div class="row">
+          <span class="row__scope"><b>ghostty</b> · local</span>
+          <span class="row__icon"></span>
+          <span class="row__action">Focus pane left</span>
+          <span class="row__chord">
+            <span class="kbd-step"><span class="kbd">F3</span></span>
+            <span class="kbd-sep">▸</span>
+            <span class="kbd-step"><span class="kbd">←</span></span>
+          </span>
+        </div>
+        <div class="row">
+          <span class="row__scope"><b>macos</b> · global</span>
+          <span class="row__icon"></span>
+          <span class="row__action">App Switcher</span>
+          <span class="row__chord">
+            <span class="kbd-step"><span class="kbd">⌘</span><span class="kbd">⇥</span></span>
+          </span>
+        </div>
+        <div class="row">
+          <span class="row__scope"><b>vscode</b> · local</span>
+          <span class="row__icon"></span>
+          <span class="row__action">Open Keyboard Shortcuts</span>
+          <span class="row__chord">
+            <span class="kbd-step"><span class="kbd">⌘</span><span class="kbd">K</span></span>
+            <span class="kbd-sep">▸</span>
+            <span class="kbd-step"><span class="kbd">⌘</span><span class="kbd">S</span></span>
+          </span>
+        </div>
+      </div>
+      <div class="footer">
+        <span class="footer__msg footer__msg--warn">⚠ Also bound globally in: macos (Restart) — press ↵ for chord detail</span>
+        <span class="footer__keys">
+          <span><b>↑↓</b> navigate</span>
+          <span><b>↵</b> chord detail</span>
+          <span><b>⌘↵</b> reveal source</span>
+          <span><b>⌘K</b> filter</span>
+          <span><b>⇧⇥</b> mode</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Centred filter modal, opened by ⌘K within the overlay -->
+    <div class="filter-modal-backdrop" role="dialog" aria-modal="true" aria-label="Filter bindings">
+      <div class="filter-modal">
+        <div class="filter-modal__head">
+          <span class="filter-modal__title">Filter bindings</span>
+          <span class="filter-modal__hint"><b>↑↓</b> navigate · <b>⇥</b> select · <b>Esc</b> close</span>
+        </div>
+        <div class="filter-modal__search">
+          <input value="" placeholder="Filter apps…" />
+        </div>
+        <div class="filter-modal__list" role="listbox" aria-label="Scope and apps">
+          <div class="filter-modal__item filter-modal__item--selected" role="option" aria-selected="true">
+            <span>All</span>
+            <span class="filter-modal__count">102</span>
+          </div>
+          <div class="filter-modal__sep"></div>
+          <div class="filter-modal__item filter-modal__item--header">Scope</div>
+          <div class="filter-modal__item" role="option">
+            <span><span class="glyph-globals">●</span>&nbsp;&nbsp;Globals only</span>
+            <span class="filter-modal__count">30</span>
+          </div>
+          <div class="filter-modal__sep"></div>
+          <div class="filter-modal__item filter-modal__item--header">Apps</div>
+          <div class="filter-modal__item" role="option">
+            <span><span class="glyph-app">⌨</span>&nbsp;&nbsp;amethyst</span>
+            <span class="filter-modal__count">14</span>
+          </div>
+          <div class="filter-modal__item" role="option">
+            <span><span class="glyph-app">⌨</span>&nbsp;&nbsp;ghostty</span>
+            <span class="filter-modal__count">18</span>
+          </div>
+          <div class="filter-modal__item" role="option">
+            <span><span class="glyph-app">⌨</span>&nbsp;&nbsp;macos</span>
+            <span class="filter-modal__count">16</span>
+          </div>
+          <div class="filter-modal__item" role="option">
+            <span><span class="glyph-app">⌨</span>&nbsp;&nbsp;vscode</span>
+            <span class="filter-modal__count">32</span>
+          </div>
+          <div class="filter-modal__item" role="option">
+            <span><span class="glyph-app">⌨</span>&nbsp;&nbsp;zsh</span>
+            <span class="filter-modal__count">22</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="legend">
+      Variant A · Raycast Compact · empty-input shows top bindings by frecency · collision icon column = empty / · / ⚠ · ⌘K opens the centred filter modal
+    </p>
+  </main>
+</body>
+</html>

@@ -45,6 +45,29 @@ Normative policy: [`e2e/requirements.md` R11](e2e/requirements.md#r11---cross-fe
 Scenarios MAY ship with `@todo` until automation lands; release gates require
 green runs without `@todo` on P0/P1 scenarios.
 
+## Verifiable acceptance (no orphan checks)
+
+Every behavior a maintainer must validate before marking a feature
+**beta-ready** — including manual dogfood, preview-server walkthroughs, and
+“integration sanity” checks — MUST be expressed so a reviewer can execute it
+**without reading implementation source**:
+
+1. **`requirements.md`** — at least one numbered **acceptance criterion**
+   (EARS `WHEN … THEN … SHALL …`) with a **Measure** clause when the check is
+   not fully automated.
+2. **`assets/features/e2e/*.feature`** — a Gherkin scenario tagged
+   `@spec:<slug>` when the flow is browser-observable (preferred for release
+   gates). Scenarios MAY carry `@todo` until steps land; the AC still binds the
+   intended outcome.
+3. **`tasks.md`** — MAY link tasks to AC ids and record evidence, but MUST NOT
+   be the **only** place a check exists.
+
+Orphan bullets in `tasks.md`, `handoff.md`, or agent checklists that are not
+backed by an AC or feature scenario are spec debt — add the AC (and scenario
+when applicable) in the same PR series as the behavior.
+
+Cross-feature policy: [`e2e/requirements.md` R11 AC7](e2e/requirements.md#r11---cross-feature-e2e-acceptance).
+
 ## Feature specs (index)
 
 - [Entry Action Panel](entry-action-panel/design.md) — unified entry actions, Return / ⌘Return in list/split/detail, frecency via executor; [requirements](entry-action-panel/requirements.md), [tasks](entry-action-panel/tasks.md), [implementation plan](entry-action-panel/implementation-plan.md).

@@ -20,6 +20,8 @@ mise run project setup
 bun run dev       # Build and launch in dev mode (Electrobun window)
 bun run build     # Production build — dist/kb.app (macOS)
 bun run test      # Run unit tests
+bun run e2e:smoke       # Playwright smoke (@smoke, incl. shortcuts list)
+bun run e2e:regression  # Playwright regression (@regression, incl. overlay)
 bun run typecheck # Type-check without emitting
 bun run lint      # Run the full Phase-1 quality chain
 bun run lint:fix  # Auto-fix what can be fixed (Biome / Knip / ast-grep)
@@ -234,22 +236,22 @@ route in `rpc/server.ts` must be mirrored there ([`CLAUDE.md`](CLAUDE.md)).
 
 ### Glossary
 
-| Term                        | Layer / location                     | Role in app                                                                                                                                                                |
-| --------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Functional Core (FCIS)**  | `src/core/`                          | Pure functions: entry/knowledge models, YAML validation schemas, parsers, task-view filters, tag ranking, list options. No `fetch`, no `fs`, no `bun:sqlite`.              |
-| **Shared**                  | `src/shared/`                        | Cross-cutting **pure** utilities and types (e.g. RPC payload shapes, `getLogger`, `fireAndForget`). No shell imports.                                                   |
-| **Imperative Shell — app**  | `src/shell/app/`                     | **App** orchestrator, config load/save, **ImportService**, `bun:sqlite` repositories, OG fetch, shell-only helpers. All durable I/O except native UI.                      |
-| **Imperative Shell — main** | `src/shell/main/`                    | Electrobun boot: **BrowserWindow**, global shortcuts, native dialogs/external open, **Elysia** `createRpcServer`, IPC **host** wiring sync progress events to the webview. |
-| **Renderer**                | `src/shell/renderer/`                | React UI: pages (`list`, `detail`, `settings`), components, hooks. Calls **`@rpc/client`** (Eden Treaty) only.                                                             |
-| **App / AppService**        | `src/shell/app/app.ts`               | Facade used by every Elysia route: list/query entries, sync, config, tasks, previews, tag suggest, window resize, etc.                                                     |
-| **RpcApp**                  | `src/shell/main/rpc/server.ts`       | Exported Elysia app type — single source of truth for main↔renderer API (replaces a hand-written shared schema).                                                           |
-| **Eden Treaty**             | `src/shell/renderer/rpc/client.ts`   | Type-safe RPC client generated from `RpcApp`; `treaty` + thin wrappers (`getList`, `getEntry`, …).                                                                         |
-| **TypeBox (`t.*`)**         | Routes + `src/core/**/**.schema.ts`  | Sole validation library (transport + domain + config). **Zod is not used.**                                                                                                |
-| **Knowledge / entry**       | Core types + DB row                  | Bookmark, command, cheat, or task row; YAML on disk, row in `knowledges`, optional FTS hit.                                                                                |
-| **ImportService**           | `src/shell/app/db/import.service.ts` | Walks sources dir, validates YAML, upserts SQLite, rebuilds FTS — transactional bulk path.                                                                                 |
-| **Repository**              | `src/shell/app/db/*.repository.ts`   | Typed SQL accessors; routes must not import repositories directly (go through **App**).                                                                                    |
-| **Electrobun IPC**          | `rpc/host.ts`                        | Bridges Elysia handlers to the webview RPC channel (`app-app`).                                                                                                            |
-| **Preview server**          | `tools/preview/server.ts`            | HTTP mirror of production RPC for Playwright / local UI smoke tests.                                                                                                       |
+| Term                        | Layer / location                     | Role in app                                                                                                                                                                                                                     |
+| --------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Functional Core (FCIS)**  | `src/core/`                          | Pure functions: entry/knowledge models, YAML validation schemas, parsers, task-view filters, tag ranking, list options. No `fetch`, no `fs`, no `bun:sqlite`.                                                                   |
+| **Shared**                  | `src/shared/`                        | Cross-cutting **pure** utilities and types (e.g. RPC payload shapes, `getLogger`, `fireAndForget`). No shell imports.                                                                                                           |
+| **Imperative Shell — app**  | `src/shell/app/`                     | **App** orchestrator, config load/save, **ImportService**, `bun:sqlite` repositories, OG fetch, shell-only helpers. All durable I/O except native UI.                                                                           |
+| **Imperative Shell — main** | `src/shell/main/`                    | Electrobun boot: **BrowserWindow**, global shortcuts, native dialogs/external open, **Elysia** `createRpcServer`, IPC **host** wiring sync progress events to the webview.                                                      |
+| **Renderer**                | `src/shell/renderer/`                | React UI: pages (`list`, `detail`, `settings`), components, hooks. Calls **`@rpc/client`** (Eden Treaty) only.                                                                                                                  |
+| **App / AppService**        | `src/shell/app/app.ts`               | Facade used by every Elysia route: list/query entries, sync, config, tasks, previews, tag suggest, window resize, etc.                                                                                                          |
+| **RpcApp**                  | `src/shell/main/rpc/server.ts`       | Exported Elysia app type — single source of truth for main↔renderer API (replaces a hand-written shared schema).                                                                                                                |
+| **Eden Treaty**             | `src/shell/renderer/rpc/client.ts`   | Type-safe RPC client generated from `RpcApp`; `treaty` + thin wrappers (`getList`, `getEntry`, …).                                                                                                                              |
+| **TypeBox (`t.*`)**         | Routes + `src/core/**/**.schema.ts`  | Sole validation library (transport + domain + config). **Zod is not used.**                                                                                                                                                     |
+| **Knowledge / entry**       | Core types + DB row                  | Bookmark, command, cheat, task, or **shortcut** row; YAML on disk, row in `knowledges`, optional FTS hit. Shortcut entries store per-app keymaps (`bindings`, optional `platform`) plus collision metadata in `entry_bindings`. |
+| **ImportService**           | `src/shell/app/db/import.service.ts` | Walks sources dir, validates YAML, upserts SQLite, rebuilds FTS — transactional bulk path.                                                                                                                                      |
+| **Repository**              | `src/shell/app/db/*.repository.ts`   | Typed SQL accessors; routes must not import repositories directly (go through **App**).                                                                                                                                         |
+| **Electrobun IPC**          | `rpc/host.ts`                        | Bridges Elysia handlers to the webview RPC channel (`app-app`).                                                                                                                                                                 |
+| **Preview server**          | `tools/preview/server.ts`            | HTTP mirror of production RPC for Playwright / local UI smoke tests.                                                                                                                                                            |
 
 ### Project definitions and agent routing
 
@@ -291,6 +293,25 @@ Product rules for the list shell (normative for implementation). Full specs: [re
 | **Palette** — actions                                        | **Entry-first** sections: This entry → Clipboard → Source → Library → App (see [design](assets/docs/specs/command-palette-filter-ux/design.md)). With **`selectedId === null`**: Library (Sync, New Task) then App (Quit). Headers are non-selectable. |
 | **Implementation**                                           | Prefer **`keydown` capture** on `window` (or one coordinator). Rename legacy **`cmdk_palette`** / **`app-cmdk-*`** to **`command_palette`** / **`app-command-palette-*`**.                                                                             |
 
+### Keyboard — shortcuts quick-lookup (⌘/)
+
+Global overlay for finding keymap bindings by action text or chord, with
+collision analysis. Normative specs: [requirements](assets/docs/specs/shortcuts/requirements.md) · [design](assets/docs/specs/shortcuts/design.md) · [tasks](assets/docs/specs/shortcuts/tasks.md).
+
+| Shortcut                           | Action                                                                                                     |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **⌘/** / **Ctrl+/**                | Toggle **quick-lookup overlay** from the list shell (focused search input).                                |
+| **Esc**                            | Close overlay; focus returns to the main list search field.                                                |
+| **⌘K** / **Ctrl+K** (overlay open) | Open overlay **filter modal** (app scope) — does not open the list filter overlay.                         |
+| **Text mode**                      | Type an action name (e.g. `go to file`) to search bindings via FTS.                                        |
+| **Chord mode**                     | Type a canonical chord (e.g. `meta+p`) to show a conflicts-first card across apps.                         |
+| **List integration**               | Filter by type **shortcut**; open keymap detail; drill into chord detail with **↵** and return with **←**. |
+
+Shortcut YAML lives under a top-level `shortcuts:` block in source files; import
+upserts `knowledges.bindings` / `platform` and rebuilds FTS (including binding
+action text). E2e coverage: `@spec:shortcuts` in `shortcuts_list.feature` (smoke)
+and `shortcuts_overlay.feature` (regression).
+
 ### CI mirror tasks
 
 The same checks GitHub Actions runs are mirrored locally via [Mise][6]:
@@ -321,17 +342,19 @@ See `assets/guides/LOGGING_GUIDE.md` for the full reference.
 Run `mise tasks ls` for the live task list. These tasks cover local setup,
 agent skill wiring, UI smoke checks, and maintenance workflows:
 
-| Task                          | Use when                                                                                                      |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `mise run project setup`      | Installing tool versions, dependencies, and hooks after cloning.                                              |
-| `mise run prepare`            | Refreshing Bun dependencies and commit hooks without reinstalling tools.                                      |
-| `mise run skill sync`         | Rewriting generated skill routing snippets from `assets/guides/SKILLS.yml`.                                   |
-| `mise run skill install`      | Restoring Skills CLI-managed project skills from `skills-lock.json`.                                          |
-| `mise run test e2e-preview`   | Running Playwright smoke tests. Required for list navigation, filter, task sheet, or preview tooling changes. |
-| `mise run project icons`      | Auditing SVG contrast against the list shell background; use `--fix` only for curated safe replacements.      |
-| `mise run project repo setup` | Creating the GitHub repo and required CI secrets / variables.                                                 |
-| `mise run project repo prune` | Deleting the GitHub repo, releases, and tags for a reset. Use with care.                                      |
-| `mise run project repo reset` | Rebuilding the CI fix branch from the scripted recovery path.                                                 |
+| Task                             | Use when                                                                                                 |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `mise run project setup`         | Installing tool versions, dependencies, and hooks after cloning.                                         |
+| `mise run prepare`               | Refreshing Bun dependencies and commit hooks without reinstalling tools.                                 |
+| `mise run skill sync`            | Rewriting generated skill routing snippets from `assets/guides/SKILLS.yml`.                              |
+| `mise run skill install`         | Restoring Skills CLI-managed project skills from `skills-lock.json`.                                     |
+| `mise run test e2e --smoke`      | Playwright smoke suite (`bun run e2e:smoke`) — list nav, filters, shortcuts list.                        |
+| `mise run test e2e --regression` | Playwright regression suite — overlay, tasks, settings, shortcuts overlay.                               |
+| `mise run test e2e-preview`      | Legacy preview list-nav Playwright spec (`e2e/preview_list_nav.e2e.spec.ts`).                            |
+| `mise run project icons`         | Auditing SVG contrast against the list shell background; use `--fix` only for curated safe replacements. |
+| `mise run project repo setup`    | Creating the GitHub repo and required CI secrets / variables.                                            |
+| `mise run project repo prune`    | Deleting the GitHub repo, releases, and tags for a reset. Use with care.                                 |
+| `mise run project repo reset`    | Rebuilding the CI fix branch from the scripted recovery path.                                            |
 
 ### DEPENDENCIES
 

@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS knowledges (
   task_order  INTEGER,
   depends_on  TEXT             DEFAULT '[]',
   meta        TEXT             DEFAULT '{}',
+  bindings    TEXT             DEFAULT '[]',
+  platform    TEXT,
   created_at  INTEGER NOT NULL,
   updated_at  INTEGER NOT NULL
 );
@@ -73,6 +75,64 @@ export type KnowledgeRow = {
   task_order: number | null
   depends_on: string | null
   meta: string | null
+  bindings: string | null
+  platform: string | null
   created_at: number
   updated_at: number
+}
+
+export const CREATE_ENTRY_BINDINGS_SQL = `
+CREATE TABLE IF NOT EXISTS entry_bindings (
+  id            TEXT PRIMARY KEY,
+  entry_key     TEXT NOT NULL,
+  app           TEXT NOT NULL,
+  platform      TEXT NOT NULL DEFAULT 'any',
+  scope         TEXT NOT NULL,
+  chord_hash    TEXT NOT NULL,
+  chord_prefix  TEXT,
+  action        TEXT NOT NULL,
+  intent        TEXT,
+  when_clause   TEXT,
+  tags_json     TEXT
+);
+`
+
+export const CREATE_BINDING_INDEXES_SQL = [
+  'CREATE INDEX IF NOT EXISTS idx_bindings_chord       ON entry_bindings(chord_hash);',
+  'CREATE INDEX IF NOT EXISTS idx_bindings_chord_app   ON entry_bindings(chord_hash, app);',
+  'CREATE INDEX IF NOT EXISTS idx_bindings_chord_scope ON entry_bindings(chord_hash, scope);',
+  'CREATE INDEX IF NOT EXISTS idx_bindings_app         ON entry_bindings(app);',
+  'CREATE INDEX IF NOT EXISTS idx_bindings_prefix      ON entry_bindings(chord_prefix) WHERE chord_prefix IS NOT NULL;'
+] as const
+
+export const CREATE_BINDING_FRECENCY_SQL = `
+CREATE TABLE IF NOT EXISTS binding_frecency (
+  binding_id    TEXT PRIMARY KEY,
+  score         REAL NOT NULL DEFAULT 0,
+  last_event_at TEXT NOT NULL
+);
+`
+
+export const CREATE_BINDING_FRECENCY_INDEXES_SQL = [
+  'CREATE INDEX IF NOT EXISTS idx_binding_frecency_score ON binding_frecency(score DESC);'
+] as const
+
+export type BindingRow = {
+  id: string
+  entry_key: string
+  app: string
+  platform: string
+  scope: string
+  chord_hash: string
+  chord_prefix: string | null
+  action: string
+  intent: string | null
+  when_clause: string | null
+  tags_json: string | null
+}
+
+export type BindingFrecencyRow = {
+  binding_id: string
+  score: number
+  last_event_at: string
 }

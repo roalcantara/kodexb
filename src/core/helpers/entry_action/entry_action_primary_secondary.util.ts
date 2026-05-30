@@ -5,14 +5,16 @@ const PRIMARY_BY_TYPE: Record<EntryType, EntryActionId> = {
   bookmark: 'open-url',
   command: 'paste-terminal',
   cheat: 'copy',
-  task: 'edit-task'
+  task: 'edit-task',
+  shortcut: 'open-editor'
 }
 
 const SECONDARY_BY_TYPE: Record<EntryType, EntryActionId> = {
   bookmark: 'copy',
   command: 'copy',
   cheat: 'open-editor',
-  task: 'cycle-status'
+  task: 'cycle-status',
+  shortcut: 'copy'
 }
 
 export function primaryActionIdForEntryType(type: EntryType): EntryActionId {

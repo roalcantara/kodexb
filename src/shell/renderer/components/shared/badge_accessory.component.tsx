@@ -1,6 +1,7 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import { memo } from 'react'
 
+import { formatEnGbDate } from '../../utils/shared/format_en_gb_date.util'
 import { isTaskKnowledge, taskIsBlocked, taskIsOverdue } from '../../utils/shared/task_state.util'
 
 export type BadgeAccessoryProps = {
@@ -21,13 +22,6 @@ const STATUS_CLASS: Record<string, string> = {
   todo: 'cmp-pill cmp-pill--todo',
   doing: 'cmp-pill cmp-pill--doing',
   done: 'cmp-pill cmp-pill--done'
-}
-
-function formatDueShort(ms: number | undefined | null): string {
-  if (ms === undefined || ms === null) return ''
-  const d = new Date(ms)
-  if (Number.isNaN(d.getTime())) return ''
-  return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short' }).format(d)
 }
 
 function bookmarkPill(hasUrl: boolean) {
@@ -66,7 +60,7 @@ function taskPills(
   const pri = entry.priority
   const status = entry.status
   const dueDate = entry.dueDate
-  const dueStr = typeof dueDate === 'number' ? formatDueShort(dueDate) : ''
+  const dueStr = typeof dueDate === 'number' ? formatEnGbDate(dueDate) : ''
 
   const statusCls = `${STATUS_CLASS[status] ?? 'cmp-pill'}${onCycleStatus ? ' cmp-pill--clickable' : ''}`
   const priCls =

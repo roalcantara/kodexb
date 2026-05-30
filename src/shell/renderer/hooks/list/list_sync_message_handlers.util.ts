@@ -2,6 +2,7 @@ import type { RpcImportResult, RpcSyncProgressPayload } from '@shared/rpc'
 import { fireAndForget } from '@shared/utils'
 import type { Dispatch, RefObject, SetStateAction } from 'react'
 import type { SyncModalModel } from '../../components/shared/sync_modal.component'
+import { syncCompleteToastForResult } from './list_sync_complete_toast.util'
 
 export type ListSyncMessageHandlerDeps = {
   setSyncUi: Dispatch<SetStateAction<SyncModalModel>>
@@ -43,15 +44,8 @@ export function listSyncMessageHandlers(deps: ListSyncMessageHandlerDeps) {
           summary: result
         }
       })
-      if (!modalWasOpen) {
-        if (result.errors.length > 0) {
-          pushToast(`Sync finished with ${result.errors.length} error(s).`, 'error')
-        } else {
-          pushToast('Sync finished.', 'success')
-        }
-      } else if (result.errors.length > 0) {
-        pushToast(`Sync finished with ${result.errors.length} error(s).`, 'error')
-      }
+      const toast = syncCompleteToastForResult(result, modalWasOpen)
+      if (toast) pushToast(toast.message, toast.type)
       fireAndForget(refreshStats())
       fireAndForget(refreshList(false))
     }

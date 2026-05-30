@@ -72,7 +72,7 @@ function handleDeleteKey(
 
 function findTaskEntry(rows: RpcKnowledge[], selectedId: number): RpcKnowledge | null {
   const entry = rows.find(r => r.id === selectedId)
-  if (!entry || entry.type !== 'task') return null
+  if (entry?.type !== 'task') return null
   return entry
 }
 

@@ -33,6 +33,17 @@ function shell(overrides: Partial<ListPageShell> = {}) {
       actions: [],
       closePalette: () => undefined
     },
+    quickLookup: {
+      open: false,
+      search: '',
+      setSearch: () => undefined,
+      closeOverlay: () => undefined,
+      openOverlay: () => undefined,
+      highlightIndex: 0,
+      setHighlightIndex: () => undefined,
+      resultRows: [],
+      searchInputRef: { current: null }
+    },
     actionToasts: [],
     dismissActionToast: () => undefined,
     ...overrides

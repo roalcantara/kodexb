@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
-import type { RpcSyncProgressPayload } from '@shared/rpc'
+import type { RpcImportResult, RpcSyncProgressPayload } from '@shared/rpc'
 import { factoryFor } from '@testing/factories/factories.builder'
 import {
   getElectrobunMessageHandler,
@@ -21,6 +21,7 @@ const {
   pasteInTerminal,
   resizeWindow,
   setSyncMessageHandlers,
+  onAfterSyncComplete,
   syncRpc
 } = await import('./client')
 
@@ -137,7 +138,9 @@ describe('Eden Treaty client', () => {
   describe('.syncRpc', () => {
     describe('when sourcesDir is omitted', () => {
       it('posts an empty body', async () => {
-        rpcCallMock.mockImplementation(() => okResponse({ filesProcessed: 0, inserted: 0, updated: 0, errors: [] }))
+        rpcCallMock.mockImplementation(() =>
+          okResponse({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [] })
+        )
         await syncRpc()
         const call = rpcCallMock.mock.calls[0]?.[0] as { body: string }
         expect(JSON.parse(call.body)).toEqual({})
@@ -146,11 +149,26 @@ describe('Eden Treaty client', () => {
 
     describe('when sourcesDir is provided', () => {
       it('forwards it in the body', async () => {
-        rpcCallMock.mockImplementation(() => okResponse({ filesProcessed: 0, inserted: 0, updated: 0, errors: [] }))
+        rpcCallMock.mockImplementation(() =>
+          okResponse({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [] })
+        )
         await syncRpc('/abs/path')
         const call = rpcCallMock.mock.calls[0]?.[0] as { body: string }
         expect(JSON.parse(call.body)).toEqual({ sourcesDir: '/abs/path' })
       })
+    })
+
+    it('notifies after-sync listeners when the RPC resolves', async () => {
+      const results: RpcImportResult[] = []
+      const unsub = onAfterSyncComplete(r => results.push(r))
+      rpcCallMock.mockImplementation(() =>
+        okResponse({ filesProcessed: 2, inserted: 1, updated: 1, errors: [], warnings: ['hard collision: cmd+space'] })
+      )
+      await syncRpc()
+      unsub()
+      expect(results).toEqual([
+        { filesProcessed: 2, inserted: 1, updated: 1, errors: [], warnings: ['hard collision: cmd+space'] }
+      ])
     })
   })
 
@@ -191,7 +209,13 @@ describe('Eden Treaty client', () => {
 
       const recentFile = { path: '/tmp/a.yml', label: 'a.yml', ok: true, inserted: 2, updated: 0 }
       getElectrobunMessageHandler('syncProgress')?.({ processed: 1, total: 10, recentFile })
-      getElectrobunMessageHandler('syncComplete')?.({ filesProcessed: 1, inserted: 1, updated: 0, errors: [] })
+      getElectrobunMessageHandler('syncComplete')?.({
+        filesProcessed: 1,
+        inserted: 1,
+        updated: 0,
+        errors: [],
+        warnings: []
+      })
 
       expect(progress).toEqual([{ processed: 1, total: 10, recentFile }])
       expect(completes).toHaveLength(1)

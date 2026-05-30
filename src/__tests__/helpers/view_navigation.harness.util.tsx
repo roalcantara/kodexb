@@ -1,4 +1,4 @@
-import type { RpcKnowledge } from '@shared/rpc'
+import type { Knowledge } from '@core'
 import { render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { useCallback, useRef, useState } from 'react'
@@ -36,9 +36,9 @@ export function ViewNavKeyCapture({
   )
 }
 
-export function ViewNavigationHarness({ rows }: { rows: RpcKnowledge[] }) {
+export function ViewNavigationHarness({ rows }: { rows: Knowledge[] }) {
   const [selectedId, setSelectedId] = useState<number | null>(null)
-  const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
+  const [detailEntry, setDetailEntry] = useState<Knowledge | null>(null)
   const { viewState, handleKey } = useViewNavigation({
     rows,
     selectedId,
@@ -62,9 +62,9 @@ export function ViewNavigationHarness({ rows }: { rows: RpcKnowledge[] }) {
   )
 }
 
-export function ViewNavigationDesyncHarness({ rows }: { rows: RpcKnowledge[] }) {
+export function ViewNavigationDesyncHarness({ rows }: { rows: Knowledge[] }) {
   const [selectedId, setSelectedId] = useState<number | null>(rows[0]?.id ?? null)
-  const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(rows[0] ?? null)
+  const [detailEntry, setDetailEntry] = useState<Knowledge | null>(rows[0] ?? null)
   const { viewState, selectDetailEntry, handleKey } = useViewNavigation({
     rows,
     selectedId,
@@ -85,9 +85,9 @@ export function ViewNavigationDesyncHarness({ rows }: { rows: RpcKnowledge[] }) 
   )
 }
 
-export function ViewNavigationVisitHarness({ rows }: { rows: RpcKnowledge[] }) {
+export function ViewNavigationVisitHarness({ rows }: { rows: Knowledge[] }) {
   const [selectedId, setSelectedId] = useState<number | null>(rows[0]?.id ?? null)
-  const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
+  const [detailEntry, setDetailEntry] = useState<Knowledge | null>(null)
   const { advance, selectDetailEntry, handleKey } = useViewNavigation({
     rows,
     selectedId,
@@ -120,13 +120,13 @@ export function ViewNavigationCopyHarness({
   pushToast,
   actionCtx
 }: {
-  rows: RpcKnowledge[]
+  rows: Knowledge[]
   selectedId: number | null
   pushToast: (msg: string, type: 'success' | 'error') => void
   actionCtx?: EntryActionContext
 }) {
   const [selectedId, setSelectedId] = useState<number | null>(initialSelected)
-  const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
+  const [detailEntry, setDetailEntry] = useState<Knowledge | null>(null)
   const { handleKey } = useViewNavigation({
     rows,
     selectedId,
@@ -149,14 +149,14 @@ export function ViewNavigationSearchHarness({
   onEscapeFromSearch: onEscapeProp,
   hideWindow
 }: {
-  rows: RpcKnowledge[]
+  rows: Knowledge[]
   onEscapeFromSearch?: () => void
   hideWindow?: () => void
 }) {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const listSurfaceRef = useRef<HTMLDivElement>(null)
   const [selectedId, setSelectedId] = useState<number | null>(null)
-  const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
+  const [detailEntry, setDetailEntry] = useState<Knowledge | null>(null)
   const leaveSearch = useCallback(() => {
     searchInputRef.current?.blur()
     listSurfaceRef.current?.focus()
@@ -184,7 +184,7 @@ export function ViewNavigationSearchHarness({
   )
 }
 
-export function renderViewNavSurfaceFocused(rows: RpcKnowledge[]): HTMLElement {
+export function renderViewNavSurfaceFocused(rows: Knowledge[]): HTMLElement {
   render(<ViewNavigationHarness rows={rows} />)
   const surface = screen.getByTestId('surface')
   surface.focus()

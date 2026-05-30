@@ -5,7 +5,7 @@ import type { Knowledge } from '../../core'
 export type RpcKnowledge = Knowledge
 
 /** List/split row: knowledge plus local usage ranking (not in YAML). */
-export type RpcListEntry = RpcKnowledge & {
+export type RpcListEntry = Knowledge & {
   frecencyScore: number
   visitCount: number
 }
@@ -46,6 +46,7 @@ export type RpcGetConfigPayload = {
     terminalApp?: string
     editorApp?: string
     pageSize: string
+    advisories?: boolean
   }
 }
 
@@ -55,6 +56,7 @@ export type RpcImportResult = {
   inserted: number
   updated: number
   errors: string[]
+  warnings: string[]
 }
 
 /** One source file finished (success or failure) during import. */
@@ -79,7 +81,7 @@ export type TaskView = 'actionable' | 'today' | 'overdue' | 'this_week' | 'all_p
 export type ListOpts = {
   query?: string
   tags?: string[]
-  types?: Array<'bookmark' | 'command' | 'cheat' | 'task'>
+  types?: Array<'bookmark' | 'command' | 'cheat' | 'shortcut' | 'task'>
   taskView?: TaskView
   limit?: number
   offset?: number
@@ -90,6 +92,7 @@ export type ListStats = {
   bookmark: number
   command: number
   cheat: number
+  shortcut: number
   task: number
   taskViews: Record<TaskView, number>
   /** Occurrence count per normalized tag (for filter dropdown). */
@@ -115,6 +118,18 @@ export type OpenDialogOpts = {
 export type PreviewImageResult = {
   url: string
   title?: string
+}
+
+/** A single flattened binding row returned by the RPC. */
+export type BindingRef = {
+  bindingId: string
+  entryKey: string
+  app: string
+  platform: 'macos' | 'linux' | 'windows' | 'any'
+  scope: 'global' | 'local'
+  chordHash: string
+  chordPrefix: string | null
+  action: string
 }
 
 /** Task mutation payloads (full CRUD in App layer). */

@@ -16,9 +16,10 @@ const stats: ListStats = {
   command: 0,
   cheat: 0,
   task: 0,
+  shortcut: 0,
   taskViews: emptyTaskViews,
   tags: {},
-  byType: { bookmark: 1, command: 0, cheat: 0, task: 0 }
+  byType: { bookmark: 1, command: 0, cheat: 0, task: 0, shortcut: 0 }
 }
 
 function renderChrome(overrides: Partial<Parameters<typeof ListSearchFilterChrome>[0]> = {}) {

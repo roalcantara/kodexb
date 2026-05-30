@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import fs, { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { factoryFor } from '@testing'
 import type { Knowledge } from '../../../core'
 import { removeTaskFromSource, taskToSourceRecord, writeTaskToSource } from './app_task_source.util'
 
@@ -12,24 +13,28 @@ function stubLog() {
   return { error: () => undefined } as unknown as ReturnType<typeof import('../../../shared/logging').getLogger>
 }
 
-function makeTask(overrides: Partial<Knowledge> = {}): Knowledge {
-  return {
-    type: 'task',
-    id: 1,
-    key: 'Build app',
-    desc: 'Build the knowledge base app',
-    source: '/tmp/test.yaml',
-    doc: '',
-    tags: ['dev'],
-    priority: 'high',
-    status: 'doing',
-    taskOrder: 1,
-    dueDate: 1_700_000_000_000,
-    dependsOn: [2, 3],
-    createdAt: 0,
-    updatedAt: 0,
-    ...overrides
-  } as Knowledge
+const sampleTask = (overrides: Record<string, unknown> = {}): Knowledge =>
+  factoryFor('task', {
+    overrides: {
+      id: 1,
+      key: 'Build app',
+      desc: 'Build the knowledge base app',
+      source: '/tmp/test.yaml',
+      doc: '',
+      tags: ['dev'],
+      priority: 'high',
+      status: 'doing',
+      taskOrder: 1,
+      dueDate: 1_700_000_000_000,
+      dependsOn: [2, 3],
+      ...overrides
+    }
+  }) as Knowledge
+
+async function tasksFromSource(path: string): Promise<Record<string, unknown>> {
+  const content = await fs.readFile(path, 'utf-8')
+  const parsed = Bun.YAML.parse(content) as Record<string, unknown>
+  return parsed.tasks as Record<string, unknown>
 }
 
 beforeEach(async () => {
@@ -43,17 +48,17 @@ afterEach(async () => {
 
 describe('taskToSourceRecord', () => {
   it('includes desc', () => {
-    const shape = taskToSourceRecord(makeTask({ desc: 'A description' }))
+    const shape = taskToSourceRecord(sampleTask({ desc: 'A description' }))
     expect(shape.desc).toBe('A description')
   })
 
   it('includes tags', () => {
-    const shape = taskToSourceRecord(makeTask({ tags: ['dev'] }))
+    const shape = taskToSourceRecord(sampleTask({ tags: ['dev'] }))
     expect(shape.tags).toEqual(['dev'])
   })
 
   it('includes task-specific fields', () => {
-    const shape = taskToSourceRecord(makeTask())
+    const shape = taskToSourceRecord(sampleTask())
     expect(shape.status).toBe('doing')
     expect(shape.priority).toBe('high')
     expect(shape.task_order).toBe(1)
@@ -62,21 +67,21 @@ describe('taskToSourceRecord', () => {
   })
 
   it('omits optional task fields when absent', () => {
-    const shape = taskToSourceRecord(makeTask({ priority: undefined, dueDate: undefined, dependsOn: [] }))
+    const shape = taskToSourceRecord(sampleTask({ priority: undefined, dueDate: undefined, dependsOn: [] }))
     expect(shape).not.toHaveProperty('priority')
     expect(shape).not.toHaveProperty('due')
     expect(shape).not.toHaveProperty('depends_on')
   })
 
   it('omits empty tags', () => {
-    const shape = taskToSourceRecord(makeTask({ tags: [] }))
+    const shape = taskToSourceRecord(sampleTask({ tags: [] }))
     expect(shape).not.toHaveProperty('tags')
   })
 })
 
 describe('writeTaskToSource', () => {
   it('creates a new source file with task', async () => {
-    await writeTaskToSource(stubLog(), sourcePath, makeTask())
+    await writeTaskToSource(stubLog(), sourcePath, sampleTask())
     const content = await fs.readFile(sourcePath, 'utf-8')
     const parsed = Bun.YAML.parse(content) as Record<string, unknown>
     expect(parsed.tasks).toHaveProperty('Build app')
@@ -84,10 +89,8 @@ describe('writeTaskToSource', () => {
 
   it('appends to existing source file', async () => {
     await fs.writeFile(sourcePath, 'tasks:\n  existing: { desc: old }\n', 'utf-8')
-    await writeTaskToSource(stubLog(), sourcePath, makeTask({ key: 'New task' }))
-    const content = await fs.readFile(sourcePath, 'utf-8')
-    const parsed = Bun.YAML.parse(content) as Record<string, unknown>
-    const tasks = parsed.tasks as Record<string, unknown>
+    await writeTaskToSource(stubLog(), sourcePath, sampleTask({ key: 'New task' }))
+    const tasks = await tasksFromSource(sourcePath)
     expect(tasks).toHaveProperty('existing')
     expect(tasks).toHaveProperty('New task')
   })
@@ -95,18 +98,16 @@ describe('writeTaskToSource', () => {
 
 describe('removeTaskFromSource', () => {
   it('removes a task from source file', async () => {
-    await writeTaskToSource(stubLog(), sourcePath, makeTask({ key: 'Keep me' }))
-    await writeTaskToSource(stubLog(), sourcePath, makeTask({ key: 'Remove me' }))
+    await writeTaskToSource(stubLog(), sourcePath, sampleTask({ key: 'Keep me' }))
+    await writeTaskToSource(stubLog(), sourcePath, sampleTask({ key: 'Remove me' }))
     await removeTaskFromSource(stubLog(), 'Remove me', sourcePath)
-    const content = await fs.readFile(sourcePath, 'utf-8')
-    const parsed = Bun.YAML.parse(content) as Record<string, unknown>
-    const tasks = parsed.tasks as Record<string, unknown>
+    const tasks = await tasksFromSource(sourcePath)
     expect(tasks).toHaveProperty('Keep me')
     expect(tasks).not.toHaveProperty('Remove me')
   })
 
   it('deletes file when last task is removed', async () => {
-    await writeTaskToSource(stubLog(), sourcePath, makeTask())
+    await writeTaskToSource(stubLog(), sourcePath, sampleTask())
     await removeTaskFromSource(stubLog(), 'Build app', sourcePath)
     await expect(fs.access(sourcePath)).rejects.toThrow()
   })

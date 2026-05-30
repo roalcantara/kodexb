@@ -1,30 +1,36 @@
 import { describe, expect, it } from 'bun:test'
+import type { JsonValue } from 'type-fest'
 import { parseNoteBlock, parseNoteBlocksFromSource } from './notes.parser'
 
-describe('parseNoteBlock', () => {
-  it('throws when note is not an object', () => {
-    expect(() => parseNoteBlock(null)).toThrow('Each note must be a non-empty object')
+describe('parseNoteBlock()', () => {
+  describe('when note is invalid', () => {
+    describe.each([
+      ['non-object note', null, 'Each note must be a non-empty object'],
+      ['unsupported language', { nope: 'text' }, 'Unsupported note block language']
+    ])('with %s', (_, note, message) => {
+      it('raises an error', () => {
+        expect(() => parseNoteBlock(note)).toThrow(message)
+      })
+    })
   })
 
-  it('throws when language is unsupported', () => {
-    expect(() => parseNoteBlock({ nope: 'text' })).toThrow('Unsupported note block language')
-  })
-
-  it('returns a valid note block', () => {
-    expect(parseNoteBlock({ md: 'hello' })).toEqual({ md: 'hello' })
+  describe('when note is valid', () => {
+    it('returns the note block', () => {
+      expect(parseNoteBlock({ md: 'hello' })).toEqual({ md: 'hello' })
+    })
   })
 })
 
-describe('parseNoteBlocksFromSource', () => {
-  it('parses markdown scalar as md block', () => {
-    expect(parseNoteBlocksFromSource('hello')).toEqual([{ md: 'hello' }])
-  })
+describe('parseNoteBlocksFromSource()', () => {
+  const mixedNoteArray: JsonValue = [{ md: 'ok' }, null, { nope: 'x' }]
 
-  it('parses single map into one-item list', () => {
-    expect(parseNoteBlocksFromSource({ md: 'hello' })).toEqual([{ md: 'hello' }])
-  })
-
-  it('leniently skips invalid array entries', () => {
-    expect(parseNoteBlocksFromSource([{ md: 'ok' }, null, { nope: 'x' }])).toEqual([{ md: 'ok' }])
+  describe.each<[string, JsonValue, { md: string }[]]>([
+    ['markdown scalar', 'hello', [{ md: 'hello' }]],
+    ['single map', { md: 'hello' }, [{ md: 'hello' }]],
+    ['array with invalid entries skipped', mixedNoteArray, [{ md: 'ok' }]]
+  ])('when source is %s', (_, source, expected) => {
+    it('returns note blocks', () => {
+      expect(parseNoteBlocksFromSource(source)).toEqual(expected)
+    })
   })
 })

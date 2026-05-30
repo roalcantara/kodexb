@@ -8,6 +8,7 @@ export function copyTextForEntry(entry: Knowledge): string {
   switch (entry.type) {
     case 'bookmark':
     case 'command':
+    case 'shortcut':
       return entry.key
     case 'cheat':
     case 'task':

@@ -80,11 +80,21 @@ function SyncModalSummary({ summary }: { summary: RpcImportResult }) {
         <li>
           Errors: {summary.errors.length} ({summary.errors.length === 0 ? 'none' : 'see log above'})
         </li>
+        <li>
+          Collision warnings: {summary.warnings.length} ({summary.warnings.length === 0 ? 'none' : 'see below'})
+        </li>
       </ul>
       {summary.errors.length > 0 ? (
         <ul className="cmp-sync-modal-summary-errors">
           {summary.errors.map(err => (
             <li key={err}>{err}</li>
+          ))}
+        </ul>
+      ) : null}
+      {summary.warnings.length > 0 ? (
+        <ul className="cmp-sync-modal-summary-warnings">
+          {summary.warnings.map(warning => (
+            <li key={warning}>{warning}</li>
           ))}
         </ul>
       ) : null}

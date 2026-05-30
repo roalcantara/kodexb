@@ -4,6 +4,7 @@ import type { Knowledge } from '../schemas/knowledge.schema'
 import { buildBookmarkPreamble } from './doc.bookmark.parser'
 import { buildCheatPreamble } from './doc.cheat.parser'
 import { buildCommandPreamble } from './doc.command.parser'
+import { buildShortcutPreamble } from './doc.shortcut.parser'
 import { buildTaskPreamble } from './doc.task.parser'
 import { parseNotes } from './notes.parser'
 
@@ -39,6 +40,8 @@ const buildPreamble = (knowledge: Knowledge, now: Date, previewImageUrl?: string
       return buildBookmarkPreamble(knowledge, previewImageUrl)
     case 'task':
       return buildTaskPreamble(knowledge, now)
+    case 'shortcut':
+      return buildShortcutPreamble(knowledge)
   }
 }
 

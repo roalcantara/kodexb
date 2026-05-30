@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Shortcuts — Chord Detail (Variant C body inside Detail Page)</title>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --surface: #121721;
+      --surface-2: #0f141d;
+      --border: #1a1f2a;
+      --text: #e2e9f5;
+      --muted: #8892a4;
+      --footer: #555;
+      --accent: rgba(94, 207, 190, 0.06);
+      --accent-fg: #5ecfbe;
+      --chip-bg: #232936;
+      --warn: #ff6b6b;
+      --soft: #6b7180;
+      --gold: #ffae57;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+    .frame {
+      width: 940px;
+      max-width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+      display: grid;
+      grid-template-columns: 340px 1fr;
+    }
+    /* left list, dimmed slightly to emphasise that the body is showing a swap-view */
+    .list-pane { border-right: 1px solid var(--border); opacity: 0.92; }
+    .list-search {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .list-search input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--text); font-size: 14px;
+    }
+    .filter-chip {
+      background: var(--chip-bg); border-radius: 4px;
+      padding: 3px 8px; font-size: 11px; color: var(--muted);
+    }
+    .list-row {
+      display: grid; grid-template-columns: 18px 1fr; gap: 10px;
+      align-items: center;
+      padding: 9px 16px; border-top: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .list-row:first-child { border-top: none; }
+    .list-row--selected { background: var(--accent); }
+    .glyph { color: var(--muted); }
+    .glyph--shortcut { color: var(--accent-fg); }
+    .list-row__sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+    /* right body */
+    .detail { display: flex; flex-direction: column; min-height: 540px; }
+
+    .crumb {
+      padding: 10px 22px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .crumb b { color: var(--text); font-weight: 500; }
+    .crumb .back {
+      color: var(--accent-fg);
+      cursor: pointer;
+    }
+    .head {
+      padding: 18px 22px 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px;
+    }
+    .head__chord-block {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .head__chord {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .head__chord .kbd {
+      font-size: 14px;
+      min-width: 32px; height: 32px; line-height: 30px;
+      padding: 0 9px;
+    }
+    .head__title {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .head__meta {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .head__meta b { color: var(--text); font-weight: 500; }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 0 22px 12px;
+    }
+    .summary-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 14px;
+    }
+    .summary-card__label {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+    .summary-card__value {
+      margin-top: 6px;
+      font-size: 16px;
+    }
+    .summary-card__value .scope-mark { vertical-align: middle; margin-right: 8px; }
+    .summary-card__sub {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 6px;
+    }
+    .summary-card--free .summary-card__value { color: var(--soft); font-style: italic; font-size: 13px; }
+    .summary-card--warn { border-color: rgba(255,107,107,0.35); }
+    .summary-card--warn .summary-card__label { color: var(--warn); }
+
+    .tab-row {
+      display: flex;
+      gap: 2px;
+      padding: 8px 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      padding: 6px 12px;
+      border-radius: 4px 4px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid transparent;
+      border-bottom: none;
+      cursor: pointer;
+    }
+    .tab--active {
+      background: var(--surface-2);
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .tab__count {
+      color: var(--muted);
+      font-size: 10px;
+      margin-left: 4px;
+    }
+
+    .rows {
+      flex: 1;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 16px 140px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 22px;
+      border-top: 1px solid var(--border);
+    }
+    .row:first-child { border-top: none; }
+    .row--current { background: var(--accent); }
+    .scope-mark {
+      width: 10px; height: 10px; border-radius: 50%;
+      display: inline-block;
+    }
+    .scope-mark--global {
+      background: var(--gold);
+      box-shadow: 0 0 0 1px rgba(255,174,87,0.3);
+    }
+    .scope-mark--local {
+      border: 1px solid var(--muted);
+      background: transparent;
+    }
+    .row__app {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .row__app b { color: var(--text); font-weight: 500; }
+    .row__action { color: var(--text); }
+    .row__meta {
+      color: var(--muted);
+      font-size: 11px;
+      text-align: right;
+    }
+    .row__meta b { color: var(--text); font-weight: 500; }
+    .row__meta--warn { color: var(--warn); }
+
+    .footer {
+      padding: 10px 22px;
+      border-top: 1px solid var(--border);
+      color: var(--footer); font-size: 11px;
+      display: flex; gap: 18px;
+    }
+    .footer b { color: var(--muted); font-weight: 400; }
+
+    .kbd {
+      display: inline-block;
+      min-width: 22px; height: 22px; line-height: 20px;
+      padding: 0 6px; text-align: center;
+      background: var(--chip-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text); font-size: 11px;
+    }
+
+    .legend {
+      margin-top: 24px;
+      color: var(--muted); font-size: 11px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="frame">
+
+      <!-- Left: list pane for context (same as keymap prototype) -->
+      <aside class="list-pane">
+        <div class="list-search">
+          <input value="" placeholder="Search your knowledge base…" />
+          <span class="filter-chip">Shortcut ▾</span>
+        </div>
+        <div class="list-row">
+          <span class="glyph glyph--shortcut">⌨</span>
+          <div>
+            <div>vscode</div>
+            <div class="list-row__sub">VS Code keymap · 32 bindings</div>
+          </div>
+        </div>
+        <div class="list-row list-row--selected">
+          <span class="glyph glyph--shortcut">⌨</span>
+          <div>
+            <div>amethyst</div>
+            <div class="list-row__sub">Amethyst window manager · 14 globals</div>
+          </div>
+        </div>
+        <div class="list-row">
+          <span class="glyph glyph--shortcut">⌨</span>
+          <div>
+            <div>ghostty</div>
+            <div class="list-row__sub">Ghostty terminal · 18 bindings</div>
+          </div>
+        </div>
+        <div class="list-row">
+          <span class="glyph glyph--shortcut">⌨</span>
+          <div>
+            <div>zsh</div>
+            <div class="list-row__sub">ZSH line editor · 22 bindings</div>
+          </div>
+        </div>
+        <div class="list-row">
+          <span class="glyph glyph--shortcut">⌨</span>
+          <div>
+            <div>macos</div>
+            <div class="list-row__sub">macOS system · 16 globals</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right: chord detail (body swap of Detail Page) -->
+      <section class="detail">
+        <div class="crumb">
+          <span class="back">← amethyst keymap</span>
+          <span>·</span>
+          <span><b>chord detail</b> for <b>⌃ ⌥ T</b></span>
+        </div>
+
+        <div class="head">
+          <div class="head__chord-block">
+            <span class="head__chord">
+              <span class="kbd">⌃</span><span class="kbd">⌥</span><span class="kbd">T</span>
+            </span>
+            <div>
+              <div class="head__title">chord</div>
+              <div class="head__meta">2 apps · <b>1 advisory</b></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary">
+          <div class="summary-card summary-card--free">
+            <div class="summary-card__label">Global</div>
+            <div class="summary-card__value">— chord is free system-wide</div>
+            <div class="summary-card__sub">no global binding will preempt this chord</div>
+          </div>
+          <div class="summary-card summary-card--warn">
+            <div class="summary-card__label">⚠ Advisory</div>
+            <div class="summary-card__value">cross-app overlap</div>
+            <div class="summary-card__sub">vscode and amethyst both bind this chord locally</div>
+          </div>
+        </div>
+
+        <div class="tab-row">
+          <span class="tab tab--active">All<span class="tab__count">2</span></span>
+          <span class="tab">amethyst<span class="tab__count">1</span></span>
+          <span class="tab">vscode<span class="tab__count">1</span></span>
+          <span class="tab">globals<span class="tab__count">0</span></span>
+        </div>
+
+        <div class="rows">
+          <div class="row row--current">
+            <span class="scope-mark scope-mark--local"></span>
+            <span class="row__app">local · <b>amethyst</b></span>
+            <span class="row__action">Toggle floating</span>
+            <span class="row__meta"><b>↵</b> chord detail · macos-only</span>
+          </div>
+          <div class="row">
+            <span class="scope-mark scope-mark--local"></span>
+            <span class="row__app">local · <b>vscode</b></span>
+            <span class="row__action">Toggle terminal</span>
+            <span class="row__meta">when: editorFocus</span>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span><b>↑↓</b> select binding</span>
+          <span><b>⌘↵</b> reveal source</span>
+          <span><b>←</b> back to keymap</span>
+          <span><b>⌘K</b> palette</span>
+        </div>
+      </section>
+    </div>
+    <p class="legend">
+      Chord detail · same Detail-Page level as the keymap detail · body swap, not a new navigation level · ← returns with original binding selection restored
+    </p>
+  </main>
+</body>
+</html>

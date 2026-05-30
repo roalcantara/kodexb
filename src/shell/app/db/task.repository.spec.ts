@@ -3,29 +3,12 @@ import { describe, expect, it } from 'bun:test'
 import { factoryFor } from '@testing'
 import type { Knowledge } from '../../../core'
 import { upsert } from './entry.repository'
+import { CREATE_KNOWLEDGES_SQL } from './schema'
 import { findDependencies, findDependents, maxTaskOrder, updateTaskOrder, wouldCreateCycle } from './task.repository'
 
 function freshDb(): Database {
   const db = new Database(':memory:')
-  db.run(`CREATE TABLE IF NOT EXISTS knowledges (
-    id          INTEGER PRIMARY KEY,
-    type        TEXT    NOT NULL,
-    key         TEXT    NOT NULL,
-    source      TEXT    NOT NULL,
-    desc        TEXT    NOT NULL,
-    tags        TEXT    NOT NULL DEFAULT '[]',
-    links       TEXT             DEFAULT '[]',
-    notes       TEXT             DEFAULT '[]',
-    doc         TEXT    NOT NULL DEFAULT '',
-    priority    TEXT,
-    status      TEXT,
-    due_date    INTEGER,
-    task_order  INTEGER,
-    depends_on  TEXT             DEFAULT '[]',
-    meta        TEXT             DEFAULT '{}',
-    created_at  INTEGER NOT NULL,
-    updated_at  INTEGER NOT NULL
-  )`)
+  db.run(CREATE_KNOWLEDGES_SQL)
   return db
 }
 

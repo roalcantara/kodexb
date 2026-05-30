@@ -6,6 +6,7 @@ export function sampleListStats(overrides: Partial<ListStats> = {}): ListStats {
     bookmark: 1,
     command: 0,
     cheat: 0,
+    shortcut: 0,
     task: 2,
     taskViews: {
       actionable: 0,
@@ -16,7 +17,7 @@ export function sampleListStats(overrides: Partial<ListStats> = {}): ListStats {
       all_doing: 0
     },
     tags: {},
-    byType: { bookmark: 1, command: 0, cheat: 0, task: 2 },
+    byType: { bookmark: 1, command: 0, cheat: 0, shortcut: 0, task: 2 },
     ...overrides
   }
 }

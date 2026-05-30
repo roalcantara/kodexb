@@ -10,11 +10,13 @@ import {
   hideWindowSchema,
   idWithDirSchema,
   idWithReorderDirSchema,
+  listBindingsByChordSchema,
   listOptsSchema,
   listStatsFilterSchema,
   openExternalSchema,
   openInEditorSchema,
   pasteInTerminalSchema,
+  recordBindingVisitSchema,
   resizeWindowSchema,
   setWindowPositionSchema,
   showOpenDialogSchema,
@@ -43,6 +45,13 @@ export function createRpcServer(appInstance: App) {
     .post('/getListStats', ({ body }) => appInstance.getListStats(body), { body: listStatsFilterSchema })
     .post('/getEntry', ({ body }) => appInstance.getEntry(body.id), { body: getEntryParams })
     .post('/recordEntryVisit', ({ body }) => appInstance.recordEntryVisit(body.id), { body: getEntryParams })
+    .post('/listBindings', () => appInstance.listBindings(), { body: emptyBodySchema })
+    .post('/listBindingsByChord', ({ body }) => appInstance.listBindingsByChord(body.hash), {
+      body: listBindingsByChordSchema
+    })
+    .post('/recordBindingVisit', ({ body }) => appInstance.recordBindingVisit(body.id, body.weight), {
+      body: recordBindingVisitSchema
+    })
     .post('/sync', ({ body }) => appInstance.sync(body.sourcesDir), { body: syncParamsInner })
     .post('/getStats', () => appInstance.getStats(), { body: emptyBodySchema })
     .post('/getConfig', () => appInstance.getConfig(), { body: emptyBodySchema })

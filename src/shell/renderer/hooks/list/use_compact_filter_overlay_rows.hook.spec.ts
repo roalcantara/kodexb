@@ -11,6 +11,7 @@ describe('useCompactFilterOverlayRows', () => {
     command: 0,
     cheat: 0,
     task: 1,
+    shortcut: 0,
     taskViews: {
       actionable: 0,
       today: 0,

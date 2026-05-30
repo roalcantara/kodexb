@@ -1,0 +1,57 @@
+shortcuts:
+  macos:
+    desc: macOS system-wide keyboard shortcuts
+    tags: [macos, system]
+    platform: macos
+    bindings:
+      - chord: cmd+space
+        action: Spotlight Search
+        scope: global
+      - chord: cmd+shift+space
+        action: Spotlight File Search
+        scope: global
+      - chord: cmd+tab
+        action: Switch Between Apps
+        scope: global
+      - chord: cmd+shift+tab
+        action: Switch Between Apps (Reverse)
+        scope: global
+      - chord: cmd+`
+        action: Switch Between Windows of Active App
+        scope: global
+      - chord: ctrl+arrowUp
+        action: Mission Control
+        scope: global
+      - chord: ctrl+arrowDown
+        action: Show Application Windows
+        scope: global
+      - chord: ctrl+arrowLeft
+        action: Switch Desktop Left
+        scope: global
+      - chord: ctrl+arrowRight
+        action: Switch Desktop Right
+        scope: global
+      - chord: cmd+shift+3
+        action: Capture Full Screen
+        scope: global
+      - chord: cmd+shift+4
+        action: Capture Selection
+        scope: global
+      - chord: cmd+shift+5
+        action: Capture Screen (Options)
+        scope: global
+      - chord: cmd+shift+ctrl+3
+        action: Capture Full Screen to Clipboard
+        scope: global
+      - chord: cmd+shift+ctrl+4
+        action: Capture Selection to Clipboard
+        scope: global
+      - chord: cmd+alt+esc
+        action: Force Quit Applications
+        scope: global
+      - chord: cmd+ctrl+q
+        action: Lock Screen
+        scope: global
+      - chord: ctrl+cmd+f
+        action: Enter Full Screen
+        scope: global

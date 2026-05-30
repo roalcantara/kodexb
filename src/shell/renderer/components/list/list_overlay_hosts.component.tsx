@@ -4,6 +4,7 @@ import { SettingsPage } from '../../pages/settings/settings.page'
 import { CommandPalette } from '../actions/command_palette.component'
 import { ActionToastHost } from '../shared/action_toast_host.component'
 import { SyncModal } from '../shared/sync_modal.component'
+import { QuickLookupOverlay } from '../shortcuts/quick_lookup_overlay.component'
 import { TaskSheet } from '../task/task_sheet.component'
 
 export type ListOverlayHostsProps = {
@@ -43,6 +44,12 @@ export function ListOverlayHosts({ p, showSettings, setShowSettings, focusMainSe
       )}
       <SyncModal model={p.data.syncUi} onDismiss={p.data.dismissSyncModal} />
       <ActionToastHost toasts={p.actionToasts} onDismiss={p.dismissActionToast} />
+      <QuickLookupOverlay
+        open={p.quickLookup.open}
+        search={p.quickLookup.search}
+        onSearchChange={p.quickLookup.setSearch}
+        onClose={p.quickLookup.closeOverlay}
+      />
     </>
   )
 }

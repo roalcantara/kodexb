@@ -16,6 +16,7 @@ const stats: ListStats = {
   command: 1,
   cheat: 1,
   task: 6,
+  shortcut: 0,
   taskViews: {
     actionable: 1,
     today: 0,

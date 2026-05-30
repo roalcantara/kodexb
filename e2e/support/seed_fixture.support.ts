@@ -86,6 +86,52 @@ const TASKS_YAML = `tasks:
     due: "${OVERDUE}"
 `
 
+const SHORTCUTS_YAML = `shortcuts:
+  release-macos:
+    desc: Release macOS
+    tags: [regression, release]
+    bindings:
+      - chord: cmd+space
+        action: Release Spotlight
+        scope: global
+        group: system
+
+  release-amethyst:
+    desc: Release Amethyst
+    tags: [regression, release]
+    bindings:
+      - chord: cmd+space
+        action: Release Spotlight
+        scope: global
+        group: system
+
+  release-vscode:
+    desc: Release VS Code
+    tags: [regression, release]
+    bindings:
+      - chord: cmd+p
+        action: Release Go To File
+        scope: local
+        group: navigation
+      - chord: cmd+shift+p
+        action: Release Show All Commands
+        scope: local
+        group: navigation
+      - chord: cmd+b
+        action: Release Toggle Sidebar
+        scope: local
+        group: view
+
+  release-browser:
+    desc: Release Browser
+    tags: [release]
+    bindings:
+      - chord: cmd+p
+        action: Release Print
+        scope: local
+        group: app
+`
+
 function configYaml(dbPath: string, sourcesPath: string): string {
   return `database:
   path: "${dbPath}"
@@ -106,13 +152,15 @@ export async function createFixture(): Promise<FixturePaths> {
   await mkdir(path.join(sourcesPath, 'commands'), { recursive: true })
   await mkdir(path.join(sourcesPath, 'cheats'), { recursive: true })
   await mkdir(path.join(sourcesPath, 'tasks'), { recursive: true })
+  await mkdir(path.join(sourcesPath, 'shortcuts'), { recursive: true })
 
   await Promise.all([
     writeFile(configPath, configYaml(dbPath, sourcesPath)),
     writeFile(path.join(sourcesPath, 'bookmarks', 'release.yml'), BOOKMARKS_YAML),
     writeFile(path.join(sourcesPath, 'commands', 'release.yml'), COMMANDS_YAML),
     writeFile(path.join(sourcesPath, 'cheats', 'release.yml'), CHEATS_YAML),
-    writeFile(path.join(sourcesPath, 'tasks', 'release.yml'), TASKS_YAML)
+    writeFile(path.join(sourcesPath, 'tasks', 'release.yml'), TASKS_YAML),
+    writeFile(path.join(sourcesPath, 'shortcuts', 'release.yml'), SHORTCUTS_YAML)
   ])
 
   return { root, configPath, dbPath, sourcesPath }

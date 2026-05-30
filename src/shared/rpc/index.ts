@@ -1,4 +1,5 @@
 export type {
+  BindingRef,
   ConfigPatch,
   DesktopRpcSchema,
   ListOpts,

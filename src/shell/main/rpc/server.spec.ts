@@ -47,6 +47,12 @@ describe('createRpcServer', () => {
     return new App(loaded)
   }
 
+  async function rpcForDefaultShell() {
+    const loaded = await loadedFixture()
+    const app = new App(loaded, {}, 'default', {})
+    return createRpcServer(app)
+  }
+
   describe('POST /api/list', () => {
     describe('when body is empty', () => {
       it('returns an array of entries', async () => {
@@ -159,9 +165,7 @@ describe('createRpcServer', () => {
 
     describe('when no shell hook is wired', () => {
       it('returns a null-equivalent body', async () => {
-        const loaded = await loadedFixture()
-        const app = new App(loaded, {}, 'default', {})
-        const rpc = createRpcServer(app)
+        const rpc = await rpcForDefaultShell()
         const res = await rpc.handle(postJson('/api/getWindowPosition', {}))
         expect(res.status).toBe(200)
         // Elysia serialises a `null` return as an empty body; the renderer
@@ -191,9 +195,7 @@ describe('createRpcServer', () => {
 
     describe('when body is missing required coords', () => {
       it('returns 500 from the validation guard', async () => {
-        const loaded = await loadedFixture()
-        const app = new App(loaded, {}, 'default', {})
-        const rpc = createRpcServer(app)
+        const rpc = await rpcForDefaultShell()
         const res = await rpc.handle(postJson('/api/setWindowPosition', { x: 1 }))
         expect(res.status).toBe(500)
       })

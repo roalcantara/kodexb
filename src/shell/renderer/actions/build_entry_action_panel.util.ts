@@ -140,6 +140,8 @@ function entryTypeActions(entry: RpcKnowledge, ctx: EntryActionContext, deps: En
         copyAction(entry, ctx),
         openEditorAction(entry, ctx, deps)
       ]
+    case 'shortcut':
+      return [copyAction(entry, ctx), openEditorAction(entry, ctx, deps)]
   }
 }
 

@@ -21,6 +21,7 @@ export class ChooseTypeFilter implements Performable {
   async performAs(actor: Actor): Promise<void> {
     const dropdown = actor.page.getByRole('listbox', { name: 'Filter options' })
     const option = dropdown.getByRole('option', { name: new RegExp(this.type, 'i') })
+    await option.first().waitFor({ state: 'attached', timeout: 15_000 })
     await option.first().click()
     await actor.page.waitForTimeout(200)
   }

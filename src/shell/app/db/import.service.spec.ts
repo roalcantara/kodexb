@@ -62,4 +62,41 @@ describe('ImportService', () => {
       expect(result.errors[0]).toContain('broken-bookmark')
     })
   })
+
+  describe('collision warnings', () => {
+    it('reports hard global collisions after import', async () => {
+      const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'kb-collision-'))
+      const dbPath = path.join(tmpDir, 'test.sqlite')
+      const sourcesDir = path.join(tmpDir, 'sources')
+      await fs.mkdir(path.join(sourcesDir, 'shortcuts'), { recursive: true })
+      await fs.writeFile(
+        path.join(sourcesDir, 'shortcuts', 'clash.yml'),
+        `shortcuts:
+  app-a:
+    desc: App A
+    tags: [test]
+    bindings:
+      - chord: cmd+space
+        action: Action A
+        scope: global
+  app-b:
+    desc: App B
+    tags: [test]
+    bindings:
+      - chord: cmd+space
+        action: Action B
+        scope: global
+`,
+        'utf-8'
+      )
+      try {
+        const svc = new ImportService(dbPath)
+        const result = await svc.run(sourcesDir)
+        expect(result.errors).toHaveLength(0)
+        expect(result.warnings.some(w => w.includes('hard collision') && w.includes('cmd+space'))).toBe(true)
+      } finally {
+        await fs.rm(tmpDir, { recursive: true, force: true })
+      }
+    })
+  })
 })

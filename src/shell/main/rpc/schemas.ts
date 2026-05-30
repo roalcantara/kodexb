@@ -28,7 +28,8 @@ const entryTypeSchema = Type.Union([
   Type.Literal(ENTRY_TYPE_VALUES[0]),
   Type.Literal(ENTRY_TYPE_VALUES[1]),
   Type.Literal(ENTRY_TYPE_VALUES[2]),
-  Type.Literal(ENTRY_TYPE_VALUES[3])
+  Type.Literal(ENTRY_TYPE_VALUES[3]),
+  Type.Literal(ENTRY_TYPE_VALUES[4])
 ])
 
 const listFilterFields = {
@@ -113,6 +114,19 @@ export const dirSchema = Type.Union([Type.Literal('forward'), Type.Literal('back
 export const reorderDirSchema = Type.Union([Type.Literal('up'), Type.Literal('down')])
 
 export const emptyBodySchema = Type.Object({}, { additionalProperties: false })
+
+export const listBindingsByChordSchema = Type.Object(
+  { hash: Type.String({ minLength: 1 }) },
+  { additionalProperties: false }
+)
+
+export const recordBindingVisitSchema = Type.Object(
+  {
+    id: Type.String({ minLength: 1 }),
+    weight: Type.Number({ default: 1.0 })
+  },
+  { additionalProperties: false }
+)
 
 export const openExternalSchema = Type.Object({ url: Type.String({ minLength: 1 }) }, { additionalProperties: false })
 export const pasteInTerminalSchema = Type.Object(

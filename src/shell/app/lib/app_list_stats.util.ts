@@ -20,6 +20,7 @@ export function buildListStats(raw: DbRaw): ListStats {
     command: stats.byType.command ?? 0,
     cheat: stats.byType.cheat ?? 0,
     task: stats.byType.task ?? 0,
+    shortcut: stats.byType.shortcut ?? 0,
     taskViews,
     tags,
     byType: stats.byType

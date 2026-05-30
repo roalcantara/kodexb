@@ -11,6 +11,7 @@ gitleaks = "latest"
 container-structure-test = "latest"
 act = "latest"
 gum = "latest"
+biome = "latest"
 
 [env]
 HK_MISE = "1"

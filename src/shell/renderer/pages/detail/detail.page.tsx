@@ -3,6 +3,9 @@ import { fireAndForget } from '@shared/utils'
 import { useEffect, useState } from 'react'
 
 import { DetailPageView } from '../../components/detail/detail_view.component'
+import { useDetailEntryLoader } from '../../hooks/detail/use_detail_entry_loader.hook'
+import { getConfig } from '../../rpc/client'
+import { DetailShortcutBody, navigateToChordDetail } from './detail_shortcut_body.component'
 
 export type DetailPageProps = {
   entryId: number
@@ -27,28 +30,37 @@ export function DetailPage({
   onSelectEntry,
   loadEntry = defaultLoadEntry
 }: DetailPageProps) {
-  const [entry, setEntry] = useState<RpcKnowledge | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [displayAdvisories, setDisplayAdvisories] = useState(false)
+  const { entry, loading, body, setBody } = useDetailEntryLoader({ entryId, loadEntry })
 
   useEffect(() => {
-    let alive = true
-    setLoading(true)
-    setEntry(null)
-    loadEntry(entryId)
-      .then(result => {
-        if (!alive) return
-        setEntry(result)
-        setLoading(false)
+    fireAndForget(
+      getConfig().then(cfg => {
+        setDisplayAdvisories(cfg.display.advisories ?? false)
       })
-      .catch(() => {
-        if (!alive) return
-        setEntry(null)
-        setLoading(false)
-      })
-    return () => {
-      alive = false
-    }
-  }, [entryId, loadEntry])
+    )
+  }, [])
+
+  const handleBack = () => {
+    setBody(prev => ({
+      mode: 'keymap',
+      restoreBindingId: prev.mode === 'chord' ? prev.restoreBindingId : null
+    }))
+  }
+
+  const renderBodyContent = () => {
+    if (!entry || loading) return null
+    return (
+      <DetailShortcutBody
+        entry={entry}
+        entryId={entryId}
+        body={body}
+        displayAdvisories={displayAdvisories}
+        onChordDetailNavigate={(chordHash, bindingId) => navigateToChordDetail(chordHash, bindingId, setBody)}
+        onBack={handleBack}
+      />
+    )
+  }
 
   return (
     <DetailPageView
@@ -58,6 +70,7 @@ export function DetailPage({
       onClose={onClose}
       onSelectEntry={onSelectEntry}
       onOpenExternal={url => fireAndForget(Promise.resolve(defaultOpenExternal(url)))}
+      bodyContent={renderBodyContent()}
     />
   )
 }

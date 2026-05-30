@@ -1,5 +1,6 @@
 import type { PreviewImageResult, RpcKnowledge } from '@shared/rpc'
 import { fireAndForget } from '@shared/utils'
+import type React from 'react'
 import { getIcon } from '../../utils/shared/get_icon.util'
 import { BadgeAccessory } from '../shared/badge_accessory.component'
 import { MdView } from '../shared/md_view.component'
@@ -58,6 +59,7 @@ export type DetailPageViewProps = {
   onSelectEntry: (id: number) => void
   onOpenExternal: (url: string) => void | Promise<void>
   onFetchPreviewImage?: (url: string) => Promise<PreviewImageResult | null>
+  bodyContent?: React.ReactNode
 }
 
 export function DetailPageView({
@@ -67,7 +69,8 @@ export function DetailPageView({
   onClose,
   onSelectEntry,
   onOpenExternal,
-  onFetchPreviewImage
+  onFetchPreviewImage,
+  bodyContent
 }: DetailPageViewProps) {
   if (loading) {
     return (
@@ -129,9 +132,9 @@ export function DetailPageView({
             ) : null}
           </header>
 
-          {md ? (
+          {md || bodyContent ? (
             <section className="cmp-detail-page-body">
-              <MdView markdown={md} onOpenExternal={onOpenExternal} />
+              {bodyContent ?? <MdView markdown={md ?? ''} onOpenExternal={onOpenExternal} />}
             </section>
           ) : null}
 

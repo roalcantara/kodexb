@@ -1,6 +1,7 @@
 import { treaty } from '@elysiajs/eden'
 import { getLogger, RPC_LOG_PREVIEW_MAX_LEN } from '@shared/logging'
 import type {
+  BindingRef,
   ConfigPatch,
   DesktopRpcSchema,
   ListOpts,
@@ -19,8 +20,10 @@ import type {
   TaskUpdateInput
 } from '@shared/rpc'
 import { Electroview } from 'electrobun/view'
-
+import { notifyAfterSyncComplete, onAfterSyncComplete } from './client_sync_complete.util'
 import type { RpcApp } from './rpc_app.types'
+
+export { onAfterSyncComplete }
 
 const rpcClientLog = getLogger(['kb', 'ui', 'rpc-client'])
 
@@ -52,6 +55,7 @@ const webviewRpc = Electroview.defineRPC<DesktopRpcSchema>({
       },
       syncComplete: result => {
         syncListeners.onComplete?.(result)
+        notifyAfterSyncComplete(result)
       }
     }
   }
@@ -200,6 +204,18 @@ export function recordEntryVisit(id: number): Promise<{ ok: true }> {
   return rpc.api.recordEntryVisit.post({ id }).then(unwrap) as Promise<{ ok: true }>
 }
 
+export function listBindings(): Promise<BindingRef[]> {
+  return rpc.api.listBindings.post({}).then(unwrap) as Promise<BindingRef[]>
+}
+
+export function listBindingsByChord(hash: string): Promise<BindingRef[]> {
+  return rpc.api.listBindingsByChord.post({ hash }).then(unwrap) as Promise<BindingRef[]>
+}
+
+export function recordBindingVisit(id: string, weight: number): Promise<{ ok: true }> {
+  return rpc.api.recordBindingVisit.post({ id, weight }).then(unwrap) as Promise<{ ok: true }>
+}
+
 export function getConfig(): Promise<RpcGetConfigPayload> {
   return rpc.api.getConfig.post({}).then(unwrap) as Promise<RpcGetConfigPayload>
 }
@@ -214,7 +230,10 @@ export function showOpenDialog(opts?: OpenDialogOpts): Promise<string | null> {
 
 export function syncRpc(sourcesDir?: string): Promise<RpcImportResult> {
   const params = sourcesDir === undefined ? {} : { sourcesDir }
-  return rpc.api.sync.post(params).then(unwrap) as Promise<RpcImportResult>
+  return (rpc.api.sync.post(params).then(unwrap) as Promise<RpcImportResult>).then(result => {
+    notifyAfterSyncComplete(result)
+    return result
+  })
 }
 
 export function resizeWindow(width: number, height: number): Promise<void> {

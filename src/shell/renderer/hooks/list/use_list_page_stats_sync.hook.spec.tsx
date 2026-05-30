@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, mock } from 'bun:test'
-import type { ListStats, RpcDbStats } from '@shared/rpc'
+import type { ListStats, RpcDbStats, RpcImportResult } from '@shared/rpc'
 import { act, render, screen, waitFor } from '@testing-library/react'
 
 const getListStatsMock = mock<() => Promise<ListStats>>()
@@ -7,7 +7,9 @@ const getStatsMock = mock<() => Promise<RpcDbStats>>()
 const setSyncMessageHandlersMock = mock<(handlers: { onProgress?: unknown; onComplete?: unknown }) => void>(
   () => undefined
 )
-const syncRpcMock = mock(() => Promise.resolve({ filesProcessed: 0, inserted: 0, updated: 0, errors: [] }))
+const syncRpcMock = mock(() =>
+  Promise.resolve({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [] })
+)
 const getSyncInfoMock = mock(() => Promise.resolve({ sourcesDir: '/tmp', fileCount: 0 }))
 const pushToastMock = mock(() => undefined)
 
@@ -28,6 +30,7 @@ describe('useListPageStatsSync', () => {
     command: 1,
     cheat: 1,
     task: 1,
+    shortcut: 0,
     taskViews: {
       actionable: 1,
       today: 0,
@@ -68,7 +71,7 @@ describe('useListPageStatsSync', () => {
       dbSize: 4096
     })
     setSyncMessageHandlersMock.mockImplementation(() => undefined)
-    syncRpcMock.mockResolvedValue({ filesProcessed: 0, inserted: 0, updated: 0, errors: [] })
+    syncRpcMock.mockResolvedValue({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [] })
   })
 
   describe('when mount completes', () => {
@@ -96,9 +99,7 @@ describe('useListPageStatsSync', () => {
 
   describe('when sync completes', () => {
     it('refreshes stats', async () => {
-      let onComplete:
-        | ((result: { filesProcessed: number; inserted: number; updated: number; errors: string[] }) => void)
-        | undefined
+      let onComplete: ((result: RpcImportResult) => void) | undefined
       setSyncMessageHandlersMock.mockImplementation((handlers: { onProgress?: unknown; onComplete?: unknown }) => {
         onComplete = handlers.onComplete as typeof onComplete
       })
@@ -111,7 +112,7 @@ describe('useListPageStatsSync', () => {
       getListStatsMock.mockReset()
       getListStatsMock.mockResolvedValueOnce(listStats)
       act(() => {
-        complete({ filesProcessed: 1, inserted: 1, updated: 0, errors: [] })
+        complete({ filesProcessed: 1, inserted: 1, updated: 0, errors: [], warnings: [] })
       })
       await waitFor(() => expect(getListStatsMock).toHaveBeenCalledTimes(1))
     })

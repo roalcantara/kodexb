@@ -4,6 +4,7 @@ import { fireAndForget } from '@shared/utils'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { EntryActionContext } from '../../actions/entry_action_panel.types'
 import { defaultEntryActionPanelDeps } from '../../actions/entry_action_panel_deps.util'
+import { useQuickLookupState } from '../../hooks/shortcuts/use_quick_lookup_state.hook'
 import { deleteTask, hideWindow, reorderTask } from '../../rpc/client'
 import { focusListSurface } from '../../utils/list/list_keyboard.util'
 import { listPageEmptyFlags } from '../../utils/list/list_page_state.util'
@@ -100,6 +101,11 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     loading: data.loading,
     fetchMore
   })
+  const quickLookup = useQuickLookupState({
+    isBlocked: showSettings || taskSheetVisible || filter.filterOpen,
+    onAfterClose: () => searchInputRef.current?.focus({ preventScroll: true })
+  })
+
   const palette = useCommandPalette({
     selectedId: sel.selectedId,
     rows: data.rows,
@@ -109,7 +115,7 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     onNewTask: handleNewTask,
     onSync: data.onSync,
     setFilterOpen: filter.setFilterOpen,
-    shortcutsBlocked: showSettings || taskSheetVisible,
+    shortcutsBlocked: showSettings || taskSheetVisible || quickLookup.open,
     entryPanelDeps
   })
 
@@ -118,6 +124,7 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     !taskSheetVisible &&
     !filter.filterOpen &&
     !palette.open &&
+    !quickLookup.open &&
     !data.syncUi.open &&
     (sel.detailEntry === null || sel.viewState === 'split')
 
@@ -192,6 +199,7 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     onCloseTaskSheet: handleCloseTaskSheet,
     dragDrop,
     palette,
+    quickLookup,
     actionCtx,
     entryPanelDeps,
     actionToasts,

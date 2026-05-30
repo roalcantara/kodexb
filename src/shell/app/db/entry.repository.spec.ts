@@ -182,3 +182,50 @@ describe('getTagCounts()', () => {
     expect(tags.dev).toBe(1)
   })
 })
+
+describe('shortcut entry round-trip', () => {
+  const filePath = '/shortcuts.yml'
+  const content = `
+shortcuts:
+  release-vscode:
+    desc: Release VS Code
+    tags: [regression]
+    bindings:
+      - chord: cmd+p
+        action: Release Go To File
+        scope: local
+        group: navigation
+      - chord: cmd+shift+p
+        action: Release Show All Commands
+        scope: local
+        group: navigation
+`
+
+  function importShortcut() {
+    const { db, raw } = makeMemoryDb()
+    const [entry] = parseSourceFile(filePath, content)
+    if (!entry) throw new Error('expected entry')
+    upsert(db, toKnowledge(entry, Date.now()))
+    rebuildFts(db)
+    return { db, raw, entry }
+  }
+
+  it('persists and reloads bindings + platform from the knowledges row', () => {
+    const { raw, entry } = importShortcut()
+    const loaded = findById(raw, toKnowledge(entry, 0).id)
+    expect(loaded).not.toBeNull()
+    if (loaded?.type !== 'shortcut') throw new Error('expected shortcut')
+    expect(loaded.bindings).toHaveLength(2)
+    expect(loaded.bindings[0]?.action).toBe('Release Go To File')
+    expect(loaded.bindings[0]?.chord[0]?.modifiers).toContain('cmd')
+    expect(loaded.bindings[0]?.chord[0]?.key).toBe('p')
+    expect(loaded.bindings[0]?.scope).toBe('local')
+  })
+
+  it('indexes binding action text in FTS so search by action returns the entry', () => {
+    const { raw, entry } = importShortcut()
+    const expectedId = toKnowledge(entry, 0).id
+    const hits = findAll(raw, { query: 'Release Go To File' })
+    expect(hits.some(h => h.id === expectedId)).toBe(true)
+  })
+})

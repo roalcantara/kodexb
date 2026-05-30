@@ -141,6 +141,10 @@
   --shadow-overlay-sm: 0 4px 12px rgb(0 0 0 / 0.3);
   --shadow-overlay-lg: 0 8px 24px rgb(0 0 0 / 0.45);
   --shadow-overlay-xl: 0 8px 32px rgb(0 0 0 / 0.4);
+  --shadow-warn-ring: 0 0 0 1px color-mix(in srgb, var(--color-warn) 30%, transparent);
+
+  /* Advisory / soft collision chrome */
+  --color-advisory-muted: #6b7180;
 
   /* Radii */
   --radius-xs: 3px;

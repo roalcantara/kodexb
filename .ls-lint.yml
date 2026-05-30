@@ -25,7 +25,7 @@ ls:
     .ts: regex:^(app|index)(\.spec)?$
 
   src/shell/app/db:
-    .ts: regex:^([a-z][a-z0-9_]*\.(repository|service)|client|schema|index)(\.spec)?$
+    .ts: regex:^([a-z][a-z0-9_]*\.(repository|service)|[a-z][a-z0-9_]+\.(util|const)|client|schema|index)(\.spec)?$
 
   # ── Main: directory↔suffix contract ─────────────────────────────────────────
   # Root: only the entry point and barrel. Everything else lives in a sub-folder.
@@ -78,6 +78,12 @@ ls:
     .ts: regex:^use_[a-z][a-z0-9_]*\.hook$
 
   # Anchor hook rules because ls-lint regexes match substrings. The .ts rules
+  # intentionally allow future .hook.spec.ts tests in shortcuts folder.
+  src/shell/renderer/hooks/shortcuts:
+    .ts: regex:^use_[a-z][a-z0-9_]*\.hook(\.spec)?$
+    .tsx: regex:^use_[a-z][a-z0-9_]*\.hook\.spec$
+
+  # Anchor hook rules because ls-lint regexes match substrings. The .ts rules
   # intentionally allow future .hook.spec.ts tests in list/shared folders.
   src/shell/renderer/hooks/shared:
     .ts: regex:^use_[a-z][a-z0-9_]*\.hook(\.spec)?$
@@ -88,6 +94,10 @@ ls:
     .tsx: regex:[a-z][a-z0-9_]*\.util(\.spec)?
 
   src/shell/renderer/utils/shared:
+    .ts: regex:[a-z][a-z0-9_]*\.util(\.spec)?
+    .tsx: regex:[a-z][a-z0-9_]*\.util(\.spec)?
+
+  src/shell/renderer/utils/shortcuts:
     .ts: regex:[a-z][a-z0-9_]*\.util(\.spec)?
     .tsx: regex:[a-z][a-z0-9_]*\.util(\.spec)?
 
@@ -103,8 +113,11 @@ ls:
   src/shell/renderer/components/shared:
     .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
 
+  src/shell/renderer/components/shortcuts:
+    .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
+
   src/shell/renderer/styles:
-    .css: regex:^(app|theme|list)$
+    .css: regex:^(app|theme|list|shortcuts)$
 
   src/shell/renderer/styles/components:
     .css: regex:^[a-z][a-z0-9_]*$
@@ -130,6 +143,9 @@ ls:
 
   src/core/domain/models/entries/factories:
     .ts: regex:([a-z][a-z0-9_]*\.factory(\.spec)?|index)
+
+  src/core/domain/models/entries/collisions:
+    .ts: regex:([a-z][a-z0-9_]*\.detector(\.spec)?|index)
 
   src/core/domain/models/sources/parsers:
     .ts: regex:([a-z][a-z0-9_]*\.parser(\.spec)?|index)

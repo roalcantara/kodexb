@@ -14,147 +14,200 @@ import {
   taskUpdateSchema
 } from './schemas'
 
+function isValid(schema: Parameters<typeof Value.Check>[0], data: unknown): boolean {
+  return Value.Check(schema, data) === true
+}
+
 describe('listOptsSchema', () => {
-  it('accepts minimal valid payload', () => {
-    expect(Value.Check(listOptsSchema, {})).toBe(true)
-  })
-
-  it('accepts full filter payload', () => {
-    expect(
-      Value.Check(listOptsSchema, {
-        query: 'bun',
-        tags: ['shell'],
-        types: ['bookmark', 'task'],
-        taskView: 'actionable',
-        limit: 20,
-        offset: 0
+  describe('when payload is valid', () => {
+    describe.each([
+      ['minimal fields', {}],
+      [
+        'full filter',
+        {
+          query: 'bun',
+          tags: ['shell'],
+          types: ['bookmark', 'task'],
+          taskView: 'actionable',
+          limit: 20,
+          offset: 0
+        }
+      ]
+    ])('with %s', (_, data) => {
+      it('passes validation', () => {
+        expect(isValid(listOptsSchema, data)).toBe(true)
       })
-    ).toBe(true)
+    })
   })
 
-  it('rejects invalid type', () => {
-    expect(Value.Check(listOptsSchema, { types: ['invalid'] })).toBe(false)
-  })
-
-  it('rejects limit exceeding max', () => {
-    expect(Value.Check(listOptsSchema, { limit: 999_999 })).toBe(false)
+  describe('when payload is invalid', () => {
+    describe.each([
+      ['invalid type', { types: ['invalid'] }],
+      ['limit exceeding max', { limit: 999_999 }]
+    ])('with %s', (_, data) => {
+      it('fails validation', () => {
+        expect(isValid(listOptsSchema, data)).toBe(false)
+      })
+    })
   })
 })
 
 describe('listStatsFilterSchema', () => {
-  it('accepts empty filter', () => {
-    expect(Value.Check(listStatsFilterSchema, {})).toBe(true)
+  describe('when filter is valid', () => {
+    it('passes validation', () => {
+      expect(isValid(listStatsFilterSchema, {})).toBe(true)
+    })
   })
 
-  it('rejects pagination keys', () => {
-    expect(Value.Check(listStatsFilterSchema, { limit: 20 })).toBe(false)
+  describe('when filter is invalid', () => {
+    it('fails validation', () => {
+      expect(isValid(listStatsFilterSchema, { limit: 20 })).toBe(false)
+    })
   })
 })
 
 describe('configPatchSchema', () => {
-  it('accepts partial config patch', () => {
-    expect(Value.Check(configPatchSchema, { pageSize: 50 })).toBe(true)
+  describe('when patch is valid', () => {
+    describe.each([
+      ['partial patch', { pageSize: 50 }],
+      ['empty patch', {}]
+    ])('with %s', (_, data) => {
+      it('passes validation', () => {
+        expect(isValid(configPatchSchema, data)).toBe(true)
+      })
+    })
   })
 
-  it('accepts empty patch', () => {
-    expect(Value.Check(configPatchSchema, {})).toBe(true)
-  })
-
-  it('rejects invalid pageSize', () => {
-    expect(Value.Check(configPatchSchema, { pageSize: 15 })).toBe(false)
+  describe('when patch is invalid', () => {
+    it('fails validation', () => {
+      expect(isValid(configPatchSchema, { pageSize: 15 })).toBe(false)
+    })
   })
 })
 
 describe('taskCreateSchema', () => {
-  it('accepts minimal task', () => {
-    expect(Value.Check(taskCreateSchema, { key: 'Build kb' })).toBe(true)
-  })
-
-  it('accepts full task with priority and tags', () => {
-    expect(
-      Value.Check(taskCreateSchema, {
-        key: 'Build kb',
-        desc: 'Make it work',
-        tags: ['dev'],
-        priority: 'high',
-        dependsOn: [1, 2]
+  describe('when payload is valid', () => {
+    describe.each([
+      ['minimal task', { key: 'Build kb' }],
+      [
+        'full task',
+        {
+          key: 'Build kb',
+          desc: 'Make it work',
+          tags: ['dev'],
+          priority: 'high',
+          dependsOn: [1, 2]
+        }
+      ]
+    ])('with %s', (_, data) => {
+      it('passes validation', () => {
+        expect(isValid(taskCreateSchema, data)).toBe(true)
       })
-    ).toBe(true)
+    })
   })
 
-  it('rejects missing key', () => {
-    expect(Value.Check(taskCreateSchema, {})).toBe(false)
-  })
-
-  it('rejects invalid priority', () => {
-    expect(Value.Check(taskCreateSchema, { key: 'x', priority: 'extreme' })).toBe(false)
+  describe('when payload is invalid', () => {
+    describe.each([
+      ['missing key', {}],
+      ['invalid priority', { key: 'x', priority: 'extreme' }]
+    ])('with %s', (_, data) => {
+      it('fails validation', () => {
+        expect(isValid(taskCreateSchema, data)).toBe(false)
+      })
+    })
   })
 })
 
 describe('taskUpdateSchema', () => {
-  it('accepts minimal patch', () => {
-    expect(Value.Check(taskUpdateSchema, { id: 1, patch: {} })).toBe(true)
+  describe('when payload is valid', () => {
+    describe.each([
+      ['minimal patch', { id: 1, patch: {} }],
+      ['status change', { id: 1, patch: { status: 'done' } }]
+    ])('with %s', (_, data) => {
+      it('passes validation', () => {
+        expect(isValid(taskUpdateSchema, data)).toBe(true)
+      })
+    })
   })
 
-  it('accepts status change', () => {
-    expect(Value.Check(taskUpdateSchema, { id: 1, patch: { status: 'done' } })).toBe(true)
-  })
-
-  it('rejects missing id', () => {
-    expect(Value.Check(taskUpdateSchema, { patch: {} })).toBe(false)
-  })
-
-  it('rejects invalid status', () => {
-    expect(Value.Check(taskUpdateSchema, { id: 1, patch: { status: 'finished' } })).toBe(false)
+  describe('when payload is invalid', () => {
+    describe.each([
+      ['missing id', { patch: {} }],
+      ['invalid status', { id: 1, patch: { status: 'finished' } }]
+    ])('with %s', (_, data) => {
+      it('fails validation', () => {
+        expect(isValid(taskUpdateSchema, data)).toBe(false)
+      })
+    })
   })
 })
 
 describe('showOpenDialogSchema', () => {
-  it('accepts empty body', () => {
-    expect(Value.Check(showOpenDialogSchema, {})).toBe(true)
-  })
-
-  it('accepts with dialog options', () => {
-    expect(
-      Value.Check(showOpenDialogSchema, {
-        opts: { title: 'Open', properties: ['openDirectory'] }
+  describe('when body is valid', () => {
+    describe.each([
+      ['empty body', {}],
+      ['dialog options', { opts: { title: 'Open', properties: ['openDirectory'] } }]
+    ])('with %s', (_, data) => {
+      it('passes validation', () => {
+        expect(isValid(showOpenDialogSchema, data)).toBe(true)
       })
-    ).toBe(true)
+    })
   })
 
-  it('rejects unknown property', () => {
-    expect(Value.Check(showOpenDialogSchema, { unexpected: true })).toBe(false)
+  describe('when body is invalid', () => {
+    it('fails validation', () => {
+      expect(isValid(showOpenDialogSchema, { unexpected: true })).toBe(false)
+    })
   })
 })
 
 describe('syncParamsInner', () => {
-  it('accepts empty sync params', () => {
-    expect(Value.Check(syncParamsInner, {})).toBe(true)
-  })
-
-  it('accepts custom sourcesDir', () => {
-    expect(Value.Check(syncParamsInner, { sourcesDir: '/tmp/src' })).toBe(true)
+  describe('when params are valid', () => {
+    describe.each([
+      ['empty params', {}],
+      ['custom sourcesDir', { sourcesDir: '/tmp/src' }]
+    ])('with %s', (_, data) => {
+      it('passes validation', () => {
+        expect(isValid(syncParamsInner, data)).toBe(true)
+      })
+    })
   })
 })
 
-describe('shell surface schemas', () => {
-  it('openExternalSchema accepts valid url', () => {
-    expect(Value.Check(openExternalSchema, { url: 'https://example.com' })).toBe(true)
+describe('openExternalSchema', () => {
+  describe('when url is valid', () => {
+    it('passes validation', () => {
+      expect(isValid(openExternalSchema, { url: 'https://example.com' })).toBe(true)
+    })
   })
 
-  it('openExternalSchema rejects empty url', () => {
-    expect(Value.Check(openExternalSchema, { url: '' })).toBe(false)
+  describe('when url is empty', () => {
+    it('fails validation', () => {
+      expect(isValid(openExternalSchema, { url: '' })).toBe(false)
+    })
   })
+})
 
-  it('pasteInTerminalSchema accepts valid cmd', () => {
-    expect(Value.Check(pasteInTerminalSchema, { cmd: 'ls' })).toBe(true)
+describe('pasteInTerminalSchema', () => {
+  describe('when cmd is present', () => {
+    it('passes validation', () => {
+      expect(isValid(pasteInTerminalSchema, { cmd: 'ls' })).toBe(true)
+    })
   })
+})
 
-  it('suggestTagsSchema accepts valid entryId', () => {
-    expect(Value.Check(suggestTagsSchema, { entryId: 1 })).toBe(true)
+describe('suggestTagsSchema', () => {
+  describe('when entryId is present', () => {
+    it('passes validation', () => {
+      expect(isValid(suggestTagsSchema, { entryId: 1 })).toBe(true)
+    })
   })
+})
 
-  it('emptyBodySchema accepts empty object', () => {
-    expect(Value.Check(emptyBodySchema, {})).toBe(true)
+describe('emptyBodySchema', () => {
+  describe('when body is empty', () => {
+    it('passes validation', () => {
+      expect(isValid(emptyBodySchema, {})).toBe(true)
+    })
   })
 })

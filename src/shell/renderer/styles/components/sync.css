@@ -308,6 +308,13 @@
   color: var(--color-error);
 }
 
+.cmp-sync-modal-summary-warnings {
+  margin: 8px 0 0;
+  padding-left: 1.25rem;
+  font-size: 0.75rem;
+  color: var(--color-warning, var(--color-error));
+}
+
 .cmp-sync-modal-actions {
   display: flex;
   justify-content: flex-end;

@@ -20,6 +20,8 @@ import type {
 import glob from 'fast-glob'
 import type { LoadedConfig } from './config/config.loader'
 import { saveConfig } from './config/config.loader'
+import { type BindingRef, listAllBindings, listBindingsByChord } from './db/binding.repository'
+import { recordBindingVisit as persistBindingVisit } from './db/binding_frecency.repository'
 import { openDatabase } from './db/client'
 import { deleteById, findAll, findById, getDbStats, upsert } from './db/entry.repository'
 import { recordEntryVisit as persistEntryVisit } from './db/frecency.repository'
@@ -108,6 +110,22 @@ export class App {
     const { raw } = this.getDb()
     persistEntryVisit(raw, id)
     this.invalidateListCache()
+    return Promise.resolve({ ok: true })
+  }
+
+  listBindings(): Promise<BindingRef[]> {
+    const { raw } = this.getDb()
+    return Promise.resolve(listAllBindings(raw))
+  }
+
+  listBindingsByChord(hash: string): Promise<BindingRef[]> {
+    const { raw } = this.getDb()
+    return Promise.resolve(listBindingsByChord(raw, hash))
+  }
+
+  recordBindingVisit(id: string, weight: number): Promise<{ ok: true }> {
+    const { raw } = this.getDb()
+    persistBindingVisit(raw, id, weight)
     return Promise.resolve({ ok: true })
   }
 
@@ -224,7 +242,7 @@ export class App {
 
   async updateTask(id: number, patch: TaskUpdateInput): Promise<Knowledge> {
     const existing = await this.getEntry(id)
-    if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
+    if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
     const merged = { ...existing, ...patch, updatedAt: Date.now() }
     const { raw } = this.getDb()
     upsert(raw, merged)
@@ -235,7 +253,7 @@ export class App {
 
   async deleteTask(id: number): Promise<void> {
     const existing = await this.getEntry(id)
-    if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
+    if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
     const { raw } = this.getDb()
     deleteById(raw, id)
     await removeTaskFromSource(this.log, existing.key, existing.source)
@@ -245,7 +263,7 @@ export class App {
   async cycleStatus(id: number, dir: 'forward' | 'backward'): Promise<Knowledge> {
     const values: TaskEntry['status'][] = ['todo', 'doing', 'done']
     const existing = await this.getEntry(id)
-    if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
+    if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
     const idx = values.indexOf(existing.status)
     const delta = dir === 'forward' ? 1 : -1
     const next = values[(idx + delta + values.length) % values.length]
@@ -256,7 +274,7 @@ export class App {
   async cyclePriority(id: number, dir: 'forward' | 'backward'): Promise<Knowledge> {
     const values: NonNullable<TaskEntry['priority']>[] = ['low', 'mid', 'high', 'urgent']
     const existing = await this.getEntry(id)
-    if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
+    if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
     const current = existing.priority ?? 'mid'
     const idx = values.indexOf(current)
     const delta = dir === 'forward' ? 1 : -1

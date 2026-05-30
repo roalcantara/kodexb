@@ -10,10 +10,10 @@ Feature: Frecency ranking
     And I am viewing the knowledge list
 
   Scenario: Opening detail records a useful visit
-    Given "Release Docs Link" is below "Release Cheat"
+    Given "Release Docs Link" is below "Release Todo Task"
     When I open the detail for "Release Docs Link"
     And I refresh the list
-    Then "Release Docs Link" ranks above "Release Cheat"
+    Then "Release Docs Link" ranks above "Release Todo Task"
 
   Scenario: Running a primary action records usefulness
     Given "Release Command" has the highest frecency score

@@ -2,19 +2,15 @@ import type { Database } from 'bun:sqlite'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { getLogger } from '@shared/logging'
-import type { RpcSyncFileResult, RpcSyncProgressPayload } from '@shared/rpc'
+import type { RpcImportResult, RpcSyncFileResult, RpcSyncProgressPayload } from '@shared/rpc'
 import glob from 'fast-glob'
-import type { Entry, Knowledge } from '../../../core'
-import { isValidSourceRowMin, parseSourceFile, toKnowledge } from '../../../core'
+import type { Entry } from '../../../core'
+import { parseSourceFile } from '../../../core'
+import { listAllBindings } from './binding.repository'
 import { openDatabase } from './client'
-import { rebuildFts, upsert } from './entry.repository'
-
-export type ImportResult = {
-  filesProcessed: number
-  inserted: number
-  updated: number
-  errors: string[]
-}
+import { rebuildFts } from './entry.repository'
+import { upsertKnowledgeBundleInTransaction } from './import_bundle_persist.util'
+import { hardCollisionWarningMessages } from './import_collision_warnings.util'
 
 type ParsedSourceBundle = { filePath: string; items: Entry[] } | { filePath: string; error: string }
 
@@ -50,7 +46,11 @@ export class ImportService {
     }
   }
 
-  private persistParsedSourceBundle(db: Database, bundle: ParsedSourceBundle, result: ImportResult): RpcSyncFileResult {
+  private persistParsedSourceBundle(
+    db: Database,
+    bundle: ParsedSourceBundle,
+    result: RpcImportResult
+  ): RpcSyncFileResult {
     const label = path.basename(bundle.filePath)
     const t0 = performance.now()
     if ('error' in bundle) {
@@ -71,25 +71,9 @@ export class ImportService {
     let updatedInFile = 0
     try {
       db.transaction(() => {
-        const toUpsert: Knowledge[] = []
-        for (const entry of bundle.items) {
-          if (!isValidSourceRowMin({ desc: entry.desc, tags: entry.tags })) {
-            result.errors.push(`${bundle.filePath}: entry "${entry.key}" failed validation`)
-            continue
-          }
-          toUpsert.push(toKnowledge(entry, now))
-        }
-
-        for (const row of toUpsert) {
-          const action = upsert(db, row)
-          if (action === 'inserted') {
-            result.inserted += 1
-            insertedInFile += 1
-          } else {
-            result.updated += 1
-            updatedInFile += 1
-          }
-        }
+        const counts = upsertKnowledgeBundleInTransaction(db, bundle, result, now)
+        insertedInFile = counts.insertedInFile
+        updatedInFile = counts.updatedInFile
       })()
 
       result.filesProcessed += 1
@@ -122,13 +106,14 @@ export class ImportService {
   async runOnce(
     sourcesDir: string,
     options?: { onProgress?: (payload: RpcSyncProgressPayload) => void }
-  ): Promise<ImportResult> {
+  ): Promise<RpcImportResult> {
     const { raw: db } = openDatabase(this.dbPath)
-    const result: ImportResult = {
+    const result: RpcImportResult = {
       filesProcessed: 0,
       inserted: 0,
       updated: 0,
-      errors: []
+      errors: [],
+      warnings: []
     }
 
     const bundles = await this.loadParsedSourceBundles(sourcesDir)
@@ -142,10 +127,14 @@ export class ImportService {
     }
 
     rebuildFts(db)
+    result.warnings = hardCollisionWarningMessages(listAllBindings(db))
     return result
   }
 
-  run(sourcesDir: string, options?: { onProgress?: (payload: RpcSyncProgressPayload) => void }): Promise<ImportResult> {
+  run(
+    sourcesDir: string,
+    options?: { onProgress?: (payload: RpcSyncProgressPayload) => void }
+  ): Promise<RpcImportResult> {
     return this.runOnce(sourcesDir, options)
   }
 }

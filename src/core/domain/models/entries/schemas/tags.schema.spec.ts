@@ -2,20 +2,28 @@ import { describe, expect, it } from 'bun:test'
 import { Value } from '@sinclair/typebox/value'
 import { tagsSchema } from './tags.schema'
 
+function isValid(data: unknown): boolean {
+  return Value.Check(tagsSchema, data) === true
+}
+
 describe('tagsSchema', () => {
-  it('accepts a valid set of tags', () => {
-    expect(Value.Check(tagsSchema, ['foo', 'bar'])).toBe(true)
+  describe('when tags are valid', () => {
+    describe.each([['foo and bar', ['foo', 'bar']]])('with %s', (_, data) => {
+      it('passes validation', () => {
+        expect(isValid(data)).toBe(true)
+      })
+    })
   })
 
-  it('rejects empty tags', () => {
-    expect(Value.Check(tagsSchema, [])).toBe(false)
-  })
-
-  it('rejects more than 4 tags', () => {
-    expect(Value.Check(tagsSchema, ['a', 'b', 'c', 'd', 'e'])).toBe(false)
-  })
-
-  it('rejects invalid characters', () => {
-    expect(Value.Check(tagsSchema, ['foo-bar'])).toBe(false)
+  describe('when tags are invalid', () => {
+    describe.each([
+      ['empty list', []],
+      ['more than four tags', ['a', 'b', 'c', 'd', 'e']],
+      ['invalid characters', ['foo-bar']]
+    ])('with %s', (_, data) => {
+      it('fails validation', () => {
+        expect(isValid(data)).toBe(false)
+      })
+    })
   })
 })

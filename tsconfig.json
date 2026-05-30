@@ -29,6 +29,7 @@
       "@shared/types": ["./src/shared/types/index.ts"],
       "@shared/logging": ["./src/shared/logging/index.ts"],
       "@shared/rpc": ["./src/shared/rpc/index.ts"],
+      "@shared/constants/*": ["./src/shared/constants/*"],
       "@shell/app/db/*": ["./src/shell/app/db/*"],
       "@shell/app/config/*": ["./src/shell/app/config/*"],
       "@testing": ["./src/__tests__/index.ts"],

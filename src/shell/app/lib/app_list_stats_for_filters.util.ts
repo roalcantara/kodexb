@@ -4,8 +4,8 @@ import type { EntryType } from '@core/domain/types/entry.types'
 import type { ListOpts, ListStats, TaskView } from '@shared/rpc'
 import type { LoadedConfig } from '../config/config.loader'
 import type { openDatabase } from '../db/client'
-import { getTagCounts } from '../db/entry.repository'
 import { countKnowledgeForOpts } from './app_list_query.util'
+import { buildTagFacetCounts } from './list_stats_tag_facets.util'
 
 type DbRaw = ReturnType<typeof openDatabase>['raw']
 
@@ -47,19 +47,7 @@ export function buildListStatsForFilters(raw: DbRaw, loaded: LoadedConfig, filte
     })
   }
 
-  const tagKeys = Object.keys(getTagCounts(raw))
-  const tagsOut: Record<string, number> = {}
-  const selectedSet = new Set(tags ?? [])
-  for (const tag of tagKeys) {
-    const marginalTags = selectedSet.has(tag) ? [...(tags ?? [])] : [...(tags ?? []), tag]
-    const uniqueTags = [...new Set(marginalTags)]
-    tagsOut[tag] = countKnowledgeForOpts(raw, loaded, {
-      query,
-      types,
-      taskView,
-      tags: uniqueTags
-    })
-  }
+  const tagsOut = buildTagFacetCounts(raw, loaded, query, types, taskView, tags)
 
   const taskViews = {} as Record<TaskView, number>
   for (const v of TASK_VIEW_KEYS) {
@@ -76,6 +64,7 @@ export function buildListStatsForFilters(raw: DbRaw, loaded: LoadedConfig, filte
     bookmark: typeCounts.bookmark,
     command: typeCounts.command,
     cheat: typeCounts.cheat,
+    shortcut: typeCounts.shortcut,
     task: typeCounts.task,
     taskViews,
     tags: tagsOut,
@@ -83,6 +72,7 @@ export function buildListStatsForFilters(raw: DbRaw, loaded: LoadedConfig, filte
       bookmark: typeCounts.bookmark,
       command: typeCounts.command,
       cheat: typeCounts.cheat,
+      shortcut: typeCounts.shortcut,
       task: typeCounts.task
     }
   }

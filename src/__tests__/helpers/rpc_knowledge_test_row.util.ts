@@ -1,4 +1,4 @@
-import type { RpcKnowledge, RpcListEntry } from '@shared/rpc'
+import type { RpcListEntry } from '@shared/rpc'
 import { factoryFor } from '../factories/factories.builder'
 
 /** Minimal bookmark list row for renderer hook/component specs (explicit id + key). */
@@ -18,7 +18,7 @@ export function rpcBookmarkRow(
       createdAt: 0,
       updatedAt: 0
     }
-  }) as RpcKnowledge
+  })
   return {
     ...base,
     frecencyScore: frecency.score ?? 0,

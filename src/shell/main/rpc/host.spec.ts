@@ -76,60 +76,51 @@ describe('forwardToRpcApp', () => {
   })
 })
 
-describe('validateBridgePayload', () => {
-  it('accepts /api/ path and POST method', () => {
-    expect(() => validateBridgePayload({ path: '/api/echo', method: 'POST' })).not.toThrow()
+describe('validateBridgePayload()', () => {
+  describe('when payload is valid', () => {
+    describe.each([
+      ['POST method', { path: '/api/echo', method: 'POST' }],
+      ['omitted method', { path: '/api/echo' }]
+    ])('with %s', (_, payload) => {
+      it('passes validation', () => {
+        expect(() => validateBridgePayload(payload)).not.toThrow()
+      })
+    })
   })
 
-  it('accepts omitted method (defaults to POST)', () => {
-    expect(() => validateBridgePayload({ path: '/api/echo' })).not.toThrow()
-  })
-
-  it('rejects non-/api/ path', () => {
-    expect(() => validateBridgePayload({ path: '/status' })).toThrow()
-    try {
-      validateBridgePayload({ path: '/status' })
-    } catch (e) {
-      expect((e as { code: string }).code).toBe(bridge_error_codes.invalid_path)
-    }
-  })
-
-  it('rejects empty path', () => {
-    expect(() => validateBridgePayload({ path: '' })).toThrow()
-    try {
-      validateBridgePayload({ path: '' })
-    } catch (e) {
-      expect((e as { code: string }).code).toBe(bridge_error_codes.missing_path)
-    }
-  })
-
-  it('rejects non-POST methods (GET, PUT)', () => {
-    for (const method of ['GET', 'PUT']) {
-      expect(() => validateBridgePayload({ path: '/api/echo', method })).toThrow()
-      try {
-        validateBridgePayload({ path: '/api/echo', method })
-      } catch (e) {
-        expect((e as { code: string }).code).toBe(bridge_error_codes.invalid_method)
-      }
-    }
+  describe('when payload is invalid', () => {
+    describe.each([
+      ['non-/api/ path', { path: '/status' }, bridge_error_codes.invalid_path],
+      ['empty path', { path: '' }, bridge_error_codes.missing_path],
+      ['GET method', { path: '/api/echo', method: 'GET' }, bridge_error_codes.invalid_method],
+      ['PUT method', { path: '/api/echo', method: 'PUT' }, bridge_error_codes.invalid_method]
+    ])('with %s', (_, payload, code) => {
+      it('raises bridge error', () => {
+        expect(() => validateBridgePayload(payload)).toThrow()
+        try {
+          validateBridgePayload(payload)
+        } catch (e) {
+          expect((e as { code: string }).code).toBe(code)
+        }
+      })
+    })
   })
 })
 
 describe('forwardToRpcApp bridge validation', () => {
-  it('rejects non-/api/ path with 400', async () => {
-    const rpc = tinyRpcApp()
-    const result = await forwardToRpcApp(rpc, { path: '/status', body: '{}' })
-    expect(result.status).toBe(HTTP_BAD_REQUEST)
-    const parsed = JSON.parse(result.body) as { error: string }
-    expect(parsed.error).toBe(bridge_error_codes.invalid_path)
-  })
-
-  it('rejects GET method with 400', async () => {
-    const rpc = tinyRpcApp()
-    const result = await forwardToRpcApp(rpc, { path: '/api/echo', method: 'GET', body: '{}' })
-    expect(result.status).toBe(HTTP_BAD_REQUEST)
-    const parsed = JSON.parse(result.body) as { error: string }
-    expect(parsed.error).toBe(bridge_error_codes.invalid_method)
+  describe('when request is invalid', () => {
+    describe.each([
+      ['non-/api/ path', { path: '/status', body: '{}' }, bridge_error_codes.invalid_path],
+      ['GET method', { path: '/api/echo', method: 'GET', body: '{}' }, bridge_error_codes.invalid_method]
+    ])('with %s', (_, request, errorCode) => {
+      it('returns 400', async () => {
+        const rpc = tinyRpcApp()
+        const result = await forwardToRpcApp(rpc, request)
+        expect(result.status).toBe(HTTP_BAD_REQUEST)
+        const parsed = JSON.parse(result.body) as { error: string }
+        expect(parsed.error).toBe(errorCode)
+      })
+    })
   })
 })
 

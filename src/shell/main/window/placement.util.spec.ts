@@ -17,7 +17,7 @@ const fakeDisplay = (workArea: ReturnType<typeof factoryFor<'rectangle'>>) => ({
   isPrimary: true
 })
 
-describe('centerBoundsInWorkArea', () => {
+describe('centerBoundsInWorkArea()', () => {
   const windowSize = factoryFor('windowSize')
 
   describe('with a zero-origin work area', () => {
@@ -33,7 +33,7 @@ describe('centerBoundsInWorkArea', () => {
     const workArea = factoryFor('rectangle', { overrides: { y: 25, width: 1440, height: 875 } })
     const frame = () => centerBoundsInWorkArea(workArea, windowSize)
 
-    it('honors the macOS menu-bar offset', () => {
+    it('honors the menu-bar offset', () => {
       expect(frame()).toEqual(factoryFor('rectangle', { overrides: { x: 380, y: 163, width: 680, height: 600 } }))
     })
   })
@@ -43,13 +43,17 @@ describe('centerBoundsInWorkArea', () => {
     const window = factoryFor('windowSize', { overrides: { width: 200, height: 100 } })
     const result = centerBoundsInWorkArea(workArea, window)
 
-    it('rounds to integers', () => {
+    it('rounds coordinates', () => {
       expect(result).toEqual(factoryFor('rectangle', { overrides: { x: 401, y: 251, width: 200, height: 100 } }))
     })
 
-    it('produces integer coordinates', () => {
-      expect(Number.isInteger(result.x)).toBe(true)
-      expect(Number.isInteger(result.y)).toBe(true)
+    describe.each([
+      ['x', result.x],
+      ['y', result.y]
+    ])('when checking %s', (_, coordinate) => {
+      it('is an integer', () => {
+        expect(Number.isInteger(coordinate)).toBe(true)
+      })
     })
   })
 
@@ -77,38 +81,36 @@ describe('centerBoundsInWorkArea', () => {
     const window = factoryFor('windowSize', { overrides: { width: 680.9, height: 420.1 } })
     const frame = () => centerBoundsInWorkArea(workArea, window)
 
-    it('floors the values', () => {
+    it('floors width and height', () => {
       expect(frame().width).toBe(680)
       expect(frame().height).toBe(420)
     })
   })
 })
 
-describe('isUsableWorkArea', () => {
+describe('isUsableWorkArea()', () => {
   describe('with invalid dimensions', () => {
-    const invalidCases = [
-      { name: 'null', input: null },
-      { name: 'undefined', input: undefined },
-      { name: 'zero width', input: factoryFor('rectangle', { overrides: { width: 0, height: 600 } }) },
-      { name: 'negative height', input: factoryFor('rectangle', { overrides: { width: 800, height: -1 } }) },
-      { name: 'NaN width', input: factoryFor('rectangle', { overrides: { width: Number.NaN, height: 600 } }) }
-    ]
-
-    for (const { name, input } of invalidCases) {
-      it(`rejects ${name}`, () => {
+    describe.each([
+      ['null input', null],
+      ['undefined input', undefined],
+      ['zero width', factoryFor('rectangle', { overrides: { width: 0, height: 600 } })],
+      ['negative height', factoryFor('rectangle', { overrides: { width: 800, height: -1 } })],
+      ['NaN width', factoryFor('rectangle', { overrides: { width: Number.NaN, height: 600 } })]
+    ])('when work area is %s', (_, input) => {
+      it('returns false', () => {
         expect(isUsableWorkArea(input)).toBe(false)
       })
-    }
+    })
   })
 
   describe('with a normal work area', () => {
-    it('accepts the value', () => {
+    it('returns true', () => {
       expect(isUsableWorkArea(factoryFor('rectangle', { overrides: { y: 25, width: 1440, height: 875 } }))).toBe(true)
     })
   })
 })
 
-describe('resolveInitialFrame', () => {
+describe('resolveInitialFrame()', () => {
   const windowSize = factoryFor('windowSize')
   const safeFallbackFrame = factoryFor('rectangle', {
     overrides: { x: SAFE_FALLBACK_X, y: SAFE_FALLBACK_Y, width: windowSize.width, height: windowSize.height }
