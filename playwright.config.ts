@@ -31,7 +31,17 @@ export default defineConfig({
     baseURL: baseUrl,
     trace: 'on-first-retry'
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        contextOptions: {
+          permissions: ['clipboard-read', 'clipboard-write']
+        }
+      }
+    }
+  ],
   webServer: {
     command: 'bun e2e/support/preview_with_fixture.support.ts',
     url: `${baseUrl}/`,

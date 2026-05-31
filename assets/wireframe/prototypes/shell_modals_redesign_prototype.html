@@ -1,0 +1,1153 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>kb — shell &amp; modals redesign (3 proposals)</title>
+  <style>
+    :root {
+      --primary: #5ecfbe;
+      --bg: #11121e;
+      --surface: #1e1f2b;
+      --surface-high: #282935;
+      --border: rgba(255, 255, 255, 0.06);
+      --text: #e2e9f5;
+      --muted: #8892a4;
+      --command: #5ecfbe;
+      --cheat: #a855f7;
+      --error: #ef4444;
+      --radius-xl: 12px;
+      --radius-lg: 8px;
+      --shadow-shell: 0 24px 80px rgba(0, 0, 0, 0.55);
+      --font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --mono: ui-monospace, 'Source Code Pro', Menlo, monospace;
+      --bookmark: #3399ff;
+      --task: #ffae57;
+      --url: #7eb8ff;
+      --app-min-width: 740px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      background:
+        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(94, 207, 190, 0.08), transparent 50%),
+        linear-gradient(180deg, #1a1b27 0%, var(--bg) 40%, #0c0d19 100%);
+      color: var(--text);
+      padding: 24px 16px 48px;
+    }
+
+    .page-header {
+      max-width: 1100px;
+      margin: 0 auto 20px;
+    }
+
+    .page-header h1 {
+      margin: 0 0 6px;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .page-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      max-width: 72ch;
+    }
+
+    .proposal-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: 1100px;
+      margin: 0 auto 16px;
+    }
+
+    .proposal-tab {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: var(--radius-lg);
+      padding: 10px 14px;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: background 120ms, border-color 120ms;
+    }
+
+    .proposal-tab:hover {
+      background: var(--surface-high);
+    }
+
+    .proposal-tab[aria-selected='true'] {
+      border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+      background: color-mix(in srgb, var(--primary) 12%, var(--surface));
+    }
+
+    .proposal-tab strong {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--primary);
+      margin-bottom: 2px;
+      letter-spacing: 0.03em;
+    }
+
+    .proposal-panel {
+      display: none;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .proposal-panel[data-active='true'] {
+      display: block;
+    }
+
+    .proposal-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 800px) {
+      .proposal-meta {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .meta-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      font-size: 0.8125rem;
+      line-height: 1.55;
+    }
+
+    .meta-card h3 {
+      margin: 0 0 8px;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    .meta-card ul {
+      margin: 0;
+      padding-left: 1.1rem;
+    }
+
+    .meta-card li {
+      margin-bottom: 4px;
+    }
+
+    .meta-card .rec {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .stage {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stage-label {
+      grid-column: 1 / -1;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin: 8px 0 0;
+    }
+
+    .stage--single {
+      grid-template-columns: 1fr;
+    }
+
+    .stage--single .app-window--raycast {
+      margin: 0 auto;
+    }
+
+    /* ── App shell (shared) ── */
+    .app-window {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-shell);
+      overflow: hidden;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Raycast-like list window — wider than 560px overlay modals */
+    .app-window--raycast {
+      width: 100%;
+      min-width: min(var(--app-min-width), 100%);
+      max-width: 860px;
+    }
+
+    .drag-stripe {
+      height: 10px;
+      flex-shrink: 0;
+      cursor: grab;
+    }
+
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .search-row .mag {
+      opacity: 0.5;
+      font-size: 18px;
+    }
+
+    .search-row input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 1.125rem;
+      font-weight: 500;
+      outline: none;
+    }
+
+    .search-row input::placeholder {
+      color: var(--muted);
+      opacity: 0.55;
+      font-style: italic;
+    }
+
+    .chip {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      border-radius: var(--radius-lg);
+      padding: 6px 12px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .results {
+      flex: 1;
+      overflow: auto;
+      padding: 4px 0;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr);
+      column-gap: 12px;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      align-items: start;
+    }
+
+    .row:hover:not(.selected) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .glyph {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .glyph--muted {
+      background: color-mix(in srgb, #334155 60%, transparent);
+      color: var(--command);
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .glyph--task {
+      background: color-mix(in srgb, var(--task) 80%, transparent);
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .glyph--plain {
+      background: transparent;
+      padding: 0;
+    }
+
+    .glyph-favicon {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      background: linear-gradient(135deg, #4285f4, #34a853);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .row-body {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .row-meta {
+      font-size: 12px;
+      line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .row-meta--command {
+      font-family: var(--mono);
+      color: var(--command);
+    }
+
+    .row-meta--url {
+      color: var(--url);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .row-meta--cheat {
+      color: var(--muted);
+    }
+
+    .row-meta--task {
+      color: var(--task);
+    }
+
+    .row-meta--task-clock {
+      opacity: 0.85;
+    }
+
+    .row-meta--shortcut {
+      font-family: var(--mono);
+      color: var(--cheat);
+    }
+
+    .row-title {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.45;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: -0.005em;
+    }
+
+    .row-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      font-size: 12px;
+      line-height: 1.35;
+      padding-top: 4px;
+    }
+
+    .row-badges {
+      display: inline-flex;
+      gap: 6px;
+      margin-left: 2px;
+    }
+
+    .badge {
+      font-size: 12px;
+      font-style: normal;
+      text-transform: lowercase;
+      color: var(--muted);
+    }
+
+    .badge--status-doing {
+      color: var(--command);
+    }
+
+    .badge--priority-high {
+      color: var(--task);
+    }
+
+    .tag {
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    /* User tags — saturation scales with library count (see shell-chrome D-SC-007) */
+    .tag--freq-rare {
+      color: color-mix(in srgb, var(--cheat) 32%, var(--muted));
+    }
+
+    .tag--freq-modest {
+      color: color-mix(in srgb, var(--cheat) 52%, var(--muted));
+    }
+
+    .tag--freq-common {
+      color: color-mix(in srgb, var(--cheat) 72%, var(--text));
+    }
+
+    .tag--freq-dominant {
+      color: var(--cheat);
+      font-weight: 400;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(0, 0, 0, 0.15);
+      min-height: 36px;
+    }
+
+    .footer-actions-raycast {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .footer-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding-right: 12px;
+      border-right: 1px solid var(--border);
+      margin-right: 12px;
+      color: var(--text);
+    }
+
+    .footer-primary-hint {
+      opacity: 0.55;
+      font-size: 14px;
+    }
+
+    .footer-actions-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+    }
+
+    .row.selected {
+      background: color-mix(in srgb, var(--primary) 12%, transparent);
+      box-shadow: inset 2px 0 0 var(--cheat);
+    }
+
+    .kbd-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .kbd {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 10px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    /* Proposal-specific chrome */
+    .footer-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .footer-link {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font: inherit;
+      font-size: 11px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .footer-link:hover {
+      color: var(--text);
+    }
+
+    .sync-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      animation: pulse 1.2s ease infinite;
+    }
+
+    @keyframes pulse {
+      50% {
+        opacity: 0.35;
+      }
+    }
+
+    .search-icons {
+      display: flex;
+      gap: 4px;
+      margin-left: 8px;
+    }
+
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: var(--radius-lg);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+    }
+
+    /* ── Overlay mocks ── */
+    .overlay-wrap {
+      position: relative;
+      min-height: 520px;
+    }
+
+    .overlay-wrap .app-window {
+      filter: blur(2px) brightness(0.72);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 16px 16px;
+      background: rgba(0, 0, 0, 0.45);
+    }
+
+    /* A: Raycast unified */
+    .modal-a {
+      width: min(560px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-shell);
+      overflow: hidden;
+    }
+
+    .modal-a input {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      padding: 16px 20px;
+      font-size: 1rem;
+      color: var(--text);
+      outline: none;
+    }
+
+    .modal-a .section {
+      padding: 10px 20px 4px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .modal-a .action {
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+    }
+
+    .modal-a .action.sel {
+      background: color-mix(in srgb, var(--primary) 18%, transparent);
+    }
+
+    .modal-a .hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .sync-a {
+      width: min(560px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      box-shadow: var(--shadow-shell);
+    }
+
+    .sync-a h2 {
+      margin: 0 0 12px;
+      font-size: 1.125rem;
+    }
+
+    .sync-a .stats {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      font-size: 0.8125rem;
+      color: var(--muted);
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sync-a .stats .err {
+      color: var(--error);
+    }
+
+    .progress {
+      height: 6px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .progress>i {
+      display: block;
+      height: 100%;
+      width: 100%;
+      background: var(--primary);
+    }
+
+    .file-row {
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 0.8125rem;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .file-row.err {
+      border-left: 4px solid var(--error);
+      background: color-mix(in srgb, var(--error) 8%, transparent);
+    }
+
+    .file-detail {
+      margin-top: 6px;
+      padding: 8px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      word-break: break-word;
+    }
+
+    /* B: Compact elevated */
+    .modal-b {
+      width: 440px;
+      max-width: 100%;
+      background: var(--surface-high);
+      border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
+      border-radius: 10px;
+      box-shadow: 0 0 0 1px rgba(94, 207, 190, 0.08), var(--shadow-shell);
+    }
+
+    .modal-b input {
+      width: 100%;
+      border: none;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 14px 16px;
+      font-size: 0.9375rem;
+      color: var(--text);
+      outline: none;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .modal-b .action {
+      padding: 9px 16px;
+      font-size: 0.8125rem;
+      border-left: 2px solid transparent;
+    }
+
+    .modal-b .action.sel {
+      border-left-color: var(--primary);
+      background: rgba(94, 207, 190, 0.1);
+    }
+
+    .sync-b {
+      width: 440px;
+      max-width: 100%;
+      border-radius: 10px;
+      padding: 16px;
+      background: var(--surface-high);
+      border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
+    }
+
+    /* C: Hub pages */
+    .hub {
+      width: min(640px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-shell);
+    }
+
+    .hub-nav {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 0 8px;
+    }
+
+    .hub-nav button {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+
+    .hub-nav button.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .hub-body {
+      padding: 16px 20px 20px;
+      min-height: 280px;
+    }
+
+    .hub-body h2 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .hub-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .hub-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+    }
+
+    .open-hint {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .open-hint code {
+      color: var(--primary);
+    }
+  </style>
+</head>
+
+<body>
+  <header class="page-header">
+    <h1>Shell &amp; modals — 3 proposals</h1>
+    <p>
+      Compare layouts that remove the Sync / New Task / Settings row from the main list, unify modal styling with the
+      app shell, and a Raycast-style footer (selected row primary action + Actions ⌘K). Open this file in a browser and
+      switch tabs.
+    </p>
+  </header>
+
+  <div class="proposal-tabs" role="tablist" aria-label="Design proposals">
+    <button type="button" class="proposal-tab" role="tab" aria-selected="true" data-proposal="a">
+      <strong>Proposal A · chosen</strong>
+      Raycast pure — contextual footer
+    </button>
+    <button type="button" class="proposal-tab" role="tab" aria-selected="false" data-proposal="b">
+      <strong>Proposal B</strong>
+      Search-row ghost icons
+    </button>
+    <button type="button" class="proposal-tab" role="tab" aria-selected="false" data-proposal="c">
+      <strong>Proposal C</strong>
+      Unified hub overlay
+    </button>
+  </div>
+
+  <!-- ═══ PROPOSAL A ═══ -->
+  <section class="proposal-panel" data-proposal="a" data-active="true" role="tabpanel">
+    <div class="proposal-meta">
+      <div class="meta-card">
+        <h3>Idea</h3>
+        <p>
+          Delete <code>ListQuickActions</code> entirely. Main screen = search + results + footer only (matches
+          <code>raycast-redesign</code> intent). List window min-width ~740px (Raycast-like). Entry type is conveyed by
+          icon + meta line colour — <strong>not</strong> <code>#command</code> / <code>#bookmark</code> hashtags. Footer
+          shows the selected entry’s primary action (e.g. Paste in Terminal ↵) plus Actions ⌘K. User hashtags only,
+          with chroma by library count.
+        </p>
+      </div>
+      <div class="meta-card">
+        <h3>Trade-offs</h3>
+        <ul>
+          <li><span class="rec">Best visual coherence</span> — zero orphan buttons</li>
+          <li>Mouse-only users use footer primary click or Actions (⌘K)</li>
+          <li>Tag chroma reuses filter facet counts — no new data source</li>
+          <li>Lowest implementation risk — remove row + restyle modals</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="stage-label">
+      Main list — all five entry types · min-width 740px · no type hashtags · tag chroma by count
+    </p>
+    <div class="stage stage--single">
+      <div class="app-window app-window--raycast">
+        <div class="drag-stripe"></div>
+        <div class="search-row">
+          <span class="mag">⌕</span>
+          <input type="search" placeholder="Search your knowledge base…" readonly />
+          <span class="chip">All ▾</span>
+        </div>
+        <div class="results">
+          <!-- command -->
+          <div class="row selected">
+            <div class="glyph glyph--muted">&gt;_</div>
+            <div class="row-body">
+              <div class="row-meta row-meta--command">brew install mise</div>
+              <div class="row-title">Install mise version manager</div>
+              <div class="row-tags">
+                <span class="tag tag--freq-common" title="412 entries">#brew</span>
+                <span class="tag tag--freq-modest" title="64 entries">#dev</span>
+              </div>
+            </div>
+          </div>
+          <!-- bookmark -->
+          <div class="row">
+            <div class="glyph glyph--plain">
+              <span class="glyph-favicon" title="Favicon">G</span>
+            </div>
+            <div class="row-body">
+              <div class="row-meta row-meta--url">https://docs.github.com/en/actions</div>
+              <div class="row-title">GitHub Actions documentation</div>
+              <div class="row-tags">
+                <span class="tag tag--freq-dominant" title="891 entries">#github</span>
+                <span class="tag tag--freq-rare" title="11 entries">#ci</span>
+              </div>
+            </div>
+          </div>
+          <!-- cheat -->
+          <div class="row">
+            <div class="glyph glyph--muted">M↓</div>
+            <div class="row-body">
+              <div class="row-meta row-meta--cheat">git/rebase-interactive</div>
+              <div class="row-title">Interactive rebase cheat sheet</div>
+              <div class="row-tags">
+                <span class="tag tag--freq-common" title="203 entries">#git</span>
+              </div>
+            </div>
+          </div>
+          <!-- task -->
+          <div class="row">
+            <div class="glyph glyph--task">✓</div>
+            <div class="row-body">
+              <div class="row-meta row-meta--task"><span class="row-meta--task-clock">◷ </span>ship-shell-chrome</div>
+              <div class="row-title">Unify list footer and drop quick-actions row</div>
+              <div class="row-tags">
+                <span class="tag tag--freq-modest" title="42 entries">#ui</span>
+                <span class="row-badges">
+                  <span class="badge badge--status-doing">doing</span>
+                  <span class="badge badge--priority-high">high</span>
+                </span>
+              </div>
+            </div>
+          </div>
+          <!-- shortcut -->
+          <div class="row">
+            <div class="glyph glyph--muted">⌘</div>
+            <div class="row-body">
+              <div class="row-meta row-meta--shortcut">cmd+k</div>
+              <div class="row-title">Open command palette</div>
+              <div class="row-tags">
+                <span class="tag tag--freq-rare" title="8 entries">#kb</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <span>4,029 total entries · Showing 50</span>
+          <div class="footer-actions-raycast">
+            <span class="footer-primary">Paste in Terminal <span class="footer-primary-hint">↵</span></span>
+            <span class="footer-actions-label">Actions <span class="kbd">⌘</span><span class="kbd">K</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="stage-label">Overlays — command palette (560px shell, same radius as today’s sync modal)</p>
+    <div class="stage">
+      <div class="overlay-wrap">
+        <div class="app-window app-window--raycast" aria-hidden="true">
+          <div class="drag-stripe"></div>
+          <div class="search-row"><span class="mag">⌕</span><input readonly placeholder="…" /></div>
+        </div>
+        <div class="overlay">
+          <div class="modal-a">
+            <input type="text" placeholder="Type an action…" value="" readonly />
+            <div class="section">Library</div>
+            <div class="action sel"><span>Sync sources</span><span class="hint">↵</span></div>
+            <div class="action"><span>New task</span><span class="hint">⌘N</span></div>
+            <div class="section">App</div>
+            <div class="action"><span>Settings</span><span class="hint">⌘,</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sync-a">
+        <h2>Sync sources</h2>
+        <div style="font-size:0.6875rem;color:var(--muted);text-transform:uppercase">Folder</div>
+        <div
+          style="font-size:0.75rem;padding:6px 8px;background:rgba(255,255,255,0.04);border-radius:4px;margin:4px 0 8px">
+          ~/.config/kodexb/sources/
+        </div>
+        <div><strong>64</strong> source files · <span style="color:var(--muted)">64 / 64 processed</span></div>
+        <div class="progress"><i></i></div>
+        <div class="file-row err">
+          <span>claude.yml</span><span>30 inserted ▸</span>
+          <div class="file-detail">entry "curl https://api.anthropic.com/…": invalid key format</div>
+        </div>
+        <div class="file-row"><span>prompts.yml</span><span>12 inserted</span></div>
+        <div class="stats">
+          Files processed: <strong>64</strong> · Imported: <strong>59</strong> ·
+          <span class="err">With errors: <strong>5</strong></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PROPOSAL B ═══ -->
+  <section class="proposal-panel" data-proposal="b" role="tabpanel">
+    <div class="proposal-meta">
+      <div class="meta-card">
+        <h3>Idea</h3>
+        <p>
+          Remove the button <em>row</em>, but keep mouse affordances: three ghost icon buttons sit inside the search row
+          (same visual language as the All chip). Modals are slightly narrower (440px), elevated with a primary ring —
+          distinct from the list shell but still token-aligned.
+        </p>
+      </div>
+      <div class="meta-card">
+        <h3>Trade-offs</h3>
+        <ul>
+          <li>Best for mixed keyboard + mouse users</li>
+          <li>Search row gets busier on small windows</li>
+          <li>Two modal widths (440 vs 560) — less strict unity</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="stage-label">Main screen — icons in search row (no second row)</p>
+    <div class="stage">
+      <div class="app-window">
+        <div class="drag-stripe"></div>
+        <div class="search-row">
+          <span class="mag">⌕</span>
+          <input type="search" placeholder="Search your knowledge base…" readonly />
+          <span class="chip">All ▾</span>
+          <div class="search-icons">
+            <button type="button" class="icon-btn" title="Sync">↺</button>
+            <button type="button" class="icon-btn" title="New task">+</button>
+            <button type="button" class="icon-btn" title="Settings">⚙</button>
+          </div>
+        </div>
+        <div class="results">
+          <div class="row">
+            <div class="glyph">&gt;_</div>
+            <div class="row-body">
+              <div class="row-title">brew install mise</div>
+              <div class="row-desc">Install mise version manager</div>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <span>4,029 total entries · Showing 50</span>
+          <div class="kbd-row"><span class="kbd">⌘P</span><span class="kbd">⌘K</span></div>
+        </div>
+      </div>
+
+      <div class="overlay-wrap">
+        <div class="app-window" aria-hidden="true">
+          <div class="drag-stripe"></div>
+        </div>
+        <div class="overlay">
+          <div class="modal-b">
+            <input type="text" placeholder="Type an action…" readonly />
+            <div class="action sel">Paste in Terminal</div>
+            <div class="action">Copy</div>
+            <div class="action">Sync sources</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="stage-label">Sync — compact elevated panel</p>
+    <div class="stage">
+      <div class="sync-b">
+        <h2 style="margin:0 0 8px;font-size:1rem">Sync sources</h2>
+        <div class="progress"><i style="width:85%"></i></div>
+        <div style="font-size:0.75rem;color:var(--muted)">54 / 64 processed</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PROPOSAL C ═══ -->
+  <section class="proposal-panel" data-proposal="c" role="tabpanel">
+    <div class="proposal-meta">
+      <div class="meta-card">
+        <h3>Idea</h3>
+        <p>
+          One overlay system: ⌘K opens a <strong>hub</strong> with tabs (Actions · Sync · Settings). Sync progress and
+          settings become pages inside the same shell instead of separate modal styles. List view has absolutely no
+          library actions — pure search + results.
+        </p>
+      </div>
+      <div class="meta-card">
+        <h3>Trade-offs</h3>
+        <ul>
+          <li>Strongest modal consistency long-term</li>
+          <li>Highest engineering cost (hub router, sync page state)</li>
+          <li>Settings UX change — no full-page sheet unless hub expands</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="stage-label">Main screen — pure list</p>
+    <div class="stage">
+      <div class="app-window">
+        <div class="drag-stripe"></div>
+        <div class="search-row">
+          <span class="mag">⌕</span>
+          <input type="search" placeholder="Search your knowledge base…" readonly />
+          <span class="chip">All ▾</span>
+        </div>
+        <div class="results">
+          <div class="row">
+            <div class="glyph">&gt;_</div>
+            <div class="row-body">
+              <div class="row-title">brew install mise</div>
+              <div class="row-desc">Install mise version manager</div>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <div class="footer-actions">
+            <span class="sync-dot" title="Sync idle"></span>
+            <span>4,029 entries</span>
+          </div>
+          <div class="kbd-row"><span class="kbd">⌘K</span> hub</div>
+        </div>
+      </div>
+
+      <div class="overlay-wrap">
+        <div class="app-window" aria-hidden="true">
+          <div class="drag-stripe"></div>
+        </div>
+        <div class="overlay">
+          <div class="hub">
+            <nav class="hub-nav">
+              <button type="button" class="active">Actions</button>
+              <button type="button">Sync</button>
+              <button type="button">Settings</button>
+            </nav>
+            <div class="hub-body">
+              <h2>Library</h2>
+              <ul class="hub-list">
+                <li><span>Sync sources</span><span class="kbd">↵</span></li>
+                <li><span>New task</span><span class="kbd">⌘N</span></li>
+                <li><span>Import from folder…</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="stage-label">Same hub — Sync tab (replaces sync modal)</p>
+    <div class="stage">
+      <div class="hub">
+        <nav class="hub-nav">
+          <button type="button">Actions</button>
+          <button type="button" class="active">Sync</button>
+          <button type="button">Settings</button>
+        </nav>
+        <div class="hub-body">
+          <h2>Sync sources</h2>
+          <div class="progress"><i></i></div>
+          <div class="file-row err"><span>claude.yml</span><span>30 inserted</span></div>
+          <div class="stats" style="border:none;padding-top:8px;margin:0">
+            Imported: <strong>59</strong> · <span class="err">5 with errors</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <p class="open-hint">
+    Open locally:
+    <code>open assets/wireframe/prototypes/shell_modals_redesign_prototype.html</code>
+  </p>
+
+  <script>
+    const tabs = document.querySelectorAll('.proposal-tab')
+    const panels = document.querySelectorAll('.proposal-panel')
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const id = tab.dataset.proposal
+        tabs.forEach(t => t.setAttribute('aria-selected', t === tab ? 'true' : 'false'))
+        panels.forEach(p => p.dataset.active = p.dataset.proposal === id ? 'true' : 'false')
+      })
+    })
+  </script>
+</body>
+
+</html>

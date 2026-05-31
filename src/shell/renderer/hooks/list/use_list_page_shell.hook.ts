@@ -25,9 +25,6 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
   const listSurfaceRef = useRef<HTMLDivElement>(null)
   const listSentinelRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const syncButtonRef = useRef<HTMLButtonElement>(null)
-  const settingsButtonRef = useRef<HTMLButtonElement>(null)
-  const newTaskButtonRef = useRef<HTMLButtonElement>(null)
   const { toasts: actionToasts, pushToast, dismissToast: dismissActionToast } = useActionToast()
   const data = useListPageData({ pushToast })
   const filter = useListFilterOverlay()
@@ -186,9 +183,6 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     listSurfaceRef,
     listSentinelRef,
     searchInputRef,
-    syncButtonRef,
-    settingsButtonRef,
-    newTaskButtonRef,
     onSearchArrowDown,
     onListSurfaceKeyDown,
     onFilterChange,

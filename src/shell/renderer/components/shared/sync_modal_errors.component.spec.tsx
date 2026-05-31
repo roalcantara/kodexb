@@ -27,7 +27,7 @@ function mountSyncModalLayoutStyles(): () => void {
   style.textContent = `
     .cmp-sync-modal {
       box-sizing: border-box;
-      width: min(var(--sync-modal-width, ${SYNC_MODAL_WIDTH_PX}px), 100%);
+      width: min(var(--overlay-shell-width, ${SYNC_MODAL_WIDTH_PX}px), 100%);
       display: flex;
       flex-direction: column;
     }
@@ -210,7 +210,7 @@ describe('SyncModal error UX', () => {
       })
 
       const modal = document.querySelector('.cmp-sync-modal') as HTMLElement
-      expect(modal.style.getPropertyValue('--sync-modal-width')).toBe(`${SYNC_MODAL_WIDTH_PX}px`)
+      expect(modal.style.getPropertyValue('--overlay-shell-width')).toBe(`${SYNC_MODAL_WIDTH_PX}px`)
 
       const styleWhenExpanded = modalInlineStyle()
       const toggle = document.querySelector('.cmp-sync-modal-file-row--interactive') as HTMLButtonElement

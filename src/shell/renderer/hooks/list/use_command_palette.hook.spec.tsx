@@ -12,6 +12,9 @@ const testEntryPanelDeps: EntryActionPanelDeps = {
   openInEditor: mock(() => Promise.resolve()),
   cycleStatus: mock(() => Promise.resolve()),
   cyclePriority: mock(() => Promise.resolve()),
+  runInTerminal: mock(() => Promise.resolve()),
+  pasteInTerminal: mock(() => Promise.resolve()),
+  pasteDoc: mock(() => Promise.resolve()),
   quitApp: mock(() => Promise.resolve())
 }
 

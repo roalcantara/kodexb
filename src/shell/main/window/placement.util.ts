@@ -72,6 +72,29 @@ export function centerBoundsInWorkArea(workArea: Rectangle, size: Size): WindowF
 }
 
 /**
+ * Resolve the display for initial window placement:
+ * - Use the display under the cursor when found,
+ * - Fall back to the primary display otherwise.
+ */
+export function resolveDisplayForPlacement(
+  screen: {
+    getCursorScreenPoint: () => { x: number; y: number }
+    getAllDisplays: () => Display[]
+    getPrimaryDisplay: () => Display
+  },
+  findDisplay: (cursor: { x: number; y: number }, displays: readonly Display[]) => Display | null
+): Display {
+  try {
+    const cursor = screen.getCursorScreenPoint()
+    const displays = screen.getAllDisplays()
+    const atCursor = findDisplay(cursor, displays)
+    return atCursor ?? screen.getPrimaryDisplay()
+  } catch {
+    return screen.getPrimaryDisplay()
+  }
+}
+
+/**
  * Initial window frame:
  * - centered on `display.workArea` when usable;
  * - safe fallback `(100, 100)` otherwise (per spec R2) — never `(0, 0)` unless the

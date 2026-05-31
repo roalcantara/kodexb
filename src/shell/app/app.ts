@@ -30,17 +30,7 @@ import { buildListStats } from './lib/app_list_stats.util'
 import { buildListStatsForFilters } from './lib/app_list_stats_for_filters.util'
 import { fetchPreviewImageFromUrl } from './lib/app_preview_fetch.util'
 import type { AppShellHooks } from './lib/app_shell_hooks.types'
-import {
-  getWindowPositionFor,
-  hideWindowFor,
-  openExternalUrl,
-  openInEditorFor,
-  pasteInTerminalFor,
-  quitFor,
-  resizeWindowFor,
-  setWindowPositionFor,
-  showOpenDialogFor
-} from './lib/app_shell_surface.util'
+import { createAppShellDelegates } from './lib/app_shell_surface.util'
 import { runSourceImportSync } from './lib/app_sync.util'
 import { getSyncInfoForSourcesDir } from './lib/app_sync_info.util'
 import { removeTaskFromSource, resolveCreateTaskTags, writeTaskToSource } from './lib/app_task_source.util'
@@ -61,7 +51,7 @@ export class App {
   private dbStatsCache: RpcDbStats | null = null
   private syncInFlight = false
   private readonly emit: SyncEmitter
-  private readonly shellHooks: AppShellHooks
+  private readonly shellDelegates: ReturnType<typeof createAppShellDelegates>
 
   constructor(
     loaded: LoadedConfig,
@@ -71,7 +61,7 @@ export class App {
   ) {
     this.loaded = loaded
     this.emit = emit
-    this.shellHooks = shellHooks
+    this.shellDelegates = createAppShellDelegates(shellHooks, () => this.loaded)
     this.log = getLogger(['kb', 'app'])
   }
 
@@ -305,25 +295,26 @@ export class App {
   }
 
   openExternal(url: string): Promise<void> {
-    return openExternalUrl(this.shellHooks, url)
+    return this.shellDelegates.openExternal(url)
   }
-
   pasteInTerminal(cmd: string): Promise<void> {
-    return pasteInTerminalFor(this.shellHooks, cmd, this.loaded.display.terminalApp)
+    return this.shellDelegates.pasteInTerminal(cmd)
   }
-
+  runInTerminal(cmd: string): Promise<void> {
+    return this.shellDelegates.runInTerminal(cmd)
+  }
+  pasteDoc(doc: string): Promise<void> {
+    return this.shellDelegates.pasteDoc(doc)
+  }
   openInEditor(filePath: string): Promise<void> {
-    return openInEditorFor(this.shellHooks, filePath, this.loaded.display.editorApp)
+    return this.shellDelegates.openInEditor(filePath)
   }
-
   showOpenDialog(opts?: OpenDialogOpts): Promise<string | null> {
-    return showOpenDialogFor(this.shellHooks, opts)
+    return this.shellDelegates.showOpenDialog(opts)
   }
-
   fetchPreviewImage(url: string): Promise<PreviewImageResult | null> {
     return fetchPreviewImageFromUrl(url)
   }
-
   async suggestTags(entryId: number): Promise<string[]> {
     const entry = await this.getEntry(entryId)
     if (!entry) return []
@@ -333,22 +324,18 @@ export class App {
   }
 
   resizeWindow(width: number, height: number): Promise<void> {
-    return resizeWindowFor(this.shellHooks, width, height)
+    return this.shellDelegates.resizeWindow(width, height)
   }
-
   hideWindow(): Promise<void> {
-    return hideWindowFor(this.shellHooks)
+    return this.shellDelegates.hideWindow()
   }
-
   getWindowPosition(): Promise<{ x: number; y: number } | null> {
-    return getWindowPositionFor(this.shellHooks)
+    return this.shellDelegates.getWindowPosition()
   }
-
   setWindowPosition(x: number, y: number): Promise<void> {
-    return setWindowPositionFor(this.shellHooks, x, y)
+    return this.shellDelegates.setWindowPosition(x, y)
   }
-
   quit(): Promise<void> {
-    return quitFor(this.shellHooks)
+    return this.shellDelegates.quit()
   }
 }

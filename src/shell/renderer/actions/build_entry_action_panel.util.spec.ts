@@ -11,6 +11,9 @@ const noopDeps: EntryActionPanelDeps = {
   openInEditor: mock(() => Promise.resolve()),
   cycleStatus: mock(() => Promise.resolve()),
   cyclePriority: mock(() => Promise.resolve()),
+  runInTerminal: mock(() => Promise.resolve()),
+  pasteInTerminal: mock(() => Promise.resolve()),
+  pasteDoc: mock(() => Promise.resolve()),
   quitApp: mock(() => Promise.resolve())
 }
 
@@ -36,10 +39,10 @@ describe('buildEntryActionPanel()', () => {
   })
 
   describe('with a bookmark entry', () => {
-    it('has open-url primary and copy secondary', () => {
+    it('has open-url primary and no secondary', () => {
       const panel = panelFor('bookmark')
       expect(primaryAction(panel)?.id).toBe('open-url')
-      expect(secondaryAction(panel)?.id).toBe('copy')
+      expect(secondaryAction(panel)).toBeUndefined()
     })
 
     it('orders sections library then app', () => {
@@ -51,18 +54,18 @@ describe('buildEntryActionPanel()', () => {
   })
 
   describe('with a command entry', () => {
-    it('has paste-terminal primary and copy secondary', () => {
+    it('has paste-terminal primary and run-terminal secondary', () => {
       const panel = panelFor('command')
       expect(primaryAction(panel)?.id).toBe('paste-terminal')
-      expect(secondaryAction(panel)?.id).toBe('copy')
+      expect(secondaryAction(panel)?.id).toBe('run-terminal')
     })
   })
 
   describe('with a cheat entry', () => {
-    it('has copy primary and open-editor secondary', () => {
+    it('has paste-doc primary and no secondary', () => {
       const panel = panelFor('cheat')
-      expect(primaryAction(panel)?.id).toBe('copy')
-      expect(secondaryAction(panel)?.id).toBe('open-editor')
+      expect(primaryAction(panel)?.id).toBe('paste-doc')
+      expect(secondaryAction(panel)).toBeUndefined()
     })
   })
 

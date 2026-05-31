@@ -6,7 +6,10 @@ export const ENTRY_ACTION_IDS = [
   'cycle-status',
   'cycle-priority',
   'copy',
+  'copy-desc',
   'open-editor',
+  'run-terminal',
+  'paste-doc',
   'sync',
   'new-task',
   'quit'

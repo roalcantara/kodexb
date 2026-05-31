@@ -44,8 +44,9 @@ function PaletteContent({
 }) {
   return (
     <div
-      className="cmp-modal"
+      className="cmp-overlay-backdrop"
       role="dialog"
+      aria-modal="true"
       onClick={e => {
         if (e.target === e.currentTarget) onClose()
       }}
@@ -53,7 +54,7 @@ function PaletteContent({
         if (e.key === 'Escape') onClose()
       }}
     >
-      <div className="cmp-command-palette">
+      <div className="cmp-overlay-shell cmp-command-palette">
         <input
           ref={inputRef}
           className="cmp-command-palette-search"

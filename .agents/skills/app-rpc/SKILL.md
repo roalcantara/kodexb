@@ -119,11 +119,13 @@ same `AppService`, no mock logic.
 
 ## Adding a New Endpoint — Checklist
 
-- [ ] Add route to `src/shell/main/rpc/server.ts`
-- [ ] Add TypeBox body/query/params schema inline (not in a separate file)
+- [ ] Add TypeBox body/query/params schema to `src/shell/main/rpc/schemas.ts` when needed
+- [ ] Register `.post(...)` in the matching `src/shell/main/rpc/routes/*.routes.ts` module
+- [ ] For expected user-visible failures (toast, not global 500): wrap with `invokeRoute` from `routes/utils/invoke_route.util.ts` (default HTTP 422; pass `{ failureStatus }` when needed)
 - [ ] If DB access needed, write typed prepared statements in the repository
-- [ ] Mirror the route in `tools/preview/server.ts`
-- [ ] Write a spec in `src/shell/main/rpc/server.spec.ts` (use `app.handle(request)`)
+- [ ] No preview-server fork — `tools/preview/server.ts` mounts `createRpcServer(app)` as-is
+- [ ] Write or extend a spec in the matching `src/shell/main/rpc/routes/*.routes.spec.ts`
+- [ ] Add composer-only coverage in `src/shell/main/rpc/server.spec.ts` when wiring changes
 - [ ] Run `bun test && bun run lint` — both must pass before commit
 
 ## Gotchas

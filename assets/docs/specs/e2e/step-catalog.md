@@ -13,17 +13,18 @@ Do not reuse the same phrase under different keywords.
 
 ## Step definition files
 
-| File                                    | Feature domain                       |
-| --------------------------------------- | ------------------------------------ |
-| `e2e/steps/harness.steps.ts`            | Fixture boot, config, sync mutations |
-| `e2e/steps/list_navigation.steps.ts`    | List surface, keyboard nav           |
-| `e2e/steps/search_and_filter.steps.ts`  | Search, filters, footer              |
-| `e2e/steps/detail_and_actions.steps.ts` | Detail panel, actions                |
-| `e2e/steps/command_palette.steps.ts`    | Palette                              |
-| `e2e/steps/task_management.steps.ts`    | Task CRUD                            |
-| `e2e/steps/settings_and_sync.steps.ts`  | Settings + import                    |
-| `e2e/steps/frecency.steps.ts`           | Ordering + refresh                   |
-| `e2e/steps/shortcuts.steps.ts`          | Quick-lookup overlay + keymap detail |
+| File                                      | Feature domain                           |
+| ----------------------------------------- | ---------------------------------------- |
+| `e2e/steps/harness.steps.ts`              | Fixture boot, config, sync mutations     |
+| `e2e/steps/list_navigation.steps.ts`      | List surface, keyboard nav               |
+| `e2e/steps/search_and_filter.steps.ts`    | Search, filters, footer                  |
+| `e2e/steps/detail_and_actions.steps.ts`   | Detail panel, actions                    |
+| `e2e/steps/command_palette.steps.ts`      | Palette                                  |
+| `e2e/steps/task_management.steps.ts`      | Task CRUD                                |
+| `e2e/steps/settings_and_sync.steps.ts`    | Settings + import                        |
+| `e2e/steps/frecency.steps.ts`             | Ordering + refresh                       |
+| `e2e/steps/shortcuts.steps.ts`            | Quick-lookup overlay + keymap detail     |
+| `e2e/steps/entry_action_handoff.steps.ts` | Handoff footer, RPC intercept, shortcuts |
 
 ## Cucumber expression patterns
 
@@ -143,11 +144,21 @@ Do not reuse the same phrase under different keywords.
 | the knowledge list uses page size {string}              | Then    | `EntryList.usesBatchSize(size)`          | N     |
 | I reset settings                                        | When    | `ResetSettings`                          | N     |
 | settings shows the persisted page size                  | Then    | `SettingsPage.showsPersistedPageSize()`  | N     |
-| I run sync                                              | When    | `RunSync`                                | N     |
+| I run sync                                              | When    | `RunSync` (⌘K → Sync)                    | N     |
 | sync reports completion                                 | Then    | `SyncModal.reportsCompletion()`          | N     |
 | the knowledge list includes {string}                    | Then    | `EntryList.includesTitle(title)`         | N     |
 | sync reports the invalid file                           | Then    | `SyncModal.reportsInvalidFile()`         | N     |
 | the knowledge list still includes valid fixture entries | Then    | `EntryList.includesCoreFixtureEntries()` | N     |
+| the knowledge list does not show a Sync toolbar button  | Then    | `shell_chrome.steps.ts`                  | N     |
+
+## Shell chrome steps (`@spec:shell-chrome`)
+
+Normative for [`shell-chrome/requirements.md`](../shell-chrome/requirements.md). Feature:
+[`shell_chrome.feature`](../../features/e2e/shell_chrome.feature).
+
+| Step                                                   | Keyword | Task / question                         | Weak? |
+| ------------------------------------------------------ | ------- | --------------------------------------- | ----- |
+| the knowledge list does not show a Sync toolbar button | Then    | Assert no `.cmp-toolbar--quick-actions` | N     |
 
 ## Sync resilience steps (`@spec:sync`)
 
@@ -211,45 +222,128 @@ above should ship as weak for P0.
 
 Metrics registry IDs follow `{feature_file_stem}.{scenario_slug}`:
 
-| Feature              | Scenario                               | ID                                                    |
-| -------------------- | -------------------------------------- | ----------------------------------------------------- |
-| `list_navigation`    | Seeded list shows the main entry types | `list_navigation.seeded_list_shows_main_types`        |
-| `list_navigation`    | Keyboard navigation cycles…            | `list_navigation.keyboard_cycles_views`               |
-| `list_navigation`    | Row selection follows arrow keys…      | `list_navigation.row_selection_in_split_view`         |
-| `search_and_filter`  | Search narrows the visible entries     | `search_and_filter.search_narrows_entries`            |
-| `search_and_filter`  | Type filters (outline)                 | `search_and_filter.type_filters`                      |
-| `search_and_filter`  | Tag filters combine with search        | `search_and_filter.tag_filters_with_search`           |
-| `search_and_filter`  | Task view filters (outline)            | `search_and_filter.task_view_filters`                 |
-| `detail_and_actions` | Detail shows metadata…                 | `detail_and_actions.detail_shows_metadata`            |
-| `detail_and_actions` | Primary action (outline)               | `detail_and_actions.primary_action_result`            |
-| `detail_and_actions` | Copy action…                           | `detail_and_actions.copy_action`                      |
-| `detail_and_actions` | Opening source…                        | `detail_and_actions.open_source`                      |
-| `command_palette`    | Palette opens with library…            | `command_palette.library_when_unselected`             |
-| `command_palette`    | Palette includes entry actions…        | `command_palette.entry_sections_when_selected`        |
-| `command_palette`    | Palette search narrows actions         | `command_palette.search_narrows_actions`              |
-| `command_palette`    | Palette escape restores list           | `command_palette.escape_restores_list`                |
-| `task_management`    | Create a task…                         | `task_management.create_task`                         |
-| `task_management`    | Edit an existing task                  | `task_management.edit_task`                           |
-| `task_management`    | Cycle task fields (outline)            | `task_management.cycle_fields`                        |
-| `task_management`    | Reorder tasks                          | `task_management.reorder_tasks`                       |
-| `task_management`    | Delete a task                          | `task_management.delete_task`                         |
-| `settings_and_sync`  | Settings shows active fixture…         | `settings_and_sync.settings_shows_fixture_config`     |
-| `settings_and_sync`  | Saving page size refreshes…            | `settings_and_sync.save_page_size`                    |
-| `settings_and_sync`  | Reset restores persisted settings      | `settings_and_sync.reset_settings`                    |
-| `settings_and_sync`  | Sync imports fixture changes           | `settings_and_sync.sync_imports_changes`              |
-| `settings_and_sync`  | Sync reports invalid source…           | `settings_and_sync.sync_invalid_file`                 |
-| `frecency`           | Opening detail records…                | `frecency.detail_visit_ranks_entry`                   |
-| `frecency`           | Running primary action…                | `frecency.primary_action_ranks_entry`                 |
-| `frecency`           | Search relevance constrains frecency   | `frecency.search_constrains_frecency`                 |
-| `shortcuts_overlay`  | Quick-lookup opens/closes              | `shortcuts_overlay.open_and_close`                    |
-| `shortcuts_overlay`  | Text search finds binding              | `shortcuts_overlay.text_search`                       |
-| `shortcuts_overlay`  | Chord search conflicts card            | `shortcuts_overlay.chord_conflicts_card`              |
-| `shortcuts_overlay`  | Hard collision warning glyph           | `shortcuts_overlay.hard_collision_glyph`              |
-| `shortcuts_overlay`  | Overlay filter modal by app            | `shortcuts_overlay.filter_by_app`                     |
-| `shortcuts_list`     | Shortcut type filter                   | `shortcuts_list.type_filter`                          |
-| `shortcuts_list`     | Search finds keymap by action          | `shortcuts_list.search_by_action`                     |
-| `shortcuts_list`     | Keymap ↔ chord detail navigation       | `shortcuts_list.keymap_chord_navigation`              |
-| `shortcuts_import`   | Sync reports hard global collision     | `shortcuts_import.sync_reports_hard_global_collision` |
+| Feature                | Scenario                               | ID                                                     |
+| ---------------------- | -------------------------------------- | ------------------------------------------------------ |
+| `list_navigation`      | Seeded list shows the main entry types | `list_navigation.seeded_list_shows_main_types`         |
+| `list_navigation`      | Keyboard navigation cycles…            | `list_navigation.keyboard_cycles_views`                |
+| `list_navigation`      | Row selection follows arrow keys…      | `list_navigation.row_selection_in_split_view`          |
+| `search_and_filter`    | Search narrows the visible entries     | `search_and_filter.search_narrows_entries`             |
+| `search_and_filter`    | Type filters (outline)                 | `search_and_filter.type_filters`                       |
+| `search_and_filter`    | Tag filters combine with search        | `search_and_filter.tag_filters_with_search`            |
+| `search_and_filter`    | Task view filters (outline)            | `search_and_filter.task_view_filters`                  |
+| `detail_and_actions`   | Detail shows metadata…                 | `detail_and_actions.detail_shows_metadata`             |
+| `detail_and_actions`   | Primary action (outline)               | `detail_and_actions.primary_action_result`             |
+| `detail_and_actions`   | Copy action…                           | `detail_and_actions.copy_action`                       |
+| `detail_and_actions`   | Opening source…                        | `detail_and_actions.open_source`                       |
+| `command_palette`      | Palette opens with library…            | `command_palette.library_when_unselected`              |
+| `command_palette`      | Palette includes entry actions…        | `command_palette.entry_sections_when_selected`         |
+| `command_palette`      | Palette search narrows actions         | `command_palette.search_narrows_actions`               |
+| `command_palette`      | Palette escape restores list           | `command_palette.escape_restores_list`                 |
+| `task_management`      | Create a task…                         | `task_management.create_task`                          |
+| `task_management`      | Edit an existing task                  | `task_management.edit_task`                            |
+| `task_management`      | Cycle task fields (outline)            | `task_management.cycle_fields`                         |
+| `task_management`      | Reorder tasks                          | `task_management.reorder_tasks`                        |
+| `task_management`      | Delete a task                          | `task_management.delete_task`                          |
+| `settings_and_sync`    | Settings shows active fixture…         | `settings_and_sync.settings_shows_fixture_config`      |
+| `settings_and_sync`    | Saving page size refreshes…            | `settings_and_sync.save_page_size`                     |
+| `settings_and_sync`    | Reset restores persisted settings      | `settings_and_sync.reset_settings`                     |
+| `settings_and_sync`    | Sync imports fixture changes           | `settings_and_sync.sync_imports_changes`               |
+| `settings_and_sync`    | Sync reports invalid source…           | `settings_and_sync.sync_invalid_file`                  |
+| `frecency`             | Opening detail records…                | `frecency.detail_visit_ranks_entry`                    |
+| `frecency`             | Running primary action…                | `frecency.primary_action_ranks_entry`                  |
+| `frecency`             | Search relevance constrains frecency   | `frecency.search_constrains_frecency`                  |
+| `shortcuts_overlay`    | Quick-lookup opens/closes              | `shortcuts_overlay.open_and_close`                     |
+| `shortcuts_overlay`    | Text search finds binding              | `shortcuts_overlay.text_search`                        |
+| `shortcuts_overlay`    | Chord search conflicts card            | `shortcuts_overlay.chord_conflicts_card`               |
+| `shortcuts_overlay`    | Hard collision warning glyph           | `shortcuts_overlay.hard_collision_glyph`               |
+| `shortcuts_overlay`    | Overlay filter modal by app            | `shortcuts_overlay.filter_by_app`                      |
+| `shortcuts_list`       | Shortcut type filter                   | `shortcuts_list.type_filter`                           |
+| `shortcuts_list`       | Search finds keymap by action          | `shortcuts_list.search_by_action`                      |
+| `shortcuts_list`       | Keymap ↔ chord detail navigation       | `shortcuts_list.keymap_chord_navigation`               |
+| `shortcuts_import`     | Sync reports hard global collision     | `shortcuts_import.sync_reports_hard_global_collision`  |
+| `entry_action_handoff` | Footer shows Open In Browser…          | `entry_action_handoff.footer_bookmark_open_in_browser` |
+| `entry_action_handoff` | Footer shows Paste and Run…            | `entry_action_handoff.footer_command_paste_and_run`    |
+| `entry_action_handoff` | Footer shows Paste Doc…                | `entry_action_handoff.footer_cheat_paste_doc`          |
+| `entry_action_handoff` | Bookmark primary requests…             | `entry_action_handoff.bookmark_open_external_rpc`      |
+| `entry_action_handoff` | Command primary requests paste…        | `entry_action_handoff.command_paste_terminal_rpc`      |
+| `entry_action_handoff` | Command secondary requests run…        | `entry_action_handoff.command_run_terminal_rpc`        |
+| `entry_action_handoff` | Cheat primary requests paste doc…      | `entry_action_handoff.cheat_paste_doc_rpc`             |
+| `entry_action_handoff` | Copy Title shortcut…                   | `entry_action_handoff.copy_title_shortcut`             |
+| `entry_action_handoff` | Copy Description shortcut…             | `entry_action_handoff.copy_description_shortcut`       |
+| `entry_action_handoff` | Open Source shortcut…                  | `entry_action_handoff.open_source_shortcut`            |
+| `entry_action_handoff` | Handoff failure shows error…           | `entry_action_handoff.handoff_failure_keeps_list`      |
+
+## Entry action handoff steps (`@spec:entry-action-handoff`)
+
+Normative feature: [`entry_action_handoff.feature`](../../features/e2e/entry_action_handoff.feature).
+Spec: [`entry-action-handoff/requirements.md`](../entry-action-handoff/requirements.md).
+Fixture: [`fixture-manifest.md#handoff-e2e-entry-action-handoff`](fixture-manifest.md#handoff-e2e-entry-action-handoff).
+
+Implement **`e2e/steps/entry_action_handoff.steps.ts`** only — do **not** change the `.feature` prose unless requirements change.
+
+### Intercept harness
+
+| Step                                    | Keyword | Task / question                  | Notes                                                                                                                                                                  |
+| --------------------------------------- | ------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| the e2e handoff API intercept is active | Given   | `HandoffIntercept.activate()`    | Playwright `page.route` on `/api/openExternal`, `/api/pasteInTerminal`, `/api/runInTerminal`, `/api/openInEditor`; append bodies to actor memory `handoffInterceptLog` |
+| external handoff is stubbed to fail     | Given   | `HandoffIntercept.stubFailure()` | Return HTTP 422 JSON `{ error: 'e2e stub' }` for all handoff routes                                                                                                    |
+
+### Footer affordances
+
+Primary label: `.cmp-footer-primary` button text (trim ↵ hint).
+Secondary label: `.cmp-footer-secondary` when rank=secondary is surfaced in footer (Phase 5 renderer — command only).
+When secondary is keyboard-only before footer work lands, step MAY assert `data-footer-secondary-label` on `.cmp-footer` until UI ships; prefer visible secondary button.
+
+| Step                                        | Keyword | Task / question                         | Weak? |
+| ------------------------------------------- | ------- | --------------------------------------- | ----- |
+| the footer primary action is {string}       | Then    | `FooterHandoff.primaryLabelIs(label)`   | N     |
+| the footer secondary action is {string}     | Then    | `FooterHandoff.secondaryLabelIs(label)` | N     |
+| the footer does not show a secondary action | Then    | `FooterHandoff.hasNoSecondary()`        | N     |
+
+### When — actions and shortcuts
+
+| Step                                                 | Keyword | Task / question                         | Notes                                                              |
+| ---------------------------------------------------- | ------- | --------------------------------------- | ------------------------------------------------------------------ |
+| I run the secondary action                           | When    | `RunSecondaryAction.forSelectedEntry()` | `Meta+Enter` / `Control+Enter` via `press_shortcut.interaction.ts` |
+| I press the copy title shortcut                      | When    | `PressCopyTitleShortcut`                | `Meta+C` / `Control+C` on list focus                               |
+| I press the copy description shortcut                | When    | `PressCopyDescriptionShortcut`          | `Meta+Alt+C` / `Control+Alt+C`                                     |
+| I press the open source shortcut                     | When    | `PressOpenSourceShortcut`               | `Meta+O` / `Control+O`                                             |
+| I run the primary action in the native desktop shell | When    | `@todo` — Electrobun CDP only           | `@native-handoff` scenarios                                        |
+
+Reuse **`I run the primary action`** from `detail_and_actions.steps.ts` (`RunPrimaryAction.forSelectedEntry`).
+
+### Then — RPC assertions
+
+Parse `handoffInterceptLog` entries (method, path, JSON body). Questions SHALL NOT assert SQLite or private hook fields.
+
+| Step                                                                     | Keyword | Task / question                                | Weak? |
+| ------------------------------------------------------------------------ | ------- | ---------------------------------------------- | ----- |
+| the handoff API receives an open external request for {string}           | Then    | `HandoffApi.receivedOpenExternal(url)`         | N     |
+| the handoff API receives a paste in terminal request containing {string} | Then    | `HandoffApi.receivedPasteInTerminal(matching)` | N     |
+| the handoff API receives a run in terminal request containing {string}   | Then    | `HandoffApi.receivedRunInTerminal(matching)`   | N     |
+| the handoff API receives a paste doc handoff request                     | Then    | `HandoffApi.receivedPasteDoc()`                | N     |
+| the handoff API receives an open in editor request                       | Then    | `HandoffApi.receivedOpenInEditor()`            | N     |
+| the handoff API received no successful open external response            | Then    | `HandoffApi.noSuccessfulOpenExternal()`        | N     |
+
+Paste-doc MAY map to `/api/pasteInTerminal` with cheat payload or a dedicated route — assert the contract implemented in Phase 4 (design §Handoff registry).
+
+### Then — toasts and surface
+
+| Step                                                 | Keyword | Task / question                                | Notes                     |
+| ---------------------------------------------------- | ------- | ---------------------------------------------- | ------------------------- |
+| a success action toast is shown                      | Then    | `ActionToast.isSuccess()`                      | Reuse `.cmp-action-toast` |
+| a success action toast is shown for copy title       | Then    | `ActionToast.isSuccessFor('Title copied')`     | Distinct message fragment |
+| a success action toast is shown for copy description | Then    | `ActionToast.isSuccessFor('Description copied')` |                         |
+| an error action toast is shown                       | Then    | `ActionToast.isError()`                        | Failure stub scenario     |
+| the knowledge list surface is visible                | Then    | `EntryList.surfaceVisible()`                   | Listbox `Entries` role    |
+
+### `@native-handoff` (optional)
+
+| Step                         | Keyword | Task / question                          |
+| ---------------------------- | ------- | ---------------------------------------- |
+| the kb main window is hidden | Then    | `@todo` `NativeShell.mainWindowHidden()` |
+
+Keep `@todo` on native scenarios until desktop harness exists; P1 green set excludes them via tag filter if needed.
 
 ## Shortcuts steps (Phase 7)
 

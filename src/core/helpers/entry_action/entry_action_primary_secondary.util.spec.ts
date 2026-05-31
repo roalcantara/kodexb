@@ -5,14 +5,14 @@ describe('entry action ranks by type', () => {
   it('primary ids', () => {
     expect(primaryActionIdForEntryType('bookmark')).toBe('open-url')
     expect(primaryActionIdForEntryType('command')).toBe('paste-terminal')
-    expect(primaryActionIdForEntryType('cheat')).toBe('copy')
+    expect(primaryActionIdForEntryType('cheat')).toBe('paste-doc')
     expect(primaryActionIdForEntryType('task')).toBe('edit-task')
   })
 
   it('secondary ids', () => {
-    expect(secondaryActionIdForEntryType('bookmark')).toBe('copy')
-    expect(secondaryActionIdForEntryType('command')).toBe('copy')
-    expect(secondaryActionIdForEntryType('cheat')).toBe('open-editor')
+    expect(secondaryActionIdForEntryType('bookmark')).toBeNull()
+    expect(secondaryActionIdForEntryType('command')).toBe('run-terminal')
+    expect(secondaryActionIdForEntryType('cheat')).toBeNull()
     expect(secondaryActionIdForEntryType('task')).toBe('cycle-status')
   })
 })

@@ -1,4 +1,5 @@
 import type { OpenDialogOpts } from '@shared/rpc'
+import type { LoadedConfig } from '../config/config.loader'
 import type { AppShellHooks, WindowPosition } from './app_shell_hooks.types'
 
 export function rejectShellNotImplemented(method: string): Promise<never> {
@@ -21,6 +22,16 @@ export function openExternalUrl(hooks: AppShellHooks, url: string): Promise<void
 
 export function pasteInTerminalFor(hooks: AppShellHooks, cmd: string, terminalApp?: string): Promise<void> {
   hooks.pasteInTerminal?.(cmd, terminalApp)
+  return Promise.resolve()
+}
+
+export function runInTerminalFor(hooks: AppShellHooks, cmd: string, terminalApp?: string): Promise<void> {
+  hooks.runInTerminal?.(cmd, terminalApp)
+  return Promise.resolve()
+}
+
+export function pasteDocFor(hooks: AppShellHooks, doc: string): Promise<void> {
+  hooks.pasteDoc?.(doc)
   return Promise.resolve()
 }
 
@@ -70,4 +81,21 @@ export function setWindowPositionFor(hooks: AppShellHooks, x: number, y: number)
 export function quitFor(hooks: AppShellHooks): Promise<void> {
   hooks.quit?.()
   return Promise.resolve()
+}
+
+/** Bundled shell RPC delegates to keep {@link App} under file-length lint. */
+export function createAppShellDelegates(hooks: AppShellHooks, getLoaded: () => LoadedConfig) {
+  return {
+    openExternal: (url: string) => openExternalUrl(hooks, url),
+    pasteInTerminal: (cmd: string) => pasteInTerminalFor(hooks, cmd, getLoaded().display.terminalApp),
+    runInTerminal: (cmd: string) => runInTerminalFor(hooks, cmd, getLoaded().display.terminalApp),
+    pasteDoc: (doc: string) => pasteDocFor(hooks, doc),
+    openInEditor: (filePath: string) => openInEditorFor(hooks, filePath, getLoaded().display.editorApp),
+    showOpenDialog: (opts?: OpenDialogOpts) => showOpenDialogFor(hooks, opts),
+    resizeWindow: (width: number, height: number) => resizeWindowFor(hooks, width, height),
+    hideWindow: () => hideWindowFor(hooks),
+    getWindowPosition: () => getWindowPositionFor(hooks),
+    setWindowPosition: (x: number, y: number) => setWindowPositionFor(hooks, x, y),
+    quit: () => quitFor(hooks)
+  }
 }

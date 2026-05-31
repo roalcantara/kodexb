@@ -86,6 +86,17 @@ export class EntryListAllTasksInView implements Answerable {
   }
 }
 
+export class EntryListSurfaceVisible implements Answerable {
+  static now(): EntryListSurfaceVisible {
+    return new EntryListSurfaceVisible()
+  }
+
+  async answeredBy(actor: Actor): Promise<void> {
+    const surface = actor.page.locator('.cmp-list-panel')
+    await expect(surface).toBeVisible()
+  }
+}
+
 export class EntryListSelectedRowChanged implements Answerable {
   static now(): EntryListSelectedRowChanged {
     return new EntryListSelectedRowChanged()

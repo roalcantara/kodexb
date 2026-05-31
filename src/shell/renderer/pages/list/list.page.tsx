@@ -14,8 +14,6 @@ export function ListPage() {
     listPageRef,
     filterButtonRef: p.filter.filterButtonRef,
     searchInputRef: p.searchInputRef,
-    syncButtonRef: p.syncButtonRef,
-    settingsButtonRef: p.settingsButtonRef,
     listSurfaceRef: p.listSurfaceRef
   })
 

@@ -110,8 +110,12 @@ function TaskSheetInner({
   onCyclePriority
 }: TaskSheetInnerProps) {
   return (
-    <div className="cmp-modal" role="dialog" aria-label={entry ? 'Edit task' : 'New task'}>
-      <div className="cmp-task-sheet">
+    <div
+      className="cmp-modal cmp-overlay-backdrop cmp-overlay-backdrop--centered"
+      role="dialog"
+      aria-label={entry ? 'Edit task' : 'New task'}
+    >
+      <div className="cmp-overlay-shell cmp-task-sheet">
         <h2 style={{ margin: '0 0 1rem', fontSize: '1.1rem' }}>{entry ? 'Edit task' : 'New task'}</h2>
 
         {form.error ? (

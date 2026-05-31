@@ -21,6 +21,13 @@ describe('CommandPalette', () => {
   })
 
   describe('when open', () => {
+    it('renders overlay shell', () => {
+      const actions = [makeAction('a', 'Action A')]
+      const { container } = render(<CommandPalette open={true} actions={actions} onClose={noop} />)
+      expect(container.querySelector('.cmp-overlay-shell')).toBeTruthy()
+      expect(container.querySelector('.cmp-overlay-backdrop')).toBeTruthy()
+    })
+
     it('renders actions', () => {
       const actions = [makeAction('a', 'Action A'), makeAction('b', 'Action B')]
       render(<CommandPalette open={true} actions={actions} onClose={noop} />)

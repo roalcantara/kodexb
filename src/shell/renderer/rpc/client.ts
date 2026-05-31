@@ -284,6 +284,14 @@ export function pasteInTerminal(cmd: string): Promise<void> {
   return rpc.api.pasteInTerminal.post({ cmd }).then(unwrap) as Promise<void>
 }
 
+export function runInTerminal(cmd: string): Promise<void> {
+  return rpc.api.runInTerminal.post({ cmd }).then(unwrap) as Promise<void>
+}
+
+export function pasteDoc(doc: string): Promise<void> {
+  return rpc.api.pasteDoc.post({ doc }).then(unwrap) as Promise<void>
+}
+
 export function openInEditor(filePath: string): Promise<void> {
   return rpc.api.openInEditor.post({ filePath }).then(unwrap) as Promise<void>
 }

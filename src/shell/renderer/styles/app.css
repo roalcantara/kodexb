@@ -16,6 +16,7 @@
 @import './components/entry_row.css';
 @import './components/footer.css';
 @import './components/list_row.css';
+@import './components/overlay_shell.css';
 @import './components/settings.css';
 @import './components/sync.css';
 @import './components/task_sheet.css';

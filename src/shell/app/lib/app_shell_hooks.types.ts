@@ -12,6 +12,8 @@ export type AppShellHooks = {
   openExternal?: (url: string) => void
   showOpenDialog?: (opts?: OpenDialogOpts) => Promise<string | null>
   pasteInTerminal?: (cmd: string, terminalApp?: string) => void
+  runInTerminal?: (cmd: string, terminalApp?: string) => void
+  pasteDoc?: (doc: string) => void
   openInEditor?: (filePath: string, editorApp?: string) => void
   /**
    * Current top-left of the window in screen coordinates, or `null` when no

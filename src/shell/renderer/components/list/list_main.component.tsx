@@ -1,9 +1,12 @@
+import { resolveCurrentEntry } from '@core/helpers/entry_action/resolve_current_entry.util'
 import { fireAndForget } from '@shared/utils'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
+import { executeEntryAction } from '../../actions/execute_entry_action.util'
 import { useFilterDropdownStats } from '../../hooks/list/use_filter_dropdown_stats.hook'
 import { useListMainEntryKeys } from '../../hooks/list/use_list_main_entry_keys.hook'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
+import { useListPointerSelection } from '../../hooks/list/use_list_pointer_selection.hook'
 import { useListSurfaceScrollRestore } from '../../hooks/list/use_list_surface_scroll_restore.hook'
 import { useVirtualListWindow } from '../../hooks/list/use_virtual_list_window.hook'
 import { useWindowDrag } from '../../hooks/list/use_window_drag.hook'
@@ -17,7 +20,6 @@ import { scheduleDoubleRaf } from '../../utils/list/list_scroll.util'
 import { listSentinelSpacers } from '../../utils/list/virtual_list.util'
 import { ListFooter } from './list_footer.component'
 import { ListOverlayHosts } from './list_overlay_hosts.component'
-import { ListQuickActions } from './list_quick_actions.component'
 import { ListResultsBody } from './list_results_body.component'
 import { ListSearchFilterChrome } from './list_search_filter_chrome.component'
 
@@ -116,6 +118,21 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
     [p.listSurfaceRef, p.sel.setSelectedId]
   )
 
+  const onHoverEntry = useCallback(
+    (id: number) => {
+      p.sel.setSelectedId(id)
+    },
+    [p.sel.setSelectedId]
+  )
+
+  const listPointerSelectionActive =
+    !showSettings && !p.taskSheetVisible && !p.palette.open && detailEntry === null && p.data.rows.length > 0
+  useListPointerSelection({
+    scrollRootRef: p.listSurfaceRef,
+    active: listPointerSelectionActive,
+    onHoverEntry
+  })
+
   const selectedIndex = p.data.rows.findIndex(e => e.id === p.sel.selectedId)
   const { window: virtualWindow, rowHeight } = useVirtualListWindow(
     p.data.rows.length,
@@ -145,6 +162,21 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
     scheduleDoubleRaf(() => p.searchInputRef.current?.focus({ preventScroll: true }))
   }, [p.searchInputRef])
 
+  const handleGlobalShortcut = useCallback(
+    (action: 'open-editor' | 'copy-desc') => {
+      const entry = resolveCurrentEntry({
+        viewState,
+        selectedId: p.sel.selectedId,
+        detailEntry,
+        rows: p.data.rows,
+        detailPanelHasFocus: false
+      })
+      if (!entry) return
+      fireAndForget(executeEntryAction(entry, action, { ...p.actionCtx, entry }))
+    },
+    [viewState, p.sel.selectedId, detailEntry, p.data.rows, p.actionCtx]
+  )
+
   const viewNavKeysDisabled = showSettings || p.taskSheetVisible || p.palette.open
   useWindowViewNavKeys({
     disabled: viewNavKeysDisabled,
@@ -155,6 +187,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
       p.onListKeyDown(e as unknown as ReactKeyboardEvent<HTMLDivElement>)
     },
     handleEntryReturn,
+    handleGlobalShortcut,
     detailScrollRef,
     detailScrollActive: detailEntry !== null
   })
@@ -201,18 +234,6 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           anchorRect={p.filter.anchorRect}
         />
 
-        {isFullDetail ? null : (
-          <ListQuickActions
-            syncButtonRef={p.syncButtonRef}
-            newTaskButtonRef={p.newTaskButtonRef}
-            settingsButtonRef={p.settingsButtonRef}
-            syncing={p.data.syncing}
-            onSync={p.data.onSync}
-            onNewTask={p.onNewTask}
-            onOpenSettings={() => setShowSettings(true)}
-          />
-        )}
-
         <div className="cmp-main">
           <div className={listPanelClass}>
             <ListResultsBody
@@ -226,6 +247,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
               syncInfo={p.data.syncInfo}
               onSync={p.data.onSync}
               emptySyncButtonRef={emptySyncButtonRef}
+              tagCounts={p.data.stats?.tags ?? {}}
               rows={p.data.rows}
               visibleRows={visibleRows}
               virtualWindow={virtualWindow}
@@ -233,6 +255,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
               hasMore={p.data.hasMore}
               maxFrecencyScore={maxFrecencyScore}
               onSelectEntry={onSelectEntry}
+              onHoverEntry={onHoverEntry}
               dragDrop={p.dragDrop}
               onCycleStatus={handleCycleStatus}
               onCyclePriority={handleCyclePriority}
@@ -258,6 +281,12 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           isFullDetail={isFullDetail}
           detailEntry={detailEntry}
           closeDetailToList={closeDetailToList}
+          viewState={viewState}
+          selectedId={p.sel.selectedId}
+          rows={p.data.rows}
+          actionCtx={p.actionCtx}
+          entryPanelDeps={p.entryPanelDeps}
+          onOpenPalette={p.palette.openPalette}
         />
       </div>
 

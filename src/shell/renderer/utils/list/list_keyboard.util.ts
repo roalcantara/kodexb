@@ -43,8 +43,6 @@ export function collectTabOrderedFocusables(root: Element): HTMLElement[] {
 export type ListPageFocusRingRefs = {
   filterButtonRef: RefObject<HTMLButtonElement | null>
   searchInputRef: RefObject<HTMLInputElement | null>
-  syncButtonRef: RefObject<HTMLButtonElement | null>
-  settingsButtonRef: RefObject<HTMLButtonElement | null>
   listSurfaceRef: RefObject<HTMLDivElement | null>
 }
 
@@ -56,13 +54,7 @@ export type ListPageFocusRingContext = {
 
 export function listPageFocusRingElements(refs: ListPageFocusRingRefs, ctx: ListPageFocusRingContext): HTMLElement[] {
   const chain: HTMLElement[] = []
-  for (const ref of [
-    refs.filterButtonRef,
-    refs.searchInputRef,
-    refs.syncButtonRef,
-    refs.settingsButtonRef,
-    refs.listSurfaceRef
-  ]) {
+  for (const ref of [refs.filterButtonRef, refs.searchInputRef, refs.listSurfaceRef]) {
     const el = ref.current
     if (el !== null) chain.push(el)
   }

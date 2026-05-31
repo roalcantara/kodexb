@@ -53,7 +53,7 @@ Related prior note: [`../renderer-nav-flow/handoff.md`](../renderer-nav-flow/han
 
 ### Main (`src/shell/main/`)
 
-- **Placement:** Before `win.show()`, compute `frame: { x, y, width, height }` using `Screen.getPrimaryDisplay()` work area and default width/height. Prefer a **pure** helper (e.g. `centerBoundsInWorkArea` in `src/shell/main/window/placement.util.ts`) plus unit tests with fake work-area rectangles.
+- **Placement (R2b — cursor display):** Before `win.show()`, compute frame using `resolveDisplayForPlacement()` which picks the display under the cursor (via `Screen.getCursorScreenPoint()` + `Screen.getAllDisplays()`), falling back to primary display. Centering math uses the resolved display's `workArea`. See [`electrobun-utils-adoption`](../electrobun-utils-adoption/design.md) Decision 4 for the full cursor-display spec.
 - **Chrome:** Extend `BrowserWindow` construction in `main.ts` with frameless or `titleBarStyle` options per verified API. Optional `transparent` / vibrancy stays off unless design requires it.
 
 ## Testing

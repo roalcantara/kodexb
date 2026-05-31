@@ -1,7 +1,7 @@
 import type { RpcImportResult, RpcSyncFileResult } from '@shared/rpc'
 import type { CSSProperties, RefObject } from 'react'
+import { OVERLAY_SHELL_WIDTH_PX } from './overlay_shell_layout.const'
 import { buildFileLogViews, type FileLogRowView } from './sync_modal_errors.util'
-import { SYNC_MODAL_WIDTH_PX } from './sync_modal_layout.const'
 import { useSyncModalExpansion } from './use_sync_modal_expansion.hook'
 
 export type SyncModalPhase = 'preparing' | 'active' | 'done' | 'failed'
@@ -215,12 +215,12 @@ export function SyncModal({ model, onDismiss }: SyncModalProps) {
 
   if (!model.open) return null
 
-  const modalStyle = { '--sync-modal-width': `${SYNC_MODAL_WIDTH_PX}px` } as CSSProperties
+  const modalStyle = { '--overlay-shell-width': `${OVERLAY_SHELL_WIDTH_PX}px` } as CSSProperties
 
   return (
-    <div className="cmp-sync-modal-backdrop" role="presentation">
+    <div className="cmp-sync-modal-backdrop cmp-overlay-backdrop cmp-overlay-backdrop--centered" role="presentation">
       <div
-        className="cmp-sync-modal"
+        className="cmp-overlay-shell cmp-sync-modal"
         style={modalStyle}
         role="dialog"
         aria-modal="true"

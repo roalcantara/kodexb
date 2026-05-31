@@ -1,7 +1,17 @@
+export { expectBodyValidationError, parseValidationErrorEnvelope } from './expectations/validation_error.expectation'
 export { factoryFor } from './factories/factories.builder'
 export { syncFixtureDir } from './fixtures/sync'
 export { rpcBookmarkRow } from './helpers/rpc_knowledge_test_row.util'
+export { runRoute } from './helpers/run_route.util'
+export { recordingTerminalShellHook, throwingShellHook } from './helpers/shell_hook_spec.util'
 export { bindingRefFixture, bindingRefsForApps, bindingsCacheSample } from './helpers/testing.bindings.util'
+export {
+  installBunDollarMock,
+  resetBunDollarMock,
+  setBunDollarThrow,
+  setupBunDollarMock,
+  uninstallBunDollarMock
+} from './helpers/testing.bun_dollar.mock'
 export { createFactoryFor } from './helpers/testing.factory'
 export { configureQuietLogtape, noopLogSink } from './helpers/testing.quiet_stdio'
 export {

@@ -13,6 +13,11 @@
       "skillPath": "skills/brainstorming/SKILL.md",
       "computedHash": "8df9b47092524833138b58682d03f2e153a242e550d1693657afdbee0cc9cdb0"
     },
+    "bun": {
+      "source": "bun.sh",
+      "sourceType": "well-known",
+      "computedHash": "959aa11169f7532aa08da08ab16d4409f5785bd08b125164dfba3e92d336cd76"
+    },
     "bun-development": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -24,6 +29,36 @@
       "sourceType": "github",
       "skillPath": "skills/bun-runtime/SKILL.md",
       "computedHash": "bdac3d20723a536f7160ca2c08f369101b73e67a0f5f2a951910056716156c3c"
+    },
+    "bun-sqlite": {
+      "source": "secondsky/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/bun/skills/bun-sqlite/SKILL.md",
+      "computedHash": "df3aa7f294c627a80ec75ca23398caaf64d41577d6c55a4541e32ad7e9186a3e"
+    },
+    "bun-test": {
+      "source": "daleseo/bun-skills",
+      "sourceType": "github",
+      "skillPath": "skills/bun-test/SKILL.md",
+      "computedHash": "1b2368cad9b61944aec3781f81d012ba7e6ab31f09fb8f927c6f9d60c979ad0a"
+    },
+    "bun-test-lifecycle": {
+      "source": "secondsky/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/bun/skills/bun-test-lifecycle/SKILL.md",
+      "computedHash": "1a8951a42f65c1aa0b520c997be3b7978758ea0a3aadbc1db2815f49c039f3d8"
+    },
+    "bun-test-mocking": {
+      "source": "secondsky/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/bun/skills/bun-test-mocking/SKILL.md",
+      "computedHash": "f6c2a4ef2e92346da36553e7251ca9234e61b24c9369b8cf661d8b18edd21a25"
+    },
+    "bun-testing": {
+      "source": "thebushidocollective/han",
+      "sourceType": "github",
+      "skillPath": "plugins/tools/bun/skills/bun-testing/SKILL.md",
+      "computedHash": "42b0f50ea03731f0f09064e3770c0ee70122041f6c3df784c102993f454fe715"
     },
     "cucumber-best-practices": {
       "source": "thebushidocollective/han",
@@ -209,6 +244,12 @@
       "skillPath": "skills/finishing-a-development-branch/SKILL.md",
       "computedHash": "932d23af11a3eb2b758f5b1d9aec7b6d28ddd26658328414f87f34dff7179d19"
     },
+    "jest-advanced": {
+      "source": "thebushidocollective/han",
+      "sourceType": "github",
+      "skillPath": "plugins/tools/jest/skills/jest-advanced/SKILL.md",
+      "computedHash": "29fba13ffcd55ca8a60f3fbdd9cfebcf22731d3616370f7fef2a163330438c4a"
+    },
     "jobs-to-be-done": {
       "source": "pmprompt/claude-plugin-product-management",
       "sourceType": "github",
@@ -297,6 +338,12 @@
       "sourceType": "github",
       "skillPath": "skills/test-driven-development/SKILL.md",
       "computedHash": "126f1ebf6ccd414f42544f6e83d8cc5adb089e1108eaffb7c400701e37eecd9f"
+    },
+    "testing-best-practices": {
+      "source": "0xbigboss/claude-code",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/testing-best-practices/SKILL.md",
+      "computedHash": "64d3db816627dc339301b05a7a028fc3151d6a61ab15b96537d8403b12ccf68e"
     },
     "using-git-worktrees": {
       "source": "obra/superpowers",

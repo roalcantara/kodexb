@@ -9,8 +9,6 @@ describe('useListPageFocusRing', () => {
     const listPageRef = useRef<HTMLDivElement>(null)
     const filterButtonRef = useRef<HTMLButtonElement>(null)
     const searchInputRef = useRef<HTMLInputElement>(null)
-    const syncButtonRef = useRef<HTMLButtonElement>(null)
-    const settingsButtonRef = useRef<HTMLButtonElement>(null)
     const listSurfaceRef = useRef<HTMLDivElement>(null)
 
     const { onListPageKeyDownCapture } = useListPageFocusRing({
@@ -20,8 +18,6 @@ describe('useListPageFocusRing', () => {
       listPageRef,
       filterButtonRef,
       searchInputRef,
-      syncButtonRef,
-      settingsButtonRef,
       listSurfaceRef
     })
 
@@ -31,12 +27,6 @@ describe('useListPageFocusRing', () => {
           filter
         </button>
         <input ref={searchInputRef} type="text" aria-label="Search" />
-        <button ref={syncButtonRef} type="button">
-          sync
-        </button>
-        <button ref={settingsButtonRef} type="button">
-          settings
-        </button>
         <div ref={listSurfaceRef} tabIndex={0} role="listbox">
           list
         </div>
@@ -45,12 +35,12 @@ describe('useListPageFocusRing', () => {
   }
 
   describe('when Tab is pressed from search', () => {
-    it('moves focus to sync', () => {
+    it('moves focus to list surface', () => {
       render(<RingHarness />)
       const search = screen.getByRole('textbox', { name: 'Search' })
       search.focus()
       fireEvent.keyDown(search, { key: 'Tab', shiftKey: false })
-      expect(document.activeElement?.textContent).toBe('sync')
+      expect(document.activeElement?.textContent).toBe('list')
     })
   })
 

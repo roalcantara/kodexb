@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'bun:test'
 import type { RpcKnowledge, RpcListEntry } from '@shared/rpc'
 import { factoryFor } from '@testing'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 
 import { EntryRow } from './entry_row.component'
 
@@ -91,8 +91,8 @@ describe('EntryRow', () => {
       )
       expect(document.querySelector('.cmp-list-row-meta')).not.toBeNull()
       expect(document.querySelector('.cmp-list-row-title')?.textContent).toBe('Release checklist')
-      expect(document.querySelectorAll('.cmp-tag')).toHaveLength(3)
-      expect(document.querySelector('.cmp-tag--type-task')).not.toBeNull()
+      expect(document.querySelectorAll('.cmp-tag')).toHaveLength(2)
+      expect(document.querySelector('.cmp-tag--type-task')).toBeNull()
     })
 
     it('shows frecency bars when visited', () => {
@@ -121,6 +121,24 @@ describe('EntryRow', () => {
         />
       )
       expect(screen.getByRole('button').classList.contains('cmp-list-row--selected')).toBe(true)
+    })
+
+    it('calls onHoverEntry when the pointer enters the row', () => {
+      const hovered: number[] = []
+      render(
+        <EntryRow
+          entry={listRow(bookmarkGithub)}
+          allEntries={[bookmarkGithub]}
+          selected={false}
+          onSelect={() => undefined}
+          onHoverEntry={id => {
+            hovered.push(id)
+          }}
+          compact
+        />
+      )
+      fireEvent.mouseEnter(screen.getByRole('button'))
+      expect(hovered).toEqual([bookmarkGithub.id])
     })
   })
 })

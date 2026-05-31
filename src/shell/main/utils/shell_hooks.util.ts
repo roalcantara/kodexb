@@ -1,8 +1,9 @@
 import type { RpcSyncProgressPayload } from '@shared/rpc'
 import type { Display } from 'electrobun/bun'
-import type { SyncEmitter } from '../app/app'
-import type { AppShellHooks } from '../app/lib/app_shell_hooks.types'
-import { isUsableWorkArea, resolveInitialFrame, type Size, type WindowFrame } from './window/placement.util'
+import type { SyncEmitter } from '../../app/app'
+import type { AppShellHooks } from '../../app/lib/app_shell_hooks.types'
+import { type HandoffServices, runEntryHandoff } from '../handoff/handoff_registry.service'
+import { isUsableWorkArea, resolveInitialFrame, type Size, type WindowFrame } from '../window/placement.util'
 
 export const MAIN_WINDOW_DEFAULT_SIZE = { width: 680, height: 600 } as const satisfies Size
 export const MAIN_WINDOW_RENDERER_URL = 'views://shell/index.html' as const
@@ -10,6 +11,7 @@ export const MAIN_WINDOW_RENDERER_URL = 'views://shell/index.html' as const
 export type MainWindowLike = {
   setSize: (width: number, height: number) => void
   minimize: () => void
+  unminimize: () => void
   getPosition: () => { x: number; y: number }
   setPosition: (x: number, y: number) => void
 }
@@ -60,7 +62,11 @@ export function createDeferredSyncEmit<Rpc>(
 /**
  * Native shell hooks for window chrome, dialogs, and external URLs (inject Electrobun `Utils` from main).
  */
-export function createShellHooks(getWin: () => MainWindowLike | null, utils: ShellHooksUtils): AppShellHooks {
+export function createShellHooks(
+  getWin: () => MainWindowLike | null,
+  utils: ShellHooksUtils,
+  handoffServices?: HandoffServices
+): AppShellHooks {
   return {
     resizeWindow: (width, height) => {
       getWin()?.setSize(width, height)
@@ -72,9 +78,7 @@ export function createShellHooks(getWin: () => MainWindowLike | null, utils: She
     setWindowPosition: (x, y) => {
       getWin()?.setPosition(x, y)
     },
-    openExternal: url => {
-      utils.openExternal(url)
-    },
+    openExternal: url => openExternalWithFallback(url, utils, handoffServices),
     showOpenDialog: async opts => {
       const properties = opts?.properties ?? []
       const canChooseDirectory = properties.includes('openDirectory')
@@ -87,14 +91,58 @@ export function createShellHooks(getWin: () => MainWindowLike | null, utils: She
       })
       return paths[0] ?? null
     },
-    pasteInTerminal: (_cmd, terminalApp) => {
-      if (terminalApp) utils.openExternal(terminalApp)
-    },
-    openInEditor: (filePath, _editorApp) => {
-      const fileUrl = filePath.startsWith('/') ? `file://${filePath}` : filePath
-      utils.openExternal(fileUrl)
-    }
+    pasteInTerminal: (cmd, terminalApp) =>
+      terminalHandoffWithFallback('terminal-paste', cmd, terminalApp, utils, handoffServices),
+    runInTerminal: (cmd, terminalApp) =>
+      terminalHandoffWithFallback('terminal-run', cmd, terminalApp, utils, handoffServices),
+    pasteDoc: doc => pasteDocWithFallback(doc, handoffServices),
+    openInEditor: (filePath, editorApp) => openInEditorWithFallback(filePath, editorApp, utils, handoffServices)
   }
+}
+
+function openExternalWithFallback(url: string, utils: ShellHooksUtils, h?: HandoffServices): void {
+  if (!h) {
+    utils.openExternal(url)
+    return
+  }
+  const result = runEntryHandoff('browser-open', { url }, h)
+  if (!result.ok) throw new Error(`openExternal failed: ${result.error}`)
+}
+
+function terminalHandoffWithFallback(
+  kind: 'terminal-paste' | 'terminal-run',
+  cmd: string,
+  terminalApp: string | undefined,
+  utils: ShellHooksUtils,
+  h?: HandoffServices
+): void {
+  if (!h) {
+    if (terminalApp) utils.openExternal(terminalApp)
+    return
+  }
+  const result = runEntryHandoff(kind, { cmd, terminalApp }, h)
+  if (!result.ok) throw new Error(`${kind} failed: ${result.error}`)
+}
+
+function pasteDocWithFallback(doc: string, h?: HandoffServices): void {
+  if (!h) return
+  const result = runEntryHandoff('paste-frontmost', { doc }, h)
+  if (!result.ok) throw new Error(`pasteDoc failed: ${result.error}`)
+}
+
+function openInEditorWithFallback(
+  filePath: string,
+  editorApp: string | undefined,
+  utils: ShellHooksUtils,
+  h?: HandoffServices
+): void {
+  if (!h) {
+    const fileUrl = filePath.startsWith('/') ? `file://${filePath}` : filePath
+    utils.openExternal(fileUrl)
+    return
+  }
+  const result = runEntryHandoff('editor-open', { filePath, editorApp }, h)
+  if (!result.ok) throw new Error(`openInEditor failed: ${result.error}`)
 }
 
 /**

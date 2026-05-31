@@ -7,7 +7,7 @@ import { describe, expect, it } from 'bun:test'
  */
 describe('main entry', () => {
   it('keeps bootstrap side effects out of the test runner', async () => {
-    const util = await import('./shell_hooks.util')
+    const util = await import('./utils/shell_hooks.util')
     expect(util.MAIN_WINDOW_DEFAULT_SIZE).toEqual({ width: 680, height: 600 })
     expect(util.MAIN_WINDOW_RENDERER_URL).toBe('views://shell/index.html')
   })

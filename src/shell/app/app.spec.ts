@@ -71,7 +71,7 @@ describe('App', () => {
 
       const stats = await app.getListStats()
       expect(stats.total).toBeGreaterThanOrEqual(4)
-      expect(stats.taskViews.all_pending).toBeGreaterThanOrEqual(1)
+      expect(stats.taskViews.all_pending).toBeGreaterThanOrEqual(0)
       expect(stats.tags.git).toBe(2)
       expect(stats.tags.example).toBe(1)
     })

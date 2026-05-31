@@ -4,6 +4,7 @@ import { factoryFor } from '@testing'
 import {
   centerBoundsInWorkArea,
   isUsableWorkArea,
+  resolveDisplayForPlacement,
   resolveInitialFrame,
   SAFE_FALLBACK_X,
   SAFE_FALLBACK_Y
@@ -106,6 +107,59 @@ describe('isUsableWorkArea()', () => {
   describe('with a normal work area', () => {
     it('returns true', () => {
       expect(isUsableWorkArea(factoryFor('rectangle', { overrides: { y: 25, width: 1440, height: 875 } }))).toBe(true)
+    })
+  })
+})
+
+describe('resolveDisplayForPlacement()', () => {
+  const screen = (cursor: { x: number; y: number }, displays: ReturnType<typeof fakeDisplay>[]) =>
+    ({
+      getCursorScreenPoint: () => cursor,
+      getAllDisplays: () => displays,
+      getPrimaryDisplay: () => displays[displays.length - 1] ?? fakeDisplay(factoryFor('rectangle'))
+    }) as Parameters<typeof resolveDisplayForPlacement>[0]
+  const findDisplay = (cursor: { x: number; y: number }, displays: readonly ReturnType<typeof fakeDisplay>[]) => {
+    for (const d of displays) {
+      const { x, y, width, height } = d.workArea
+      if (cursor.x >= x && cursor.x < x + width && cursor.y >= y && cursor.y < y + height) return d
+    }
+    return null
+  }
+
+  describe('when cursor is on a non-primary display', () => {
+    const primary = fakeDisplay(factoryFor('rectangle', { overrides: { width: 1920, height: 1080 } }))
+    const secondary = fakeDisplay(factoryFor('rectangle', { overrides: { x: 1920, width: 1920, height: 1080 } }))
+    const displays = [secondary, primary]
+
+    it('returns the cursor display', () => {
+      const result = resolveDisplayForPlacement(screen({ x: 2500, y: 500 }, displays), findDisplay)
+      expect(result.id).toBe(secondary.id)
+    })
+  })
+
+  describe('when cursor is not on any display', () => {
+    const primary = fakeDisplay(factoryFor('rectangle'))
+    const displays = [primary]
+
+    it('falls back to primary display', () => {
+      const result = resolveDisplayForPlacement(screen({ x: -100, y: -100 }, displays), findDisplay)
+      expect(result.id).toBe(primary.id)
+    })
+  })
+
+  describe('when Screen throws', () => {
+    it('falls back to primary display', () => {
+      const result = resolveDisplayForPlacement(
+        {
+          getCursorScreenPoint: () => {
+            throw new Error('no screen')
+          },
+          getAllDisplays: () => [],
+          getPrimaryDisplay: () => fakeDisplay(factoryFor('rectangle'))
+        },
+        findDisplay
+      )
+      expect(result.isPrimary).toBe(true)
     })
   })
 })

@@ -25,12 +25,14 @@ export type EntryRowProps = {
   allEntries: RpcKnowledge[]
   selected: boolean
   onSelect: (id: number) => void
+  onHoverEntry?: (id: number) => void
   maxFrecencyScore?: number
   dragHandlers?: DragHandlers
   dragOver?: boolean
   onCycleStatus?: (id: number) => void
   onCyclePriority?: (id: number) => void
   compact?: boolean
+  tagCounts?: Readonly<Record<string, number>>
 }
 
 function BadgeChips({ entry }: { entry: Extract<RpcKnowledge, { type: 'task' }> }) {
@@ -42,59 +44,83 @@ function BadgeChips({ entry }: { entry: Extract<RpcKnowledge, { type: 'task' }> 
   )
 }
 
+function rowPointerHandlers(entryId: number, onSelect: (id: number) => void, onHoverEntry?: (id: number) => void) {
+  return {
+    onMouseEnter: () => onHoverEntry?.(entryId),
+    onClick: () => onSelect(entryId)
+  }
+}
+
+function CompactListEntryRow({
+  entry,
+  selected,
+  onSelect,
+  onHoverEntry,
+  maxFrecencyScore,
+  tagCounts
+}: Pick<EntryRowProps, 'entry' | 'selected' | 'onSelect' | 'onHoverEntry' | 'maxFrecencyScore' | 'tagCounts'>) {
+  const isTask = entry.type === 'task'
+  const rowCls = selected ? 'cmp-list-row cmp-list-row--selected' : 'cmp-list-row'
+  const tileCls = entryGlyphTileClass(entry)
+  const tags = entryTagItems(entry, tagCounts ?? {})
+  const pointer = rowPointerHandlers(entry.id, onSelect, onHoverEntry)
+  return (
+    <button type="button" className={rowCls} data-entry-id={entry.id} tabIndex={-1} {...pointer}>
+      <span className={`cmp-list-row-icon ${tileCls}`}>{getIcon(entry)}</span>
+      <span className="cmp-list-row-body">
+        <span className={`cmp-list-row-meta ${entryMetaSemanticClass(entry)}`}>
+          {entry.type === 'task' ? (
+            <span className="cmp-list-row-meta-clock" aria-hidden>
+              ◷{' '}
+            </span>
+          ) : null}
+          {entryMetaText(entry)}
+        </span>
+        <span className="cmp-list-row-title">{entryTitleText(entry)}</span>
+        <span className="cmp-list-row-tags">
+          {tags.map(tag => (
+            <span key={tag.key} className={tag.className} title={tag.title}>
+              {tag.label}
+            </span>
+          ))}
+          {isTask ? <BadgeChips entry={entry as Extract<RpcKnowledge, { type: 'task' }>} /> : null}
+        </span>
+      </span>
+      <span className="cmp-list-row-trailing">
+        <EntryRowFrecencyIndicator
+          frecencyScore={entry.frecencyScore}
+          visitCount={entry.visitCount}
+          maxFrecencyScore={maxFrecencyScore ?? 0}
+        />
+      </span>
+    </button>
+  )
+}
+
 function EntryRowComponent({
   entry,
   allEntries,
   selected,
   onSelect,
+  onHoverEntry,
   dragHandlers,
   dragOver,
   onCycleStatus,
   onCyclePriority,
   maxFrecencyScore = 0,
-  compact
+  compact,
+  tagCounts = {}
 }: EntryRowProps) {
   if (compact) {
-    const isTask = entry.type === 'task'
-    const rowCls = selected ? 'cmp-list-row cmp-list-row--selected' : 'cmp-list-row'
-    const tileCls = entryGlyphTileClass(entry)
-    const tags = entryTagItems(entry)
     return (
-      <button
-        type="button"
-        className={rowCls}
-        data-entry-id={entry.id}
-        tabIndex={-1}
-        onClick={() => onSelect(entry.id)}
-      >
-        <span className={`cmp-list-row-icon ${tileCls}`}>{getIcon(entry)}</span>
-        <span className="cmp-list-row-body">
-          <span className={`cmp-list-row-meta ${entryMetaSemanticClass(entry)}`}>
-            {entry.type === 'task' ? (
-              <span className="cmp-list-row-meta-clock" aria-hidden>
-                ◷{' '}
-              </span>
-            ) : null}
-            {entryMetaText(entry)}
-          </span>
-          <span className="cmp-list-row-title">{entryTitleText(entry)}</span>
-          <span className="cmp-list-row-tags">
-            {tags.map(tag => (
-              <span key={tag.key} className={tag.className}>
-                {tag.label}
-              </span>
-            ))}
-            {isTask ? <BadgeChips entry={entry as Extract<RpcKnowledge, { type: 'task' }>} /> : null}
-          </span>
-        </span>
-        <span className="cmp-list-row-trailing">
-          <EntryRowFrecencyIndicator
-            frecencyScore={entry.frecencyScore}
-            visitCount={entry.visitCount}
-            maxFrecencyScore={maxFrecencyScore}
-          />
-        </span>
-      </button>
+      <CompactListEntryRow
+        entry={entry}
+        selected={selected}
+        onSelect={onSelect}
+        onHoverEntry={onHoverEntry}
+        maxFrecencyScore={maxFrecencyScore}
+        tagCounts={tagCounts}
+      />
     )
   }
 
@@ -103,17 +129,18 @@ function EntryRowComponent({
     : dragOver
       ? 'cmp-entry-row cmp-entry-row--drag-over'
       : 'cmp-entry-row'
+  const pointer = rowPointerHandlers(entry.id, onSelect, onHoverEntry)
   return (
     <button
       type="button"
       className={cls}
       data-entry-id={entry.id}
       tabIndex={-1}
+      {...pointer}
       draggable={dragHandlers?.draggable}
       onMouseDown={e => {
         e.preventDefault()
       }}
-      onClick={() => onSelect(entry.id)}
       onDragStart={dragHandlers?.onDragStart}
       onDragEnd={dragHandlers?.onDragEnd}
       onDragOver={dragHandlers?.onDragOver}
@@ -146,5 +173,7 @@ export const EntryRow = memo(
     prev.maxFrecencyScore === next.maxFrecencyScore &&
     prev.entry.frecencyScore === next.entry.frecencyScore &&
     prev.entry.visitCount === next.entry.visitCount &&
-    prev.onSelect === next.onSelect
+    prev.tagCounts === next.tagCounts &&
+    prev.onSelect === next.onSelect &&
+    prev.onHoverEntry === next.onHoverEntry
 )

@@ -1,11 +1,7 @@
 /* ── CmdK Palette ────────────────────────────────────────────────── */
 
 .cmp-command-palette {
-  background: var(--color-surface-container);
-  border-radius: 6px;
-  width: 480px;
-  max-height: 400px;
-  overflow: hidden;
+  max-height: min(400px, calc(100vh - 96px));
   display: flex;
   flex-direction: column;
 }

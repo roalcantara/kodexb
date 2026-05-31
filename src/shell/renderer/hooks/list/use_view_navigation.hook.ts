@@ -30,6 +30,7 @@ export type ViewNavigationKeyEvent = {
   key: string
   metaKey?: boolean
   ctrlKey?: boolean
+  altKey?: boolean
   preventDefault?: () => void
   target?: EventTarget | null
 }
@@ -92,7 +93,7 @@ function tryCopyShortcut(
   isInput: boolean,
   isEditable: boolean
 ): boolean {
-  if (!((e.metaKey || e.ctrlKey) && e.key === 'c' && !isInput && !isEditable)) return false
+  if (!((e.metaKey || e.ctrlKey) && e.key === 'c' && !e.altKey && !isInput && !isEditable)) return false
   e.preventDefault?.()
   const { rows: r, selectedId: sid, detailEntry, viewState } = ctx.depsRef.current
   const actionCtx = ctx.actionCtx

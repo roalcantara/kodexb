@@ -1,6 +1,8 @@
 import type { RefObject } from 'react'
 import { useEffect } from 'react'
 
+export type GlobalShortcutAction = 'open-editor' | 'copy-desc'
+
 export type WindowViewNavKeysOpts = {
   disabled: boolean
   /**
@@ -15,6 +17,8 @@ export type WindowViewNavKeysOpts = {
   handleListArrows?: (e: KeyboardEvent) => void
   /** Return / mod+Return for entry primary/secondary actions. */
   handleEntryReturn?: (e: KeyboardEvent) => void
+  /** Global entry-action keyboard shortcuts (Meta+Alt+c → copy-desc, Meta+o → open-editor). */
+  handleGlobalShortcut?: (action: GlobalShortcutAction) => void
   /** Scroll container for ⌘/⌃+ArrowUp/ArrowDown (detail / split). */
   detailScrollRef?: RefObject<HTMLElement | null>
   /** When true, ⌘/⌃+vertical arrows scroll `detailScrollRef` instead of doing nothing. */
@@ -26,7 +30,7 @@ function isModL(e: KeyboardEvent): boolean {
 }
 
 function isModC(e: KeyboardEvent): boolean {
-  return (e.metaKey || e.ctrlKey) && e.key === 'c'
+  return (e.metaKey || e.ctrlKey) && e.key === 'c' && !e.altKey && !e.shiftKey
 }
 
 function isArrowLeftOrRight(e: KeyboardEvent): boolean {
@@ -72,6 +76,28 @@ function tryListArrows(e: KeyboardEvent, handleListArrows?: (e: KeyboardEvent) =
   stopIfDefaultPrevented(e)
 }
 
+const MOD_OR_CTRL = (e: KeyboardEvent) => e.metaKey || e.ctrlKey
+
+function globalShortcutAction(e: KeyboardEvent): GlobalShortcutAction | null {
+  if (!MOD_OR_CTRL(e)) return null
+  if (e.key === 'o' && !e.altKey && !e.shiftKey) return 'open-editor'
+  if (e.key === 'c' && e.altKey && !e.shiftKey) return 'copy-desc'
+  return null
+}
+
+function tryGlobalShortcutKeydown(
+  e: KeyboardEvent,
+  handleGlobalShortcut: ((action: GlobalShortcutAction) => void) | undefined
+): boolean {
+  if (!handleGlobalShortcut) return false
+  const globalAction = globalShortcutAction(e)
+  if (!globalAction) return false
+  if (keyTargetIsTextField(e.target)) return false
+  handleGlobalShortcut(globalAction)
+  e.preventDefault()
+  return true
+}
+
 function runListWindowKeydown(
   e: KeyboardEvent,
   disabled: boolean,
@@ -80,6 +106,7 @@ function runListWindowKeydown(
   onModL: (e: KeyboardEvent) => void,
   handleListArrows: ((e: KeyboardEvent) => void) | undefined,
   handleEntryReturn: ((e: KeyboardEvent) => void) | undefined,
+  handleGlobalShortcut: ((action: GlobalShortcutAction) => void) | undefined,
   detailScrollRef: RefObject<HTMLElement | null> | undefined,
   detailScrollActive: boolean | undefined
 ): void {
@@ -99,6 +126,7 @@ function runListWindowKeydown(
     stopIfDefaultPrevented(e)
     return
   }
+  if (tryGlobalShortcutKeydown(e, handleGlobalShortcut)) return
   if (e.key === 'Enter' && handleEntryReturn) {
     if (!keyTargetIsTextField(e.target)) {
       handleEntryReturn(e)
@@ -126,6 +154,7 @@ export function useWindowViewNavKeys({
   handleModL,
   handleListArrows,
   handleEntryReturn,
+  handleGlobalShortcut,
   detailScrollRef,
   detailScrollActive
 }: WindowViewNavKeysOpts): void {
@@ -140,6 +169,7 @@ export function useWindowViewNavKeys({
         onModL,
         handleListArrows,
         handleEntryReturn,
+        handleGlobalShortcut,
         detailScrollRef,
         detailScrollActive
       )
@@ -153,6 +183,7 @@ export function useWindowViewNavKeys({
     onModL,
     handleListArrows,
     handleEntryReturn,
+    handleGlobalShortcut,
     detailScrollRef,
     detailScrollActive
   ])

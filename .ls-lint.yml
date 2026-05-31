@@ -40,6 +40,12 @@ ls:
   src/shell/main/rpc:
     .ts: regex:^(host|schemas|server)(\.spec)?$
 
+  src/shell/main/rpc/routes:
+    .ts: regex:^[a-z][a-z0-9_]*\.routes(\.spec)?$
+
+  src/shell/main/rpc/routes/utils:
+    .ts: regex:^[a-z][a-z0-9_]*\.util(\.spec)?$
+
   src/shell/main/window:
     .ts: regex:^(state|[a-z][a-z0-9_]*\.util)(\.spec)?$
 

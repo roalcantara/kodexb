@@ -134,6 +134,23 @@
   background: transparent;
 }
 
+.cmp-tag--freq-rare {
+  color: color-mix(in srgb, var(--color-tag-type-accent) 32%, var(--color-on-surface-variant));
+}
+
+.cmp-tag--freq-modest {
+  color: color-mix(in srgb, var(--color-tag-type-accent) 52%, var(--color-on-surface-variant));
+}
+
+.cmp-tag--freq-common {
+  color: color-mix(in srgb, var(--color-tag-type-accent) 72%, var(--color-text-main));
+}
+
+.cmp-tag--freq-dominant {
+  color: var(--color-tag-type-accent);
+  font-weight: 400;
+}
+
 .cmp-tag {
   font-size: 12px;
   font-weight: 300;

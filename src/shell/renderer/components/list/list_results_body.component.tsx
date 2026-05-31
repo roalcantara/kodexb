@@ -15,6 +15,7 @@ export type ListResultsBodyProps = {
   syncInfo: ListPageShell['data']['syncInfo']
   onSync: () => void
   emptySyncButtonRef: RefObject<HTMLButtonElement | null>
+  tagCounts: Readonly<Record<string, number>>
   rows: RpcListEntry[]
   visibleRows: RpcListEntry[]
   virtualWindow: VirtualListWindow
@@ -22,6 +23,7 @@ export type ListResultsBodyProps = {
   hasMore: boolean
   maxFrecencyScore: number
   onSelectEntry: (id: number) => void
+  onHoverEntry: (id: number) => void
   dragDrop?: ListPageShell['dragDrop']
   onCycleStatus: (id: number) => void
   onCyclePriority: (id: number) => void
@@ -39,6 +41,7 @@ export function ListResultsBody({
   syncInfo,
   onSync,
   emptySyncButtonRef,
+  tagCounts,
   rows,
   visibleRows,
   virtualWindow,
@@ -46,6 +49,7 @@ export function ListResultsBody({
   hasMore,
   maxFrecencyScore,
   onSelectEntry,
+  onHoverEntry,
   dragDrop,
   onCycleStatus,
   onCyclePriority
@@ -74,9 +78,15 @@ export function ListResultsBody({
                 {syncInfo.fileCount} source file{syncInfo.fileCount === 1 ? '' : 's'} found
               </p>
             ) : null}
-            <button ref={emptySyncButtonRef} type="button" onClick={onSync}>
-              ↺ Sync — press Enter to start
-            </button>
+            <p className="cmp-empty-state-hint">
+              <button ref={emptySyncButtonRef} type="button" className="cmp-empty-state-link" onClick={onSync}>
+                Sync sources
+              </button>
+              {' · or Actions '}
+              <kbd className="cmp-kbd">⌘</kbd>
+              <kbd className="cmp-kbd">K</kbd>
+              {' → Sync'}
+            </p>
           </div>
         </div>
       ) : null}
@@ -99,11 +109,13 @@ export function ListResultsBody({
           maxFrecencyScore={maxFrecencyScore}
           selected={entry.id === selectedId}
           onSelect={onSelectEntry}
+          onHoverEntry={onHoverEntry}
           dragHandlers={dragDrop?.getDragHandlers(entry)}
           dragOver={dragDrop?.dragOverId === entry.id}
           onCycleStatus={onCycleStatus}
           onCyclePriority={onCyclePriority}
           compact
+          tagCounts={tagCounts}
         />
       ))}
       {hasMore && sentinelSpacers !== null ? (

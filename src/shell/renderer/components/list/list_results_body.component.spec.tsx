@@ -6,8 +6,8 @@ import userEvent from '@testing-library/user-event'
 import { createRef } from 'react'
 import { ListResultsBody } from './list_results_body.component'
 
-const SYNC_BUTTON_RE = /sync/i
 const EXAMPLE_URL_RE = /https:\/\/example.com/
+const SYNC_SOURCES_RE = /Sync sources/i
 
 afterEach(() => {
   cleanup()
@@ -42,6 +42,7 @@ function renderBody(overrides: Partial<Parameters<typeof ListResultsBody>[0]> = 
     syncInfo: null,
     onSync: () => undefined,
     emptySyncButtonRef: createRef<HTMLButtonElement>(),
+    tagCounts: {},
     rows: [],
     visibleRows: [],
     virtualWindow: { startIndex: 0, endIndex: 0, paddingTop: 0, paddingBottom: 0 },
@@ -49,6 +50,7 @@ function renderBody(overrides: Partial<Parameters<typeof ListResultsBody>[0]> = 
     hasMore: false,
     maxFrecencyScore: 0,
     onSelectEntry: () => undefined,
+    onHoverEntry: () => undefined,
     dragDrop: undefined,
     onCycleStatus: () => undefined,
     onCyclePriority: () => undefined,
@@ -69,7 +71,7 @@ describe('ListResultsBody', () => {
         }
       })
 
-      await userEvent.click(screen.getByRole('button', { name: SYNC_BUTTON_RE }))
+      await userEvent.click(screen.getByRole('button', { name: SYNC_SOURCES_RE }))
       expect(synced).toBe(true)
     })
   })

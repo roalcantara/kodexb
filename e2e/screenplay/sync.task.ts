@@ -61,8 +61,11 @@ export class RunSync implements Performable {
   }
 
   async performAs(actor: Actor): Promise<void> {
-    await actor.page.getByRole('button', { name: /Sync/ }).first().click()
-    await actor.page.locator('.cmp-sync-modal').waitFor({ state: 'visible', timeout: 10_000 })
+    const page = actor.page
+    await page.keyboard.press('Meta+k')
+    await page.getByPlaceholder('Type an action...').waitFor({ state: 'visible', timeout: 10_000 })
+    await page.locator('.cmp-command-palette-action', { hasText: /^Sync$/ }).click()
+    await page.locator('.cmp-sync-modal').waitFor({ state: 'visible', timeout: 10_000 })
     await actor.eventually(async () => {
       const finished = actor.page.locator('.cmp-sync-modal-summary-title', { hasText: 'Sync finished' })
       const failed = actor.page.locator('.cmp-sync-modal-error-banner')

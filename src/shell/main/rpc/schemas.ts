@@ -133,6 +133,8 @@ export const pasteInTerminalSchema = Type.Object(
   { cmd: Type.String({ minLength: 1 }) },
   { additionalProperties: false }
 )
+export const runInTerminalSchema = Type.Object({ cmd: Type.String({ minLength: 1 }) }, { additionalProperties: false })
+export const pasteDocSchema = Type.Object({ doc: Type.String({ minLength: 1 }) }, { additionalProperties: false })
 export const openInEditorSchema = Type.Object(
   { filePath: Type.String({ minLength: 1 }) },
   { additionalProperties: false }

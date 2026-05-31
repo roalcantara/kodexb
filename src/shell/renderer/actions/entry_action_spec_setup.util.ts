@@ -9,6 +9,9 @@ export function installEntryActionPanelDepsMock(): EntryActionPanelDeps {
     openInEditor: noop,
     cycleStatus: noop,
     cyclePriority: noop,
+    runInTerminal: noop,
+    pasteInTerminal: noop,
+    pasteDoc: noop,
     quitApp: noop
   }
   mock.module('./entry_action_panel_deps.util', () => ({

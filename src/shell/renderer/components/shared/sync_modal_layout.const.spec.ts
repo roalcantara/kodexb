@@ -12,7 +12,7 @@ describe('sync_modal_layout.const', () => {
 
   it('sync.css locks modal width and wraps long error text', () => {
     const css = readFileSync(syncCssPath, 'utf8')
-    expect(css).toContain('width: min(var(--sync-modal-width')
+    expect(css).toContain('width: min(var(--overlay-shell-width')
     expect(css).toContain('overflow-wrap: anywhere')
     expect(css).toContain('overflow-x: hidden')
   })

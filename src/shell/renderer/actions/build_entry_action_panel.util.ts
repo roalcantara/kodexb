@@ -1,17 +1,9 @@
 import { copyTextForEntry } from '@core'
 import type { EntryActionId } from '@core/helpers/entry_action/entry_action_ids.const'
 import type { RpcKnowledge } from '@shared/rpc'
-import { clipboardCopiedToastMessage } from '../utils/list/list_formatters.util'
 import type { EntryAction, EntryActionContext } from './entry_action_panel.types'
 import type { EntryActionPanelDeps } from './entry_action_panel_deps.util'
 import { actionRankForEntry } from './entry_action_panel_resolve.util'
-
-const APPLE_UA_PATTERN = /Mac|iPhone|iPod|iPad/i
-
-function paletteQuitShortcut(): string {
-  if (typeof navigator === 'undefined') return '⌘Q'
-  return APPLE_UA_PATTERN.test(navigator.userAgent) ? '⌘Q' : 'Ctrl+Q'
-}
 
 function action(
   entry: RpcKnowledge,
@@ -48,100 +40,180 @@ function libraryActions(ctx: EntryActionContext): EntryAction[] {
   ]
 }
 
+function quitShortcut(): string {
+  return '⌘Q'
+}
+
 function quitAction(ctx: EntryActionContext, deps: EntryActionPanelDeps): EntryAction {
   return {
     id: 'quit',
     label: 'Quit kb',
     section: 'app',
-    shortcut: paletteQuitShortcut(),
+    shortcut: quitShortcut(),
     run: () => {
       deps.quitApp().catch(() => ctx.pushToast('Failed to quit', 'error'))
     }
   }
 }
 
-function copyAction(entry: RpcKnowledge, ctx: EntryActionContext): EntryAction {
-  return action(entry, 'copy', 'Copy', 'clipboard', () => {
-    const text = copyTextForEntry(entry)
-    const msg = clipboardCopiedToastMessage(text)
-    return navigator.clipboard.writeText(text).then(
+function copyDescAction(entry: RpcKnowledge, ctx: EntryActionContext): EntryAction {
+  return action(entry, 'copy-desc', 'Copy Description', 'clipboard', () =>
+    navigator.clipboard.writeText(entry.desc).then(
       () => {
-        ctx.pushToast(msg, 'success')
+        ctx.pushToast('Description copied', 'success')
+      },
+      () => {
+        ctx.pushToast('Copy description failed', 'error')
+        throw new Error('copy desc failed')
+      }
+    )
+  )
+}
+
+function copyAction(entry: RpcKnowledge, ctx: EntryActionContext): EntryAction {
+  return action(entry, 'copy', 'Copy', 'clipboard', () =>
+    navigator.clipboard.writeText(copyTextForEntry(entry)).then(
+      () => {
+        ctx.pushToast('Title copied', 'success')
       },
       () => {
         ctx.pushToast('Copy failed', 'error')
         throw new Error('copy failed')
       }
     )
-  })
+  )
 }
 
 function openEditorAction(entry: RpcKnowledge, ctx: EntryActionContext, deps: EntryActionPanelDeps): EntryAction {
-  return action(entry, 'open-editor', 'Open in Editor', 'source', () => {
-    deps.openInEditor(entry.source).catch(() => {
-      ctx.pushToast('Failed to open editor', 'error')
-      throw new Error('editor failed')
-    })
-  })
+  return action(entry, 'open-editor', 'Open in Editor', 'source', () =>
+    deps.openInEditor(entry.source).then(
+      () => {
+        ctx.pushToast('Opened in editor', 'success')
+      },
+      () => {
+        ctx.pushToast('Failed to open editor', 'error')
+        throw new Error('editor failed')
+      }
+    )
+  )
+}
+
+function pasteDocAction(entry: RpcKnowledge, ctx: EntryActionContext, deps: EntryActionPanelDeps): EntryAction {
+  return action(entry, 'paste-doc', 'Paste Doc', 'entry', () =>
+    deps.pasteDoc(entry.desc).then(
+      () => {
+        ctx.pushToast('Doc pasted', 'success')
+      },
+      () => {
+        ctx.pushToast('Failed to paste doc', 'error')
+        throw new Error('paste doc failed')
+      }
+    )
+  )
+}
+
+function runTerminalAction(entry: RpcKnowledge, ctx: EntryActionContext, deps: EntryActionPanelDeps): EntryAction {
+  return action(entry, 'run-terminal', 'Run in Terminal', 'entry', () =>
+    deps.runInTerminal(entry.key).then(
+      () => {
+        ctx.pushToast('Running in terminal', 'success')
+      },
+      () => {
+        ctx.pushToast('Failed to run in terminal', 'error')
+        throw new Error('run terminal failed')
+      }
+    )
+  )
+}
+
+function bookmarkTypeActions(entry: RpcKnowledge, ctx: EntryActionContext, deps: EntryActionPanelDeps): EntryAction[] {
+  return [
+    action(entry, 'open-url', 'Open In Browser', 'entry', () => {
+      const targetUrl = (entry.links?.[0] ?? entry.key) as string
+      return deps.openExternal(targetUrl).then(
+        () => {
+          ctx.pushToast('Opened in browser', 'success')
+        },
+        () => {
+          ctx.pushToast('Failed to open', 'error')
+          throw new Error('open failed')
+        }
+      )
+    }),
+    copyAction(entry, ctx),
+    copyDescAction(entry, ctx),
+    openEditorAction(entry, ctx, deps)
+  ]
+}
+
+function commandTypeActions(entry: RpcKnowledge, ctx: EntryActionContext, deps: EntryActionPanelDeps): EntryAction[] {
+  return [
+    action(entry, 'paste-terminal', 'Paste in Terminal', 'entry', () =>
+      deps.pasteInTerminal(entry.key).then(
+        () => {
+          ctx.pushToast('Command pasted', 'success')
+        },
+        () => {
+          ctx.pushToast('Failed to paste command', 'error')
+          throw new Error('paste failed')
+        }
+      )
+    ),
+    runTerminalAction(entry, ctx, deps),
+    copyAction(entry, ctx),
+    copyDescAction(entry, ctx),
+    openEditorAction(entry, ctx, deps)
+  ]
+}
+
+function cheatTypeActions(entry: RpcKnowledge, ctx: EntryActionContext, deps: EntryActionPanelDeps): EntryAction[] {
+  return [
+    pasteDocAction(entry, ctx, deps),
+    copyAction(entry, ctx),
+    copyDescAction(entry, ctx),
+    openEditorAction(entry, ctx, deps)
+  ]
+}
+
+function taskTypeActions(entry: RpcKnowledge, ctx: EntryActionContext, deps: EntryActionPanelDeps): EntryAction[] {
+  return [
+    action(entry, 'edit-task', 'Edit Task', 'entry', () => ctx.onEditTask(entry)),
+    action(entry, 'cycle-status', 'Cycle Status', 'entry', () =>
+      deps
+        .cycleStatus(entry.id, 'forward')
+        .then(() => undefined)
+        .catch(() => {
+          ctx.pushToast('Status cycle failed', 'error')
+          throw new Error('cycle status failed')
+        })
+    ),
+    action(entry, 'cycle-priority', 'Cycle Priority', 'entry', () =>
+      deps
+        .cyclePriority(entry.id, 'forward')
+        .then(() => undefined)
+        .catch(() => {
+          ctx.pushToast('Priority cycle failed', 'error')
+          throw new Error('cycle priority failed')
+        })
+    ),
+    copyAction(entry, ctx),
+    copyDescAction(entry, ctx),
+    openEditorAction(entry, ctx, deps)
+  ]
 }
 
 function entryTypeActions(entry: RpcKnowledge, ctx: EntryActionContext, deps: EntryActionPanelDeps): EntryAction[] {
   switch (entry.type) {
     case 'bookmark':
-      return [
-        action(entry, 'open-url', 'Open URL', 'entry', () => {
-          deps.openExternal(entry.key).catch(() => {
-            ctx.pushToast('Failed to open URL', 'error')
-            throw new Error('open failed')
-          })
-        }),
-        copyAction(entry, ctx),
-        openEditorAction(entry, ctx, deps)
-      ]
+      return bookmarkTypeActions(entry, ctx, deps)
     case 'command':
-      return [
-        action(entry, 'paste-terminal', 'Paste in Terminal', 'entry', () =>
-          navigator.clipboard.writeText(entry.key).then(
-            () => {
-              ctx.pushToast('Command copied', 'success')
-            },
-            () => {
-              ctx.pushToast('Command copy failed', 'error')
-              throw new Error('paste failed')
-            }
-          )
-        ),
-        copyAction(entry, ctx),
-        openEditorAction(entry, ctx, deps)
-      ]
+      return commandTypeActions(entry, ctx, deps)
     case 'cheat':
-      return [copyAction(entry, ctx), openEditorAction(entry, ctx, deps)]
+      return cheatTypeActions(entry, ctx, deps)
     case 'task':
-      return [
-        action(entry, 'edit-task', 'Edit Task', 'entry', () => ctx.onEditTask(entry)),
-        action(entry, 'cycle-status', 'Cycle Status', 'entry', () =>
-          deps
-            .cycleStatus(entry.id, 'forward')
-            .then(() => undefined)
-            .catch(() => {
-              ctx.pushToast('Status cycle failed', 'error')
-              throw new Error('cycle status failed')
-            })
-        ),
-        action(entry, 'cycle-priority', 'Cycle Priority', 'entry', () =>
-          deps
-            .cyclePriority(entry.id, 'forward')
-            .then(() => undefined)
-            .catch(() => {
-              ctx.pushToast('Priority cycle failed', 'error')
-              throw new Error('cycle priority failed')
-            })
-        ),
-        copyAction(entry, ctx),
-        openEditorAction(entry, ctx, deps)
-      ]
+      return taskTypeActions(entry, ctx, deps)
     case 'shortcut':
-      return [copyAction(entry, ctx), openEditorAction(entry, ctx, deps)]
+      return [copyAction(entry, ctx), copyDescAction(entry, ctx), openEditorAction(entry, ctx, deps)]
   }
 }
 

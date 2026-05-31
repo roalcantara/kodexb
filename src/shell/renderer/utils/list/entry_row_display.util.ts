@@ -1,5 +1,7 @@
 import type { RpcKnowledge } from '@shared/rpc'
 
+import { tagFrequencyClassName } from './tag_frequency_class.util'
+
 const TITLE_PREVIEW_LEN = 80
 const META_URL_PREVIEW_LEN = 48
 
@@ -43,22 +45,18 @@ export type EntryTagItem = {
   key: string
   label: string
   className: string
+  title?: string
 }
 
-export function entryTagItems(entry: RpcKnowledge): EntryTagItem[] {
-  const items: EntryTagItem[] = [
-    {
-      key: `type-${entry.type}`,
-      label: `#${entry.type}`,
-      className: `cmp-tag cmp-tag--type-${entry.type}`
-    }
-  ]
-  for (const tag of entry.tags) {
-    items.push({
+export function entryTagItems(entry: RpcKnowledge, tagCounts: Readonly<Record<string, number>> = {}): EntryTagItem[] {
+  return entry.tags.map(tag => {
+    const count = tagCounts[tag] ?? 0
+    const className = count > 0 ? tagFrequencyClassName(count) : 'cmp-tag'
+    return {
       key: tag,
       label: `#${tag}`,
-      className: 'cmp-tag'
-    })
-  }
-  return items
+      className,
+      title: count > 0 ? `${count} entries` : undefined
+    }
+  })
 }

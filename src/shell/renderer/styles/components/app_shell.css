@@ -3,7 +3,8 @@
   flex-direction: column;
   box-sizing: border-box;
   height: 100vh;
-  padding: 2px 8px 8px;
+  /* Horizontal inset matches prototype body padding; keeps 740px shell inside ≥780px window. */
+  padding: 2px 16px 8px;
   background: transparent;
 }
 
@@ -104,6 +105,8 @@
 .cmp-app-shell {
   --cmp-shell-radius: var(--radius-xl);
   --cmp-search-bar-height: 52px;
+  --app-list-min-width: 740px;
+  min-width: min(var(--app-list-min-width), 100%);
   display: flex;
   flex-direction: column;
   flex: 1;

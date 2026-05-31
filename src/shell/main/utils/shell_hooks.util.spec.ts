@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, mock } from 'bun:test'
 
 import { factoryFor } from '@testing'
+import { SAFE_FALLBACK_X, SAFE_FALLBACK_Y } from '../window/placement.util'
 import {
   buildBrowserWindowCreateOptions,
   computeInitialFrameFromDisplay,
@@ -9,7 +10,6 @@ import {
   MAIN_WINDOW_DEFAULT_SIZE,
   MAIN_WINDOW_RENDERER_URL
 } from './shell_hooks.util'
-import { SAFE_FALLBACK_X, SAFE_FALLBACK_Y } from './window/placement.util'
 
 describe('computeInitialFrameFromDisplay', () => {
   afterEach(() => {
@@ -78,6 +78,7 @@ describe('createShellHooks', () => {
     return {
       setSize: mock((_w: number, _h: number) => undefined),
       minimize: mock(() => undefined),
+      unminimize: mock(() => undefined),
       getPosition: mock(() => position),
       setPosition: mock((_x: number, _y: number) => undefined)
     }
@@ -161,6 +162,40 @@ describe('createShellHooks', () => {
     const hooks = createShellHooks(() => null, { openExternal, openFileDialog: async () => [] })
     hooks.openInEditor?.('/tmp/note.md', 'Code')
     expect(openExternal).toHaveBeenCalledWith('file:///tmp/note.md')
+  })
+
+  describe('handoff failure propagation', () => {
+    function makeHandoffServices() {
+      return {
+        hide: mock(() => undefined),
+        show: mock(() => undefined),
+        armGuard: mock(() => undefined),
+        disarmGuard: mock(() => undefined)
+      }
+    }
+
+    function makeHandoffHooks() {
+      return createShellHooks(
+        () => null,
+        { openExternal: mock(() => undefined), openFileDialog: async () => [] },
+        makeHandoffServices()
+      )
+    }
+
+    it('throws when openExternal receives an empty URL', () => {
+      expect(() => makeHandoffHooks().openExternal?.('')).toThrow('openExternal failed')
+    })
+
+    it('throws when openInEditor receives an empty path', () => {
+      expect(() => makeHandoffHooks().openInEditor?.('', 'Code')).toThrow('openInEditor failed')
+    })
+
+    it('falls back to openExternal when handoffServices is not provided', () => {
+      const openExternal = mock((_url: string) => undefined)
+      const hooks = createShellHooks(() => null, { openExternal, openFileDialog: async () => [] })
+      hooks.openExternal?.('https://example.com')
+      expect(openExternal).toHaveBeenCalledWith('https://example.com')
+    })
   })
 })
 

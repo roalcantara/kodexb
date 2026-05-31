@@ -26,7 +26,7 @@ describe('ImportService', () => {
     it('imports minimal fixture', async () => {
       const svc = new ImportService(':memory:')
       const result = await svc.run(testingPaths.minimal)
-      expect(result.filesProcessed).toBe(1)
+      expect(result.filesProcessed).toBe(2)
       expect(result.inserted).toBe(4)
       expect(result.updated).toBe(0)
       expect(result.errors).toHaveLength(0)

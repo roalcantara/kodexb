@@ -47,12 +47,22 @@ describe('entry_row_display.util', () => {
   })
 
   describe('entryTagItems', () => {
-    it('includes type hash and tag hashes', () => {
+    it('includes user tag hashes with frequency class', () => {
       const entry = factoryFor('cheat', {
         overrides: { tags: ['security'], desc: '', key: 'audit' }
       }) as RpcKnowledge
+      const labels = entryTagItems(entry, { security: 120 }).map(i => i.label)
+      expect(labels).toEqual(['#security'])
+      expect(entryTagItems(entry, { security: 120 })[0]?.className).toContain('cmp-tag--freq-common')
+    })
+
+    it('does not prepend entry type hashtag', () => {
+      const entry = factoryFor('command', {
+        overrides: { tags: ['brew'], desc: '', key: 'npm test' }
+      }) as RpcKnowledge
       const labels = entryTagItems(entry).map(i => i.label)
-      expect(labels).toEqual(['#cheat', '#security'])
+      expect(labels).not.toContain('#command')
+      expect(labels).toEqual(['#brew'])
     })
   })
 

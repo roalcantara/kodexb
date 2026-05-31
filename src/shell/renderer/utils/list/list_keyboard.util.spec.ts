@@ -29,8 +29,6 @@ describe('listPageTabRing', () => {
         listPage.innerHTML = `
         <button type="button" id="filter">filter</button>
         <input id="search" type="text" />
-        <button type="button" id="sync">sync</button>
-        <button type="button" id="settings">settings</button>
         <div id="list" tabindex="0">list</div>
         <aside class="cmp-detail-panel cmp-detail-panel--visible">
           <button type="button" id="detailBtn">detail-btn</button>
@@ -43,29 +41,23 @@ describe('listPageTabRing', () => {
 
         const filterButtonRef = createRef<HTMLButtonElement>()
         const searchInputRef = createRef<HTMLInputElement>()
-        const syncButtonRef = createRef<HTMLButtonElement>()
-        const settingsButtonRef = createRef<HTMLButtonElement>()
         const listSurfaceRef = createRef<HTMLDivElement>()
 
         filterButtonRef.current = listPage.querySelector('#filter')
         searchInputRef.current = listPage.querySelector('#search')
-        syncButtonRef.current = listPage.querySelector('#sync')
-        settingsButtonRef.current = listPage.querySelector('#settings')
         listSurfaceRef.current = listPage.querySelector('#list')
 
         const chain = listPageFocusRingElements(
           {
             filterButtonRef,
             searchInputRef,
-            syncButtonRef,
-            settingsButtonRef,
             listSurfaceRef
           },
           { listPageRoot: listPage, filterOpen: true, detailOpen: true }
         )
 
         const ids = chain.map(el => el.id)
-        expect(ids).toEqual(['filter', 'search', 'sync', 'settings', 'list', 'detailBtn', 'backdrop', 'filterQ'])
+        expect(ids).toEqual(['filter', 'search', 'list', 'detailBtn', 'backdrop', 'filterQ'])
       })
     })
   })

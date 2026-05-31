@@ -13,6 +13,19 @@ export class RunPrimaryAction implements Performable {
   }
 }
 
+export class RunSecondaryAction implements Performable {
+  static forSelectedEntry(): RunSecondaryAction {
+    return new RunSecondaryAction()
+  }
+
+  async performAs(actor: Actor): Promise<void> {
+    const listbox = actor.page.getByRole('listbox', { name: 'Entries' })
+    await listbox.focus()
+    await actor.page.keyboard.press('Meta+Enter')
+    await actor.page.locator('.cmp-action-toast').first().waitFor({ state: 'visible', timeout: 10_000 })
+  }
+}
+
 export class CopySelectedEntry implements Performable {
   static now(): CopySelectedEntry {
     return new CopySelectedEntry()
