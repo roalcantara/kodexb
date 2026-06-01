@@ -133,6 +133,13 @@ as `npm test` are not sufficient.
 Subagent prompts must include these project overrides explicitly because subagents
 may not inherit the controller's full context.
 
+## Code review graph
+
+Follow the canonical CRG query-first workflow and daemon/HK hook policy in
+[`AGENTS.md`](AGENTS.md#code-review-graph). Use the repo MCP server from
+`.mcp.json`; run `code-review-graph update --skip-flows` when coverage appears
+stale.
+
 ## Reference docs
 
 The guides under [`assets/guides/`](assets/guides/) are the canonical source

@@ -81,6 +81,34 @@ skills:
             - structured logging
           avoid:
             - documentation-only edits with no logging code change
+  build-graph:
+    location: project
+    rationale: Operational MCP workflow for building, refreshing, and verifying the local code-review-graph database.
+    policy:
+      type: required
+      usage:
+        summary: Use when initializing or refreshing the repository code graph.
+        when:
+          load:
+            - build the code review graph
+            - refresh the code review graph
+            - graph status
+          avoid:
+            - replacing project quality validation
+  code-review-graph:
+    location: project
+    rationale: Supporting CRG concept reference. Current upstream CLI documentation and KB graph specs remain authoritative.
+    policy:
+      type: reference
+      usage:
+        summary: Read for CRG concepts after the operational workflow and current KB graph spec.
+        when:
+          load:
+            - code-review-graph setup
+            - blast radius analysis
+            - CRG MCP configuration
+          avoid:
+            - overriding current upstream CLI behavior or KB hook policy
   electrobun-best-practices:
     location: project
     rationale: Baseline for desktop stack work and the first stop before narrower Electrobun skills.

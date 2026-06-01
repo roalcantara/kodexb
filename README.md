@@ -27,6 +27,16 @@ bun run lint      # Run the full Phase-1 quality chain
 bun run lint:fix  # Auto-fix what can be fixed (Biome / Knip / ast-grep)
 ```
 
+## CODE REVIEW GRAPH
+
+KB uses [code-review-graph](https://github.com/tirth8205/code-review-graph)
+(CRG) to maintain a local, queryable code graph for coding agents. After
+cloning, run `mise run graph setup` so repo MCP configs point at your checkout
+and the local graph is built. Re-run setup when moving the repo to another path.
+See
+[`assets/guides/CRG.md`](assets/guides/CRG.md) for purpose, setup, agent
+coverage, hooks, common commands, best practices, and troubleshooting.
+
 ## Architecture
 
 **app** is an [Electrobun][12] desktop app: a **Bun** main process owns the window,

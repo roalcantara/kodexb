@@ -1,6 +1,7 @@
 # https://mise.jdx.dev
 [tools]
 bun = "1.3.14"
+uv = "0.11.3"
 usage = "latest"
 hk = "1.45.0"
 ast-grep = "latest"
@@ -39,7 +40,7 @@ HK_PKL_BACKEND = "pklr"
     CMD="${usage_cmd:-}"
     case "$CMD" in
       setup)
-        mise install --yes && mise run project prepare
+        mise install --yes && mise run project prepare && mise run graph setup
         ;;
       prepare)
         bun install ${usage_ci:+--frozen-lockfile}
@@ -81,6 +82,113 @@ HK_PKL_BACKEND = "pklr"
         fi
         ;;
       *) echo "project: unknown action ${CMD}"; exit 2 ;;
+    esac
+  ''' }
+"graph" = { description = "Install, configure, build, refresh, inspect, and watch the local CRG knowledge graph", usage = '''
+    cmd "install" {}
+    cmd "setup" {
+        flag "--user-config" help="Also configure local-only Codex and Antigravity MCP files"
+    }
+    cmd "build" {}
+    cmd "update" {}
+    cmd "status" {}
+    cmd "watch" {}
+  ''', run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    CMD="${usage_cmd:-}"
+    REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+    install_crg() {
+      uv tool install --upgrade code-review-graph
+    }
+
+    setup_repo_mcp() {
+      local platform
+      for platform in claude cursor opencode gemini-cli copilot; do
+        code-review-graph install \
+          --repo "$REPO_ROOT" \
+          --platform "$platform" \
+          --no-skills \
+          --no-hooks \
+          --no-instructions \
+          -y
+      done
+    }
+
+    setup_user_mcp() {
+      local antigravity="$HOME/.gemini/antigravity/mcp_config.json"
+      local backup
+      local tmp
+
+      code-review-graph install \
+        --repo "$REPO_ROOT" \
+        --platform codex \
+        --no-skills \
+        --no-hooks \
+        --no-instructions \
+        -y
+
+      mkdir -p "$(dirname "$antigravity")"
+      if [[ -e "$antigravity" ]]; then
+        backup="$antigravity.bak.$(date +%Y%m%d%H%M%S)"
+        cp "$antigravity" "$backup"
+        echo "Backed up Antigravity MCP config to $backup"
+      else
+        printf '{"mcpServers":{}}\n' > "$antigravity"
+      fi
+
+      if ! jq empty "$antigravity"; then
+        echo "graph setup: repair malformed Antigravity JSON at $antigravity, then retry" >&2
+        exit 1
+      fi
+
+      tmp="$(mktemp)"
+      if ! jq --arg cwd "$REPO_ROOT" '
+        .mcpServers = (.mcpServers // {}) |
+        .mcpServers["code-review-graph"] = {
+          "command": "uvx",
+          "args": ["code-review-graph", "serve"],
+          "cwd": $cwd,
+          "type": "stdio"
+        }
+      ' "$antigravity" > "$tmp"; then
+        rm -f "$tmp"
+        exit 1
+      fi
+      mv "$tmp" "$antigravity"
+      jq empty "$antigravity"
+    }
+
+    case "$CMD" in
+      install)
+        install_crg
+        ;;
+      setup)
+        install_crg
+        setup_repo_mcp
+        if [[ "${usage_user_config:-false}" == "true" ]]; then
+          setup_user_mcp
+        fi
+        code-review-graph build
+        ;;
+      build)
+        code-review-graph build
+        ;;
+      update)
+        code-review-graph update --skip-flows
+        ;;
+      status)
+        code-review-graph status
+        ;;
+      watch)
+        exec code-review-graph watch --repo "$REPO_ROOT"
+        ;;
+      *)
+        echo "graph: unknown action '${CMD}' (expected one of: install, setup, build, update, status, watch)" >&2
+        exit 2
+        ;;
     esac
   ''' }
 "ci" = { description = "Run review, release, and publish CI workflows", usage = '''
@@ -1446,6 +1554,7 @@ HK_PKL_BACKEND = "pklr"
       ['app', 'Manage Electrobun dev lifecycle and gates'],
       ['ci', 'Run review, release, and publish CI workflows'],
       ['docker', 'Build, run, and test the Docker image'],
+      ['graph', 'Install, configure, build, refresh, inspect, and watch the local CRG knowledge graph'],
       ['lint', 'Run lint, strict lint, fix, report, and graph workflows'],
       ['perf', 'Run preview-server performance benchmark workflows'],
       ['policy', 'Check Mise task policy and usage specs'],

@@ -4,7 +4,7 @@ import "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Builtin
 // Repo-wide ignores. Bare directory names match recursively; patterns are
 // unioned with any per-step `.exclude` overrides below.
 exclude = List(
-    "graphify-out",   // generated knowledge-graph artifacts (>500 KB JSON/HTML)
+    ".code-review-graph", // local SQLite code-review-graph database
     "tmp",            // local report scratch (tmp/reports/...)
     "build",          // electrobun bundle output
     "dist",           // distribution outputs
@@ -247,6 +247,14 @@ local preCommitSteps = (hygieneSteps) {
     ["no_commit_to_branch"] = Builtins.no_commit_to_branch
     ["check_executables_have_shebangs"] = Builtins.check_executables_have_shebangs
     ["check_symlinks"] = Builtins.check_symlinks
+    ["code-review-graph-risk-summary"] {
+        check = """
+          if command -v code-review-graph >/dev/null 2>&1; then
+            code-review-graph update --skip-flows || true
+            code-review-graph detect-changes --brief || true
+          fi
+          """
+    }
 }
 
 local checkSteps = (hygieneSteps) {

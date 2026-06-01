@@ -13,7 +13,7 @@
     "assets/sources/**",
     "assets/docs/**",
     "assets/wireframe/**",
-    "graphify-out/**",
+    ".code-review-graph/**",
     "**/tools/benchmarks/results/**",
     ".cursor/commands/**",
     "**/tmp/**",

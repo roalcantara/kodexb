@@ -144,3 +144,20 @@ At the start of work that might touch the desktop stack, **read the routing file
 Optional: a **sessionStart** hook in [`.cursor/hooks.json`](.cursor/hooks.json) runs [`.cursor/hooks/electrobun_session_start.ts`](.cursor/hooks/electrobun_session_start.ts) to inject the same routing text when Cursor applies `additional_context` (if it does not appear, rely on the rule above).
 
 Repo docs: `assets/guides/ELECTROBUN.md`, `assets/docs/specs/foundation/design.md`. Feature specs: `assets/docs/specs/README.md` (never `docs/superpowers/` — gitignored).
+
+---
+
+## Code review graph
+
+Use the local code-review-graph (CRG) MCP tools before broad codebase scans:
+
+1. Start with graph stats or minimal context.
+2. Use impact-radius and review-context tools for code review.
+3. Use graph queries for callers, callees, imports, tests, and architecture.
+4. Fall back to `rg` and direct file reads when graph coverage is insufficient.
+5. Run `code-review-graph update --skip-flows` if the graph appears stale.
+
+The CRG daemon is the shared freshness owner. HK runs an additional
+non-blocking update and risk summary before commits. Do not install redundant
+per-agent edit hooks. Antigravity uses this file plus its user-level MCP config
+at `~/.gemini/antigravity/mcp_config.json`.

@@ -17,7 +17,7 @@
       "!.cursor",
       "!.opencode",
       "!.agents",
-      "!graphify-out",
+      "!.code-review-graph",
       "!e2e/.generated",
       "!tmp",
       "!.venv",

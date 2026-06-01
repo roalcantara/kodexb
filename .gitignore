@@ -219,8 +219,8 @@ docs/superpowers/
 tools/benchmarks/results/*/
 tools/benchmarks/results/latest.json
 
-# Graphify cache
-graphify-out/cache/
+# Local code-review-graph database
+.code-review-graph/
 
 # Electrobun build output (top-level only; tools/build/ is source)
 /build

@@ -1,0 +1,18 @@
+---
+applyTo: "**"
+---
+
+# Code review graph
+
+Use the local code-review-graph (CRG) MCP tools before broad codebase scans:
+
+1. Start with graph stats or minimal context.
+2. Use impact-radius and review-context tools for code review.
+3. Use graph queries for callers, callees, imports, tests, and architecture.
+4. Fall back to repository search and direct file reads when graph coverage is
+   insufficient.
+5. Run `code-review-graph update --skip-flows` if the graph appears stale.
+
+The CRG daemon is the shared freshness owner. HK runs an additional
+non-blocking update and risk summary before commits. Do not install redundant
+per-agent edit hooks.

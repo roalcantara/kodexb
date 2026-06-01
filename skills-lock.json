@@ -13,6 +13,12 @@
       "skillPath": "skills/brainstorming/SKILL.md",
       "computedHash": "8df9b47092524833138b58682d03f2e153a242e550d1693657afdbee0cc9cdb0"
     },
+    "build-graph": {
+      "source": "tirth8205/code-review-graph",
+      "sourceType": "github",
+      "skillPath": "skills/build-graph/SKILL.md",
+      "computedHash": "78d738cc25bb6ec563184f87d49255d289fd0f151b9c0f4702a3ad08a56b6db4"
+    },
     "bun": {
       "source": "bun.sh",
       "sourceType": "well-known",
@@ -59,6 +65,12 @@
       "sourceType": "github",
       "skillPath": "plugins/tools/bun/skills/bun-testing/SKILL.md",
       "computedHash": "42b0f50ea03731f0f09064e3770c0ee70122041f6c3df784c102993f454fe715"
+    },
+    "code-review-graph": {
+      "source": "aradotso/trending-skills",
+      "sourceType": "github",
+      "skillPath": "skills/code-review-graph/SKILL.md",
+      "computedHash": "96cbafc931a1f3910e099ca1726fe499b926867d63ed0adcafb29b686a4291bf"
     },
     "cucumber-best-practices": {
       "source": "thebushidocollective/han",

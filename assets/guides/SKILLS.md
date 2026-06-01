@@ -84,6 +84,8 @@ project-specific situation.
 | `app-testing`                  | `owned`   | `required`  | Canonical testing workflow for co-located Bun specs and harnesses.            |
 | `app-quality-gate`             | `owned`   | `required`  | Executable completion and commit-readiness gate.                              |
 | `app-logging`                  | `owned`   | `required`  | Structured logging with LogTape, `LOG_LEVEL` dial, and DB/RPC instrumentation.|
+| `build-graph`                  | `project` | `required`  | Operational CRG MCP workflow for graph initialization and refresh.            |
+| `code-review-graph`            | `project` | `reference` | CRG concepts, subordinate to upstream CLI docs and KB graph policy.           |
 | `electrobun-best-practices`    | `project` | `required`  | Baseline for desktop stack work before narrower Electrobun skills.            |
 | `electrobun-plugin-guide`      | `project` | `routed`    | Entry point when the right Electrobun skill is unclear.                       |
 | `electrobun-config`            | `project` | `routed`    | Electrobun configuration, build views, and asset wiring.                      |

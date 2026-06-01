@@ -163,4 +163,4 @@ ignore:
   - node_modules
   - dist
   - build
-  - graphify-out
+  - .code-review-graph

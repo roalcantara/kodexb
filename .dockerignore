@@ -5,7 +5,7 @@ node_modules
 dist
 report
 test-results
-graphify-out
+.code-review-graph
 tmp
 **/.DS_Store
 **/*.log
