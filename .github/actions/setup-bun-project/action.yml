@@ -10,11 +10,11 @@ inputs:
   bun_version:
     description: Bun version when setup_mode=bun
     required: false
-    default: 1.3.13
+    default: 1.3.14
   mise_version:
     description: Mise version when setup_mode=mise
     required: false
-    default: '2026.3.9'
+    default: '2026.3.17'
 
 runs:
   using: composite

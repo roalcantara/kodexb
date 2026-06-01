@@ -1,0 +1,199 @@
+/* Footer — fixed row height; ⎋ prefix always mounted (visibility) so layout does not shift. */
+.cmp-footer {
+  -webkit-app-region: no-drag;
+  box-sizing: border-box;
+  min-height: 36px;
+  padding: var(--spacing-md) var(--spacing-xxl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-text-subdued);
+  font-size: 11px;
+  font-weight: 300;
+  background: var(--color-surface-container-low);
+  border-top: 1px solid var(--color-overlay-border);
+}
+
+.cmp-footer-right {
+  display: flex;
+  align-items: center;
+}
+
+.cmp-footer-keys {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  font-size: inherit;
+  line-height: 1.2;
+}
+
+.cmp-footer-shortcuts {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cmp-footer-shortcut-group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.cmp-footer-keys-prefix {
+  display: inline-flex;
+  align-items: center;
+}
+
+.cmp-footer-keys-prefix--inactive {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.cmp-footer-key-back {
+  -webkit-app-region: no-drag;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  cursor: pointer;
+}
+
+.cmp-footer-keys-prefix:not(.cmp-footer-keys-prefix--inactive) .cmp-footer-key-back:hover {
+  color: var(--color-text-main);
+}
+
+.cmp-footer-keys-sep {
+  color: var(--color-text-separator);
+  user-select: none;
+}
+
+.cmp-empty-state {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.cmp-empty-state p {
+  color: var(--color-text-dim);
+  font-size: 14px;
+  margin: 0 0 var(--spacing-sm);
+}
+
+.cmp-empty-state code {
+  background: var(--color-surface-container-high);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+}
+
+.cmp-empty-state-detail {
+  margin-top: var(--spacing-lg);
+}
+
+.cmp-footer-actions-raycast {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  color: var(--color-text-main);
+  font-size: 12px;
+}
+
+.cmp-footer-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px 0 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-main);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.cmp-footer-primary:hover {
+  color: var(--color-primary);
+}
+
+.cmp-footer-primary-hint {
+  opacity: 0.55;
+  font-size: 14px;
+}
+
+.cmp-footer-actions-sep {
+  display: inline-block;
+  width: 1px;
+  height: 14px;
+  background: var(--color-overlay-border);
+  margin-right: 12px;
+}
+
+.cmp-footer-actions-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text-subdued);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.cmp-footer-actions-label:hover {
+  color: var(--color-text-main);
+}
+
+.cmp-footer-actions-label .cmp-kbd {
+  font-size: 10px;
+}
+
+.cmp-empty-state-link {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-primary);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cmp-empty-state-link:hover {
+  color: var(--color-text-main);
+}
+
+.cmp-empty-state-hint {
+  margin-top: var(--spacing-md);
+  color: var(--color-text-dim);
+  font-size: 13px;
+}
+
+.cmp-empty-state-hint .cmp-kbd {
+  font-size: 10px;
+}
+
+.cmp-empty-state-detail button:not(.cmp-empty-state-link) {
+  margin-top: var(--spacing-md);
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-md);
+  color: var(--color-text-main);
+  font-size: 14px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.cmp-empty-state-detail button:hover {
+  border-color: var(--color-primary);
+}

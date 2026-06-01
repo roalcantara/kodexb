@@ -13,7 +13,7 @@ on:
         type: string
 
 concurrency:
-  group: kb-${{ github.ref_name || inputs.tag }}
+  group: app-${{ github.ref_name || inputs.tag }}
   cancel-in-progress: true
 
 jobs:
@@ -74,9 +74,9 @@ jobs:
     env:
       RELEASE_TAG: ${{ needs.resolve_tag.outputs.tag }}
       ELECTROBUN_DEVELOPER_ID: ${{ secrets.ELECTROBUN_DEVELOPER_ID }}
-      ELECTROBUN_APPLEID:      ${{ secrets.ELECTROBUN_APPLEID }}
-      ELECTROBUN_APPLEIDPASS:  ${{ secrets.ELECTROBUN_APPLEIDPASS }}
-      ELECTROBUN_TEAMID:       ${{ secrets.ELECTROBUN_TEAMID }}
+      ELECTROBUN_APPLEID: ${{ secrets.ELECTROBUN_APPLEID }}
+      ELECTROBUN_APPLEIDPASS: ${{ secrets.ELECTROBUN_APPLEIDPASS }}
+      ELECTROBUN_TEAMID: ${{ secrets.ELECTROBUN_TEAMID }}
     steps:
       - uses: actions/checkout@v4
         if: matrix.platform != 'mac' || env.ELECTROBUN_DEVELOPER_ID != ''
@@ -104,7 +104,7 @@ jobs:
       - name: Import macOS code-signing cert (signed path only)
         if: matrix.target == 'darwin-arm64' && env.ELECTROBUN_DEVELOPER_ID != ''
         env:
-          MAC_CERT_BASE64:   ${{ secrets.MAC_CERTIFICATE_BASE64 }}
+          MAC_CERT_BASE64: ${{ secrets.MAC_CERTIFICATE_BASE64 }}
           MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
         run: |
           set -euo pipefail
@@ -163,7 +163,7 @@ jobs:
           set -euo pipefail
           cd assets
           shopt -s nullglob
-          sha256sum *.tar.gz *.dmg 2>/dev/null > checksums.txt || true
+          sha256sum -- *.tar.gz *.dmg 2>/dev/null > checksums.txt || true
           test -s checksums.txt
           cat checksums.txt
       - uses: actions/attest-build-provenance@v2

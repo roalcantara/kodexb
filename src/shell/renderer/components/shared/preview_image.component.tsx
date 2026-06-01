@@ -1,4 +1,5 @@
 import type { PreviewImageResult } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
 import { useEffect, useMemo, useState } from 'react'
 
 const YOUTUBE_ID_RE = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/
@@ -35,14 +36,14 @@ function PreviewImageFigure({
   openUrl: (url: string) => Promise<void>
 }) {
   return (
-    <figure className="kb-previewImage">
+    <figure className="cmp-preview-image">
       <img src={imageUrl} alt="" />
       {youtubeImage ? (
         <button
           type="button"
-          className="kb-previewImage-open"
+          className="cmp-preview-image-open"
           onClick={() => {
-            openUrl(url).catch(() => undefined)
+            fireAndForget(openUrl(url))
           }}
         >
           ▶ Open on YouTube
@@ -104,7 +105,7 @@ export function PreviewImage({ url, fetchImage = defaultFetchImage, openUrl = de
   if (hidden) return null
   if (loading)
     return (
-      <div className="kb-previewImage kb-previewImage--skeleton" role="status" aria-label="Loading preview image" />
+      <div className="cmp-preview-image cmp-preview-image--skeleton" role="status" aria-label="Loading preview image" />
     )
   if (!imageUrl) return null
 

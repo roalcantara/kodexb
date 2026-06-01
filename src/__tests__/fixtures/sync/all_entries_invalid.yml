@@ -1,0 +1,17 @@
+bookmarks:
+  https://fail.example.com/1:
+    tags: [InvalidTag1]
+  https://fail.example.com/2:
+    tags: [InvalidTag2]
+  https://fail.example.com/3:
+    tags: [AlsoInvalid]
+
+commands:
+  https://fail.example.com/cmd1:
+    tags: [InvalidTag]
+  https://fail.example.com/cmd2:
+    tags: [BadTag]
+
+cheats:
+  https://fail.example.com/cheat1:
+    tags: [Invalid]

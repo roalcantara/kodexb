@@ -1,60 +1,14 @@
 import type { RpcKnowledge } from '@shared/rpc'
+import type { RefObject } from 'react'
 import { type KeyboardEvent as ReactKeyboardEvent, useState } from 'react'
+import type { EntryActionContext } from '../../actions/entry_action_panel.types'
+import { useViewNavigation } from './use_view_navigation.hook'
 
 const REPEAT_MOVE_STEP = 5
-
-export type ListSelectionLayout = {
-  onFirstDetailOpen: () => void
-  onDetailClose: () => void
-}
-
-type DetailState = {
-  rows: RpcKnowledge[]
-  selectedId: number | null
-  detailEntry: RpcKnowledge | null
-  setDetailEntry: (v: RpcKnowledge | null) => void
-  layout?: ListSelectionLayout
-}
-
-function closeDetail(
-  detailEntry: RpcKnowledge | null,
-  setDetailEntry: (v: RpcKnowledge | null) => void,
-  layout?: ListSelectionLayout
-): void {
-  if (detailEntry === null) return
-  layout?.onDetailClose()
-  setDetailEntry(null)
-}
-
-function openDetail(
-  rows: RpcKnowledge[],
-  selectedId: number | null,
-  detailEntry: RpcKnowledge | null,
-  setDetailEntry: (v: RpcKnowledge | null) => void,
-  layout?: ListSelectionLayout
-): void {
-  const row = rows.find(r => r.id === selectedId)
-  if (row === undefined) return
-  const openingFirst = detailEntry === null
-  setDetailEntry(row)
-  if (openingFirst) layout?.onFirstDetailOpen()
-}
-
-function toggleDetail(state: DetailState): void {
-  const { rows, selectedId, detailEntry, setDetailEntry, layout } = state
-  const row = rows.find(r => r.id === selectedId)
-  if (row === undefined) return
-  if (detailEntry !== null && detailEntry.id === row.id) {
-    closeDetail(detailEntry, setDetailEntry, layout)
-    return
-  }
-  openDetail(rows, selectedId, detailEntry, setDetailEntry, layout)
-}
 
 type ListArrowNav = {
   rows: RpcKnowledge[]
   selectedId: number | null
-  detailEntry: RpcKnowledge | null
   setSelectedId: (id: number | null) => void
   moveSelection: (delta: number) => void
   onLeaveListUpward?: () => void
@@ -67,11 +21,20 @@ function handleListArrowDown(e: ReactKeyboardEvent<HTMLDivElement>, moveSelectio
   return true
 }
 
-function handleListArrowUp(e: ReactKeyboardEvent<HTMLDivElement>, d: ListArrowNav): 'leave' | 'moved' | false {
+function handleListArrowUp(
+  e: ReactKeyboardEvent<HTMLDivElement>,
+  d: ListArrowNav,
+  patchSelection: (nextId: number | null, rowIfDetail?: RpcKnowledge | null) => void
+): 'leave' | 'moved' | false {
   if (e.key !== 'ArrowUp') return false
   e.preventDefault()
-  if (d.detailEntry === null && d.rows.length > 0) {
+  if (d.rows.length > 0) {
     const idx = d.rows.findIndex(r => r.id === d.selectedId)
+    if (idx < 0) {
+      const last = d.rows[d.rows.length - 1] ?? null
+      patchSelection(last?.id ?? null, last)
+      return 'moved'
+    }
     if (idx === 0) {
       d.setSelectedId(null)
       d.onLeaveListUpward?.()
@@ -82,53 +45,57 @@ function handleListArrowUp(e: ReactKeyboardEvent<HTMLDivElement>, d: ListArrowNa
   return 'moved'
 }
 
-function handleDetailKey(e: ReactKeyboardEvent<HTMLDivElement>, state: DetailState): boolean {
-  if (e.key === 'ArrowRight') {
-    e.preventDefault()
-    openDetail(state.rows, state.selectedId, state.detailEntry, state.setDetailEntry, state.layout)
-    return true
-  }
-  if (e.key === '[' && (e.metaKey || e.ctrlKey)) {
-    if (state.detailEntry !== null) {
-      e.preventDefault()
-      closeDetail(state.detailEntry, state.setDetailEntry, state.layout)
-    }
-    return true
-  }
-  if (e.key !== 'ArrowLeft' && e.key !== 'Escape') return false
-  if (state.detailEntry !== null) {
-    e.preventDefault()
-    closeDetail(state.detailEntry, state.setDetailEntry, state.layout)
-  }
-  return true
-}
-
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: selection + detail sync stay with view nav wiring
 export function useListSelection(
   rows: RpcKnowledge[],
-  layout?: ListSelectionLayout,
   onLeaveListUpward?: () => void,
-  onRestoreListSurfaceFocus?: () => void
+  onRestoreListSurfaceFocus?: () => void,
+  searchInputRef?: RefObject<HTMLInputElement | null>,
+  hideWindow?: () => void,
+  pushToast?: (msg: string, type: 'success' | 'error') => void,
+  onEscapeFromSearch?: () => void,
+  actionCtx?: EntryActionContext
 ) {
   const [selectedId, setSelectedId] = useState<number | null>(null)
   const [detailEntry, setDetailEntry] = useState<RpcKnowledge | null>(null)
+
+  const { advance, retreat, closeToList, selectDetailEntry, viewState, handleKey } = useViewNavigation({
+    rows,
+    selectedId,
+    detailEntry,
+    setSelectedId,
+    setDetailEntry,
+    searchInputRef,
+    onEscapeFromSearch,
+    hideWindow,
+    pushToast,
+    actionCtx
+  })
+
+  const patchSelection = (nextId: number | null, rowIfDetail?: RpcKnowledge | null) => {
+    setSelectedId(nextId)
+    if (detailEntry !== null && rowIfDetail) setDetailEntry(rowIfDetail)
+  }
 
   const moveSelection = (delta: number) => {
     if (rows.length === 0) return
     const idx = rows.findIndex(r => r.id === selectedId)
     const base = idx < 0 ? -1 : idx
     const next = Math.max(0, Math.min(rows.length - 1, base + delta))
-    setSelectedId(rows[next]?.id ?? null)
+    const nextRow = rows[next]
+    patchSelection(nextRow?.id ?? null, nextRow ?? null)
   }
 
   const selectFirst = () => {
-    setSelectedId(rows[0]?.id ?? null)
+    const first = rows[0] ?? null
+    patchSelection(first?.id ?? null, first)
   }
 
+  // List surface handler: ArrowUp/Down for selection, ArrowRight/Left for view nav
   const onListKeyDown = (e: ReactKeyboardEvent<HTMLDivElement>) => {
     const nav: ListArrowNav = {
       rows,
       selectedId,
-      detailEntry,
       setSelectedId,
       moveSelection,
       onLeaveListUpward
@@ -137,18 +104,27 @@ export function useListSelection(
       onRestoreListSurfaceFocus?.()
       return
     }
-    const arrowUp = handleListArrowUp(e, nav)
+    const arrowUp = handleListArrowUp(e, nav, patchSelection)
     if (arrowUp === 'leave') return
     if (arrowUp === 'moved') {
       onRestoreListSurfaceFocus?.()
-      return
     }
-    const detailState = { rows, selectedId, detailEntry, setDetailEntry, layout }
-    if (handleDetailKey(e, detailState)) return
-    if (e.key !== 'Enter') return
-    e.preventDefault()
-    toggleDetail(detailState)
+    // ArrowLeft/ArrowRight and ⌘L: handled via `useWindowViewNavKeys` (window capture)
+    // so keys still run when focus is inside the detail panel.
   }
 
-  return { selectedId, setSelectedId, detailEntry, setDetailEntry, selectFirst, onListKeyDown }
+  return {
+    selectedId,
+    setSelectedId,
+    detailEntry,
+    setDetailEntry,
+    viewState,
+    selectFirst,
+    onListKeyDown,
+    advance,
+    retreat,
+    closeToList,
+    selectDetailEntry,
+    handleKey
+  }
 }

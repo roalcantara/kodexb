@@ -1,9 +1,10 @@
 import fs from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
+import { DEFAULTS } from '@core/constants/defaults.const'
+import { expandPath } from '@core/helpers/path.helper'
+import type { Env } from '@shared/types'
 import { err, ok, type Result } from 'neverthrow'
-import { DEFAULTS } from '../../../core/constants/defaults.const'
-import { expandPath } from '../../../core/helpers/path.helper'
-import type { Env } from '../../../shared/types'
 import { DEFAULT_CONFIG_BODY, parseConfig, type RawConfig, type ResolvedConfig } from './config.schema'
 
 export type LoadedConfig = ResolvedConfig & {
@@ -35,13 +36,35 @@ function resolveConfig(raw: unknown, configPath: string, env: Env): Result<Resol
   })
 }
 
+function testProfileRoot(env: Env): string {
+  return env.KB_TEST_DIR ?? path.join(tmpdir(), 'kb-test')
+}
+
 /**
- * Loads and validates the kb config from the given path.
+ * Loads and validates the app config from the given path.
  * Creates the file with defaults if missing.
+ *
+ * Resolution order:
+ *   1. `pathArg` (explicit, any profile)
+ *   2. `APP_CONFIG_PATH` env var (override, any profile)
+ *   3. `NODE_ENV=test` → test profile (isolated temp paths)
+ *   4. Development defaults (~/.config/kb/…)
  */
 export async function loadConfig(pathArg?: string): Promise<LoadedConfig> {
   const env = process.env as Env
-  const configPath = expandPath(pathArg ?? DEFAULTS.config.path, env)
+
+  let configPath: string
+  let profileIsTest = false
+  if (pathArg) {
+    configPath = expandPath(pathArg, env)
+  } else if (env.APP_CONFIG_PATH) {
+    configPath = expandPath(env.APP_CONFIG_PATH, env)
+  } else if (env.NODE_ENV === 'test') {
+    profileIsTest = true
+    configPath = path.join(testProfileRoot(env), 'config.yaml')
+  } else {
+    configPath = expandPath(DEFAULTS.config.path, env)
+  }
 
   let raw: unknown
   try {
@@ -49,9 +72,16 @@ export async function loadConfig(pathArg?: string): Promise<LoadedConfig> {
     raw = Bun.YAML.parse(content)
   } catch (e) {
     if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e
-    raw = DEFAULT_CONFIG_BODY
+    if (profileIsTest) {
+      raw = {
+        database: { path: path.join(testProfileRoot(env), 'knowledge.sqlite') },
+        sources: { path: path.join(testProfileRoot(env), 'sources') }
+      }
+    } else {
+      raw = DEFAULT_CONFIG_BODY
+    }
     await fs.mkdir(path.dirname(configPath), { recursive: true })
-    await fs.writeFile(configPath, `${Bun.YAML.stringify(DEFAULT_CONFIG_BODY)}\n`, 'utf-8')
+    await fs.writeFile(configPath, `${Bun.YAML.stringify(raw)}\n`, 'utf-8')
   }
 
   const result = resolveConfig(raw, configPath, env)

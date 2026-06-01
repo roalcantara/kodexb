@@ -1,5 +1,5 @@
 <!-- markdownlint-disable-file -->
-# kb — Implementation Roadmap
+# app — Implementation Roadmap
 
 Aligned with [requirements.md](requirements.md) **V1-1 … V1-8** and
 [design.md](design.md).
@@ -12,21 +12,22 @@ sequencing, delivery value, and recommended skills only.
 
 ## Phase sequence
 
-| Phase | Name                           | Requirements | Status    |
-| :---: | ------------------------------ | ------------ | --------- |
-|   0   | Scaffold & Tooling             | —            | ✔ done    |
-|   1   | Tooling                        | —            | ⬜ pending |
-|   2   | CI / Build / Packaging         | —            | ⬜ pending |
-|   3   | Core Domain (port from KodexB) | —            | ⬜ done    |
-|   4   | Data Layer                     | V1-2         | ⬜ done    |
-|   5   | App Service + Elysia RPC       | V1-1         | ✔ done    |
-|   6   | Renderer: List View            | V1-3         | ⬜ done    |
-|   7   | Renderer: Detail View          | V1-4         | ✔ done    |
-|   8   | First-Run Setup & Settings     | V1-1, V1-6   | ✔ done    |
-|   9   | Task Management                | V1-7         | ✔ done    |
-|  10   | Actions System (⌘K)            | V1-8         | ✔ done    |
-|  11   | Sync UI                        | V1-2         | ✔ done    |
-|  12   | Stats Panel                    | V1-5         | ⬜ pending |
+| Phase | Name                           | Requirements | Status |
+| :---: | ------------------------------ | ------------ | ------ |
+|   0   | Scaffold & Tooling             | —            | ✔ done |
+|   1   | Tooling                        | —            | ✔ done |
+|   2   | CI / Build / Packaging         | —            | ✔ done |
+|   3   | Core Domain (port from KodexB) | —            | ⬜ done |
+|   4   | Data Layer                     | V1-2         | ⬜ done |
+|   5   | App Service + Elysia RPC       | V1-1         | ✔ done |
+|   6   | Renderer: List View            | V1-3         | ⬜ done |
+|   7   | Renderer: Detail View          | V1-4         | ✔ done |
+|   8   | First-Run Setup & Settings     | V1-1, V1-6   | ✔ done |
+|   9   | Task Management                | V1-7         | ✔ done |
+|  10   | Actions System (⌘K)            | V1-8         | ✔ done |
+|  11   | Sync UI                        | V1-2         | ✔ done |
+|  12   | Stats Panel                    | V1-5         | ✔ done |
+|  13   | Debug Logging                  | DBG-1-8      | ✔ done |
 
 ---
 
@@ -38,7 +39,7 @@ sequencing, delivery value, and recommended skills only.
 
 `bun run dev` opens an Electrobun window. Build pipeline produces `.app` on macOS.
 
-**Skills:** `kb-context`, `electrobun-core`, `electrobun-config`, `mise-expert`, `mise-tasks`
+**Skills:** `app-context`, `electrobun-core`, `electrobun-config`, `mise-expert`, `mise-tasks`
 
 ---
 
@@ -63,7 +64,7 @@ Add scripts to package.json:
 - "lint:knip": "bunx knip",
 - "lint:knip:fix": "bunx knip --fix",
 - "lint:depcruise": "bunx depcruise . --config .dependency-cruiser.cjs",
-- "lint:depcruise:graph": "bunx depcruise . --config .dependency-cruiser.cjs --include-only '^.' --output-type dot | dot -T svg > report/dependency-graph.svg",
+- "lint:depcruise:graph": "bunx depcruise . --config .dependency-cruiser.cjs --include-only '^.' --output-type mermaid --output-to tmp/reports/dependency-graph.mmd",
 - "lint:jscpd": "bunx jscpd .",
 - "lint:ls": "bunx @ls-lint/ls-lint",
 - "lint:ast-grep": "mise exec -- ast-grep scan --error",
@@ -164,7 +165,7 @@ jobs:
 
 ```ts
 export default defineConfig({
-  app: { name: 'kb', identifier: 'sh.blackboard.kb', version: '0.1.0' },
+  app: { name: 'app', identifier: 'sh.blackboard.app', version: '0.1.0' },
   build: { main: './src/shell/main/main.ts' },
   // darwin-arm64 only for Phase 1; add more targets in a later phase
   mac: {
@@ -203,7 +204,7 @@ export default defineConfig({
 | `GH_TOKEN`                | PAT for release-it to bypass branch protection      |
 | `RELEASE_SIGNING_SSH_KEY` | SSH key for signed commits (from release.yml)       |
 
-**Skills:** `kb-context`, `kb-quality-gate`, `electrobun-distribution`,
+**Skills:** `app-context`, `app-quality-gate`, `electrobun-distribution`,
 `electrobun-build`, `electrobun-config`
 
 ---
@@ -213,7 +214,7 @@ export default defineConfig({
 Pure parsers, validators, id derivation, and doc assembly ported from KodexB.
 No I/O. Full unit test coverage.
 
-**Skills:** `kb-context`, `kb-testing`, `bun-development`
+**Skills:** `app-context`, `app-testing`, `bun-development`
 
 ---
 
@@ -222,7 +223,7 @@ No I/O. Full unit test coverage.
 Drizzle + SQLite schema. Import service reads YAML → upserts → FTS5. drizzle-seed
 fixtures for integration tests.
 
-**Skills:** `kb-context`, `kb-testing`, `bun-development`
+**Skills:** `app-context`, `app-testing`, `bun-development`
 
 ---
 
@@ -244,7 +245,7 @@ contract:
 
 TypeBox is the sole validation library across core and transport.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-rpc`, `electrobun-rpc-patterns`
 
 ---
@@ -254,7 +255,7 @@ TypeBox is the sole validation library across core and transport.
 Searchable, filterable list of all knowledge entries. Type filters, tag filters,
 task view presets. Priority/status/overdue badges. Brand icons. Keyboard navigation.
 
-**Skills:** `kb-context`, `kb-testing`, `electrobun-dev`
+**Skills:** `app-context`, `app-testing`, `electrobun-dev`
 
 ---
 
@@ -264,7 +265,7 @@ Enter on a selected entry opens the detail panel (180 ms slide-in, window expand
 to 1200 px). Markdown with syntax highlighting. OG image / YouTube thumbnail.
 Task dependency graph. Metadata sidebar at ≥ 1300 px.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-dev`, `electrobun-window-management`
 
 ---
@@ -274,7 +275,7 @@ Task dependency graph. Metadata sidebar at ≥ 1300 px.
 Auto-create platform directories and default config on first launch. Settings panel
 (paths, apps, display). Config reload without restart.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-dev`, `electrobun-platform`
 
 ---
@@ -284,7 +285,7 @@ Auto-create platform directories and default config on first launch. Settings pa
 Create/edit/delete tasks from the UI. YAML write-back. Status and priority cycling.
 Reorder. Dependency management with circular-dep rejection.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-dev`
 
 ---
@@ -294,7 +295,7 @@ Reorder. Dependency management with circular-dep rejection.
 ⌘K palette with context-sensitive primary action per type. Copy submenu. Open in
 editor. AI tag suggestions. Task-specific actions.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-dev`, `electrobun-native-ui`
 
 ---
@@ -304,7 +305,7 @@ editor. AI tag suggestions. Task-specific actions.
 Progress bar in toolbar while sync runs. Completion toast with counts and errors.
 Concurrent sync prevention.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-dev`
 
 ---
@@ -313,7 +314,7 @@ Concurrent sync prevention.
 
 Entry counts by type. Total count. Database path and size. Auto-refresh after sync.
 
-**Skills:** `kb-context`, `kb-rpc`, `kb-testing`, `kb-quality-gate`,
+**Skills:** `app-context`, `app-rpc`, `app-testing`, `app-quality-gate`,
 `electrobun-dev`
 
 ---
@@ -333,7 +334,7 @@ path — everything from Phase 7 onward builds on the Eden Treaty client.
 Each pending phase follows this Superpowers workflow:
 
 ```
-1. /brainstorming          Design + SDD spec → docs/specs/<slug>/
+1. /brainstorming          Design + SDD spec → assets/docs/specs/<slug>/
 2.  ↳ review & approve
 3. /using-git-worktrees    Isolated branch for the phase
 4. /writing-plans          2-4h task plan with TDD markers
@@ -341,13 +342,17 @@ Each pending phase follows this Superpowers workflow:
 6. /executing-plans        One task at a time
    /test-driven-development  RED → GREEN → REFACTOR per task
 7. /finishing-a-development-branch
-   ↳ runs kb-quality-gate (gate.sh must exit 0 before merge)
+   ↳ runs app-quality-gate (gate.sh must exit 0 before merge)
 8.  Evaluate in preview server: bun tools/preview/server.ts
 9. Go to 1 for next phase
 ```
 
-The `kb-quality-gate` skill is the gate for step 7. Running
-`.agents/skills/kb-quality-gate/scripts/gate.sh` is how
+When Superpowers skills mention `docs/superpowers/specs` or
+`docs/superpowers/plans`, use the `spec-driven-development` shape in
+`assets/docs/specs/<slug>/` instead.
+
+The `app-quality-gate` skill is the gate for step 7. Running
+`.agents/skills/app-quality-gate/scripts/gate.sh` is how
 `finishing-a-development-branch` verifies the phase is done.
 
 ---

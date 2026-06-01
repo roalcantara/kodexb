@@ -1,0 +1,20 @@
+{
+  "pull_request": {
+    "number": 1,
+    "draft": false,
+    "head": {
+      "ref": "local-act",
+      "sha": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+      "repo": {
+        "full_name": "roalcantara/kodexb"
+      }
+    },
+    "base": {
+      "ref": "main"
+    }
+  },
+  "repository": {
+    "full_name": "roalcantara/kodexb",
+    "default_branch": "main"
+  }
+}

@@ -1,0 +1,211 @@
+/* ── Stats section (Phase 12) ───────────────────────────────────── */
+.cmp-settings-section {
+  margin-bottom: 1.5rem;
+}
+
+.cmp-settings-section-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-on-surface-variant);
+}
+
+.cmp-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cmp-settings-value {
+  font-size: 0.85rem;
+  color: var(--color-text-main);
+}
+
+.cmp-stats-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cmp-stats-table td {
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  color: var(--color-text-main);
+}
+
+.cmp-stats-count {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.cmp-stats-total td {
+  border-top: 1px solid var(--color-outline-variant);
+  font-weight: 600;
+  padding-top: 8px;
+}
+
+
+.cmp-settings-host {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface-settings-scrim);
+  backdrop-filter: blur(40px) saturate(1.25);
+  -webkit-backdrop-filter: blur(40px) saturate(1.25);
+}
+
+.cmp-settings {
+  padding: 1rem 1.25rem;
+  max-width: 720px;
+  margin: 0 auto;
+  overflow: auto;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.cmp-settings--error {
+  color: var(--color-error);
+}
+
+.cmp-settings-pre {
+  white-space: pre-wrap;
+  font-size: 0.85rem;
+}
+
+.cmp-settings-title {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+}
+
+.cmp-settings-muted {
+  color: var(--color-on-surface-variant);
+}
+
+.cmp-settings-block {
+  margin-bottom: 1.5rem;
+}
+
+.cmp-settings-heading {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-on-surface-variant);
+}
+
+.cmp-settings-block-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cmp-settings-label {
+  flex: 0 0 6.5rem;
+  color: var(--color-on-surface-variant);
+  font-size: 0.85rem;
+}
+
+.cmp-settings-path {
+  flex: 1 1 12rem;
+  min-width: 0;
+  font-size: 0.8rem;
+  background: transparent;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  overflow: auto;
+}
+
+.cmp-settings-browse {
+  flex: 0 0 auto;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-container);
+  color: var(--color-text-main);
+  cursor: pointer;
+}
+
+.cmp-settings-browse:hover {
+  background: var(--color-row-hover);
+}
+
+.cmp-settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.65rem;
+}
+
+.cmp-settings-input {
+  background: transparent;
+  color: var(--color-text-main);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.9rem;
+}
+
+.cmp-settings-fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cmp-settings-legend {
+  font-size: 0.85rem;
+  color: var(--color-on-surface-variant);
+  margin-bottom: 0.35rem;
+}
+
+.cmp-settings-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-right: 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.cmp-settings-actions .cmp-settings-heading {
+  margin-bottom: 0.35rem;
+}
+
+.cmp-settings-action-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.cmp-settings-primary,
+
+.cmp-settings-secondary {
+  font-size: 0.9rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid var(--color-outline-variant);
+}
+
+.cmp-settings-primary {
+  background: var(--color-primary);
+  color: transparent;
+  border-color: transparent;
+}
+
+.cmp-settings-secondary {
+  background: var(--color-surface-container);
+  color: var(--color-text-main);
+}
+
+.cmp-settings-saved {
+  color: var(--color-primary);
+  font-size: 0.9rem;
+}

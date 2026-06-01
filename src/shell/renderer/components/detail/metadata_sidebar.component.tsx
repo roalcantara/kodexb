@@ -1,9 +1,10 @@
 import type { RpcKnowledge } from '@shared/rpc'
+import { formatEnGbDate } from '../../utils/shared/format_en_gb_date.util'
 
 function Field({ label, value }: { label: string; value?: string | number | null }) {
   if (value === undefined || value === null || value === '') return null
   return (
-    <div className="kb-metadataField">
+    <div className="cmp-metadata-field">
       <dt>{label}</dt>
       <dd>{value}</dd>
     </div>
@@ -16,23 +17,16 @@ function formatTime(ms: number): string {
   return d.toLocaleString()
 }
 
-function formatDateString(ms: number | undefined | null): string {
-  if (ms === undefined || ms === null) return ''
-  const d = new Date(ms)
-  if (Number.isNaN(d.getTime())) return ''
-  return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(d)
-}
-
 export type MetadataSidebarProps = {
   entry: RpcKnowledge
 }
 
 export function MetadataSidebar({ entry }: MetadataSidebarProps) {
-  const due = entry.type === 'task' ? formatDateString(entry.dueDate) : undefined
+  const due = entry.type === 'task' ? formatEnGbDate(entry.dueDate, 'withYear') : undefined
   const taskOrder = entry.type === 'task' ? entry.taskOrder : undefined
 
   return (
-    <aside className="kb-metadataSidebar" aria-label="Entry metadata">
+    <aside className="cmp-metadata-sidebar" aria-label="Entry metadata">
       <h2>Metadata</h2>
       <dl>
         <Field label="Type" value={entry.type} />

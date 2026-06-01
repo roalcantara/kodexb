@@ -1,9 +1,9 @@
 <!-- markdownlint-disable-file -->
-# Design Document: kb Desktop
+# Design Document: app Desktop
 
 ## OVERVIEW
 
-**kb** is a macOS desktop knowledge-base app built on [Electrobun][8] and
+**app** is a macOS desktop knowledge-base app built on [Electrobun][8] and
 [Bun][1]. It lets developers browse, search, and manage personal knowledge
 entries (bookmarks, commands, cheat-sheets, tasks) stored as YAML files with
 a local SQLite index.
@@ -147,7 +147,7 @@ purged.
 │  ┌─────────────▼────────────────────────────────────────┐    │
 │  │  BrowserWindow — src/shell/renderer/                  │    │
 │  │  React app (pure browser JS, no Bun APIs)             │    │
-│  │  Eden Treaty client: treaty<RpcApp>('kb-app')         │    │
+│  │  Eden Treaty client: treaty<RpcApp>('app-app')         │    │
 │  └───────────────────────────────────────────────────────┘    │
 └───────────────────────────────────────────────────────────────┘
 ```
@@ -195,7 +195,7 @@ export type RpcApp = ReturnType<typeof createRpcServer>
 import { treaty } from '@elysiajs/eden'
 import type { RpcApp } from './server'
 
-export const rpc = treaty<RpcApp>('kb-app')
+export const rpc = treaty<RpcApp>('app-app')
 // Usage: const { data } = await rpc.list.get({ query: { limit: 20 } })
 ```
 
@@ -231,7 +231,7 @@ messages.
 ## STABLE IDENTITY
 
 Entry IDs are deterministic: `crc32(type + ":" + yamlKey)`. Rebuilds never
-change IDs. This makes deep links (`kb://entry/<id>`) stable across syncs.
+change IDs. This makes deep links (`app://entry/<id>`) stable across syncs.
 
 ---
 
@@ -283,18 +283,18 @@ There is no Drizzle, no `drizzle-kit`, and no schema diffing. Migrations are
 plain `*.sql` files applied by a small in-process runner. The mechanism has
 three phases of existence:
 
-| Stage                | When                                                                      | What exists                                                                                                                                                                                                                                                                                                                          |
-| -------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Bootstrap-only**   | Phase 4 (now)                                                             | `client.ts` runs idempotent `CREATE TABLE IF NOT EXISTS …` (+ FTS5 virtual table + indexes). No `tools/db/migrations/` folder. No runner. No `_kb_migrations` table.                                                                                                                                                                 |
-| **Runner activated** | First phase that needs a schema change (earliest Phase 9, possibly later) | `tools/db/migrations/0001_initial.sql` (extracted verbatim from the Phase 4 bootstrap) plus `0002_<change>.sql` for the new change. `src/shell/app/db/migrate.ts` (≈ 35 lines) is added. `client.ts` stops running the bootstrap and calls `migrate(db, migrationsDir)` instead. The `_kb_migrations` table is created on first run. |
-| **Steady state**     | Phase ≥ runner activation                                                 | Each schema change is one new `<NNNN>_<snake_case_label>.sql` file. The runner replays everything not in `_kb_migrations` in filename order, each in its own transaction.                                                                                                                                                            |
+| Stage                | When                                                                      | What exists                                                                                                                                                                                                                                                                                                                           |
+| -------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Bootstrap-only**   | Phase 4 (now)                                                             | `client.ts` runs idempotent `CREATE TABLE IF NOT EXISTS …` (+ FTS5 virtual table + indexes). No `tools/db/migrations/` folder. No runner. No `_app_migrations` table.                                                                                                                                                                 |
+| **Runner activated** | First phase that needs a schema change (earliest Phase 9, possibly later) | `tools/db/migrations/0001_initial.sql` (extracted verbatim from the Phase 4 bootstrap) plus `0002_<change>.sql` for the new change. `src/shell/app/db/migrate.ts` (≈ 35 lines) is added. `client.ts` stops running the bootstrap and calls `migrate(db, migrationsDir)` instead. The `_app_migrations` table is created on first run. |
+| **Steady state**     | Phase ≥ runner activation                                                 | Each schema change is one new `<NNNN>_<snake_case_label>.sql` file. The runner replays everything not in `_app_migrations` in filename order, each in its own transaction.                                                                                                                                                            |
 
 The runner's contract:
 
 ```ts
 // src/shell/app/db/migrate.ts (introduced when the first schema change ships)
 export function migrate(db: Database, dir: string): string[]
-//   - ensures _kb_migrations(filename PRIMARY KEY, applied_at INTEGER) exists
+//   - ensures _app_migrations(filename PRIMARY KEY, applied_at INTEGER) exists
 //   - selects already-applied filenames into a Set
 //   - reads dir, keeps files matching /^\d{4}_[a-z0-9_]+\.sql$/, sorts ascending
 //   - for each pending file: db.transaction(() => { db.run(sql); insert(filename, now) })
@@ -305,7 +305,7 @@ Properties:
 
 - **Idempotent.** Already-applied files are skipped on every startup.
 - **Atomic per file.** Each migration runs in its own `db.transaction()`
-  — a SQL error rolls back the whole file *and* its `_kb_migrations`
+  — a SQL error rolls back the whole file *and* its `_app_migrations`
   insert.
 - **Deterministic ordering.** The 4-digit prefix is sorted as a string,
   which is identical to numeric order up to file 9999. (We will not have
@@ -315,7 +315,7 @@ Properties:
 - **Testable.** A spec exercises empty DB, partial-applied DB, malformed
   filename rejection, and SQL-error rollback.
 
-This is enough complexity for kb's data shape (one table family + FTS5 +
+This is enough complexity for app's data shape (one table family + FTS5 +
 a handful of indexes). Drizzle-kit's value proposition (auto-generated
 migrations from schema diffs) doesn't apply when we own a single, mostly
 stable schema.
@@ -353,11 +353,11 @@ and `cache_miss` are emitted at debug level.
 ```tree
 .
 ├── .agents/
-│   └── skills/                  # Project-specific agent skills
-│       ├── kb-context/SKILL.md  # Always-loaded project context
-│       ├── kb-rpc/SKILL.md      # Elysia + Eden Treaty patterns
-│       ├── kb-testing/SKILL.md  # Testing conventions
-│       └── kb-quality-gate/     # DoD gate + gate.sh script
+│   └── skills/                   # Project-specific agent skills
+│       ├── app-context/SKILL.md  # Always-loaded project context
+│       ├── app-rpc/SKILL.md      # Elysia + Eden Treaty patterns
+│       ├── app-testing/SKILL.md  # Testing conventions
+│       └── app-quality-gate/     # DoD gate + gate.sh script
 ├── assets/
 │   └── docs/                    # design.md, requirements.md, roadmap.md
 ├── docs/
@@ -413,7 +413,7 @@ and `cache_miss` are emitted at debug level.
 │           ├── index.html
 │           ├── app.tsx          # React app root
 │           ├── rpc/
-│           │   └── client.ts    # treaty<RpcApp>('kb-app')
+│           │   └── client.ts    # treaty<RpcApp>('app-app')
 │           ├── constants/
 │           │   └── icons.const.ts
 │           ├── utils/
@@ -462,7 +462,7 @@ and `cache_miss` are emitted at debug level.
 ### Sync
 
 ```
-~/.config/kb/sources/**/*.yaml
+~/.config/app/sources/**/*.yaml
   → fs.promises.readFile()       [import.service]
   → js-yaml parse()
   → TypeBox validate (Knowledge) [src/core/domain/models/entries/schemas/]
@@ -564,11 +564,11 @@ and (if paths changed) re-opens the database at the new path.
 Resolved by `loadConfig()` using Electrobun's `app.getPath('userData')`:
 
 ```ts
-const userData = app.getPath('userData')  // ~/.config/kb on macOS
+const userData = app.getPath('userData')  // ~/.config/app on macOS
 
 const DEFAULT_PATHS = {
   configPath: path.join(userData, 'config.yaml'),
-  dbPath:     path.join(userData, 'kb.sqlite'),
+  dbPath:     path.join(userData, 'app.sqlite'),
   sourcesDir: path.join(userData, 'sources'),
 }
 ```
@@ -609,15 +609,15 @@ System font stack. No web fonts. No drop-shadows except floating overlays.
 
 ## TESTING STRATEGY
 
-| Layer          | Approach                                                                         |
-| -------------- | -------------------------------------------------------------------------------- |
-| Core parsers   | Pure unit — data in, assertions out. No mocks.                                   |
-| AppService     | In-memory `bun:sqlite` + Fishery `factoryFor(...)` rows                          |
-| Elysia routes  | `server.handle(new Request(...))` — no real port                                 |
-| Renderer       | React Testing Library + Happy-DOM; Eden Treaty via context double                |
-| Import service | Real YAML fixtures in `src/__tests__/fixtures/sample/` (5 curated files, ~10 KB) |
+| Layer          | Approach                                                                          |
+| -------------- | --------------------------------------------------------------------------------- |
+| Core parsers   | Pure unit — data in, assertions out. No mocks.                                    |
+| AppService     | In-memory `bun:sqlite` + Fishery `factoryFor(...)` rows                           |
+| Elysia routes  | `server.handle(new Request(...))` — no real port                                  |
+| Renderer       | React Testing Library + Happy-DOM; Eden Treaty via context double                 |
+| Import service | Real YAML fixtures in `src/__tests__/fixtures/sample/` (5 curated files, ~10 app) |
 
-See `kb-testing` skill for patterns and gotchas.
+See `app-testing` skill for patterns and gotchas.
 
 ---
 
@@ -628,7 +628,7 @@ See `kb-testing` skill for patterns and gotchas.
 import { defineConfig } from 'electrobun'
 
 export default defineConfig({
-  name: 'kb',
+  name: 'app',
   version: '0.1.0',
   main: './src/shell/main/main.ts',
   renderer: './src/shell/renderer/index.html',
@@ -653,8 +653,8 @@ were created as nested supersets and are not reliable for per-phase recovery).
 To inspect:
 
 ```bash
-git worktree add ~/Work/bun/kb_legacy cc3d08b
-ls ~/Work/bun/kb_legacy/src/shell/app/db/
+git worktree add ~/Work/bun/app_legacy cc3d08b
+ls ~/Work/bun/app_legacy/src/shell/app/db/
 ```
 
 Files in `cc3d08b` that are partially or fully reusable in upcoming phases:
@@ -696,6 +696,27 @@ import — `task_views.types.ts` (1-line literal union) is added in Phase 4.
 - [requirements.md](requirements.md) — EARS feature specs (V1-1 through V1-8)
 - [roadmap.md](roadmap.md) — Phase sequence and delivery order
 - `docs/specs/<slug>/` — Per-feature SDD specs (generated by `sdd` skill)
+
+---
+
+## Decision: Observability
+
+**Context:** kb debug and operational visibility was limited to `console.*`
+with no per-request correlation or SQL tracing.
+
+**Decision:** Adopt LogTape as the structured logging backbone with
+a `LOG_LEVEL` environment-variable dial. Main process logging uses
+`AsyncLocalStorage` for per-request context; renderer uses independent
+configuration. DB instrumentation uses a typed statement wrapper.
+
+**Outcome:** Debug logging is controllable via a single env var.
+RPC requests are correlated by `requestId`. SQL queries are timed and
+logged only when enabled. Default verbosity is unchanged.
+
+**Roadmap items (deferred):** OpenTelemetry export, Sentry sink, file
+sink, SQLite sink, renderer→main ferry, field-level redaction.
+
+**Reference:** `assets/docs/specs/debugging/design.md`
 
 ---
 

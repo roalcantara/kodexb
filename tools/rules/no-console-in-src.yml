@@ -1,4 +1,4 @@
-# console.* is banned inside src/. Use createLogger() from @shared/logging.
+# console.* is banned inside src/. Use getLogger([...]) from @shared/logging.
 # tools/ and test helpers may use console freely.
 id: no-console-in-src
 language: TypeScript
@@ -19,6 +19,6 @@ rule:
     - pattern: console.debug($$$ARGS)
     - pattern: console.info($$$ARGS)
 message: >
-  Use createLogger() from @shared/logging instead of console.*.
+  Use getLogger([...]) from @shared/logging instead of console.*.
   Structured log lines are written to the Electrobun console via Logtape.
 note: See assets/docs/design.md — §Observability (phase labels, structured output).

@@ -1,0 +1,267 @@
+.cmp-entry-row {
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  margin: 0;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  border: none;
+  border-left: 2px solid transparent;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.cmp-entry-row:hover {
+  background: var(--color-row-hover);
+}
+
+/* Avoid a second “selected-looking” row when the pointer rests on one row while another stays selected. */
+.cmp-list-surface[data-list-selection='true'] .cmp-entry-row:hover:not(.cmp-entry-row--selected) {
+  background: transparent;
+}
+
+.cmp-entry-row--selected {
+  background: var(--color-row-selected);
+  border-left-color: var(--color-color-cheat);
+}
+
+.cmp-entry-row--selected:hover {
+  background: var(--color-row-selected);
+}
+
+/* Pressed state: keep the same fill as hover/selected so the browser default doesn’t add a third “flash”. */
+.cmp-entry-row--selected:active {
+  background: var(--color-row-selected);
+}
+
+.cmp-entry-row:active:not(.cmp-entry-row--selected) {
+  background: var(--color-row-hover);
+}
+
+.cmp-list-surface[data-list-selection='true'] .cmp-entry-row:active:not(.cmp-entry-row--selected) {
+  background: transparent;
+}
+
+/* Shared icon slot: borderless (PowerToys / Raycast-style); row highlight only. */
+.cmp-entry-row-glyph,
+.cmp-list-row-icon {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: var(--color-on-surface-variant);
+}
+
+.cmp-entry-row-glyph .cmp-entry-glyph,
+.cmp-list-row-icon .cmp-entry-glyph {
+  width: auto;
+  min-width: 0;
+  font-size: 1rem;
+  line-height: 1;
+  text-align: center;
+  color: inherit;
+}
+
+.cmp-entry-glyph {
+  font-size: 1.1rem;
+  width: 1.75rem;
+  text-align: center;
+}
+
+.cmp-entry-glyph-img {
+  width: 1.25rem;
+  height: 1.25rem;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+.cmp-entry-row-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.cmp-entry-row-meta {
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.cmp-entry-row-title {
+  font-size: 15px;
+  font-weight: 300;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmp-entry-glyph-tile {
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cmp-entry-glyph-tile--task {
+  background: var(--color-glyph-task-tile);
+  color: var(--color-on-glyph);
+}
+
+.cmp-entry-glyph-tile--muted {
+  background: var(--color-glyph-muted-tile);
+  color: var(--color-status-doing);
+}
+
+.cmp-entry-glyph-tile--plain {
+  background: transparent;
+}
+
+.cmp-tag--freq-rare {
+  color: color-mix(in srgb, var(--color-tag-type-accent) 32%, var(--color-on-surface-variant));
+}
+
+.cmp-tag--freq-modest {
+  color: color-mix(in srgb, var(--color-tag-type-accent) 52%, var(--color-on-surface-variant));
+}
+
+.cmp-tag--freq-common {
+  color: color-mix(in srgb, var(--color-tag-type-accent) 72%, var(--color-text-main));
+}
+
+.cmp-tag--freq-dominant {
+  color: var(--color-tag-type-accent);
+  font-weight: 400;
+}
+
+.cmp-tag {
+  font-size: 12px;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.35;
+  color: var(--color-on-surface-variant);
+}
+
+.cmp-tag--type-task,
+.cmp-tag--type-cheat {
+  color: var(--color-tag-type-accent);
+}
+
+.cmp-tag--type-bookmark {
+  color: var(--color-tag-bookmark-accent);
+}
+
+.cmp-tag--type-command {
+  color: var(--color-color-command);
+}
+
+.cmp-tag--status-todo,
+.cmp-tag--status-doing,
+.cmp-tag--status-done,
+.cmp-tag--status-blocked,
+.cmp-tag--status-overdue {
+  font-style: normal;
+  text-transform: lowercase;
+}
+
+.cmp-entry-row-sub {
+  font-size: 0.75rem;
+  color: var(--color-on-surface-variant);
+  margin-top: 0.15rem;
+}
+
+.cmp-entry-row-badges {
+  flex: 0 0 auto;
+}
+
+.cmp-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: flex-end;
+}
+
+.cmp-pill {
+  font-size: 0.65rem;
+  padding: 0.12rem 0.35rem;
+  border-radius: 4px;
+  text-transform: lowercase;
+  border: 1px solid var(--color-outline-variant);
+}
+
+.cmp-pill--muted {
+  color: var(--color-on-surface-variant);
+}
+
+.cmp-pill--urgent {
+  border-color: var(--color-error);
+  color: var(--color-priority-urgent-text);
+}
+
+.cmp-pill--high {
+  border-color: var(--color-priority-high-border);
+  color: var(--color-priority-high-text);
+}
+
+.cmp-pill--mid {
+  border-color: var(--color-priority-mid-border);
+  color: var(--color-priority-mid-text);
+}
+
+.cmp-pill--low {
+  border-color: var(--color-priority-low-border);
+  color: var(--color-priority-low-text);
+}
+
+.cmp-pill--todo {
+  color: var(--color-on-surface-variant);
+}
+
+.cmp-pill--doing {
+  color: var(--color-status-doing);
+}
+
+.cmp-pill--done {
+  color: var(--color-status-done);
+}
+
+.cmp-pill--overdue {
+  border-color: var(--color-error);
+  color: var(--color-priority-urgent-text);
+}
+
+.cmp-pill--blocked {
+  border-color: var(--color-warn);
+  color: var(--color-priority-mid-text);
+}
+
+.cmp-pill--due {
+  color: var(--color-on-surface-variant);
+}
+
+/* ── Drag and drop ──────────────────────────────────────────────── */
+
+.cmp-entry-row--dragging {
+  opacity: 0.4;
+}
+
+.cmp-entry-row--drag-over {
+  border-top: 2px solid var(--color-primary);
+}

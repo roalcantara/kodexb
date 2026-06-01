@@ -2,31 +2,36 @@ import { describe, expect, it } from 'bun:test'
 import { factoryFor } from './factories.builder'
 
 describe('factoryFor()', () => {
-  describe('bookmark preset', () => {
-    it('defaults type bookmark', () => {
-      const row = factoryFor('bookmark')
-      expect(row.type).toBe('bookmark')
+  describe.each(['bookmark', 'command', 'cheat', 'task'] as const)('with param `%s`', val => {
+    const value = factoryFor(val)
+    it(`builds entry type ${val}`, () => {
+      expect(value.type).toBe(val)
+    })
+    it('with non-empty doc', () => {
+      expect(value.doc.length).toBeGreaterThan(0)
     })
   })
 
-  describe('loadedConfig preset', () => {
-    it('uses minimal sources path', () => {
-      const cfg = factoryFor('loadedConfig')
-      expect(cfg.sources.path).toContain('minimal')
+  describe('with param `loadedConfig`', () => {
+    const value = factoryFor('loadedConfig')
+    it('builds a config', () => {
+      expect(value).toBeDefined()
+    })
+    it('with source path `minimal`', () => {
+      expect(value.sources.path).toContain('minimal')
     })
   })
 
-  it('produces rows with non-empty doc', () => {
-    const bookmark = factoryFor('bookmark')
-    expect(bookmark.doc.length).toBeGreaterThan(0)
-
-    const command = factoryFor('command')
-    expect(command.doc.length).toBeGreaterThan(0)
-
-    const cheat = factoryFor('cheat')
-    expect(cheat.doc.length).toBeGreaterThan(0)
-
-    const task = factoryFor('task')
-    expect(task.doc.length).toBeGreaterThan(0)
+  describe.each([
+    ['knowledge:weaker', 'bookmark', 'coding'],
+    ['knowledge:stronger', 'command', 'brew']
+  ])('with param `%s` of `%s` with `%s`', (name, model, prop) => {
+    const value = factoryFor(name as 'knowledge:weaker' | 'knowledge:stronger')
+    it(`builds ${model}`, () => {
+      expect(value.type).toBe(model as 'bookmark' | 'command')
+    })
+    it(`with tag '${prop}'`, () => {
+      expect(value.tags).toContain(prop as string)
+    })
   })
 })

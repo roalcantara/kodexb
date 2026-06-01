@@ -1,0 +1,286 @@
+amends "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Builtins.pkl"
+
+// Repo-wide ignores. Bare directory names match recursively; patterns are
+// unioned with any per-step `.exclude` overrides below.
+exclude = List(
+    ".code-review-graph", // local SQLite code-review-graph database
+    "tmp",            // local report scratch (tmp/reports/...)
+    "build",          // electrobun bundle output
+    "dist",           // distribution outputs
+    ".worktrees",     // linked git worktrees (duplicate biome.jsonc roots)
+    ".opencode",      // local opencode install (not project source)
+)
+hide_warnings = List("missing-profiles")
+display_skip_reasons = List()
+terminal_progress = false
+
+// Large-asset carve-out: keep `check_added_large_files` active everywhere else
+// (so we still catch accidental binary commits), but allow tracked SVG/PNG/AVIF
+// design references that intentionally exceed the 500 KB default.
+local largeFilesCheck = (Builtins.check_added_large_files) {
+    exclude = List(
+        "assets/**",
+        "tools/**"
+    )
+}
+
+// Text-hygiene writers skip files that are technically text but live as
+// hand-rolled or generated assets. Rewriting them is wasteful (multi-MB
+// diffs in `assets/images/*.svg`), risks pre-commit stash conflicts when
+// the user is editing wireframes, and was the original source of the
+// parallel-write race that clobbered EOF newlines on >1 MB SVGs.
+local textWriterExclude = List(
+    "**/*.svg",
+    "**/*.min.js",
+    "**/*.min.css",
+    "bun.lock",
+    "bun.lockb",
+    "package-lock.json",
+    "yarn.lock",
+    "pnpm-lock.yaml"
+)
+
+// Belt-and-braces: even with SVGs excluded, chain the three writers with
+// `depends` so hk serializes their writes on the remaining text files.
+local endOfFileFixer = (Builtins.newlines) {
+    exclude = textWriterExclude
+}
+local mixedLineEnding = (Builtins.mixed_line_ending) {
+    exclude = textWriterExclude
+    depends = List("end-of-file-fixer")
+}
+local trailingWhitespace = (Builtins.trailing_whitespace) {
+    exclude = textWriterExclude
+    depends = List("mixed_line_ending")
+}
+
+// Fast hygiene — no profile tag: runs on every `hk check` and pre-commit.
+local hygieneSteps = new Mapping<String, Step> {
+    ["end-of-file-fixer"] = endOfFileFixer
+    ["mixed_line_ending"] = mixedLineEnding
+    ["trailing_whitespace"] = trailingWhitespace
+    ["check_merge_conflict"] = Builtins.check_merge_conflict
+    ["detect_private_key"] = Builtins.detect_private_key
+    ["check_case_conflict"] = Builtins.check_case_conflict
+    ["check_added_large_files"] = largeFilesCheck
+}
+
+// Cheap extras for `hk check --profile commit` (and duplicated under `pr`).
+local commitProfileSteps = new Mapping<String, Step> {
+    ["check_executables_have_shebangs"] = (Builtins.check_executables_have_shebangs) {
+        profiles = List("commit")
+    }
+    ["check_symlinks"] = (Builtins.check_symlinks) {
+        profiles = List("commit")
+    }
+}
+
+// File-scoped checks — HK skips when no selected files match `glob`.
+// HK treats multiple profiles as AND; use one profile per step and duplicate
+// when both `pr` and `ci` need the same tool.
+local workflowGlob = List(".github/workflows/*.yml", ".github/workflows/*.yaml")
+local fileScopedSteps = new Mapping<String, Step> {
+    ["actionlint-pr"] = (Builtins.actionlint) {
+        glob = workflowGlob
+        profiles = List("pr")
+    }
+    ["actionlint-ci"] = (Builtins.actionlint) {
+        glob = workflowGlob
+        profiles = List("ci")
+    }
+    ["hadolint-pr"] = (Builtins.hadolint) {
+        glob = List("Dockerfile")
+        profiles = List("pr")
+    }
+    ["hadolint-ci"] = (Builtins.hadolint) {
+        glob = List("Dockerfile")
+        profiles = List("ci")
+    }
+    ["tombi-pr"] = (Builtins.tombi) {
+        glob = List("mise.toml")
+        profiles = List("pr")
+    }
+    ["tombi-ci"] = (Builtins.tombi) {
+        glob = List("mise.toml")
+        profiles = List("ci")
+    }
+}
+
+// PR profile reuses commit cheap checks without requiring `--profile commit`.
+local prProfileSteps = new Mapping<String, Step> {
+    ["check_executables_have_shebangs-pr"] = (Builtins.check_executables_have_shebangs) {
+        profiles = List("pr")
+    }
+    ["check_symlinks-pr"] = (Builtins.check_symlinks) {
+        profiles = List("pr")
+    }
+}
+
+// CI profile mirrors `mise run lint check --* --ci` and preserves tool policy.
+// Custom commands (not HK builtins) keep strict Biome, knip --no-exit-code, etc.
+local ciProfileSteps = new Mapping<String, Step> {
+    ["hk-validate"] {
+        profiles = List("ci")
+        check = "hk validate"
+    }
+    ["head-commit-message"] {
+        profiles = List("ci")
+        check = """
+          tmp="$(mktemp)"
+          git log -1 --format=%B > "$tmp"
+          bun tools/hooks/commit_message.script.ts "$tmp"
+          rm -f "$tmp"
+          """
+    }
+    ["biome-ci"] {
+        profiles = List("ci")
+        check = "bunx biome check --reporter=github"
+    }
+    ["knip-ci"] {
+        profiles = List("ci")
+        check = "mkdir -p tmp/reports/linters && bun run lint:knip -- --reporter compact | tee tmp/reports/linters/knip.txt"
+    }
+    ["depcruise-ci"] {
+        profiles = List("ci")
+        check = "mkdir -p tmp/reports/linters && bun run lint:depcruise -- --output-type json --output-to tmp/reports/linters/depcruise.json"
+    }
+    ["jscpd-ci"] {
+        profiles = List("ci")
+        check = "mkdir -p tmp/reports/linters && bunx jscpd . --noTips --reporters json,console --output tmp/reports/linters/jscpd"
+    }
+    ["ls-lint-ci"] {
+        profiles = List("ci")
+        check = "mkdir -p tmp/reports/linters && bunx @ls-lint/ls-lint | tee tmp/reports/linters/ls-lint.txt"
+    }
+    ["ast-grep-ci"] {
+        profiles = List("ci")
+        check = "mkdir -p tmp/reports/linters && bun run lint:ast-grep | tee tmp/reports/linters/ast-grep.txt"
+    }
+    ["renderer-css-ci"] {
+        profiles = List("ci")
+        check = "mkdir -p tmp/reports/linters && bun run lint:renderer-css | tee tmp/reports/linters/renderer-css.txt"
+    }
+    ["spec-guide-ci"] {
+        profiles = List("ci")
+        check = "mkdir -p tmp/reports/linters && bun run lint:spec-guide | tee tmp/reports/linters/spec-guide.txt"
+    }
+    ["typecheck-ci"] {
+        profiles = List("ci")
+        check = "bun run typecheck"
+    }
+    // Baseline only — report findings without failing CI until triaged (HK-4).
+    ["gitleaks-baseline-ci"] {
+        profiles = List("ci")
+        check = """
+          mkdir -p tmp/reports/linters
+          gitleaks detect --redact --log-opts="HEAD~1..HEAD" 2>&1 | tee tmp/reports/linters/gitleaks.txt || true
+          """
+    }
+    ["gitleaks-baseline-pr"] {
+        profiles = List("pr")
+        check = """
+          mkdir -p tmp/reports/linters
+          gitleaks detect --redact --log-opts="HEAD~1..HEAD" 2>&1 | tee tmp/reports/linters/gitleaks.txt || true
+          """
+    }
+}
+
+// Full profile mirrors gate.sh stages; gate.sh remains the stable entry point.
+local fullProfileSteps = new Mapping<String, Step> {
+    ["gate-autofix"] {
+        profiles = List("full")
+        check = "bun run lint:fix"
+    }
+    ["gate-policy"] {
+        profiles = List("full")
+        depends = List("gate-autofix")
+        check = "env GATE_EMBEDDED_POLICY=1 bash .agents/skills/app-quality-gate/scripts/gate_policy.sh"
+    }
+    ["gate-lint"] {
+        profiles = List("full")
+        depends = List("gate-policy")
+        check = "bun run lint"
+    }
+    ["gate-test"] {
+        profiles = List("full")
+        depends = List("gate-lint")
+        check = "bun test"
+    }
+    ["gate-preview-smoke"] {
+        profiles = List("full")
+        depends = List("gate-test")
+        check = """
+          bun tools/preview/server.ts &
+          SERVER_PID=$!
+          sleep 3
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3456/ || echo 000)
+          kill "$SERVER_PID" 2>/dev/null || true
+          test "$HTTP_STATUS" = "200"
+          """
+    }
+    ["gate-build-smoke"] {
+        profiles = List("full")
+        depends = List("gate-preview-smoke")
+        check = """
+          if [ "$(uname -s)" = "Darwin" ]; then
+            bun run build
+          else
+            echo "gate-build-smoke: skipped on non-macOS host"
+          fi
+          """
+    }
+}
+
+// Slow profile — optional checks; enable with `hk check --slow` or --profile slow.
+local slowProfileSteps = new Mapping<String, Step> {
+    ["gitleaks-full"] {
+        profiles = List("slow")
+        check = """
+          mkdir -p tmp/reports/linters
+          gitleaks detect --redact 2>&1 | tee tmp/reports/linters/gitleaks-full.txt || true
+          """
+    }
+}
+
+local preCommitSteps = (hygieneSteps) {
+    ["no_commit_to_branch"] = Builtins.no_commit_to_branch
+    ["check_executables_have_shebangs"] = Builtins.check_executables_have_shebangs
+    ["check_symlinks"] = Builtins.check_symlinks
+    ["code-review-graph-risk-summary"] {
+        check = """
+          if command -v code-review-graph >/dev/null 2>&1; then
+            code-review-graph update --skip-flows || true
+            code-review-graph detect-changes --brief || true
+          fi
+          """
+    }
+}
+
+local checkSteps = (hygieneSteps) {
+    ...commitProfileSteps
+    ...prProfileSteps
+    ...fileScopedSteps
+    ...ciProfileSteps
+    ...fullProfileSteps
+    ...slowProfileSteps
+}
+
+local commitMsgSteps = new Mapping<String, Step> {
+    ["commit-message-policy"] {
+        check = "bun tools/hooks/commit_message.script.ts {{commit_msg_file}}"
+    }
+}
+
+local prePushSteps = new Mapping<String, Step> {
+    ["quality-gate"] {
+        check = "bash .agents/skills/app-quality-gate/scripts/gate.sh"
+    }
+}
+
+hooks {
+    ["pre-commit"] { fix = true; stash = "git"; steps = preCommitSteps }
+    ["commit-msg"] { steps = commitMsgSteps }
+    ["pre-push"] { steps = prePushSteps }
+    ["check"] { steps = checkSteps }
+}

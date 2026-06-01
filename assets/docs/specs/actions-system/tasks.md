@@ -18,7 +18,7 @@
 - [ ] Read `assets/docs/specs/actions-system/design.md`
 - [ ] Read `assets/docs/specs/actions-system/requirements.md`
 - [ ] Read `assets/docs/specs/foundation/requirements.md` — V1-8 section
-- [ ] Read `.agents/skills/kb-context/SKILL.md`, `.agents/skills/kb-testing/SKILL.md`
+- [ ] Read `.agents/skills/app-context/SKILL.md`, `.agents/skills/app-testing/SKILL.md`
 
 ---
 
@@ -222,28 +222,28 @@ export function CmdKPalette({ open, actions, onClose }: CmdKPaletteProps) {
   if (!open) return null
 
   return (
-    <div className="kb-modal" onClick={onClose} onKeyDown={handleKeyDown}>
-      <div className="kb-cmdk" onClick={e => e.stopPropagation()}>
+    <div className="app-modal" onClick={onClose} onKeyDown={handleKeyDown}>
+      <div className="app-cmdk" onClick={e => e.stopPropagation()}>
         <input
           ref={inputRef}
-          className="kb-cmdk-search"
+          className="app-cmdk-search"
           type="text"
           placeholder="Type an action..."
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
-        <div className="kb-cmdk-list">
+        <div className="app-cmdk-list">
           {filtered.length === 0 ? (
-            <div className="kb-cmdk-empty">No matching actions</div>
+            <div className="app-cmdk-empty">No matching actions</div>
           ) : (
             filtered.map((action, i) => (
               <div
                 key={action.id}
-                className={`kb-cmdk-action${i === selectedIndex ? ' kb-cmdk-action--selected' : ''}`}
+                className={`app-cmdk-action${i === selectedIndex ? ' app-cmdk-action--selected' : ''}`}
                 onClick={() => { action.handler(); onClose() }}
               >
                 <span>{action.label}</span>
-                {action.shortcut ? <span className="kb-cmdk-shortcut">{action.shortcut}</span> : null}
+                {action.shortcut ? <span className="app-cmdk-shortcut">{action.shortcut}</span> : null}
               </div>
             ))
           )}
@@ -409,7 +409,7 @@ Render when open:
 Add `onCmdK?: () => void` to `ToolbarProps`.
 Change the static `<span>` to a `<button>`:
 ```tsx
-<button type="button" className="kb-toolbar-hint" onClick={onCmdK} title="Action palette (⌘K)">
+<button type="button" className="app-toolbar-hint" onClick={onCmdK} title="Action palette (⌘K)">
   ⌘K
 </button>
 ```
@@ -419,13 +419,13 @@ Pass `onCmdK={p.palette.openPalette}` from `list_main`.
 - [ ] **Step 4: Add CSS to `styles/list.css`**
 
 ```css
-.kb-cmdk { background: var(--kb-surface); border-radius: 6px; width: 480px; max-height: 400px; overflow: hidden; display: flex; flex-direction: column; }
-.kb-cmdk-search { padding: 12px 16px; border-bottom: 1px solid var(--kb-border); font-size: 1rem; background: transparent; color: var(--kb-text); border: none; outline: none; width: 100%; }
-.kb-cmdk-list { overflow-y: auto; padding: 4px 0; }
-.kb-cmdk-action { padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: var(--kb-text); }
-.kb-cmdk-action--selected { background: color-mix(in srgb, var(--kb-accent) 20%, transparent); }
-.kb-cmdk-shortcut { font-size: 0.75rem; color: var(--kb-muted); }
-.kb-cmdk-empty { padding: 16px; color: var(--kb-muted); text-align: center; }
+.app-cmdk { background: var(--app-surface); border-radius: 6px; width: 480px; max-height: 400px; overflow: hidden; display: flex; flex-direction: column; }
+.app-cmdk-search { padding: 12px 16px; border-bottom: 1px solid var(--app-border); font-size: 1rem; background: transparent; color: var(--app-text); border: none; outline: none; width: 100%; }
+.app-cmdk-list { overflow-y: auto; padding: 4px 0; }
+.app-cmdk-action { padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; color: var(--app-text); }
+.app-cmdk-action--selected { background: color-mix(in srgb, var(--app-accent) 20%, transparent); }
+.app-cmdk-shortcut { font-size: 0.75rem; color: var(--app-muted); }
+.app-cmdk-empty { padding: 16px; color: var(--app-muted); text-align: center; }
 ```
 
 - [ ] **Step 5: Verify typecheck**
@@ -452,7 +452,7 @@ git commit -m "feat(renderer): integrate CmdKPalette into list page"
 - [ ] **Step 1: Create spec with 6 test cases**
 
 ```tsx
-/// <reference lib="dom" />
+
 import { expect, mock, test } from 'bun:test'
 import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'

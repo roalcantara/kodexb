@@ -1,8 +1,8 @@
-// biome-ignore lint/nursery/noExcessiveLinesPerFile: pre-existing pattern outside Phase 9 scope
 import fs from 'node:fs/promises'
-import type { Entry, Knowledge, TaskEntry } from '../../core'
-import { toKnowledge } from '../../core'
-import { createLogger } from '../../shared/logging'
+import type { Entry, Knowledge, TaskEntry } from '@core'
+import { toKnowledge } from '@core'
+import { rankSuggestedTags } from '@core/domain/models/knowledges/tags/rank_suggested_tags.util'
+import { getLogger, type LogVerbosity } from '@shared/logging'
 import type {
   ConfigPatch,
   ListOpts,
@@ -12,103 +12,63 @@ import type {
   RpcDbStats,
   RpcGetConfigPayload,
   RpcImportResult,
+  RpcListEntry,
+  RpcSyncProgressPayload,
   TaskCreateInput,
   TaskUpdateInput
-} from '../../shared/rpc'
+} from '@shared/rpc'
 import type { LoadedConfig } from './config/config.loader'
 import { saveConfig } from './config/config.loader'
+import { type BindingRef, listAllBindings, listBindingsByChord } from './db/binding.repository'
+import { recordBindingVisit as persistBindingVisit } from './db/binding_frecency.repository'
 import { openDatabase } from './db/client'
-import {
-  deleteById,
-  type FindAllOpts,
-  findAll,
-  findById,
-  getDbStats,
-  getTagCounts,
-  upsert
-} from './db/entry.repository'
-import { ImportService } from './db/import.service'
+import { deleteById, findAll, findById, getDbStats, upsert } from './db/entry.repository'
+import { recordEntryVisit as persistEntryVisit } from './db/frecency.repository'
 import { maxTaskOrder, updateTaskOrder } from './db/task.repository'
-import { countTasksByView, filterKnowledgeByTaskView } from './lib/task_views.util'
-
-type TaskKnowledge = Extract<Knowledge, { type: 'task' }>
-
-/** Fallback when `display.pageSize` is missing or invalid (matches common YAML default). */
-const DEFAULT_LIST_PAGE_SIZE = 50
-
-function isTask(k: Knowledge): k is TaskKnowledge {
-  return k.type === 'task'
-}
-
-function stableListCacheKey(opts: ListOpts): string {
-  return JSON.stringify(opts)
-}
-
-function toFindAllOpts(opts: ListOpts): FindAllOpts {
-  return {
-    query: opts.query,
-    tags: opts.tags,
-    types: opts.types,
-    limit: opts.limit,
-    offset: opts.offset
-  }
-}
+import { countKnowledgeForOpts, listKnowledgeForOpts } from './lib/app_list_query.util'
+import { buildListStats } from './lib/app_list_stats.util'
+import { buildListStatsForFilters } from './lib/app_list_stats_for_filters.util'
+import { fetchPreviewImageFromUrl } from './lib/app_preview_fetch.util'
+import type { AppShellHooks } from './lib/app_shell_hooks.types'
+import { createAppShellDelegates } from './lib/app_shell_surface.util'
+import { runSourceImportSync } from './lib/app_sync.util'
+import { getSyncInfoForSourcesDir } from './lib/app_sync_info.util'
+import { removeTaskFromSource, resolveCreateTaskTags, writeTaskToSource } from './lib/app_task_source.util'
+import { SyncDatabaseBusyError } from './lib/sync_database_busy.error'
 
 export type SyncEmitter = {
-  syncProgress?: (processed: number, total: number) => void
+  syncProgress?: (payload: RpcSyncProgressPayload) => void
   syncComplete?: (result: RpcImportResult) => void
 }
 
-/** Optional native hooks (mutate after `BrowserWindow` construction). */
-export type AppShellHooks = {
-  resizeWindow?: (width: number, height: number) => void
-  openExternal?: (url: string) => void
-  showOpenDialog?: (opts?: OpenDialogOpts) => Promise<string | null>
-  pasteInTerminal?: (cmd: string, terminalApp?: string) => void
-  openInEditor?: (filePath: string, editorApp?: string) => void
-}
-
-const OG_IMAGE_RE = /<meta\s+[^>]*(?:property|name)=["']og:image["'][^>]*content=["']([^"']+)["'][^>]*>/i
-const OG_IMAGE_REVERSE_RE = /<meta\s+[^>]*content=["']([^"']+)["'][^>]*(?:property|name)=["']og:image["'][^>]*>/i
-const YOUTUBE_ID_RE = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/
-const OG_FETCH_TIMEOUT_MS = 5_000
-
-function youtubePreviewImage(url: string): PreviewImageResult | null {
-  const id = YOUTUBE_ID_RE.exec(url)?.[1]
-  return id ? { url: `https://img.youtube.com/vi/${id}/mqdefault.jpg` } : null
-}
-
-function previewImageFromHtml(html: string, baseUrl: string): PreviewImageResult | null {
-  const image = OG_IMAGE_RE.exec(html)?.[1] ?? OG_IMAGE_REVERSE_RE.exec(html)?.[1]
-  if (!image) return null
-  try {
-    return { url: new URL(image, baseUrl).toString() }
-  } catch {
-    return null
-  }
-}
-
-/**
- * Single orchestrator for DB, import, and config. RPC handlers delegate here only.
- */
+/** Single orchestrator for DB, import, and config. RPC handlers delegate here only. */
 export class App {
-  private readonly log: ReturnType<typeof createLogger>
+  private readonly log: ReturnType<typeof getLogger>
   private loaded: LoadedConfig
   private db: ReturnType<typeof openDatabase> | null = null
-  private readonly listCache = new Map<string, Knowledge[]>()
+  private readonly listCache = new Map<string, RpcListEntry[]>()
   private listStatsCache: ListStats | null = null
   private dbStatsCache: RpcDbStats | null = null
+  private syncInFlight = false
   private readonly emit: SyncEmitter
-  private readonly shellHooks: AppShellHooks
+  private readonly shellDelegates: ReturnType<typeof createAppShellDelegates>
 
-  constructor(loaded: LoadedConfig, emit: SyncEmitter = {}, debug = false, shellHooks: AppShellHooks = {}) {
+  constructor(
+    loaded: LoadedConfig,
+    emit: SyncEmitter = {},
+    _verbosity: LogVerbosity = 'default',
+    shellHooks: AppShellHooks = {}
+  ) {
     this.loaded = loaded
     this.emit = emit
-    this.shellHooks = shellHooks
-    this.log = createLogger({ debug })
+    this.shellDelegates = createAppShellDelegates(shellHooks, () => this.loaded)
+    this.log = getLogger(['kb', 'app'])
   }
 
   private getDb() {
+    if (this.syncInFlight) {
+      throw new SyncDatabaseBusyError()
+    }
     if (!this.db) {
       this.db = openDatabase(this.loaded.database.path)
     }
@@ -128,81 +88,97 @@ export class App {
     this.dbStatsCache = null
   }
 
-  list(opts: ListOpts = {}): Promise<Knowledge[]> {
+  list(opts: ListOpts = {}): Promise<RpcListEntry[]> {
     const { raw } = this.getDb()
-    const pageSize = Number.parseInt(this.loaded.display.pageSize, 10)
-    const safePage = Number.isFinite(pageSize) && pageSize > 0 ? pageSize : DEFAULT_LIST_PAGE_SIZE
-    const limit = opts.limit ?? safePage
-    const offset = opts.offset ?? 0
-
-    if (opts.taskView) {
-      if (opts.types?.length && !opts.types.includes('task')) {
-        return Promise.resolve([])
-      }
-      const base = findAll(raw, {
-        query: opts.query,
-        tags: opts.tags,
-        types: opts.types?.length ? opts.types : ['task'],
-        limit: -1,
-        offset: 0
-      })
-      const filtered = filterKnowledgeByTaskView(base, opts.taskView)
-      return Promise.resolve(filtered.slice(offset, offset + limit))
-    }
-
-    const cacheKey = stableListCacheKey({ ...opts, limit, offset })
-    const hit = this.listCache.get(cacheKey)
-    if (hit) return Promise.resolve(hit)
-
-    const rows = findAll(raw, { ...toFindAllOpts(opts), limit, offset })
-    this.listCache.set(cacheKey, rows)
-    return Promise.resolve(rows)
+    return Promise.resolve(listKnowledgeForOpts(raw, this.loaded, opts, this.listCache))
   }
-
+  listMatchCount(opts: ListOpts = {}): Promise<number> {
+    const { raw } = this.getDb()
+    return Promise.resolve(countKnowledgeForOpts(raw, this.loaded, opts))
+  }
   getEntry(id: number): Promise<Knowledge | null> {
     const { raw } = this.getDb()
     return Promise.resolve(findById(raw, id))
   }
 
-  getListStats(): Promise<ListStats> {
-    if (this.listStatsCache) return Promise.resolve(this.listStatsCache)
+  recordEntryVisit(id: number): Promise<{ ok: true }> {
     const { raw } = this.getDb()
-    const stats = getDbStats(raw)
-    const tags = getTagCounts(raw)
-    const tasks = findAll(raw, { types: ['task'], limit: -1, offset: 0 }).filter(isTask)
-    const taskViews = countTasksByView(tasks)
-    this.listStatsCache = {
-      total: stats.total,
-      bookmark: stats.byType.bookmark ?? 0,
-      command: stats.byType.command ?? 0,
-      cheat: stats.byType.cheat ?? 0,
-      task: stats.byType.task ?? 0,
-      taskViews,
-      tags,
-      byType: stats.byType
+    persistEntryVisit(raw, id)
+    this.invalidateListCache()
+    return Promise.resolve({ ok: true })
+  }
+
+  listBindings(): Promise<BindingRef[]> {
+    const { raw } = this.getDb()
+    return Promise.resolve(listAllBindings(raw))
+  }
+
+  listBindingsByChord(hash: string): Promise<BindingRef[]> {
+    const { raw } = this.getDb()
+    return Promise.resolve(listBindingsByChord(raw, hash))
+  }
+
+  recordBindingVisit(id: string, weight: number): Promise<{ ok: true }> {
+    const { raw } = this.getDb()
+    persistBindingVisit(raw, id, weight)
+    return Promise.resolve({ ok: true })
+  }
+
+  getListStats(filters: Partial<Pick<ListOpts, 'query' | 'tags' | 'types' | 'taskView'>> = {}): Promise<ListStats> {
+    const hasContext =
+      (filters.query !== undefined && filters.query.trim() !== '') ||
+      (filters.types?.length ?? 0) > 0 ||
+      (filters.tags?.length ?? 0) > 0 ||
+      filters.taskView !== undefined
+
+    const { raw } = this.getDb()
+
+    if (!hasContext) {
+      if (this.listStatsCache) return Promise.resolve(this.listStatsCache)
+      this.listStatsCache = buildListStats(raw)
+      return Promise.resolve(this.listStatsCache)
     }
-    return Promise.resolve(this.listStatsCache)
+
+    return Promise.resolve(buildListStatsForFilters(raw, this.loaded, filters))
   }
 
   async sync(sourcesDir?: string): Promise<RpcImportResult> {
     const dir = sourcesDir ?? this.loaded.sources.path
-    const importer = new ImportService(this.loaded.database.path)
-    this.invalidateListCache()
-    const result = await importer.run(dir, {
-      onProgress: (processed, total) => {
-        this.emit.syncProgress?.(processed, total)
-      }
-    })
-    this.emit.syncComplete?.(result)
-    this.log.phase('import', `sync_complete files=${result.filesProcessed}`, 0)
-    return result
+    const dbPath = this.loaded.database.path
+    this.syncInFlight = true
+    try {
+      return await runSourceImportSync({
+        sourcesDir: dir,
+        dbPath,
+        closeDb: () => this.closeDb(),
+        invalidateListCache: () => this.invalidateListCache(),
+        emit: this.emit,
+        log: this.log
+      })
+    } finally {
+      this.syncInFlight = false
+      this.closeDb()
+    }
   }
 
-  getStats(): Promise<RpcDbStats> {
-    if (this.dbStatsCache) return Promise.resolve(this.dbStatsCache)
+  async getStats(): Promise<RpcDbStats> {
+    if (this.dbStatsCache) return this.dbStatsCache
     const { raw } = this.getDb()
-    this.dbStatsCache = getDbStats(raw)
-    return Promise.resolve(this.dbStatsCache)
+    const stats = getDbStats(raw)
+    let dbSize = 0
+    try {
+      const stat = await fs.stat(this.loaded.database.path)
+      dbSize = stat.size
+    } catch {
+      dbSize = 0
+    }
+    this.dbStatsCache = {
+      total: stats.total,
+      byType: stats.byType,
+      dbPath: this.loaded.database.path,
+      dbSize
+    }
+    return this.dbStatsCache
   }
 
   getConfig(): Promise<RpcGetConfigPayload> {
@@ -212,6 +188,10 @@ export class App {
       sources: { path: this.loaded.sources.path },
       display: { ...this.loaded.display }
     })
+  }
+
+  getSyncInfo(): Promise<{ sourcesDir: string; fileCount: number }> {
+    return getSyncInfoForSourcesDir(this.loaded.sources.path)
   }
 
   async applyConfigPatch(patch: ConfigPatch): Promise<RpcGetConfigPayload> {
@@ -230,63 +210,6 @@ export class App {
     return this.getConfig()
   }
 
-  private async writeTaskToYaml(task: Knowledge, filePath: string): Promise<void> {
-    try {
-      let doc: Record<string, unknown> = {}
-      try {
-        const content = await fs.readFile(filePath, 'utf-8')
-        doc = Bun.YAML.parse(content) as Record<string, unknown>
-      } catch (e) {
-        if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e
-      }
-      const tasks = (doc.tasks ?? {}) as Record<string, unknown>
-      tasks[task.key] = this.taskToYamlShape(task)
-      doc.tasks = tasks
-      const tmpPath = filePath + '.tmp'
-      await fs.writeFile(tmpPath, Bun.YAML.stringify(doc), 'utf-8')
-      await fs.rename(tmpPath, filePath)
-    } catch (err) {
-      this.log.error(['YAML write-back failed', task.key, filePath, err])
-    }
-  }
-
-  private async removeTaskFromYaml(key: string, filePath: string): Promise<void> {
-    try {
-      const content = await fs.readFile(filePath, 'utf-8')
-      const doc = Bun.YAML.parse(content) as Record<string, unknown>
-      const tasks = (doc.tasks ?? {}) as Record<string, unknown>
-      delete tasks[key]
-      if (Object.keys(tasks).length === 0) {
-        await fs.unlink(filePath)
-      } else {
-        doc.tasks = tasks
-        const tmpPath = filePath + '.tmp'
-        await fs.writeFile(tmpPath, Bun.YAML.stringify(doc), 'utf-8')
-        await fs.rename(tmpPath, filePath)
-      }
-    } catch (err) {
-      this.log.error(['YAML remove failed', key, filePath, err])
-    }
-  }
-
-  private taskToYamlShape(task: Knowledge): Record<string, unknown> {
-    const shape: Record<string, unknown> = {}
-    if (task.desc) shape.desc = task.desc
-    if (task.tags && task.tags.length > 0) shape.tags = task.tags
-    if (task.type === 'task') {
-      shape.status = task.status
-      if (task.priority) shape.priority = task.priority
-      if (task.dueDate) shape.due = new Date(task.dueDate).toISOString().split('T')[0]
-      if (task.taskOrder != null) shape.task_order = task.taskOrder
-      if (task.dependsOn && task.dependsOn.length > 0) shape.depends_on = task.dependsOn.map(String)
-    }
-    return shape
-  }
-
-  private static rejectNotImplemented(method: string): Promise<never> {
-    return Promise.reject(new Error(`Not implemented: ${method}`))
-  }
-
   async createTask(input: TaskCreateInput): Promise<Knowledge> {
     const { raw } = this.getDb()
     const order = maxTaskOrder(raw)
@@ -296,7 +219,7 @@ export class App {
       key: input.key,
       source: this.loaded.writeTarget,
       desc: input.desc ?? '',
-      tags: input.tags ?? [],
+      tags: resolveCreateTaskTags(input.tags),
       priority: input.priority ?? 'mid',
       status: 'todo',
       dueDate: input.dueDate,
@@ -305,35 +228,35 @@ export class App {
     } as Entry
     const knowledge = toKnowledge(entry, now)
     upsert(raw, knowledge)
-    await this.writeTaskToYaml(knowledge, this.loaded.writeTarget)
+    await writeTaskToSource(this.log, this.loaded.writeTarget, knowledge)
     this.invalidateListCache()
     return knowledge
   }
 
   async updateTask(id: number, patch: TaskUpdateInput): Promise<Knowledge> {
     const existing = await this.getEntry(id)
-    if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
+    if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
     const merged = { ...existing, ...patch, updatedAt: Date.now() }
     const { raw } = this.getDb()
     upsert(raw, merged)
-    await this.writeTaskToYaml(merged, merged.source)
+    await writeTaskToSource(this.log, merged.source, merged)
     this.invalidateListCache()
     return merged
   }
 
   async deleteTask(id: number): Promise<void> {
     const existing = await this.getEntry(id)
-    if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
+    if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
     const { raw } = this.getDb()
     deleteById(raw, id)
-    await this.removeTaskFromYaml(existing.key, existing.source)
+    await removeTaskFromSource(this.log, existing.key, existing.source)
     this.invalidateListCache()
   }
 
   async cycleStatus(id: number, dir: 'forward' | 'backward'): Promise<Knowledge> {
     const values: TaskEntry['status'][] = ['todo', 'doing', 'done']
     const existing = await this.getEntry(id)
-    if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
+    if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
     const idx = values.indexOf(existing.status)
     const delta = dir === 'forward' ? 1 : -1
     const next = values[(idx + delta + values.length) % values.length]
@@ -344,7 +267,7 @@ export class App {
   async cyclePriority(id: number, dir: 'forward' | 'backward'): Promise<Knowledge> {
     const values: NonNullable<TaskEntry['priority']>[] = ['low', 'mid', 'high', 'urgent']
     const existing = await this.getEntry(id)
-    if (!existing || existing.type !== 'task') throw new Error(`Task ${id} not found`)
+    if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
     const current = existing.priority ?? 'mid'
     const idx = values.indexOf(current)
     const delta = dir === 'forward' ? 1 : -1
@@ -360,7 +283,7 @@ export class App {
     const writes = affected.map(async ({ id: affectedId }) => {
       const entry = findById(raw, affectedId)
       if (entry) {
-        await this.writeTaskToYaml(entry, entry.source)
+        await writeTaskToSource(this.log, entry.source, entry)
         return entry
       }
       return null
@@ -372,60 +295,47 @@ export class App {
   }
 
   openExternal(url: string): Promise<void> {
-    let parsed: URL
-    try {
-      parsed = new URL(url)
-    } catch (err) {
-      return Promise.reject(err)
-    }
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      return Promise.reject(new Error(`Unsupported URL protocol: ${parsed.protocol}`))
-    }
-    this.shellHooks.openExternal?.(parsed.toString())
-    return Promise.resolve()
+    return this.shellDelegates.openExternal(url)
   }
-
   pasteInTerminal(cmd: string): Promise<void> {
-    const app = this.loaded.display.terminalApp
-    this.shellHooks.pasteInTerminal?.(cmd, app)
-    return Promise.resolve()
+    return this.shellDelegates.pasteInTerminal(cmd)
   }
-
+  runInTerminal(cmd: string): Promise<void> {
+    return this.shellDelegates.runInTerminal(cmd)
+  }
+  pasteDoc(doc: string): Promise<void> {
+    return this.shellDelegates.pasteDoc(doc)
+  }
   openInEditor(filePath: string): Promise<void> {
-    const app = this.loaded.display.editorApp
-    this.shellHooks.openInEditor?.(filePath, app)
-    return Promise.resolve()
+    return this.shellDelegates.openInEditor(filePath)
   }
-
   showOpenDialog(opts?: OpenDialogOpts): Promise<string | null> {
-    const fn = this.shellHooks.showOpenDialog
-    if (!fn) {
-      return App.rejectNotImplemented('showOpenDialog')
-    }
-    return fn(opts)
+    return this.shellDelegates.showOpenDialog(opts)
   }
-
-  async fetchPreviewImage(url: string): Promise<PreviewImageResult | null> {
-    const parsed = new URL(url)
-    const youtube = youtubePreviewImage(parsed.toString())
-    if (youtube) return youtube
-
-    const res = await fetch(parsed, { signal: AbortSignal.timeout(OG_FETCH_TIMEOUT_MS) }).catch(() => null)
-    if (!res?.ok) return null
-    const html = await res.text().catch(() => '')
-    return previewImageFromHtml(html, parsed.toString())
+  fetchPreviewImage(url: string): Promise<PreviewImageResult | null> {
+    return fetchPreviewImageFromUrl(url)
   }
-
-  suggestTags(_entryId: number): Promise<string[]> {
-    return App.rejectNotImplemented('suggestTags')
+  async suggestTags(entryId: number): Promise<string[]> {
+    const entry = await this.getEntry(entryId)
+    if (!entry) return []
+    const { raw } = this.getDb()
+    const allEntries = findAll(raw, { limit: -1, offset: 0 })
+    return rankSuggestedTags(entry, allEntries)
   }
 
   resizeWindow(width: number, height: number): Promise<void> {
-    const fn = this.shellHooks.resizeWindow
-    if (!fn) {
-      return App.rejectNotImplemented('resizeWindow')
-    }
-    fn(width, height)
-    return Promise.resolve()
+    return this.shellDelegates.resizeWindow(width, height)
+  }
+  hideWindow(): Promise<void> {
+    return this.shellDelegates.hideWindow()
+  }
+  getWindowPosition(): Promise<{ x: number; y: number } | null> {
+    return this.shellDelegates.getWindowPosition()
+  }
+  setWindowPosition(x: number, y: number): Promise<void> {
+    return this.shellDelegates.setWindowPosition(x, y)
+  }
+  quit(): Promise<void> {
+    return this.shellDelegates.quit()
   }
 }

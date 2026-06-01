@@ -17,14 +17,14 @@ fields on `TaskKnowledge`.
 
 ## SCOPE DECISIONS
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| New task destination | Configurable write-target (default: `sources/tasks.yml`) | Predictable, single-file; no tag→file mapping complexity |
-| Task sheet UI | Centered modal overlay | Single component for create+edit; matches existing backdrop pattern |
-| Reorder | Keyboard (Cmd+↑/↓) + HTML5 drag-and-drop | Full V1-7 spec coverage; no library needed for drag-and-drop |
-| Dependency storage | First-class `dependsOn: number[]` field, `depends_on` DB column | Queryable, fixable; enables `wouldCreateCycle` BFS |
-| Task fields (`due_date`, `task_order`) | Promoted to first-class on `TaskKnowledge` | Consistent with `priority`/`status`; removes `meta` JSON indirection |
-| YAML write-back on failure | Log error, keep DB change | DB is the working index; YAML can be rebuilt |
+| Decision                               | Choice                                                          | Rationale                                                            |
+| -------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------- |
+| New task destination                   | Configurable write-target (default: `sources/tasks.yml`)        | Predictable, single-file; no tag→file mapping complexity             |
+| Task sheet UI                          | Centered modal overlay                                          | Single component for create+edit; matches existing backdrop pattern  |
+| Reorder                                | Keyboard (Cmd+↑/↓) + HTML5 drag-and-drop                        | Full V1-7 spec coverage; no library needed for drag-and-drop         |
+| Dependency storage                     | First-class `dependsOn: number[]` field, `depends_on` DB column | Queryable, fixable; enables `wouldCreateCycle` BFS                   |
+| Task fields (`due_date`, `task_order`) | Promoted to first-class on `TaskKnowledge`                      | Consistent with `priority`/`status`; removes `meta` JSON indirection |
+| YAML write-back on failure             | Log error, keep DB change                                       | DB is the working index; YAML can be rebuilt                         |
 
 ---
 
@@ -130,13 +130,13 @@ New exported function `deleteById(db, id): boolean` — deletes a row by id, ret
 
 **`src/shell/app/db/task.repository.ts`** (new file)
 
-| Function | Signature | Purpose |
-|---|---|---|
-| `maxTaskOrder` | `(db: Database) => number` | Highest `task_order` for new task insertion |
-| `wouldCreateCycle` | `(db: Database, taskId: number, newDepId: number, maxDepth?: number) => boolean` | BFS up to depth 3 to detect circular deps |
-| `updateTaskOrder` | `(db: Database, taskId: number, dir: 'up' \| 'down') => { id: number; taskOrder: number }[]` | Swap order with neighbor, return both rows |
-| `findDependents` | `(db: Database, taskId: number) => Knowledge[]` | Tasks that depend on this task |
-| `findDependencies` | `(db: Database, dependsOn: number[]) => Knowledge[]` | Tasks this task depends on |
+| Function           | Signature                                                                                    | Purpose                                     |
+| ------------------ | -------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `maxTaskOrder`     | `(db: Database) => number`                                                                   | Highest `task_order` for new task insertion |
+| `wouldCreateCycle` | `(db: Database, taskId: number, newDepId: number, maxDepth?: number) => boolean`             | BFS up to depth 3 to detect circular deps   |
+| `updateTaskOrder`  | `(db: Database, taskId: number, dir: 'up' \| 'down') => { id: number; taskOrder: number }[]` | Swap order with neighbor, return both rows  |
+| `findDependents`   | `(db: Database, taskId: number) => Knowledge[]`                                              | Tasks that depend on this task              |
+| `findDependencies` | `(db: Database, dependsOn: number[]) => Knowledge[]`                                         | Tasks this task depends on                  |
 
 `wouldCreateCycle` uses BFS starting from `newDepId`, following `depends_on` chains. If `taskId` is found within 3 levels, return true. A task depending on itself is always rejected.
 
@@ -206,17 +206,17 @@ HTML5 drag-and-drop state: `onDragStart(id)`, `onDragOver(id)`, `onDrop(id)`, `d
 
 ### Renderer UI — existing file changes
 
-| File | Change |
-|------|--------|
-| `entry_row.component.tsx` | Add `draggable={type === 'task'}`, drag event handlers |
-| `badge_accessory.component.tsx` | Add `onClick` handlers to status/priority pills for task entries |
-| `toolbar.component.tsx` | Add "+ New Task" button |
-| `use_list_page_shell.hook.ts` | Compose new task hooks |
-| `styles/list.css` | Add `.kb-modal`, `.kb-taskSheet`, drag-and-drop styles |
-| `task_state.util.ts` | Fix `taskIsBlocked` to check `dependsOn` field |
-| `metadata_sidebar.component.tsx` | Switch from `meta.due` to `entry.dueDate` |
-| `dependency_graph.component.tsx` | Switch from `meta.dependsOn` to `entry.dependsOn` |
-| `task_views.util.ts` | Switch from `meta.due` to `entry.dueDate` |
+| File                             | Change                                                           |
+| -------------------------------- | ---------------------------------------------------------------- |
+| `entry_row.component.tsx`        | Add `draggable={type === 'task'}`, drag event handlers           |
+| `badge_accessory.component.tsx`  | Add `onClick` handlers to status/priority pills for task entries |
+| `toolbar.component.tsx`          | Add "+ New Task" button                                          |
+| `use_list_page_shell.hook.ts`    | Compose new task hooks                                           |
+| `styles/list.css`                | Add `.app-modal`, `.app-taskSheet`, drag-and-drop styles         |
+| `task_state.util.ts`             | Fix `taskIsBlocked` to check `dependsOn` field                   |
+| `metadata_sidebar.component.tsx` | Switch from `meta.due` to `entry.dueDate`                        |
+| `dependency_graph.component.tsx` | Switch from `meta.dependsOn` to `entry.dependsOn`                |
+| `task_views.util.ts`             | Switch from `meta.due` to `entry.dueDate`                        |
 
 ---
 
@@ -242,17 +242,17 @@ HTML5 drag-and-drop state: `onDragStart(id)`, `onDragOver(id)`, `onDrop(id)`, `d
 
 ## TESTING STRATEGY
 
-| Layer | Approach | File |
-|---|---|---|
-| Core types | Parse valid/invalid task entries, assert round-trip | `knowledge.schema.spec.ts` |
-| Core parser | YAML string → extracted fields | `entry.factory.spec.ts` |
-| DB row mapping | Fishery task → upsert → findById → assert fields | `entry.repository.spec.ts` |
-| Task repository | `maxTaskOrder`, `wouldCreateCycle`, `updateTaskOrder` | `task.repository.spec.ts` (new) |
-| App mutations | In-memory DB + temp YAML, assert DB + file state | `app.spec.ts` |
-| RPC routes | `rpc.handle(postJson(...))` against in-memory App | `server.spec.ts` |
-| RPC schemas | Valid/invalid bodies for expanded schemas | `requests.spec.ts` |
-| Renderer client | Mock bridge, assert route + body | `client.spec.tsx` |
-| TaskSheet | Render create/edit, simulate input, assert save call | `task_sheet.component.spec.tsx` (new) |
-| Keyboard hooks | Simulate key events, assert callbacks | `use_task_keyboard.hook.spec.tsx` (new) |
-| Drag-and-drop | Simulate drag events, assert reorder call | `use_task_drag_drop.hook.spec.tsx` (new) |
-| Badge cycling | Click status/priority pill on task row, assert RPC | `badge_accessory.component.spec.tsx` |
+| Layer           | Approach                                              | File                                     |
+| --------------- | ----------------------------------------------------- | ---------------------------------------- |
+| Core types      | Parse valid/invalid task entries, assert round-trip   | `knowledge.schema.spec.ts`               |
+| Core parser     | YAML string → extracted fields                        | `entry.factory.spec.ts`                  |
+| DB row mapping  | Fishery task → upsert → findById → assert fields      | `entry.repository.spec.ts`               |
+| Task repository | `maxTaskOrder`, `wouldCreateCycle`, `updateTaskOrder` | `task.repository.spec.ts` (new)          |
+| App mutations   | In-memory DB + temp YAML, assert DB + file state      | `app.spec.ts`                            |
+| RPC routes      | `rpc.handle(postJson(...))` against in-memory App     | `server.spec.ts`                         |
+| RPC schemas     | Valid/invalid bodies for expanded schemas             | `requests.spec.ts`                       |
+| Renderer client | Mock bridge, assert route + body                      | `client.spec.tsx`                        |
+| TaskSheet       | Render create/edit, simulate input, assert save call  | `task_sheet.component.spec.tsx` (new)    |
+| Keyboard hooks  | Simulate key events, assert callbacks                 | `use_task_keyboard.hook.spec.tsx` (new)  |
+| Drag-and-drop   | Simulate drag events, assert reorder call             | `use_task_drag_drop.hook.spec.tsx` (new) |
+| Badge cycling   | Click status/priority pill on task row, assert RPC    | `badge_accessory.component.spec.tsx`     |

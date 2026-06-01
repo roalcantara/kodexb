@@ -1,4 +1,5 @@
 import type { RpcKnowledge } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
 import { useEffect, useRef } from 'react'
 import { cyclePriority, cycleStatus, reorderTask } from '../../rpc/client'
 
@@ -30,16 +31,12 @@ function handleCreateKey(e: globalThis.KeyboardEvent, deps: DepsSnapshot): boole
 function handleCycleKey(e: globalThis.KeyboardEvent, entry: RpcKnowledge, onRefresh: () => void): boolean {
   if (e.key === 's' && !e.metaKey && !e.ctrlKey && !e.altKey) {
     e.preventDefault()
-    cycleStatus(entry.id, 'forward')
-      .then(() => onRefresh())
-      .catch(() => undefined)
+    fireAndForget(cycleStatus(entry.id, 'forward').then(() => onRefresh()))
     return true
   }
   if (e.key === 'p' && !e.metaKey && !e.ctrlKey && !e.altKey) {
     e.preventDefault()
-    cyclePriority(entry.id, 'forward')
-      .then(() => onRefresh())
-      .catch(() => undefined)
+    fireAndForget(cyclePriority(entry.id, 'forward').then(() => onRefresh()))
     return true
   }
   return false
@@ -48,16 +45,12 @@ function handleCycleKey(e: globalThis.KeyboardEvent, entry: RpcKnowledge, onRefr
 function handleReorderKey(e: globalThis.KeyboardEvent, entry: RpcKnowledge, onRefresh: () => void): boolean {
   if ((e.metaKey || e.ctrlKey) && e.key === 'ArrowUp') {
     e.preventDefault()
-    reorderTask(entry.id, 'up')
-      .then(() => onRefresh())
-      .catch(() => undefined)
+    fireAndForget(reorderTask(entry.id, 'up').then(() => onRefresh()))
     return true
   }
   if ((e.metaKey || e.ctrlKey) && e.key === 'ArrowDown') {
     e.preventDefault()
-    reorderTask(entry.id, 'down')
-      .then(() => onRefresh())
-      .catch(() => undefined)
+    fireAndForget(reorderTask(entry.id, 'down').then(() => onRefresh()))
     return true
   }
   return false
@@ -79,7 +72,7 @@ function handleDeleteKey(
 
 function findTaskEntry(rows: RpcKnowledge[], selectedId: number): RpcKnowledge | null {
   const entry = rows.find(r => r.id === selectedId)
-  if (!entry || entry.type !== 'task') return null
+  if (entry?.type !== 'task') return null
   return entry
 }
 

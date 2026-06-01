@@ -1,6 +1,7 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import { memo } from 'react'
 
+import { formatEnGbDate } from '../../utils/shared/format_en_gb_date.util'
 import { isTaskKnowledge, taskIsBlocked, taskIsOverdue } from '../../utils/shared/task_state.util'
 
 export type BadgeAccessoryProps = {
@@ -11,29 +12,22 @@ export type BadgeAccessoryProps = {
 }
 
 const PRIORITY_CLASS: Record<string, string> = {
-  urgent: 'kb-pill kb-pill--urgent',
-  high: 'kb-pill kb-pill--high',
-  mid: 'kb-pill kb-pill--mid',
-  low: 'kb-pill kb-pill--low'
+  urgent: 'cmp-pill cmp-pill--urgent',
+  high: 'cmp-pill cmp-pill--high',
+  mid: 'cmp-pill cmp-pill--mid',
+  low: 'cmp-pill cmp-pill--low'
 }
 
 const STATUS_CLASS: Record<string, string> = {
-  todo: 'kb-pill kb-pill--todo',
-  doing: 'kb-pill kb-pill--doing',
-  done: 'kb-pill kb-pill--done'
-}
-
-function formatDueShort(ms: number | undefined | null): string {
-  if (ms === undefined || ms === null) return ''
-  const d = new Date(ms)
-  if (Number.isNaN(d.getTime())) return ''
-  return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short' }).format(d)
+  todo: 'cmp-pill cmp-pill--todo',
+  doing: 'cmp-pill cmp-pill--doing',
+  done: 'cmp-pill cmp-pill--done'
 }
 
 function bookmarkPill(hasUrl: boolean) {
   if (!hasUrl) return null
   return (
-    <span className="kb-pill kb-pill--muted" title="Has URL">
+    <span className="cmp-pill cmp-pill--muted" title="Has URL">
       ↗
     </span>
   )
@@ -41,7 +35,7 @@ function bookmarkPill(hasUrl: boolean) {
 
 function commandPill() {
   return (
-    <span className="kb-pill kb-pill--muted" title="Command">
+    <span className="cmp-pill cmp-pill--muted" title="Command">
       &gt;_
     </span>
   )
@@ -49,7 +43,7 @@ function commandPill() {
 
 function cheatPill() {
   return (
-    <span className="kb-pill kb-pill--muted" title="Cheat">
+    <span className="cmp-pill cmp-pill--muted" title="Cheat">
       ~
     </span>
   )
@@ -66,11 +60,11 @@ function taskPills(
   const pri = entry.priority
   const status = entry.status
   const dueDate = entry.dueDate
-  const dueStr = typeof dueDate === 'number' ? formatDueShort(dueDate) : ''
+  const dueStr = typeof dueDate === 'number' ? formatEnGbDate(dueDate) : ''
 
-  const statusCls = `${STATUS_CLASS[status] ?? 'kb-pill'}${onCycleStatus ? ' kb-pill--clickable' : ''}`
+  const statusCls = `${STATUS_CLASS[status] ?? 'cmp-pill'}${onCycleStatus ? ' cmp-pill--clickable' : ''}`
   const priCls =
-    pri === undefined ? '' : `${PRIORITY_CLASS[pri] ?? 'kb-pill'}${onCyclePriority ? ' kb-pill--clickable' : ''}`
+    pri === undefined ? '' : `${PRIORITY_CLASS[pri] ?? 'cmp-pill'}${onCyclePriority ? ' cmp-pill--clickable' : ''}`
 
   return (
     <>
@@ -102,9 +96,9 @@ function taskPills(
       ) : (
         <span className={statusCls}>{status}</span>
       )}
-      {overdue ? <span className="kb-pill kb-pill--overdue">overdue</span> : null}
-      {blocked ? <span className="kb-pill kb-pill--blocked">blocked</span> : null}
-      {dueStr === '' ? null : <span className="kb-pill kb-pill--due">{dueStr}</span>}
+      {overdue ? <span className="cmp-pill cmp-pill--overdue">overdue</span> : null}
+      {blocked ? <span className="cmp-pill cmp-pill--blocked">blocked</span> : null}
+      {dueStr === '' ? null : <span className="cmp-pill cmp-pill--due">{dueStr}</span>}
     </>
   )
 }
@@ -112,16 +106,16 @@ function taskPills(
 function BadgeAccessoryComponent({ entry, allEntries = [], onCycleStatus, onCyclePriority }: BadgeAccessoryProps) {
   if (entry.type === 'bookmark') {
     const hasUrl = entry.key.startsWith('http://') || entry.key.startsWith('https://')
-    return <span className="kb-badgeRow">{bookmarkPill(hasUrl)}</span>
+    return <span className="cmp-badge-row">{bookmarkPill(hasUrl)}</span>
   }
   if (entry.type === 'command') {
-    return <span className="kb-badgeRow">{commandPill()}</span>
+    return <span className="cmp-badge-row">{commandPill()}</span>
   }
   if (entry.type === 'cheat') {
-    return <span className="kb-badgeRow">{cheatPill()}</span>
+    return <span className="cmp-badge-row">{cheatPill()}</span>
   }
   if (isTaskKnowledge(entry)) {
-    return <span className="kb-badgeRow">{taskPills(entry, allEntries, onCycleStatus, onCyclePriority)}</span>
+    return <span className="cmp-badge-row">{taskPills(entry, allEntries, onCycleStatus, onCyclePriority)}</span>
   }
   return null
 }

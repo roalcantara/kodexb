@@ -1,0 +1,2092 @@
+version: 1
+generated_at: '2026-05-22'
+sources:
+  - id: elysia
+    name: Elysia
+    root_url: https://elysiajs.com/
+    fetched_at: '2026-05-22'
+    notes:
+      - LLM bundle (llms-full.txt) fetched successfully; canonical page URLs preserved per capability.
+      - Standard Schema is upstream-only for app; app standardises on TypeBox per CLAUDE.md.
+      - No unreachable upstream pages during the 2026-05-18 scrape (CE-1.3).
+      - Coverage addendum on 2026-05-22 added prominent Elysia pages from llms.txt that were missing from the first pass.
+  - id: electrobun
+    name: Electrobun
+    root_url: https://blackboard.sh/electrobun/docs/
+    fetched_at: '2026-05-22'
+    notes:
+      - Documentation site reviewed for API surface; local repo evidence checked on 2026-05-18.
+      - No unreachable upstream pages during the 2026-05-18 scrape (CE-1.3).
+      - File dialogs and dev/hot-reload workflow are covered under utils and build entries unless split later.
+      - Coverage addendum on 2026-05-22 added prominent Electrobun guide/API pages that were missing from the first pass.
+capabilities:
+  - id: elysia-routing
+    ecosystem: elysia
+    area: routing
+    feature: POST routing and handlers
+    source_urls:
+      - https://elysiajs.com/essential/route.html
+    summary: HTTP method handlers (.get, .post, .put, .delete, .route), path params, wildcards, and group prefixing.
+    current_usage:
+      status: used
+      evidence:
+        - src/shell/main/rpc/server.ts
+      confidence: high
+      notes: All app RPC endpoints are POST routes under `/api/*` via `createRpcServer`.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Foundation of app's typed RPC server.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/rpc/server.ts
+      - .agents/skills/app-rpc/SKILL.md
+    candidate_stories: []
+    notes: []
+  - id: elysia-typebox
+    ecosystem: elysia
+    area: validation
+    feature: TypeBox validation
+    source_urls:
+      - https://elysiajs.com/patterns/typebox.html
+    summary: Runtime and compile-time validation via TypeBox schemas on route bodies, query, and params.
+    current_usage:
+      status: partial
+      evidence:
+        - src/shell/main/rpc/schemas.ts
+        - src/shell/main/rpc/server.ts
+        - src/core/validation/typebox.helper.ts
+      confidence: high
+      notes: app uses `@sinclair/typebox` (`Type.*`) for RPC schemas and core validation, not Elysia's `t.*` builder. Elysia accepts the TypeBox objects as route `body` schemas.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt:
+        - Two TypeBox authoring styles (Elysia `t` vs `@sinclair/typebox`) if app ever mixes them.
+      risk_reduction: []
+    pros:
+      - TypeBox is app's sole validation library across transport and core.
+    cons:
+      - Route schemas do not use Elysia's `t` helper; docs examples may not match app's pattern verbatim.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/rpc/schemas.ts
+      - src/core/validation/typebox.helper.ts
+    candidate_stories:
+      - Document app's TypeBox-only RPC schema pattern in app-rpc skill examples.
+    notes: []
+  - id: elysia-eden-treaty
+    ecosystem: elysia
+    area: rpc
+    feature: Eden Treaty
+    source_urls:
+      - https://elysiajs.com/eden/treaty/overview.html
+    summary: End-to-end typed client inferred from the Elysia server type; no code generation.
+    current_usage:
+      status: used
+      evidence:
+        - src/shell/renderer/rpc/client.ts
+        - src/shell/renderer/rpc/rpc_app.types.ts
+      confidence: high
+      notes: Renderer calls `treaty<RpcApp>` through a custom Electrobun bridge, not a normal HTTP origin.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Keeps renderer and main RPC types aligned without manual sync.
+    cons:
+      - Bridge discipline required because production transport is Electrobun IPC, not HTTP.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/renderer/rpc/client.ts
+      - src/shell/main/rpc/server.ts
+      - .agents/skills/app-rpc/SKILL.md
+    candidate_stories:
+      - Harden Eden bridge response and error contracts.
+    notes: []
+  - id: elysia-lifecycle
+    ecosystem: elysia
+    area: lifecycle
+    feature: Lifecycle hooks
+    source_urls:
+      - https://elysiajs.com/essential/life-cycle.html
+    summary: onRequest, onParse, onTransform, beforeHandle, afterHandle, onError, onResponse, and trace handlers.
+    current_usage:
+      status: partial
+      evidence:
+        - src/shell/main/rpc/server.ts
+      confidence: high
+      notes: Only global `onError` is configured via `rpcErrorContract`. Trace, onRequest, beforeHandle, and other hooks are not used.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction:
+        - Trace hooks could add RPC latency observability if app adopts them later.
+    pros:
+      - onError already provides a global error boundary for RPC routes.
+    cons:
+      - Most lifecycle hooks are unused; trace would add overhead unless adopted deliberately.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/rpc/server.ts
+    candidate_stories:
+      - Add onRequest logging with request IDs for preview-server debugging.
+      - Evaluate trace hooks for RPC performance monitoring (requires benchmark evidence first).
+    notes: []
+  - id: elysia-error-handling
+    ecosystem: elysia
+    area: lifecycle
+    feature: Global error handling (onError)
+    source_urls:
+      - https://elysiajs.com/patterns/error-handling.html
+    summary: Global error handler via onError; status helpers for HTTP error codes.
+    current_usage:
+      status: used
+      evidence:
+        - src/shell/main/rpc/server.ts
+      confidence: high
+      notes: '`rpcErrorContract` registers global `onError` and normalises failures to `{ error: string }` with HTTP 500.'
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Consistent RPC error shape for renderer and preview server.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/rpc/server.ts
+      - tools/preview/server.ts
+    candidate_stories: []
+    notes: []
+  - id: elysia-eden-test
+    ecosystem: elysia
+    area: testing
+    feature: Eden Treaty unit testing (app.handle)
+    source_urls:
+      - https://elysiajs.com/eden/treaty/unit-test.html
+    summary: Test Elysia routes with `app.handle(new Request(...))` without binding a port.
+    current_usage:
+      status: used
+      evidence:
+        - src/shell/main/rpc/server.spec.ts
+      confidence: high
+      notes: Specs call `createRpcServer(app).handle(postJson(...))` directly.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Fast, parallel-safe RPC tests without real HTTP ports.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/rpc/server.spec.ts
+    candidate_stories: []
+    notes: []
+  - id: elysia-config
+    ecosystem: elysia
+    area: configuration
+    feature: Elysia constructor configuration
+    source_urls:
+      - https://elysiajs.com/patterns/configuration.html
+    summary: Constructor options such as prefix, strictPath, normalize, serve, aot, precompile, name, and seed.
+    current_usage:
+      status: partial
+      evidence:
+        - src/shell/main/rpc/server.ts
+        - src/shell/main/rpc/host.spec.ts
+      confidence: high
+      notes: "Only `prefix: '/api'` and named plugin `name: 'app-rpc-error'` are set. AOT, precompile, strictPath, and serve options are not enabled."
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/rpc/server.ts
+    candidate_stories: []
+    notes: []
+  - id: elysia-plugin-dedup
+    ecosystem: elysia
+    area: plugins
+    feature: Plugin composition and deduplication
+    source_urls:
+      - https://elysiajs.com/essential/plugin.html
+    summary: Compose behaviour with `.use()`; plugins with the same name and seed deduplicate automatically.
+    current_usage:
+      status: partial
+      evidence:
+        - src/shell/main/rpc/server.ts
+      confidence: medium
+      notes: app uses `.use(rpcErrorContract)` for a named error plugin. Deduplication semantics are not exercised or tested explicitly.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Plugin model keeps error handling modular.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/rpc/server.ts
+    candidate_stories: []
+    notes: []
+  - id: elysia-state-decorate
+    ecosystem: elysia
+    area: handler
+    feature: State, decorate, and store
+    source_urls:
+      - https://elysiajs.com/essential/handler.html
+    summary: Inject custom context via `.state()`, `.decorate()`, and store access in handlers.
+    current_usage:
+      status: not-used
+      evidence:
+        - src/shell/main/rpc/server.ts
+      confidence: high
+      notes: RPC handlers receive `App` via closure in `createRpcServer(appInstance)` instead of Elysia state/decorate.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/rpc/server.ts
+    candidate_stories: []
+    notes: []
+  - id: elysia-macro
+    ecosystem: elysia
+    area: patterns
+    feature: Macros
+    source_urls:
+      - https://elysiajs.com/patterns/macro.html
+    summary: Reusable route behaviours combining lifecycle hooks, schema validation, and context injection.
+    current_usage:
+      status: not-used
+      evidence: []
+      confidence: high
+      notes: No macro definitions in app RPC or preview server.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt:
+        - Repeated POST route patterns could be DRY'd if macros prove clearer than plain handlers.
+      risk_reduction: []
+    pros:
+      - Could reduce duplication across many similar POST routes.
+    cons:
+      - Adds indirection; app currently favours explicit route definitions.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/rpc/server.ts
+    candidate_stories:
+      - Evaluate a typed-rpc macro for common route patterns after maintainer review.
+    notes: []
+  - id: elysia-mount
+    ecosystem: elysia
+    area: patterns
+    feature: Mount
+    source_urls:
+      - https://elysiajs.com/patterns/mount.html
+    summary: Mount a fetch-compatible handler (e.g. auth framework) into an Elysia app.
+    current_usage:
+      status: not-used
+      evidence: []
+      confidence: high
+      notes: app does not mount external fetch handlers into the RPC app.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints: []
+    candidate_stories: []
+    notes: []
+  - id: elysia-aot-precompile
+    ecosystem: elysia
+    area: configuration
+    feature: AOT and precompile
+    source_urls:
+      - https://elysiajs.com/patterns/configuration.html
+    summary: Ahead-of-time compilation and precompile options for startup performance.
+    current_usage:
+      status: not-used
+      evidence:
+        - src/shell/main/rpc/server.ts
+        - tools/preview/server.ts
+      confidence: high
+      notes: Neither production RPC nor preview server enables AOT or precompile flags.
+    priority: undecided
+    priority_signals:
+      roi:
+        - Hypothesis only — could reduce preview-server cold start; requires benchmark evidence before prioritisation.
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Benefit unverified for app's small RPC surface.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - tools/preview/server.ts
+    candidate_stories:
+      - Benchmark AOT/precompile impact on preview-server startup before adoption.
+    notes:
+      - Do not treat startup improvement as proven without measurements.
+  - id: elysia-openapi
+    ecosystem: elysia
+    area: plugins
+    feature: OpenAPI plugin
+    source_urls:
+      - https://elysiajs.com/plugins/openapi.html
+    summary: Auto-generates OpenAPI 3.x specs and Swagger/Scalar UI from routes and schemas.
+    current_usage:
+      status: not-used
+      evidence: []
+      confidence: high
+      notes: Production transport is Electrobun IPC; preview server mirrors routes manually without OpenAPI.
+    priority: undecided
+    priority_signals:
+      roi:
+        - Could document preview-server HTTP endpoints for local development.
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Zero-config API docs from existing TypeBox route schemas.
+    cons:
+      - Adds `@elysia/openapi` dependency; limited value for IPC-only production path.
+    risks:
+      - May encourage HTTP-first thinking that does not match Electrobun IPC production.
+    prerequisites:
+      - '@elysia/openapi package'
+      - Preview server remains HTTP-accessible for doc UI
+    app_touchpoints:
+      - tools/preview/server.ts
+      - src/shell/main/rpc/schemas.ts
+    candidate_stories:
+      - Generate OpenAPI docs for preview server endpoints only.
+    notes: []
+  - id: elysia-websocket
+    ecosystem: elysia
+    area: transport
+    feature: WebSocket support
+    source_urls:
+      - https://elysiajs.com/patterns/websocket.html
+    summary: Native WebSocket routes via `.ws()` with message, open, close, and drain events.
+    current_usage:
+      status: not-used
+      evidence:
+        - src/shell/main/rpc/server.ts
+        - src/shell/main/rpc/host.ts
+      confidence: high
+      notes: app uses Electrobun RPC push messages for sync progress, not Elysia WebSockets.
+    priority: undecided
+    priority_signals:
+      roi:
+        - Hypothesis — could stream sync progress over HTTP preview; Electrobun messages already cover desktop path.
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Built into Elysia without extra WebSocket libraries for HTTP servers.
+    cons:
+      - Duplicates existing Electrobun bidirectional messaging for production.
+      - app has not verified whether Electrobun transport encryption claims apply to app's bridge; treat as unknown.
+    risks: []
+    prerequisites:
+      - HTTP server path (preview server), not Electrobun IPC
+    app_touchpoints:
+      - src/shell/main/rpc/host.ts
+      - src/shell/renderer/rpc/client.ts
+    candidate_stories:
+      - Stream sync progress via WebSocket on preview server only (if HTTP streaming is needed).
+    notes:
+      - Upstream capability only; not an automatic app adoption candidate.
+  - id: elysia-cors
+    ecosystem: elysia
+    area: plugins
+    feature: CORS plugin
+    source_urls:
+      - https://elysiajs.com/plugins/cors.html
+    summary: Configures Cross-Origin Resource Sharing response headers.
+    current_usage:
+      status: not-used
+      evidence:
+        - tools/preview/server.ts
+      confidence: medium
+      notes: Preview server does not register `@elysia/cors`; relevance is limited to local browser preview if cross-origin access is needed.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Simple one-liner for browser-based preview tooling.
+    cons:
+      - Irrelevant for Electrobun IPC production path.
+      - app desktop app does not expose a public HTTP API.
+    risks: []
+    prerequisites:
+      - '@elysia/cors package'
+      - Browser clients accessing preview server from a different origin
+    app_touchpoints:
+      - tools/preview/server.ts
+    candidate_stories: []
+    notes:
+      - Upstream HTTP plugin; not required for desktop IPC architecture.
+  - id: elysia-jwt
+    ecosystem: elysia
+    area: plugins
+    feature: JWT plugin
+    source_urls:
+      - https://elysiajs.com/plugins/jwt.html
+    summary: Sign and verify JSON Web Tokens with schema-inferred payload types.
+    current_usage:
+      status: not-applicable
+      evidence: []
+      confidence: high
+      notes: app is a single-user desktop app with no auth layer.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Unnecessary overhead for local desktop RPC.
+      - Would imply network-exposed authenticated API surface app does not have.
+    risks: []
+    prerequisites:
+      - Multi-user or network-exposed API requirement
+      - '@elysia/jwt package'
+    app_touchpoints: []
+    candidate_stories: []
+    notes:
+      - Upstream capability recorded for completeness; not a app adoption candidate today.
+  - id: elysia-bearer
+    ecosystem: elysia
+    area: plugins
+    feature: Bearer auth plugin
+    source_urls:
+      - https://elysiajs.com/plugins/bearer.html
+    summary: Extracts Bearer token from the Authorization header.
+    current_usage:
+      status: not-applicable
+      evidence: []
+      confidence: high
+      notes: No Authorization header handling in app RPC or preview server.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Unnecessary for single-user desktop app.
+    risks: []
+    prerequisites:
+      - Network-exposed authenticated API
+    app_touchpoints: []
+    candidate_stories: []
+    notes:
+      - Upstream HTTP auth helper; conflicts with app's local-only IPC model.
+  - id: elysia-html
+    ecosystem: elysia
+    area: plugins
+    feature: HTML plugin
+    source_urls:
+      - https://elysiajs.com/plugins/html.html
+    summary: JSX-based HTML templating with ETag and streaming support.
+    current_usage:
+      status: not-applicable
+      evidence:
+        - src/shell/renderer/index.ts
+      confidence: high
+      notes: Renderer is React 19 in the webview, not server-rendered HTML from Elysia.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Conflicts with existing React renderer architecture.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/renderer/
+    candidate_stories: []
+    notes: []
+  - id: elysia-static
+    ecosystem: elysia
+    area: plugins
+    feature: Static file plugin
+    source_urls:
+      - https://elysiajs.com/plugins/static.html
+    summary: Serves static files from a directory with caching headers.
+    current_usage:
+      status: not-used
+      evidence:
+        - electrobun.config.ts
+        - tools/preview/server.ts
+      confidence: high
+      notes: Electrobun serves bundled renderer via `views://`; preview server uses Bun.serve routing, not `@elysia/static`.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Electrobun `views://` and `build.copy` already handle packaged assets.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - electrobun.config.ts
+      - tools/preview/server.ts
+    candidate_stories: []
+    notes: []
+  - id: elysia-cron
+    ecosystem: elysia
+    area: plugins
+    feature: Cron plugin
+    source_urls:
+      - https://elysiajs.com/plugins/cron.html
+    summary: Schedule periodic tasks using cron syntax inside an Elysia app.
+    current_usage:
+      status: not-used
+      evidence: []
+      confidence: high
+      notes: app has no scheduled background jobs wired through Elysia.
+    priority: undecided
+    priority_signals:
+      roi:
+        - Hypothesis — periodic background sync could use cron if app adds always-on main-process scheduling.
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Adds background scheduling complexity to a desktop app that currently syncs on demand.
+    risks: []
+    prerequisites:
+      - '@elysia/cron package'
+      - Defined policy for background sync while app is open
+    app_touchpoints:
+      - src/shell/app/app.ts
+    candidate_stories:
+      - Schedule periodic knowledge-base refresh (requires product decision first).
+    notes: []
+  - id: elysia-server-timing
+    ecosystem: elysia
+    area: plugins
+    feature: Server Timing plugin
+    source_urls:
+      - https://elysiajs.com/plugins/server-timing.html
+    summary: Adds Server-Timing headers for HTTP performance debugging.
+    current_usage:
+      status: not-used
+      evidence: []
+      confidence: high
+      notes: Not registered on preview server or RPC app.
+    priority: undecided
+    priority_signals:
+      roi:
+        - Could aid preview-server RPC latency debugging over HTTP.
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Lightweight HTTP observability for local preview.
+    cons:
+      - No effect on Electrobun IPC production path.
+    risks: []
+    prerequisites:
+      - HTTP preview server path
+    app_touchpoints:
+      - tools/preview/server.ts
+    candidate_stories: []
+    notes: []
+  - id: elysia-file-upload
+    ecosystem: elysia
+    area: validation
+    feature: File upload (t.File / t.Files)
+    source_urls:
+      - https://elysiajs.com/essential/validation.html
+    summary: Type-safe file upload validation in route schemas.
+    current_usage:
+      status: not-applicable
+      evidence:
+        - src/shell/main/rpc/schemas.ts
+      confidence: high
+      notes: All RPC bodies are JSON objects; no multipart or file upload routes.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints: []
+    candidate_stories: []
+    notes: []
+  - id: elysia-graphql
+    ecosystem: elysia
+    area: plugins
+    feature: GraphQL (Yoga / Apollo)
+    source_urls:
+      - https://elysiajs.com/plugins/graphql-yoga.html
+    summary: GraphQL server via GraphQL Yoga or Apollo Elysia plugins.
+    current_usage:
+      status: not-applicable
+      evidence: []
+      confidence: high
+      notes: app uses a flat POST RPC surface, not GraphQL.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Significant complexity versus current Eden Treaty RPC model.
+    risks: []
+    prerequisites: []
+    app_touchpoints: []
+    candidate_stories: []
+    notes: []
+  - id: elysia-opentelemetry
+    ecosystem: elysia
+    area: plugins
+    feature: OpenTelemetry plugin
+    source_urls:
+      - https://elysiajs.com/plugins/opentelemetry.html
+    summary: Export traces, metrics, and logs to OpenTelemetry collectors.
+    current_usage:
+      status: not-used
+      evidence:
+        - src/shared/logging/
+      confidence: high
+      notes: app uses `createLogger()` from `@shared/logging`, not OpenTelemetry exporters.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Standard observability protocol for HTTP services.
+    cons:
+      - Heavy dependency footprint for a local desktop app.
+      - app policy favours structured logging over production telemetry pipelines.
+    risks: []
+    prerequisites:
+      - '@elysia/opentelemetry package'
+      - OTLP collector or cloud observability backend
+      - Maintainer approval for production telemetry scope
+    app_touchpoints:
+      - src/shared/logging/
+      - src/shell/main/rpc/server.ts
+    candidate_stories: []
+    notes:
+      - Upstream capability only; not aligned with app's current logging approach.
+  - id: elysia-standard-schema
+    ecosystem: elysia
+    area: validation
+    feature: Standard Schema support (Zod, Valibot, etc.)
+    source_urls:
+      - https://elysiajs.com/at-glance.html
+    summary: Elysia accepts Standard Schema validators including Zod, Valibot, ArkType, and others alongside TypeBox.
+    current_usage:
+      status: not-used
+      evidence:
+        - package.json
+        - src/shell/main/rpc/schemas.ts
+      confidence: high
+      notes: app standardises on TypeBox; `zod` is not a dependency and ast-grep/depcruiser enforce TypeBox-only validation.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt:
+        - Introducing Zod or other validators would fragment app's validation surface.
+      risk_reduction: []
+    pros:
+      - Flexible for upstream projects using multiple validator libraries.
+    cons:
+      - Violates app TypeBox-only policy (CLAUDE.md, app-rpc skill).
+      - Would increase validation surface area and quality-gate risk.
+    risks:
+      - Non-TypeBox validators may fail ast-grep and dependency-cruiser rules.
+    prerequisites: []
+    app_touchpoints:
+      - .agents/skills/app-rpc/SKILL.md
+      - src/core/validation/typebox.helper.ts
+    candidate_stories: []
+    notes:
+      - Recorded as upstream capability; app should not adopt without explicit policy change.
+  - id: elysia-integration-drizzle
+    ecosystem: elysia
+    area: integrations
+    feature: Drizzle ORM integration
+    source_urls:
+      - https://elysiajs.com/integrations/drizzle.html
+    summary: Official Drizzle ORM integration examples for Elysia apps.
+    current_usage:
+      status: not-applicable
+      evidence:
+        - src/shell/app/db/
+        - CLAUDE.md
+      confidence: high
+      notes: app uses `bun:sqlite` with hand-authored SQL repositories; Drizzle is explicitly banned.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Violates app no-Drizzle policy and foundation design decisions.
+    risks:
+      - Adding Drizzle would conflict with architecture guards and skills.
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/app/db/
+      - assets/docs/specs/foundation/design.md
+    candidate_stories: []
+    notes:
+      - Upstream integration example only; not a app adoption candidate.
+  - id: elysia-integration-better-auth
+    ecosystem: elysia
+    area: integrations
+    feature: Better Auth integration
+    source_urls:
+      - https://elysiajs.com/integrations/better-auth.html
+    summary: Authentication framework mounted into Elysia via Better Auth.
+    current_usage:
+      status: not-applicable
+      evidence: []
+      confidence: high
+      notes: Single-user desktop app with no auth layer.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Requires network-exposed auth flows app does not have.
+    risks: []
+    prerequisites:
+      - Network-exposed HTTP server
+      - Identity and session storage design
+    app_touchpoints: []
+    candidate_stories: []
+    notes: []
+  - id: elysia-integration-ai-sdk
+    ecosystem: elysia
+    area: integrations
+    feature: Vercel AI SDK integration
+    source_urls:
+      - https://elysiajs.com/integrations/ai-sdk.html
+    summary: Elysia patterns for Vercel AI SDK powered features.
+    current_usage:
+      status: not-used
+      evidence:
+        - src/shell/app/app.ts
+      confidence: medium
+      notes: app has local tag suggestion logic without AI SDK; no Elysia AI integration routes.
+    priority: undecided
+    priority_signals:
+      roi:
+        - Hypothesis — AI-powered search or tag suggestions could add user value.
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Opens path to AI-assisted knowledge features if product approves.
+    cons:
+      - Adds dependencies and external API key requirements.
+      - Conflicts with offline-first desktop expectations unless carefully scoped.
+    risks:
+      - Network calls and API keys for cloud models.
+    prerequisites:
+      - Product approval for AI features
+      - API keys and provider accounts
+      - Privacy review for local knowledge content
+    app_touchpoints:
+      - src/shell/app/app.ts
+    candidate_stories:
+      - AI-powered tag suggestions (requires product and privacy review).
+      - Natural language knowledge search (requires product and privacy review).
+    notes:
+      - Upstream integration; not an automatic app backlog item.
+  - id: electrobun-browser-window
+    ecosystem: electrobun
+    area: window
+    feature: BrowserWindow
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/browser-window
+    summary: Native window creation with frame, title, url, rpc, sandbox, transparency, titleBarStyle, and lifecycle methods.
+    current_usage:
+      status: used
+      evidence:
+        - src/shell/main/main.ts
+        - src/shell/main/window/state.ts
+      confidence: high
+      notes: Main app window created with `views://shell/index.html`, custom frame, and attached RPC instance.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Foundation of app desktop shell.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/main.ts
+      - assets/guides/ELECTROBUN.md
+    candidate_stories: []
+    notes: []
+  - id: electrobun-main-process-rpc
+    ecosystem: electrobun
+    area: rpc
+    feature: BrowserView.defineRPC (main process)
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/browser-view
+    summary: Typed bidirectional RPC on the main process via `BrowserView.defineRPC`, including request handlers and push messages.
+    current_usage:
+      status: used
+      evidence:
+        - src/shell/main/rpc/host.ts
+        - src/shared/rpc/app_rpc_schema.ts
+      confidence: high
+      notes: '`createappWebviewRpc` registers `rpcCall` and sync push messages; forwards validated payloads to Elysia `RpcApp.handle`.'
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Bridges Electrobun IPC to Elysia without duplicating route logic.
+    cons:
+      - Custom bridge rules (POST-only, `/api/` prefix) must stay in sync with Eden client.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/rpc/host.ts
+      - src/shell/main/rpc/host.spec.ts
+      - .agents/skills/electrobun-rpc/SKILL.md
+    candidate_stories:
+      - Document bridge validation rules alongside app-rpc skill.
+    notes: []
+  - id: electrobun-renderer-electroview-rpc
+    ecosystem: electrobun
+    area: rpc
+    feature: Electroview.defineRPC (renderer)
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/browser-view
+    summary: Renderer-side RPC registration via `Electroview.defineRPC` for requests and inbound push messages.
+    current_usage:
+      status: used
+      evidence:
+        - src/shell/renderer/rpc/client.ts
+        - src/__tests__/helpers/testing.electrobun_view.mock.ts
+      confidence: high
+      notes: Renderer defines `appWebviewRpc` and wraps Eden Treaty calls through the single `rpcCall` bridge method.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Typed renderer-side handlers for sync progress push messages.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/renderer/rpc/client.ts
+      - src/shell/renderer/rpc/client.spec.tsx
+    candidate_stories: []
+    notes: []
+  - id: electrobun-bundled-assets
+    ecosystem: electrobun
+    area: build
+    feature: Bundled assets (views://)
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/bundled-assets
+    summary: '`views://` URL scheme for packaged renderer assets via `build.views` and `build.copy`.'
+    current_usage:
+      status: used
+      evidence:
+        - electrobun.config.ts
+        - src/shell/main/main.ts
+      confidence: high
+      notes: Main window loads `views://shell/index.html`; config defines `build.views.shell` and static copy targets.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Packaged renderer without external origin in production.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - electrobun.config.ts
+    candidate_stories: []
+    notes: []
+  - id: electrobun-build
+    ecosystem: electrobun
+    area: build
+    feature: Build and bundling
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/guides/bundling-and-distribution
+    summary: '`electrobun build` with bun entrypoint, views, copy assets, and platform-specific outputs.'
+    current_usage:
+      status: used
+      evidence:
+        - package.json
+        - electrobun.config.ts
+        - mise.toml
+      confidence: high
+      notes: '`"build": "electrobun build"` in package.json; CI review task smoke-builds with signing forced off when env vars absent.'
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Core desktop packaging pipeline exists.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - electrobun.config.ts
+      - mise.toml
+    candidate_stories: []
+    notes: []
+  - id: electrobun-code-signing
+    ecosystem: electrobun
+    area: distribution
+    feature: Code signing and notarization
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/guides/code-signing
+    summary: macOS code signing, notarization, and Windows signing support via Electrobun build config.
+    current_usage:
+      status: partial
+      evidence:
+        - electrobun.config.ts
+        - mise.toml
+      confidence: high
+      notes: Config gates `codesign` and `notarize` on env vars (`ELECTROBUN_DEVELOPER_ID`, Apple ID credentials). Local dev and CI smoke builds typically run unsigned.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt:
+        - Release pipeline needs verified signing path before public distribution.
+      risk_reduction:
+        - Required for Gatekeeper-trusted macOS distribution when maintainers ship releases.
+    pros:
+      - Wiring exists in config; no custom signing scripts in app repo.
+    cons:
+      - Not exercised in default dev/CI paths without credentials.
+    risks:
+      - Shipping without credentials yields unsigned artifacts.
+    prerequisites:
+      - Apple Developer ID and notarization credentials for macOS releases
+      - Windows signing certificate if targeting Windows releases
+    app_touchpoints:
+      - electrobun.config.ts
+      - mise.toml
+    candidate_stories:
+      - Document maintainer signing env vars and release checklist.
+    notes: []
+  - id: electrobun-updates
+    ecosystem: electrobun
+    area: distribution
+    feature: Auto-update system
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/guides/updates
+    summary: bsdiff-based delta updates with release channels (dev/canary/stable) and `release.baseUrl`.
+    current_usage:
+      status: not-used
+      evidence:
+        - electrobun.config.ts
+      confidence: high
+      notes: No updater configuration or release.baseUrl in app config.
+    priority: undecided
+    priority_signals:
+      roi:
+        - Essential for distributing updates once app ships beyond maintainer machines.
+      technical_debt: []
+      risk_reduction:
+        - Reduces manual reinstall burden for users.
+    pros:
+      - Built-in delta updates without a separate updater framework.
+    cons:
+      - Requires update hosting infrastructure and release process.
+    risks: []
+    prerequisites:
+      - Static hosting or update server for release artifacts
+      - Signed release builds
+      - Channel policy (dev/canary/stable)
+    app_touchpoints:
+      - electrobun.config.ts
+    candidate_stories:
+      - Auto-update app from canary/stable channels after signing pipeline exists.
+    notes: []
+  - id: electrobun-platform
+    ecosystem: electrobun
+    area: platform
+    feature: Cross-platform support
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/guides/cross-platform-development
+    summary: macOS (WebKit), Windows (WebView2), Linux (WebKitGTK); optional CEF bundling.
+    current_usage:
+      status: partial
+      evidence:
+        - electrobun.config.ts
+        - src/shell/main/main.ts
+      confidence: high
+      notes: app development targets macOS (darwin title bar branch, primary platform). `electrobun.config.ts` includes linux stub; Windows not configured. No verified Windows/Linux release builds in repo.
+    priority: undecided
+    priority_signals:
+      roi:
+        - Expands addressable users if app ships cross-platform.
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Single codebase can target multiple platforms via Electrobun.
+    cons:
+      - Platform-specific testing and debugging overhead.
+      - CEF bundling increases artifact size if chosen for consistency.
+    risks: []
+    prerequisites:
+      - Platform CI runners and test hardware
+      - Platform-specific signing/notarization as applicable
+    app_touchpoints:
+      - electrobun.config.ts
+      - src/shell/main/main.ts
+    candidate_stories:
+      - Build and smoke-test app on Windows/Linux (requires platform CI investment).
+    notes: []
+  - id: electrobun-global-shortcut
+    ecosystem: electrobun
+    area: native-ui
+    feature: GlobalShortcut
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/bun
+    summary: Register system-wide keyboard shortcuts outside the webview focus.
+    current_usage:
+      status: used
+      evidence:
+        - src/shell/main/main.ts
+      confidence: high
+      notes: Registers `CommandOrControl+Alt+/` to toggle window minimize/restore.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Quick show/hide without focusing the webview first.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/main.ts
+    candidate_stories: []
+    notes: []
+  - id: electrobun-utils
+    ecosystem: electrobun
+    area: utils
+    feature: Utils (paths, dialogs, external open)
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/utils
+    summary: PATHS helpers plus native utilities such as openExternal, openFileDialog, showMessageBox, and quit.
+    current_usage:
+      status: partial
+      evidence:
+        - src/shell/main/main.ts
+        - src/shell/main/helpers/error.helper.ts
+      confidence: high
+      notes: Uses `Utils.openExternal`, `Utils.openFileDialog`, `Utils.showMessageBox`, and `Utils.quit`. Does not use PATHS helpers for app data paths in these files.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt:
+        - PATHS helpers might simplify cross-platform data directory resolution if app expands storage layout.
+      risk_reduction: []
+    pros:
+      - Native file picker and external URL handling already integrated in shell hooks.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/main.ts
+      - src/shell/app/lib/app_shell_hooks.types.ts
+    candidate_stories:
+      - Evaluate Electrobun PATHS for config/database default locations.
+    notes: []
+  - id: electrobun-menus
+    ecosystem: electrobun
+    area: native-ui
+    feature: ApplicationMenu and ContextMenu
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/application-menu
+    summary: Native menu bars with accelerators, role-based items, and context menus.
+    current_usage:
+      status: not-used
+      evidence:
+        - src/shell/main/main.ts
+      confidence: high
+      notes: No ApplicationMenu or ContextMenu registration; app relies on default webview/Electrobun behaviour.
+    priority: undecided
+    priority_signals:
+      roi:
+        - Could improve macOS-native editing shortcuts and app-specific commands.
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Native OS integration and accelerator support.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/main.ts
+      - assets/guides/ELECTROBUN.md
+    candidate_stories:
+      - Add Edit menu with Cut/Copy/Paste roles.
+      - Add app-specific application menu entries.
+    notes: []
+  - id: electrobun-tray
+    ecosystem: electrobun
+    area: native-ui
+    feature: System Tray
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/tray
+    summary: System tray icon with menu, click events, and tooltips.
+    current_usage:
+      status: not-used
+      evidence: []
+      confidence: high
+      notes: No tray icon or tray menu in main process.
+    priority: undecided
+    priority_signals:
+      roi:
+        - Hypothesis — quick access while window is minimized.
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Persistent access without keeping the main window visible.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/main.ts
+    candidate_stories:
+      - Add system tray with quick-search entry point.
+      - Minimize to tray instead of dock-only minimize.
+    notes: []
+  - id: electrobun-events
+    ecosystem: electrobun
+    area: lifecycle
+    feature: App and window Events API
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/events
+    summary: Application lifecycle events (before-quit, window-all-closed, activate) and window events.
+    current_usage:
+      status: partial
+      evidence:
+        - src/shell/main/main.ts
+      confidence: medium
+      notes: Uses `win.on('blur', ...)` on BrowserWindow only. Does not register app-level Electrobun Events API handlers such as before-quit.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt:
+        - before-quit could persist window state cleanly.
+      risk_reduction: []
+    pros: []
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/main.ts
+      - src/shell/main/window/state.ts
+    candidate_stories:
+      - Save window state on before-quit via Electrobun Events API.
+    notes: []
+  - id: electrobun-webgpu
+    ecosystem: electrobun
+    area: gpu
+    feature: WebGPU / GpuWindow
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/webgpu
+    summary: Native GPU windows with WGSL shaders and FFI buffer management.
+    current_usage:
+      status: not-applicable
+      evidence: []
+      confidence: high
+      notes: app has no GPU rendering requirements.
+    priority: undecided
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Irrelevant to app's knowledge-management UI.
+    risks: []
+    prerequisites: []
+    app_touchpoints: []
+    candidate_stories: []
+    notes: []
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Validates app's thin route and extracted schema approach.
+    cons:
+      - Upstream layout guidance must stay subordinate to FCIS and app skill routing.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - .agents/skills/app-rpc/SKILL.md
+      - assets/guides/FCIS.guide.md
+    candidate_stories:
+      - Cross-check app-rpc examples against current Elysia best-practice guidance.
+    notes: []
+    id: elysia-best-practices
+    ecosystem: elysia
+    area: architecture
+    feature: Best practices
+    source_urls:
+      - https://elysiajs.com/essential/best-practice.html
+    summary: Project structure, handler extraction, plugin boundaries, validation placement, and type-safety guidance for larger Elysia apps.
+    current_usage:
+      evidence:
+        - .agents/skills/app-rpc/SKILL.md
+        - src/shell/main/rpc/server.ts
+      notes: app follows thin RPC handlers and extracted TypeBox schemas, but uses app-specific FCIS rules instead of adopting upstream project layout wholesale.
+      status: partial
+      confidence: medium
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt:
+        - Could matter if the RPC surface or plugin graph grows.
+      risk_reduction: []
+    pros:
+      - Could reduce future typecheck friction as routes accumulate.
+    cons:
+      - Current RPC surface is small enough that benefit is unproven.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/rpc/server.ts
+      - tsconfig.json
+    candidate_stories:
+      - Measure RPC typecheck cost before adding more Elysia plugins.
+    notes:
+      - Added in coverage addendum because tasks.md explicitly called out TypeScript type performance.
+    id: elysia-typescript-performance
+    ecosystem: elysia
+    area: typescript
+    feature: TypeScript type performance
+    source_urls:
+      - https://elysiajs.com/patterns/typescript.html
+    summary: Guidance for keeping Elysia type inference tractable as route graphs and plugins grow.
+    current_usage:
+      evidence:
+        - src/shell/main/rpc/server.ts
+      notes: No dedicated type-performance benchmark or compile-time budget exists for the RPC server.
+      status: unknown
+      confidence: low
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction:
+        - Could isolate slow preview-server RPC handlers if latency issues appear.
+    pros:
+      - Fine-grained route timing without rewriting handlers.
+    cons:
+      - Adds instrumentation complexity and may not help the Electrobun IPC path directly.
+    risks: []
+    prerequisites:
+      - Benchmark or debugging need for RPC latency
+    app_touchpoints:
+      - src/shell/main/rpc/server.ts
+      - tools/preview/server.ts
+    candidate_stories:
+      - Prototype trace instrumentation for preview-only RPC latency debugging.
+    notes: []
+    id: elysia-trace
+    ecosystem: elysia
+    area: lifecycle
+    feature: Trace lifecycle instrumentation
+    source_urls:
+      - https://elysiajs.com/patterns/trace.html
+    summary: Lifecycle tracing hooks for observing route processing phases and timing.
+    current_usage:
+      evidence:
+        - src/shell/main/rpc/server.ts
+      notes: No trace hook is registered on the RPC app.
+      status: not-used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Cookie state is unnecessary for the current single-user desktop IPC model.
+    risks: []
+    prerequisites:
+      - Networked HTTP session model
+    app_touchpoints: []
+    candidate_stories: []
+    notes:
+      - Prominent upstream HTTP capability recorded for completeness.
+    id: elysia-cookies
+    ecosystem: elysia
+    area: handler
+    feature: Cookie handling
+    source_urls:
+      - https://elysiajs.com/patterns/cookie.html
+    summary: Typed cookie parsing, signing, and mutation on HTTP requests and responses.
+    current_usage:
+      evidence: []
+      notes: app does not use browser cookies for its local desktop RPC contract.
+      status: not-applicable
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Could centralise shared request metadata if app adds auth or observability.
+    cons:
+      - Not needed while handlers remain thin delegates to `App`.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/rpc/server.ts
+    candidate_stories: []
+    notes: []
+    id: elysia-extends-context
+    ecosystem: elysia
+    area: handler
+    feature: Extends context
+    source_urls:
+      - https://elysiajs.com/patterns/extends-context.html
+    summary: Patterns for extending request context with derived values and shared helpers.
+    current_usage:
+      evidence:
+        - src/shell/main/rpc/server.ts
+      notes: app injects `App` through closure and keeps handler context minimal.
+      status: not-used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Mostly irrelevant to Electrobun IPC production architecture.
+    risks: []
+    prerequisites:
+      - Decision to expose app RPC over HTTP
+    app_touchpoints:
+      - tools/preview/server.ts
+    candidate_stories: []
+    notes:
+      - Recorded to make the deploy capability explicitly reviewed rather than silently skipped.
+    id: elysia-deploy-patterns
+    ecosystem: elysia
+    area: deployment
+    feature: Deploy patterns
+    source_urls:
+      - https://elysiajs.com/patterns/deploy.html
+    summary: HTTP deployment patterns for Elysia across server runtimes and hosting targets.
+    current_usage:
+      evidence:
+        - tools/preview/server.ts
+        - src/shell/main/rpc/host.ts
+      notes: Production app does not deploy Elysia as a public HTTP service; preview is local-only.
+      status: not-applicable
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Could consolidate preview HTTP handling if the renderer workflow changes.
+    cons:
+      - Would compete with the existing Electrobun preview pipeline.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - tools/preview/server.ts
+      - vite.config.ts
+    candidate_stories: []
+    notes: []
+    id: elysia-fullstack-dev-server
+    ecosystem: elysia
+    area: development
+    feature: Full-stack dev server
+    source_urls:
+      - https://elysiajs.com/patterns/fullstack-dev-server.html
+    summary: Use Elysia as a development server for full-stack web projects.
+    current_usage:
+      evidence:
+        - tools/preview/server.ts
+        - electrobun.config.ts
+      notes: app uses an Electrobun renderer build plus a custom Bun preview server, not Elysia full-stack dev-server integration.
+      status: not-used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Could be simpler for isolated utility calls.
+    cons:
+      - Switching would churn a working Treaty wrapper without clear benefit.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/renderer/rpc/client.ts
+    candidate_stories: []
+    notes: []
+    id: elysia-eden-fetch
+    ecosystem: elysia
+    area: rpc
+    feature: Eden Fetch client
+    source_urls:
+      - https://elysiajs.com/eden/fetch.html
+    summary: Function-style typed client alternative to Treaty for calling Elysia apps.
+    current_usage:
+      evidence:
+        - src/shell/renderer/rpc/client.ts
+      notes: Renderer uses Treaty with a custom fetcher, not Eden Fetch.
+      status: not-used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt:
+        - Bridge response handling is custom and deserves explicit documentation.
+      risk_reduction: []
+    pros:
+      - Directly documents the custom Treaty bridge shape app relies on.
+    cons:
+      - Requires version-aware care because Treaty options can change.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/renderer/rpc/client.ts
+      - src/shell/main/rpc/host.ts
+    candidate_stories:
+      - Document Treaty fetcher and response assumptions in the RPC guide.
+    notes: []
+    id: elysia-eden-treaty-options
+    ecosystem: elysia
+    area: rpc
+    feature: Eden Treaty configuration and response model
+    source_urls:
+      - https://elysiajs.com/eden/treaty/config.html
+      - https://elysiajs.com/eden/treaty/parameters.html
+      - https://elysiajs.com/eden/treaty/response.html
+    summary: Treaty client configuration, parameter mapping, and `{ data, error }` response handling.
+    current_usage:
+      evidence:
+        - src/shell/renderer/rpc/client.ts
+      notes: app uses a Treaty `fetcher` override, route parameter mapping, and unwraps Treaty result objects.
+      status: used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Could type a preview-only streaming channel if app adopts Elysia WebSockets.
+    cons:
+      - Duplicates Electrobun push-message transport in production.
+    risks: []
+    prerequisites:
+      - Elysia WebSocket route adoption
+    app_touchpoints:
+      - src/shell/renderer/rpc/client.ts
+    candidate_stories: []
+    notes: []
+    id: elysia-eden-websocket
+    ecosystem: elysia
+    area: rpc
+    feature: Eden Treaty WebSocket client
+    source_urls:
+      - https://elysiajs.com/eden/treaty/websocket.html
+    summary: Typed WebSocket client support through Eden Treaty.
+    current_usage:
+      evidence:
+        - src/shell/renderer/rpc/client.ts
+      notes: No Eden WebSocket client is configured.
+      status: not-used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Alternative human-readable API explorer for preview endpoints.
+    cons:
+      - Overlaps with the OpenAPI plugin entry and has limited production value for IPC.
+    risks: []
+    prerequisites:
+      - '@elysiajs/swagger package'
+      - Preview HTTP endpoint documentation need
+    app_touchpoints:
+      - tools/preview/server.ts
+    candidate_stories: []
+    notes: []
+    id: elysia-swagger-plugin
+    ecosystem: elysia
+    area: plugins
+    feature: Swagger plugin
+    source_urls:
+      - https://elysiajs.com/plugins/swagger.html
+    summary: Swagger UI generation for Elysia routes and schemas.
+    current_usage:
+      evidence: []
+      notes: No Swagger or OpenAPI UI plugin is registered.
+      status: not-used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - 'Same mismatch as GraphQL Yoga: higher complexity than the current typed RPC surface.'
+    risks: []
+    prerequisites:
+      - Product decision to replace or supplement Eden RPC with GraphQL
+    app_touchpoints: []
+    candidate_stories: []
+    notes:
+      - Recorded for source coverage; not a app adoption candidate today.
+    id: elysia-graphql-apollo
+    ecosystem: elysia
+    area: plugins
+    feature: GraphQL Apollo integration
+    source_urls:
+      - https://elysiajs.com/plugins/graphql-apollo.html
+    summary: Apollo GraphQL server integration for Elysia.
+    current_usage:
+      evidence: []
+      notes: Covered separately from GraphQL Yoga to make both upstream GraphQL paths explicit.
+      status: not-applicable
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Hosted runtime integrations do not match app desktop-local deployment.
+    risks: []
+    prerequisites:
+      - Decision to expose app functionality as a hosted web service
+    app_touchpoints: []
+    candidate_stories: []
+    notes:
+      - Grouped to avoid one low-fit entry per hosting provider while still recording the prominent integration family.
+    id: elysia-runtime-integrations
+    ecosystem: elysia
+    area: integrations
+    feature: Runtime and framework integrations
+    source_urls:
+      - https://elysiajs.com/integrations/node.html
+      - https://elysiajs.com/integrations/cloudflare-worker.html
+      - https://elysiajs.com/integrations/vercel.html
+      - https://elysiajs.com/integrations/nextjs.html
+    summary: Adapters and examples for running Elysia with Node, Cloudflare Workers, Vercel, Next.js, and other web frameworks.
+    current_usage:
+      evidence:
+        - src/shell/main/rpc/host.ts
+        - tools/preview/server.ts
+      notes: app runs Elysia inside Bun/Electrobun and a local preview server, not hosted web frameworks.
+      status: not-applicable
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Matches app's desktop shell structure.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - assets/guides/ELECTROBUN.md
+      - .cursor/electrobun-skill-routing.md
+    candidate_stories: []
+    notes: []
+    id: electrobun-architecture-overview
+    ecosystem: electrobun
+    area: architecture
+    feature: Electrobun architecture overview
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/guides/architecture
+    summary: High-level model for Bun main process, webviews, native shell APIs, and renderer communication.
+    current_usage:
+      evidence:
+        - src/shell/main/main.ts
+        - src/shell/renderer/rpc/client.ts
+      notes: app follows the main-process plus packaged renderer split and bridges renderer calls through Electrobun RPC.
+      status: used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt:
+        - Compatibility expectations are not fully documented for non-macOS maintainers.
+      risk_reduction: []
+    pros:
+      - Can turn platform caveats into explicit release criteria.
+    cons:
+      - Requires real platform testing, not just docs review.
+    risks: []
+    prerequisites:
+      - Windows/Linux test access or CI runners
+    app_touchpoints:
+      - electrobun.config.ts
+      - assets/guides/CI_GUIDE.md
+    candidate_stories:
+      - Create a compatibility matrix for app release targets.
+    notes: []
+    id: electrobun-compatibility
+    ecosystem: electrobun
+    area: platform
+    feature: Compatibility guidance
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/guides/compatibility
+    summary: Compatibility notes for operating systems, renderers, and platform-specific behaviour.
+    current_usage:
+      evidence:
+        - electrobun.config.ts
+        - src/shell/main/main.ts
+      notes: app has macOS-first runtime branches and a Linux config stub; Windows/Linux compatibility is not verified.
+      status: partial
+      confidence: medium
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Could support embedded external documentation or preview panes later.
+    cons:
+      - Nested webviews would add isolation and navigation-policy work.
+    risks: []
+    prerequisites:
+      - Product decision for embedded external content
+    app_touchpoints:
+      - src/shell/renderer/
+    candidate_stories: []
+    notes: []
+    id: electrobun-webview-tag-architecture
+    ecosystem: electrobun
+    area: webview
+    feature: Webview tag architecture
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/guides/webview-tag-architecture
+    summary: Architecture for embedding and controlling `<electrobun-webview>` content.
+    current_usage:
+      evidence:
+        - src/shell/renderer
+      notes: app uses a primary BrowserWindow webview, not nested Electrobun webview tags.
+      status: not-used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Possible future embedded browser surface.
+    cons:
+      - External content requires sandboxing, partitions, and navigation allowlists.
+    risks:
+      - Untrusted content could weaken desktop security if adopted without strict rules.
+    prerequisites:
+      - Security design for embedded remote content
+    app_touchpoints:
+      - src/shell/renderer/
+    candidate_stories: []
+    notes: []
+    id: electrobun-webview-tag
+    ecosystem: electrobun
+    area: webview
+    feature: <electrobun-webview> tag API
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/webview-tag
+    summary: Renderer-side custom element for embedding webviews with host messages and events.
+    current_usage:
+      evidence:
+        - src/shell/renderer/
+      notes: No `<electrobun-webview>` tag usage in renderer code.
+      status: not-used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Could expose native actions for entries and text fields.
+    cons:
+      - Renderer already owns most contextual UI behaviour.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/main.ts
+      - src/shell/renderer/components/
+    candidate_stories:
+      - Evaluate native context menu for entry actions after command palette workflows settle.
+    notes: []
+    id: electrobun-context-menu
+    ecosystem: electrobun
+    area: native-ui
+    feature: ContextMenu API
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/context-menu
+    summary: Native context menus for right-click and contextual actions.
+    current_usage:
+      evidence:
+        - src/shell/main/main.ts
+        - src/shell/renderer/
+      notes: No native ContextMenu registration found.
+      status: not-used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt:
+        - Could reduce custom path handling for config and database locations.
+      risk_reduction: []
+    pros:
+      - Can make storage defaults more platform-native.
+    cons:
+      - Changing paths can break existing local data unless migrated carefully.
+    risks:
+      - Data migration risk if adopted after users have local databases.
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/app/config/
+      - src/shell/app/db/
+    candidate_stories:
+      - Audit config and database paths against Electrobun PATHS before distribution.
+    notes: []
+    id: electrobun-paths-api
+    ecosystem: electrobun
+    area: utils
+    feature: PATHS and app storage locations
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/paths
+    summary: Standard paths for resources, user data, caches, and application files.
+    current_usage:
+      evidence:
+        - src/shell/app/config
+        - src/shell/main/main.ts
+      notes: The existing utils entry notes PATHS absence; this split tracks storage-location capability explicitly.
+      status: not-used
+      confidence: medium
+    priority: undecided
+  - priority_signals:
+      roi:
+        - Useful only after signed release channels exist.
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Completes the runtime side of the auto-update story.
+    cons:
+      - Blocked by release hosting, signing, and channel policy.
+    risks: []
+    prerequisites:
+      - Signed release builds
+      - Update hosting
+      - Release channel policy
+    app_touchpoints:
+      - src/shell/main/main.ts
+      - electrobun.config.ts
+    candidate_stories:
+      - Add update checks after signing and release hosting are proven.
+    notes: []
+    id: electrobun-updater-api
+    ecosystem: electrobun
+    area: distribution
+    feature: Updater API
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/updater
+    summary: Runtime API for checking, downloading, and applying Electrobun updates.
+    current_usage:
+      evidence:
+        - src/shell/main/main.ts
+        - electrobun.config.ts
+      notes: No updater runtime calls or release configuration exist.
+      status: not-used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Central to app renderer-main bridge initialization.
+    cons:
+      - Initialization order matters for RPC availability.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/renderer/rpc/client.ts
+    candidate_stories: []
+    notes: []
+    id: electrobun-electroview-class
+    ecosystem: electrobun
+    area: rpc
+    feature: Electroview class
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/electroview
+    summary: Renderer entry point for creating Electroview instances and attaching RPC.
+    current_usage:
+      evidence:
+        - src/shell/renderer/rpc/client.ts
+      notes: 'Renderer creates `new Electroview({ rpc: appWebviewRpc })` after defining RPC handlers.'
+      status: used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt:
+        - Custom-frame window dragging should be documented if app relies on it.
+      risk_reduction: []
+    pros:
+      - Could improve native feel for the custom window frame.
+    cons:
+      - May be unnecessary if current frame mode already handles dragging.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/main.ts
+      - src/shell/renderer/styles/list.css
+    candidate_stories:
+      - Verify whether app needs explicit draggable regions for the custom frame.
+    notes: []
+    id: electrobun-draggable-regions
+    ecosystem: electrobun
+    area: window
+    feature: Draggable regions
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/draggable-regions
+    summary: Renderer CSS or APIs for defining draggable regions in frameless/custom-frame windows.
+    current_usage:
+      evidence:
+        - src/shell/main/main.ts
+        - src/shell/renderer/styles/list.css
+      notes: Main window uses custom frame behaviour, but this pass did not prove whether Electrobun-specific draggable regions are configured.
+      status: unknown
+      confidence: low
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Could expose runtime metadata without extra plumbing.
+    cons:
+      - Globals are harder to test than injected values.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/
+      - src/shell/renderer/
+    candidate_stories: []
+    notes: []
+    id: electrobun-global-properties
+    ecosystem: electrobun
+    area: runtime
+    feature: Global properties
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/global-properties
+    summary: Electrobun-provided global runtime values exposed to app code.
+    current_usage:
+      evidence:
+        - src/shell/main/
+        - src/shell/renderer/
+      notes: No targeted scan proved use or absence of Electrobun global properties.
+      status: unknown
+      confidence: low
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Can identify packaging options before public release.
+    cons:
+      - Advanced build options add maintenance cost if adopted prematurely.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - electrobun.config.ts
+    candidate_stories:
+      - Review Electrobun build config options before the first distribution release.
+    notes: []
+    id: electrobun-build-configuration
+    ecosystem: electrobun
+    area: build
+    feature: Build configuration schema
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/guides/build-configuration
+    summary: Detailed build config options beyond entrypoints, views, copy targets, and platform blocks.
+    current_usage:
+      evidence:
+        - electrobun.config.ts
+      notes: app config covers app metadata, entrypoints, views, copied assets, macOS signing, and Linux icon/CEF settings, but not all advanced build options.
+      status: partial
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Could simplify debug and release workflows.
+    cons:
+      - Task wrappers already hide most CLI detail from contributors.
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - package.json
+      - mise.toml
+    candidate_stories:
+      - Document the Electrobun CLI flags actually used by app tasks.
+    notes: []
+    id: electrobun-cli-args
+    ecosystem: electrobun
+    area: development
+    feature: CLI args and environment flags
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/guides/cli-args
+    summary: Command-line and environment controls for Electrobun run, dev, and build workflows.
+    current_usage:
+      evidence:
+        - package.json
+        - mise.toml
+      notes: app wraps Electrobun commands through package scripts and mise tasks, but this pass did not enumerate every supported CLI flag.
+      status: partial
+      confidence: medium
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction:
+        - Could reduce renderer differences if cross-platform bugs appear.
+    pros:
+      - More consistent rendering across platforms.
+    cons:
+      - Increases artifact size and distribution complexity.
+    risks: []
+    prerequisites:
+      - Cross-platform rendering issue or explicit release requirement
+    app_touchpoints:
+      - electrobun.config.ts
+    candidate_stories:
+      - Decide whether CEF bundling is needed for Windows/Linux release targets.
+    notes: []
+    id: electrobun-bundling-cef
+    ecosystem: electrobun
+    area: build
+    feature: Bundling CEF
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/guides/bundling-cef
+    summary: Bundle Chromium Embedded Framework for renderer consistency across platforms.
+    current_usage:
+      evidence:
+        - electrobun.config.ts
+      notes: '`bundleCEF: false` is configured for macOS and Linux.'
+      status: not-used
+      confidence: high
+    priority: undecided
+  - priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Required packaging polish is already wired.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - electrobun.config.ts
+      - assets/icons/
+    candidate_stories: []
+    notes: []
+    id: electrobun-application-icons
+    ecosystem: electrobun
+    area: build
+    feature: Application icons
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/application-icons
+    summary: Application icon formats and packaging configuration for platforms.
+    current_usage:
+      evidence:
+        - electrobun.config.ts
+        - assets/icons/app-logo.iconset
+      notes: Config points macOS and Linux icon settings at the app iconset.
+      status: used
+      confidence: high
+    priority: undecided

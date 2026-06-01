@@ -3,7 +3,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Land Phase 4 of the kb foundation roadmap as a single `feat(data)` commit on `chore-add-domain` — the SQLite data substrate (`src/shell/app/db/`), the YAML import service, the config layer (TypeBox replaces Zod), the logging adapter, the test infrastructure (Fishery factories + curated YAML corpus), and the agent-skill drift fixes — while collapsing the 5 leftover phase stashes into a single `phase-pending` stash for cleaner future recovery.
+**Goal:** Land Phase 4 of the app foundation roadmap as a single `feat(data)` commit on `chore-add-domain` — the SQLite data substrate (`src/shell/app/db/`), the YAML import service, the config layer (TypeBox replaces Zod), the logging adapter, the test infrastructure (Fishery factories + curated YAML corpus), and the agent-skill drift fixes — while collapsing the 5 leftover phase stashes into a single `phase-pending` stash for cleaner future recovery.
 
 **Architecture:** I/O lives under `src/shell/app/`. SQLite uses `bun:sqlite` directly — no Drizzle, no `drizzle-typebox`, no `drizzle-seed`. YAML parsing uses `Bun.YAML.parse()` everywhere (already standard in `@core` per `tools/rules/no-bun-in-core.yml`). Validation uses TypeBox at every boundary. Test fixtures use Fishery factories for typed rows; YAML fixtures only exist for `import.service.spec.ts` end-to-end paths.
 
@@ -11,7 +11,7 @@
 
 **Spec source of truth:** [`design.md`](design.md). Section references like "design §SCHEMA" point to that file.
 
-**Legacy reference:** `~/Work/bun/kb_legacy` worktree at commit `cc3d08b` is the authoritative source for the working legacy implementation. The pre-collapse stashes hold partial / truncated versions; treat the legacy worktree as the source of truth when content disagrees.
+**Legacy reference:** `~/Work/bun/app_legacy` worktree at commit `cc3d08b` is the authoritative source for the working legacy implementation. The pre-collapse stashes hold partial / truncated versions; treat the legacy worktree as the source of truth when content disagrees.
 
 ---
 
@@ -83,7 +83,7 @@ Expected: 6 stash entries (5 phase + 1 WIP); `git status` ≈ 0 lines (clean tre
 - [ ] **Step 2: Verify legacy worktree exists**
 
 ```bash
-test -d ~/Work/bun/kb_legacy && echo OK || echo "MISSING — clone with: git worktree add ~/Work/bun/kb_legacy cc3d08b"
+test -d ~/Work/bun/app_legacy && echo OK || echo "MISSING — clone with: git worktree add ~/Work/bun/app_legacy cc3d08b"
 ```
 
 Expected: `OK`. If `MISSING`, run the suggested command before continuing.
@@ -159,7 +159,7 @@ commit-eligible paths each phase needs are listed in the design doc's
 ## Authoritative legacy reference
 
 For any file the working tree disagrees with, consult
-`~/Work/bun/kb_legacy` at commit `cc3d08b`. That worktree contains the
+`~/Work/bun/app_legacy` at commit `cc3d08b`. That worktree contains the
 complete legacy implementations (e.g. `src/shell/app/db/entry.repository.ts`
 is 193 lines there vs. ~80 lines in the pre-collapse stash).
 EOF
@@ -329,12 +329,12 @@ Expected: `NO drizzle` (Drizzle stripped); both files import from `bun:sqlite`; 
 
 - Modify: `src/shell/app/db/entry.repository.ts`
 
-**Why:** Per design §REPOSITORY APIs, the legacy public API is preserved (6 functions: `upsert`, `rebuildFts`, `findAll`, `findById`, `getDbStats`, `getTagCounts`) but the internals move to typed `db.query<KnowledgeRow, [params]>(…)` prepared statements. `upsert` becomes hand-written `INSERT … ON CONFLICT(id) DO UPDATE SET …`. The legacy `~/Work/bun/kb_legacy` worktree at `cc3d08b` is the **complete** 193-line reference; the pre-collapse stash held a truncated ~80-line version.
+**Why:** Per design §REPOSITORY APIs, the legacy public API is preserved (6 functions: `upsert`, `rebuildFts`, `findAll`, `findById`, `getDbStats`, `getTagCounts`) but the internals move to typed `db.query<KnowledgeRow, [params]>(…)` prepared statements. `upsert` becomes hand-written `INSERT … ON CONFLICT(id) DO UPDATE SET …`. The legacy `~/Work/bun/app_legacy` worktree at `cc3d08b` is the **complete** 193-line reference; the pre-collapse stash held a truncated ~80-line version.
 
 - [ ] **Step 1: Open the legacy reference**
 
 ```bash
-cat ~/Work/bun/kb_legacy/src/shell/app/db/entry.repository.ts | wc -l
+cat ~/Work/bun/app_legacy/src/shell/app/db/entry.repository.ts | wc -l
 ```
 
 Expected: ≈ 193 lines. Read the file end-to-end to internalise the `findAll` two-branch dispatch (FTS5 join when `query` is non-empty, plain `SELECT` otherwise), the in-process tag-AND filter, the `toFts5MatchQuery` helper, and the `rowToKnowledge` mapper.
@@ -375,7 +375,7 @@ Expected: no `drizzle`; no `async`; ≥ 5 typed `db.query<…>` call sites; no t
 - [ ] **Step 1: Open the legacy reference**
 
 ```bash
-cat ~/Work/bun/kb_legacy/src/shell/app/db/import.service.ts | wc -l
+cat ~/Work/bun/app_legacy/src/shell/app/db/import.service.ts | wc -l
 ```
 
 Expected: ~150 lines. Read the file to internalise the per-file try/catch, the progress callback semantics, and the error-collection pattern.
@@ -479,7 +479,7 @@ done
 test -f src/shared/types/logger.types.ts && echo OK_logger_types || echo MISS_logger_types
 ```
 
-Expected: 5 `OK*` lines. If any are `MISS`, copy the missing file from `~/Work/bun/kb_legacy/`.
+Expected: 5 `OK*` lines. If any are `MISS`, copy the missing file from `~/Work/bun/app_legacy/`.
 
 - [ ] **Step 2: Verify the logging files compile against declared deps**
 
@@ -627,7 +627,7 @@ for f in src/__tests__/factories/factories.builder.ts \
 done
 ```
 
-Expected: 7+ `OK` lines. `MISS` indicates a file should be copied from `~/Work/bun/kb_legacy/`.
+Expected: 7+ `OK` lines. `MISS` indicates a file should be copied from `~/Work/bun/app_legacy/`.
 
 - [ ] **Step 2: Move + rename**
 
@@ -1074,7 +1074,7 @@ Expected: exit 0.
 Add at the end of the file:
 
 ```gitignore
-# Brainstorming-skill default path; kb uses assets/docs/specs/ instead.
+# Brainstorming-skill default path; app uses assets/docs/specs/ instead.
 docs/superpowers/
 ```
 
@@ -1088,17 +1088,17 @@ Expected: `IGNORED`.
 
 ---
 
-## Task 15: Sync agent skills (kb-context, kb-testing, kb-rpc)
+## Task 15: Sync agent skills (app-context, app-testing, app-rpc)
 
 **Files:**
 
-- Modify: `.agents/skills/kb-context/SKILL.md`
-- Modify: `.agents/skills/kb-testing/SKILL.md`
-- Modify: `.agents/skills/kb-rpc/SKILL.md`
+- Modify: `.agents/skills/app-context/SKILL.md`
+- Modify: `.agents/skills/app-testing/SKILL.md`
+- Modify: `.agents/skills/app-rpc/SKILL.md`
 
 **Why:** Per design §"Modified in Phase 4 (incremental)" + the user-confirmed `yes_same_commit` decision, the three skills carry drift (drizzle, drizzle-typebox, drizzle-seed, removed test exports, wrong path alias). They must be accurate before Phase 5+ agents read them.
 
-- [ ] **Step 1: Update `kb-context/SKILL.md`**
+- [ ] **Step 1: Update `app-context/SKILL.md`**
 
 Specific edits:
 
@@ -1106,7 +1106,7 @@ Specific edits:
 2. **Line 82**: Replace `Schema validation at the transport layer uses **drizzle-typebox**` with `Schema validation at the transport layer uses **hand-written TypeBox response schemas** (per foundation/design.md Decision 3)`.
 3. **Line 130**: Replace `Drizzle migrations live in drizzle/ at project root, not src/.` with `Migrations (when introduced ≥ Phase 9) live in tools/db/migrations/, not at the project root or under src/. See foundation/design.md § Migration mechanism.`
 
-- [ ] **Step 2: Update `kb-testing/SKILL.md`**
+- [ ] **Step 2: Update `app-testing/SKILL.md`**
 
 Specific edits:
 
@@ -1137,7 +1137,7 @@ describe('EntryRepository', () => {
 5. Replace `import { AppService } from '@app/app.service'` (line ~216) with `import { AppService } from '@shell/app'`.
 6. Drop the closing `> **Note:**` block (lines ~172–176) about the CLAUDE.md drift — that drift was fixed in the prior skill-enhancement task.
 
-- [ ] **Step 3: Update `kb-rpc/SKILL.md`**
+- [ ] **Step 3: Update `app-rpc/SKILL.md`**
 
 Specific edits:
 
@@ -1190,7 +1190,7 @@ Expected: `NO drizzle in skills`.
 
 **Files:** none modified.
 
-**Why:** All five gate stages from `.agents/skills/kb-quality-gate/SKILL.md` plus the Phase 4-specific invariants must pass before the commit lands.
+**Why:** All five gate stages from `.agents/skills/app-quality-gate/SKILL.md` plus the Phase 4-specific invariants must pass before the commit lands.
 
 - [ ] **Step 1: Stage 0 — autofix**
 
@@ -1276,9 +1276,9 @@ git add \
   .ls-lint.yml \
   .dependency-cruiser.cjs \
   .gitignore \
-  .agents/skills/kb-context/SKILL.md \
-  .agents/skills/kb-testing/SKILL.md \
-  .agents/skills/kb-rpc/SKILL.md \
+  .agents/skills/app-context/SKILL.md \
+  .agents/skills/app-testing/SKILL.md \
+  .agents/skills/app-rpc/SKILL.md \
   tmp/phase-4-stash-manifest.md
 git status --short | wc -l
 git status --short | head -20
@@ -1325,7 +1325,7 @@ Layers:
   (the temporary Phase 3 omission is reverted).
 
 Test infrastructure:
-- 5 curated YAML fixtures under fixtures/sample/ (~10 KB
+- 5 curated YAML fixtures under fixtures/sample/ (~10 app
   total) used only by import.service.spec.
 - Fishery factories for typed rows; createSeededMemoryDb
   is now synchronous (bun:sqlite is synchronous).
@@ -1354,7 +1354,7 @@ drizzle-seed + zod are NOT declared. ast-grep no-bun-in-core
 permits Bun.YAML.parse and Bun.YAML.stringify as the only
 Bun globals in pure core.
 
-Skills synced: kb-context, kb-testing, kb-rpc all updated
+Skills synced: app-context, app-testing, app-rpc all updated
 to reflect Decisions 2-5 (drizzle / drizzle-typebox /
 drizzle-seed / minimalEntriesYml references removed).
 EOF
@@ -1378,7 +1378,7 @@ Expected: new SHA. Subject matches `feat(data): Add SQLite + import service` (or
 
 **Files:** none modified.
 
-**Why:** After the commit, ~920 files remain in the working tree (everything that did not commit — AppService, RPC, renderer, preview server, benchmarks). They go into a single `phase-pending` stash that future phases pop selectively from, using `~/Work/bun/kb_legacy` at `cc3d08b` as the authoritative source-of-truth for content.
+**Why:** After the commit, ~920 files remain in the working tree (everything that did not commit — AppService, RPC, renderer, preview server, benchmarks). They go into a single `phase-pending` stash that future phases pop selectively from, using `~/Work/bun/app_legacy` at `cc3d08b` as the authoritative source-of-truth for content.
 
 - [ ] **Step 1: Inventory uncommitted state**
 
@@ -1423,10 +1423,10 @@ Expected: ≈ 150 paths in HEAD; `OK no out-of-scope paths`; subject = `feat(dat
 ```bash
 git stash list | grep "phase-pending"   || echo "MISSING phase-pending"
 git stash list | grep "WIP on main"      || echo "(WIP optional)"
-test -d ~/Work/bun/kb_legacy             && echo "OK kb_legacy worktree"
+test -d ~/Work/bun/app_legacy             && echo "OK app_legacy worktree"
 ```
 
-Expected: `phase-pending` found; `kb_legacy` worktree exists. If the stash is missing, run `git fsck --unreachable` to find the lost commit and recover with `git stash apply <SHA>`.
+Expected: `phase-pending` found; `app_legacy` worktree exists. If the stash is missing, run `git fsck --unreachable` to find the lost commit and recover with `git stash apply <SHA>`.
 
 - [ ] **Step 6: Final smoke**
 
@@ -1466,4 +1466,4 @@ The plan covers every section of `design.md`:
 - §OPEN-QUESTION RESOLUTIONS → covered transitively (every locked decision has an enforcing task).
 - §RELATED DOCS → not actionable.
 
-No placeholders (TBD/TODO/FIXME) in any task. Every snippet uses `describe`/`it` per the kb-testing skill. Every file path quoted matches the design's inventory. The legacy worktree is referenced as the recovery substrate. The commit message subject is verified against the .gitlint 50-char cap; a fallback is provided.
+No placeholders (TBD/TODO/FIXME) in any task. Every snippet uses `describe`/`it` per the app-testing skill. Every file path quoted matches the design's inventory. The legacy worktree is referenced as the recovery substrate. The commit message subject is verified against the .gitlint 50-char cap; a fallback is provided.

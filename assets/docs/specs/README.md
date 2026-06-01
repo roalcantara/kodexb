@@ -1,0 +1,88 @@
+<!-- markdownlint-disable-file -->
+
+# app — feature specs (canonical location)
+
+All **product and feature specifications** for this repository live under:
+
+**`assets/docs/specs/<feature-slug>/`**
+
+Typical files per feature (use only what you need):
+
+| File                     | Purpose                                        |
+| ------------------------ | ---------------------------------------------- |
+| `requirements.md`        | EARS-style behavior and acceptance criteria    |
+| `design.md`              | Normative technical contract                   |
+| `tasks.md`               | Ordered verification work                      |
+| `implementation-plan.md` | Agent-oriented step-by-step plan (optional)    |
+| `*.html` or other assets | Prototypes and diagrams (optional, co-located) |
+
+Foundation and roadmap:
+
+- [`foundation/design.md`](foundation/design.md)
+- [`foundation/requirements.md`](foundation/requirements.md)
+- [`foundation/roadmap.md`](foundation/roadmap.md)
+
+## Do not use `docs/superpowers/`
+
+Some external skills default to `docs/superpowers/specs/` for brainstorm output. **app does not commit there.** That path is listed in **`.gitignore`** so accidental files never enter the repo.
+
+When an AI skill or template says to write under `docs/superpowers/`, use the `spec-driven-development` skill shape and **redirect** to `assets/docs/specs/<slug>/` instead (create the slug folder if needed). Use `requirements.md`, `design.md`, `tasks.md`, and optional `handoff.md`.
+
+## E2e acceptance criteria (all features)
+
+Every **release-facing feature** and **user-visible refactor** MUST include e2e
+acceptance criteria before beta:
+
+1. **`requirements.md`** — at least one requirement (or AC block) tracing to
+   Gherkin under `assets/features/e2e/` with `@spec:<slug>` tags.
+2. **`tasks.md`** — an e2e task or cross-link to [`e2e/tasks.md`](e2e/tasks.md).
+3. **[`e2e/fixture-manifest.md`](e2e/fixture-manifest.md)** — seed data contract
+   when the feature needs deterministic rows.
+4. **[`e2e/step-catalog.md`](e2e/step-catalog.md)** — normative Gherkin phrases
+   before step implementations merge.
+
+Normative policy: [`e2e/requirements.md` R11](e2e/requirements.md#r11---cross-feature-e2e-acceptance).
+Scenarios MAY ship with `@todo` until automation lands; release gates require
+green runs without `@todo` on P0/P1 scenarios.
+
+## Verifiable acceptance (no orphan checks)
+
+Every behavior a maintainer must validate before marking a feature
+**beta-ready** — including manual dogfood, preview-server walkthroughs, and
+“integration sanity” checks — MUST be expressed so a reviewer can execute it
+**without reading implementation source**:
+
+1. **`requirements.md`** — at least one numbered **acceptance criterion**
+   (EARS `WHEN … THEN … SHALL …`) with a **Measure** clause when the check is
+   not fully automated.
+2. **`assets/features/e2e/*.feature`** — a Gherkin scenario tagged
+   `@spec:<slug>` when the flow is browser-observable (preferred for release
+   gates). Scenarios MAY carry `@todo` until steps land; the AC still binds the
+   intended outcome.
+3. **`tasks.md`** — MAY link tasks to AC ids and record evidence, but MUST NOT
+   be the **only** place a check exists.
+
+Orphan bullets in `tasks.md`, `handoff.md`, or agent checklists that are not
+backed by an AC or feature scenario are spec debt — add the AC (and scenario
+when applicable) in the same PR series as the behavior.
+
+Cross-feature policy: [`e2e/requirements.md` R11 AC7](e2e/requirements.md#r11---cross-feature-e2e-acceptance).
+
+## Feature specs (index)
+
+- [Entry Action Panel](entry-action-panel/design.md) — unified entry actions, Return / ⌘Return in list/split/detail, frecency via executor; [requirements](entry-action-panel/requirements.md), [tasks](entry-action-panel/tasks.md), [implementation plan](entry-action-panel/implementation-plan.md).
+- [Entry action handoff](entry-action-handoff/design.md) — arkn-aligned browser/terminal/paste handoff, hide-on-success; [requirements](entry-action-handoff/requirements.md), [tasks](entry-action-handoff/tasks.md), [handoff](entry-action-handoff/handoff.md), [e2e feature](../features/e2e/entry_action_handoff.feature). UX reference: Raycast extension **arkn**.
+- [List frecency sort](list-frecency-sort/design.md) — Raycast-style entry ranking for list/split; visits on detail open + copy; [requirements](list-frecency-sort/requirements.md), [tasks](list-frecency-sort/tasks.md), [implementation plan](list-frecency-sort/implementation-plan.md).
+- [Compact filter overlay rebuild](compact-filter-redesign/design.md) — single scrollport, fixed Close footer, highlight visibility; [tasks](compact-filter-redesign/tasks.md), [implementation plan](compact-filter-redesign/implementation-plan.md).
+- [Command palette and filter UX](command-palette-filter-ux/design.md) — ⌘P / ⌘K; behaviour matrix in the **project root** [README.md](../../../README.md).
+- [Shortcuts](shortcuts/design.md) — `shortcut` entry type, `⌘/` quick-lookup overlay, list/detail keymaps; [requirements](shortcuts/requirements.md), [tasks](shortcuts/tasks.md), [handoff](shortcuts/handoff.md), [e2e Phase 7](e2e/tasks.md#phase-7---shortcuts-feature-p1).
+- [End-to-end regression suite](e2e/design.md) — Playwright BDD + Gherkin smoke/regression; [requirements](e2e/requirements.md), [tasks](e2e/tasks.md), [fixture manifest](e2e/fixture-manifest.md), [step catalog](e2e/step-catalog.md).
+- [Elysia and Electrobun capability inventory](elysia-electrobun-capability-inventory/design.md) — decision-neutral upstream capability research for maintainer priority review; [requirements](elysia-electrobun-capability-inventory/requirements.md), [tasks](elysia-electrobun-capability-inventory/tasks.md), [report](elysia-electrobun-capability-inventory/report.md), [inventory](elysia-electrobun-capability-inventory/inventory.yml).
+- [Mise usage policy](mise-usage/design.md) — executable policy for Mise task shape, embedded Usage specs, package scripts, and automation entrypoints; [requirements](mise-usage/requirements.md), [tasks](mise-usage/tasks.md), [handoff](mise-usage/handoff.md).
+- [Mise usage improvements](mise-usage-improvements/design.md) — final Mise task contract cleanup, nested command surface, package script pruning, CI updates, and command validation matrix; [requirements](mise-usage-improvements/requirements.md), [tasks](mise-usage-improvements/tasks.md), [handoff](mise-usage-improvements/handoff.md).
+- [Source sync resilience](sync/design.md) — import always completes; per-file/entry error isolation; Phase 7 modal error UX (SY-7); [requirements](sync/requirements.md), [tasks](sync/tasks.md), [handoff](sync/handoff.md), [Phase 7 handoff](sync/handoff-phase-7-modal-errors.md). E2e: `@spec:sync`.
+- [Shell chrome unification](shell-chrome/design.md) — Proposal A: remove list action row, unify overlay modals at 560px; [requirements](shell-chrome/requirements.md), [tasks](shell-chrome/tasks.md), [handoff](shell-chrome/handoff.md). Prototype: [`shell_modals_redesign_prototype.html`](../../wireframe/prototypes/shell_modals_redesign_prototype.html).
+- [macOS / Linux platform parity](platform-parity/design.md) — cross-cutting audit and closure plan for handoff + shell adapters; [requirements](platform-parity/requirements.md), [tasks](platform-parity/tasks.md), [handoff](platform-parity/handoff.md).
+- [Code review graph migration](graph/design.md) — legacy graph removal and local CRG MCP setup for common KB agents; [requirements](graph/requirements.md), [tasks](graph/tasks.md), [implementation plan](graph/implementation-plan.md), [handoff](graph/handoff.md).
+
+Also documented in [`CLAUDE.md`](../../../CLAUDE.md) (reference docs) and [`.agents/skills/app-context/SKILL.md`](../../../.agents/skills/app-context/SKILL.md).

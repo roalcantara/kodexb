@@ -1,160 +1,140 @@
-/// <reference lib="dom" />
-
-import { expect, mock, test } from 'bun:test'
+import { describe, expect, it, mock } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
+import { expectViewState, fireArrowKey, fireTwoRightsExpectSplitThenDetail, rpcBookmarkRow } from '@testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import type { ListSelectionLayout } from './use_list_selection.hook'
 import { useListSelection } from './use_list_selection.hook'
 
-function Harness({
-  rows,
-  layout,
-  onLeaveListUpward
-}: {
-  rows: RpcKnowledge[]
-  layout?: ListSelectionLayout
-  onLeaveListUpward?: () => void
-}) {
-  const sel = useListSelection(rows, layout, onLeaveListUpward)
+function Harness({ rows, onLeaveListUpward }: { rows: RpcKnowledge[]; onLeaveListUpward?: () => void }) {
+  const sel = useListSelection(rows, onLeaveListUpward)
   return (
-    <div tabIndex={0} data-testid="list-surface" onKeyDown={sel.onListKeyDown} role="listbox" aria-label="Test list">
-      <span data-testid="selected">{sel.selectedId ?? 'null'}</span>
-      <span data-testid="detail">{sel.detailEntry?.id ?? 'null'}</span>
+    <div
+      onKeyDownCapture={e => {
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+        sel.handleKey(e)
+        if (e.defaultPrevented) e.stopPropagation()
+      }}
+    >
+      <div tabIndex={0} data-testid="list-surface" onKeyDown={sel.onListKeyDown} role="listbox" aria-label="Test list">
+        <span data-testid="selected">{sel.selectedId ?? 'null'}</span>
+        <span data-testid="detail">{sel.detailEntry?.id ?? 'null'}</span>
+        <span data-testid="view-state">{sel.viewState}</span>
+      </div>
     </div>
   )
 }
 
 function row(id: number, key = `k${id}`): RpcKnowledge {
-  return {
-    type: 'bookmark',
-    id,
-    key,
-    source: 'fixtures/t.yaml',
-    desc: '',
-    tags: [],
-    doc: '',
-    createdAt: 0,
-    updatedAt: 0
-  }
+  return rpcBookmarkRow(id, key)
 }
 
-function renderFocusedSurface(
-  rows: RpcKnowledge[],
-  layout?: ListSelectionLayout,
-  onLeaveListUpward?: () => void
-): HTMLElement {
-  render(<Harness rows={rows} layout={layout} onLeaveListUpward={onLeaveListUpward} />)
+function renderFocusedSurface(rows: RpcKnowledge[], onLeaveListUpward?: () => void): HTMLElement {
+  render(<Harness rows={rows} onLeaveListUpward={onLeaveListUpward} />)
   const surface = screen.getByTestId('list-surface')
   surface.focus()
   return surface
 }
 
-test('Escape clears detail and calls layout.onDetailClose when detail is open', async () => {
-  const onDetailClose = mock(() => undefined)
-  const rows = [row(1), row(2)]
-  const user = userEvent.setup()
-  renderFocusedSurface(rows, { onFirstDetailOpen: mock(), onDetailClose })
-  await user.keyboard('{ArrowUp}')
-  await user.keyboard('{Enter}')
-  expect(screen.getByTestId('detail').textContent).toBe('1')
-  await user.keyboard('{Escape}')
-  expect(screen.getByTestId('detail').textContent).toBe('null')
-  expect(onDetailClose).toHaveBeenCalledTimes(1)
-})
+describe('useListSelection', () => {
+  describe('when navigating split/detail with ArrowLeft/Right', () => {
+    it.each([
+      { title: 'ArrowLeft closes detail when detail is open', reopen: false },
+      { title: 'ArrowRight works repeatedly after close', reopen: true }
+    ])('$title', async ({ reopen }) => {
+      const user = userEvent.setup()
+      const surface = renderFocusedSurface([row(1)])
+      await user.keyboard('{ArrowDown}')
+      fireEvent.keyDown(surface, { key: 'ArrowRight' })
+      expect(screen.getByTestId('detail').textContent).toBe('1')
+      fireEvent.keyDown(surface, { key: 'ArrowLeft' })
+      expect(screen.getByTestId('detail').textContent).toBe('null')
+      if (reopen) {
+        fireEvent.keyDown(surface, { key: 'ArrowRight' })
+        expect(screen.getByTestId('detail').textContent).toBe('1')
+      }
+    })
 
-test('Enter opens detail, calls onFirstDetailOpen once; Enter again closes and calls onDetailClose', async () => {
-  const onFirstDetailOpen = mock(() => undefined)
-  const onDetailClose = mock(() => undefined)
-  const rows = [row(10)]
-  const user = userEvent.setup()
-  renderFocusedSurface(rows, { onFirstDetailOpen, onDetailClose })
-  await user.keyboard('{ArrowUp}')
-  expect(screen.getByTestId('selected').textContent).toBe('10')
-  await user.keyboard('{Enter}')
-  expect(screen.getByTestId('detail').textContent).toBe('10')
-  expect(onFirstDetailOpen).toHaveBeenCalledTimes(1)
-  await user.keyboard('{Enter}')
-  expect(screen.getByTestId('detail').textContent).toBe('null')
-  expect(onDetailClose).toHaveBeenCalledTimes(1)
-})
+    it('viewState reaches detail after two ArrowRight from list', async () => {
+      const user = userEvent.setup()
+      const surface = renderFocusedSurface([row(1)])
+      await user.keyboard('{ArrowDown}')
+      fireTwoRightsExpectSplitThenDetail(surface)
+      expect(screen.getByTestId('detail').textContent).toBe('1')
+    })
 
-test('ArrowUp selects first row when none selected; ArrowDown moves to next row', async () => {
-  const rows = [row(1), row(2)]
-  const user = userEvent.setup()
-  renderFocusedSurface(rows)
-  await user.keyboard('{ArrowUp}')
-  expect(screen.getByTestId('selected').textContent).toBe('1')
-  await user.keyboard('{ArrowDown}')
-  expect(screen.getByTestId('selected').textContent).toBe('2')
-})
+    it('ArrowDown keeps detail preview in sync after split to full detail via ArrowRight', async () => {
+      const user = userEvent.setup()
+      const surface = renderFocusedSurface([row(1), row(2), row(3)])
+      await user.keyboard('{ArrowDown}')
+      fireArrowKey(surface, 'ArrowRight')
+      expectViewState('split')
+      expect(screen.getByTestId('detail').textContent).toBe('1')
+      fireArrowKey(surface, 'ArrowRight')
+      expectViewState('detail')
+      fireArrowKey(surface, 'ArrowRight')
+      expectViewState('split')
+      await user.keyboard('{ArrowDown}')
+      expect(screen.getByTestId('selected').textContent).toBe('2')
+      expect(screen.getByTestId('detail').textContent).toBe('2')
+    })
 
-test('ArrowUp on first row with onLeaveListUpward clears selection and invokes callback', async () => {
-  const onLeaveListUpward = mock(() => undefined)
-  const rows = [row(1), row(2)]
-  const user = userEvent.setup()
-  renderFocusedSurface(rows, undefined, onLeaveListUpward)
-  await user.keyboard('{ArrowDown}')
-  expect(screen.getByTestId('selected').textContent).toBe('1')
-  await user.keyboard('{ArrowUp}')
-  expect(onLeaveListUpward).toHaveBeenCalledTimes(1)
-  expect(screen.getByTestId('selected').textContent).toBe('null')
-})
+    it('ArrowDown updates detail preview while split view is open', async () => {
+      const user = userEvent.setup()
+      const surface = renderFocusedSurface([row(1), row(2)])
+      await user.keyboard('{ArrowDown}')
+      fireEvent.keyDown(surface, { key: 'ArrowRight' })
+      expect(screen.getByTestId('detail').textContent).toBe('1')
+      await user.keyboard('{ArrowDown}')
+      expect(screen.getByTestId('selected').textContent).toBe('2')
+      expect(screen.getByTestId('detail').textContent).toBe('2')
+    })
 
-test('ArrowDown selects first row when none selected', async () => {
-  const rows = [row(1), row(2)]
-  const user = userEvent.setup()
-  renderFocusedSurface(rows)
-  await user.keyboard('{ArrowDown}')
-  expect(screen.getByTestId('selected').textContent).toBe('1')
-})
+    it('ArrowRight auto-selects first row when nothing selected', () => {
+      const rows = [row(7)]
+      const surface = renderFocusedSurface(rows)
+      fireEvent.keyDown(surface, { key: 'ArrowRight' })
+      expect(screen.getByTestId('detail').textContent).toBe('7')
+    })
+  })
 
-test('ArrowRight opens detail and ArrowLeft closes it', async () => {
-  const onFirstDetailOpen = mock(() => undefined)
-  const onDetailClose = mock(() => undefined)
-  const rows = [row(1)]
-  const user = userEvent.setup()
-  renderFocusedSurface(rows, { onFirstDetailOpen, onDetailClose })
-  await user.keyboard('{ArrowDown}')
-  await user.keyboard('{ArrowRight}')
-  expect(screen.getByTestId('detail').textContent).toBe('1')
-  expect(onFirstDetailOpen).toHaveBeenCalledTimes(1)
-  await user.keyboard('{ArrowLeft}')
-  expect(screen.getByTestId('detail').textContent).toBe('null')
-  expect(onDetailClose).toHaveBeenCalledTimes(1)
-})
+  describe('when navigating with ArrowUp/ArrowDown', () => {
+    it('ArrowUp selects last row when none selected; ArrowDown moves from last', async () => {
+      const rows = [row(1), row(2)]
+      const user = userEvent.setup()
+      renderFocusedSurface(rows)
+      await user.keyboard('{ArrowUp}')
+      expect(screen.getByTestId('selected').textContent).toBe('2')
+      await user.keyboard('{ArrowDown}')
+      expect(screen.getByTestId('selected').textContent).toBe('2')
+    })
 
-test.each([
-  { name: 'Meta+[', mods: { metaKey: true } as const },
-  { name: 'Ctrl+[', mods: { ctrlKey: true } as const }
-])('$name closes detail and calls onDetailClose', ({ mods }) => {
-  const onDetailClose = mock(() => undefined)
-  const rows = [row(1)]
-  renderFocusedSurface(rows, { onFirstDetailOpen: mock(), onDetailClose })
-  const surface = screen.getByTestId('list-surface')
-  surface.focus()
-  fireEvent.keyDown(surface, { key: 'ArrowUp' })
-  fireEvent.keyDown(surface, { key: 'Enter' })
-  expect(screen.getByTestId('detail').textContent).toBe('1')
-  fireEvent.keyDown(surface, { key: '[', ...mods })
-  expect(screen.getByTestId('detail').textContent).toBe('null')
-  expect(onDetailClose).toHaveBeenCalledTimes(1)
-})
+    it('ArrowUp on first row clears selection and invokes onLeaveListUpward', async () => {
+      const onLeaveListUpward = mock(() => undefined)
+      const rows = [row(1), row(2)]
+      const user = userEvent.setup()
+      renderFocusedSurface(rows, onLeaveListUpward)
+      await user.keyboard('{ArrowDown}')
+      expect(screen.getByTestId('selected').textContent).toBe('1')
+      await user.keyboard('{ArrowUp}')
+      expect(onLeaveListUpward).toHaveBeenCalledTimes(1)
+      expect(screen.getByTestId('selected').textContent).toBe('null')
+    })
 
-test('repeated ArrowDown moves by larger step', () => {
-  const rows = [row(1), row(2), row(3), row(4), row(5), row(6)]
-  const surface = renderFocusedSurface(rows)
-  fireEvent.keyDown(surface, { key: 'ArrowDown' })
-  fireEvent.keyDown(surface, { key: 'ArrowDown', repeat: true })
-  expect(screen.getByTestId('selected').textContent).toBe('6')
-})
+    it('ArrowDown selects first row when none selected', async () => {
+      const rows = [row(1), row(2)]
+      const user = userEvent.setup()
+      renderFocusedSurface(rows)
+      await user.keyboard('{ArrowDown}')
+      expect(screen.getByTestId('selected').textContent).toBe('1')
+    })
 
-test('Enter with no selection does not open detail', async () => {
-  const rows = [row(7)]
-  const user = userEvent.setup()
-  renderFocusedSurface(rows)
-  await user.keyboard('{Enter}')
-  expect(screen.getByTestId('detail').textContent).toBe('null')
-  expect(screen.getByTestId('selected').textContent).toBe('null')
+    it('repeated ArrowDown moves by larger step', () => {
+      const rows = [row(1), row(2), row(3), row(4), row(5), row(6)]
+      const surface = renderFocusedSurface(rows)
+      fireEvent.keyDown(surface, { key: 'ArrowDown' })
+      fireEvent.keyDown(surface, { key: 'ArrowDown', repeat: true })
+      expect(screen.getByTestId('selected').textContent).toBe('6')
+    })
+  })
 })

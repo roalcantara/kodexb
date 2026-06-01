@@ -1,13 +1,19 @@
-// biome-ignore-all lint/suspicious/noExplicitAny: Fishery `Factory` registries need a single loose `build` signature for assignability
 import type { BuildOptions } from 'fishery'
 import { type FactoryBuildOpts, isFactoryOpts, type WrappedFactoryOpts } from './testing.types'
 
 /**
  * Structural minimum for Fishery `Factory`.
- * Parameters are intentionally loose so concrete `Factory<T>` instances stay assignable (TS variance).
+ * `build` uses `any` so concrete `Factory<T>` stays assignable under
+ * strictFunctionTypes (contravariant parameters).
  */
 type FactoryLike = {
-  build: (params?: any, options?: any) => any
+  build: (
+    // biome-ignore lint/suspicious/noExplicitAny: Fishery per-factory partial params
+    params?: any,
+    // biome-ignore lint/suspicious/noExplicitAny: Fishery BuildOptions
+    options?: any
+    // biome-ignore lint/suspicious/noExplicitAny: Fishery built row type
+  ) => any
 }
 
 function paramsFor<R>(

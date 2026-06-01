@@ -1,0 +1,321 @@
+.cmp-filter-chip--active {
+  color: var(--color-primary);
+  background: var(--color-primary-chip);
+  font-weight: 300;
+}
+
+/* Filter dropdown overlay */
+
+.cmp-filter-dropdown {
+  margin: 0 14px 4px;
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 6px;
+  padding: 8px 0;
+}
+
+.cmp-filter-dropdown-section {
+  padding: 8px 14px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cmp-filter-dropdown-section-block+.cmp-filter-dropdown-section-block {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--color-outline-variant);
+}
+
+.cmp-compact-filter-option {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  color: var(--color-on-surface-variant);
+  font-size: 13px;
+  font-family: inherit;
+  line-height: 1.35;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 20px 34px minmax(0, 1fr) max-content;
+  align-items: center;
+  column-gap: 10px;
+  text-align: left;
+}
+
+.cmp-compact-filter-option:hover {
+  background: var(--color-primary-subtle);
+}
+
+.cmp-compact-filter-option--selected {
+  color: var(--color-text-main);
+}
+
+.cmp-compact-filter-option-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 20px;
+  min-width: 20px;
+  height: 28px;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1;
+  flex-shrink: 0;
+  color: transparent;
+}
+
+.cmp-compact-filter-option--selected .cmp-compact-filter-option-mark {
+  color: var(--color-text-main);
+}
+
+.cmp-compact-filter-option-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
+  flex-shrink: 0;
+  justify-self: center;
+}
+
+.cmp-filter-dropdown-section-block--task-views .cmp-compact-filter-option-icon {
+  background: color-mix(in srgb, var(--color-priority-high) 80%, transparent);
+  border: 1px solid var(--color-outline-variant);
+  box-shadow: inset 0 1px 0 var(--color-overlay-highlight);
+}
+
+.cmp-compact-filter-option-icon img {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.cmp-compact-filter-option-label {
+  min-width: 0;
+  align-self: center;
+}
+
+.cmp-compact-filter-option-count {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+  align-self: center;
+  justify-self: end;
+}
+
+.cmp-compact-filter-option:hover .cmp-compact-filter-option-count {
+  color: var(--color-text-main);
+}
+
+.cmp-filter-dropdown .cmp-compact-filter-option--highlight {
+  background: var(--color-primary-muted);
+  box-shadow: inset 3px 0 0 0 var(--color-primary);
+}
+
+.cmp-filter-dropdown .cmp-compact-filter-option--highlight:hover {
+  background: var(--color-primary-soft);
+}
+
+.cmp-filter-dropdown .cmp-compact-filter-option--highlight .cmp-compact-filter-option-count {
+  color: var(--color-text-main);
+}
+
+.cmp-compact-filter-option--footer {
+  display: block;
+  width: 100%;
+}
+
+.cmp-filter-dropdown-search {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-outline-variant);
+  color: var(--color-text-main);
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+}
+
+.cmp-filter-dropdown-search:focus {
+  border-bottom-color: var(--color-primary);
+}
+
+.cmp-filter-dropdown-empty {
+  padding: 12px 14px;
+  color: var(--color-on-surface-variant);
+  font-size: 12px;
+}
+
+.cmp-filter-dropdown-divider {
+  margin: 4px 14px 0;
+  border-top: 1px solid var(--color-outline-variant);
+}
+
+/* Results */
+
+.cmp-filter-stack {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: auto;
+}
+
+/* Compact filter: portal under `document.body` so `.cmp-app-shell { overflow: hidden }` does not clip the list */
+
+.cmp-filter-stack--compact-portal {
+  z-index: 99;
+}
+
+.cmp-filter-portal-clip {
+  position: fixed;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  z-index: 1;
+  -webkit-app-region: no-drag;
+  border-radius: 6px;
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.cmp-filter-portal-clip>.cmp-filter-dropdown {
+  flex: 1 1 0;
+  min-height: 0;
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  margin: 0;
+  padding: 8px 10px 18px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.cmp-filter-portal-clip>.cmp-filter-dropdown>.cmp-filter-scroll-root {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-padding-block: 10px 16px;
+  scroll-padding-inline: 4px;
+  padding-bottom: 12px;
+}
+
+.cmp-filter-portal-clip>.cmp-filter-dropdown>.cmp-filter-sticky-facets {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--color-surface-glass-solid);
+  box-shadow: 0 1px 0 var(--color-outline-variant);
+}
+
+.cmp-filter-backdrop {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: var(--color-scrim-medium);
+  cursor: pointer;
+}
+
+.cmp-filter-drop {
+  position: absolute;
+  z-index: 1;
+  max-height: min(70vh, 520px);
+  overflow: auto;
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: var(--shadow-overlay-lg);
+}
+
+.cmp-filter-search {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 0.5rem;
+  background: transparent;
+  color: var(--color-text-main);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+}
+
+.cmp-filter-all {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: var(--color-text-main);
+  border: none;
+  padding: 0.35rem 0.25rem;
+  cursor: pointer;
+  margin-bottom: 0.35rem;
+}
+
+.cmp-filter-section {
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--color-outline-variant);
+  padding-top: 0.35rem;
+}
+
+.cmp-filter-section-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+  margin-bottom: 0.25rem;
+}
+
+.cmp-filter-row {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: var(--color-text-main);
+  border: none;
+  padding: 0.3rem 0.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.cmp-filter-row:hover {
+  background: var(--color-row-hover);
+}
+
+.cmp-filter-row--on {
+  background: var(--color-row-selected);
+  color: var(--color-primary);
+}
+
+.cmp-filter-tag-list {
+  max-height: 200px;
+  overflow: auto;
+}
+
+/* Settings (Phase 6) */

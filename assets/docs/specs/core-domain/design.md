@@ -29,44 +29,44 @@ No I/O. No shell or renderer dependencies. Single commit on
 The full `src/core/` tree (53 files) and the pure-only slice of
 `src/shared/`:
 
-| Area | Files | Purpose |
-| ---- | ----- | ------- |
-| `src/core/constants/` | 4 | App identifier, default values, language metadata |
-| `src/core/domain/types/` | 3 | `Entry`, `NoteBlock`, `LinkItem`, supporting unions |
-| `src/core/domain/constants/` | 2 | Entry keys, section types, regex patterns |
-| `src/core/domain/guards/` | 4 | Pure type guards: entry, lang, entry_section |
-| `src/core/domain/models/entries/schemas/` | 10 | Zod schemas: base, meta, tags (+spec), notes, link, entry, task, source_row_min |
-| `src/core/domain/models/entries/parsers/` | 3 | `parseBaseEntryFields`, `parseSourceFile`/`parseSourceSection` (+spec) |
-| `src/core/domain/models/entries/factories/` | 1 | `toEntryWithSourceHint` |
-| `src/core/domain/models/entries/index.ts` | 1 | Barrel |
-| `src/core/domain/models/knowledges/schemas/` | 2 | `KnowledgeSchema`, barrel |
-| `src/core/domain/models/knowledges/factories/` | 1 | `deriveId` (crc32-based), `toKnowledge` |
-| `src/core/domain/models/knowledges/detail/` | 11 | `assembleDoc` (+spec) + per-type doc parsers (bookmark, cheat, command, task) + shared (notes +spec, youtube +spec) + barrel |
-| `src/core/domain/models/knowledges/index.ts` | 1 | Barrel |
-| `src/core/domain/models/sources/parsers/` | 2 | `parseSourceLocation` (+spec) |
-| `src/core/domain/models/sources/index.ts` | 1 | Barrel |
-| `src/core/domain/models/index.ts` | 1 | Barrel |
-| `src/core/domain/index.ts` | 1 | Barrel |
-| `src/core/helpers/` | 3 | `expandPath` (~ and `$VAR` substitution, pure) |
-| `src/core/index.ts`, `src/core/package.json` | 2 | Top-level barrel + workspace package |
-| `src/shared/utils/crc32.{ts,spec.ts}` | 2 | Id derivation primitive |
-| `src/shared/utils/index.ts`, `src/shared/utils/package.json` | 2 | Barrel + workspace package |
-| `src/shared/types/env.types.ts` | 1 | `Env = Record<string, string>` |
-| `src/shared/types/index.ts` *(modified)* | 1 | Re-exports only `env.types` (logger re-export removed; returns in Phase 5) |
-| `src/shared/types/package.json` | 1 | Workspace package |
-| **New specs (per-public-export rule)** | 10 | parsers + factories + guards (see [TESTING](#testing)) |
+| Area                                                         | Files | Purpose                                                                                                                      |
+| ------------------------------------------------------------ | ----- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `src/core/constants/`                                        | 4     | App identifier, default values, language metadata                                                                            |
+| `src/core/domain/types/`                                     | 3     | `Entry`, `NoteBlock`, `LinkItem`, supporting unions                                                                          |
+| `src/core/domain/constants/`                                 | 2     | Entry keys, section types, regex patterns                                                                                    |
+| `src/core/domain/guards/`                                    | 4     | Pure type guards: entry, lang, entry_section                                                                                 |
+| `src/core/domain/models/entries/schemas/`                    | 10    | Zod schemas: base, meta, tags (+spec), notes, link, entry, task, source_row_min                                              |
+| `src/core/domain/models/entries/parsers/`                    | 3     | `parseBaseEntryFields`, `parseSourceFile`/`parseSourceSection` (+spec)                                                       |
+| `src/core/domain/models/entries/factories/`                  | 1     | `toEntryWithSourceHint`                                                                                                      |
+| `src/core/domain/models/entries/index.ts`                    | 1     | Barrel                                                                                                                       |
+| `src/core/domain/models/knowledges/schemas/`                 | 2     | `KnowledgeSchema`, barrel                                                                                                    |
+| `src/core/domain/models/knowledges/factories/`               | 1     | `deriveId` (crc32-based), `toKnowledge`                                                                                      |
+| `src/core/domain/models/knowledges/detail/`                  | 11    | `assembleDoc` (+spec) + per-type doc parsers (bookmark, cheat, command, task) + shared (notes +spec, youtube +spec) + barrel |
+| `src/core/domain/models/knowledges/index.ts`                 | 1     | Barrel                                                                                                                       |
+| `src/core/domain/models/sources/parsers/`                    | 2     | `parseSourceLocation` (+spec)                                                                                                |
+| `src/core/domain/models/sources/index.ts`                    | 1     | Barrel                                                                                                                       |
+| `src/core/domain/models/index.ts`                            | 1     | Barrel                                                                                                                       |
+| `src/core/domain/index.ts`                                   | 1     | Barrel                                                                                                                       |
+| `src/core/helpers/`                                          | 3     | `expandPath` (~ and `$VAR` substitution, pure)                                                                               |
+| `src/core/index.ts`, `src/core/package.json`                 | 2     | Top-level barrel + workspace package                                                                                         |
+| `src/shared/utils/crc32.{ts,spec.ts}`                        | 2     | Id derivation primitive                                                                                                      |
+| `src/shared/utils/index.ts`, `src/shared/utils/package.json` | 2     | Barrel + workspace package                                                                                                   |
+| `src/shared/types/env.types.ts`                              | 1     | `Env = Record<string, string>`                                                                                               |
+| `src/shared/types/index.ts` *(modified)*                     | 1     | Re-exports only `env.types` (logger re-export removed; returns in Phase 5)                                                   |
+| `src/shared/types/package.json`                              | 1     | Workspace package                                                                                                            |
+| **New specs (per-public-export rule)**                       | 10    | parsers + factories + guards (see [TESTING](#testing))                                                                       |
 
 **Total:** ~70 files.
 
 ### Out of scope
 
-| Area | Phase | Stash |
-| ---- | ----- | ----- |
-| `src/shell/app/db/*`, `src/__tests__/factories/*`, `src/__tests__/fixtures/*`, `src/shared/logging/*`, `drizzle/` if present | 4 — Data Layer | `phase-4-data-layer` |
-| `src/shell/main/main.ts` *(modified)*, `src/shell/main/rpc/*`, `src/shared/rpc/*`, `src/shared/types/logger.types.ts`, `src/shell/renderer/app.tsx` *(modified)*, `tools/preview/*` | 5 — Elysia RPC | `phase-5-rpc` |
-| `src/shell/renderer/{components/list,components/shared,utils,constants,styles}/*`, `src/shell/renderer/{index.html,app.tsx}` (initial scaffold), `assets/icons/*`, `assets/images/*`, `happydom.ts`, `package.json` *(modified)* | 6 — Renderer List View | `phase-6-renderer-list` |
-| `src/shell/renderer/components/detail/*` | 7 — Renderer Detail View | `phase-7-renderer-detail` |
-| `docs/superpowers/plans/*` | n/a (planning) | `phase-misc-docs` |
+| Area                                                                                                                                                                                                                             | Phase                    | Stash                     |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ------------------------- |
+| `src/shell/app/db/*`, `src/__tests__/factories/*`, `src/__tests__/fixtures/*`, `src/shared/logging/*`, `drizzle/` if present                                                                                                     | 4 — Data Layer           | `phase-4-data-layer`      |
+| `src/shell/main/main.ts` *(modified)*, `src/shell/main/rpc/*`, `src/shared/rpc/*`, `src/shared/types/logger.types.ts`, `src/shell/renderer/app.tsx` *(modified)*, `tools/preview/*`                                              | 5 — Elysia RPC           | `phase-5-rpc`             |
+| `src/shell/renderer/{components/list,components/shared,utils,constants,styles}/*`, `src/shell/renderer/{index.html,app.tsx}` (initial scaffold), `assets/icons/*`, `assets/images/*`, `happydom.ts`, `package.json` *(modified)* | 6 — Renderer List View   | `phase-6-renderer-list`   |
+| `src/shell/renderer/components/detail/*`                                                                                                                                                                                         | 7 — Renderer Detail View | `phase-7-renderer-detail` |
+| `docs/superpowers/plans/*`                                                                                                                                                                                                       | n/a (planning)           | `phase-misc-docs`         |
 
 ---
 
@@ -140,31 +140,31 @@ See [SCOPE / In scope](#in-scope-single-commit) above.
 
 ### Existing specs (preserved as-is, 7 files)
 
-| Spec | Covers |
-| ---- | ------ |
-| `domain/models/entries/schemas/tags.schema.spec.ts` | Tag normalization & dedupe |
+| Spec                                                           | Covers                                           |
+| -------------------------------------------------------------- | ------------------------------------------------ |
+| `domain/models/entries/schemas/tags.schema.spec.ts`            | Tag normalization & dedupe                       |
 | `domain/models/entries/parsers/source_document.parser.spec.ts` | YAML → entries (table-driven across all 4 types) |
-| `domain/models/knowledges/detail/doc.assembler.spec.ts` | End-to-end doc assembly per entry type |
-| `domain/models/knowledges/detail/youtube.parser.spec.ts` | YouTube URL detection + thumbnail extraction |
-| `domain/models/knowledges/detail/notes.parser.spec.ts` | Note fragment shape extraction |
-| `domain/models/sources/parsers/source_location.parser.spec.ts` | Path → SourceLocation parsing |
-| `helpers/path.helper.spec.ts` | `expandPath` substitution |
-| `src/shared/utils/crc32.spec.ts` | crc32 idempotence + known-vector |
+| `domain/models/knowledges/detail/doc.assembler.spec.ts`        | End-to-end doc assembly per entry type           |
+| `domain/models/knowledges/detail/youtube.parser.spec.ts`       | YouTube URL detection + thumbnail extraction     |
+| `domain/models/knowledges/detail/notes.parser.spec.ts`         | Note fragment shape extraction                   |
+| `domain/models/sources/parsers/source_location.parser.spec.ts` | Path → SourceLocation parsing                    |
+| `helpers/path.helper.spec.ts`                                  | `expandPath` substitution                        |
+| `src/shared/utils/crc32.spec.ts`                               | crc32 idempotence + known-vector                 |
 
 ### New specs (10 files, per-public-export rule)
 
-| Spec | Public exports covered | Approx LOC |
-| ---- | ---------------------- | ---------- |
-| `domain/models/entries/parsers/base_fields.parser.spec.ts` | `parseSourceBaseEntryFields` | ~80 |
-| `domain/models/entries/factories/entry.factory.spec.ts` | `toEntryWithSourceHint` | ~60 |
-| `domain/models/knowledges/factories/knowledge.factory.spec.ts` | `deriveId`, `toKnowledge` | ~80 |
-| `domain/models/knowledges/detail/doc.bookmark.parser.spec.ts` | bookmark doc parsing | ~70 |
-| `domain/models/knowledges/detail/doc.cheat.parser.spec.ts` | cheat doc parsing | ~70 |
-| `domain/models/knowledges/detail/doc.command.parser.spec.ts` | command doc parsing | ~70 |
-| `domain/models/knowledges/detail/doc.task.parser.spec.ts` | task doc parsing (status, priority, due) | ~80 |
-| `domain/guards/entry.guard.spec.ts` | `isEntry`, `isEntryType` | ~40 |
-| `domain/guards/lang.guard.spec.ts` | `isNoteLang`, `isMarkdownLang` | ~30 |
-| `domain/guards/entry_section.guard.spec.ts` | `isSectionEntryType` | ~30 |
+| Spec                                                           | Public exports covered                   | Approx LOC |
+| -------------------------------------------------------------- | ---------------------------------------- | ---------- |
+| `domain/models/entries/parsers/base_fields.parser.spec.ts`     | `parseSourceBaseEntryFields`             | ~80        |
+| `domain/models/entries/factories/entry.factory.spec.ts`        | `toEntryWithSourceHint`                  | ~60        |
+| `domain/models/knowledges/factories/knowledge.factory.spec.ts` | `deriveId`, `toKnowledge`                | ~80        |
+| `domain/models/knowledges/detail/doc.bookmark.parser.spec.ts`  | bookmark doc parsing                     | ~70        |
+| `domain/models/knowledges/detail/doc.cheat.parser.spec.ts`     | cheat doc parsing                        | ~70        |
+| `domain/models/knowledges/detail/doc.command.parser.spec.ts`   | command doc parsing                      | ~70        |
+| `domain/models/knowledges/detail/doc.task.parser.spec.ts`      | task doc parsing (status, priority, due) | ~80        |
+| `domain/guards/entry.guard.spec.ts`                            | `isEntry`, `isEntryType`                 | ~40        |
+| `domain/guards/lang.guard.spec.ts`                             | `isNoteLang`, `isMarkdownLang`           | ~30        |
+| `domain/guards/entry_section.guard.spec.ts`                    | `isSectionEntryType`                     | ~30        |
 
 **Total new test code:** ~600 LOC across 10 files.
 
@@ -239,16 +239,16 @@ The manifest is human-reviewable before any stash operation runs.
 
 ## VERIFICATION POINTS
 
-| # | Command | Expected |
-| --- | ------- | -------- |
-| 1 | `bun run typecheck` | Exit 0 |
-| 2 | `bun test src/core src/shared` | Exit 0; 17 specs pass |
-| 3 | `bunx biome check src/core src/shared` | Exit 0 |
-| 4 | `bunx knip` | Exit 0 (no unused exports in the trimmed slice) |
-| 5 | `bunx depcruise src/core src/shared --config .dependency-cruiser.cjs` | Exit 0 (no shell-layer leakage) |
-| 6 | `git diff-tree --no-commit-id --name-only -r HEAD \| wc -l` | Exit 0; line count ≈ 70 |
-| 7 | `git status --short` | Empty after commit |
-| 8 | `git stash list` | 6 entries: 5 phase stashes + the original `WIP on main` |
+| #   | Command                                                               | Expected                                                |
+| --- | --------------------------------------------------------------------- | ------------------------------------------------------- |
+| 1   | `bun run typecheck`                                                   | Exit 0                                                  |
+| 2   | `bun test src/core src/shared`                                        | Exit 0; 17 specs pass                                   |
+| 3   | `bunx biome check src/core src/shared`                                | Exit 0                                                  |
+| 4   | `bunx knip`                                                           | Exit 0 (no unused exports in the trimmed slice)         |
+| 5   | `bunx depcruise src/core src/shared --config .dependency-cruiser.cjs` | Exit 0 (no shell-layer leakage)                         |
+| 6   | `git diff-tree --no-commit-id --name-only -r HEAD \| wc -l`           | Exit 0; line count ≈ 70                                 |
+| 7   | `git status --short`                                                  | Empty after commit                                      |
+| 8   | `git stash list`                                                      | 6 entries: 5 phase stashes + the original `WIP on main` |
 
 Steps 1–5 form the pre-commit gate. Steps 6–8 form the post-commit verification.
 
@@ -324,14 +324,14 @@ The Cursor runtime auto-appends `Co-authored-by: Cursor <cursoragent@cursor.com>
 
 ## RISKS AND MITIGATIONS
 
-| Risk | Mitigation |
-| ---- | ---------- |
-| File mis-mapped to a stash; lost on Phase 4 start | Manifest audit before stashing; each stash recoverable independently via `git stash apply <stash@{N}>` |
-| Phase 3 file silently depends on a stashed file (compile fail after stash) | Verification step 5 in [EXECUTION SEQUENCE](#execution-sequence): typecheck + test after stashing, before authoring new specs |
-| `src/shared/types/index.ts` edit breaks downstream imports | The edit only removes a re-export. Verified by typecheck — failures point to the offender, which gets stashed too |
-| 10 new specs introduce mocking or I/O by accident | Test style rules in [TESTING](#test-style-requirements); reviewer enforces |
-| Commit body exceeds gitlint limits | Pre-commit dry-run with `gitlint --staged` after staging; subject is 47 chars; body lines wrap at 72 |
-| Stash-on-stash conflict on a later `pop` | Stashes are recorded in dependency order; manifest documents file ownership; fallback is `git stash branch <name> stash@{N}` for surgical recovery |
+| Risk                                                                       | Mitigation                                                                                                                                         |
+| -------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| File mis-mapped to a stash; lost on Phase 4 start                          | Manifest audit before stashing; each stash recoverable independently via `git stash apply <stash@{N}>`                                             |
+| Phase 3 file silently depends on a stashed file (compile fail after stash) | Verification step 5 in [EXECUTION SEQUENCE](#execution-sequence): typecheck + test after stashing, before authoring new specs                      |
+| `src/shared/types/index.ts` edit breaks downstream imports                 | The edit only removes a re-export. Verified by typecheck — failures point to the offender, which gets stashed too                                  |
+| 10 new specs introduce mocking or I/O by accident                          | Test style rules in [TESTING](#test-style-requirements); reviewer enforces                                                                         |
+| Commit body exceeds gitlint limits                                         | Pre-commit dry-run with `gitlint --staged` after staging; subject is 47 chars; body lines wrap at 72                                               |
+| Stash-on-stash conflict on a later `pop`                                   | Stashes are recorded in dependency order; manifest documents file ownership; fallback is `git stash branch <name> stash@{N}` for surgical recovery |
 
 ---
 
@@ -349,5 +349,5 @@ The Cursor runtime auto-appends `Co-authored-by: Cursor <cursoragent@cursor.com>
 - [Bun test docs](https://bun.sh/docs/cli/test) — `describe.each`, table-driven tests.
 - [Zod docs](https://zod.dev/) — schema parsing, `safeParse`, refinement.
 - [`crc32` (Bun built-in)](https://bun.sh/docs/api/hashing) — used for `deriveId`.
-- `kb-context` skill — architecture rules (FCIS layers, naming conventions).
-- `kb-testing` skill — testing patterns (no-mock rule, table-driven).
+- `app-context` skill — architecture rules (FCIS layers, naming conventions).
+- `app-testing` skill — testing patterns (no-mock rule, table-driven).

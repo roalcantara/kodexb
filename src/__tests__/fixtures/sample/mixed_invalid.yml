@@ -5,5 +5,5 @@ bookmarks:
   broken-bookmark:
     tags: [invalid]
   https://valid.example.com/omega:
-    desc: This row is structurally valid but never imports because the file fails
-    tags: [valid, skipped]
+    desc: Valid entry — imports with SY-3 entry-level error isolation
+    tags: [valid, sample]

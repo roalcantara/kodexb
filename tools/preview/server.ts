@@ -47,7 +47,7 @@ console.log(`Renderer bundle built (${(bundleJs.length / BYTES_PER_KIB).toFixed(
 
 // ── Boot real App + Elysia RpcApp ──────────────────────────────────────────
 const config = await loadConfig()
-const app = new App(config, {}, false, {})
+const app = new App(config, {}, 'default', {})
 const rpc = createRpcServer(app)
 
 // ── HTML shell ──────────────────────────────────────────────────────────────
@@ -59,7 +59,7 @@ const html = `<!doctype html>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>kb — preview</title>
+    <title>app — preview</title>
     ${cssExists ? '<link rel="stylesheet" href="/index.css" />' : ''}
   </head>
   <body>

@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>kb prototype — Keyboard Shortcuts (two views)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --surface: rgba(18, 23, 33, 0.92);
+      --surface-2: #121721;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #e8edf7;
+      --muted: #8892a4;
+      --faded: #555c6a;
+      --accent: #00d4ff;
+      --accent-dim: rgba(0, 212, 255, 0.08);
+      --cheat: #a855f7;
+      --radius: 8px;
+      --shell-radius: 12px;
+      --font: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(900px 500px at 15% 0%, rgba(0, 212, 255, 0.07), transparent 55%),
+        radial-gradient(700px 400px at 85% 90%, rgba(168, 85, 247, 0.06), transparent 50%),
+        var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.25rem 1rem 2rem;
+    }
+
+    .proto-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      width: min(980px, 100%);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      margin-bottom: 1rem;
+      border-radius: var(--radius);
+      background: rgba(10, 10, 11, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+    }
+
+    .proto-bar h1 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      flex: 1 1 auto;
+    }
+
+    .proto-bar p {
+      margin: 0;
+      width: 100%;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .proto-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 3px;
+      border-radius: 7px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+    }
+
+    .proto-tabs button {
+      font: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 0.35rem 0.75rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: var(--muted);
+      background: transparent;
+    }
+
+    .proto-tabs button[aria-selected="true"] {
+      color: var(--text);
+      background: var(--accent-dim);
+      box-shadow: inset 0 0 0 1px rgba(0, 212, 255, 0.25);
+    }
+
+    .shell {
+      width: min(980px, 100%);
+      border-radius: var(--shell-radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      backdrop-filter: blur(48px) saturate(1.2);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+    }
+
+    .shell-drag {
+      height: 24px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent);
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view[data-active="true"] {
+      display: block;
+    }
+
+    /* ── Page 1: App keyboard shortcuts ── */
+    .app-shortcuts {
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-shortcuts-header {
+      padding: 1rem 1.25rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .app-shortcuts-header .eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin: 0 0 0.35rem;
+    }
+
+    .app-shortcuts-header h2 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+
+    .app-shortcuts-header .sub {
+      margin: 0.35rem 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 0.65rem;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .toolbar input {
+      flex: 1 1 200px;
+      min-width: 0;
+      padding: 0.55rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text);
+      font: inherit;
+      font-size: 14px;
+    }
+
+    .toolbar input::placeholder {
+      color: var(--faded);
+    }
+
+    .platform-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .platform-toggle button {
+      font: inherit;
+      font-size: 12px;
+      padding: 0.45rem 0.7rem;
+      border: none;
+      background: var(--surface-2);
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .platform-toggle button[aria-pressed="true"] {
+      color: var(--text);
+      background: var(--accent-dim);
+    }
+
+    .shortcut-groups {
+      flex: 1;
+      overflow: auto;
+      padding: 0.5rem 0 1rem;
+      max-height: 480px;
+    }
+
+    .group {
+      padding: 0.75rem 1.25rem 0.25rem;
+    }
+
+    .group h3 {
+      margin: 0 0 0.5rem;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    .shortcut-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.45rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 14px;
+    }
+
+    .shortcut-row:last-child {
+      border-bottom: none;
+    }
+
+    .shortcut-row .label {
+      color: var(--text);
+    }
+
+    .shortcut-row .context {
+      font-size: 12px;
+      color: var(--faded);
+      margin-top: 0.15rem;
+    }
+
+    kbd,
+    .kbd {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 0.2rem 0.45rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .kbd-sep {
+      color: var(--faded);
+      font-size: 10px;
+      padding: 0 0.1rem;
+    }
+
+    .app-footer {
+      padding: 0.65rem 1.25rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--faded);
+    }
+
+    /* ── Page 2: Cheat entry (shortcut collection) ── */
+    .entry-detail {
+      display: grid;
+      grid-template-columns: minmax(280px, 340px) 1fr minmax(200px, 220px);
+      min-height: 580px;
+    }
+
+    @media (max-width: 860px) {
+      .entry-detail {
+        grid-template-columns: 1fr;
+      }
+
+      .entry-detail .list-col,
+      .entry-detail .meta-col {
+        display: none;
+      }
+    }
+
+    .list-col {
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .list-col .search-mini {
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .list-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.55rem 0.75rem;
+      border: none;
+      width: 100%;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+      background: transparent;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .list-row:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .list-row.selected {
+      background: var(--accent-dim);
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+
+    .list-row .icon {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .list-row .title {
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+
+    .list-row .meta-line {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    .content-col {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .entry-header {
+      padding: 1rem 1.15rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .entry-header .type-pill {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--cheat);
+      background: rgba(168, 85, 247, 0.12);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .entry-header h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .entry-header .desc {
+      margin: 0.4rem 0 0;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.65rem;
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.6rem 1.15rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .view-toggle button {
+      font: inherit;
+      font-size: 12px;
+      padding: 0.3rem 0.6rem;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .view-toggle button[aria-pressed="true"] {
+      color: var(--text);
+      border-color: rgba(0, 212, 255, 0.35);
+      background: var(--accent-dim);
+    }
+
+    .shortcut-table-wrap {
+      flex: 1;
+      overflow: auto;
+      padding: 0.75rem 1.15rem 1rem;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 1rem 0 0.5rem;
+      letter-spacing: 0.04em;
+    }
+
+    .section-title:first-child {
+      margin-top: 0;
+    }
+
+    table.shortcuts {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    table.shortcuts th {
+      text-align: left;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--faded);
+      padding: 0.35rem 0.5rem 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    table.shortcuts td {
+      padding: 0.5rem 0.5rem 0.5rem 0;
+      vertical-align: top;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    table.shortcuts td.tags {
+      color: var(--faded);
+      font-size: 11px;
+    }
+
+    table.shortcuts tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .markdown-fallback {
+      display: none;
+      padding: 1rem 1.15rem;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--muted);
+      white-space: pre-wrap;
+      overflow: auto;
+      flex: 1;
+    }
+
+    .markdown-fallback[data-active="true"] {
+      display: block;
+    }
+
+    .shortcut-table-wrap[data-hidden="true"] {
+      display: none;
+    }
+
+    .meta-col {
+      border-left: 1px solid var(--border);
+      padding: 1rem 0.85rem;
+      font-size: 12px;
+    }
+
+    .meta-col h3 {
+      margin: 0 0 0.75rem;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    .meta-col dl {
+      margin: 0;
+    }
+
+    .meta-col dt {
+      color: var(--faded);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.65rem;
+    }
+
+    .meta-col dt:first-child {
+      margin-top: 0;
+    }
+
+    .meta-col dd {
+      margin: 0.2rem 0 0;
+      color: var(--text);
+    }
+
+    .action-bar {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--faded);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .action-bar .hints kbd {
+      font-size: 10px;
+      padding: 0.1rem 0.3rem;
+    }
+
+    .linux-only {
+      display: none;
+    }
+
+    body[data-platform="linux"] .mac-only {
+      display: none;
+    }
+
+    body[data-platform="linux"] .linux-only {
+      display: inline-flex;
+    }
+  </style>
+</head>
+
+<body data-platform="mac">
+  <div class="proto-bar">
+    <h1>Keyboard Shortcuts — planned prototype</h1>
+    <div class="proto-tabs" role="tablist" aria-label="Prototype views">
+      <button type="button" role="tab" id="tab-app" aria-selected="true" aria-controls="view-app">1 · App
+        shortcuts</button>
+      <button type="button" role="tab" id="tab-entry" aria-selected="false" aria-controls="view-entry">2 · Cheat
+        entry</button>
+    </div>
+    <p>
+      Two surfaces: <strong>App Keyboard Shortcuts</strong> (kb’s own bindings — opened via
+      <kbd>⌘,</kbd> Settings or <kbd>⌘K</kbd> → “Keyboard shortcuts”) and a
+      <strong>cheat entry detail</strong> (structured shortcut rows parsed from YAML, not raw markdown only).
+    </p>
+  </div>
+
+  <div class="shell">
+    <div class="shell-drag" aria-hidden="true"></div>
+
+    <!-- ═══ PAGE 1: App keyboard shortcuts ═══ -->
+    <section class="view app-shortcuts" id="view-app" data-active="true" role="tabpanel" aria-labelledby="tab-app">
+      <header class="app-shortcuts-header">
+        <p class="eyebrow">kb · App</p>
+        <h2>Keyboard Shortcuts</h2>
+        <p class="sub">Bindings for this application. Platform-aware labels; filterable list.</p>
+      </header>
+
+      <div class="toolbar">
+        <input type="search" placeholder="Filter shortcuts…" aria-label="Filter app shortcuts" />
+        <div class="platform-toggle" role="group" aria-label="Platform">
+          <button type="button" data-platform="mac" aria-pressed="true">macOS</button>
+          <button type="button" data-platform="linux" aria-pressed="false">Linux</button>
+        </div>
+      </div>
+
+      <div class="shortcut-groups">
+        <div class="group">
+          <h3>Navigation</h3>
+          <div class="shortcut-row">
+            <div>
+              <div class="label">Focus search</div>
+            </div>
+            <div>
+              <span class="mac-only"><kbd>⌘</kbd><span class="kbd-sep">+</span><kbd>F</kbd></span>
+              <span class="linux-only"><kbd>Ctrl</kbd><span class="kbd-sep">+</span><kbd>F</kbd></span>
+            </div>
+          </div>
+          <div class="shortcut-row">
+            <div>
+              <div class="label">Move selection</div>
+            </div>
+            <div><kbd>↑</kbd><span class="kbd-sep">/</span><kbd>↓</kbd></div>
+          </div>
+          <div class="shortcut-row">
+            <div>
+              <div class="label">Toggle detail panel</div>
+            </div>
+            <div><kbd>↵</kbd></div>
+          </div>
+          <div class="shortcut-row">
+            <div>
+              <div class="label">Close sheet / palette</div>
+            </div>
+            <div><kbd>Esc</kbd></div>
+          </div>
+        </div>
+
+        <div class="group">
+          <h3>Actions</h3>
+          <div class="shortcut-row">
+            <div>
+              <div class="label">Open command palette</div>
+            </div>
+            <div>
+              <span class="mac-only"><kbd>⌘</kbd><span class="kbd-sep">+</span><kbd>K</kbd></span>
+              <span class="linux-only"><kbd>Ctrl</kbd><span class="kbd-sep">+</span><kbd>K</kbd></span>
+            </div>
+          </div>
+          <div class="shortcut-row">
+            <div>
+              <div class="label">Primary entry action</div>
+              <div class="context">Open link · paste command · copy cheat</div>
+            </div>
+            <div>
+              <span class="mac-only"><kbd>⌘</kbd><span class="kbd-sep">+</span><kbd>↵</kbd></span>
+              <span class="linux-only"><kbd>Ctrl</kbd><span class="kbd-sep">+</span><kbd>↵</kbd></span>
+            </div>
+          </div>
+          <div class="shortcut-row">
+            <div>
+              <div class="label">Sync / refresh</div>
+            </div>
+            <div>
+              <span class="mac-only"><kbd>⌘</kbd><span class="kbd-sep">+</span><kbd>R</kbd></span>
+              <span class="linux-only"><kbd>Ctrl</kbd><span class="kbd-sep">+</span><kbd>R</kbd></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <h3>Window</h3>
+          <div class="shortcut-row">
+            <div>
+              <div class="label">Settings</div>
+            </div>
+            <div>
+              <span class="mac-only"><kbd>⌘</kbd><span class="kbd-sep">+</span><kbd>,</kbd></span>
+              <span class="linux-only"><kbd>Ctrl</kbd><span class="kbd-sep">+</span><kbd>,</kbd></span>
+            </div>
+          </div>
+          <div class="shortcut-row">
+            <div>
+              <div class="label">Snap to compact width</div>
+            </div>
+            <div>
+              <span class="mac-only"><kbd>⌘</kbd><span class="kbd-sep">+</span><kbd>⇧</kbd><span
+                  class="kbd-sep">+</span><kbd>C</kbd></span>
+              <span class="linux-only"><kbd>Ctrl</kbd><span class="kbd-sep">+</span><kbd>⇧</kbd><span
+                  class="kbd-sep">+</span><kbd>C</kbd></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <h3>Help</h3>
+          <div class="shortcut-row">
+            <div>
+              <div class="label">Open this reference</div>
+            </div>
+            <div>
+              <span class="mac-only"><kbd>⌘</kbd><span class="kbd-sep">+</span><kbd>/</kbd></span>
+              <span class="linux-only"><kbd>Ctrl</kbd><span class="kbd-sep">+</span><kbd>/</kbd></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="app-footer">
+        <span>24 shortcuts · kb 0.x</span>
+        <span>Also in Command palette → App → Keyboard shortcuts</span>
+      </footer>
+    </section>
+
+    <!-- ═══ PAGE 2: Cheat entry (shortcut collection) ═══ -->
+    <section class="view entry-detail" id="view-entry" data-active="false" role="tabpanel" aria-labelledby="tab-entry">
+      <aside class="list-col" aria-label="Entry list">
+        <div class="search-mini">Filter: type cheat · tag shortcuts</div>
+        <button type="button" class="list-row">
+          <span class="icon">⌨</span>
+          <span>
+            <div class="title">Keyboard Shortcuts writing order…</div>
+            <div class="meta-line">cheat · #shortcuts</div>
+          </span>
+        </button>
+        <button type="button" class="list-row selected">
+          <span class="icon">⌨</span>
+          <span>
+            <div class="title">Common Shortcuts</div>
+            <div class="meta-line">cheat · #shortcuts #general</div>
+          </span>
+        </button>
+        <button type="button" class="list-row">
+          <span class="icon">⌨</span>
+          <span>
+            <div class="title">Ghostty · Amethyst · TWM</div>
+            <div class="meta-line">cheat · #ghostty #shortcuts</div>
+          </span>
+        </button>
+      </aside>
+
+      <main class="content-col">
+        <header class="entry-header">
+          <span class="type-pill">cheat</span>
+          <h2>Common Shortcuts</h2>
+          <p class="desc">Cross-app shortcuts for shell, terminal, and window managers — indexed from shortcuts.yml.</p>
+          <div class="tag-row">
+            <span class="tag">#shortcuts</span>
+            <span class="tag">#general</span>
+            <span class="tag">#zsh</span>
+          </div>
+        </header>
+
+        <div class="view-toggle" role="group" aria-label="Content view">
+          <button type="button" id="btn-table" aria-pressed="true">Structured table</button>
+          <button type="button" id="btn-md" aria-pressed="false">Markdown source</button>
+        </div>
+
+        <div class="shortcut-table-wrap" id="table-wrap">
+          <h3 class="section-title">ZSH</h3>
+          <table class="shortcuts">
+            <thead>
+              <tr>
+                <th style="width:28%">Keys</th>
+                <th style="width:44%">Action</th>
+                <th style="width:28%">Tags</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>⌥</kbd><span class="kbd-sep">+</span><kbd>C</kbd></td>
+                <td>Fuzzy find directory</td>
+                <td class="tags">search, file, fzf</td>
+              </tr>
+              <tr>
+                <td><kbd>⌃</kbd><span class="kbd-sep">+</span><kbd>R</kbd></td>
+                <td>Reverse search history</td>
+                <td class="tags">search, history, fzf</td>
+              </tr>
+              <tr>
+                <td><kbd>⌃</kbd><span class="kbd-sep">+</span><kbd>L</kbd></td>
+                <td>Clear screen</td>
+                <td class="tags">terminal, ui</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="section-title">Neovim (excerpt)</h3>
+          <table class="shortcuts">
+            <thead>
+              <tr>
+                <th>Keys</th>
+                <th>Action</th>
+                <th>Tags</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>⌘</kbd><span class="kbd-sep">+</span><kbd>P</kbd></td>
+                <td>Search files by name</td>
+                <td class="tags">search, file, navigation</td>
+              </tr>
+              <tr>
+                <td><kbd>⇧</kbd><span class="kbd-sep">+</span><kbd>⌘</kbd><span class="kbd-sep">+</span><kbd>P</kbd>
+                </td>
+                <td>Show command palette</td>
+                <td class="tags">command, ui, palette</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <pre class="markdown-fallback" id="md-wrap" aria-label="Markdown source preview"># COMMON SHORTCUTS
+
+## ZSH
+
+```yaml
+shortcuts:
+  ⌥ c:
+    desc: Fuzzy find directory
+    tags: [ search, file, fzf ]
+  ⌃ r:
+    desc: Reverse search history
+    ...
+```</pre>
+      </main>
+
+      <aside class="meta-col" aria-label="Entry metadata">
+        <h3>Metadata</h3>
+        <dl>
+          <dt>Type</dt>
+          <dd>cheat</dd>
+          <dt>Source</dt>
+          <dd>shortcuts.yml</dd>
+          <dt>Bindings</dt>
+          <dd>47 rows · 3 sections</dd>
+          <dt>Updated</dt>
+          <dd>2026-05-12</dd>
+          <dt>Tags</dt>
+          <dd>shortcuts, general</dd>
+        </dl>
+      </aside>
+
+      <footer class="action-bar">
+        <span>Common Shortcuts</span>
+        <span class="hints">
+          <kbd>↵</kbd> Copy body · <kbd>⌘↵</kbd> Open editor · <kbd>⌘K</kbd> Actions
+        </span>
+      </footer>
+    </section>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.proto-tabs [role="tab"]')
+    const views = document.querySelectorAll('.view')
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)))
+        views.forEach(v => {
+          v.dataset.active = String(v.id === tab.getAttribute('aria-controls'))
+        })
+      })
+    })
+
+    document.querySelectorAll('.platform-toggle button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.body.dataset.platform = btn.dataset.platform
+        document.querySelectorAll('.platform-toggle button').forEach(b => {
+          b.setAttribute('aria-pressed', String(b === btn))
+        })
+      })
+    })
+
+    const btnTable = document.getElementById('btn-table')
+    const btnMd = document.getElementById('btn-md')
+    const tableWrap = document.getElementById('table-wrap')
+    const mdWrap = document.getElementById('md-wrap')
+
+    btnTable.addEventListener('click', () => {
+      btnTable.setAttribute('aria-pressed', 'true')
+      btnMd.setAttribute('aria-pressed', 'false')
+      tableWrap.dataset.hidden = 'false'
+      mdWrap.dataset.active = 'false'
+    })
+
+    btnMd.addEventListener('click', () => {
+      btnMd.setAttribute('aria-pressed', 'true')
+      btnTable.setAttribute('aria-pressed', 'false')
+      tableWrap.dataset.hidden = 'true'
+      mdWrap.dataset.active = 'true'
+    })
+  </script>
+</body>
+
+</html>

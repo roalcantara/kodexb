@@ -1,0 +1,15 @@
+bookmarks:
+  https://github.com/example/repo:
+    desc: Production user entry with tag regex failure
+    tags: [OpenValidation, my_project]
+  https://github.com/another/project:
+    desc: Another entry with invalid tag
+    tags: [InvalidUpperCase, valid_tag]
+  https://github.com/third/repo:
+    desc: Entry with mixed invalid tags
+    tags: [BadTag, AnotherBadTag]
+
+commands:
+  https://github.com/cli/tool:
+    desc: Command with invalid tag
+    tags: [OpenValidation]

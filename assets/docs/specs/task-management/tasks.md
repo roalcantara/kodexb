@@ -18,7 +18,7 @@
 - [ ] Read `assets/docs/specs/task-management/design.md`
 - [ ] Read `assets/docs/specs/task-management/requirements.md`
 - [ ] Read `assets/docs/specs/foundation/requirements.md` — V1-7 section
-- [ ] Read `.agents/skills/kb-context/SKILL.md`, `.agents/skills/kb-testing/SKILL.md`, `.agents/skills/kb-rpc/SKILL.md`
+- [ ] Read `.agents/skills/app-context/SKILL.md`, `.agents/skills/app-testing/SKILL.md`, `.agents/skills/app-rpc/SKILL.md`
 
 ---
 
@@ -282,11 +282,11 @@ const taskFactory = Factory.define<TaskKnowledge>(({ sequence }) => ({
   type: 'task',
   key: `Task title ${sequence}`,
   source: minimalEntriesYml,
-  desc: 'Build kb',
-  tags: ['dev', 'kb'],
+  desc: 'Build app',
+  tags: ['dev', 'app'],
   priority: 'high',
   status: 'doing',
-  doc: `# Task ${sequence}\n\n> Build kb`,
+  doc: `# Task ${sequence}\n\n> Build app`,
   dueDate: undefined,
   taskOrder: sequence,
   dependsOn: undefined,
@@ -762,7 +762,7 @@ export function useTaskSheet(entry?: RpcKnowledge) {
 bun test src/shell/renderer/components/task/task_sheet.component.spec.tsx
 ```
 
-- [ ] **Step 4: Add CSS for `.kb-modal`, `.kb-taskSheet` in `styles/list.css`**
+- [ ] **Step 4: Add CSS for `.app-modal`, `.app-taskSheet` in `styles/list.css`**
 
 - [ ] **Step 5: Commit**
 
@@ -784,8 +784,8 @@ For task entries, the status and priority pills become clickable. On click, call
 - [ ] **Step 2: Add "+ New Task" button to `Toolbar`**
 
 ```tsx
-<button type="button" className="kb-toolbar-btn" onClick={onNewTask} title="New Task (⌘N)">
-  + <span className="kb-toolbar-hint">⌘N</span>
+<button type="button" className="app-toolbar-btn" onClick={onNewTask} title="New Task (⌘N)">
+  + <span className="app-toolbar-hint">⌘N</span>
 </button>
 ```
 

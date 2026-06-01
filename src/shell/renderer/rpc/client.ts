@@ -1,7 +1,9 @@
 import { treaty } from '@elysiajs/eden'
+import { getLogger, RPC_LOG_PREVIEW_MAX_LEN } from '@shared/logging'
 import type {
+  BindingRef,
   ConfigPatch,
-  KbDesktopRpcSchema,
+  DesktopRpcSchema,
   ListOpts,
   ListStats,
   OpenDialogOpts,
@@ -12,24 +14,30 @@ import type {
   RpcGetConfigPayload,
   RpcImportResult,
   RpcKnowledge,
+  RpcListEntry,
+  RpcSyncProgressPayload,
   TaskCreateInput,
   TaskUpdateInput
 } from '@shared/rpc'
 import { Electroview } from 'electrobun/view'
-
+import { notifyAfterSyncComplete, onAfterSyncComplete } from './client_sync_complete.util'
 import type { RpcApp } from './rpc_app.types'
+
+export { onAfterSyncComplete }
+
+const rpcClientLog = getLogger(['kb', 'ui', 'rpc-client'])
 
 const RPC_TIMEOUT_MS = 60_000
 const BRIDGE_ORIGIN = 'http://kb.local'
 
 const syncListeners: {
-  onProgress?: (payload: { processed: number; total: number }) => void
+  onProgress?: (payload: RpcSyncProgressPayload) => void
   onComplete?: (result: RpcImportResult) => void
 } = {}
 
 /**
  * Electrobun-side webview RPC instance. Used for:
- *   - request bridge: `kbWebviewRpc.request.rpcCall({...})` reaches the main
+ *   - request bridge: `webviewRpc.request.rpcCall({...})` reaches the main
  *     process and is forwarded into `RpcApp.handle(request)`.
  *   - push messages: `syncProgress`, `syncComplete` from `App.sync` emitters.
  *
@@ -37,7 +45,7 @@ const syncListeners: {
  * time for `tools/preview/mock_electroview.ts`, which proxies `rpcCall`
  * through native `fetch` against the same `RpcApp` exposed over HTTP.
  */
-const kbWebviewRpc = Electroview.defineRPC<KbDesktopRpcSchema>({
+const webviewRpc = Electroview.defineRPC<DesktopRpcSchema>({
   maxRequestTime: RPC_TIMEOUT_MS,
   handlers: {
     requests: {},
@@ -47,16 +55,17 @@ const kbWebviewRpc = Electroview.defineRPC<KbDesktopRpcSchema>({
       },
       syncComplete: result => {
         syncListeners.onComplete?.(result)
+        notifyAfterSyncComplete(result)
       }
     }
   }
 })
 
-new Electroview({ rpc: kbWebviewRpc })
+new Electroview({ rpc: webviewRpc })
 
 type RpcCallRequest = (params: RpcCallParams) => Promise<RpcCallResponse>
 
-const rpcCall = (kbWebviewRpc.request as unknown as { rpcCall: RpcCallRequest }).rpcCall
+const rpcCall = (webviewRpc.request as unknown as { rpcCall: RpcCallRequest }).rpcCall
 
 /**
  * Eden Treaty `fetcher` override — every Treaty call (e.g. `rpc.api.list.post(...)`)
@@ -68,13 +77,34 @@ const rpcCall = (kbWebviewRpc.request as unknown as { rpcCall: RpcCallRequest })
 async function bridgeFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url
   const parsed = new URL(url, BRIDGE_ORIGIN)
+  const method = init?.method ?? 'POST'
+  const path = `${parsed.pathname}${parsed.search}`
   const bodyText = await readInitBody(init?.body)
   const headers = extractHeaders(init?.headers)
+  const requestId = headers?.['x-request-id'] ?? headers?.['X-Request-Id']
+
+  rpcClientLog.info('→ {method} {path}', { method, path, requestId })
+
+  if (rpcClientLog.isEnabledFor('debug') && bodyText !== undefined) {
+    const preview =
+      bodyText.length > RPC_LOG_PREVIEW_MAX_LEN ? `${bodyText.slice(0, RPC_LOG_PREVIEW_MAX_LEN)}…(truncated)` : bodyText
+    rpcClientLog.debug('Request body', { body: preview })
+  }
+
+  const startedAt = performance.now()
   const result = await rpcCall({
-    path: `${parsed.pathname}${parsed.search}`,
-    method: init?.method ?? 'POST',
+    path,
+    method,
     body: bodyText,
     headers
+  })
+  const durationMs = Math.round((performance.now() - startedAt) * 10) / 10
+
+  rpcClientLog.info('← {status} {path} in {durationMs}ms', {
+    status: result.status,
+    path,
+    durationMs,
+    requestId
   })
   // Eden Treaty calls `Response.json()` unconditionally; an empty body
   // (`App.openExternal` returns `void`) breaks that parser. Default empty
@@ -141,19 +171,25 @@ function extractErrorMessage(value: unknown): string {
 
 /** Register main→renderer sync notifications (replace previous listeners). */
 export function setSyncMessageHandlers(handlers: {
-  onProgress?: (payload: { processed: number; total: number }) => void
+  onProgress?: (payload: RpcSyncProgressPayload) => void
   onComplete?: (result: RpcImportResult) => void
 }): void {
   syncListeners.onProgress = handlers.onProgress
   syncListeners.onComplete = handlers.onComplete
 }
 
-export function listEntries(opts: ListOpts = {}): Promise<RpcKnowledge[]> {
-  return rpc.api.list.post(opts).then(unwrap) as Promise<RpcKnowledge[]>
+export function listEntries(opts: ListOpts = {}): Promise<RpcListEntry[]> {
+  return rpc.api.list.post(opts).then(unwrap) as Promise<RpcListEntry[]>
 }
 
-export function getListStats(): Promise<ListStats> {
-  return rpc.api.getListStats.post({}).then(unwrap) as Promise<ListStats>
+export function listMatchCount(opts: ListOpts = {}): Promise<number> {
+  return rpc.api.listMatchCount.post(opts).then(unwrap) as Promise<number>
+}
+
+export function getListStats(
+  body: Partial<Pick<ListOpts, 'query' | 'tags' | 'types' | 'taskView'>> = {}
+): Promise<ListStats> {
+  return rpc.api.getListStats.post(body).then(unwrap) as Promise<ListStats>
 }
 
 export function getStats(): Promise<RpcDbStats> {
@@ -162,6 +198,22 @@ export function getStats(): Promise<RpcDbStats> {
 
 export function getEntry(id: number): Promise<RpcKnowledge | null> {
   return rpc.api.getEntry.post({ id }).then(unwrap) as Promise<RpcKnowledge | null>
+}
+
+export function recordEntryVisit(id: number): Promise<{ ok: true }> {
+  return rpc.api.recordEntryVisit.post({ id }).then(unwrap) as Promise<{ ok: true }>
+}
+
+export function listBindings(): Promise<BindingRef[]> {
+  return rpc.api.listBindings.post({}).then(unwrap) as Promise<BindingRef[]>
+}
+
+export function listBindingsByChord(hash: string): Promise<BindingRef[]> {
+  return rpc.api.listBindingsByChord.post({ hash }).then(unwrap) as Promise<BindingRef[]>
+}
+
+export function recordBindingVisit(id: string, weight: number): Promise<{ ok: true }> {
+  return rpc.api.recordBindingVisit.post({ id, weight }).then(unwrap) as Promise<{ ok: true }>
 }
 
 export function getConfig(): Promise<RpcGetConfigPayload> {
@@ -178,11 +230,22 @@ export function showOpenDialog(opts?: OpenDialogOpts): Promise<string | null> {
 
 export function syncRpc(sourcesDir?: string): Promise<RpcImportResult> {
   const params = sourcesDir === undefined ? {} : { sourcesDir }
-  return rpc.api.sync.post(params).then(unwrap) as Promise<RpcImportResult>
+  return (rpc.api.sync.post(params).then(unwrap) as Promise<RpcImportResult>).then(result => {
+    notifyAfterSyncComplete(result)
+    return result
+  })
 }
 
 export function resizeWindow(width: number, height: number): Promise<void> {
   return rpc.api.resizeWindow.post({ width, height }).then(unwrap) as Promise<void>
+}
+
+export function getWindowPosition(): Promise<{ x: number; y: number } | null> {
+  return rpc.api.getWindowPosition.post({}).then(unwrap) as Promise<{ x: number; y: number } | null>
+}
+
+export function setWindowPosition(x: number, y: number): Promise<void> {
+  return rpc.api.setWindowPosition.post({ x, y }).then(unwrap) as Promise<void>
 }
 
 export function openExternal(url: string): Promise<void> {
@@ -221,10 +284,30 @@ export function pasteInTerminal(cmd: string): Promise<void> {
   return rpc.api.pasteInTerminal.post({ cmd }).then(unwrap) as Promise<void>
 }
 
+export function runInTerminal(cmd: string): Promise<void> {
+  return rpc.api.runInTerminal.post({ cmd }).then(unwrap) as Promise<void>
+}
+
+export function pasteDoc(doc: string): Promise<void> {
+  return rpc.api.pasteDoc.post({ doc }).then(unwrap) as Promise<void>
+}
+
 export function openInEditor(filePath: string): Promise<void> {
   return rpc.api.openInEditor.post({ filePath }).then(unwrap) as Promise<void>
 }
 
 export function suggestTags(entryId: number): Promise<string[]> {
   return rpc.api.suggestTags.post({ entryId }).then(unwrap) as Promise<string[]>
+}
+
+export function hideWindow(): Promise<void> {
+  return rpc.api.hideWindow.post({}).then(unwrap) as Promise<void>
+}
+
+export function quitApp(): Promise<void> {
+  return rpc.api.quit.post({}).then(unwrap) as Promise<void>
+}
+
+export function getSyncInfo(): Promise<{ sourcesDir: string; fileCount: number }> {
+  return rpc.api.getSyncInfo.post({}).then(unwrap) as Promise<{ sourcesDir: string; fileCount: number }>
 }

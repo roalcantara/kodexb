@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>app prototype — Approach B (PowerToys / Raycast chrome)</title>
+  <style>
+    :root {
+      --app-bg: rgba(11, 14, 20, 0.78);
+      --app-surface: rgba(18, 23, 33, 0.85);
+      --app-border: #232936;
+      --app-text: #e2e9f5;
+      --app-muted: #8892a4;
+      --app-accent: #5ecfbe;
+      --app-row-hover: rgba(28, 37, 55, 0.9);
+      --app-row-selected: rgba(15, 37, 53, 0.95);
+      --shell-radius: 12px;
+      --bar-height: 44px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Simulated desktop wallpaper (blur reads better than flat gray) */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+      background:
+        radial-gradient(1200px 800px at 20% 10%, rgba(94, 207, 190, 0.12), transparent 50%),
+        radial-gradient(900px 600px at 80% 70%, rgba(51, 153, 255, 0.1), transparent 45%),
+        linear-gradient(165deg, #1a1d28 0%, #0d0f14 50%, #12151c 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .caption {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: rgba(226, 233, 245, 0.65);
+      text-align: center;
+      max-width: 42rem;
+      line-height: 1.4;
+    }
+
+    .caption code {
+      background: rgba(0, 0, 0, 0.35);
+      padding: 0.1em 0.35em;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    /* Floating shell: rounded card + frosted fill (matches implementation direction) */
+    .app-powertoys {
+      width: min(680px, 100vw - 2rem);
+      max-height: min(520px, 85vh);
+      display: flex;
+      flex-direction: column;
+      border-radius: var(--shell-radius);
+      overflow: hidden;
+      background: var(--app-bg);
+      backdrop-filter: blur(48px) saturate(1.35);
+      -webkit-backdrop-filter: blur(48px) saturate(1.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow:
+        0 24px 80px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(0, 0, 0, 0.2) inset;
+    }
+
+    .app-windowDragStripe {
+      height: 28px;
+      min-height: 28px;
+      flex-shrink: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent);
+    }
+
+    /* ── Approach B: one bordered “segmented” bar (search | filter) ── */
+    .app-pt-search-wrap {
+      padding: 10px 14px 8px;
+    }
+
+    .app-pt-bar {
+      display: flex;
+      align-items: stretch;
+      min-height: var(--bar-height);
+      border: 1px solid var(--app-border);
+      border-radius: 8px;
+      background: var(--app-surface);
+      overflow: hidden;
+    }
+
+    .app-pt-bar input[type="search"] {
+      flex: 1 1 auto;
+      min-width: 0;
+      height: var(--bar-height);
+      margin: 0;
+      padding: 0 14px;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      color: var(--app-text);
+      font-size: 15px;
+      outline: none;
+    }
+
+    .app-pt-bar input::placeholder {
+      color: #555;
+    }
+
+    .app-pt-bar-divider {
+      width: 1px;
+      flex-shrink: 0;
+      background: var(--app-border);
+      align-self: stretch;
+      margin: 8px 0;
+    }
+
+    .app-pt-bar .app-pt-filter-chip {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      height: var(--bar-height);
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      color: var(--app-muted);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .app-pt-bar .app-pt-filter-chip:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--app-text);
+    }
+
+    .app-pt-results {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 200px;
+    }
+
+    .app-pt-row {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr) min-content;
+      align-items: center;
+      column-gap: 10px;
+      padding: 10px 16px;
+      min-height: 48px;
+      border: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      width: 100%;
+      cursor: default;
+    }
+
+    .app-pt-row:first-of-type {
+      border-top: none;
+    }
+
+    .app-pt-row--selected {
+      background: rgba(51, 153, 255, 0.08);
+    }
+
+    .app-pt-row-icon {
+      font-size: 15px;
+      text-align: center;
+    }
+
+    .app-pt-row-body {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .app-pt-row-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--app-text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .app-pt-row-subtitle {
+      font-size: 11px;
+      color: var(--app-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 6px;
+    }
+
+    .app-pt-chip {
+      display: inline-block;
+      background: rgba(35, 41, 54, 0.95);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 10px;
+      line-height: 1.25;
+    }
+
+    .app-pt-row-hint {
+      font-size: 10px;
+      color: var(--app-accent);
+      flex-shrink: 0;
+    }
+
+    .app-pt-footer {
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #555;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+  </style>
+</head>
+
+<body>
+  <p class="caption">
+    <strong>Approach B</strong> — single bordered bar: search (borderless) + divider + filter chip, shared height
+    <code>44px</code>.
+    Shell <code>border-radius: 12px</code> + frosted panel. Not implemented in the app yet — preview only.
+  </p>
+
+  <div class="app-powertoys" role="application" aria-label="Prototype">
+    <div class="app-windowDragStripe" aria-hidden="true" title="Drag region (desktop)"></div>
+
+    <div class="app-pt-search-wrap">
+      <div class="app-pt-bar" role="search">
+        <input type="search" placeholder="Search your knowledge base…" value="" aria-label="Search" />
+        <span class="app-pt-bar-divider" aria-hidden="true"></span>
+        <button type="button" class="app-pt-filter-chip">All ▾</button>
+      </div>
+    </div>
+
+    <div class="app-pt-results">
+      <div class="app-pt-row">
+        <span class="app-pt-row-icon" aria-hidden="true">◇</span>
+        <div class="app-pt-row-body">
+          <span class="app-pt-row-title">https://example.com/docs</span>
+          <span class="app-pt-row-subtitle">
+            <span class="app-pt-chip" style="color:#3399ff">bookmark</span>
+            <span class="app-pt-chip">docs</span>
+          </span>
+        </div>
+      </div>
+      <div class="app-pt-row app-pt-row--selected">
+        <span class="app-pt-row-icon" aria-hidden="true">▶</span>
+        <div class="app-pt-row-body">
+          <span class="app-pt-row-title">aws ecs update-service …</span>
+          <span class="app-pt-row-subtitle">
+            <span class="app-pt-chip" style="color:#5ecfbe">command</span>
+            <span class="app-pt-chip">aws</span>
+            <span class="app-pt-chip">serverless</span>
+          </span>
+        </div>
+        <span class="app-pt-row-hint">⌘C Copy</span>
+      </div>
+      <div class="app-pt-row">
+        <span class="app-pt-row-icon" aria-hidden="true">◇</span>
+        <div class="app-pt-row-body">
+          <span class="app-pt-row-title">kubectl get pods -A</span>
+          <span class="app-pt-row-subtitle">
+            <span class="app-pt-chip" style="color:#5ecfbe">command</span>
+            <span class="app-pt-chip">k8s</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-pt-footer">
+      <span>3992 results</span>
+      <span>⌘K · ⌘N · ⌘,</span>
+    </div>
+  </div>
+</body>
+
+</html>

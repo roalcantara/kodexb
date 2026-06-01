@@ -1,24 +1,27 @@
-import { effectiveListPageSize } from '../../utils/list/list_viewport_page_size.util'
 import { useListPageFilters } from './use_list_page_filters.hook'
 import { useListPageRows } from './use_list_page_rows.hook'
 import { useListPageStatsSync } from './use_list_page_stats_sync.hook'
 
-export function useListPageData(opts: { pageSizeOverride?: number } = {}) {
+export function useListPageData(opts: { pushToast: (message: string, type?: 'success' | 'error') => void }) {
   const filters = useListPageFilters()
-  const pageSize = effectiveListPageSize(opts.pageSizeOverride, filters.pageSize)
-  const { rows, loading, hasMore, refreshList } = useListPageRows({
+  const pageSize = filters.pageSize
+  const { rows, loading, hasMore, refreshList, matchTotal } = useListPageRows({
     debouncedSearch: filters.debouncedSearch,
     types: filters.types,
     tags: filters.tags,
     taskView: filters.taskView,
     pageSize
   })
-  const { stats, dbStats, syncing, syncProg, onSync, toastResult, dismissToast } = useListPageStatsSync(refreshList)
+  const { stats, dbStats, syncing, syncUi, dismissSyncModal, onSync, syncInfo } = useListPageStatsSync({
+    refreshList,
+    pushToast: opts.pushToast
+  })
 
   return {
     rows,
     stats,
     dbStats,
+    syncInfo,
     search: filters.search,
     setSearch: filters.setSearch,
     debouncedSearch: filters.debouncedSearch,
@@ -32,11 +35,11 @@ export function useListPageData(opts: { pageSizeOverride?: number } = {}) {
     setPageSize: filters.setPageSize,
     hasMore,
     loading,
+    matchTotal,
     syncing,
-    syncProg,
     refreshList,
     onSync,
-    toastResult,
-    dismissToast
+    syncUi,
+    dismissSyncModal
   }
 }

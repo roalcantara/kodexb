@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Shortcuts — Keymap Detail (Variant A body inside Detail Page)</title>
+  <style>
+    :root {
+      --bg: #0b0e14;
+      --surface: #121721;
+      --surface-2: #0f141d;
+      --border: #1a1f2a;
+      --text: #e2e9f5;
+      --muted: #8892a4;
+      --footer: #555;
+      --accent: rgba(94, 207, 190, 0.06);
+      --accent-fg: #5ecfbe;
+      --chip-bg: #232936;
+      --warn: #ff6b6b;
+      --soft: #6b7180;
+      --gold: #ffae57;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+    .frame {
+      width: 940px;
+      max-width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+      display: grid;
+      grid-template-columns: 340px 1fr;
+    }
+    /* left list — minimal mock to give context */
+    .list-pane { border-right: 1px solid var(--border); }
+    .list-search {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .list-search input {
+      flex: 1; background: transparent; border: none; outline: none;
+      color: var(--text); font-size: 14px;
+    }
+    .filter-chip {
+      background: var(--chip-bg); border-radius: 4px;
+      padding: 3px 8px; font-size: 11px; color: var(--muted);
+    }
+    .list-row {
+      display: grid; grid-template-columns: 18px 1fr; gap: 10px;
+      align-items: center;
+      padding: 9px 16px; border-top: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .list-row:first-child { border-top: none; }
+    .list-row--selected { background: var(--accent); }
+    .glyph { color: var(--muted); }
+    .glyph--shortcut { color: var(--accent-fg); }
+    .list-row__sub {
+      color: var(--muted); font-size: 11px; margin-top: 2px;
+    }
+    /* right detail */
+    .detail { display: flex; flex-direction: column; min-height: 540px; }
+    .detail-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 18px 22px 8px; border-bottom: 1px solid var(--border);
+    }
+    .detail-head__title { font-size: 20px; font-weight: 600; letter-spacing: 0.2px; }
+    .detail-head__sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .detail-head__sub b { color: var(--text); font-weight: 500; }
+    .detail-head__meta {
+      text-align: right;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .detail-head__meta .pill {
+      display: inline-block;
+      background: var(--chip-bg);
+      border-radius: 4px;
+      padding: 2px 7px;
+      color: var(--accent-fg);
+      margin-left: 6px;
+      font-size: 11px;
+    }
+    .tab-row {
+      display: flex;
+      gap: 2px;
+      padding: 10px 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      padding: 6px 12px;
+      border-radius: 4px 4px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid transparent;
+      border-bottom: none;
+      cursor: pointer;
+    }
+    .tab--active {
+      background: var(--surface-2);
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .tab--warn { color: var(--warn); }
+    .tab__count {
+      color: var(--muted);
+      font-size: 10px;
+      margin-left: 4px;
+    }
+    .bindings {
+      flex: 1;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+    .binding-row {
+      display: grid;
+      grid-template-columns: 16px 1fr auto 22px;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 22px;
+      border-top: 1px solid var(--border);
+    }
+    .binding-row:first-child { border-top: none; }
+    .binding-row--selected { background: var(--accent); }
+    .row__icon {
+      text-align: center; font-size: 13px;
+    }
+    .row__icon--warn { color: var(--warn); }
+    .row__icon--soft { color: var(--soft); opacity: 0.6; }
+    .row__main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .row__action { color: var(--text); }
+    .row__note { color: var(--muted); font-size: 11px; }
+    .row__note--warn { color: var(--warn); }
+    .row__chord { display: flex; align-items: center; gap: 6px; }
+    .info {
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .info:hover { color: var(--text); }
+    .kbd-step { display: inline-flex; gap: 2px; }
+    .kbd-sep {
+      color: var(--footer);
+      padding: 0 2px;
+      font-size: 10px;
+    }
+    .kbd {
+      display: inline-block;
+      min-width: 22px; height: 22px; line-height: 20px;
+      padding: 0 6px; text-align: center;
+      background: var(--chip-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text); font-size: 11px;
+    }
+    .footer {
+      padding: 10px 22px;
+      border-top: 1px solid var(--border);
+      color: var(--footer); font-size: 11px;
+      display: flex; gap: 18px;
+    }
+    .footer b { color: var(--muted); font-weight: 400; }
+    .legend {
+      margin-top: 24px;
+      color: var(--muted); font-size: 11px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="frame">
+      <!-- Left: list pane for context -->
+      <aside class="list-pane">
+        <div class="list-search">
+          <input value="" placeholder="Search your knowledge base…" />
+          <span class="filter-chip">Shortcut ▾</span>
+        </div>
+        <div class="list-row">
+          <span class="glyph glyph--shortcut">⌨</span>
+          <div>
+            <div>vscode</div>
+            <div class="list-row__sub">VS Code keymap · 32 bindings</div>
+          </div>
+        </div>
+        <div class="list-row list-row--selected">
+          <span class="glyph glyph--shortcut">⌨</span>
+          <div>
+            <div>amethyst</div>
+            <div class="list-row__sub">Amethyst window manager · 14 globals</div>
+          </div>
+        </div>
+        <div class="list-row">
+          <span class="glyph glyph--shortcut">⌨</span>
+          <div>
+            <div>ghostty</div>
+            <div class="list-row__sub">Ghostty terminal · 18 bindings</div>
+          </div>
+        </div>
+        <div class="list-row">
+          <span class="glyph glyph--shortcut">⌨</span>
+          <div>
+            <div>zsh</div>
+            <div class="list-row__sub">ZSH line editor · 22 bindings</div>
+          </div>
+        </div>
+        <div class="list-row">
+          <span class="glyph glyph--shortcut">⌨</span>
+          <div>
+            <div>macos</div>
+            <div class="list-row__sub">macOS system · 16 globals</div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right: keymap detail -->
+      <section class="detail">
+        <div class="detail-head">
+          <div>
+            <div class="detail-head__title">amethyst</div>
+            <div class="detail-head__sub">
+              <b>Amethyst window manager</b> · twm · macos-only
+            </div>
+          </div>
+          <div class="detail-head__meta">
+            14 bindings · 3 conflicts<span class="pill">⌨ shortcut</span>
+          </div>
+        </div>
+        <div class="tab-row">
+          <span class="tab tab--active">All<span class="tab__count">14</span></span>
+          <span class="tab">Focus<span class="tab__count">5</span></span>
+          <span class="tab">Move<span class="tab__count">4</span></span>
+          <span class="tab">Layout<span class="tab__count">2</span></span>
+          <span class="tab tab--warn">⚠ Conflicts<span class="tab__count">3</span></span>
+        </div>
+        <div class="bindings">
+
+          <div class="binding-row binding-row--selected">
+            <span class="row__icon row__icon--warn" title="Hard collision">⚠</span>
+            <div class="row__main">
+              <span class="row__action">Throw window to main pane</span>
+              <span class="row__note row__note--warn">conflicts: also global in macos (Restart)</span>
+            </div>
+            <span class="row__chord">
+              <span class="kbd-step"><span class="kbd">⌃</span><span class="kbd">⌥</span><span class="kbd">⏎</span></span>
+            </span>
+            <span class="info" title="when / notes / links">ⓘ</span>
+          </div>
+
+          <div class="binding-row">
+            <span class="row__icon"></span>
+            <div class="row__main">
+              <span class="row__action">Focus window left</span>
+              <span class="row__note">no conflicts</span>
+            </div>
+            <span class="row__chord">
+              <span class="kbd-step"><span class="kbd">⌃</span><span class="kbd">⌥</span><span class="kbd">H</span></span>
+            </span>
+            <span class="info">ⓘ</span>
+          </div>
+
+          <div class="binding-row">
+            <span class="row__icon"></span>
+            <div class="row__main">
+              <span class="row__action">Focus window right</span>
+              <span class="row__note">no conflicts</span>
+            </div>
+            <span class="row__chord">
+              <span class="kbd-step"><span class="kbd">⌃</span><span class="kbd">⌥</span><span class="kbd">L</span></span>
+            </span>
+            <span class="info">ⓘ</span>
+          </div>
+
+          <div class="binding-row">
+            <span class="row__icon row__icon--soft" title="Soft advisory: same chord in other apps">·</span>
+            <div class="row__main">
+              <span class="row__action">Toggle floating</span>
+              <span class="row__note">advisory: also local in vscode (Toggle terminal)</span>
+            </div>
+            <span class="row__chord">
+              <span class="kbd-step"><span class="kbd">⌃</span><span class="kbd">⌥</span><span class="kbd">T</span></span>
+            </span>
+            <span class="info">ⓘ</span>
+          </div>
+
+          <div class="binding-row">
+            <span class="row__icon row__icon--warn" title="Hard collision: sequence-shadow">⚠</span>
+            <div class="row__main">
+              <span class="row__action">Cycle layout</span>
+              <span class="row__note row__note--warn">conflicts: shadowed by single-step F3 in ghostty</span>
+            </div>
+            <span class="row__chord">
+              <span class="kbd-step"><span class="kbd">F3</span></span>
+              <span class="kbd-sep">▸</span>
+              <span class="kbd-step"><span class="kbd">⏎</span></span>
+            </span>
+            <span class="info">ⓘ</span>
+          </div>
+
+          <div class="binding-row">
+            <span class="row__icon"></span>
+            <div class="row__main">
+              <span class="row__action">Move window to main pane</span>
+              <span class="row__note">no conflicts</span>
+            </div>
+            <span class="row__chord">
+              <span class="kbd-step"><span class="kbd">⌃</span><span class="kbd">⌥</span><span class="kbd">⇧</span><span class="kbd">⏎</span></span>
+            </span>
+            <span class="info">ⓘ</span>
+          </div>
+
+        </div>
+        <div class="footer">
+          <span><b>↑↓</b> select binding</span>
+          <span><b>↵</b> chord detail</span>
+          <span><b>⌘↵</b> reveal source</span>
+          <span><b>←</b> back</span>
+          <span><b>⌘K</b> palette</span>
+        </div>
+      </section>
+    </div>
+    <p class="legend">
+      Keymap detail · derived from Variant A row style · group tabs from binding `group:` field · `Conflicts` tab appears when ≥ 1 hard collision exists
+    </p>
+  </main>
+</body>
+</html>

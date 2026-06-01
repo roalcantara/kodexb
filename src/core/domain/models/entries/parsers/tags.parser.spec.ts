@@ -7,39 +7,36 @@ describe('normalizeKnowledgeTag()', () => {
     ['lowercases', 'FOO', 'foo'],
     ['replaces hyphens with underscores', 'foo-bar', 'foo_bar'],
     ['handles mixed cases', 'Foo-Bar', 'foo_bar']
-  ])('%s', (_, input, expected) => {
-    it(`normalizeKnowledgeTag("${input}") === "${expected}"`, () => {
+  ])('when tag %s', (_, input, expected) => {
+    it('returns normalized tag', () => {
       expect(normalizeKnowledgeTag(input)).toBe(expected)
     })
   })
 })
 
-describe('parseTagsFromSource', () => {
-  it('parses a valid array of tags', () => {
-    expect(parseTagsFromSource(['foo', 'bar'])).toEqual(['foo', 'bar'])
+describe('parseTagsFromSource()', () => {
+  describe('when source is valid', () => {
+    describe.each([
+      ['valid array', ['foo', 'bar'], ['foo', 'bar']],
+      ['deduplicated tags', ['foo', 'foo'], ['foo']],
+      ['normalized hyphens', ['foo-bar'], ['foo_bar']],
+      ['non-string entries skipped', ['foo', 42, 'bar'], ['foo', 'bar']]
+    ])('with %s', (_, source, expected) => {
+      it('returns parsed tags', () => {
+        expect(parseTagsFromSource(source)).toEqual(expected)
+      })
+    })
   })
 
-  it('deduplicates tags', () => {
-    expect(parseTagsFromSource(['foo', 'foo'])).toEqual(['foo'])
-  })
-
-  it('normalizes hyphens to underscores', () => {
-    expect(parseTagsFromSource(['foo-bar'])).toEqual(['foo_bar'])
-  })
-
-  it('throws on empty array', () => {
-    expect(() => parseTagsFromSource([])).toThrow()
-  })
-
-  it('throws on more than 4 tags', () => {
-    expect(() => parseTagsFromSource(['a', 'b', 'c', 'd', 'e'])).toThrow()
-  })
-
-  it('returns empty and then throws when input is not an array', () => {
-    expect(() => parseTagsFromSource(null)).toThrow()
-  })
-
-  it('skips non-string entries', () => {
-    expect(parseTagsFromSource(['foo', 42, 'bar'])).toEqual(['foo', 'bar'])
+  describe('when source is invalid', () => {
+    describe.each([
+      ['empty array', []],
+      ['more than four tags', ['a', 'b', 'c', 'd', 'e']],
+      ['non-array input', null]
+    ])('with %s', (_, source) => {
+      it('raises an error', () => {
+        expect(() => parseTagsFromSource(source)).toThrow()
+      })
+    })
   })
 })

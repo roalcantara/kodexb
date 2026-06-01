@@ -15,13 +15,13 @@ AI tag suggestions (`suggestTags`) remain a stub — deferred to a future phase.
 
 ## SCOPE DECISIONS
 
-| Decision | Choice | Rationale |
-|---|---|---|
-| Palette UX | Command palette (centered search + filterable list) | Familiar pattern from VS Code, Spotlight, Raycast |
-| AI tags | Deferred | Needs API integration; palette UI is independent |
-| Terminal/editor integration | Shell hooks via config | Users already configure terminalApp/editorApp in Settings |
-| Action registry | Static (in hook) | Only ~8 actions; YAGNI — extract if count exceeds 15 |
-| RPC schemas | No changes | `pasteInTerminalSchema`, `openInEditorSchema`, `suggestTagsSchema` already defined |
+| Decision                    | Choice                                              | Rationale                                                                          |
+| --------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Palette UX                  | Command palette (centered search + filterable list) | Familiar pattern from VS Code, Spotlight, Raycast                                  |
+| AI tags                     | Deferred                                            | Needs API integration; palette UI is independent                                   |
+| Terminal/editor integration | Shell hooks via config                              | Users already configure terminalApp/editorApp in Settings                          |
+| Action registry             | Static (in hook)                                    | Only ~8 actions; YAGNI — extract if count exceeds 15                               |
+| RPC schemas                 | No changes                                          | `pasteInTerminalSchema`, `openInEditorSchema`, `suggestTagsSchema` already defined |
 
 ---
 
@@ -161,19 +161,19 @@ a clickable `<button>` with `onCmdK` prop.
 
 ### CSS
 
-**`src/shell/renderer/styles/list.css`**: Add `.kb-cmdk`, `.kb-cmdk-search`,
-`.kb-cmdk-list`, `.kb-cmdk-action`, `.kb-cmdk-action--selected`, `.kb-cmdk-shortcut`,
-`.kb-cmdk-empty` styles. The palette reuses the existing `kb-modal` backdrop class.
+**`src/shell/renderer/styles/list.css`**: Add `.app-cmdk`, `.app-cmdk-search`,
+`.app-cmdk-list`, `.app-cmdk-action`, `.app-cmdk-action--selected`, `.app-cmdk-shortcut`,
+`.app-cmdk-empty` styles. The palette reuses the existing `app-modal` backdrop class.
 
 ---
 
 ## TESTING STRATEGY
 
-| Layer | Approach | File |
-|---|---|---|
-| App methods | Test `pasteInTerminal`/`openInEditor` call shell hooks with config values | `app.spec.ts` (update) |
-| RPC client | Mock bridge, assert route + body for new wrappers | `client.spec.tsx` (update) |
-| CmdKPalette | Render with actions, simulate typing/arrows/enter, assert handler + close | `cmdk_palette.component.spec.tsx` (new) |
-| useCmdKPalette | Hook unit — open/close/filter/select logic | `use_cmdk_palette.hook.spec.tsx` (new) |
-| Toolbar | Click ⌘K button, assert callback | `toolbar.component.spec.tsx` (update) |
-| Shell integration | Main process hook wiring tested via `server.spec.ts` (routes call App methods) | `server.spec.ts` (update) |
+| Layer             | Approach                                                                       | File                                    |
+| ----------------- | ------------------------------------------------------------------------------ | --------------------------------------- |
+| App methods       | Test `pasteInTerminal`/`openInEditor` call shell hooks with config values      | `app.spec.ts` (update)                  |
+| RPC client        | Mock bridge, assert route + body for new wrappers                              | `client.spec.tsx` (update)              |
+| CmdKPalette       | Render with actions, simulate typing/arrows/enter, assert handler + close      | `cmdk_palette.component.spec.tsx` (new) |
+| useCmdKPalette    | Hook unit — open/close/filter/select logic                                     | `use_cmdk_palette.hook.spec.tsx` (new)  |
+| Toolbar           | Click ⌘K button, assert callback                                               | `toolbar.component.spec.tsx` (update)   |
+| Shell integration | Main process hook wiring tested via `server.spec.ts` (routes call App methods) | `server.spec.ts` (update)               |

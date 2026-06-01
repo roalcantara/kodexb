@@ -2,6 +2,7 @@
 title: Definition of Done
 description: Checklist before considering a task complete
 ---
+<!-- markdownlint-disable-file -->
 
 # DEFINITION OF DONE
 
@@ -71,7 +72,7 @@ In order for a task to be considered completed, it MUST satisfy ALL of the follo
 - [ ] **Subject line ≤50 characters**
 - [ ] **Body explains WHAT and WHY** (not HOW)
 - [ ] **All relevant files staged** - no unrelated changes
-- [ ] **Pre-commit hooks pass** - gitlint and other hooks succeed
+- [ ] **HK hooks pass** - commit-message policy and quality gate succeed
 
 ## 7. Task-Specific Additions
 

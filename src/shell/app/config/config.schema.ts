@@ -1,7 +1,7 @@
+import { DEFAULTS } from '@core/constants/defaults.const'
 import { type Static, Type } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 import { err, ok, type Result } from 'neverthrow'
-import { DEFAULTS } from '../../../core/constants/defaults.const'
 
 export const PAGE_SIZE_SMALL = 25
 export const PAGE_SIZE_MEDIUM = 50
@@ -14,7 +14,8 @@ const PageSize = Type.Union(PAGE_SIZE_VALUES.map(value => Type.Literal(String(va
 const DisplayConfig = Type.Object({
   terminalApp: Type.Optional(Type.String()),
   editorApp: Type.Optional(Type.String()),
-  pageSize: Type.Optional(PageSize)
+  pageSize: Type.Optional(PageSize),
+  advisories: Type.Optional(Type.Boolean())
 })
 
 export const configSchema = Type.Object({
@@ -28,7 +29,7 @@ export type RawConfig = Static<typeof configSchema>
 export type ResolvedConfig = {
   database: { path: string }
   sources: { path: string }
-  display: { terminalApp?: string; editorApp?: string; pageSize: '25' | '50' | '100' | '200' }
+  display: { terminalApp?: string; editorApp?: string; pageSize: '25' | '50' | '100' | '200'; advisories?: boolean }
 }
 
 export const DEFAULT_CONFIG_BODY: RawConfig = {

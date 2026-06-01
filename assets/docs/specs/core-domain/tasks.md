@@ -3,7 +3,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Land Phase 3 of the kb foundation roadmap as a single `feat(core)` commit on `chore-add-domain` — the pure domain layer (`src/core/`) plus the pure-only slice of `src/shared/` (crc32, env types) — with 7 existing + 10 new unit specs (per-public-export rule). Quarantine all out-of-scope work (Phases 4–7 + planning docs) into 5 named stashes so each can be restored when its phase begins.
+**Goal:** Land Phase 3 of the app foundation roadmap as a single `feat(core)` commit on `chore-add-domain` — the pure domain layer (`src/core/`) plus the pure-only slice of `src/shared/` (crc32, env types) — with 7 existing + 10 new unit specs (per-public-export rule). Quarantine all out-of-scope work (Phases 4–7 + planning docs) into 5 named stashes so each can be restored when its phase begins.
 
 **Architecture:** No-I/O domain layer under `src/core/`. Type guards on top of `domain/types` and `domain/constants`. Zod schemas validate YAML rows. Parsers (`base_fields`, `source_document`, `source_location`) produce structured shapes. Factories (`entry.factory`, `knowledge.factory`) compose schemas + parsers and derive stable ids via `crc32(type:key)`. `doc.assembler` plus four per-type doc parsers produce the Markdown body that downstream phases (4–7) persist and render. Helpers expose pure path expansion. `src/shared/utils/crc32` is the only shared dependency for id derivation; `src/shared/types/env.types` is needed by `path.helper`.
 

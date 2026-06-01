@@ -1,5 +1,9 @@
 {
+  "threshold": 0,
+  "minLines": 4,
+  "minTokens": 45,
   "ignore": [
+    "**/.venv/**",
     "**/node_modules/**",
     "**/dist/**",
     "**/build/**",
@@ -8,9 +12,15 @@
     "assets/images/**",
     "assets/sources/**",
     "assets/docs/**",
-    "graphify-out/**",
+    "assets/wireframe/**",
+    ".code-review-graph/**",
     "**/tools/benchmarks/results/**",
     ".cursor/commands/**",
-    "**/tmp/**"
+    "**/tmp/**",
+    "**/*.spec.tsx",
+    "**/e2e/**",
+    "**/.superpowers/**",
+    ".agents/skills/**",
+    "src/shell/app/db/import.service.spec.ts"
   ]
 }

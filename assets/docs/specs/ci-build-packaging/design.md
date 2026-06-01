@@ -42,8 +42,8 @@ this document).
 - Linux signing (no GPG keys provisioned; `.tar.gz` ships unsigned).
 - App auto-update delivery (deferred to a later phase per
   `foundation/requirements.md` OUT OF SCOPE).
-- DockerHub image publishing (kb is not a server binary).
-- Container Structure Tests (kb is not a Docker image).
+- DockerHub image publishing (app is not a server binary).
+- Container Structure Tests (app is not a Docker image).
 - Apple Developer Program enrollment (administrative; assumed to be done
   externally before signing is enabled).
 
@@ -122,19 +122,19 @@ push: main      ──► release.yml      (ubuntu-latest)
 
 ### Concurrency
 
-| Workflow      | Group                                       | cancel-in-progress                            |
-| ------------- | ------------------------------------------- | --------------------------------------------- |
-| `review.yml`  | `kb-${{ github.ref }}`                      | true                                          |
-| `release.yml` | `kb-release`                                | **false** — never cancel an in-flight release |
-| `publish.yml` | `kb-${{ github.ref_name \|\| inputs.tag }}` | true                                          |
+| Workflow      | Group                                        | cancel-in-progress                            |
+| ------------- | -------------------------------------------- | --------------------------------------------- |
+| `review.yml`  | `app-${{ github.ref }}`                      | true                                          |
+| `release.yml` | `app-release`                                | **false** — never cancel an in-flight release |
+| `publish.yml` | `app-${{ github.ref_name \|\| inputs.tag }}` | true                                          |
 
 ### Build targets
 
-| Target         | Runner             | Artifact                                                                                             | Notes                                                      |
-| -------------- | ------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| `linux-x64`    | `ubuntu-latest`    | `kb-<ver>-linux-x64.tar.gz`                                                                          | —                                                          |
-| `linux-arm64`  | `ubuntu-24.04-arm` | `kb-<ver>-linux-arm64.tar.gz`                                                                        | Native ARM hosted runner (GA 2025)                         |
-| `darwin-arm64` | `macos-latest`     | `kb-<ver>-darwin-arm64.dmg` (signed) **or** `kb-<ver>-darwin-arm64-unsigned.dmg` (unsigned fallback) | Electrobun handles sign + notarize + staple + DMG creation |
+| Target         | Runner             | Artifact                                                                                               | Notes                                                      |
+| -------------- | ------------------ | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `linux-x64`    | `ubuntu-latest`    | `app-<ver>-linux-x64.tar.gz`                                                                           | —                                                          |
+| `linux-arm64`  | `ubuntu-24.04-arm` | `app-<ver>-linux-arm64.tar.gz`                                                                         | Native ARM hosted runner (GA 2025)                         |
+| `darwin-arm64` | `macos-latest`     | `app-<ver>-darwin-arm64.dmg` (signed) **or** `app-<ver>-darwin-arm64-unsigned.dmg` (unsigned fallback) | Electrobun handles sign + notarize + staple + DMG creation |
 
 ---
 
@@ -399,11 +399,11 @@ Steps in order:
    secrets. Electrobun's `electrobun.config.ts` reads these and decides
    whether to sign + notarize + staple internally.
 6. **Package** via `./.github/actions/package-electrobun`:
-   - Linux: `tar czf "kb-${VER}-${TARGET}.tar.gz" -C <electrobun-output> .`
+   - Linux: `tar czf "app-${VER}-${TARGET}.tar.gz" -C <electrobun-output> .`
    - Mac (signed): find `*.dmg` in Electrobun output, rename to
-     `kb-${VER}-darwin-arm64.dmg`.
+     `app-${VER}-darwin-arm64.dmg`.
    - Mac (unsigned, when `ELECTROBUN_DEVELOPER_ID` empty): same but rename
-     to `kb-${VER}-darwin-arm64-unsigned.dmg`.
+     to `app-${VER}-darwin-arm64-unsigned.dmg`.
 7. **Attest build provenance** — `actions/attest-build-provenance@v2` with
    `subject-path: <archive>`.
 8. **Upload artifact** `binary-${{ matrix.target }}` (1-day retention).
@@ -466,10 +466,10 @@ Steps:
 
 ### macOS signing fallback
 
-| `ELECTROBUN_DEVELOPER_ID` | Mac leg behavior                                                                 | Artifact filename                    |
-| ------------------------- | -------------------------------------------------------------------------------- | ------------------------------------ |
-| empty / unset             | Build unsigned `.app`, Electrobun produces unsigned `.dmg`, skip notarize/staple | `kb-<ver>-darwin-arm64-unsigned.dmg` |
-| non-empty                 | Full sign + notarize + staple via Electrobun's built-in pipeline                 | `kb-<ver>-darwin-arm64.dmg`          |
+| `ELECTROBUN_DEVELOPER_ID` | Mac leg behavior                                                                 | Artifact filename                     |
+| ------------------------- | -------------------------------------------------------------------------------- | ------------------------------------- |
+| empty / unset             | Build unsigned `.app`, Electrobun produces unsigned `.dmg`, skip notarize/staple | `app-<ver>-darwin-arm64-unsigned.dmg` |
+| non-empty                 | Full sign + notarize + staple via Electrobun's built-in pipeline                 | `app-<ver>-darwin-arm64.dmg`          |
 
 The four conditional Apple secrets (`MAC_CERTIFICATE_BASE64`, `MAC_CERT_PASSWORD`,
 `ELECTROBUN_APPLEID`, `ELECTROBUN_APPLEIDPASS`, `ELECTROBUN_TEAMID`) are
@@ -508,7 +508,7 @@ does **not** match the actual `ElectrobunConfig` schema in
 ```ts
 import type { ElectrobunConfig } from 'electrobun'
 
-const kbIconset = 'assets/icons/kb-logo.iconset'
+const appIconset = 'assets/icons/app-logo.iconset'
 
 const developerId = process.env.ELECTROBUN_DEVELOPER_ID ?? ''
 const appleId     = process.env.ELECTROBUN_APPLEID ?? ''
@@ -522,7 +522,7 @@ const canNotarize = canCodesign
   && appleTeamId.length > 0
 
 export default {
-  app: { name: 'kb', identifier: 'sh.blackboard.kb', version: '0.1.0' },
+  app: { name: 'app', identifier: 'sh.blackboard.app', version: '0.1.0' },
   build: {
     bun:   { entrypoint: 'src/shell/main/index.ts' },
     views: { shell: { entrypoint: 'src/shell/renderer/index.ts' } },
@@ -531,7 +531,7 @@ export default {
       'assets/images':                 'views/shell/assets/images'
     },
     mac: {
-      icons:     kbIconset,
+      icons:     appIconset,
       bundleCEF: false,
       codesign:  canCodesign,
       notarize:  canNotarize,
@@ -543,7 +543,7 @@ export default {
         'com.apple.security.network.client':                      true
       }
     },
-    linux: { icon: `${kbIconset}/icon_256x256.png`, bundleCEF: false }
+    linux: { icon: `${appIconset}/icon_256x256.png`, bundleCEF: false }
   }
 } satisfies ElectrobunConfig
 ```
@@ -581,11 +581,11 @@ Inputs: `target`, `platform`, `version`, `dist_dir`, `apple_identity`.
 Output: `archive` (the produced filename).
 
 Behavior:
-- `platform == linux`: `tar czf "kb-${version}-${target}.tar.gz" -C "${dist_dir}" .`
+- `platform == linux`: `tar czf "app-${version}-${target}.tar.gz" -C "${dist_dir}" .`
 - `platform == mac`:
   - Find Electrobun's output `*.dmg` under `${dist_dir}` (max-depth 3).
   - If `apple_identity` empty → suffix `-unsigned`.
-  - `mv` to final filename `kb-${version}-${target}${suffix}.dmg`.
+  - `mv` to final filename `app-${version}-${target}${suffix}.dmg`.
   - The composite does **not** call `codesign`, `hdiutil`, `xcrun notarytool`,
     or `xcrun stapler` — Electrobun has already done all of those internally
     (or skipped them, in the unsigned path).

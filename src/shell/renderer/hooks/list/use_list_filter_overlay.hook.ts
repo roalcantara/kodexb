@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 export function useListFilterOverlay() {
   const [filterOpen, setFilterOpen] = useState(false)
@@ -10,6 +10,13 @@ export function useListFilterOverlay() {
     setAnchorRect(el === null ? null : el.getBoundingClientRect())
     setFilterOpen(true)
   }
+
+  /** Keep anchor in sync when opening via ⌘K (not only via `openFilter()` click). */
+  useLayoutEffect(() => {
+    if (!filterOpen) return
+    const el = filterButtonRef.current
+    if (el) setAnchorRect(el.getBoundingClientRect())
+  }, [filterOpen])
 
   return { filterOpen, setFilterOpen, anchorRect, filterButtonRef, openFilter }
 }

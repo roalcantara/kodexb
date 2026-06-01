@@ -1,6 +1,4 @@
-/// <reference lib="dom" />
-
-import { afterEach, describe, expect, mock, test } from 'bun:test'
+import { afterEach, describe, expect, it, mock } from 'bun:test'
 
 import { reportConfigLoadErrorAndExit } from './error.helper'
 
@@ -9,7 +7,7 @@ describe('reportConfigLoadErrorAndExit', () => {
     mock.restore()
   })
 
-  test('shows error dialog then exits with code 1', async () => {
+  it('shows error dialog then exits with code 1', async () => {
     const showMessageBox = mock(() => Promise.resolve({ response: 0 }))
     const exit = mock((_code?: number) => undefined as never)
     const logError = mock((_e: unknown) => undefined)

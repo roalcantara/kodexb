@@ -27,10 +27,38 @@ module.exports = {
       from: { path: '^src/' },
       to: { path: '^(zod|node_modules/zod)' },
     },
+    {
+      name: 'no-renderer-importing-shell-app',
+      severity: 'error',
+      comment:
+        'src/shell/renderer must not import from src/shell/app — use @rpc/client (Eden Treaty) per CLAUDE.md',
+      from: { path: '^src/shell/renderer/' },
+      to: { path: '^src/shell/app/' },
+    },
+    {
+      name: 'no-shared-importing-shell',
+      severity: 'error',
+      comment:
+        'src/shared must not import from src/shell — shared stays I/O-free per CLAUDE.md',
+      from: { path: '^src/shared/' },
+      to: { path: '^src/shell/' },
+    },
+    {
+      name: 'no-route-direct-to-repository',
+      severity: 'error',
+      comment:
+        'Route modules must not import repositories directly — go through the App orchestration layer per CLAUDE.md. app.ts is the approved App path and is not in the route from-path, so its repository imports are allowed by construction.',
+      from: {
+        path: '^src/shell/main/rpc/(server|schemas)\\.ts$',
+      },
+      to: {
+        path: '^src/shell/app/db/.+\\.repository\\.ts$',
+      },
+    },
   ],
   options: {
     // Symlinks to external dirs can ELOOP or be unreadable in some envs
-    exclude: { path: '^(assets/(images|sources)|graphify-out)' },
+    exclude: { path: '^(assets/(images|sources)|\\.code-review-graph|\\.venv)' },
     doNotFollow: { path: 'node_modules' },
     tsPreCompilationDeps: true,
     tsConfig: { fileName: 'tsconfig.json' },

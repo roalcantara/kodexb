@@ -1,2 +1,9 @@
 [test]
-preload = ["./happydom.ts", "./src/__tests__/helpers/testing.react.helper.ts"]
+preload = [
+  "./src/__tests__/helpers/testing.electrobun_view.mock.ts",
+  "./happydom.ts",
+  "./src/__tests__/helpers/testing.react.helper.ts",
+  "./src/__tests__/helpers/testing.quiet_stdio.ts"
+]
+root = "src"
+onlyFailures = true

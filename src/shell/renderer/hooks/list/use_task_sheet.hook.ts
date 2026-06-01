@@ -5,6 +5,20 @@ import { createTask, cyclePriority, cycleStatus, updateTask } from '../../rpc/cl
 const STATUS_CYCLE = ['todo', 'doing', 'done'] as const
 const PRIORITY_CYCLE = ['low', 'mid', 'high', 'urgent'] as const
 
+function nextInCycle<T>(cycle: readonly T[], current: T): T | undefined {
+  const idx = cycle.indexOf(current)
+  return cycle[(idx + 1) % cycle.length]
+}
+
+function withCycledField<K extends 'status' | 'priority'>(
+  prev: TaskSheetFormState,
+  field: K,
+  next: TaskSheetFormState[K] | undefined
+): TaskSheetFormState {
+  if (!next) return { ...prev, saving: false }
+  return { ...prev, [field]: next, saving: false }
+}
+
 export type TaskSheetFormState = {
   key: string
   desc: string
@@ -53,12 +67,7 @@ export function useTaskSheet(entry: RpcKnowledge | null | undefined, onClose: ()
     set('saving', true)
     try {
       await cycleStatus(entry.id, 'forward')
-      setForm(prev => {
-        const idx = STATUS_CYCLE.indexOf(prev.status)
-        const nextStatus = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length]
-        if (!nextStatus) return { ...prev, saving: false }
-        return { ...prev, status: nextStatus, saving: false }
-      })
+      setForm(prev => withCycledField(prev, 'status', nextInCycle(STATUS_CYCLE, prev.status)))
     } catch (err) {
       setForm(prev => ({ ...prev, error: String(err), saving: false }))
     }
@@ -69,12 +78,7 @@ export function useTaskSheet(entry: RpcKnowledge | null | undefined, onClose: ()
     set('saving', true)
     try {
       await cyclePriority(entry.id, 'forward')
-      setForm(prev => {
-        const idx = PRIORITY_CYCLE.indexOf(prev.priority)
-        const nextPriority = PRIORITY_CYCLE[(idx + 1) % PRIORITY_CYCLE.length]
-        if (!nextPriority) return { ...prev, saving: false }
-        return { ...prev, priority: nextPriority, saving: false }
-      })
+      setForm(prev => withCycledField(prev, 'priority', nextInCycle(PRIORITY_CYCLE, prev.priority)))
     } catch (err) {
       setForm(prev => ({ ...prev, error: String(err), saving: false }))
     }

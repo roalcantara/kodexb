@@ -7,8 +7,11 @@ inputs:
     description: Path to the JUnit XML file
     required: true
   output_path:
-    description: File to append the markdown summary to (typically $GITHUB_STEP_SUMMARY)
-    required: true
+    description: >-
+      File to append the markdown summary to. Defaults to GITHUB_STEP_SUMMARY on
+      the runner when unset or empty (do not pass workflow expressions here).
+    required: false
+    default: ''
   title:
     description: Heading text for the summary section
     required: false
@@ -21,21 +24,36 @@ runs:
       run: |
         set -euo pipefail
         XML="${{ inputs.xml_path }}"
-        OUT="${{ inputs.output_path }}"
         TITLE="${{ inputs.title }}"
+
+        OUT="${{ inputs.output_path }}"
+        if [[ -z "$OUT" ]]; then
+          OUT="${GITHUB_STEP_SUMMARY:-}"
+        fi
+
+        append_summary() {
+          if [[ -z "${OUT:-}" ]]; then
+            echo "junit-summary: no output path; skipping summary append" >&2
+            return 0
+          fi
+          cat >>"$OUT"
+        }
+
         if [[ ! -f "$XML" ]]; then
           {
             echo "## $TITLE"
             echo
             echo "_No JUnit report at \`$XML\`._"
-          } >> "$OUT"
+          } | append_summary
           exit 0
         fi
         line="$(grep -oE '<testsuites[^>]*>' "$XML" | head -n 1 || true)"
         if [[ -z "$line" ]]; then
           line="$(grep -oE '<testsuite[^>]*>' "$XML" | head -n 1 || true)"
         fi
-        get() { printf '%s' "$line" | grep -oE "$1=\"[^\"]+\"" | head -n 1 | sed -E "s/^$1=\"|\"$//g"; }
+        # `|| true` so a missing attribute (e.g. CST junit.xml omits `skipped`)
+        # doesn't tear down the script under `set -euo pipefail`.
+        get() { printf '%s' "$line" | grep -oE "$1=\"[^\"]+\"" | head -n 1 | sed -E "s/^$1=\"|\"$//g" || true; }
         tests="$(get tests)"
         failures="$(get failures)"
         skipped="$(get skipped)"
@@ -47,4 +65,4 @@ runs:
           echo "| Tests | Passed | Failed | Skipped | Time (s) |"
           echo "| ----- | ------ | ------ | ------- | -------- |"
           printf '| %s | %s | %s | %s | %s |\n' "${tests:-0}" "$passed" "${failures:-0}" "${skipped:-0}" "${time:-0}"
-        } >> "$OUT"
+        } | append_summary

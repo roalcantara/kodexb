@@ -1,49 +1,136 @@
-import type { ListStats, RpcDbStats, RpcImportResult } from '@shared/rpc'
-import { useCallback, useEffect, useState } from 'react'
+import type { ListStats, RpcDbStats } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import type { SyncModalModel } from '../../components/shared/sync_modal.component'
+import { getListStats, getStats, getSyncInfo, setSyncMessageHandlers, syncRpc } from '../../rpc/client'
+import { listSyncMessageHandlers } from './list_sync_message_handlers.util'
 
-import { getListStats, setSyncMessageHandlers, syncRpc } from '../../rpc/client'
+export type UseListPageStatsSyncParams = {
+  refreshList: (append: boolean) => Promise<void>
+  pushToast: (message: string, type?: 'success' | 'error') => void
+}
 
-export function useListPageStatsSync(refreshList: (append: boolean) => Promise<void>) {
+const initialModal: SyncModalModel = {
+  open: false,
+  phase: 'preparing',
+  sourcesDir: '',
+  totalFiles: 0,
+  processed: 0,
+  fileLog: [],
+  summary: null,
+  failMessage: null
+}
+
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: composes stats load + sync modal + RPC listener wiring
+export function useListPageStatsSync({ refreshList, pushToast }: UseListPageStatsSyncParams) {
   const [stats, setStats] = useState<ListStats | null>(null)
   const [dbStats, setDbStats] = useState<RpcDbStats | null>(null)
   const [syncing, setSyncing] = useState(false)
-  const [syncProg, setSyncProg] = useState<{ processed: number; total: number } | undefined>(undefined)
-  const [toastResult, setToastResult] = useState<RpcImportResult | null>(null)
+  const [syncUi, setSyncUi] = useState<SyncModalModel>(initialModal)
+  const [syncInfo, setSyncInfo] = useState<{ sourcesDir: string; fileCount: number } | null>(null)
+  const syncModalOpenRef = useRef(false)
+  const syncHandlersRef = useRef<ReturnType<typeof listSyncMessageHandlers>>(
+    {} as ReturnType<typeof listSyncMessageHandlers>
+  )
 
-  const dismissToast = useCallback(() => setToastResult(null), [])
+  useEffect(() => {
+    syncModalOpenRef.current = syncUi.open
+  }, [syncUi.open])
+
+  const dismissSyncModal = useCallback(() => {
+    syncModalOpenRef.current = false
+    setSyncUi(initialModal)
+  }, [])
 
   const refreshStats = useCallback(async () => {
     const s = await getListStats()
     setStats(s)
-    setDbStats({ total: s.total, byType: s.byType })
+    const d = await getStats()
+    setDbStats(d)
+    if (s.total === 0) {
+      fireAndForget(getSyncInfo().then(setSyncInfo))
+    }
   }, [])
 
   useEffect(() => {
-    refreshStats().catch(() => undefined)
+    fireAndForget(refreshStats())
   }, [refreshStats])
 
   useEffect(() => {
-    setSyncMessageHandlers({
-      onProgress: p => setSyncProg({ processed: p.processed, total: p.total }),
-      onComplete: (result: RpcImportResult) => {
-        setSyncing(false)
-        setSyncProg(undefined)
-        setToastResult(result)
-        refreshStats().catch(() => undefined)
-        refreshList(false).catch(() => undefined)
-      }
+    const handlers = listSyncMessageHandlers({
+      setSyncUi,
+      setSyncing,
+      syncModalOpenRef,
+      pushToast,
+      refreshStats,
+      refreshList
     })
-  }, [refreshList, refreshStats])
+    syncHandlersRef.current = handlers
+    setSyncMessageHandlers(handlers)
+    return () => {
+      syncHandlersRef.current = {} as ReturnType<typeof listSyncMessageHandlers>
+      setSyncMessageHandlers({})
+    }
+  }, [refreshList, refreshStats, pushToast])
 
-  const onSync = () => {
+  const onSync = useCallback(async () => {
     if (syncing) return
+    syncModalOpenRef.current = true
     setSyncing(true)
-    setSyncProg(undefined)
-    setToastResult(null)
-    syncRpc().catch(() => {
-      setSyncing(false)
+    setSyncUi({
+      ...initialModal,
+      open: true,
+      phase: 'preparing'
     })
-  }
+    try {
+      const info = await getSyncInfo()
+      setSyncUi({
+        open: true,
+        phase: 'active',
+        sourcesDir: info.sourcesDir,
+        totalFiles: info.fileCount,
+        processed: 0,
+        fileLog: [],
+        summary: null,
+        failMessage: null
+      })
+      fireAndForget(
+        syncRpc()
+          .then(result => {
+            syncHandlersRef.current.onComplete?.(result)
+          })
+          .catch((err: unknown) => {
+            setSyncing(false)
+            const msg = err instanceof Error ? err.message : String(err)
+            setSyncUi(prev => ({
+              ...prev,
+              phase: 'failed',
+              failMessage: msg
+            }))
+            pushToast(msg, 'error')
+          })
+      )
+    } catch (err) {
+      setSyncing(false)
+      const msg = err instanceof Error ? err.message : String(err)
+      setSyncUi({
+        ...initialModal,
+        open: true,
+        phase: 'failed',
+        failMessage: msg
+      })
+      pushToast(msg, 'error')
+    }
+  }, [syncing, pushToast])
 
-  return { stats, dbStats, refreshStats, syncing, syncProg, onSync, toastResult, dismissToast }
+  return {
+    stats,
+    dbStats,
+    refreshStats,
+    syncing,
+    syncUi,
+    dismissSyncModal,
+    onSync,
+    syncInfo
+  }
 }

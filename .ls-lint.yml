@@ -25,7 +25,7 @@ ls:
     .ts: regex:^(app|index)(\.spec)?$
 
   src/shell/app/db:
-    .ts: regex:^([a-z][a-z0-9_]*\.(repository|service)|client|schema|index)(\.spec)?$
+    .ts: regex:^([a-z][a-z0-9_]*\.(repository|service)|[a-z][a-z0-9_]+\.(util|const)|client|schema|index)(\.spec)?$
 
   # ── Main: directory↔suffix contract ─────────────────────────────────────────
   # Root: only the entry point and barrel. Everything else lives in a sub-folder.
@@ -40,8 +40,14 @@ ls:
   src/shell/main/rpc:
     .ts: regex:^(host|schemas|server)(\.spec)?$
 
+  src/shell/main/rpc/routes:
+    .ts: regex:^[a-z][a-z0-9_]*\.routes(\.spec)?$
+
+  src/shell/main/rpc/routes/utils:
+    .ts: regex:^[a-z][a-z0-9_]*\.util(\.spec)?$
+
   src/shell/main/window:
-    .ts: regex:^state(\.spec)?$
+    .ts: regex:^(state|[a-z][a-z0-9_]*\.util)(\.spec)?$
 
   # ── Renderer: directory↔suffix contract ─────────────────────────────────────
   # Root: only the React root, entry point, and HTML shell.
@@ -73,9 +79,16 @@ ls:
     .tsx: regex:^use_[a-z][a-z0-9_]*\.hook\.spec$
 
   # Anchor hook rules because ls-lint regexes match substrings. The .ts rules
-  # intentionally allow future .hook.spec.ts tests in list/shared folders.
+  # intentionally allow future .hook.spec.ts tests in the settings folder.
   src/shell/renderer/hooks/settings:
-    .ts: regex:^use_[a-z][a-z0-9_]*\.hook$
+    .ts: regex:^use_[a-z][a-z0-9_]*\.hook(\.spec)?$
+    .tsx: regex:^use_[a-z][a-z0-9_]*\.hook\.spec$
+
+  # Anchor hook rules because ls-lint regexes match substrings. The .ts rules
+  # intentionally allow future .hook.spec.ts tests in shortcuts folder.
+  src/shell/renderer/hooks/shortcuts:
+    .ts: regex:^use_[a-z][a-z0-9_]*\.hook(\.spec)?$
+    .tsx: regex:^use_[a-z][a-z0-9_]*\.hook\.spec$
 
   # Anchor hook rules because ls-lint regexes match substrings. The .ts rules
   # intentionally allow future .hook.spec.ts tests in list/shared folders.
@@ -91,6 +104,10 @@ ls:
     .ts: regex:[a-z][a-z0-9_]*\.util(\.spec)?
     .tsx: regex:[a-z][a-z0-9_]*\.util(\.spec)?
 
+  src/shell/renderer/utils/shortcuts:
+    .ts: regex:[a-z][a-z0-9_]*\.util(\.spec)?
+    .tsx: regex:[a-z][a-z0-9_]*\.util(\.spec)?
+
   src/shell/renderer/constants:
     .ts: regex:([a-z][a-z0-9_]*\.const|index)
 
@@ -102,6 +119,15 @@ ls:
 
   src/shell/renderer/components/shared:
     .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
+
+  src/shell/renderer/components/shortcuts:
+    .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
+
+  src/shell/renderer/styles:
+    .css: regex:^(app|theme|list|shortcuts)$
+
+  src/shell/renderer/styles/components:
+    .css: regex:^[a-z][a-z0-9_]*$
 
   # ── Core: directory↔suffix contract ─────────────────────────────────────────
   src/core/helpers:
@@ -125,12 +151,16 @@ ls:
   src/core/domain/models/entries/factories:
     .ts: regex:([a-z][a-z0-9_]*\.factory(\.spec)?|index)
 
+  src/core/domain/models/entries/collisions:
+    .ts: regex:([a-z][a-z0-9_]*\.detector(\.spec)?|index)
+
   src/core/domain/models/sources/parsers:
     .ts: regex:([a-z][a-z0-9_]*\.parser(\.spec)?|index)
 
 ignore:
   - .DS_Store
+  - .venv
   - node_modules
   - dist
   - build
-  - graphify-out
+  - .code-review-graph

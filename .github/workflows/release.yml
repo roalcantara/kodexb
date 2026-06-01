@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 concurrency:
-  group: kb-release
+  group: app-release
   cancel-in-progress: false
 
 jobs:
@@ -114,7 +114,7 @@ jobs:
       - name: Run release-it
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: bun run release:ci
+        run: bunx release-it --ci
 
       - name: Create draft GitHub release
         env:

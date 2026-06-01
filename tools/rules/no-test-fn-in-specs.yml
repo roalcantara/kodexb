@@ -1,0 +1,8 @@
+# TESTING_GUIDE: prefer it() over test() in src specs.
+id: no-test-fn-in-specs
+language: TypeScript
+files:
+  - '**/*.spec.ts'
+  - '**/*.spec.tsx'
+rule:
+  pattern: test($$$)

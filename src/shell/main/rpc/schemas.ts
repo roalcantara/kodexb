@@ -1,5 +1,5 @@
+import { ENTRY_TYPE_VALUES } from '@core/domain/constants'
 import { Type } from '@sinclair/typebox'
-import { ENTRY_TYPE_VALUES } from '../../../core/domain/constants'
 
 const PAGE_SIZE_SMALL = 25
 const PAGE_SIZE_MEDIUM = 50
@@ -28,20 +28,28 @@ const entryTypeSchema = Type.Union([
   Type.Literal(ENTRY_TYPE_VALUES[0]),
   Type.Literal(ENTRY_TYPE_VALUES[1]),
   Type.Literal(ENTRY_TYPE_VALUES[2]),
-  Type.Literal(ENTRY_TYPE_VALUES[3])
+  Type.Literal(ENTRY_TYPE_VALUES[3]),
+  Type.Literal(ENTRY_TYPE_VALUES[4])
 ])
+
+const listFilterFields = {
+  query: Type.Optional(Type.String()),
+  tags: Type.Optional(Type.Array(Type.String())),
+  types: Type.Optional(Type.Array(entryTypeSchema)),
+  taskView: Type.Optional(taskViewSchema)
+}
 
 export const listOptsSchema = Type.Object(
   {
-    query: Type.Optional(Type.String()),
-    tags: Type.Optional(Type.Array(Type.String())),
-    types: Type.Optional(Type.Array(entryTypeSchema)),
-    taskView: Type.Optional(taskViewSchema),
+    ...listFilterFields,
     limit: Type.Optional(Type.Integer({ minimum: 1, maximum: RPC_LIST_LIMIT_MAX })),
     offset: Type.Optional(Type.Integer({ minimum: 0 }))
   },
   { additionalProperties: false }
 )
+
+/** Body for `getListStats` when computing contextual facet counts (no pagination keys). */
+export const listStatsFilterSchema = Type.Object(listFilterFields, { additionalProperties: false })
 
 export const getEntryParams = Type.Object({ id: Type.Integer() }, { additionalProperties: false })
 
@@ -107,16 +115,35 @@ export const reorderDirSchema = Type.Union([Type.Literal('up'), Type.Literal('do
 
 export const emptyBodySchema = Type.Object({}, { additionalProperties: false })
 
+export const listBindingsByChordSchema = Type.Object(
+  { hash: Type.String({ minLength: 1 }) },
+  { additionalProperties: false }
+)
+
+export const recordBindingVisitSchema = Type.Object(
+  {
+    id: Type.String({ minLength: 1 }),
+    weight: Type.Number({ default: 1.0 })
+  },
+  { additionalProperties: false }
+)
+
 export const openExternalSchema = Type.Object({ url: Type.String({ minLength: 1 }) }, { additionalProperties: false })
 export const pasteInTerminalSchema = Type.Object(
   { cmd: Type.String({ minLength: 1 }) },
   { additionalProperties: false }
 )
+export const runInTerminalSchema = Type.Object({ cmd: Type.String({ minLength: 1 }) }, { additionalProperties: false })
+export const pasteDocSchema = Type.Object({ doc: Type.String({ minLength: 1 }) }, { additionalProperties: false })
 export const openInEditorSchema = Type.Object(
   { filePath: Type.String({ minLength: 1 }) },
   { additionalProperties: false }
 )
 export const suggestTagsSchema = Type.Object({ entryId: Type.Integer() }, { additionalProperties: false })
+
+export const hideWindowSchema = Type.Object({}, { additionalProperties: false })
+
+export const syncInfoSchema = Type.Object({}, { additionalProperties: false })
 export const resizeWindowSchema = Type.Object(
   {
     width: Type.Integer({ minimum: 1 }),
@@ -124,6 +151,24 @@ export const resizeWindowSchema = Type.Object(
   },
   { additionalProperties: false }
 )
+
+/**
+ * Body for `setWindowPosition` — `x`/`y` are screen coordinates, integer
+ * pixels. Bounds are intentionally generous (multi-monitor setups can put
+ * the window at negative coordinates) but capped to avoid pathological RPC
+ * payloads that would deadlock the native setPosition call.
+ */
+const WINDOW_COORD_MIN = -32_000
+const WINDOW_COORD_MAX = 32_000
+export const setWindowPositionSchema = Type.Object(
+  {
+    x: Type.Integer({ minimum: WINDOW_COORD_MIN, maximum: WINDOW_COORD_MAX }),
+    y: Type.Integer({ minimum: WINDOW_COORD_MIN, maximum: WINDOW_COORD_MAX })
+  },
+  { additionalProperties: false }
+)
+
+export const getWindowPositionSchema = Type.Object({}, { additionalProperties: false })
 
 export const idWithDirSchema = Type.Object(
   {

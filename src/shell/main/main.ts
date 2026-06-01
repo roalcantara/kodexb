@@ -1,96 +1,118 @@
-import { BrowserWindow, Utils } from 'electrobun/bun'
-import { createLogger } from '../../shared/logging'
-import { App, type AppShellHooks, type SyncEmitter } from '../app/app'
+import { configureMainLogging, getLogger, parseLogVerbosity } from '@shared/logging'
+import { BrowserWindow, GlobalShortcut, Screen, Utils } from 'electrobun/bun'
+import { App } from '../app/app'
 import { loadConfig } from '../app/config/config.loader'
+import type { HandoffServices } from './handoff/handoff_registry.service'
 import { reportConfigLoadErrorAndExit } from './helpers/error.helper'
-import { createKbWebviewRpc, createSyncEmitter } from './rpc/host'
+import { createSyncEmitter, createWebviewRpc } from './rpc/host'
 import { createRpcServer } from './rpc/server'
-import { loadWindowStateSync, saveWindowState, validateBounds, windowStatePathForConfigFile } from './window/state'
+import {
+  buildBrowserWindowCreateOptions,
+  computeInitialFrameFromDisplay,
+  createDeferredSyncEmit,
+  createShellHooks,
+  MAIN_WINDOW_DEFAULT_SIZE
+} from './utils/shell_hooks.util'
+import { findDisplayAtPoint } from './window/display_at_cursor.util'
+import { createExternalFocusHandoff } from './window/external_focus_handoff.util'
+import { resolveDisplayForPlacement } from './window/placement.util'
 
-const DEFAULT_FRAME = { x: 100, y: 100, width: 820, height: 600 }
+type WebviewRpc = ReturnType<typeof createWebviewRpc>
 
+/**
+ * Bootstrap the main window.
+ */
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: pre-existing bootstrap function
 async function bootstrap() {
-  const log = createLogger({ debug: false })
-
+  const verbosity = parseLogVerbosity()
+  configureMainLogging()
+  const logger = getLogger(['kb', 'main'])
   const config = await loadConfig().catch(async err => {
     await reportConfigLoadErrorAndExit(err, {
       showMessageBox: Utils.showMessageBox,
       exit: Utils.quit,
-      logError: e => log.error([e])
+      logError: e => logger.error(String(e))
     })
     throw err
   })
 
-  const persisted = loadWindowStateSync(config.configPath)
-  const frame = persisted && validateBounds(persisted) ? persisted : DEFAULT_FRAME
+  let webviewRpc: WebviewRpc | null = null
+  let win: BrowserWindow<WebviewRpc> | null = null
 
-  // Forward declarations so emit / shellHooks can reach the window + rpc once
-  // construction completes. `BrowserWindow` must be the last thing created so
-  // Electrobun attaches the transport to `kbWebviewRpc` after the handler is
-  // already wired.
-  let kbWebviewRpc: ReturnType<typeof createKbWebviewRpc> | null = null
-  let win: BrowserWindow<ReturnType<typeof createKbWebviewRpc>> | null = null
-
-  const lateEmit: SyncEmitter = {
-    syncProgress: (processed, total) => {
-      if (kbWebviewRpc) createSyncEmitter(kbWebviewRpc).syncProgress(processed, total)
-    },
-    syncComplete: result => {
-      if (kbWebviewRpc) createSyncEmitter(kbWebviewRpc).syncComplete(result)
-    }
-  }
-
-  const shellHooks: AppShellHooks = {
-    resizeWindow: (width, height) => {
-      win?.setSize(width, height)
-    },
-    openExternal: url => {
-      Utils.openExternal(url)
-    },
-    showOpenDialog: async opts => {
-      const properties = opts?.properties ?? []
-      const canChooseDirectory = properties.includes('openDirectory')
-      const canChooseFiles = properties.length === 0 || properties.includes('openFile')
-      const paths = await Utils.openFileDialog({
-        startingFolder: opts?.defaultPath,
-        canChooseFiles,
-        canChooseDirectory,
-        allowsMultipleSelection: false
-      })
-      return paths[0] ?? null
-    },
-    pasteInTerminal: (_cmd, terminalApp) => {
-      if (terminalApp) Utils.openExternal(terminalApp)
-    },
-    openInEditor: (filePath, _editorApp) => {
-      const fileUrl = filePath.startsWith('/') ? `file://${filePath}` : filePath
-      Utils.openExternal(fileUrl)
-    }
-  }
-
-  const app = new App(config, lateEmit, false, shellHooks)
-  const rpcApp = createRpcServer(app)
-  kbWebviewRpc = createKbWebviewRpc(rpcApp)
-
-  win = new BrowserWindow({
-    title: 'kb',
-    url: 'views://shell/index.html',
-    frame,
-    rpc: kbWebviewRpc
+  const focusHandoff = createExternalFocusHandoff({
+    hide: () => win?.minimize(),
+    show: () => win?.unminimize()
   })
 
-  win.show()
-  win.activate()
+  const handoffServices: HandoffServices = {
+    armGuard: () => focusHandoff.armGuard(),
+    disarmGuard: () => focusHandoff.disarmGuard(),
+    hide: () => win?.minimize(),
+    show: () => win?.unminimize()
+  }
 
-  win.on('close', () => {
-    if (!win) return
-    const f = win.frame
-    if (validateBounds(f)) {
-      saveWindowState(config.configPath, f).catch(err => {
-        log.error(['Failed to persist window state', err, windowStatePathForConfigFile(config.configPath)])
-      })
+  const shellHooks = {
+    ...createShellHooks(
+      () => win,
+      {
+        openExternal: url => Utils.openExternal(url),
+        openFileDialog: opts => Utils.openFileDialog(opts)
+      },
+      handoffServices
+    ),
+    quit: () => {
+      GlobalShortcut.unregisterAll()
+      Utils.quit()
     }
+  }
+  const lateEmit = createDeferredSyncEmit(() => webviewRpc, createSyncEmitter)
+
+  const app = new App(config, lateEmit, verbosity, shellHooks)
+  const rpcApp = createRpcServer(app)
+  webviewRpc = createWebviewRpc(rpcApp)
+
+  // The main window loads trusted packaged renderer content at views://shell/index.html (bundled by Electrobun, no external origin).
+  // Any future external or third-party webview must use sandbox: true,
+  // partition isolation, and navigation allowlists per assets/guides/ELECTROBUN.md and electrobun-best-practices.
+  const resolvedDisplay = resolveDisplayForPlacement(
+    {
+      getCursorScreenPoint: () => Screen.getCursorScreenPoint(),
+      getAllDisplays: () => Screen.getAllDisplays(),
+      getPrimaryDisplay: () => Screen.getPrimaryDisplay()
+    },
+    findDisplayAtPoint
+  )
+  const mainWin = new BrowserWindow(
+    buildBrowserWindowCreateOptions(
+      computeInitialFrameFromDisplay(resolvedDisplay, logger, MAIN_WINDOW_DEFAULT_SIZE),
+      webviewRpc,
+      process.platform
+    )
+  )
+  win = mainWin
+
+  mainWin.show()
+  mainWin.activate()
+
+  /**
+   * Toggle minimize — must match `hideWindow` (Escape) which uses `minimize()`, not `hide()`.
+   */
+  GlobalShortcut.register('CommandOrControl+Alt+/', () => {
+    if (!win) return
+    if (win.isMinimized()) {
+      win.unminimize()
+      win.show()
+      win.activate()
+    } else {
+      win.minimize()
+    }
+  })
+
+  /**
+   * Minimize the main window when it loses focus.
+   */
+  mainWin.on('blur', () => {
+    mainWin.minimize()
   })
 }
 

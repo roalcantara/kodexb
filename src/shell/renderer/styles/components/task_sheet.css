@@ -1,0 +1,83 @@
+/* ── Modal / TaskSheet ──────────────────────────────────────────── */
+
+.cmp-modal {
+  position: fixed;
+  inset: 0;
+  background: var(--color-scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.cmp-task-sheet {
+  padding: 24px;
+  min-width: min(400px, 100%);
+  box-sizing: border-box;
+}
+
+.cmp-task-sheet--field {
+  margin-bottom: 0.75rem;
+}
+
+.cmp-task-sheet--field label {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+  margin-bottom: 0.25rem;
+}
+
+.cmp-task-sheet--row {
+  display: flex;
+  gap: 1rem;
+}
+
+.cmp-task-sheet--row .cmp-task-sheet--field {
+  flex: 0 0 auto;
+}
+
+.cmp-task-sheet--input,
+.cmp-task-sheet--textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  color: var(--color-text-main);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.cmp-task-sheet--textarea {
+  resize: vertical;
+}
+
+.cmp-task-sheet--actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.cmp-task-sheet--btn {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-container);
+  color: var(--color-text-main);
+}
+
+.cmp-task-sheet--btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cmp-task-sheet--btn-primary {
+  background: var(--color-primary);
+  color: transparent;
+  border-color: transparent;
+}

@@ -3,7 +3,7 @@
 
 ## OVERVIEW
 
-Phase 5 delivers the **main↔renderer transport contract** for kb:
+Phase 5 delivers the **main↔renderer transport contract** for app:
 
 - A single Elysia app (`RpcApp`) defines the request/response API surface.
 - The renderer uses Eden Treaty (`@elysiajs/eden`) to call the Elysia app.
@@ -149,4 +149,3 @@ These are handled in the renderer via `Electroview.defineRPC({ handlers: { messa
   client is invoked and errors surface consistently.
 - **Preview:** smoke test via `bun tools/preview/server.ts` plus a `curl` POST
   to `/api/getStats`.
-

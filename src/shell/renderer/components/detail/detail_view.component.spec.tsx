@@ -2,6 +2,7 @@ import '@happy-dom/global-registrator'
 
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
+import { factoryFor } from '@testing'
 import { render, screen } from '@testing-library/react'
 import { DetailPageView, type DetailPageViewProps } from './detail_view.component'
 
@@ -24,42 +25,44 @@ const baseProps: DetailPageViewProps = {
     })
 }
 
-function makeBookmark(overrides: Partial<RpcKnowledge> = {}): RpcKnowledge {
-  return {
-    id: 1,
-    type: 'bookmark',
-    key: 'https://example.com',
-    source: '/tmp/test.yaml',
-    desc: 'Test bookmark',
-    tags: ['example'],
-    links: [],
-    notes: [],
-    meta: {},
-    doc: '',
-    createdAt: 1_700_000_000_000,
-    updatedAt: 1_700_000_000_000,
-    ...overrides
-  } as RpcKnowledge
+function rpcBookmark(overrides: Partial<Omit<RpcKnowledge, 'type'>> = {}): RpcKnowledge {
+  return factoryFor('bookmark', {
+    overrides: {
+      id: 1,
+      key: 'https://example.com',
+      source: '/tmp/test.yaml',
+      desc: 'Test bookmark',
+      tags: ['example'],
+      links: [],
+      notes: [],
+      meta: {},
+      doc: '',
+      createdAt: 1_700_000_000_000,
+      updatedAt: 1_700_000_000_000,
+      ...overrides
+    }
+  }) as RpcKnowledge
 }
 
-function makeTask(overrides: Partial<RpcKnowledge> = {}): RpcKnowledge {
-  return {
-    id: 2,
-    type: 'task',
-    key: 'Build kb',
-    source: '/tmp/test.yaml',
-    desc: 'Build the app',
-    tags: ['dev'],
-    links: [],
-    notes: [],
-    meta: {},
-    doc: '',
-    priority: 'high',
-    status: 'doing',
-    createdAt: 1_700_000_000_000,
-    updatedAt: 1_700_000_000_000,
-    ...overrides
-  } as RpcKnowledge
+function rpcTask(overrides: Partial<Omit<RpcKnowledge, 'type'>> = {}): RpcKnowledge {
+  return factoryFor('task', {
+    overrides: {
+      id: 2,
+      key: 'Build kb',
+      source: '/tmp/test.yaml',
+      desc: 'Build the app',
+      tags: ['dev'],
+      links: [],
+      notes: [],
+      meta: {},
+      doc: '',
+      priority: 'high',
+      status: 'doing',
+      createdAt: 1_700_000_000_000,
+      updatedAt: 1_700_000_000_000,
+      ...overrides
+    }
+  }) as RpcKnowledge
 }
 
 beforeEach(() => {
@@ -89,7 +92,7 @@ describe('DetailPageView', () => {
 
   describe('when entry has doc content', () => {
     it('renders the doc markdown via MdView', () => {
-      const entry = makeBookmark({
+      const entry = rpcBookmark({
         doc: '# My Bookmark\n\nSome **bold** notes.',
         key: 'my-bookmark'
       })
@@ -104,7 +107,7 @@ describe('DetailPageView', () => {
 
   describe('when entry is a task', () => {
     it('renders BadgeAccessory and DependencyGraph', () => {
-      const entry = makeTask({ doc: '# Task\n\nDo the thing.' })
+      const entry = rpcTask({ doc: '# Task\n\nDo the thing.' })
       render(<DetailPageView {...baseProps} entry={entry} allEntries={[entry]} />)
 
       expect(screen.getByText('Build kb')).toBeTruthy()
@@ -119,7 +122,7 @@ describe('DetailPageView', () => {
 
   describe('when entry has links', () => {
     it('renders the Links section with clickable buttons', () => {
-      const entry = makeBookmark({
+      const entry = rpcBookmark({
         links: [{ GitHub: 'https://github.com' }],
         doc: '# Bookmark'
       })

@@ -43,10 +43,18 @@ src/shell/renderer/  React UI. Calls main via Eden Treaty client ONLY.
   end-to-end specs. No drizzle-seed. See
   [`assets/guides/FISHERY_GUIDE.md`](assets/guides/FISHERY_GUIDE.md) and
   [`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md).
-- **Logging**: use `createLogger()` from `@shared/logging`. Never `console.*` in `src/`.
+- **Logging**: use `getLogger(['kb', '<area>', ...])` from `@shared/logging`. Never `console.*` in `src/`.
+  Use `configureMainLogging()` at main entry; `configureRendererLogging()` at renderer entry.
+  Use `repositoryStmts(db, 'Noun', { ...sql })` for DB instrumentation.
+  Use `withContext(...)` when adding per-request metadata.
+  See `assets/guides/LOGGING_GUIDE.md` for canonical reference.
 - **Every new Elysia route** must also appear in `tools/preview/server.ts`.
 - **Every new file** in `src/` needs a co-located `.spec.ts(x)`.
 - **Exports**: unused exports are a knip error — delete or use before committing.
+- **Renderer styling**: Tailwind v4 via `src/shell/renderer/styles/` (`app.css`, `theme.css`,
+  `components/*.css`); Andromeda Void tokens in `@theme`; JSX uses `cmp-*` and `.semantic-*`
+  helpers — not inline utility strings. Build with `mise run app styles`; see
+  [`assets/guides/STYLING_GUIDE.md`](assets/guides/STYLING_GUIDE.md).
 
 ## Naming conventions
 
@@ -67,14 +75,70 @@ see `.ls-lint.yml`). The full canonical suffix vocabulary lives in
 
 ## Skills to load
 
-Load these at the start of any kb task:
+Load these at the start of any project task:
 
-- `kb-context` — always (architecture + naming + design system)
-- `kb-rpc` — when touching Elysia routes or the Eden Treaty client
-- `kb-testing` — when writing or modifying tests
-- `kb-quality-gate` — before marking anything done
+- `app-context` — always (architecture + naming + design system)
+- `app-rpc` — when touching Elysia routes or the Eden Treaty client
+- `app-testing` — when writing or modifying tests
+- `app-quality-gate` — before marking anything done
 
-Skills live at `.agents/skills/`. Global Electrobun skills at `~/.agents/skills/`.
+Optional companion skills for narrower situations:
+
+<!-- skills:optional-companions:start -->
+- `systematic-debugging` - before fixing failing tests, gate failures, or unexpected behavior
+- `elysia` - for Elysia route mechanics, after app-rpc
+- `receiving-code-review` - when applying review feedback
+- `requesting-code-review` - when preparing a review handoff or PR
+- `mise-tasks` - when editing mise.toml or task orchestration
+- `mise-expert` - when editing mise tool versions or environment setup
+- `ast-grep` - for structural search or rewrite rules
+- `knip` - for unused exports, files, or dependencies
+- `jscpd` - for duplication reports and extraction judgment
+- `dry-principle` - when deciding whether duplication warrants extraction
+- `solid-principles` - for class or module design review
+- `react:components` - when translating design artifacts into renderer components
+- `stitch-design` - for design intake or prototypes, under the prototype gate
+- `using-git-worktrees` - only when isolated parallel work is requested or approved
+- `verification-before-completion` - as a reminder; app-quality-gate remains the executable authority
+<!-- skills:optional-companions:end -->
+
+Skill adoption and routing rationale lives in
+[`assets/guides/SKILLS.md`](assets/guides/SKILLS.md). Project-authored skills
+and Skills CLI-managed project skills live at `.agents/skills/`;
+`mise run skill install` restores the external project skills from
+`skills-lock.json`. Other optional companions remain global at
+`~/.agents/skills/`.
+
+## Superpowers adaptation
+
+When a Superpowers skill mentions `docs/superpowers/specs` or
+`docs/superpowers/plans`, use the `spec-driven-development` skill shape
+instead and map the output to [`assets/docs/specs/<scope>/`](assets/docs/specs/)
+in this repo. Use `requirements.md`, `design.md`, `tasks.md`, and optional
+`handoff.md`.
+
+Do not create `docs/superpowers/`. That path is a common external skill
+default and is gitignored in this repo to prevent drift.
+
+For tests, project rules override generic Superpowers examples: follow
+[`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md), use
+`bun:test`, prefer `it(...)`, and follow the repo's Better Specs and Fishery
+guidance.
+
+For completion, use the phase-specific `mise run validate ...` command when
+one is provided. Otherwise run
+`bash .agents/skills/app-quality-gate/scripts/gate.sh`. Generic examples such
+as `npm test` are not sufficient.
+
+Subagent prompts must include these project overrides explicitly because subagents
+may not inherit the controller's full context.
+
+## Code review graph
+
+Follow the canonical CRG query-first workflow and daemon/HK hook policy in
+[`AGENTS.md`](AGENTS.md#code-review-graph). Use the repo MCP server from
+`.mcp.json`; run `code-review-graph update --skip-flows` when coverage appears
+stale.
 
 ## Reference docs
 
@@ -83,12 +147,15 @@ of truth for every convention in this file. If the guides ever disagree
 with this `CLAUDE.md`, **the guides win** — open a PR to fix `CLAUDE.md`.
 
 - [`assets/guides/CODESTYLE_GUIDE.md`](assets/guides/CODESTYLE_GUIDE.md) — naming, FCIS layout, SOLID
+- [`assets/guides/STYLING_GUIDE.md`](assets/guides/STYLING_GUIDE.md) — Tailwind v4, Andromeda Void, renderer CSS partials
 - [`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md) — bun:test, Better Specs, no-mock rule
 - [`assets/guides/FISHERY_GUIDE.md`](assets/guides/FISHERY_GUIDE.md) — `factoryFor` usage and registry
 - [`assets/guides/FCIS.guide.md`](assets/guides/FCIS.guide.md) — pure core / imperative shell rules
-- [`assets/guides/DoD.md`](assets/guides/DoD.md) — Definition of Done (gated by `kb-quality-gate`)
+- [`assets/guides/DoD.md`](assets/guides/DoD.md) — Definition of Done (gated by `app-quality-gate`)
 - [`assets/guides/GIT_COMMITS_GUIDE.md`](assets/guides/GIT_COMMITS_GUIDE.md) — Conventional Commits, ≤ 50-char subject
 - [`assets/guides/MISE_GUIDE.md`](assets/guides/MISE_GUIDE.md) — when to use `mise run` vs `bun run`
+- [`assets/guides/SKILLS.md`](assets/guides/SKILLS.md) — skill adoption ledger, routing rationale, optional companions
+- [`assets/guides/SKILLS.yml`](assets/guides/SKILLS.yml) — structured skill registry used by `mise run skill validate`, `mise run skill sync`, and `mise run skill install`
 - [`assets/guides/CI_GUIDE.md`](assets/guides/CI_GUIDE.md) — review/release/publish workflows
 - [`assets/guides/BUN_RUNTIME.md`](assets/guides/BUN_RUNTIME.md) — Bun YAML/JSON5/SQLite quick reference
 - [`assets/guides/ELECTROBUN.md`](assets/guides/ELECTROBUN.md) — Electrobun official-docs map + RPC shape
@@ -98,3 +165,5 @@ Foundation specs:
 - [`assets/docs/specs/foundation/design.md`](assets/docs/specs/foundation/design.md) — architecture decisions, layer rules, RPC contract
 - [`assets/docs/specs/foundation/requirements.md`](assets/docs/specs/foundation/requirements.md) — EARS specs V1-1 through V1-8
 - [`assets/docs/specs/foundation/roadmap.md`](assets/docs/specs/foundation/roadmap.md) — phase sequence, skills per phase, development loop
+
+Feature specs and plans belong under [`assets/docs/specs/`](assets/docs/specs/) (see [`assets/docs/specs/README.md`](assets/docs/specs/README.md)). **Do not add `docs/superpowers/`** — that path is a common external skill default and is **gitignored** in this repo to prevent drift.

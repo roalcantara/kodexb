@@ -2,8 +2,7 @@
 title: Commit message guidelines
 description: Conventional Commits for this repo (primary reference)
 ---
-
-# Commit Message Guidelines
+<!-- markdownlint-disable-file -->
 
 Cursor rule (summary): `.cursor/rules/git-commits.mdc`
 

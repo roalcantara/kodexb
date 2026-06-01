@@ -1,0 +1,8 @@
+# TESTING_GUIDE: do not alias RSpec context — use nested describe.
+id: no-context-alias
+language: TypeScript
+files:
+  - '**/*.spec.ts'
+  - '**/*.spec.tsx'
+rule:
+  pattern: const context = describe

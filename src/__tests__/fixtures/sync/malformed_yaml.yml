@@ -1,0 +1,7 @@
+bookmarks:
+  https://example.com:
+    desc: This file is intentionally malformed
+    tags: [valid]
+  - this is not a valid YAML mapping
+    key: value
+  another: broken

@@ -219,7 +219,7 @@ To make these palettes stand out, we've moved away from the standard `"blue-grey
 
 ---
 
-## 08. Ranked Theme Evaluation for kb
+## 08. Ranked Theme Evaluation for app
 
 This ranking is based on a balance of universal appeal, legibility for extended deep work sessions, color distinctiveness (for those 4 key entry types), and adherence to a cohesive `"design story."`
 
@@ -331,4 +331,4 @@ They include all tokens and implementation advice.
 
 - For the `"Glitch Protocol"` theme, consider adding a subtle `text-shadow` to your `primary` and `color-command` tokens to simulate that CRT phosphor bleed seen in the Cyberpunk reference.
 
-- It will make the `"kb"` app look like it's actually emitting light.
+- It will make the `"app"` app look like it's actually emitting light.

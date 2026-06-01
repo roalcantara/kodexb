@@ -1,6 +1,6 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class=""><rect id="_r_9_" width="482" height="482" x="15" y="15" rx="128" fill="#F5AF19" stroke="#FFFFFF" stroke-width="30" stroke-opacity="100%" paint-order="stroke"></rect><clipPath id="clip"><use xlink:href="#_r_9_"></use></clipPath><defs><linearGradient id="_r_a_" gradientUnits="userSpaceOnUse" gradientTransform="rotate(45)" style="transform-origin: center center;"><stop stop-color="#F5AF19"></stop><stop offset="1" stop-color="#F12711"></stop></linearGradient><radialGradient id="_r_b_" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(256) rotate(90) scale(512)"><stop stop-color="white"></stop><stop offset="1" stop-color="white" stop-opacity="0"></stop></radialGradient></defs>
 <svg width="440" height="440" viewBox="0 0 80 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="36" y="36" alignment-baseline="middle" style="color: rgb(255, 255, 255); width: 440px; height: 440px;">
-    
+
     <title>Icon-Architecture/64/Arch_AWS-Lambda_64</title>
     <desc>Created with Sketch.</desc>
     <g id="Icon-Architecture/64/Arch_AWS-Lambda_64" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.15/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
   "files": {
     "ignoreUnknown": false,
     "includes": [
@@ -17,7 +17,12 @@
       "!.cursor",
       "!.opencode",
       "!.agents",
-      "!graphify-out"
+      "!.code-review-graph",
+      "!e2e/.generated",
+      "!tmp",
+      "!.venv",
+      "!.worktrees",
+      "!.opencode"
     ]
   },
   "formatter": {
@@ -73,7 +78,7 @@
                 "selector": {
                   "kind": "objectLiteralProperty"
                 },
-                "formats": ["camelCase", "snake_case", "PascalCase"]
+                "formats": ["camelCase", "snake_case", "PascalCase", "CONSTANT_CASE"]
               },
               {
                 "selector": {
@@ -218,7 +223,27 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.test.ts", "**/*.spec.ts", "**/*.test.tsx", "**/*.spec.tsx", "**/__tests__/**/*.ts"],
+      "includes": ["src/__tests__/**/*.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noMisplacedAssertion": "off"
+          },
+          "nursery": {
+            "noExcessiveLinesPerFile": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "**/*.e2e.spec.ts",
+        "**/*.test.tsx",
+        "**/*.spec.tsx",
+        "**/__tests__/**/*.ts"
+      ],
       "linter": {
         "rules": {
           "complexity": {
@@ -249,11 +274,93 @@
       }
     },
     {
-      "includes": ["electrobun.config.ts"],
+      "includes": ["tools/**/*.script.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off",
+            "noExcessiveLinesPerFunction": "off"
+          },
+          "style": {
+            "noMagicNumbers": "off",
+            "useNamingConvention": "off"
+          },
+          "security": {
+            "noSecrets": "off"
+          },
+          "suspicious": {
+            "noEmptyBlockStatements": "off"
+          },
+          "performance": {
+            "noAwaitInLoops": "off",
+            "useTopLevelRegex": "off"
+          },
+          "nursery": {
+            "noExcessiveLinesPerFile": {
+              "level": "warn",
+              "options": {
+                "maxLines": 400,
+                "skipBlankLines": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["e2e/screenplay/**/*.ts", "e2e/steps/**/*.ts", "e2e/support/**/*.ts"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noExcessiveClassesPerFile": "off",
+            "useConsistentMethodSignatures": "off"
+          },
+          "performance": {
+            "noAwaitInLoops": "off",
+            "useTopLevelRegex": "off"
+          },
+          "correctness": {
+            "noUnusedPrivateClassMembers": "off",
+            "noUnusedFunctionParameters": "off"
+          },
+          "style": {
+            "noMagicNumbers": "off",
+            "useConsistentTypeDefinitions": "off",
+            "noDefaultExport": "off",
+            "useConsistentMemberAccessibility": "off"
+          },
+          "suspicious": {
+            "useAwait": "off"
+          },
+          "security": {
+            "noSecrets": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["electrobun.config.ts", "playwright.config.ts"],
       "linter": {
         "rules": {
           "style": {
-            "noDefaultExport": "off"
+            "noDefaultExport": "off",
+            "useNamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/shell/app/app.ts"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noExcessiveLinesPerFile": {
+              "level": "error",
+              "options": {
+                "maxLines": 320,
+                "skipBlankLines": true
+              }
+            }
           }
         }
       }

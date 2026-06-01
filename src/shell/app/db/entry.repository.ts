@@ -1,65 +1,89 @@
 import type { Database } from 'bun:sqlite'
+import type { FindAllOpts } from '@core/helpers/list_opts/find_all_opts.types'
+import { repositoryStmts } from '@shared/logging'
 import type { UnknownRecord } from 'type-fest'
-import type { EntryType, Knowledge } from '../../../core'
+import type { EntryType, Knowledge, ShortcutKnowledge } from '../../../core'
+import {
+  DEFAULT_QUERY_LIMIT,
+  DELETE_BY_ID_SQL,
+  DOUBLE_QUOTE_RE,
+  EXISTS_BY_ID_SQL,
+  FIND_BY_ID_SQL,
+  FRECENCY_JOIN_SQL,
+  FRECENCY_SELECT_SQL,
+  FTS_SPACE_RE,
+  ORDER_BY_FRECENCY_TAIL_SQL,
+  REBUILD_FTS_SQL,
+  STATS_BY_TYPE_SQL,
+  TAG_COUNT_SQL,
+  UPSERT_SQL
+} from './entry_repository.const'
+import { rowToParams } from './entry_upsert_params.util'
 import type { KnowledgeRow } from './schema'
 
-export type FindAllOpts = {
-  query?: string
-  tags?: string[]
-  types?: EntryType[]
-  limit?: number
-  offset?: number
+export type KnowledgeWithFrecency = Knowledge & {
+  frecencyScore: number
+  visitCount: number
 }
+
+type KnowledgeRowWithFrecency = KnowledgeRow & {
+  frecency_score: number
+  visit_count: number
+}
+
+export type { FindAllOpts }
 
 export type DbStats = {
   total: number
   byType: Record<string, number>
 }
 
-const DEFAULT_QUERY_LIMIT = 50
+// `rebuildFts` lives outside the bag because the FTS virtual table is not
+// present in every test fixture (e.g., `task.repository.spec.ts` builds the
+// `knowledges` table directly). Bagging it would force a prepare at every
+// call site and crash before any non-FTS work could run.
+type KnowledgeStmts = ReturnType<
+  typeof repositoryStmts<{
+    upsert: string
+    existsById: string
+    findById: string
+    tagCounts: string
+    statsByType: string
+    deleteById: string
+  }>
+>
 
-const UPSERT_SQL = `
-INSERT INTO knowledges (
-  id, type, key, source, desc, tags, links, notes, doc,
-  priority, status, due_date, task_order, depends_on, meta,
-  created_at, updated_at
-) VALUES (
-  ?, ?, ?, ?, ?, ?, ?, ?, ?,
-  ?, ?, ?, ?, ?, ?,
-  ?, ?
-)
-ON CONFLICT(id) DO UPDATE SET
-  type        = excluded.type,
-  key         = excluded.key,
-  source      = excluded.source,
-  desc        = excluded.desc,
-  tags        = excluded.tags,
-  links       = excluded.links,
-  notes       = excluded.notes,
-  doc         = excluded.doc,
-  priority    = excluded.priority,
-  status      = excluded.status,
-  due_date    = excluded.due_date,
-  task_order  = excluded.task_order,
-  depends_on  = excluded.depends_on,
-  meta        = excluded.meta,
-  updated_at  = excluded.updated_at
-`
+const knowledgeStmtsByDb = new WeakMap<Database, KnowledgeStmts>()
 
-const FIND_BY_ID_SQL = 'SELECT * FROM knowledges WHERE id = ?'
-
-const TAG_COUNT_SQL = `SELECT json_each.value AS tag, COUNT(*) AS cnt
-FROM knowledges, json_each(knowledges.tags) AS json_each
-GROUP BY json_each.value`
-
-const FTS_SPACE_RE = /\s+/g
-const DOUBLE_QUOTE_RE = /"/g
+function initStmts(db: Database): KnowledgeStmts {
+  const cached = knowledgeStmtsByDb.get(db)
+  if (cached) return cached
+  const stmts = repositoryStmts(db, 'Knowledge', {
+    upsert: UPSERT_SQL,
+    existsById: EXISTS_BY_ID_SQL,
+    findById: FIND_BY_ID_SQL,
+    tagCounts: TAG_COUNT_SQL,
+    statsByType: STATS_BY_TYPE_SQL,
+    deleteById: DELETE_BY_ID_SQL
+  })
+  knowledgeStmtsByDb.set(db, stmts)
+  return stmts
+}
 
 function toFts5MatchQuery(input: string): string {
   const raw = input.trim()
   if (!raw) return raw
   const tokens = raw.split(FTS_SPACE_RE).filter(Boolean)
   return tokens.map(token => `"${token.replaceAll(DOUBLE_QUOTE_RE, '""')}"*`).join(' ')
+}
+
+/** AND semantics: row must contain every tag (matches prior in-memory filter). */
+function sqlKnowHasEveryTag(aliasTable: string, tags: string[]): { clause: string; params: string[] } {
+  if (tags.length === 0) return { clause: '', params: [] }
+  const clause = tags
+    .map(() => `EXISTS (SELECT 1 FROM json_each(${aliasTable}.tags) AS tag_row WHERE tag_row.value = ?)`)
+    .join(' AND ')
+  return { clause, params: [...tags] }
 }
 
 function parseJson<T>(raw: string | null, fallback: T): T {
@@ -99,97 +123,98 @@ export function rowToKnowledge(row: KnowledgeRow): Knowledge {
     }
   }
 
+  if (row.type === 'shortcut') {
+    return {
+      ...base,
+      type: 'shortcut',
+      bindings: parseJson<ShortcutKnowledge['bindings']>(row.bindings, []),
+      ...(row.platform ? { platform: row.platform as ShortcutKnowledge['platform'] } : {})
+    }
+  }
+
   return base as Knowledge
 }
 
-function rowToParams(
-  row: Knowledge
-): [
-  number,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string,
-  string | null,
-  string | null,
-  number | null,
-  number | null,
-  string,
-  string,
-  number,
-  number
-] {
-  return [
-    row.id,
-    row.type,
-    row.key,
-    row.source,
-    row.desc,
-    JSON.stringify(row.tags),
-    JSON.stringify(row.links ?? []),
-    JSON.stringify(row.notes ?? []),
-    row.doc,
-    'priority' in row ? (row.priority ?? null) : null,
-    'status' in row ? (row.status ?? null) : null,
-    'dueDate' in row ? (row.dueDate ?? null) : null,
-    'taskOrder' in row ? (row.taskOrder ?? null) : null,
-    'dependsOn' in row ? JSON.stringify(row.dependsOn ?? []) : JSON.stringify([]),
-    JSON.stringify(row.meta ?? {}),
-    row.createdAt,
-    row.updatedAt
-  ]
-}
-
 export function upsert(db: Database, row: Knowledge): 'inserted' | 'updated' {
-  const exists = db.query<{ one: 1 } | null, [number]>('SELECT 1 AS one FROM knowledges WHERE id = ?').get(row.id)
-  db.query(UPSERT_SQL).run(...rowToParams(row))
+  const s = initStmts(db)
+  const exists = s.existsById.get(row.id) as { one: 1 } | null
+  s.upsert.run(...rowToParams(row))
   return exists ? 'updated' : 'inserted'
 }
 
 export function rebuildFts(db: Database): void {
-  db.query('INSERT INTO knowledges_fts(knowledges_fts) VALUES(?)').run('rebuild')
+  db.query(REBUILD_FTS_SQL).run('rebuild')
 }
 
-export function findAll(db: Database, opts: FindAllOpts = {}): Knowledge[] {
+function findAllRowsFts(
+  db: Database,
+  match: string,
+  tagFilter: { clause: string; params: string[] },
+  limitParam: number,
+  offset: number
+): UnknownRecord[] {
+  const tagWhere = tagFilter.clause === '' ? '' : ` AND (${tagFilter.clause})`
+  const sql = `
+      SELECT k.*, ${FRECENCY_SELECT_SQL}
+      FROM knowledges k
+      ${FRECENCY_JOIN_SQL}
+      JOIN knowledges_fts ON k.id = knowledges_fts.id
+      WHERE knowledges_fts MATCH ?${tagWhere}
+      ORDER BY bm25(knowledges_fts),
+               COALESCE(f.frecency_score, 0) DESC,
+               k.task_order ASC NULLS LAST,
+               k.updated_at DESC,
+               k.id DESC
+      LIMIT ? OFFSET ?
+    `
+  return db.query(sql).all(match, ...tagFilter.params, limitParam, offset) as UnknownRecord[]
+}
+
+function findAllRowsPlain(
+  db: Database,
+  types: EntryType[] | undefined,
+  tagFilter: { clause: string; params: string[] },
+  limitParam: number,
+  offset: number
+): UnknownRecord[] {
+  const conditions: string[] = []
+  const params: string[] = []
+
+  if (types && types.length > 0) {
+    conditions.push(`k.type IN (${types.map(() => '?').join(',')})`)
+    params.push(...types)
+  }
+
+  if (tagFilter.clause !== '') {
+    conditions.push(`(${tagFilter.clause})`)
+    params.push(...tagFilter.params)
+  }
+
+  const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+  const sql = `SELECT k.*, ${FRECENCY_SELECT_SQL} FROM knowledges k ${FRECENCY_JOIN_SQL} ${where}${ORDER_BY_FRECENCY_TAIL_SQL} LIMIT ? OFFSET ?`
+  return db.query(sql).all(...params, limitParam, offset) as UnknownRecord[]
+}
+
+function rowToKnowledgeWithFrecency(row: KnowledgeRowWithFrecency): KnowledgeWithFrecency {
+  return {
+    ...rowToKnowledge(row),
+    frecencyScore: row.frecency_score,
+    visitCount: row.visit_count
+  }
+}
+
+export function findAll(db: Database, opts: FindAllOpts = {}): KnowledgeWithFrecency[] {
   const { query, tags, types, offset = 0 } = opts
   const limit = opts.limit ?? DEFAULT_QUERY_LIMIT
   const limitParam = limit === -1 ? -1 : limit
 
-  let rows: UnknownRecord[]
+  const tagFilter = sqlKnowHasEveryTag('k', tags && tags.length > 0 ? tags : [])
 
-  if (query) {
-    const match = toFts5MatchQuery(query)
-    const sql = `
-      SELECT k.*
-      FROM knowledges k
-      JOIN knowledges_fts f ON k.id = f.id
-      WHERE knowledges_fts MATCH ?
-      LIMIT ? OFFSET ?
-    `
-    rows = db.query(sql).all(match, limitParam, offset) as UnknownRecord[]
-  } else {
-    const conditions: string[] = []
-    const params: string[] = []
+  const rows = query
+    ? findAllRowsFts(db, toFts5MatchQuery(query), tagFilter, limitParam, offset)
+    : findAllRowsPlain(db, types, tagFilter, limitParam, offset)
 
-    if (types && types.length > 0) {
-      conditions.push(`type IN (${types.map(() => '?').join(',')})`)
-      params.push(...types)
-    }
-
-    const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
-    const sql = `SELECT * FROM knowledges ${where} LIMIT ? OFFSET ?`
-    rows = db.query(sql).all(...params, limitParam, offset) as UnknownRecord[]
-  }
-
-  let list = rows.map(row => rowToKnowledge(row as KnowledgeRow))
-
-  if (tags && tags.length > 0) {
-    list = list.filter(entry => tags.every(tag => entry.tags.includes(tag)))
-  }
+  let list = rows.map(row => rowToKnowledgeWithFrecency(row as KnowledgeRowWithFrecency))
 
   if (query && types && types.length > 0) {
     list = list.filter(entry => types.includes(entry.type))
@@ -199,14 +224,14 @@ export function findAll(db: Database, opts: FindAllOpts = {}): Knowledge[] {
 }
 
 export function findById(db: Database, id: number): Knowledge | null {
-  const row = db.query<KnowledgeRow, [number]>(FIND_BY_ID_SQL).get(id)
+  const s = initStmts(db)
+  const row = s.findById.get(id) as KnowledgeRow | null
   return row ? rowToKnowledge(row) : null
 }
 
 export function getDbStats(db: Database): DbStats {
-  const rows = db
-    .query<{ type: string; count: number }, []>('SELECT type, COUNT(*) as count FROM knowledges GROUP BY type')
-    .all()
+  const s = initStmts(db)
+  const rows = s.statsByType.all() as Array<{ type: string; count: number }>
 
   const byType: Record<string, number> = {}
   let total = 0
@@ -219,7 +244,8 @@ export function getDbStats(db: Database): DbStats {
 }
 
 export function getTagCounts(db: Database): Record<string, number> {
-  const rows = db.query<{ tag: string; cnt: number }, []>(TAG_COUNT_SQL).all()
+  const s = initStmts(db)
+  const rows = s.tagCounts.all() as Array<{ tag: string; cnt: number }>
   const out: Record<string, number> = {}
   for (const row of rows) {
     if (row.tag) out[row.tag] = row.cnt
@@ -228,6 +254,7 @@ export function getTagCounts(db: Database): Record<string, number> {
 }
 
 export function deleteById(db: Database, id: number): boolean {
-  const result = db.query('DELETE FROM knowledges WHERE id = ?').run(id)
+  const s = initStmts(db)
+  const result = s.deleteById.run(id)
   return result.changes > 0
 }

@@ -108,15 +108,15 @@ mise exec -- actionlint   # validates all .github/workflows/*.yml
 ## Workflow: review.yml
 
 **Trigger:** PR opened / synchronized / reopened / ready-for-review.
-**Concurrency:** `kb-${{ github.ref }}`, cancel-in-progress.
+**Concurrency:** `app-${{ github.ref }}`, cancel-in-progress.
 
 Jobs:
 
-- **`lint`** — runs `lint:biome:ci`, `lint:knip:ci`, `lint:depcruise:ci`,
-  `lint:jscpd:ci`, `lint:ls:ci`, `lint:ast-grep:ci`, `lint:mise:ci`,
-  `typecheck` with aggregated exit code. Reports → `tmp/reports/linters/` →
+- **`lint`** — `mise run lint check --<tool> --ci`
+  (Biome, Knip, dependency-cruiser, jscpd, ls-lint, ast-grep, mise) plus
+  `typecheck`, with aggregated exit code. Reports → `tmp/reports/linters/` →
   `report-linters` artifact (7 days).
-- **`test`** — `bun run test:ci` produces JUnit + coverage. Summary table
+- **`test`** — `mise run test ci` produces JUnit + coverage. Summary table
   via composite `junit-summary`. `mikepenz/action-junit-report` publishes
   the test check.
 - **`build`** — Linux smoke build with `ELECTROBUN_DEVELOPER_ID=''`. Uploads
@@ -126,15 +126,15 @@ Jobs:
 
 | Symptom                                   | Cause / fix                                                 |
 | ----------------------------------------- | ----------------------------------------------------------- |
-| `lint:knip` fails on unused export        | Delete the export or use it; `bun run lint:knip:fix`        |
+| `lint:knip` fails on unused export        | Delete the export or use it; `mise run lint check --knip`   |
 | `lint:depcruise` fails on layer violation | A renderer file imported `shell/app/`; move to RPC          |
 | Build cache miss every run                | Verify `~/.electrobun` cache key; check `package.json` hash |
 
-**Local mirror:** `mise run ci:review`.
+**Local mirror:** `mise run ci review`.
 
 ## Workflow: release.yml
 
-**Trigger:** push to `main`. **Concurrency:** `kb-release`,
+**Trigger:** push to `main`. **Concurrency:** `app-release`,
 **cancel-in-progress: false** — never interrupt an in-flight release.
 
 Steps (in order):
@@ -147,7 +147,7 @@ Steps (in order):
    falls back to `ssh-add -L`).
 6. Verify signing self-test: signed commit + signed tag in a temp repo.
 7. `git pull --rebase origin main` (defensive against push races).
-8. `bun run release:ci` (release-it).
+8. `bunx release-it --ci`.
 9. Poll `gh release list --limit 1` for `isDraft: true` (10 × 5s). Exits 0
    either way; "no draft" means "no releasable commits in this push," which
    is normal for `chore`/`docs` pushes.
@@ -164,10 +164,10 @@ Steps (in order):
 **Local mirror:**
 
 ```sh
-mise run ci:release:check-squash
-mise run ci:release:check-signing
-mise run ci:release:dry-run
-mise run ci:release:notes
+mise run ci release --check-squash
+mise run ci release --check-signing
+mise run ci release --dry-run
+mise run ci release --notes
 ```
 
 ## Workflow: publish.yml
@@ -250,24 +250,21 @@ Only this job touches the GitHub Release surface.
 | Upstream Release succeeded but publish.yml didn't trigger | Repo doesn't have Actions enabled on `workflow_run`; use `workflow_dispatch` |
 | linux-arm64 leg cancelled "no runner available"           | GitHub-hosted ARM runners temporarily exhausted; retry the matrix leg        |
 
-**Local mirror:** `mise run ci:publish --version=<ver> --target=<target>`.
+**Local mirror:** `mise run ci publish package --version=<ver> --target=<target>`.
 
 ## Local mirror tasks (mise)
 
-| Task                       | What it does                                      |
-| -------------------------- | ------------------------------------------------- |
-| `ci:review`                | full review.yml chain (lint + test + smoke build) |
-| `ci:review:lint`           | `bun run lint`                                    |
-| `ci:review:test`           | `bun run test:ci` (JUnit + coverage)              |
-| `ci:review:build`          | `ELECTROBUN_DEVELOPER_ID='' bun run build`        |
-| `ci:release:check-squash`  | validate HEAD subject is not a merge commit       |
-| `ci:release:check-signing` | signed-commit + signed-tag self-test              |
-| `ci:release:dry-run`       | `bunx release-it --dry-run --ci`                  |
-| `ci:release:notes`         | preview only the next CHANGELOG entry             |
-| `ci:publish`               | full publish.yml chain for the local platform     |
-| `ci:publish:build`         | `bun run build:prod`                              |
-| `ci:publish:package`       | tarball linux output / rename mac `.dmg`          |
-| `ci:publish:checksum`      | `sha256sum *.tar.gz *.dmg > checksums.txt`        |
+| Task                         | What it does                                      |
+| ---------------------------- | ------------------------------------------------- |
+| `ci review`                  | full review.yml chain (lint + test + smoke build) |
+| `ci release --check-squash`  | validate HEAD subject is not a merge commit       |
+| `ci release --check-signing` | signed-commit + signed-tag self-test              |
+| `ci release --dry-run`       | `bunx release-it --dry-run --ci`                  |
+| `ci release --notes`         | preview only the next CHANGELOG entry             |
+| `ci publish build`           | `bun run build:prod`                              |
+| `ci publish package`         | tarball linux output / rename mac `.dmg`          |
+| `ci publish checksum`        | `sha256sum *.tar.gz *.dmg > checksums.txt`        |
+| `test ci`                    | `mise run test ci` (JUnit + coverage)             |
 
 **Not mirrored:** Apple cert keychain import, `gh release` calls,
 `gh attestation verify`. These require runtime state that doesn't exist
@@ -279,7 +276,7 @@ locally (CI-ephemeral keychain, GitHub OIDC token, repo write).
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | Workflow can't find composite action                    | Missing `actions/checkout@v4` step before the `uses: ./.github/...` reference                          |
 | `setup_mode: mise` step fails silently in caching       | Stale `~/.bun/install/cache` key; bump the cache key or delete it via UI                               |
-| Two `release.yml` runs racing                           | Concurrency group is per-`kb-release` and `cancel-in-progress: false` — let one finish                 |
+| Two `release.yml` runs racing                           | Concurrency group is per-`app-release` and `cancel-in-progress: false` — let one finish                |
 | Tag created but no draft release                        | release-it ran with no releasable commits (`chore:` only, etc.) — expected                             |
 | Draft release exists but `publish.yml` doesn't fire     | Trigger is `workflow_run: completed` — only fires when Release completes successfully                  |
 | ARM Linux leg fails with `bash: bun: command not found` | `setup-bun-project` action didn't install on `ubuntu-24.04-arm`; verify mise.toml has `bun = "latest"` |

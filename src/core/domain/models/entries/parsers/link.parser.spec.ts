@@ -1,34 +1,33 @@
 import { describe, expect, it } from 'bun:test'
 import { parseLinksFromSource } from './link.parser'
 
-describe('parseLinksFromSource', () => {
-  it('parses a bare URL string', () => {
-    expect(parseLinksFromSource('https://example.com')).toEqual(['https://example.com'])
+describe('parseLinksFromSource()', () => {
+  describe('when source is valid', () => {
+    describe.each([
+      ['bare URL string', 'https://example.com', ['https://example.com']],
+      ['titled shorthand string', 'Docs: https://example.com', [{ Docs: 'https://example.com' }]],
+      ['link object with single URL', { Docs: 'https://example.com' }, [{ Docs: 'https://example.com' }]],
+      [
+        'link object with URL array',
+        { Docs: ['https://a.com', 'https://b.com'] },
+        [{ Docs: ['https://a.com', 'https://b.com'] }]
+      ],
+      ['nested arrays leniently', [['https://a.com'], 'https://b.com'], ['https://a.com', 'https://b.com']]
+    ])('with %s', (_, source, expected) => {
+      it('returns parsed links', () => {
+        expect(parseLinksFromSource(source)).toEqual(expected)
+      })
+    })
   })
 
-  it('parses titled shorthand string', () => {
-    expect(parseLinksFromSource('Docs: https://example.com')).toEqual([{ Docs: 'https://example.com' }])
-  })
-
-  it('parses link object with single URL', () => {
-    expect(parseLinksFromSource({ Docs: 'https://example.com' })).toEqual([{ Docs: 'https://example.com' }])
-  })
-
-  it('parses link object with URL array', () => {
-    expect(parseLinksFromSource({ Docs: ['https://a.com', 'https://b.com'] })).toEqual([
-      { Docs: ['https://a.com', 'https://b.com'] }
-    ])
-  })
-
-  it('rejects invalid URL', () => {
-    expect(() => parseLinksFromSource(['not-a-url'])).toThrow('Invalid URL')
-  })
-
-  it('rejects empty object link item', () => {
-    expect(() => parseLinksFromSource([{}])).toThrow('Link object must have at least one key')
-  })
-
-  it('normalizes nested arrays leniently', () => {
-    expect(parseLinksFromSource([['https://a.com'], 'https://b.com'])).toEqual(['https://a.com', 'https://b.com'])
+  describe('when source is invalid', () => {
+    describe.each([
+      ['invalid URL', ['not-a-url'], 'Invalid URL'],
+      ['empty object link item', [{}], 'Link object must have at least one key']
+    ])('with %s', (_, source, message) => {
+      it('raises an error', () => {
+        expect(() => parseLinksFromSource(source)).toThrow(message)
+      })
+    })
   })
 })

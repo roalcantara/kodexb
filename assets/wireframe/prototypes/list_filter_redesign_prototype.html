@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>app — filter dropdown redesign (prototype)</title>
+  <style>
+    :root {
+      --app-bg: #0b0e14;
+      --app-surface: #121721;
+      --app-border: #232936;
+      --app-text: #e2e9f5;
+      --app-muted: #8892a4;
+      --app-accent: #5ecfbe;
+      --app-row-hover: #1c2537;
+      --app-row-selected: #0f2535;
+      --app-color-command: #5ecfbe;
+      --app-color-cheat: #a855f7;
+      --app-color-task: #ffae57;
+      --app-color-bookmark: #3399ff;
+      --bar-h: 38px;
+      --radius: 10px;
+      --panel-max: 400px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family:
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        'Segoe UI',
+        Roboto,
+        sans-serif;
+      background: var(--app-bg);
+      color: var(--app-text);
+    }
+
+    .shell {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 20px 48px;
+    }
+
+    .proto-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 14px 16px;
+      background: var(--app-surface);
+      border: 1px solid var(--app-border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--app-muted);
+    }
+
+    .proto-toolbar label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: var(--app-text);
+    }
+
+    .proto-note {
+      font-size: 12px;
+      color: var(--app-muted);
+      line-height: 1.5;
+      margin: 0 0 16px;
+    }
+
+    /* Fake app chrome */
+    .app {
+      position: relative;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(11, 14, 20, 0.78);
+      overflow: hidden;
+      min-height: 520px;
+    }
+
+    .search-wrap {
+      padding: 10px 16px 8px;
+      border-bottom: 1px solid var(--app-border);
+    }
+
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .fake-search {
+      flex: 1;
+      height: var(--bar-h);
+      border: none;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.2);
+      color: var(--app-muted);
+      padding: 0 12px;
+      font-size: 15px;
+    }
+
+    .filter-chip {
+      flex-shrink: 0;
+      height: var(--bar-h);
+      padding: 0 12px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--app-accent);
+      font-size: 13px;
+      cursor: default;
+    }
+
+    .list-bg {
+      padding: 12px 16px;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .fake-row {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 13px;
+    }
+
+    .fake-row:first-child {
+      border-top: none;
+    }
+
+    /* Backdrop + panel (portal simulation) */
+    .backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 5;
+    }
+
+    .panel-anchor {
+      position: absolute;
+      z-index: 6;
+      top: calc(10px + var(--bar-h) + 8px);
+      width: min(var(--panel-max), calc(100% - 32px));
+      transition: left 0.2s ease, transform 0.2s ease;
+    }
+
+    .panel-anchor[data-mode='center'] {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .panel-anchor[data-mode='chip'] {
+      left: auto;
+      right: 16px;
+      transform: none;
+    }
+
+    .filter-panel {
+      background: var(--app-surface);
+      border: 1px solid var(--app-border);
+      border-radius: var(--radius);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      max-height: min(420px, 70vh);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .filter-panel input[type='search'] {
+      width: 100%;
+      margin: 0;
+      padding: 12px 16px;
+      border: none;
+      border-bottom: 1px solid var(--app-border);
+      background: transparent;
+      color: var(--app-text);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .filter-panel input[type='search']::placeholder {
+      color: var(--app-muted);
+    }
+
+    .filter-scroll {
+      overflow-y: auto;
+      padding: 4px 0 8px;
+    }
+
+    .sec {
+      padding: 10px 0 4px;
+    }
+
+    .sec-title {
+      padding: 4px 16px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--app-muted);
+    }
+
+    .sec:first-of-type .sec-title {
+      padding-top: 8px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 22px 1fr minmax(3rem, auto);
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      margin: 0;
+      padding: 9px 16px;
+      border: none;
+      background: transparent;
+      color: var(--app-muted);
+      font: inherit;
+      font-size: 13px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .row:hover {
+      background: var(--app-row-hover);
+      color: var(--app-text);
+    }
+
+    .row[data-active='true'] {
+      background: linear-gradient(90deg, rgba(94, 207, 190, 0.12), transparent);
+      color: var(--app-text);
+    }
+
+    .row .glyph {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    .row .label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .row .count {
+      font-variant-numeric: tabular-nums;
+      color: var(--app-muted);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .row[data-active='true'] .count {
+      color: var(--app-text);
+    }
+
+    .dot-bookmark {
+      background: rgba(51, 153, 255, 0.2);
+      color: var(--app-color-bookmark);
+    }
+
+    .dot-task {
+      background: rgba(255, 174, 87, 0.15);
+      color: var(--app-color-task);
+    }
+
+    .dot-command {
+      background: rgba(94, 207, 190, 0.12);
+      color: var(--app-color-command);
+    }
+
+    .dot-cheat {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--app-color-cheat);
+    }
+
+    .dot-all {
+      background: rgba(94, 207, 190, 0.2);
+      color: var(--app-accent);
+    }
+
+    .footer-hint {
+      padding: 10px 16px 12px;
+      font-size: 11px;
+      color: var(--app-muted);
+      border-top: 1px solid var(--app-border);
+    }
+
+    appd {
+      font: inherit;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--app-border);
+      background: rgba(0, 0, 0, 0.25);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <p class="proto-note">
+      <strong>Prototype only</strong> — not wired to the app. Compare placement; sectioned layout + app tokens match the
+      redesign proposal (Raycast-style grouping, Andromeda Void colors).
+    </p>
+
+    <div class="proto-toolbar" role="radiogroup" aria-label="Panel placement">
+      <label><input type="radio" name="place" value="center" checked /> Centered under search bar (app default)</label>
+      <label><input type="radio" name="place" value="chip" /> Right-anchored (Raycast-like chip tie-in)</label>
+    </div>
+
+    <div class="app" id="app">
+      <div class="search-wrap">
+        <div class="search-row">
+          <div class="fake-search">Search your knowledge base…</div>
+          <button type="button" class="filter-chip" aria-hidden="true">All ▾</button>
+        </div>
+      </div>
+
+      <div class="list-bg" aria-hidden="true">
+        <div class="fake-row"><span>◆</span><span>aws serverless patterns…</span><span>#aws</span></div>
+        <div class="fake-row"><span>▶</span><span>youtube.com/watch?v=…</span><span>#video</span></div>
+        <div class="fake-row"><span>⌘</span><span>docker compose up…</span><span>#command</span></div>
+      </div>
+
+      <div class="backdrop" aria-hidden="true"></div>
+
+      <div class="panel-anchor" id="panel" data-mode="center">
+        <div class="filter-panel" role="dialog" aria-label="Filter options (prototype)">
+          <input type="search" placeholder="Search filters…" disabled />
+          <div class="filter-scroll">
+            <section class="sec" aria-labelledby="sec-quick">
+              <h2 class="sec-title" id="sec-quick">Quick</h2>
+              <button type="button" class="row" data-active="true">
+                <span class="glyph dot-all" aria-hidden="true">◇</span>
+                <span class="label">All entries</span>
+                <span class="count">3992</span>
+              </button>
+            </section>
+
+            <section class="sec" aria-labelledby="sec-tv">
+              <h2 class="sec-title" id="sec-tv">Task views</h2>
+              <button type="button" class="row">
+                <span class="glyph dot-task" aria-hidden="true">◎</span>
+                <span class="label">Actionable</span>
+                <span class="count">1</span>
+              </button>
+              <button type="button" class="row">
+                <span class="glyph dot-task" aria-hidden="true">▫</span>
+                <span class="label">Today</span>
+                <span class="count">0</span>
+              </button>
+              <button type="button" class="row">
+                <span class="glyph dot-task" aria-hidden="true">!</span>
+                <span class="label">Overdue</span>
+                <span class="count">0</span>
+              </button>
+              <button type="button" class="row">
+                <span class="glyph dot-task" aria-hidden="true">⌁</span>
+                <span class="label">This week</span>
+                <span class="count">0</span>
+              </button>
+            </section>
+
+            <section class="sec" aria-labelledby="sec-types">
+              <h2 class="sec-title" id="sec-types">Types</h2>
+              <button type="button" class="row">
+                <span class="glyph dot-bookmark" aria-hidden="true">B</span>
+                <span class="label">Bookmarks</span>
+                <span class="count">1112</span>
+              </button>
+              <button type="button" class="row">
+                <span class="glyph dot-command" aria-hidden="true">⌘</span>
+                <span class="label">Commands</span>
+                <span class="count">842</span>
+              </button>
+              <button type="button" class="row">
+                <span class="glyph dot-cheat" aria-hidden="true">§</span>
+                <span class="label">Cheats</span>
+                <span class="count">1201</span>
+              </button>
+              <button type="button" class="row">
+                <span class="glyph dot-task" aria-hidden="true">T</span>
+                <span class="label">Tasks</span>
+                <span class="count">837</span>
+              </button>
+            </section>
+
+            <section class="sec" aria-labelledby="sec-tags">
+              <h2 class="sec-title" id="sec-tags">Tags</h2>
+              <button type="button" class="row">
+                <span class="glyph" style="opacity: 0.4" aria-hidden="true">#</span>
+                <span class="label">serverless</span>
+                <span class="count">42</span>
+              </button>
+              <button type="button" class="row">
+                <span class="glyph" style="opacity: 0.4" aria-hidden="true">#</span>
+                <span class="label">ruby</span>
+                <span class="count">28</span>
+              </button>
+              <button type="button" class="row">
+                <span class="glyph" style="opacity: 0.4" aria-hidden="true">#</span>
+                <span class="label">web3</span>
+                <span class="count">1</span>
+              </button>
+            </section>
+          </div>
+          <div class="footer-hint">Dismiss: <kbd>Esc</kbd> · Apply: click row (prototype)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const panel = document.getElementById('panel')
+    document.querySelectorAll('input[name="place"]').forEach(r => {
+      r.addEventListener('change', () => {
+        if (r.checked) panel.dataset.mode = r.value
+      })
+    })
+  </script>
+</body>
+
+</html>

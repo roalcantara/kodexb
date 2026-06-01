@@ -1,4 +1,5 @@
-import { type RefObject, useEffect } from 'react'
+import { fireAndForget } from '@shared/utils'
+import { type RefObject, useEffect, useRef } from 'react'
 
 export type ListSentinelPaginationArgs = {
   scrollRootRef: RefObject<HTMLElement | null>
@@ -16,6 +17,8 @@ export function useListSentinelPagination({
   loading,
   fetchMore
 }: ListSentinelPaginationArgs) {
+  const fetchInFlightRef = useRef(false)
+
   useEffect(() => {
     const root = scrollRootRef.current
     const sentinel = sentinelRef.current
@@ -24,10 +27,15 @@ export function useListSentinelPagination({
     const observer = new IntersectionObserver(
       entries => {
         const hit = entries.some(en => en.isIntersecting)
-        if (!hit || !hasMore || loading) return
-        fetchMore().catch(() => undefined)
+        if (!hit || !hasMore || loading || fetchInFlightRef.current) return
+        fetchInFlightRef.current = true
+        fireAndForget(
+          Promise.resolve(fetchMore()).finally(() => {
+            fetchInFlightRef.current = false
+          })
+        )
       },
-      { root, rootMargin: '120px', threshold: 0 }
+      { root, rootMargin: '0px', threshold: 0 }
     )
     observer.observe(sentinel)
     return () => observer.disconnect()

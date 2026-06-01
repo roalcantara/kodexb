@@ -1,0 +1,25 @@
+.cmp-overlay-shell {
+  box-sizing: border-box;
+  width: min(var(--overlay-shell-width, 560px), 100%);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-overlay-border);
+  background: var(--color-surface-container);
+  box-shadow: var(--shadow-shell);
+  overflow: hidden;
+}
+
+.cmp-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--color-scrim-strong);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 16px 16px;
+  z-index: 100;
+}
+
+.cmp-overlay-backdrop--centered {
+  align-items: center;
+  padding: 16px;
+}

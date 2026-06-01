@@ -1,0 +1,38 @@
+---
+description: >
+  When drafting, editing, or generating git commit messages (including
+  Conventional Commits, commit message errors, or SCM commit descriptions),
+  match this repo's `tools/hooks/commit_message.script.ts` contract so
+  messages pass the HK `commit-msg` hook without rewrite.
+alwaysApply: false
+---
+
+# Commit messages must match `tools/hooks/commit_message.script.ts`
+
+Single source of truth: **`tools/hooks/commit_message.script.ts`** (and **`assets/guides/GIT_COMMITS_GUIDE.md`** for prose style).
+
+When you output a **full** commit message (subject + body), it must satisfy at least:
+
+1. **Subject (first line)**
+   - Entire line **≤ 50 characters** (relaxed for `Release ` subjects).
+   - Regex: `^(feat|fix|docs|style|ref|test|revert|chore|ci|build)(\([^)]*\))?(!)?: [A-Z].*`
+   - Use **`ref`** for refactors, **not** `refactor`.
+   - Imperative mood; **capital letter** immediately after `": "`; no trailing period; not the word `wip`.
+
+2. **Body**
+   - Blank line after the subject.
+   - **≥ 20 characters** total (`body-min-length`) — a trivial one-line body usually fails; write a real *what + why*.
+   - Each body line **≤ 72 characters** (`body-max-line-length`).
+
+3. **Validate locally** before handing off:
+
+   ```bash
+   _f=$(mktemp)
+   printf '%s\n' '<paste message>' > "$_f"
+   bun tools/hooks/commit_message.script.ts "$_f"
+   rm -f "$_f"
+   ```
+
+   Or use HK directly: `mise exec -- hk run commit-msg <file>`.
+
+If the user asks for a **short subject only**, still respect the 50-char cap and regex; warn that the HK `commit-message-policy` requires a substantive body when they actually commit.

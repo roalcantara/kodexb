@@ -1,0 +1,35 @@
+# Default flags for `act` when running this repo's workflows locally
+
+# Override on the CLI as needed (e.g. `act -P ubuntu-24.04=node:20-bullseye-slim`)
+
+# Apple Silicon (and any non-amd64 host) must emulate x86 because the official
+
+# act-compatible runner images publish only linux/amd64. Slow under Rosetta but
+
+# correct; comment this out on native amd64 hosts
+
+--container-architecture linux/amd64
+
+# Map the workflow's runs-on labels to runner images. `act-latest` is the
+
+# medium image (~1.5GB compressed, ~17GB uncompressed) and ships docker
+
+# node, python — needed by the `cst` job's docker-in-docker step and by the
+
+# `mikepenz/action-junit-report` JS action
+
+-P ubuntu-24.04=catthehacker/ubuntu:act-latest
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
+
+# Satisfy the `if: github.event.pull_request.head.repo.full_name == github.repository`
+
+# gate on every job; without this every job is skipped. The event JSON carries
+
+# `head.repo.full_name`; act populates `github.repository` from this env var
+
+--eventpath tools/act/event.json
+--env GITHUB_REPOSITORY=roalcantara/kodexb
+
+# Reuse pulled images instead of re-pulling each run
+
+--pull=false

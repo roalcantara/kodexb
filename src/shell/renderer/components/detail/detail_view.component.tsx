@@ -1,4 +1,6 @@
 import type { PreviewImageResult, RpcKnowledge } from '@shared/rpc'
+import { fireAndForget } from '@shared/utils'
+import type React from 'react'
 import { getIcon } from '../../utils/shared/get_icon.util'
 import { BadgeAccessory } from '../shared/badge_accessory.component'
 import { MdView } from '../shared/md_view.component'
@@ -57,6 +59,7 @@ export type DetailPageViewProps = {
   onSelectEntry: (id: number) => void
   onOpenExternal: (url: string) => void | Promise<void>
   onFetchPreviewImage?: (url: string) => Promise<PreviewImageResult | null>
+  bodyContent?: React.ReactNode
 }
 
 export function DetailPageView({
@@ -66,23 +69,24 @@ export function DetailPageView({
   onClose,
   onSelectEntry,
   onOpenExternal,
-  onFetchPreviewImage
+  onFetchPreviewImage,
+  bodyContent
 }: DetailPageViewProps) {
   if (loading) {
     return (
-      <article className="kb-detailPage">
-        <p className="kb-empty">Loading entry…</p>
+      <article className="cmp-detail-page">
+        <p className="cmp-list-empty">Loading entry…</p>
       </article>
     )
   }
 
   if (!entry) {
     return (
-      <article className="kb-detailPage">
-        <button type="button" className="kb-detailPage-close" onClick={onClose} aria-label="Close detail">
+      <article className="cmp-detail-page">
+        <button type="button" className="cmp-detail-page-close" onClick={onClose} aria-label="Close detail">
           ✕
         </button>
-        <p className="kb-empty">Entry not found.</p>
+        <p className="cmp-list-empty">Entry not found.</p>
       </article>
     )
   }
@@ -92,30 +96,30 @@ export function DetailPageView({
   const url = primaryUrl(entry)
 
   return (
-    <article className="kb-detailPage">
-      <div className="kb-detailPage-main">
-        <section className="kb-detailPage-content">
-          <header className="kb-detailPage-header">
-            <div className="kb-detailPage-headerRow">
-              <span className="kb-detailPage-icon">{getIcon(entry)}</span>
-              <span className="kb-detailPage-type">{entry.type}</span>
-              <button type="button" className="kb-detailPage-close" onClick={onClose} aria-label="Close detail">
+    <article className="cmp-detail-page">
+      <div className="cmp-detail-page-main">
+        <section className="cmp-detail-page-content">
+          <header className="cmp-detail-page-header">
+            <div className="cmp-detail-page-header-row">
+              <span className="cmp-detail-page-icon">{getIcon(entry)}</span>
+              <span className="cmp-detail-page-type">{entry.type}</span>
+              <button type="button" className="cmp-detail-page-close" onClick={onClose} aria-label="Close detail">
                 ✕
               </button>
             </div>
-            <h1 className="kb-detailPage-key">{entry.key}</h1>
-            {entry.desc ? <p className="kb-detailPage-desc">{entry.desc}</p> : null}
+            <h1 className="cmp-detail-page-key">{entry.key}</h1>
+            {entry.desc ? <p className="cmp-detail-page-desc">{entry.desc}</p> : null}
             {entry.tags.length > 0 ? (
-              <div className="kb-detailPage-tags">
+              <div className="cmp-detail-page-tags">
                 {entry.tags.map(t => (
-                  <span key={t} className="kb-pill kb-pill--muted">
+                  <span key={t} className="cmp-pill cmp-pill--muted">
                     #{t}
                   </span>
                 ))}
               </div>
             ) : null}
             {entry.type === 'task' ? (
-              <div className="kb-detailPage-badges">
+              <div className="cmp-detail-page-badges">
                 <BadgeAccessory entry={entry} allEntries={allEntries} />
               </div>
             ) : null}
@@ -128,9 +132,9 @@ export function DetailPageView({
             ) : null}
           </header>
 
-          {md ? (
-            <section className="kb-detailPage-body">
-              <MdView markdown={md} onOpenExternal={onOpenExternal} />
+          {md || bodyContent ? (
+            <section className="cmp-detail-page-body">
+              {bodyContent ?? <MdView markdown={md ?? ''} onOpenExternal={onOpenExternal} />}
             </section>
           ) : null}
 
@@ -139,21 +143,21 @@ export function DetailPageView({
           ) : null}
 
           {links.length > 0 ? (
-            <section className="kb-detailPage-links">
-              <h2 className="kb-detailPage-sectionTitle">Links</h2>
-              <ul className="kb-detailPage-linkList">
+            <section className="cmp-detail-page-links">
+              <h2 className="cmp-detail-page-section-title">Links</h2>
+              <ul className="cmp-detail-page-link-list">
                 {links.map(({ title, url: linkUrl }) => (
                   <li key={linkUrl}>
                     <button
                       type="button"
-                      className="kb-detailPage-link"
+                      className="cmp-detail-page-link"
                       onClick={() => {
-                        Promise.resolve(onOpenExternal(linkUrl)).catch(() => undefined)
+                        fireAndForget(Promise.resolve(onOpenExternal(linkUrl)))
                       }}
                       title={linkUrl}
                     >
                       {title}
-                      <span className="kb-detailPage-linkArrow"> ↗</span>
+                      <span className="cmp-detail-page-link-arrow"> ↗</span>
                     </button>
                   </li>
                 ))}

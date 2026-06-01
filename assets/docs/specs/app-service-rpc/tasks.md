@@ -15,7 +15,7 @@
 
 - [ ] Read `assets/docs/specs/app-service-rpc/{requirements,design,implementation-plan}.md`
 - [ ] Read `assets/docs/specs/foundation/{design,roadmap}.md` Phase 5 section
-- [ ] Read `.agents/skills/kb-context/SKILL.md`, `.agents/skills/kb-rpc/SKILL.md`, `.agents/skills/kb-testing/SKILL.md`, `.agents/skills/kb-quality-gate/SKILL.md`
+- [ ] Read `.agents/skills/app-context/SKILL.md`, `.agents/skills/app-rpc/SKILL.md`, `.agents/skills/app-testing/SKILL.md`, `.agents/skills/app-quality-gate/SKILL.md`
 - [ ] Read `.cursor/electrobun-skill-routing.md` then the referenced Electrobun RPC skills (do not guess IPC binding APIs)
 
 ---
@@ -102,7 +102,7 @@ Expected: JSON response (not 404).
 
 ## Task 9: Slim Electrobun schema typing to messages-only
 
-**Files:** Modify `src/shared/rpc/kb_rpc_schema.ts`
+**Files:** Modify `src/shared/rpc/app_rpc_schema.ts`
 
 - [ ] Follow **Implementation Plan Task 10**
 - [ ] Verify: `bun run typecheck`
@@ -121,4 +121,3 @@ bun run lint
 ```
 
 - [ ] Only after passing verification, mark Phase 5 done in `assets/docs/specs/foundation/roadmap.md`
-

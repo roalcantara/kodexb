@@ -1,14 +1,14 @@
 <!-- markdownlint-disable-file -->
 
-# kb — Requirements (Desktop v1 MVP)
+# app — Requirements (Desktop v1 MVP)
 
 ## INTRODUCTION
 
-**kb** is a native multiplatform desktop knowledge management app built on
+**app** is a native multiplatform desktop knowledge management app built on
 [Electrobun](https://blackboard.sh/electrobun/docs/). Sources are human-editable
 YAML files; SQLite is a derived, rebuildable index.
 
-kb is an Electrobun application that produces a native `.app` (macOS ARM) and
+app is an Electrobun application that produces a native `.app` (macOS ARM) and
 binary (Linux ARM/x86). It ports the KodexB CLI/TUI codebase to a desktop GUI
 using **Strategy 1 — Direct Main Process + Typed RPC** (see [design.md](design.md)).
 
@@ -76,10 +76,10 @@ by the `sdd` skill per phase).
 
 Resolved at runtime via Electrobun's `app.getPath()`. No hardcoded paths.
 
-| **Platform** | **Config**                 | **Database**             | **Sources**             |
-| ------------ | -------------------------- | ------------------------ | ----------------------- |
-| macOS        | `~/.config/kb/config.yaml` | `~/.config/kb/kb.sqlite` | `~/.config/kb/sources/` |
-| Linux        | `~/.config/kb/config.yaml` | `~/.config/kb/kb.sqlite` | `~/.config/kb/sources/` |
+| **Platform** | **Config**                  | **Database**               | **Sources**              |
+| ------------ | --------------------------- | -------------------------- | ------------------------ |
+| macOS        | `~/.config/app/config.yaml` | `~/.config/app/app.sqlite` | `~/.config/app/sources/` |
+| Linux        | `~/.config/app/config.yaml` | `~/.config/app/app.sqlite` | `~/.config/app/sources/` |
 
 The `config.yaml` file, SQLite path, and sources directory SHALL be
 user-overridable via the Settings panel (V1-6).
@@ -322,7 +322,7 @@ verify my knowledge base is healthy.
 ## REQUIREMENT V1-6: Settings
 
 **User story:** As a user, I want to configure paths, preferred apps, and UI
-preferences so that kb fits into my existing workflow.
+preferences so that app fits into my existing workflow.
 
 ### Acceptance criteria
 
@@ -446,13 +446,13 @@ integration.
 
 ## Appendix B — CLI parity map
 
-| **KodexB CLI** | **kb Desktop (this spec)** | **Status** |
-| -------------- | -------------------------- | ---------- |
-| `kb config`    | Settings panel + first-run | V1-1, V1-6 |
-| `kb import`    | Sync action                | V1-2       |
-| `kb ls`        | List view                  | V1-3       |
-| `kb view`      | Detail panel               | V1-4       |
-| `kb db`        | Stats panel                | V1-5       |
-| `kb cache`     | Deferred (Phase 2)         | —          |
-| *(new)*        | Task management UI         | V1-7       |
-| *(new)*        | ⌘K action palette          | V1-8       |
+| **KodexB CLI** | **app Desktop (this spec)** | **Status** |
+| -------------- | --------------------------- | ---------- |
+| `app config`   | Settings panel + first-run  | V1-1, V1-6 |
+| `app import`   | Sync action                 | V1-2       |
+| `app ls`       | List view                   | V1-3       |
+| `app view`     | Detail panel                | V1-4       |
+| `app db`       | Stats panel                 | V1-5       |
+| `app cache`    | Deferred (Phase 2)          | —          |
+| *(new)*        | Task management UI          | V1-7       |
+| *(new)*        | ⌘K action palette           | V1-8       |

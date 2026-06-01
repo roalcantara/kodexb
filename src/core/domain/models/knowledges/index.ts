@@ -1,3 +1,7 @@
+export * from './copy_text_for_entry.util'
 export * from './detail'
 export * from './factories/knowledge.factory'
+export * from './preview'
 export * from './schemas'
+export * from './tags'
+export * from './task_views'

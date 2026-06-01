@@ -1,0 +1,11 @@
+.git
+.github
+node_modules
+/build
+dist
+report
+test-results
+.code-review-graph
+tmp
+**/.DS_Store
+**/*.log

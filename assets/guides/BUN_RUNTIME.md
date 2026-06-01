@@ -2,6 +2,7 @@
 title: Bun runtime reference
 description: YAML, JSON5, file I/O, SQLite, tests — quick API notes for this repo
 ---
+<!-- markdownlint-disable-file -->
 
 # Bun Runtime Reference
 

@@ -1,267 +1,2277 @@
 # https://mise.jdx.dev
 [tools]
-bun = "1.3.13"
+bun = "1.3.14"
+uv = "0.11.3"
 usage = "latest"
-pre-commit = "4.4"
+hk = "1.45.0"
 ast-grep = "latest"
 tombi = "0.9.22"
 actionlint = "latest"
+hadolint = "latest"
+gitleaks = "latest"
+container-structure-test = "latest"
+act = "latest"
+gum = "latest"
+biome = "latest"
+shellcheck = "latest"
+
+[env]
+HK_MISE = "1"
+HK_PKL_BACKEND = "pklr"
 
 [tasks]
-"prepare" = { description = "Install dependencies and hooks", usage = '''
-    flag "--ci" help="Install dependencies for CI"
-  ''', run = '''
-    #!/usr/bin/env bash
-    bun install $($usage_ci && echo '--frozen-lockfile')
-    $usage_ci || pre-commit install --hook-type commit-msg
-  ''' }
-"setup" = { description = "Install tools and dependencies", run = '''
-    #!/usr/bin/env bash
-    mise install --yes && mise run prepare
-  ''' }
-"ci:review" = { description = "Mirror review.yml end-to-end (lint + test + build smoke)", depends = [
-  "prepare"
-], run = '''
-    #!/usr/bin/env bash
-    set -e
-    mise run ci:review:lint
-    mise run ci:review:test
-    mise run ci:review:build
-  ''' }
-"ci:review:lint" = { description = "Run the full Phase-1 lint chain", run = "bun run lint" }
-"ci:review:test" = { description = "Run tests with JUnit + coverage (CI shape)", run = "bun run test:ci" }
-"ci:review:build" = { description = "Smoke build with macOS signing forced off", run = '''
-    #!/usr/bin/env bash
-    ELECTROBUN_DEVELOPER_ID="" bun run build
-  ''' }
-"ci:release:check-squash" = { description = "Validate HEAD is a single squash commit (no merge subject)", run = '''
-    #!/usr/bin/env bash
-    set -e
-    subject="$(git log -1 --pretty=%s HEAD)"
-    if [[ "$subject" =~ ^Merge\ (pull\ request|branch) ]]; then
-      echo "ERROR: HEAD is a merge commit: $subject" >&2
-      echo "Repository must use Squash and Merge only." >&2
-      exit 1
-    fi
-    echo "OK: HEAD subject is '$subject'"
-  ''' }
-"ci:release:check-signing" = { description = "Signed-commit + signed-tag self-test in a temp repo", run = '''
-    #!/usr/bin/env bash
-    set -euo pipefail
-    tmp="$(mktemp -d)"
-    tag="signing-test-tag-$$"
-    trap 'rm -rf "$tmp"' EXIT
-    cd "$tmp"
-    git init -q
-    git config commit.gpgsign true
-    git config tag.gpgsign true
-    echo test > f.txt
-    git add f.txt
-    git commit -q -m "test: signing"
-    git cat-file -p HEAD | grep -q '^gpgsig' || { echo "ERROR: commit not signed"; exit 1; }
-    git tag -s "$tag" -m signing
-    git cat-file -p "$tag" | grep -qE 'BEGIN (PGP|SSH) SIGNATURE' || { echo "ERROR: tag not signed"; exit 1; }
-    echo "OK: signed commit + signed tag verified."
-  ''' }
-"ci:release:dry-run" = { description = "Preview the next release without touching git/GitHub", run = "bunx release-it --dry-run --ci" }
-"ci:release:notes" = { description = "Preview only the next CHANGELOG entry", run = '''
-    #!/usr/bin/env bash
-    bunx release-it --release-notes-only --dry-run --ci 2>/dev/null \
-      || bunx release-it --dry-run --ci 2>&1 | sed -n '/^# Changelog/,$p'
-  ''' }
-"ci:publish" = { description = "Mirror publish.yml end-to-end for the local platform (build + package + checksum)", depends = [
-  "prepare"
-], usage = '''
-    flag "--version <ver>" help="Release version (e.g. 0.1.0)"
-    flag "--target <target>" help="Build target (linux-x64 | linux-arm64 | darwin-arm64)"
-  ''', run = '''
-    #!/usr/bin/env bash
-    set -e
-    : "${usage_version:?--version is required (e.g. --version=0.1.0)}"
-    : "${usage_target:=$(uname -s | tr A-Z a-z)-$(uname -m | sed -e s/x86_64/x64/ -e s/aarch64/arm64/)}"
-    case "$usage_target" in
-      darwin-x64) usage_target=darwin-arm64 ;;
-    esac
-    mise run ci:publish:build
-    mise run ci:publish:package -- --version="$usage_version" --target="$usage_target"
-    mise run ci:publish:checksum
-  ''' }
-"ci:publish:build" = { description = "Production build for the local platform", run = "bun run build:prod" }
-"ci:publish:package" = { description = "Package dist/ as .tar.gz (linux) or rename .dmg (mac)", usage = '''
-    flag "--version <ver>" help="Release version" required
-    flag "--target <target>" help="Build target" required
+"project" = { description = "Manage setup, dependencies, cleanup, icons, repository, and local maintenance", usage = '''
+    cmd "setup" {}
+    cmd "prepare" { flag "--ci" help="Install dependencies for CI" }
+    cmd "clean" {}
+    cmd "cleanup" {}
+    cmd "reinstall" {}
+    cmd "repo" {
+        cmd "setup" {}
+        cmd "prune" {}
+        cmd "reset" {}
+    }
+    cmd "icons" {
+        flag "--fix" help="Apply safe hex replacements"
+    }
   ''', run = '''
     #!/usr/bin/env bash
     set -euo pipefail
-    case "$usage_target" in
-      linux-*)
-        tar czf "kb-${usage_version}-${usage_target}.tar.gz" -C dist .
+    CMD="${usage_cmd:-}"
+    case "$CMD" in
+      setup)
+        mise install --yes && mise run project prepare && mise run graph setup
         ;;
-      darwin-*)
-        DMG="$(find dist -maxdepth 3 -type f -name '*.dmg' | head -n 1)"
-        [[ -n "$DMG" ]] || { echo "ERROR: no .dmg under dist/"; exit 1; }
-        suffix=""
-        [[ -z "${ELECTROBUN_DEVELOPER_ID:-}" ]] && suffix="-unsigned"
-        mv "$DMG" "kb-${usage_version}-${usage_target}${suffix}.dmg"
+      prepare)
+        bun install ${usage_ci:+--frozen-lockfile}
+        ${usage_ci:-false} || hk install --mise
+        ;;
+      clean)
+        rm -rf dist tmp .electrobun-cache
+        ;;
+      cleanup)
+        mise run project clean
+        rm -rf node_modules bun.lock*
+        ;;
+      reinstall)
+        mise run project cleanup
+        mise exec -- bun install
+        ;;
+      "repo setup")
+        gh repo create kb --public --push --source=. 2>/dev/null || echo "Repo may already exist"
+        ;;
+      "repo prune")
+        echo "WARNING: This will delete all tags, releases and the repo."
+        read -rp "Type 'yes' to confirm: " c
+        [[ "$c" == "yes" ]] || { echo "Aborted."; exit 0; }
+        for tag in $(git tag -l); do git push origin --delete "$tag" 2>/dev/null; git tag -d "$tag"; done
+        gh api repos/:owner/:name --silent && gh repo delete kb --yes || true
+        ;;
+      "repo reset")
+        echo "DANGER: Rewrites git history."
+        read -rp "Type 'yes' to confirm: " c
+        [[ "$c" == "yes" ]] || { echo "Aborted."; exit 0; }
+        for tag in $(git tag -l); do git push origin --delete "$tag" 2>/dev/null; git tag -d "$tag"; done
+        git checkout main && git reset --hard "$(git rev-list --max-parents=0 HEAD)" && git push --force origin main
+        ;;
+      icons)
+        if [[ "${usage_fix:-false}" == "true" ]]; then
+          mise run _icons check --write-safe
+        else
+          mise run _icons check
+        fi
+        ;;
+      *) echo "project: unknown action ${CMD}"; exit 2 ;;
+    esac
+  ''' }
+"graph" = { description = "Install, configure, build, refresh, inspect, and watch the local CRG knowledge graph", usage = '''
+    cmd "install" {}
+    cmd "setup" {
+        flag "--user-config" help="Also configure local-only Codex and Antigravity MCP files"
+    }
+    cmd "build" {}
+    cmd "update" {}
+    cmd "status" {}
+    cmd "watch" {}
+  ''', run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    CMD="${usage_cmd:-}"
+    REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+    install_crg() {
+      uv tool install --upgrade code-review-graph
+    }
+
+    setup_repo_mcp() {
+      local platform
+      for platform in claude cursor opencode gemini-cli copilot; do
+        code-review-graph install \
+          --repo "$REPO_ROOT" \
+          --platform "$platform" \
+          --no-skills \
+          --no-hooks \
+          --no-instructions \
+          -y
+      done
+    }
+
+    setup_user_mcp() {
+      local antigravity="$HOME/.gemini/antigravity/mcp_config.json"
+      local backup
+      local tmp
+
+      code-review-graph install \
+        --repo "$REPO_ROOT" \
+        --platform codex \
+        --no-skills \
+        --no-hooks \
+        --no-instructions \
+        -y
+
+      mkdir -p "$(dirname "$antigravity")"
+      if [[ -e "$antigravity" ]]; then
+        backup="$antigravity.bak.$(date +%Y%m%d%H%M%S)"
+        cp "$antigravity" "$backup"
+        echo "Backed up Antigravity MCP config to $backup"
+      else
+        printf '{"mcpServers":{}}\n' > "$antigravity"
+      fi
+
+      if ! jq empty "$antigravity"; then
+        echo "graph setup: repair malformed Antigravity JSON at $antigravity, then retry" >&2
+        exit 1
+      fi
+
+      tmp="$(mktemp)"
+      if ! jq --arg cwd "$REPO_ROOT" '
+        .mcpServers = (.mcpServers // {}) |
+        .mcpServers["code-review-graph"] = {
+          "command": "uvx",
+          "args": ["code-review-graph", "serve"],
+          "cwd": $cwd,
+          "type": "stdio"
+        }
+      ' "$antigravity" > "$tmp"; then
+        rm -f "$tmp"
+        exit 1
+      fi
+      mv "$tmp" "$antigravity"
+      jq empty "$antigravity"
+    }
+
+    case "$CMD" in
+      install)
+        install_crg
+        ;;
+      setup)
+        install_crg
+        setup_repo_mcp
+        if [[ "${usage_user_config:-false}" == "true" ]]; then
+          setup_user_mcp
+        fi
+        code-review-graph build
+        ;;
+      build)
+        code-review-graph build
+        ;;
+      update)
+        code-review-graph update --skip-flows
+        ;;
+      status)
+        code-review-graph status
+        ;;
+      watch)
+        exec code-review-graph watch --repo "$REPO_ROOT"
         ;;
       *)
-        echo "ERROR: unknown target $usage_target"; exit 1
+        echo "graph: unknown action '${CMD}' (expected one of: install, setup, build, update, status, watch)" >&2
+        exit 2
         ;;
     esac
   ''' }
-"ci:publish:checksum" = { description = "Write checksums.txt for produced archives", run = '''
+"ci" = { description = "Run review, release, and publish CI workflows", usage = '''
+    cmd "review" {
+        flag "--lint" help="Run lint checks"
+        flag "--test" help="Run tests"
+        flag "--build" help="Run build smoke"
+    }
+    cmd "release" {
+        flag "--check-signing" help="Check commit and tag signing"
+        flag "--check-squash" help="Check HEAD is a single squash commit"
+        flag "--dry-run" help="Dry run release-it"
+        flag "--notes" help="Generate release notes"
+    }
+    cmd "publish" {
+        cmd "build" {}
+        cmd "package" {
+            flag "--version <ver>" help="Release version"
+            flag "--target <target>" help="Build target" { choices "linux-x64" "linux-arm64" "darwin-arm64" }
+        }
+        cmd "checksum" {}
+    }
+  ''', run = '''
     #!/usr/bin/env bash
     set -euo pipefail
-    shopt -s nullglob
-    sha256sum *.tar.gz *.dmg 2>/dev/null > checksums.txt || true
-    test -s checksums.txt
-    cat checksums.txt
+    CMD="${usage_cmd:-}"
+    if [[ -z "$CMD" ]]; then
+      mise run project prepare --ci
+      bun run lint
+      mise run test ci
+      ELECTROBUN_DEVELOPER_ID="" bun run build
+      exit $?
+    fi
+    case "$CMD" in
+      review)
+        if [[ -z "${usage_lint:-}${usage_test:-}${usage_build:-}" ]]; then
+          bun run lint
+          mise run test ci
+          ELECTROBUN_DEVELOPER_ID="" bun run build
+        else
+          if [[ "${usage_lint:-false}" == "true" ]]; then
+            bun run lint
+          fi
+          if [[ "${usage_test:-false}" == "true" ]]; then
+            mise run test ci
+          fi
+          if [[ "${usage_build:-false}" == "true" ]]; then
+            ELECTROBUN_DEVELOPER_ID="" bun run build
+          fi
+        fi
+        ;;
+      release)
+        if [[ "${usage_check_signing:-false}" != "true" && "${usage_check_squash:-false}" != "true" && "${usage_dry_run:-false}" != "true" && "${usage_notes:-false}" != "true" ]]; then
+          echo "ci release: at least one flag required. Available: --check-signing, --check-squash, --dry-run, --notes" >&2
+          exit 1
+        fi
+        if [[ "${usage_check_signing:-false}" == "true" ]]; then
+            tmp="$(mktemp -d)"
+            tag="signing-test-tag-$$"
+            trap "rm -rf \"$tmp\"" EXIT
+            cd "$tmp" && git init -q && git config commit.gpgsign true && git config tag.gpgsign true
+            echo test > f.txt && git add f.txt && git commit -q -m "test: signing"
+            git cat-file -p HEAD | grep -q "^gpgsig" || { echo "ERROR: commit not signed"; exit 1; }
+            git tag -s "$tag" -m signing
+            git cat-file -p "$tag" | grep -qE "BEGIN (PGP|SSH) SIGNATURE" || { echo "ERROR: tag not signed"; exit 1; }
+            echo "OK: signed commit + signed tag verified."
+        fi
+        if [[ "${usage_check_squash:-false}" == "true" ]]; then
+            subject="$(git log -1 --pretty=%s HEAD)"
+            [[ "$subject" =~ ^Merge\ (pull\ request|branch) ]] && { echo "ERROR: HEAD is a merge commit: $subject" >&2; exit 1; }
+            echo "OK: HEAD subject is '$subject'"
+        fi
+        if [[ "${usage_dry_run:-false}" == "true" ]]; then
+          bunx release-it --dry-run --ci
+        fi
+        if [[ "${usage_notes:-false}" == "true" ]]; then
+          bunx release-it --release-notes-only --dry-run --ci 2>/dev/null || true
+        fi
+        ;;
+      "publish build")
+        bun run build:prod
+        ;;
+      "publish package")
+        : "${usage_version:?--version required}"
+        target="${usage_target:-$(uname -s|tr A-Z a-z)-$(uname -m|sed -e s/x86_64/x64/ -e s/aarch64/arm64/)}"
+        [[ "$target" == "darwin-x64" ]] && target=darwin-arm64
+        case "$target" in
+          linux-*) tar czf "kb-${usage_version}-${target}.tar.gz" -C dist . ;;
+          darwin-*) DMG="$(find dist -maxdepth 3 -type f -name '*.dmg'|head -n1)"; [[ -n "$DMG" ]] || { echo "ERROR: no .dmg"; exit 1; }; suffix=""; [[ -z "${ELECTROBUN_DEVELOPER_ID:-}" ]] && suffix="-unsigned"; mv "$DMG" "kb-${usage_version}-${target}${suffix}.dmg" ;;
+          *) echo "ERROR: unknown target $target"; exit 1 ;;
+        esac
+        ;;
+      "publish checksum")
+        shopt -s nullglob
+        sha256sum *.tar.gz *.dmg 2>/dev/null > checksums.txt || true
+        test -s checksums.txt && cat checksums.txt || echo "No artifacts"
+        ;;
+      *) echo "ci: unknown command $CMD"; exit 2 ;;
+    esac
   ''' }
-"ci:reset-branch" = { description = "Reset main, delete tags, create fresh branch with CI fix, push and PR", run = '''
+"test" = { description = "Run unit, CI, e2e preview, spec audit, and style checks", usage = '''
+    cmd "unit" {}
+    cmd "ci" {}
+    cmd "spec-audit" {
+      flag "--strict" help="Exit non-zero on findings"
+    }
+    cmd "spec-style" {
+      flag "--strict" help="Exit non-zero on findings"
+      flag "--scope <scope>" default="src" help="Limit spec-style to src, a path, or layer alias"
+      flag "--format <format>" default="text" help="Spec-style output format" {
+        choices "text" "markdown"
+      }
+      flag "--update-ledger" help="Update normalise-specs Phase 12 audit block"
+    }
+    cmd "e2e-preview" {}
+    cmd "e2e" {
+      flag "--smoke" help="P0 Gherkin smoke (@smoke) only"
+      flag "--regression" help="P0+P1 Gherkin regression (@regression) only"
+      flag "--debug" help="Playwright debug UI for BDD suite"
+      flag "--metrics-report" help="Write tmp/e2e/metrics/latest.json from JUnit + scenario scores"
+      flag "--metrics-compare" help="Compare latest metrics to quality-baseline.json"
+      flag "--write-baseline" help="Maintainer: refresh quality-baseline.json from latest run"
+    }
+  ''', run = '''
+    #!/usr/bin/env bun
+    import { existsSync, mkdirSync } from 'node:fs'
+    import path from 'node:path'
+
+    const ACTION = process.env.usage_cmd ?? 'unit'
+    const STRICT = process.env.usage_strict === 'true'
+    const STYLE_FORMAT = process.env.usage_format ?? 'text'
+    const UPDATE_LEDGER =
+      process.env.usage_update_ledger === 'true' || process.env['usage_update-ledger'] === 'true'
+
+    function die(msg: string, code = 1): never {
+      console.error(msg)
+      process.exit(code)
+    }
+
+    function chdirToGitRoot(): string {
+      const r = Bun.spawnSync(['git', 'rev-parse', '--show-toplevel'])
+      const root = r.stdout.toString().trim()
+      if (!r.success || !root) die('test: run from inside the app git checkout')
+      process.chdir(root)
+      return root
+    }
+
+    function runInherit(cmd: string[]): never {
+      const r = Bun.spawnSync(cmd, { stdout: 'inherit', stderr: 'inherit', stdin: 'inherit' })
+      process.exit(r.exitCode ?? (r.success ? 0 : 1))
+    }
+
+    const ROOT = chdirToGitRoot()
+    const SRC = path.join(ROOT, 'src')
+
+    function runSpecAudit(): void {
+      const EXEMPT_SUFFIXES = ['.d.ts', '.types.ts', '.const.ts', '.guard.ts']
+      const EXEMPT_FILES = ['index.ts', 'main.ts', 'registry.ts', 'generated.ts']
+      const TS_EXT_RE = /\.tsx?$/
+      const SOURCE_GLOB = new Bun.Glob('**/*.{ts,tsx}')
+
+      function hasSpec(filePath: string): boolean {
+        const stem = filePath.replace(TS_EXT_RE, '')
+        return existsSync(`${stem}.spec.ts`) || existsSync(`${stem}.spec.tsx`)
+      }
+
+      function isExempt(rel: string): boolean {
+        if (!rel.startsWith('src/')) return true
+        if (EXEMPT_SUFFIXES.some(suffix => rel.endsWith(suffix))) return true
+        const base = rel.split('/').pop() ?? ''
+        if (EXEMPT_FILES.some(f => base === f || base.endsWith(`.${f}`))) return true
+        if (base.endsWith('.schema.ts') || base.endsWith('.schemas.ts')) return true
+        if (base === 'index.ts' || base === 'shared.ts') return true
+        return rel.includes('__tests__/fixtures') || rel.includes('generated')
+      }
+
+      const missing = [...SOURCE_GLOB.scanSync(SRC)]
+        .flatMap(name => {
+          const full = path.join(SRC, name)
+          const rel = path.relative(ROOT, full).replace(/\\/g, '/')
+          if (isExempt(rel) || hasSpec(full)) return []
+          return [rel]
+        })
+        .sort()
+
+      for (const m of missing) console.log(m)
+      if (missing.length > 0) {
+        console.error('missing specs:', missing.length)
+        if (STRICT) process.exit(1)
+      }
+    }
+
+    async function runSpecStyle(): Promise<void> {
+      const LEDGER_START = '<!-- phase-12-style-audit:start -->'
+      const LEDGER_END = '<!-- phase-12-style-audit:end -->'
+      const TRAILING_SLASH_RE = /\/$/
+      const SPEC_GLOB = new Bun.Glob('**/*.spec.{ts,tsx}')
+      const SCOPE_ALIASES: Record<string, string> = {
+        'test-helper': 'src/__tests__',
+        core: 'src/core',
+        shared: 'src/shared',
+        'shell-app': 'src/shell/app',
+        'shell-main': 'src/shell/main',
+        'shell-renderer': 'src/shell/renderer',
+      }
+      const LEDGER = path.join(ROOT, 'assets/docs/specs/normalise-specs/tasks.md')
+
+      type StyleIssue = { file: string; category: string; message: string }
+
+      function normalizeScope(raw: string): string {
+        const value = SCOPE_ALIASES[raw] || raw || 'src'
+        const scoped = value.startsWith('src') ? value : `src/${value}`
+        return path.normalize(scoped).replace(/\\/g, '/').replace(TRAILING_SLASH_RE, '')
+      }
+
+      const scope = normalizeScope(process.env.usage_scope || 'src')
+      const relPath = (full: string) => path.relative(ROOT, full).replace(/\\/g, '/')
+      const inScope = (rel: string) => rel === scope || rel.startsWith(`${scope}/`)
+
+      async function loadFactoryNames(): Promise<Set<string>> {
+        const file = Bun.file(path.join(ROOT, 'src/__tests__/factories/factories.builder.ts'))
+        if (!(await file.exists())) return new Set()
+        const c = await file.text()
+        const start = c.indexOf('const factories = {')
+        const end = c.indexOf('} as const', start)
+        if (start < 0 || end < start) return new Set()
+        return new Set(
+          [...c.slice(start, end).matchAll(/(?:'([^']+)'|(\w+))\s*:/g)]
+            .map(x => x[1] ?? x[2])
+            .filter((name): name is string => name !== undefined),
+        )
+      }
+
+      function auditSpec(rel: string, c: string, knownFactories: Set<string>): StyleIssue[] {
+        const findings: StyleIssue[] = []
+        const add = (category: string, message: string) => findings.push({ file: rel, category, message })
+
+        if (/import\s*\{[^}]*\btest\b/.test(c)) add('test usage', 'imports test from bun:test (use it)')
+        if (/^\s*test\(/m.test(c)) add('test usage', 'uses test() (use it)')
+        if (!c.includes('describe(')) add('no describe', 'no describe block')
+        if (c.includes('describe(') && !/describe\(['"]when |describe\(['"]with |describe\(['"]without /.test(c)) {
+          add('no situation', 'no when/with/without situation describe')
+        }
+        for (const l of c.split('\n')) {
+          const m = l.match(/^\s*it\('(.{41,})'\)/)
+          if (m) {
+            add('long description', `${m[1]?.slice(0, 60) ?? ''}: description > 40 chars`)
+            break
+          }
+        }
+        if (/expect\([^)]*===/.test(c) && /\.toBe\(true\)|\.toBe\(false\)/.test(c)) {
+          add('opaque boolean matcher', 'opaque boolean matcher (use readable matcher)')
+        }
+        if (/window\.dispatchEvent/.test(c) || /document\.dispatchEvent/.test(c)) {
+          add('global dispatchEvent', 'uses global dispatchEvent')
+        }
+        if (/\bmock\s*\(/.test(c) || /\bspyOn\s*\(/.test(c) || /\bmock\.module\s*\(/.test(c)) {
+          add('mock usage', 'uses mock, spyOn, or mock.module')
+        }
+        for (const [, name] of c.matchAll(/factoryFor\('([^']+)'/g)) {
+          if (name && !knownFactories.has(name)) {
+            add('unknown factory', `factoryFor('${name}') not in factories.builder.ts`)
+          }
+        }
+        return findings
+      }
+
+      function categoryCounts(findings: StyleIssue[]): [string, number][] {
+        const counts = new Map<string, number>()
+        for (const { category } of findings) counts.set(category, (counts.get(category) ?? 0) + 1)
+        return [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]))
+      }
+
+      function render(specCount: number, findings: StyleIssue[], asMarkdown: boolean): string {
+        const counts = categoryCounts(findings)
+        if (!asMarkdown) {
+          const lines = [`scope: ${scope}`, `specs scanned: ${specCount}`]
+          for (const [category, count] of counts) lines.push(`${category}: ${count}`)
+          for (const issue of findings) lines.push(`${issue.file}: ${issue.message}`)
+          lines.push(`style issues: ${findings.length}`)
+          return lines.join('\n')
+        }
+        const lines = [
+          '### Better Specs style audit',
+          '',
+          `- Scope: \`${scope}\``,
+          `- Specs scanned: ${specCount}`,
+          `- Style issues: ${findings.length}`,
+          '',
+          '| Category | Count |',
+          '| --- | ---: |',
+          ...(counts.length === 0 ? ['| none | 0 |'] : counts.map(([c, n]) => `| ${c} | ${n} |`)),
+          '',
+        ]
+        if (findings.length > 0) {
+          lines.push('<details>', '<summary>Findings</summary>', '')
+          for (const issue of findings) lines.push(`- \`${issue.file}\` — ${issue.message}`)
+          lines.push('', '</details>')
+        }
+        return lines.join('\n')
+      }
+
+      async function updateLedger(ledgerBody: string): Promise<void> {
+        const file = Bun.file(LEDGER)
+        if (!(await file.exists())) die(`ledger not found: ${path.relative(ROOT, LEDGER)}`)
+        const current = await file.text()
+        const start = current.lastIndexOf(LEDGER_START)
+        const end = current.indexOf(LEDGER_END, start)
+        if (start < 0 || end < 0) die('ledger markers not found')
+        const replacement = `${LEDGER_START}\n${ledgerBody}\n${LEDGER_END}`
+        await Bun.write(LEDGER, current.slice(0, start) + replacement + current.slice(end + LEDGER_END.length))
+      }
+
+      const specPaths = [...SPEC_GLOB.scanSync(SRC)]
+        .map(name => path.join(SRC, name))
+        .filter(full => inScope(relPath(full)))
+        .sort()
+
+      const factoryNames = await loadFactoryNames()
+      const specTexts = await Promise.all(specPaths.map(full => Bun.file(full).text()))
+      const issues = specPaths.flatMap((full, index) =>
+        auditSpec(relPath(full), specTexts[index] ?? '', factoryNames),
+      )
+
+      const markdown = render(specPaths.length, issues, true)
+      const report = STYLE_FORMAT === 'markdown' ? markdown : render(specPaths.length, issues, false)
+      console.log(report)
+      if (UPDATE_LEDGER) await updateLedger(markdown)
+      if (issues.length > 0 && STRICT) process.exit(1)
+    }
+
+    switch (ACTION) {
+      case 'unit':
+        runInherit(['bun', 'test', '--pass-with-no-tests'])
+        break
+      case 'ci': {
+        mkdirSync(path.join(ROOT, 'tmp/reports/tests'), { recursive: true })
+        runInherit([
+          'bun',
+          'test',
+          '--pass-with-no-tests',
+          '--reporter=junit',
+          '--reporter-outfile=tmp/reports/tests/junit.xml',
+          '--coverage',
+          '--coverage-dir=tmp/reports/tests/coverage',
+        ])
+      }
+      case 'spec-audit':
+        runSpecAudit()
+        break
+      case 'spec-style':
+        await runSpecStyle()
+        break
+      case 'e2e-preview':
+        runInherit(['bun', 'run', 'e2e:preview'])
+        break
+      case 'e2e': {
+        const smoke = process.env.usage_smoke === 'true'
+        const regression = process.env.usage_regression === 'true'
+        const debug = process.env.usage_debug === 'true'
+        const metricsReport = process.env.usage_metrics_report === 'true' || process.env['usage_metrics-report'] === 'true'
+        const metricsCompare = process.env.usage_metrics_compare === 'true' || process.env['usage_metrics-compare'] === 'true'
+        const writeBaseline = process.env.usage_write_baseline === 'true' || process.env['usage_write-baseline'] === 'true'
+        if (metricsReport) {
+          runInherit(['bun', 'tools/e2e/e2e_metrics.script.ts', 'report'])
+        } else if (metricsCompare) {
+          runInherit(['bun', 'tools/e2e/e2e_metrics.script.ts', 'compare'])
+        } else if (writeBaseline) {
+          runInherit(['bun', 'tools/e2e/e2e_metrics.script.ts', 'write-baseline'])
+        } else if (smoke) {
+          runInherit(['bun', 'run', 'e2e:smoke'])
+        } else if (regression) {
+          runInherit(['bun', 'run', 'e2e:regression'])
+        } else if (debug) {
+          runInherit(['bun', 'run', 'e2e:bddgen'])
+          runInherit(['bunx', 'playwright', 'test', '--ui'])
+        } else {
+          runInherit(['bun', 'run', 'e2e'])
+        }
+        break
+      }
+      default:
+        die(`test: unknown action ${ACTION}`, 2)
+    }
+
+  ''' }
+"perf" = { description = "Run preview-server performance benchmark workflows", usage = '''
+    cmd "run" {
+      flag "--port <port>" default="3457" help="Preview server port for run action"
+    }
+    cmd "baseline" {}
+    cmd "compare" {}
+    cmd "open" {}
+  ''', run = '''
+    #!/usr/bin/env bun
+    import { mkdir } from 'node:fs/promises'
+    import path from 'node:path'
+
+    const P50_QUANTILE = 0.5
+    const P99_QUANTILE = 0.99
+    const MS_PER_SECOND = 1000
+    const READINESS_POLL_MAX = 900
+    const READINESS_POLL_MS = 100
+    const DEFAULT_SAMPLE_COUNT = 100
+    const THROUGHPUT_DURATION_MS = 10_000
+    const THROUGHPUT_CONCURRENCY = 10
+    const ISO_SLUG_LEN = 19
+    const GIT_SHA_SHORT = 8
+    const DATE_SHORT = 10
+    const LATEST_JSON = 'latest.json'
+    const BASELINE_JSON = 'baseline.json'
+    const JSON_HEADERS = { 'Content-Type': 'application/json' }
+    const ROOT = spawnText(['git', 'rev-parse', '--show-toplevel'])
+    const BENCH = path.join(ROOT, 'tools', 'benchmarks')
+    const SERVER = path.join(ROOT, 'tools', 'preview', 'server.ts')
+    const RESULTS = path.join(BENCH, 'results')
+    const PATH_SECTION: Record<BenchPath, string> = {
+      p1: 'cold start',
+      p2: 'FTS',
+      p3: 'filter',
+      p4: 'throughput',
+      p5: 'stats'
+    }
+    const VIOLATION_METRICS = {
+      cold_start: 'cold_start_ms',
+      req_per_sec: 'req_per_sec'
+    } as const
+    const METRIC_SPECS = [
+      { path: 'p1', stat: 'cold_start', limit: 300, kind: 'max', compareDir: 'lower', unit: 'ms', precision: 1 },
+      { path: 'p2', stat: 'p50', limit: 2, kind: 'max', compareDir: 'lower', unit: 'ms', precision: 1 },
+      { path: 'p2', stat: 'p99', limit: 4, kind: 'max', compareDir: 'lower', unit: 'ms', precision: 1 },
+      { path: 'p3', stat: 'p50', limit: 2, kind: 'max', compareDir: 'lower', unit: 'ms', precision: 1 },
+      { path: 'p3', stat: 'p99', limit: 3, kind: 'max', compareDir: 'lower', unit: 'ms', precision: 1 },
+      { path: 'p4', stat: 'req_per_sec', limit: 8000, kind: 'min', compareDir: 'higher', unit: 'r/s', precision: 0 },
+      { path: 'p5', stat: 'p50', limit: 3, kind: 'max', compareDir: 'lower', unit: 'ms', precision: 1 },
+      { path: 'p5', stat: 'p99', limit: 5, kind: 'max', compareDir: 'lower', unit: 'ms', precision: 1 }
+    ] as const
+    type MetricSpec = (typeof METRIC_SPECS)[number]
+    type BenchmarkResult = {
+      timestamp: string
+      git_sha: string
+      bun_version: string
+      thresholds: Record<string, number>
+      results: Record<string, number>
+      violations: Array<{ path: string; metric: string; value: number; threshold: number; delta: number }>
+      summary: 'PASS' | 'FAIL'
+    }
+    type SpawnSyncOptions = NonNullable<Parameters<typeof Bun.spawnSync>[1]>
+    type LatencySample = { p50: number; p99: number }
+    type BenchSamples = {
+      p1: number
+      p2: LatencySample
+      p3: LatencySample
+      p4: number
+      p5: LatencySample
+    }
+    type BenchPath = 'p1' | 'p2' | 'p3' | 'p4' | 'p5'
+    type BenchStat = 'cold_start' | 'p50' | 'p99' | 'req_per_sec'
+    type BenchmarkMetric = MetricSpec & {
+      key: string
+      id: string
+      metric: string
+      label: string
+      reportLabel: string
+      valueFrom: (samples: BenchSamples) => number
+    }
+
+    const action = process.env.usage_cmd
+    const port = Number.parseInt(process.env.usage_port ?? '3457', 10)
+
+    if (!Number.isFinite(port) || port <= 0) {
+      console.error('perf: --port must be a positive integer')
+      process.exit(1)
+    }
+
+    function spawnText(cmd: string[], opts: SpawnSyncOptions = {}): string {
+      const child = Bun.spawnSync(cmd, opts)
+      if (!child.success) {
+        throw new Error((child.stderr ?? Buffer.alloc(0)).toString().trim() || `${cmd.join(' ')} failed`)
+      }
+      return (child.stdout ?? Buffer.alloc(0)).toString().trim()
+    }
+    function resultKey(benchPath: BenchPath, stat: BenchStat): string {
+      if (stat === 'req_per_sec') return `${benchPath}_req_per_sec`
+      if (stat === 'cold_start') return `${benchPath}_cold_start_ms`
+      return `${benchPath}_${stat}_ms`
+    }
+
+    function displayLabel(benchPath: BenchPath, stat: BenchStat): string {
+      const section = PATH_SECTION[benchPath]
+      if (stat === 'cold_start' || stat === 'req_per_sec') return section
+      return `${section} ${stat}`
+    }
+
+    function getMetric(spec: MetricSpec): BenchmarkMetric {
+      const id = spec.path.toUpperCase()
+      const label = displayLabel(spec.path, spec.stat)
+      return {
+        ...spec,
+        key: resultKey(spec.path, spec.stat),
+        id,
+        metric: VIOLATION_METRICS[spec.stat as keyof typeof VIOLATION_METRICS] ?? `${spec.stat}_ms`,
+        label,
+        reportLabel: `${id} ${label}`,
+        valueFrom: samples => {
+          if (spec.stat === 'p50' || spec.stat === 'p99') {
+            return (samples[spec.path] as LatencySample)[spec.stat]
+          }
+          return samples[spec.path] as number
+        }
+      }
+    }
+
+    const METRICS = METRIC_SPECS.map(getMetric)
+    const THRESHOLDS = Object.fromEntries(METRICS.map(m => [m.key, m.limit])) as Record<string, number>
+
+    function resultPath(fileName: string): string {
+      return path.join(RESULTS, fileName)
+    }
+
+    function formatRunLabel({ git_sha, timestamp }: Pick<BenchmarkResult, 'git_sha' | 'timestamp'>): string {
+      return `${git_sha.slice(0, GIT_SHA_SHORT)} (${timestamp.slice(0, DATE_SHORT)})`
+    }
+
+    function isoSlug(timestamp: string): string {
+      return timestamp.replace(/[:.]/g, '-').slice(0, ISO_SLUG_LEN)
+    }
+
+    function percentile(samples: number[], quantile: number): number {
+      const last = samples.length - 1
+      return samples[Math.floor(last * quantile)] ?? samples.at(-1) ?? 0
+    }
+
+    function postJson(baseUrl: string, endpoint: string, body: string | object): Promise<Response> {
+      return fetch(`${baseUrl}/api/${endpoint}`, {
+        method: 'POST',
+        headers: JSON_HEADERS,
+        body: typeof body === 'string' ? body : JSON.stringify(body)
+      })
+    }
+
+    async function readResultFile(fileName: string): Promise<BenchmarkResult | null> {
+      const file = Bun.file(resultPath(fileName))
+      if (!(await file.exists())) return null
+      return (await file.json()) as BenchmarkResult
+    }
+
+    async function requireResultFile(fileName: string, missingMessage: string): Promise<BenchmarkResult> {
+      const result = await readResultFile(fileName)
+      if (!result) {
+        console.error(missingMessage)
+        process.exit(1)
+      }
+      return result
+    }
+
+    function requireLatest(): Promise<BenchmarkResult> {
+      return requireResultFile(LATEST_JSON, 'No latest.json - run `mise run perf run` first')
+    }
+
+    /** Sequential samples measure wall-clock latency per request (not parallelizable). */
+    async function measure(baseUrl: string, endpoint: string, body: object, n = DEFAULT_SAMPLE_COUNT) {
+      const samples: number[] = []
+      const payload = JSON.stringify(body)
+      for (let i = 0; i < n; i++) {
+        const t = performance.now()
+        const r = await postJson(baseUrl, endpoint, payload)
+        if (r.ok) samples.push(performance.now() - t)
+      }
+      if (samples.length === 0) throw new Error(`All requests to /api/${endpoint} failed`)
+      samples.sort((a, b) => a - b)
+      return {
+        p50: percentile(samples, P50_QUANTILE),
+        p99: percentile(samples, P99_QUANTILE)
+      }
+    }
+
+    async function measureThroughput(
+      baseUrl: string,
+      endpoint: string,
+      body: object,
+      durationMs = THROUGHPUT_DURATION_MS,
+      concurrency = THROUGHPUT_CONCURRENCY
+    ) {
+      const until = performance.now() + durationMs
+      let completed = 0
+      const payload = JSON.stringify(body)
+      async function worker(): Promise<void> {
+        async function step(): Promise<void> {
+          if (performance.now() >= until) return
+          try {
+            const r = await postJson(baseUrl, endpoint, payload)
+            if (r.ok) completed += 1
+          } catch {
+            // ignore transient network errors during throughput window
+          }
+          return step()
+        }
+        await step()
+      }
+      await Promise.all(Array.from({ length: concurrency }, () => worker()))
+      return completed / (durationMs / MS_PER_SECOND)
+    }
+
+    async function waitForServer(baseUrl: string, srv: ReturnType<typeof Bun.spawn>): Promise<void> {
+      let exited = false
+      srv.exited.then(() => {
+        exited = true
+      })
+      for (let i = 0; i < READINESS_POLL_MAX; i++) {
+        if (exited) throw new Error('Preview server exited before readiness')
+        try {
+          const r = await fetch(baseUrl)
+          if (r.ok) return
+        } catch {
+          // connection refused until preview server is ready
+        }
+        await Bun.sleep(READINESS_POLL_MS)
+      }
+      throw new Error('Preview server did not start in 90 s')
+    }
+
+    function collectViolations(samples: BenchSamples): BenchmarkResult['violations'] {
+      return METRICS.reduce<BenchmarkResult['violations']>((violations, m) => {
+        const value = m.valueFrom(samples)
+        const failed = m.kind === 'max' ? value > m.limit : value < m.limit
+        if (failed) {
+          violations.push({
+            path: m.id,
+            metric: m.metric,
+            value: +value.toFixed(1),
+            threshold: m.limit,
+            delta: +(m.kind === 'max' ? value - m.limit : m.limit - value).toFixed(1)
+          })
+        }
+        return violations
+      }, [])
+    }
+
+    async function writeResultArtifacts(result: BenchmarkResult, runDir: string): Promise<void> {
+      const json = JSON.stringify(result, null, 2)
+      await mkdir(runDir, { recursive: true })
+      await Bun.write(path.join(runDir, 'result.json'), json)
+      await Bun.write(resultPath(LATEST_JSON), json)
+    }
+
+    function printPerformanceReport(result: BenchmarkResult, violations: BenchmarkResult['violations'], runDir: string) {
+      console.log('\nPerformance Report')
+      for (const m of METRICS) {
+        console.log(`${m.reportLabel}  ${result.results[m.key]} ${m.unit}`)
+      }
+      console.log(`${result.summary} ${violations.length} violation(s) -> ${runDir}`)
+    }
+
+    const actions = {
+      run: async () => {
+        const baseUrl = `http://localhost:${port}`
+        const gitSha = spawnText(['git', '-C', ROOT, 'rev-parse', 'HEAD'])
+        const timestamp = new Date().toISOString()
+        console.log('P1  cold start...')
+        const t0 = performance.now()
+        const srv = Bun.spawn(['bun', SERVER], {
+          cwd: ROOT,
+          env: { ...process.env, PORT: String(port) },
+          stdout: 'ignore',
+          stderr: 'inherit'
+        })
+        try {
+          await waitForServer(baseUrl, srv)
+          const p1 = performance.now() - t0
+          console.log(`P1  ${p1.toFixed(0)} ms`)
+
+          console.log('P2  FTS search (100 samples)...')
+          const p2 = await measure(baseUrl, 'list', { query: 'bun', limit: 50 })
+          console.log(`P2  p50=${p2.p50.toFixed(1)} ms  p99=${p2.p99.toFixed(1)} ms`)
+
+          console.log('P3  filter query (100 samples)...')
+          const p3 = await measure(baseUrl, 'list', { types: ['task'], limit: 50 })
+          console.log(`P3  p50=${p3.p50.toFixed(1)} ms  p99=${p3.p99.toFixed(1)} ms`)
+
+          console.log('P4  throughput 10 s...')
+          const p4 = await measureThroughput(baseUrl, 'list', { query: 'bun', limit: 50 })
+          console.log(`P4  ${p4.toFixed(0)} req/s`)
+
+          console.log('P5  getStats (100 samples)...')
+          const p5 = await measure(baseUrl, 'getStats', {})
+          console.log(`P5  p50=${p5.p50.toFixed(1)} ms  p99=${p5.p99.toFixed(1)} ms`)
+
+          const sample = { p1, p2, p3, p4, p5 }
+          const violations = collectViolations(sample)
+          const runDir = path.join(RESULTS, isoSlug(timestamp))
+          const result: BenchmarkResult = {
+            timestamp,
+            git_sha: gitSha,
+            bun_version: Bun.version,
+            thresholds: THRESHOLDS,
+            results: Object.fromEntries(METRICS.map(m => [m.key, +m.valueFrom(sample).toFixed(m.precision)])),
+            violations,
+            summary: violations.length === 0 ? 'PASS' : 'FAIL'
+          }
+          await writeResultArtifacts(result, runDir)
+          printPerformanceReport(result, violations, runDir)
+          process.exit(violations.length > 0 ? 1 : 0)
+        } finally {
+          srv.kill()
+        }
+      },
+      compare: async () => {
+        const [base, latest] = await Promise.all([
+          requireResultFile(BASELINE_JSON, 'No baseline.json - run `mise run perf baseline` first'),
+          requireLatest()
+        ])
+        console.log(`Baseline : ${formatRunLabel(base)}`)
+        console.log(`Latest   : ${formatRunLabel(latest)}`)
+        let regressions = 0
+        for (const m of METRICS) {
+          const b = base.results[m.key]
+          const l = latest.results[m.key]
+          const delta = (l ?? 0) - (b ?? 0)
+          const pct = (b ?? 0) === 0 ? 0 : (delta / (b ?? 0)) * 100
+          const regressed =
+            m.compareDir === 'lower'
+              ? (l ?? 0) > (b ?? 0) && (l ?? 0) - (b ?? 0) >= Math.max(0.25, (b ?? 0) * 0.2)
+              : pct < -20
+          if (regressed) regressions++
+          const status = regressed ? 'REGRESSION' : Math.abs(pct) < 5 ? 'stable' : delta > 0 ? 'worse' : 'better'
+          console.log(`${m.id} ${m.label}: ${b} -> ${l} (${delta >= 0 ? '+' : ''}${delta.toFixed(1)}${m.unit}) ${status}`)
+        }
+        console.log(`${regressions} regression(s)`)
+        process.exit(regressions > 0 ? 1 : 0)
+      },
+      baseline: async () => {
+        const latest = await requireLatest()
+        await Bun.write(resultPath(BASELINE_JSON), Bun.file(resultPath(LATEST_JSON)))
+        console.log(`Baseline set -> ${formatRunLabel(latest)}`)
+      },
+      open: async () => {
+        const { timestamp } = await requireLatest()
+        const child = Bun.spawnSync(['open', path.join(RESULTS, isoSlug(timestamp))])
+        process.exit(child.exitCode ?? 0)
+      }
+    } as const
+
+    const fn = actions[action as keyof typeof actions]
+    if (!fn) {
+      console.error('Usage: mise run perf <run|baseline|compare|open>')
+      process.exit(1)
+    }
+    await fn()
+
+  ''' }
+"_icons" = { description = "Check and optionally fix SVG icon contrast", hide = true, usage = '''
+    cmd "check" {}
+    flag "--scope <scope>" help="Check scope" default="all" { choices "all" "brand" }
+    flag "--strict" help="Exit non-zero on failure"
+    flag "--write-safe" help="Apply safe hex replacements"
+    flag "--min <min>" default="3" help="Minimum contrast ratio vs list shell background"
+  ''', run = '''
+    #!/usr/bin/env bun
+    import { readdirSync } from 'node:fs'
+    import path from 'node:path'
+
+    /** Matches list.css `--theme-bg` (Andromeda Void shell). */
+    const LIST_BG = '#0b0e14'
+    /** WCAG 1.4.11 non-text contrast target for graphical objects (relaxed vs body text). */
+    const DEFAULT_MIN_RATIO = 3
+    /** Only these exact hex strings are rewritten with `--write-safe` (case-insensitive keys). */
+    const SAFE_HEX_REPLACEMENTS: Record<string, string> = { '#24292f': '#e6edf3' }
+    const HEX_IN_SVG = /#([0-9a-f]{3}|[0-9a-f]{6})\b/gi
+    const RGB_IN_SVG = /rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/gi
+    const CHUNK = 80
+
+    function die(msg: string, code = 1): never {
+      console.error(msg)
+      process.exit(code)
+    }
+
+    function chdirToGitRoot(): void {
+      const r = Bun.spawnSync(['git', 'rev-parse', '--show-toplevel'])
+      const root = r.stdout.toString().trim()
+      if (!r.success || !root) die('icons: run from inside the app git checkout')
+      process.chdir(root)
+    }
+
+    chdirToGitRoot()
+
+    function parseArgs(argv: string[]) {
+      const envScope = process.env.usage_scope
+      let scope: 'brand' | 'all' = envScope === 'brand' || envScope === 'all' ? envScope : 'all'
+      let writeSafe = process.env.usage_write_safe === 'true'
+      let strict = process.env.usage_strict === 'true'
+      let minRatio = DEFAULT_MIN_RATIO
+      const envMin = process.env.usage_min
+      if (envMin) {
+        const n = Number(envMin)
+        if (Number.isFinite(n) && n > 0) minRatio = n
+      }
+      for (const a of argv) {
+        if (a === '--write-safe') writeSafe = true
+        else if (a === '--strict') strict = true
+        else if (a.startsWith('--scope=')) {
+          const v = a.slice(8)
+          if (v === 'brand' || v === 'all') scope = v
+          else die(`Unknown --scope=${v} (use brand|all)`, 2)
+        } else if (a.startsWith('--min=')) {
+          minRatio = Number(a.slice(6))
+          if (!Number.isFinite(minRatio) || minRatio <= 0) die(`Invalid --min=${a}`, 2)
+        }
+      }
+      return { scope, writeSafe, strict, minRatio }
+    }
+
+    function expandShorthandHex(hex: string): string {
+      const h = hex.slice(1).toLowerCase()
+      if (h.length === 3) return `#${[...h].map(c => c + c).join('')}`
+      if (h.length === 6) return `#${h}`
+      return hex.toLowerCase()
+    }
+
+    function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+      const m = /^#([0-9a-f]{6})$/.exec(expandShorthandHex(hex.startsWith('#') ? hex : `#${hex}`))
+      if (!m?.[1]) return null
+      const n = Number.parseInt(m[1], 16)
+      return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 }
+    }
+
+    function relativeLuminance(rgb: { r: number; g: number; b: number }): number {
+      const ch = (u: number) => {
+        const c = u / 255
+        return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+      }
+      return 0.2126 * ch(rgb.r) + 0.7152 * ch(rgb.g) + 0.0722 * ch(rgb.b)
+    }
+
+    function contrastRatio(fgHex: string, bgHex: string): number | null {
+      const fg = hexToRgb(fgHex)
+      const bg = hexToRgb(bgHex)
+      if (!fg || !bg) return null
+      const l1 = relativeLuminance(fg)
+      const l2 = relativeLuminance(bg)
+      return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05)
+    }
+
+    function hasLightAndNearBlack(samples: string[]): boolean {
+      let hasLight = false
+      let hasNearBlack = false
+      for (const raw of samples) {
+        const rgb = hexToRgb(raw)
+        if (!rgb) continue
+        const L = relativeLuminance(rgb)
+        if (L > 0.28) hasLight = true
+        if (L < 0.12) hasNearBlack = true
+        if (hasLight && hasNearBlack) return true
+      }
+      return false
+    }
+
+    function collectHexSamples(svgText: string): string[] {
+      const out = new Set<string>()
+      for (const m of svgText.matchAll(HEX_IN_SVG)) {
+        if (m[1] !== undefined) out.add(expandShorthandHex(`#${m[1]}`))
+      }
+      for (const m of svgText.matchAll(RGB_IN_SVG)) {
+        const r = Number(m[1])
+        const g = Number(m[2])
+        const b = Number(m[3])
+        if (Number.isFinite(r) && Number.isFinite(g) && Number.isFinite(b)) {
+          const clamp = (n: number) => Math.min(255, Math.max(0, Math.round(n)))
+          const h = (n: number) => clamp(n).toString(16).padStart(2, '0')
+          out.add(expandShorthandHex(`#${h(r)}${h(g)}${h(b)}`))
+        }
+      }
+      return [...out]
+    }
+
+    async function loadBrandBasenames(root: string): Promise<string[]> {
+      const dir = path.join(root, 'src/shell/renderer/constants')
+      const [tag, ent] = await Promise.all([
+        import(path.join(dir, 'tag_brand_svg_map.const.ts')),
+        import(path.join(dir, 'entry_type_icon_basename.const.ts'))
+      ])
+      const t = tag as { TAG_BRAND_SVG_BASENAME: Record<string, string> }
+      const e = ent as { ENTRY_TYPE_DEFAULT_SVG_BASENAME: Record<string, string> }
+      return [
+        ...new Set([...Object.values(t.TAG_BRAND_SVG_BASENAME), ...Object.values(e.ENTRY_TYPE_DEFAULT_SVG_BASENAME)])
+      ].sort()
+    }
+
+    function listSvgBasenames(imagesDir: string): string[] {
+      return readdirSync(imagesDir)
+        .filter(n => n.endsWith('.svg'))
+        .map(n => n.replace(/\.svg$/i, ''))
+        .sort()
+    }
+
+    function applySafeReplacements(content: string): { next: string; hits: number } {
+      let next = content
+      let hits = 0
+      for (const [from, to] of Object.entries(SAFE_HEX_REPLACEMENTS)) {
+        next = next.replace(new RegExp(from, 'gi'), m => {
+          if (m.toLowerCase() !== from.toLowerCase()) return m
+          hits += 1
+          return to
+        })
+      }
+      return { next, hits }
+    }
+
+    type ScanRow =
+      | { base: string; missing: true }
+      | { base: string; missing: false; bad: { hex: string; ratio: number }[]; written: boolean }
+
+    async function scanOne(imagesDir: string, base: string, writeSafe: boolean, minRatio: number): Promise<ScanRow> {
+      const filePath = path.join(imagesDir, `${base}.svg`)
+      const file = Bun.file(filePath)
+      if (!(await file.exists())) {
+        console.warn(`missing: ${base}.svg`)
+        return { base, missing: true }
+      }
+
+      let text = await file.text()
+      let written = false
+      if (writeSafe) {
+        const { next, hits } = applySafeReplacements(text)
+        if (hits > 0 && next !== text) {
+          await Bun.write(filePath, next)
+          written = true
+          console.log(`write-safe: ${base}.svg (${hits} replacement(s))`)
+          text = next
+        }
+      }
+
+      const samples = collectHexSamples(text)
+      const dualTone = hasLightAndNearBlack(samples)
+      const bad = samples.flatMap(hex => {
+        const rgb = hexToRgb(hex)
+        if (!rgb || (dualTone && relativeLuminance(rgb) < 0.12)) return []
+        const ratio = contrastRatio(hex, LIST_BG)
+        return ratio !== null && ratio < minRatio ? [{ hex, ratio }] : []
+      })
+      return { base, missing: false, bad, written }
+    }
+
+    async function main() {
+      const root = process.cwd()
+      const imagesDir = path.join(root, 'assets/images')
+      const { scope, writeSafe, strict, minRatio } = parseArgs(process.argv.slice(2))
+      const basenames = scope === 'brand' ? await loadBrandBasenames(root) : listSvgBasenames(imagesDir)
+
+      const rows: ScanRow[] = []
+      for (let i = 0; i < basenames.length; i += CHUNK) {
+        const part = await Promise.all(
+          basenames.slice(i, i + CHUNK).map(base => scanOne(imagesDir, base, writeSafe, minRatio))
+        )
+        rows.push(...part)
+      }
+
+      let failures = 0
+      let filesWritten = 0
+      for (const row of rows) {
+        if (row.missing) continue
+        if (row.written) filesWritten += 1
+        if (row.bad.length === 0) continue
+        failures += 1
+        const line = row.bad
+          .toSorted((a, b) => a.ratio - b.ratio)
+          .map(x => `${x.hex} (${x.ratio.toFixed(2)}:1)`)
+          .join(', ')
+        console.log(`FAIL ${row.base}.svg  <${minRatio}:1  vs ${LIST_BG}  →  ${line}`)
+      }
+
+      console.log('')
+      console.log(
+        `scope=${scope}  files=${basenames.length}  failing=${failures}  minRatio=${minRatio}  writeSafe=${writeSafe}  strict=${strict}  written=${filesWritten}`
+      )
+      if (failures > 0) {
+        console.log(
+          'Hint: add targeted entries to SAFE_HEX_REPLACEMENTS and run with --write-safe; use --strict to fail CI'
+        )
+        if (strict) process.exit(1)
+      }
+    }
+
+    await main()
+
+  ''' }
+"lint" = { description = "Run lint, strict lint, fix, report, and graph workflows", usage = '''
+    cmd "check" {
+      flag "--biome" help="Run Biome"
+      flag "--knip" help="Run Knip"
+      flag "--depcruise" help="Run dependency-cruiser"
+      flag "--jscpd" help="Run jscpd"
+      flag "--ls" help="Run ls-lint"
+      flag "--hadolint" help="Run hadolint on Dockerfile"
+      flag "--ast-grep" help="Run ast-grep"
+      flag "--mise" help="Run tombi on mise.toml"
+      flag "--typecheck" help="Run TypeScript check"
+      flag "--ci" help="Use CI reporters and write under tmp/reports/linters"
+    }
+    cmd "fix" {
+      flag "--biome" help="Fix Biome findings"
+      flag "--ast-grep" help="Apply ast-grep rewrites"
+      flag "--typecheck" help="Run TypeScript check after fixes"
+      flag "--knip" help="Fail with guidance; Knip has no fixer"
+    }
+    cmd "graph" {}
+  ''', run = '''
     #!/usr/bin/env bash
-    set -e
+    set -euo pipefail
 
-    echo "=== CI Branch Reset & Recreate Script ==="
-    echo ""
+    is_true() { [[ "${1:-false}" == "true" ]]; }
 
-    current_branch=$(git branch --show-current)
-    echo "Current branch: $current_branch"
+    lint_flag_set=false
+    is_true "${usage_biome:-false}" && lint_flag_set=true
+    is_true "${usage_knip:-false}" && lint_flag_set=true
+    is_true "${usage_depcruise:-false}" && lint_flag_set=true
+    is_true "${usage_jscpd:-false}" && lint_flag_set=true
+    is_true "${usage_ls:-false}" && lint_flag_set=true
+    is_true "${usage_hadolint:-false}" && lint_flag_set=true
+    is_true "${usage_ast_grep:-false}" && lint_flag_set=true
+    is_true "${usage_mise:-false}" && lint_flag_set=true
+    is_true "${usage_typecheck:-false}" && lint_flag_set=true
+    want() {
+      if [[ "$lint_flag_set" == "false" ]]; then
+        return 0
+      fi
+      is_true "${1:-false}"
+    }
 
-    echo ""
-    echo "=== Step 1: Delete remote tags ==="
-    for tag in $(git tag -l); do
-        echo "Deleting remote tag: $tag"
-        git push origin --delete "$tag" 2>/dev/null || echo "  (tag may not exist remotely)"
-    done
+    graph() {
+      mkdir -p tmp/reports
+      bunx depcruise . --config .dependency-cruiser.cjs --include-only '^.' --output-type mermaid --output-to tmp/reports/dependency-graph.mmd
+    }
 
-    echo ""
-    echo "=== Step 2: Delete local tags ==="
-    for tag in $(git tag -l); do
-        echo "Deleting local tag: $tag"
-        git tag -d "$tag"
-    done
-
-    echo ""
-    echo "=== Step 3: Reset main to initial commit ==="
-    git checkout main
-    git fetch origin main
-    git reset --hard 9b59223
-    echo "Main reset to: $(git log --oneline -1)"
-
-    echo ""
-    echo "=== Step 4: Force push main ==="
-    git push --force origin main
-    echo "Main force pushed"
-
-    echo ""
-    echo "=== Step 5: Create new branch with CI fix ==="
-    ci_commit=$(git log --oneline --all | grep -m1 "feat(setup): Project foundation and CI" | cut -d' ' -f1)
-    echo "Using commit: $ci_commit"
-
-    git branch -D fix/release-workflow-v2 2>/dev/null || true
-    git checkout -b fix/release-workflow-v2 "$ci_commit"
-
-    echo ""
-    echo "=== Step 6: Run lint and test locally ==="
-    echo "Running bun run lint..."
-    bun run lint
-
-    echo ""
-    echo "Running bun test..."
-    bun test
-
-    echo ""
-    echo "=== Step 7: Push new branch to origin ==="
-    git push -u origin fix/release-workflow-v2
-
-    echo ""
-    echo "=== Step 8: Create PR ==="
-    if command -v gh &> /dev/null; then
-        pr_url=$(gh pr create \
-            --title "fix: Release workflow and CI improvements" \
-            --body "## Summary
-    - Fix release workflow to use gh release create instead of release-it's broken GitHub release
-    - Properly delete local and remote tags before creating releases
-    - Ensure CI passes before merging
-
-    ## Changes
-    - Disable release-it's GitHub release (set release: false)
-    - Use explicit gh release create in release.yml
-    - Properly handle tag cleanup
-
-    ## Testing
-    - Lint passes locally
-    - Tests pass locally" \
-            --base main)
-
-        echo "PR created: $pr_url"
-    else
-        echo "gh CLI not found. Please create PR manually:"
-        echo "  gh pr create --base main --head fix/release-workflow-v2"
+    if is_true "${usage_ci:-false}"; then
+      mkdir -p tmp/reports/linters
     fi
 
-    echo ""
-    echo "=== Done! ==="
-    echo "Branch: fix/release-workflow-v2"
-    echo "PR created with CI fix"
+    clear_local_jscpd_report() {
+      if ! is_true "${usage_ci:-false}"; then
+        rm -rf tmp/reports/linters/jscpd
+      fi
+    }
+
+    run_biome() {
+      if is_true "${usage_ci:-false}"; then
+        bunx biome check --reporter=github
+      else
+        clear_local_jscpd_report
+        bun run lint:biome:strict
+      fi
+    }
+
+    run_knip() {
+      if is_true "${usage_ci:-false}"; then
+        bun run lint:knip -- --reporter compact | tee tmp/reports/linters/knip.txt
+      else
+        bun run lint:knip
+      fi
+    }
+
+    run_depcruise() {
+      if is_true "${usage_ci:-false}"; then
+        bun run lint:depcruise -- --output-type json --output-to tmp/reports/linters/depcruise.json
+      else
+        bun run lint:depcruise
+      fi
+    }
+
+    run_jscpd() {
+      if is_true "${usage_ci:-false}"; then
+        bunx jscpd . --noTips --reporters json,console --output tmp/reports/linters/jscpd
+      else
+        bun run lint:jscpd
+      fi
+    }
+
+    run_ls() {
+      if is_true "${usage_ci:-false}"; then
+        bunx @ls-lint/ls-lint | tee tmp/reports/linters/ls-lint.txt
+      else
+        bun run lint:ls
+      fi
+    }
+
+    run_hadolint() {
+      if is_true "${usage_ci:-false}"; then
+        bun run lint:hadolint | tee tmp/reports/linters/hadolint.txt
+      else
+        bun run lint:hadolint
+      fi
+    }
+
+    run_ast_grep() {
+      if is_true "${usage_ci:-false}"; then
+        bun run lint:ast-grep | tee tmp/reports/linters/ast-grep.txt
+      else
+        bun run lint:ast-grep
+      fi
+    }
+
+    run_mise() {
+      if is_true "${usage_ci:-false}"; then
+        bun run lint:mise | tee tmp/reports/linters/mise.txt
+      else
+        bun run lint:mise
+      fi
+    }
+
+    run_renderer_css_tokens() {
+      bun run lint:renderer-css
+    }
+
+    run_spec_testing_guide() {
+      bun run lint:spec-guide
+    }
+
+    case "${usage_cmd:-check}" in
+      check)
+        e=0
+        want "${usage_typecheck:-false}" && { bun run typecheck || e=1; }
+        want "${usage_biome:-false}" && { run_biome || e=1; }
+        want "${usage_knip:-false}" && { run_knip || e=1; }
+        want "${usage_depcruise:-false}" && { run_depcruise || e=1; }
+        want "${usage_mise:-false}" && { run_mise || e=1; }
+        want "${usage_jscpd:-false}" && { run_jscpd || e=1; }
+        want "${usage_ls:-false}" && { run_ls || e=1; }
+        want "${usage_hadolint:-false}" && { run_hadolint || e=1; }
+        want "${usage_ast_grep:-false}" && { run_ast_grep || e=1; }
+        run_renderer_css_tokens || e=1
+        run_spec_testing_guide || e=1
+        exit "$e"
+        ;;
+      fix)
+        e=0
+        fix_flag_set=false
+        is_true "${usage_ast_grep:-false}" && fix_flag_set=true
+        is_true "${usage_biome:-false}" && fix_flag_set=true
+        is_true "${usage_typecheck:-false}" && fix_flag_set=true
+        if is_true "${usage_knip:-false}"; then
+          echo "lint fix: --knip has no fixer; use 'mise run lint check --knip'" >&2
+          e=1
+        fi
+        if [[ "$fix_flag_set" == "false" && "$e" == "0" ]]; then
+          bun run lint:ast-grep:fix || e=1
+          bun run lint:biome:fix || e=1
+        else
+          is_true "${usage_ast_grep:-false}" && { bun run lint:ast-grep:fix || e=1; }
+          is_true "${usage_biome:-false}" && { bun run lint:biome:fix || e=1; }
+          is_true "${usage_typecheck:-false}" && { bun run typecheck || e=1; }
+        fi
+        exit "$e"
+        ;;
+      graph)
+        graph
+        ;;
+      *)
+        echo "lint: unknown command ${usage_cmd:-}" >&2
+        exit 2
+        ;;
+    esac
   ''' }
-"repo:setup" = { description = "Create GitHub repo and set required secrets/vars for CI workflows", run = '''
+"app" = { description = "Manage Electrobun dev lifecycle and gates", usage = '''
+    flag "--stop" help="Stop the electrobun dev --watch process only"
+    flag "--check" help="Print whether kb-dev or the watcher is running"
+    flag "--quit" help="Quit kb-dev via AppleScript (graceful)"
+    flag "--kill" help="Quit kb-dev, kill its process tree, and stop the watcher"
+    cmd "styles" help="Compile Tailwind v4 renderer CSS" {
+      flag "--watch" help="Rebuild when sources change (dev)"
+    }
+    cmd "gates" help="Run quality and/or policy gates" {
+      flag "--quality" help="Run the full app quality gate"
+      flag "--policy" help="Run embedded policy checks only"
+    }
+    cmd "start" help="Start dev (package.json dev script; includes --watch)" {
+      arg "[level]" help="Log level preset" {
+        choices "verbose" "debug" "trace"
+      }
+      flag "--cef" help="Use CEF renderer (ELECTROBUN_RENDERER=cef)"
+      flag "--open-devtools" help="Print CEF DevTools URLs for kb renderer (Cmd+click; requires --cef)"
+      flag "--force" help="Tear down any running kb-dev and watcher before start"
+    }
+  ''', run = '''
     #!/usr/bin/env bash
     set -euo pipefail
 
-    echo "=== Setup GitHub Repo & CI Secrets ==="
-    echo ""
+    APP_STYLES_INPUT="src/shell/renderer/styles/app.css"
+    APP_STYLES_OUTPUT="src/shell/renderer/styles/generated/app.css"
 
-    echo "=== Step 1: Create GitHub repository ==="
-    gh repo create kodexb --description "A knowledge base" --source=. --push --public
+    app_styles_once() {
+      mkdir -p src/shell/renderer/styles/generated
+      bunx @tailwindcss/cli -i "$APP_STYLES_INPUT" -o "$APP_STYLES_OUTPUT" --minify
+    }
 
-    echo ""
-    echo "=== Step 2: Set GH_TOKEN secret ==="
-    GH_TOKEN="$(gopass show -n --password tokens/sudo.github.com)"
-    echo "$GH_TOKEN" | gh secret set GH_TOKEN
+    app_styles_watch() {
+      mkdir -p src/shell/renderer/styles/generated
+      bunx @tailwindcss/cli -i "$APP_STYLES_INPUT" -o "$APP_STYLES_OUTPUT" --watch
+    }
 
-    echo ""
-    echo "=== Step 3: Set RELEASE_SIGNING_SSH_KEY secret ==="
-    SSH_KEY="$(gopass cat tokens/pvt.release.github.com)"
-    echo "$SSH_KEY" | gh secret set RELEASE_SIGNING_SSH_KEY
+    app_stop_watcher() {
+      if pkill -f "electrobun dev --watch" 2>/dev/null; then
+        echo "app: stopped electrobun dev --watch"
+      else
+        echo "app: no electrobun dev --watch process found"
+      fi
+    }
 
-    echo ""
-    echo "=== Step 4: Set RELEASE_SIGNING_SIGNER_PUB variable ==="
-    PUB_KEY="$(gopass show -n --password tokens/pub.release.github.com)"
-    echo "$PUB_KEY" | gh variable set RELEASE_SIGNING_SIGNER_PUB
+    app_teardown() {
+      echo "app: tearing down kb-dev and watcher..."
+      osascript -e 'quit app "kb-dev"' 2>/dev/null || true
+      sleep 0.5
+      pkill -f 'kb-dev.app' 2>/dev/null || true
+      app_stop_watcher
+      echo "app: teardown complete"
+    }
 
-    echo ""
-    echo "=== Done! ==="
-    echo "Repository 'kodexb' created with CI secrets configured."
+    app_print_devtools_link_when_ready() {
+      echo "app: waiting for CEF DevTools ..."
+      for _ in $(seq 1 120); do
+        if curl -sf http://127.0.0.1:9222/json/version >/dev/null 2>&1; then
+          # #region agent log
+          bun -e "const t=await fetch('http://127.0.0.1:9222/json/list').then(r=>r.json());const fs=require('node:fs');fs.appendFileSync('/Users/roalcantara/Work/bun/kb/.cursor/debug-98e08a.log',JSON.stringify({sessionId:'98e08a',hypothesisId:'A',location:'mise.toml:app_print_devtools',message:'cef_json_list',data:{targets:t},timestamp:Date.now()})+'\n')" 2>/dev/null || true
+          # #endregion
+          echo "app: kb UI is the kb-dev window (Dock). DevTools below inspect the renderer only."
+          echo "app: Cmd+click the kb inspector URL (not the target list) to debug views://shell in Cursor Browser:"
+          inspector_url="$(curl -sf http://127.0.0.1:9222/json/list | bun -e "
+            const targets = await Bun.stdin.json();
+            const kb = targets.find((t) => String(t.url ?? '').includes('views://shell'));
+            if (!kb?.webSocketDebuggerUrl) process.exit(1);
+            const ws = String(kb.webSocketDebuggerUrl).replace(/^ws:\\/\\//, '');
+            console.log('http://127.0.0.1:9222/devtools/inspector.html?ws=' + ws);
+          " 2>/dev/null || true)"
+          if [[ -n "${inspector_url:-}" ]]; then
+            echo "${inspector_url}"
+          else
+            echo "http://localhost:9222"
+            echo "app: open the target titled kb (views://shell/index.html), not the blank inspector chrome"
+          fi
+          echo "app: or use Run and Debug → Attach to kb renderer (CEF) in .vscode/launch.json"
+          return 0
+        fi
+        sleep 1
+      done
+      echo "app: DevTools did not become ready within 120s" >&2
+      return 1
+    }
+
+  case "${usage_cmd:-}" in
+    styles)
+      if [[ "${usage_watch:-false}" == "true" ]]; then
+        app_styles_watch
+      else
+        app_styles_once
+      fi
+      ;;
+    gates)
+      ran=false
+      if [[ "${usage_quality:-false}" == "true" ]]; then
+        ran=true
+        echo "app gates: running quality gate..."
+        bash .agents/skills/app-quality-gate/scripts/gate.sh
+      fi
+      if [[ "${usage_policy:-false}" == "true" ]]; then
+        ran=true
+        echo "app gates: running policy gate..."
+        GATE_EMBEDDED_POLICY=1 bash .agents/skills/app-quality-gate/scripts/gate_policy.sh
+      fi
+      if [[ "$ran" != "true" ]]; then
+        echo "app gates: pass --quality and/or --policy" >&2
+        exit 2
+      fi
+      ;;
+    start)
+      if [[ "${usage_force:-false}" == "true" ]]; then
+        app_teardown
+      fi
+      if [[ "${usage_open_devtools:-false}" == "true" ]]; then
+        if [[ "${usage_cef:-false}" != "true" ]]; then
+          echo "app: --open-devtools requires --cef (DevTools listen on http://localhost:9222)" >&2
+          exit 2
+        fi
+        app_print_devtools_link_when_ready &
+      fi
+      start_env=()
+      start_label="bun run dev"
+      if [[ "${usage_cef:-false}" == "true" ]]; then
+        start_env+=(ELECTROBUN_RENDERER=cef)
+        start_label="ELECTROBUN_RENDERER=cef ${start_label}"
+      fi
+      case "${usage_level:-}" in
+        verbose|debug|trace)
+          start_env+=(LOG_LEVEL="${usage_level}")
+          start_label="LOG_LEVEL=${usage_level} ${start_label}"
+          ;;
+      esac
+      echo "app: starting (${start_label})..."
+      app_styles_once
+      app_styles_watch &
+      tw_pid=$!
+      trap 'kill "$tw_pid" 2>/dev/null || true' EXIT INT TERM
+      if [[ "${usage_cef:-false}" == "true" || -n "${usage_level:-}" ]]; then
+        exec env "${start_env[@]}" bun run dev
+      else
+        exec bun run dev
+      fi
+      ;;
+    "")
+      handled=false
+      if [[ "${usage_stop:-false}" == "true" ]]; then
+        handled=true
+        app_stop_watcher
+      fi
+      if [[ "${usage_check:-false}" == "true" ]]; then
+        handled=true
+        echo "app: process check (kb-dev | electrobun dev):"
+        if pgrep -fl 'kb-dev|electrobun dev' >/dev/null; then
+          pgrep -fl 'kb-dev|electrobun dev'
+        else
+          echo "app: nothing running"
+        fi
+      fi
+      if [[ "${usage_quit:-false}" == "true" ]]; then
+        handled=true
+        echo "app: quitting kb-dev..."
+        osascript -e 'quit app "kb-dev"' || exit 1
+        echo "app: quit sent"
+      fi
+      if [[ "${usage_kill:-false}" == "true" ]]; then
+        handled=true
+        app_teardown
+      fi
+      if [[ "$handled" != "true" ]]; then
+        echo "app: pass a subcommand (start, gates) or a flag (--stop, --check, --quit, --kill)" >&2
+        echo "app: run 'mise run app --help' for usage" >&2
+        exit 2
+      fi
+      ;;
+    *)
+      echo "app: unknown subcommand '${usage_cmd}'" >&2
+      exit 2
+      ;;
+  esac
   ''' }
-"repo:prune" = { description = "Delete all tags, releases and repo from GitHub", run = '''
+"policy" = { description = "Check Mise task policy and usage specs", quiet = true, usage = '''
+    cmd "check" {
+      flag "--format <format>" help="Output format" default="text" {
+        choices "text" "json"
+      }
+      flag "--strict" help="Treat non-info findings as failures"
+    }
+    cmd "report" {
+      flag "--format <format>" help="Output format" default="text" {
+        choices "text" "json"
+      }
+    }
+  ''', run = '''
+    #!/usr/bin/env bun
+
+    const TASK_SEPARATOR = ':'
+    const COMPLEX_SCRIPT_PATTERN = /(&&|\|\||;|\||>|<|\bmkdir\b|\brm\b|\btee\b)/
+    const TABLE_TASK_PATTERN = /^\[tasks\."?([^"\]]+)"?\]/gm
+    const EXPECTED_PUBLIC_TASKS = [
+      ['app', 'Manage Electrobun dev lifecycle and gates'],
+      ['ci', 'Run review, release, and publish CI workflows'],
+      ['docker', 'Build, run, and test the Docker image'],
+      ['graph', 'Install, configure, build, refresh, inspect, and watch the local CRG knowledge graph'],
+      ['lint', 'Run lint, strict lint, fix, report, and graph workflows'],
+      ['perf', 'Run preview-server performance benchmark workflows'],
+      ['policy', 'Check Mise task policy and usage specs'],
+      ['project', 'Manage setup, dependencies, cleanup, icons, repository, and local maintenance'],
+      ['skill', 'Validate, generate, install, and report skill registry artifacts'],
+      ['test', 'Run unit, CI, e2e preview, spec audit, and style checks'],
+    ] as const
+    const EXPECTED_PACKAGE_SCRIPTS = [
+      'start', 'dev', 'dev:cef', 'dev:verbose', 'dev:debug', 'dev:trace', 'dev:kill',
+      'build', 'build:prod', 'build:insecure-local', 'test', 'typecheck',
+      'lint', 'lint:strict', 'lint:fix', 'lint:biome', 'lint:biome:strict',
+      'lint:biome:fix', 'lint:biome:format', 'lint:mise', 'lint:knip',
+      'lint:depcruise', 'lint:jscpd', 'lint:ls', 'lint:hadolint', 'lint:ast-grep',
+      'lint:ast-grep:fix', 'e2e:preview:install', 'e2e:preview', 'e2e:preview:ui',
+    ] as const
+    const SPLIT_FAMILY_PREFIXES: string[] = []
+    const ACTION = process.env.usage_cmd ?? 'check'
+    const FORMAT = process.env.usage_format ?? 'text'
+    const STRICT = process.env.usage_strict === 'true'
+
+    type FindingSeverity = 'error' | 'warn' | 'info'
+    type Finding = { severity: FindingSeverity; code: string; target: string; message: string }
+    type TaskConfig = { description?: string; hide?: boolean; run?: string | string[]; usage?: string }
+    type UsageArg = { name?: string; choices?: { choices?: string[] } }
+    type UsageJson = { cmd?: { args?: UsageArg[]; flags?: Array<{ name?: string }> } }
+    type PolicyContext = { miseText: string; tasks: Record<string, TaskConfig>; scripts: Record<string, string> }
+
+    function die(msg: string, code = 1): never {
+      console.error(msg)
+      process.exit(code)
+    }
+
+    function chdirToGitRoot(): void {
+      const r = Bun.spawnSync(['git', 'rev-parse', '--show-toplevel'])
+      const root = r.stdout.toString().trim()
+      if (!r.success || !root) die('policy: run from inside the app git checkout')
+      process.chdir(root)
+    }
+
+    chdirToGitRoot()
+
+    if (ACTION !== 'check' && ACTION !== 'report') {
+      die(`policy: unknown action ${ACTION} (use check|report)`, 2)
+    }
+
+    function isRecord(value: unknown): value is Record<string, unknown> {
+      return typeof value === 'object' && value !== null
+    }
+
+    async function readContext(): Promise<PolicyContext> {
+      const [miseText, packageConfig] = await Promise.all([
+        Bun.file('mise.toml').text(),
+        Bun.file('package.json').json() as Promise<{ scripts?: Record<string, string> }>,
+      ])
+      const tasksRaw = (Bun.TOML.parse(miseText) as { tasks?: unknown }).tasks
+      const tasks = isRecord(tasksRaw)
+        ? Object.fromEntries(Object.entries(tasksRaw).filter((e): e is [string, TaskConfig] => isRecord(e[1])))
+        : {}
+      return { miseText, tasks, scripts: packageConfig.scripts ?? {} }
+    }
+
+    function runUsage(command: string[], spec: string): { ok: boolean; output: string } {
+      const r = Bun.spawnSync(['usage', ...command], { stdin: new TextEncoder().encode(spec) })
+      return {
+        ok: r.success,
+        output: `${r.stdout.toString()}${r.stderr.toString()}`.trim(),
+      }
+    }
+
+    function parseUsageJson(spec: string): UsageJson | undefined {
+      const result = runUsage(['generate', 'json', '-f', '-'], spec)
+      if (!result.ok) return
+      return JSON.parse(result.output) as UsageJson
+    }
+
+    function checkOneUsageSpec(name: string, usage: string): Finding[] {
+      const spec = `name ${JSON.stringify(name)}\n${usage}`
+      const findings: Finding[] = []
+      const lint = runUsage(['lint', '-W', '-'], spec)
+      if (!lint.ok) findings.push({ severity: 'error', code: 'usage-lint', target: name, message: lint.output })
+      const usageJson = parseUsageJson(spec)
+      if (usageJson === undefined) {
+        findings.push({ severity: 'error', code: 'usage-json', target: name, message: 'Usage JSON generation failed.' })
+        return findings
+      }
+      return findings
+    }
+
+    function checkUsageSpecs(tasks: Record<string, TaskConfig>): Finding[] {
+      return Object.entries(tasks).flatMap(([name, task]) =>
+        typeof task.usage === 'string' ? checkOneUsageSpec(name, task.usage) : [],
+      )
+    }
+
+    function checkTableStyleTasks(miseText: string, tasks: Record<string, TaskConfig>): Finding[] {
+      return [...miseText.matchAll(TABLE_TASK_PATTERN)].flatMap(match => {
+        const name = match[1]
+        if (!name) return []
+        const task = tasks[name]
+        if (!task || task.run || task.usage) return []
+        return [
+          {
+            severity: 'warn' as const,
+            code: 'table-task',
+            target: name,
+            message: 'Prefer an inline task object under [tasks].',
+          },
+        ]
+      })
+    }
+
+    function checkDeprecatedTasks(tasks: Record<string, TaskConfig>): Finding[] {
+      return Object.entries(tasks)
+        .filter(([, task]) => task.description?.includes('DEPRECATED'))
+        .map(([name]) => ({
+          severity: 'warn' as const,
+          code: 'deprecated-task',
+          target: name,
+          message: 'Remove deprecated task names before enforcing policy.',
+        }))
+    }
+
+    function checkSplitFamilies(tasks: Record<string, TaskConfig>): Finding[] {
+      const names = Object.keys(tasks)
+      return SPLIT_FAMILY_PREFIXES.flatMap(prefix => {
+        const members = names.filter(name => name.startsWith(`${prefix}${TASK_SEPARATOR}`))
+        if (members.length === 0) return []
+        return [
+          {
+            severity: 'info' as const,
+            code: 'split-family',
+            target: prefix,
+            message: `Evaluate merging related tasks: ${members.sort().join(', ')}.`,
+          },
+        ]
+      })
+    }
+
+    function checkPackageScripts(scripts: Record<string, string>): Finding[] {
+      const findings: Finding[] = []
+      const actual = Object.keys(scripts)
+      if (JSON.stringify(actual) !== JSON.stringify(EXPECTED_PACKAGE_SCRIPTS)) {
+        findings.push({
+          severity: 'error',
+          code: 'package-script-surface',
+          target: 'package.json',
+          message: `Expected package scripts ${EXPECTED_PACKAGE_SCRIPTS.join(', ')}; got ${actual.join(', ')}.`,
+        })
+      }
+      findings.push(...Object.entries(scripts)
+        .filter(([, command]) => COMPLEX_SCRIPT_PATTERN.test(command) && !command.startsWith('mise run '))
+        .map(([name, command]) => ({
+          severity: 'info' as const,
+          code: 'complex-package-script',
+          target: name,
+          message: `Evaluate moving this script behind Mise: ${command}`,
+        })))
+      return findings
+    }
+
+    function checkPublicTaskSurface(tasks: Record<string, TaskConfig>): Finding[] {
+      const actual = Object.entries(tasks)
+        .filter(([, task]) => task.hide !== true)
+        .map(([name, task]) => [name, task.description ?? ''] as const)
+        .sort(([a], [b]) => a.localeCompare(b))
+      if (JSON.stringify(actual) === JSON.stringify(EXPECTED_PUBLIC_TASKS)) return []
+      return [{
+        severity: 'error' as const,
+        code: 'public-task-surface',
+        target: 'mise.toml',
+        message: `Expected public tasks ${EXPECTED_PUBLIC_TASKS.map(([name]) => name).join(', ')}; got ${actual.map(([name]) => name).join(', ')}.`,
+      }]
+    }
+
+    function checkMissingPackageScriptReferences(ctx: PolicyContext): Finding[] {
+      const scriptNames = new Set(Object.keys(ctx.scripts))
+      const refs = [...ctx.miseText.matchAll(/\bbun run ([A-Za-z0-9:_-]+)/g)]
+        .map(match => match[1])
+        .filter((name): name is string => name !== undefined)
+      return [...new Set(refs)]
+        .filter(name => !scriptNames.has(name))
+        .map(name => ({
+          severity: 'error' as const,
+          code: 'missing-package-script-reference',
+          target: name,
+          message: `mise.toml references removed package script '${name}'.`,
+        }))
+    }
+
+    function checkUsageActionReferences(miseText: string): Finding[] {
+      const legacyEnv = 'usage_' + 'action'
+      const legacyPattern = new RegExp(`\\bprocess\\.env\\.${legacyEnv}\\b|\\$\\{${legacyEnv}\\b`)
+      return legacyPattern.test(miseText)
+        ? [{
+            severity: 'error' as const,
+            code: 'usage-action-reference',
+            target: 'mise.toml',
+            message: 'Use usage_cmd for task command dispatch.',
+          }]
+        : []
+    }
+
+    async function collectFindings(): Promise<Finding[]> {
+      const ctx = await readContext()
+      return [
+        ...checkUsageSpecs(ctx.tasks),
+        ...checkPublicTaskSurface(ctx.tasks),
+        ...checkTableStyleTasks(ctx.miseText, ctx.tasks),
+        ...checkDeprecatedTasks(ctx.tasks),
+        ...checkSplitFamilies(ctx.tasks),
+        ...checkPackageScripts(ctx.scripts),
+        ...checkMissingPackageScriptReferences(ctx),
+        ...checkUsageActionReferences(ctx.miseText),
+      ]
+    }
+
+    function printText(findings: Finding[]) {
+      if (findings.length === 0) {
+        console.log('policy check: no findings')
+        return
+      }
+      console.log(`policy check: ${findings.length} finding(s)`)
+      for (const f of findings) {
+        console.log(`[${f.severity}] ${f.code} ${f.target}: ${f.message}`)
+      }
+    }
+
+    try {
+      const findings = await collectFindings()
+      if (FORMAT === 'json') {
+        console.log(JSON.stringify({ findings }, null, 2))
+      } else {
+        printText(findings)
+      }
+      if (STRICT && findings.length > 0) process.exit(1)
+    } catch (error) {
+      die(error instanceof Error ? error.message : String(error), -1)
+    }
+
+  ''' }
+"skill" = { description = "Validate, generate, install, and report skill registry artifacts", usage = '''
+cmd "validate" {}
+cmd "sync" {}
+cmd "install" {}
+cmd "all" {}
+cmd "report" {
+  flag "--json" help="Print machine-readable report output"
+}
+flag "--dry-run" help="Validate intended writes without changing files"
+''', run = '''
+#!/usr/bin/env bun
+import { existsSync, readFileSync, writeFileSync } from "node:fs"
+import { join } from "node:path"
+import { pathToFileURL } from "node:url"
+
+const ACTION = process.env.usage_cmd || ""
+const JSON_OUT = process.env.usage_json === "true"
+const DRY_RUN = process.env.usage_dry_run === "true"
+const VALID_ACTIONS = ["validate", "sync", "install", "all", "report"]
+
+if (!VALID_ACTIONS.includes(ACTION)) {
+  console.error("skill: action is required: validate, sync, install, all, or report")
+  process.exit(1)
+}
+
+function gitRoot() {
+  const r = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"])
+  if (r.exitCode !== 0) { console.error("skill: run from inside the app git checkout"); process.exit(1) }
+  return new TextDecoder().decode(r.stdout).trim()
+}
+
+function isRecord(v) { return v !== null && typeof v === "object" && !Array.isArray(v) }
+
+function loadRegistry() {
+  const root = gitRoot()
+  const url = pathToFileURL(join(root, "assets/guides/SKILLS.yml")).href
+  return import(url, { with: { type: "yaml" } }).then(m => m.default)
+}
+
+function loadSkillLock(root) {
+  const fp = join(root, "skills-lock.json")
+  if (!existsSync(fp)) return new Set()
+  const lock = JSON.parse(readFileSync(fp, "utf8"))
+  return new Set(Object.keys(lock.skills ?? {}))
+}
+
+function loadActualProjectSkills(root) {
+  const child = Bun.spawnSync(["skills", "list", "--json"], { cwd: root })
+  if (child.exitCode !== 0) {
+    console.error("skill validate: skills CLI unavailable — this registry requires the Skills CLI")
+    return null
+  }
+  try {
+    const list = JSON.parse(new TextDecoder().decode(child.stdout))
+    return new Set(
+      list
+        .filter(s => s.scope === "project" && (s.path || "").includes(".agents/skills/"))
+        .map(s => (s.path || "").split("/").pop() || "")
+        .filter(Boolean)
+    )
+  } catch {
+    return null
+  }
+}
+
+function diffSets(actual, expected) {
+  const missing = [...expected].filter(s => !actual.has(s))
+  const extra = [...actual].filter(s => !expected.has(s))
+  return { missing, extra }
+}
+
+let validateOk = false
+let drift = null
+
+const ALLOWED_LOCATIONS = new Set(["owned", "project", "global"])
+const ALLOWED_TYPES = new Set(["required", "routed", "optional", "reference", "blocked"])
+const FORBIDDEN_SKILL_FIELDS = ["source", "install", "link", "decision", "load"]
+const REDUNDANT_NOTES = new Set(["owned", "project", "global only"])
+
+let ok = true
+function check(cond, msg) { if (!cond) { console.error("skill validate: " + msg); ok = false } }
+
+async function validate() {
+  ok = true
+  drift = null
+  const root = gitRoot()
+  const registry = await loadRegistry()
+  const lockedSkills = loadSkillLock(root)
+  const registryProjectSkills = new Set()
+
+  check(registry?.schema_version === 3, "schema_version must be 3")
+  check(isRecord(registry?.skills), "skills must be a mapping")
+  check(!Object.hasOwn(registry ?? {}, "electrobun_routing"), "top-level electrobun_routing must not exist")
+
+  const skills = registry.skills ?? {}
+  for (const [name, skill] of Object.entries(skills)) {
+    check(isRecord(skill), name + " must be a mapping")
+    if (!isRecord(skill)) continue
+
+    check(ALLOWED_LOCATIONS.has(skill.location), name + ".location invalid: " + skill.location)
+    check(typeof skill.rationale === "string" && skill.rationale.trim() !== "", name + ".rationale required")
+    check(isRecord(skill.policy), name + ".policy must be a mapping")
+    if (!isRecord(skill.policy)) continue
+    check(ALLOWED_TYPES.has(skill.policy.type), name + ".policy.type invalid: " + skill.policy.type)
+    if (skill.location === "project") {
+      registryProjectSkills.add(name)
+      check(lockedSkills.has(name), name + ": location project requires an entry in skills-lock.json")
+    } else {
+      check(!lockedSkills.has(name), name + ": only location project entries may appear in skills-lock.json")
+    }
+
+    for (const f of FORBIDDEN_SKILL_FIELDS) {
+      check(!Object.hasOwn(skill, f), name + " must not have forbidden field: " + f)
+    }
+
+    const t = skill.policy.type
+    const hasUsage = isRecord(skill.policy.usage)
+    const hasRouting = isRecord(skill.policy.routing)
+    const hasSurfaces = isRecord(skill.policy.surfaces)
+    const hasReason = typeof skill.policy.reason === "string" && skill.policy.reason.trim() !== ""
+    const hasRedirect = Array.isArray(skill.policy.redirect_to)
+
+    if (t === "required") {
+      check(hasUsage, name + ": required must have usage")
+      check(!hasRouting, name + ": required must not have routing")
+      check(!hasSurfaces, name + ": required must not have surfaces")
+      check(!hasReason, name + ": required must not have reason")
+      check(!hasRedirect, name + ": required must not have redirect_to")
+    } else if (t === "routed") {
+      check(hasUsage, name + ": routed must have usage")
+      check(hasRouting && Object.keys(skill.policy.routing).length > 0, name + ": routed must have non-empty routing")
+      check(!hasSurfaces, name + ": routed must not have surfaces")
+      check(!hasReason, name + ": routed must not have reason")
+      check(!hasRedirect, name + ": routed must not have redirect_to")
+    } else if (t === "optional") {
+      check(hasUsage, name + ": optional must have usage")
+      check(!hasRouting, name + ": optional must not have routing")
+      check(!hasReason, name + ": optional must not have reason")
+      check(!hasRedirect, name + ": optional must not have redirect_to")
+    } else if (t === "reference") {
+      check(hasUsage, name + ": reference must have usage")
+      check(!hasRouting, name + ": reference must not have routing")
+      check(!hasSurfaces, name + ": reference must not have surfaces")
+      check(!hasReason, name + ": reference must not have reason")
+      check(!hasRedirect, name + ": reference must not have redirect_to")
+    } else if (t === "blocked") {
+      check(hasReason, name + ": blocked must have reason")
+      check(!hasUsage, name + ": blocked must not have usage")
+      check(!hasRouting, name + ": blocked must not have routing")
+      check(!hasSurfaces, name + ": blocked must not have surfaces")
+      check(skill.location === "global", name + ": blocked requires location: global")
+    }
+
+    if (hasUsage) {
+      check(typeof skill.policy.usage.summary === "string" && skill.policy.usage.summary.trim() !== "", name + ".usage.summary required")
+      const load = skill.policy.usage.when?.load
+      check(Array.isArray(load) && load.length > 0, name + ".usage.when.load must be a non-empty list")
+      if (Array.isArray(load)) {
+        for (const item of load) check(typeof item === "string" && item.trim() !== "", name + ".usage.when.load entries must be non-empty strings")
+      }
+      const avoid = skill.policy.usage.when?.avoid
+      check(Array.isArray(avoid), name + ".usage.when.avoid must be a list")
+    }
+
+    if (hasRouting) {
+      for (const [surface, routes] of Object.entries(skill.policy.routing)) {
+        check(Array.isArray(routes), name + ".routing." + surface + " must be a list")
+        if (!Array.isArray(routes)) continue
+        for (const route of routes) {
+          check(isRecord(route), name + ".routing." + surface + " entries must be mappings")
+          if (!isRecord(route)) continue
+          check(typeof route.order === "number", name + ".routing." + surface + ".order must be numeric")
+          check(Array.isArray(route.triggers) && route.triggers.length > 0, name + ".routing." + surface + ".triggers must be non-empty list")
+          if (Array.isArray(route.triggers)) {
+            for (const t of route.triggers) check(typeof t === "string" && t.trim() !== "", name + ".routing." + surface + ".triggers entries must be non-empty strings")
+          }
+          if (Object.hasOwn(route, "note")) {
+            check(typeof route.note === "string" && route.note.trim() !== "", name + ".routing." + surface + ".note must be non-empty string when present")
+            check(!REDUNDANT_NOTES.has(route.note?.trim()), name + ".routing." + surface + ".note must not be a redundant status note: " + route.note)
+          }
+        }
+      }
+    }
+  }
+  for (const lockedName of lockedSkills) {
+    check(registryProjectSkills.has(lockedName), lockedName + ": skills-lock.json entry requires a matching location project registry entry")
+  }
+
+  // Actual project installs check via Skills CLI
+  const actualSkills = loadActualProjectSkills(root)
+  if (actualSkills === null) {
+    check(false, "skills CLI unavailable — cannot validate actual project installs")
+  } else {
+    const expectedSkills = new Set()
+    for (const [name, skill] of Object.entries(skills)) {
+      if (skill.location === "owned" || skill.location === "project") expectedSkills.add(name)
+    }
+    const { missing, extra } = diffSets(actualSkills, expectedSkills)
+    for (const m of missing) check(false, m + ": expected project skill not installed — run mise run skill install")
+    for (const e of extra) check(false, e + ": installed project skill not in registry as owned or project")
+    drift = { actual_skills: [...actualSkills].sort(), expected_skills: [...expectedSkills].sort(), missing, extra }
+  }
+
+  validateOk = ok
+  if (!ok && !JSON_OUT) return // validation-only exits with failure below; report collects drift
+}
+
+// ── Replace Managed Block ─────────────────────────────────────────────
+
+function replaceManaged(root, relativePath, marker, content) {
+  const fp = join(root, relativePath)
+  const start = "<!-- skills:" + marker + ":start -->"
+  const end = "<!-- skills:" + marker + ":end -->"
+  const orig = readFileSync(fp, "utf8")
+  const si = orig.indexOf(start), ei = orig.indexOf(end)
+  if (si === -1 || ei === -1 || ei < si) { console.error("skill sync: missing markers for " + marker + " in " + relativePath); process.exit(1) }
+  const next = orig.slice(0, si + start.length) + "\n" + content.trimEnd() + "\n" + orig.slice(ei)
+  if (DRY_RUN) {
+    const status = next === orig ? "up to date" : "would update"
+    console.log("skill sync: dry-run " + status + " " + relativePath + ":" + marker)
+    return
+  }
+  writeFileSync(fp, next)
+}
+
+function statusNote(location) {
+  if (location === "project") return "project"
+  if (location === "owned") return "owned"
+  return "global only"
+}
+
+// ── Sync ──────────────────────────────────────────────────────────────
+
+async function sync() {
+  await validate()
+  const registry = await loadRegistry()
+  const root = gitRoot()
+  const skills = registry.skills ?? {}
+
+  // Optional companions
+  const optionals = Object.entries(skills)
+    .filter(([, s]) => s.policy.type === "optional" && isRecord(s.policy.surfaces))
+    .map(([name, s]) => ({ name, ...s }))
+
+  const claudeList = optionals
+    .map(s => "- `" + s.name + "` - " + s.policy.surfaces.claude_optional)
+    .join("\n")
+  replaceManaged(root, "CLAUDE.md", "optional-companions", claudeList)
+
+  const ctxTable = [
+    "| Skill | When |",
+    "| --- | --- |",
+    ...optionals.map(s => "| **" + s.name + "** | " + s.policy.surfaces.app_context_optional + " |"),
+  ].join("\n")
+  replaceManaged(root, ".agents/skills/app-context/SKILL.md", "optional-companions", ctxTable)
+
+  // Electrobun routing
+  const ebRoutes = []
+  for (const [name, skill] of Object.entries(skills)) {
+    const eb = isRecord(skill.policy?.routing) ? skill.policy.routing.electrobun : undefined
+    if (!Array.isArray(eb)) continue
+    for (const route of eb) ebRoutes.push({ name, ...route })
+  }
+  ebRoutes.sort((a, b) => a.order - b.order)
+
+  const ebTable = [
+    "| When the task involves... | Read this skill first | Note |",
+    "| --- | --- | --- |",
+    ...ebRoutes.map(r => {
+      const skill = skills[r.name]
+      let note = statusNote(skill.location)
+      if (r.note) note += " - " + r.note
+      const triggers = (r.triggers ?? []).join(", ")
+      return "| " + triggers + " | `" + r.name + "` | " + note + " |"
+    }),
+  ].join("\n")
+  replaceManaged(root, ".cursor/electrobun-skill-routing.md", "electrobun-routing", ebTable)
+}
+
+// ── Install ────────────────────────────────────────────────────────────
+
+async function install() {
+  await validate()
+  if (DRY_RUN) {
+    console.log("skill install: dry-run would run skills experimental_install")
+    return
+  }
+  const child = Bun.spawnSync(["skills", "experimental_install"], {
+    cwd: gitRoot(),
+    stdout: "inherit",
+    stderr: "inherit",
+  })
+  if (child.exitCode !== 0) process.exit(child.exitCode ?? 1)
+}
+
+// ── Report ─────────────────────────────────────────────────────────────
+
+async function report() {
+  await validate()
+  const registry = await loadRegistry()
+  const skills = registry.skills ?? {}
+  const byLoc = {}, byType = {}
+  let ebTotal = 0
+  for (const [, s] of Object.entries(skills)) {
+    const loc = s.location || "?"
+    const t = s.policy?.type || "?"
+    byLoc[loc] = (byLoc[loc] || 0) + 1
+    byType[t] = (byType[t] || 0) + 1
+    const eb = isRecord(s.policy?.routing) ? s.policy.routing.electrobun : undefined
+    if (Array.isArray(eb)) ebTotal += eb.length
+  }
+  const data = {
+    schema_version: registry.schema_version,
+    total_skills: Object.keys(skills).length,
+    by_location: byLoc,
+    by_policy_type: byType,
+    electrobun_routes: ebTotal,
+    valid: validateOk,
+    drift: drift ?? {},
+  }
+  if (JSON_OUT) {
+    console.log(JSON.stringify(data, null, 2))
+  } else {
+    console.log("schema_version:", data.schema_version)
+    console.log("total_skills:", data.total_skills)
+    console.log("by_location:", JSON.stringify(data.by_location))
+    console.log("by_policy_type:", JSON.stringify(data.by_policy_type))
+    console.log("electrobun_routes:", data.electrobun_routes)
+    console.log("valid:", data.valid)
+    if (drift) {
+      if (drift.missing.length) console.log("missing:", JSON.stringify(drift.missing))
+      if (drift.extra.length) console.log("extra:", JSON.stringify(drift.extra))
+      else console.log("drift: none")
+    }
+  }
+}
+
+// ── Dispatch ───────────────────────────────────────────────────────────
+
+if (ACTION === "validate") { await validate(); if (!validateOk) process.exit(1) }
+else if (ACTION === "sync") { await sync(); if (!validateOk) process.exit(1) }
+else if (ACTION === "install") { await install(); if (!validateOk) process.exit(1) }
+else if (ACTION === "all") { await sync(); await install() }
+else if (ACTION === "report") { await report(); if (!validateOk) process.exit(1) }
+
+if (!ok) process.exit(1)
+''' }
+# mise run docker build
+# mise run docker build --nocache --platform amd64
+# mise run docker build --nocache --tag next
+# mise run docker run
+# mise run docker run --tag local
+# mise run docker run --xcompile all --prod
+# mise run docker test
+# mise run docker test --platform amd64
+# mise run docker test --skip-build           # reuse the current local image
+"docker" = { description = "Build, run, and test the Docker image", usage = '''
+    cmd "build" {
+        flag "--nocache" help="Disable build cache"
+        flag "--tag <tag>" help="Image tag suffix" default="latest"
+        flag "--image <image>" help="Image name (without tag)" env="REGISTRY_IMAGE" default="roalcantara/kb"
+        flag "--platform <platform>" {
+            help "Target platform"
+            choices "amd64" "arm64" "amd64v2"
+            default "arm64"
+        }
+    }
+    cmd "run" {
+        flag "--tag <tag>" help="Image tag (use with built image)" default="latest"
+        flag "--image <image>" help="Image name (without tag)" env="REGISTRY_IMAGE" default="roalcantara/kb"
+        flag "--xcompile <target>" {
+            help "Cross-compile dist/kb in Ubuntu (clean bun install) instead of an interactive shell"
+            choices "all" "bun-linux-x64-modern" "bun-linux-arm64" "bun-darwin-arm64"
+        }
+        flag "--prod" help="With --xcompile: bun install --production (omit devDependencies)"
+    }
+    cmd "test" {
+        flag "--tag <tag>" help="Image tag" default="latest"
+        flag "--image <image>" help="Image name (without tag)" env="REGISTRY_IMAGE" default="roalcantara/kb"
+        flag "--config <config>" help="CST config path" env="CST_CONFIG" default="tools/container-structure-test.yml"
+        flag "--platform <platform>" {
+            help "Target platform (forwarded to docker build)"
+            choices "amd64" "arm64" "amd64v2"
+            default "arm64"
+        }
+        flag "--nocache" help="Disable build cache (forwarded to docker build)"
+        flag "--skip-build" help="Skip docker build and test the existing image"
+        flag "--junit <path>" help="Write CST results as JUnit XML to <path> (for CI reporting)"
+    }
+  ''', run = '''
     #!/usr/bin/env bash
     set -euo pipefail
-
-    echo "=== Prune GitHub Repository ==="
-    repo="kodexb"
-    echo "Target: $repo"
-    echo ""
-
-    echo "=== Step 1: Delete all remote tags ==="
-    for tag in $(git ls-remote --tags origin | cut -d$'\t' -f2 | grep -v '^{$'); do
-        tag_name="${tag#refs/tags/}"
-        echo "Deleting tag: $tag_name"
-        gh repo delete "$repo" --yes 2>/dev/null || true
-    done || true
-    gh api repos/"$repo"/tags --method DELETE 2>/dev/null || true
-
-    echo ""
-    echo "=== Step 2: Delete all releases ==="
-    for release in $(gh release list --repo "$repo" --json name -q '.[].name' 2>/dev/null); do
-        echo "Deleting release: $release"
-        gh release delete "$release" --yes --repo "$repo" 2>/dev/null || true
-    done || true
-
-    echo ""
-    echo "=== Step 3: Delete repository ==="
-    echo "Deleting repository: $repo"
-    gh repo delete "$repo" --yes
-    echo ""
-    echo "Repository '$repo' deleted."
+    CMD="${usage_cmd:-}"
+    case "$CMD" in
+      build)
+        case "$usage_platform" in
+          amd64)    PLATFORM_VALUE="linux/amd64" ;;
+          arm64)    PLATFORM_VALUE="linux/arm64" ;;
+          amd64v2)  PLATFORM_VALUE="linux/amd64/v2" ;;
+        esac
+        DOCKER_CMD=(DOCKER_BUILDKIT=1 docker build --build-arg=BUILDKIT_INLINE_CACHE=1 --platform="$PLATFORM_VALUE" --file="Dockerfile")
+        [ "${usage_nocache:-false}" = "true" ] && DOCKER_CMD+=(--no-cache)
+        DOCKER_CMD+=(--tag "$usage_image:$usage_tag" .)
+        echo "  ==> ${DOCKER_CMD[*]}"
+        eval "${DOCKER_CMD[*]}"
+        ;;
+      run)
+        if [ -n "${usage_xcompile:-}" ]; then
+          target="${usage_xcompile:?}"
+          case "$target" in
+            all) targets=(bun-linux-x64-modern bun-linux-arm64 bun-darwin-arm64) ;;
+            bun-linux-x64-modern|bun-linux-arm64|bun-darwin-arm64) targets=("$target") ;;
+            *) echo "unknown --xcompile: $target" >&2; exit 1 ;;
+          esac
+          export XCOMPILE_TARGETS="${targets[*]}"
+          export XCOMPILE_PROD="${usage_prod:-false}"
+          echo "  ==> docker xcompile (Ubuntu 24.04): $XCOMPILE_TARGETS prod=${XCOMPILE_PROD}"
+          docker run --rm \
+            -e XCOMPILE_TARGETS \
+            -e XCOMPILE_PROD \
+            -v "$PWD:/repo" \
+            -w /repo \
+            ubuntu:24.04 \
+            bash -lc 'set -euo pipefail
+              apt-get update -y >/dev/null
+              apt-get install -y curl unzip ca-certificates rsync >/dev/null
+              curl -fsSL https://bun.sh/install | bash >/dev/null
+              export PATH="/root/.bun/bin:$PATH"
+              bun --version
+              work=/tmp/kb-work
+              rm -rf "$work"
+              mkdir -p "$work"
+              rsync -a /repo/ "$work/" --exclude node_modules --exclude dist --exclude .git
+              cd "$work"
+              if [ "${XCOMPILE_PROD:-false}" = "true" ]; then
+                bun install --frozen-lockfile --production
+              else
+                bun install --frozen-lockfile
+              fi
+              mkdir -p /repo/dist
+              for t in $XCOMPILE_TARGETS; do
+                echo "=== build:prod --target=$t ==="
+                slug="${t#bun-}"
+                out="/tmp/kb.$slug"
+                bun build apps/kb/src/index.ts --minify --sourcemap --no-compile-autoload-dotenv --no-compile-autoload-bunfig --compile --outfile "$out" --target="$t"
+                cp "$out" "/repo/dist/kb-$slug"
+                rm -f "$out"
+              done'
+          exit 0
+        fi
+        echo "  ==> docker run -it --rm $usage_image:${usage_tag}"
+        docker run -it --rm "$usage_image:$usage_tag"
+        ;;
+      test)
+        image="${usage_image}:${usage_tag}"
+        if [ "${usage_skip_build:-false}" != "true" ]; then
+          BUILD_CMD=(mise run docker build --tag "$usage_tag" --image "$usage_image" --platform "$usage_platform")
+          [ "${usage_nocache:-false}" = "true" ] && BUILD_CMD+=(--nocache)
+          echo "  ==> ${BUILD_CMD[*]}"
+          "${BUILD_CMD[@]}"
+        fi
+        case "$usage_platform" in
+          amd64)    CST_PLATFORM="linux/amd64" ;;
+          arm64)    CST_PLATFORM="linux/arm64" ;;
+          amd64v2)  CST_PLATFORM="linux/amd64/v2" ;;
+        esac
+        CST_CMD=(mise exec -- container-structure-test test
+          --image "$image"
+          --config "$usage_config"
+          --platform "$CST_PLATFORM")
+        if [ -n "${usage_junit:-}" ]; then
+          mkdir -p "$(dirname "$usage_junit")"
+          CST_CMD+=(--output junit --test-report "$usage_junit")
+        fi
+        echo "  ==> ${CST_CMD[*]}"
+        "${CST_CMD[@]}"
+        ;;
+      *) echo "docker: unknown action '${CMD}' (expected one of: build, run, test)"; exit 2 ;;
+    esac
   ''' }

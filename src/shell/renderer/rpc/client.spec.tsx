@@ -1,52 +1,33 @@
-import '@happy-dom/global-registrator'
-
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
+import type { RpcImportResult, RpcSyncProgressPayload } from '@shared/rpc'
+import { factoryFor } from '@testing/factories/factories.builder'
+import {
+  getElectrobunMessageHandler,
+  type RpcCallParams,
+  setRpcCallHandler
+} from '@testing/helpers/testing.electrobun_view.mock'
 
-const rpcCallMock = mock<(params: unknown) => Promise<{ status: number; body: string }>>()
-
-const messageHandlers: Record<string, (payload: unknown) => void> = {}
-
-const ElectroviewMock = {
-  // biome-ignore lint/style/useNamingConvention: mirrors Electrobun API
-  defineRPC(config: { handlers?: { messages?: Record<string, (payload: unknown) => void> } }) {
-    const messages = config.handlers?.messages ?? {}
-    for (const [name, handler] of Object.entries(messages)) {
-      messageHandlers[name] = handler
-    }
-    return {
-      request: { rpcCall: rpcCallMock },
-      send: {},
-      setTransport: () => undefined
-    }
-  }
-}
-
-mock.module('electrobun/view', () => ({
-  Electroview: class {
-    // biome-ignore lint/style/useNamingConvention: mirrors Electrobun API
-    static defineRPC = ElectroviewMock.defineRPC
-    rpc: unknown
-    constructor(config: { rpc: unknown }) {
-      this.rpc = config.rpc
-    }
-  }
-}))
+const rpcCallMock = mock<(params: RpcCallParams) => Promise<{ status: number; body: string }>>()
 
 const {
   fetchPreviewImage,
   getEntry,
   getListStats,
   listEntries,
+  listMatchCount,
+  recordEntryVisit,
   openExternal,
   openInEditor,
   pasteInTerminal,
   resizeWindow,
   setSyncMessageHandlers,
+  onAfterSyncComplete,
   syncRpc
 } = await import('./client')
 
 beforeEach(() => {
   rpcCallMock.mockReset()
+  setRpcCallHandler(params => rpcCallMock(params))
 })
 
 afterEach(() => {
@@ -66,7 +47,13 @@ describe('Eden Treaty client', () => {
   describe('.listEntries', () => {
     describe('when main returns rows', () => {
       it('forwards body to /api/list and returns the rows', async () => {
-        rpcCallMock.mockImplementation(() => okResponse([{ id: 1, type: 'bookmark', key: 'k' }]))
+        rpcCallMock.mockImplementation(() =>
+          okResponse([
+            factoryFor('bookmark', {
+              overrides: { id: 1, key: 'k', source: 's', desc: 'd', tags: [], doc: '', createdAt: 0, updatedAt: 0 }
+            })
+          ])
+        )
 
         const rows = await listEntries({ limit: 5 })
 
@@ -87,8 +74,34 @@ describe('Eden Treaty client', () => {
     })
   })
 
+  describe('.listMatchCount', () => {
+    it('forwards body to /api/listMatchCount and returns the number', async () => {
+      rpcCallMock.mockImplementation(() => okResponse(42))
+
+      const n = await listMatchCount({ query: 'brew' })
+
+      expect(n).toBe(42)
+      const call = rpcCallMock.mock.calls[0]?.[0] as { path: string; body: string }
+      expect(call.path).toBe('/api/listMatchCount')
+      expect(JSON.parse(call.body)).toEqual({ query: 'brew' })
+    })
+  })
+
+  describe('.recordEntryVisit', () => {
+    it('forwards body to /api/recordEntryVisit', async () => {
+      rpcCallMock.mockImplementation(() => okResponse({ ok: true }))
+
+      const result = await recordEntryVisit(7)
+
+      expect(result).toEqual({ ok: true })
+      const call = rpcCallMock.mock.calls[0]?.[0] as { path: string; body: string }
+      expect(call.path).toBe('/api/recordEntryVisit')
+      expect(JSON.parse(call.body)).toEqual({ id: 7 })
+    })
+  })
+
   describe('.getListStats', () => {
-    it('posts an empty body to /api/getListStats', async () => {
+    it('posts an empty body to /api/getListStats by default', async () => {
       rpcCallMock.mockImplementation(() => okResponse({ total: 3 }))
 
       const stats = await getListStats()
@@ -97,6 +110,16 @@ describe('Eden Treaty client', () => {
       const call = rpcCallMock.mock.calls[0]?.[0] as { path: string; body: string }
       expect(call.path).toBe('/api/getListStats')
       expect(JSON.parse(call.body)).toEqual({})
+    })
+
+    it('forwards filter context in the POST body when provided', async () => {
+      rpcCallMock.mockImplementation(() => okResponse({ total: 1 }))
+
+      await getListStats({ types: ['cheat'], tags: ['fabric'] })
+
+      const call = rpcCallMock.mock.calls[0]?.[0] as { path: string; body: string }
+      expect(call.path).toBe('/api/getListStats')
+      expect(JSON.parse(call.body)).toEqual({ types: ['cheat'], tags: ['fabric'] })
     })
   })
 
@@ -115,7 +138,9 @@ describe('Eden Treaty client', () => {
   describe('.syncRpc', () => {
     describe('when sourcesDir is omitted', () => {
       it('posts an empty body', async () => {
-        rpcCallMock.mockImplementation(() => okResponse({ filesProcessed: 0, inserted: 0, updated: 0, errors: [] }))
+        rpcCallMock.mockImplementation(() =>
+          okResponse({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [] })
+        )
         await syncRpc()
         const call = rpcCallMock.mock.calls[0]?.[0] as { body: string }
         expect(JSON.parse(call.body)).toEqual({})
@@ -124,11 +149,26 @@ describe('Eden Treaty client', () => {
 
     describe('when sourcesDir is provided', () => {
       it('forwards it in the body', async () => {
-        rpcCallMock.mockImplementation(() => okResponse({ filesProcessed: 0, inserted: 0, updated: 0, errors: [] }))
+        rpcCallMock.mockImplementation(() =>
+          okResponse({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [] })
+        )
         await syncRpc('/abs/path')
         const call = rpcCallMock.mock.calls[0]?.[0] as { body: string }
         expect(JSON.parse(call.body)).toEqual({ sourcesDir: '/abs/path' })
       })
+    })
+
+    it('notifies after-sync listeners when the RPC resolves', async () => {
+      const results: RpcImportResult[] = []
+      const unsub = onAfterSyncComplete(r => results.push(r))
+      rpcCallMock.mockImplementation(() =>
+        okResponse({ filesProcessed: 2, inserted: 1, updated: 1, errors: [], warnings: ['hard collision: cmd+space'] })
+      )
+      await syncRpc()
+      unsub()
+      expect(results).toEqual([
+        { filesProcessed: 2, inserted: 1, updated: 1, errors: [], warnings: ['hard collision: cmd+space'] }
+      ])
     })
   })
 
@@ -160,17 +200,24 @@ describe('Eden Treaty client', () => {
 
   describe('.setSyncMessageHandlers', () => {
     it('registers progress and completion callbacks', () => {
-      const progress: Array<{ processed: number; total: number }> = []
+      const progress: RpcSyncProgressPayload[] = []
       const completes: unknown[] = []
       setSyncMessageHandlers({
         onProgress: p => progress.push(p),
         onComplete: r => completes.push(r)
       })
 
-      messageHandlers.syncProgress?.({ processed: 1, total: 10 })
-      messageHandlers.syncComplete?.({ filesProcessed: 1, inserted: 1, updated: 0, errors: [] })
+      const recentFile = { path: '/tmp/a.yml', label: 'a.yml', ok: true, inserted: 2, updated: 0 }
+      getElectrobunMessageHandler('syncProgress')?.({ processed: 1, total: 10, recentFile })
+      getElectrobunMessageHandler('syncComplete')?.({
+        filesProcessed: 1,
+        inserted: 1,
+        updated: 0,
+        errors: [],
+        warnings: []
+      })
 
-      expect(progress).toEqual([{ processed: 1, total: 10 }])
+      expect(progress).toEqual([{ processed: 1, total: 10, recentFile }])
       expect(completes).toHaveLength(1)
     })
   })

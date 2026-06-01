@@ -2,7 +2,7 @@ import type { RpcKnowledge } from '@shared/rpc'
 import type { KeyboardEvent as ReactKeyboardEvent, RefObject } from 'react'
 import { useCallback, useEffect } from 'react'
 
-import { listPageFocusRingElements, tryApplyListPageTabRing } from '../../utils/list/list_page_tab_ring.util'
+import { listPageFocusRingElements, tryApplyListPageTabRing } from '../../utils/list/list_keyboard.util'
 
 export type ListPageFocusRingDeps = {
   showSettings: boolean
@@ -11,28 +11,16 @@ export type ListPageFocusRingDeps = {
   listPageRef: RefObject<HTMLDivElement | null>
   filterButtonRef: RefObject<HTMLButtonElement | null>
   searchInputRef: RefObject<HTMLInputElement | null>
-  syncButtonRef: RefObject<HTMLButtonElement | null>
-  settingsButtonRef: RefObject<HTMLButtonElement | null>
   listSurfaceRef: RefObject<HTMLDivElement | null>
 }
 
 /**
- * Tab order: toolbar (filter → search → sync → settings) → list surface → when
- * detail is open, focusables inside the detail panel → when the filter sheet is
- * open, focusables inside `.kb-filterStack` — then wraps (Shift+Tab reverses).
+ * Tab order: filter → search → list surface → when detail is open, focusables
+ * inside the detail panel → when the filter sheet is open, focusables inside
+ * `.cmp-filter-stack` — then wraps (Shift+Tab reverses).
  */
 export function useListPageFocusRing(deps: ListPageFocusRingDeps) {
-  const {
-    showSettings,
-    filterOpen,
-    detailEntry,
-    listPageRef,
-    filterButtonRef,
-    searchInputRef,
-    syncButtonRef,
-    settingsButtonRef,
-    listSurfaceRef
-  } = deps
+  const { showSettings, filterOpen, detailEntry, listPageRef, filterButtonRef, searchInputRef, listSurfaceRef } = deps
 
   const focusSearchWhenReady = !showSettings && !filterOpen && detailEntry === null
 
@@ -51,8 +39,6 @@ export function useListPageFocusRing(deps: ListPageFocusRingDeps) {
         {
           filterButtonRef,
           searchInputRef,
-          syncButtonRef,
-          settingsButtonRef,
           listSurfaceRef
         },
         {
@@ -63,18 +49,7 @@ export function useListPageFocusRing(deps: ListPageFocusRingDeps) {
       )
       tryApplyListPageTabRing(e, chain)
     },
-    [
-      showSettings,
-      filterOpen,
-      detailEntry,
-      listPageRef,
-      filterButtonRef,
-      searchInputRef,
-
-      syncButtonRef,
-      settingsButtonRef,
-      listSurfaceRef
-    ]
+    [showSettings, filterOpen, detailEntry, listPageRef, filterButtonRef, searchInputRef, listSurfaceRef]
   )
 
   return { onListPageKeyDownCapture }
