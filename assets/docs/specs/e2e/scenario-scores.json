@@ -379,6 +379,116 @@
         "shortcuts"
       ],
       "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.footer_shows_open_in_browser_for_a_bookmark_without_secondary_action",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.footer_shows_paste_and_run_in_terminal_for_a_command",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.footer_shows_paste_doc_for_a_cheat_without_secondary_action",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.bookmark_primary_requests_external_open_handoff",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.command_primary_requests_paste_in_terminal_handoff",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.command_secondary_requests_run_in_terminal_handoff",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.cheat_primary_requests_paste_doc_handoff",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.copy_title_shortcut_shows_success_feedback",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.copy_description_shortcut_shows_success_feedback",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.open_source_shortcut_requests_editor_handoff",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.handoff_failure_shows_error_toast_and_keeps_list_usable",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
     }
   ]
 }

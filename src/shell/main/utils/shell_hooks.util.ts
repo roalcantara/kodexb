@@ -17,7 +17,8 @@ export type MainWindowLike = {
 }
 
 export type ShellHooksUtils = {
-  openExternal: (url: string) => void
+  openExternal: (url: string) => boolean
+  openPath: (path: string) => boolean
   openFileDialog: (opts: {
     startingFolder?: string
     canChooseFiles: boolean
@@ -102,7 +103,7 @@ export function createShellHooks(
 
 function openExternalWithFallback(url: string, utils: ShellHooksUtils, h?: HandoffServices): void {
   if (!h) {
-    utils.openExternal(url)
+    if (!utils.openExternal(url)) throw new Error(`openExternal failed for URL: ${url}`)
     return
   }
   const result = runEntryHandoff('browser-open', { url }, h)
@@ -117,7 +118,7 @@ function terminalHandoffWithFallback(
   h?: HandoffServices
 ): void {
   if (!h) {
-    if (terminalApp) utils.openExternal(terminalApp)
+    if (terminalApp && !utils.openExternal(terminalApp)) throw new Error(`${kind} failed for terminal: ${terminalApp}`)
     return
   }
   const result = runEntryHandoff(kind, { cmd, terminalApp }, h)
@@ -137,8 +138,8 @@ function openInEditorWithFallback(
   h?: HandoffServices
 ): void {
   if (!h) {
-    const fileUrl = filePath.startsWith('/') ? `file://${filePath}` : filePath
-    utils.openExternal(fileUrl)
+    if (editorApp) throw new Error('openInEditor failed: editorApp provided without handoffServices')
+    if (!utils.openPath(filePath)) throw new Error(`openInEditor failed for path: ${filePath}`)
     return
   }
   const result = runEntryHandoff('editor-open', { filePath, editorApp }, h)

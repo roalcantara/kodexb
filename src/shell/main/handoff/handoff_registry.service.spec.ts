@@ -26,6 +26,10 @@ mock.module('./electrobun_clipboard.port', () => ({
   }
 }))
 
+mock.module('./resolve_frontmost_app.util', () => ({
+  resolveFrontmostAppBundleId: () => null
+}))
+
 beforeAll(() => installBunDollarMock())
 beforeEach(() => {
   clipboardContent = ''
@@ -186,6 +190,21 @@ describe('runEntryHandoff', () => {
       expect(services.calls).toContain('hide')
       expect(services.calls).toContain('disarmGuard')
       expect(services.calls).not.toContain('show')
+    })
+  })
+
+  describe('when adapter returns ok:false after hide', () => {
+    it('calls show and returns browser-open-failed code', async () => {
+      clipboardContent = 'clip'
+      const { runEntryHandoff } = await import('./handoff_registry.service')
+      const services = makeServices()
+      const result = runEntryHandoff('browser-open', { url: 'https://example.com' }, services, HANDOFF_TEST_PLATFORM)
+
+      expect(result).toMatchObject({ ok: false, code: 'browser-open-failed' })
+      expect(services.calls).toContain('hide')
+      expect(services.calls).toContain('show')
+      expect(services.calls).toContain('disarmGuard')
+      expect(clipboardContent).toBe('clip')
     })
   })
 

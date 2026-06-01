@@ -16,28 +16,58 @@ export function openExternalUrl(hooks: AppShellHooks, url: string): Promise<void
   if (!['http:', 'https:'].includes(parsed.protocol)) {
     return Promise.reject(new Error(`Unsupported URL protocol: ${parsed.protocol}`))
   }
-  hooks.openExternal?.(parsed.toString())
-  return Promise.resolve()
+  return new Promise((resolve, reject) => {
+    try {
+      hooks.openExternal?.(parsed.toString())
+      resolve()
+    } catch (e) {
+      reject(e instanceof Error ? e : new Error(String(e)))
+    }
+  })
 }
 
 export function pasteInTerminalFor(hooks: AppShellHooks, cmd: string, terminalApp?: string): Promise<void> {
-  hooks.pasteInTerminal?.(cmd, terminalApp)
-  return Promise.resolve()
+  return new Promise((resolve, reject) => {
+    try {
+      hooks.pasteInTerminal?.(cmd, terminalApp)
+      resolve()
+    } catch (e) {
+      reject(e instanceof Error ? e : new Error(String(e)))
+    }
+  })
 }
 
 export function runInTerminalFor(hooks: AppShellHooks, cmd: string, terminalApp?: string): Promise<void> {
-  hooks.runInTerminal?.(cmd, terminalApp)
-  return Promise.resolve()
+  return new Promise((resolve, reject) => {
+    try {
+      hooks.runInTerminal?.(cmd, terminalApp)
+      resolve()
+    } catch (e) {
+      reject(e instanceof Error ? e : new Error(String(e)))
+    }
+  })
 }
 
 export function pasteDocFor(hooks: AppShellHooks, doc: string): Promise<void> {
-  hooks.pasteDoc?.(doc)
-  return Promise.resolve()
+  return new Promise((resolve, reject) => {
+    try {
+      hooks.pasteDoc?.(doc)
+      resolve()
+    } catch (e) {
+      reject(e instanceof Error ? e : new Error(String(e)))
+    }
+  })
 }
 
 export function openInEditorFor(hooks: AppShellHooks, filePath: string, editorApp?: string): Promise<void> {
-  hooks.openInEditor?.(filePath, editorApp)
-  return Promise.resolve()
+  return new Promise((resolve, reject) => {
+    try {
+      hooks.openInEditor?.(filePath, editorApp)
+      resolve()
+    } catch (e) {
+      reject(e instanceof Error ? e : new Error(String(e)))
+    }
+  })
 }
 
 export function showOpenDialogFor(hooks: AppShellHooks, opts?: OpenDialogOpts): Promise<string | null> {
