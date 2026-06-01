@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.9.0](https://github.com/roalcantara/kodexb/compare/v0.8.0...v0.9.0) (2026-06-01)
+
+### Features
+
+* Enhance UI/UX, e2e and agents support ([51aa7e8](https://github.com/roalcantara/kodexb/commit/51aa7e801ca464125a044301ca341016d5dfc024))
+
 ## [0.8.0](https://github.com/roalcantara/kodexb/compare/v0.7.0...v0.8.0) (2026-05-12)
 
 ### Features
