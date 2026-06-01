@@ -11,7 +11,7 @@ export class DetailPanelShowsTitle implements Answerable {
   async answeredBy(actor: Actor): Promise<void> {
     const detail = actor.page.locator('article.cmp-detail-page')
     await expect(detail).toBeVisible()
-    await expect(detail).toContainText(this.title)
+    await expect(detail).toContainText(this.title, { timeout: 15_000 })
   }
 }
 

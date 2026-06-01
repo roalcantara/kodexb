@@ -108,6 +108,82 @@ jobs:
           fail_on_failure: true
           require_tests: true
 
+  e2e-smoke:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    name: E2E Smoke - Runs the Playwright BDD smoke suite
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-e2e-preview
+      - name: Run e2e smoke suite
+        run: |
+          CI=true NODE_ENV=test mise run test e2e --smoke
+          CI=true NODE_ENV=test mise run test e2e --metrics-report
+      - name: Append E2E smoke summary
+        if: always()
+        uses: ./.github/actions/junit-summary
+        with:
+          xml_path: tmp/e2e/junit.xml
+          title: E2E Smoke
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-e2e-smoke
+          path: |
+            tmp/e2e/
+            tmp/playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+      - uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: tmp/e2e/junit.xml
+          fail_on_failure: true
+          require_tests: true
+          check_name: E2E Smoke
+
+  e2e-regression:
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    name: E2E Regression - Runs the Playwright BDD regression suite
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-e2e-preview
+      - name: Run e2e regression suite
+        run: |
+          CI=true NODE_ENV=test mise run test e2e --regression
+          CI=true NODE_ENV=test mise run test e2e --metrics-report
+      - name: Append E2E regression summary
+        if: always()
+        uses: ./.github/actions/junit-summary
+        with:
+          xml_path: tmp/e2e/junit.xml
+          title: E2E Regression
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report-e2e-regression
+          path: |
+            tmp/e2e/
+            tmp/playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+      - uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: tmp/e2e/junit.xml
+          fail_on_failure: true
+          require_tests: true
+          check_name: E2E Regression
+
   cst:
     # Skip drafts, and skip fork PRs (Docker build needs in-repo secrets/cache).
     if: ${{ !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}

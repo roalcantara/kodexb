@@ -1,0 +1,28 @@
+name: Setup e2e preview
+description: Checkout, install Bun/mise, compile CSS, cache Playwright, install Chromium + system deps.
+
+runs:
+  using: composite
+  steps:
+    - uses: ./.github/actions/setup-bun-project
+      with:
+        setup_mode: mise
+
+    - name: Compile renderer styles
+      shell: bash
+      run: bash tools/scripts/compile_renderer_styles.sh
+
+    - uses: actions/cache@v4
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('bun.lock') }}
+        restore-keys: |
+          playwright-${{ runner.os }}-${{ runner.arch }}-
+
+    - name: Install Playwright Chromium
+      shell: bash
+      run: bun run e2e:preview:install
+
+    - name: Install Playwright system dependencies
+      shell: bash
+      run: bunx playwright install-deps chromium

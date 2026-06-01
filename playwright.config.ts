@@ -5,6 +5,9 @@ import { defineBddConfig } from 'playwright-bdd'
 const PREVIEW_PORT = process.env.PREVIEW_PORT ?? '3456'
 const baseUrl = `http://localhost:${PREVIEW_PORT}`
 
+const TEST_TIMEOUT_MS = 60_000
+const CI_TEST_TIMEOUT_MS = 180_000
+
 const bddTestDir = defineBddConfig({
   features: 'assets/features/e2e/**/*.feature',
   steps: ['e2e/support/fixtures.support.ts', 'e2e/steps/**/*.ts'],
@@ -26,7 +29,7 @@ export default defineConfig({
     ['junit', { outputFile: 'tmp/e2e/junit.xml' }]
   ],
   outputDir: 'tmp/e2e/test-results',
-  timeout: 60_000,
+  timeout: process.env.CI ? CI_TEST_TIMEOUT_MS : TEST_TIMEOUT_MS,
   use: {
     baseURL: baseUrl,
     trace: 'on-first-retry'

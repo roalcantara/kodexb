@@ -3,8 +3,8 @@ import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
 import { DetailPageView } from '../../components/detail/detail_view.component'
+import { DetailPage } from './detail.page'
 
 const onOpenExternal = mock(() => Promise.resolve())
 const pendingOg = () => new Promise<null>(() => undefined)
@@ -124,6 +124,25 @@ describe('DetailPage', () => {
       expect(badges).not.toBeNull()
       expect(badges?.textContent).toContain('high')
       expect(badges?.textContent).toContain('doing')
+    })
+  })
+
+  describe('DetailPage loader', () => {
+    it('renders markdown body for a loaded bookmark', async () => {
+      const loadEntry = mock(() => Promise.resolve(bookmark))
+      render(
+        <DetailPage
+          entryId={1}
+          allEntries={[bookmark]}
+          onClose={() => undefined}
+          onSelectEntry={() => undefined}
+          loadEntry={loadEntry}
+        />
+      )
+      await screen.findByText('Fast JS runtime.')
+      const body = document.querySelector('.cmp-detail-page-body')
+      expect(body).not.toBeNull()
+      expect(body?.textContent).toContain('Fast JS runtime')
     })
   })
 })

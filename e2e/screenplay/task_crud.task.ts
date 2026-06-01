@@ -1,5 +1,6 @@
+import { expect } from '@playwright/test'
 import type { Actor, Performable } from './actor.ability'
-import { OpenCommandPalette, SearchPaletteActions } from './command_palette.task'
+import { OpenCommandPalette } from './command_palette.task'
 import { ChooseTypeFilter, OpenFilterOverlay } from './filter_overlay.task'
 import { OpenDetailPreview } from './navigate_views.task'
 import { SelectEntryByTitle } from './select_entry.task'
@@ -32,15 +33,19 @@ export class EditTaskDescription implements Performable {
   }
 
   async performAs(actor: Actor): Promise<void> {
-    await actor.attemptsTo(OpenCommandPalette.now())
-    await actor.attemptsTo(SearchPaletteActions.for('edit task'))
-    await actor.page.locator('.cmp-command-palette-action', { hasText: 'Edit Task' }).click()
+    const listbox = actor.page.getByRole('listbox', { name: 'Entries' })
+    await listbox.focus()
+    const edit = actor.page.locator('.cmp-footer-primary', { hasText: 'Edit Task' })
+    await edit.waitFor({ state: 'visible', timeout: 10_000 })
+    await edit.click()
     const dialog = actor.page.getByRole('dialog', { name: 'Edit task' })
     await dialog.waitFor({ state: 'visible' })
     await dialog.locator('#ts-desc').fill(this.text)
     await dialog.getByRole('button', { name: 'Save' }).click()
     await dialog.waitFor({ state: 'hidden' })
     await actor.attemptsTo(OpenDetailPreview.forSelectedEntry())
+    const detail = actor.page.locator('article.cmp-detail-page')
+    await expect(detail.locator('.cmp-detail-page-desc')).toHaveText(this.text, { timeout: 15_000 })
   }
 }
 

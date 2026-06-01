@@ -120,6 +120,17 @@ describe('DetailPageView', () => {
     })
   })
 
+  describe('when bodyContent is omitted', () => {
+    it('renders doc markdown instead of an empty body shell', () => {
+      const entry = rpcBookmark({
+        doc: '## Notes\n\nVisible in preview.',
+        key: 'plain-bookmark'
+      })
+      render(<DetailPageView {...baseProps} entry={entry} />)
+      expect(screen.getByText('Visible in preview.')).toBeTruthy()
+    })
+  })
+
   describe('when entry has links', () => {
     it('renders the Links section with clickable buttons', () => {
       const entry = rpcBookmark({

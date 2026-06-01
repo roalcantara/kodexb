@@ -41,7 +41,7 @@ export class ReturnToListView implements Performable {
   async performAs(actor: Actor): Promise<void> {
     await actor.page.keyboard.press('ArrowLeft')
     await actor.page.locator('.cmp-list-panel--narrow').waitFor({ state: 'hidden' })
-    await actor.page.locator('input[aria-label="Search"]').focus()
-    await actor.page.locator('input[aria-label="Search"]').waitFor({ state: 'visible' })
+    const search = actor.page.locator('input[aria-label="Search"]')
+    await search.waitFor({ state: 'visible' })
   }
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRef } from 'react'
 
 import { useListPageFocusRing } from './use_list_page_focus_ring.hook'
@@ -68,11 +68,8 @@ describe('useListPageFocusRing', () => {
     it('autofocuses search when ring is active', async () => {
       render(<RingHarness />)
       const search = screen.getByRole('textbox', { name: 'Search' })
-      await new Promise<void>(resolve => {
-        requestAnimationFrame(() => {
-          expect(document.activeElement).toBe(search)
-          resolve()
-        })
+      await waitFor(() => {
+        expect(document.activeElement).toBe(search)
       })
     })
   })
