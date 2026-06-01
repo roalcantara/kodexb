@@ -1,1 +1,6 @@
-{bookmarks: {https://example.com: {desc: Example website,tags: [example,web]}},commands: {git status: {desc: Show the working tree status,tags: [git,vcs]}},cheats: {Git basics: {desc: Common git commands,tags: [git],notes: [{md: "- `git status` — show changes\n- `git add .` — stage all\n- `git commit -m \"msg\"` — commit\n"}]}},tasks: {Setup project: {desc: Updated via RPC route spec,tags: [dev],status: todo,priority: urgent}}}
+{
+  bookmarks: { https://example.com: { desc: Example website, tags: [example, web] } },
+  commands: { git status: { desc: Show the working tree status, tags: [git, vcs] } },
+  cheats: { Git basics: { desc: Common git commands, tags: [git], notes: [{ md: "- `git status` — show changes\n- `git add .` — stage all\n- `git commit -m \"msg\"` — commit\n" }] } },
+  tasks: { Setup project: { desc: Initialize the new project structure, tags: [dev], status: todo, priority: high } },
+}

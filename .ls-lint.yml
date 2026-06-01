@@ -79,9 +79,10 @@ ls:
     .tsx: regex:^use_[a-z][a-z0-9_]*\.hook\.spec$
 
   # Anchor hook rules because ls-lint regexes match substrings. The .ts rules
-  # intentionally allow future .hook.spec.ts tests in list/shared folders.
+  # intentionally allow future .hook.spec.ts tests in the settings folder.
   src/shell/renderer/hooks/settings:
-    .ts: regex:^use_[a-z][a-z0-9_]*\.hook$
+    .ts: regex:^use_[a-z][a-z0-9_]*\.hook(\.spec)?$
+    .tsx: regex:^use_[a-z][a-z0-9_]*\.hook\.spec$
 
   # Anchor hook rules because ls-lint regexes match substrings. The .ts rules
   # intentionally allow future .hook.spec.ts tests in shortcuts folder.

@@ -19,7 +19,8 @@ export type HandoffServices = {
 export function runEntryHandoff(
   kind: HandoffKind,
   payload: { url?: string; cmd?: string; doc?: string; filePath?: string; terminalApp?: string; editorApp?: string },
-  services: HandoffServices
+  services: HandoffServices,
+  platform: NodeJS.Platform = process.platform
 ): HandoffResult {
   try {
     services.armGuard()
@@ -40,7 +41,7 @@ export function runEntryHandoff(
 
     services.hide()
 
-    const result = dispatchHandoff(kind, payload)
+    const result = dispatchHandoff(kind, payload, platform)
 
     if (result.ok) {
       if (needsClipboardRestore) {
@@ -65,23 +66,24 @@ export function runEntryHandoff(
 
 function dispatchHandoff(
   kind: HandoffKind,
-  payload: { url?: string; cmd?: string; doc?: string; filePath?: string; terminalApp?: string; editorApp?: string }
+  payload: { url?: string; cmd?: string; doc?: string; filePath?: string; terminalApp?: string; editorApp?: string },
+  platform: NodeJS.Platform
 ): BrowserHandoffResult | TerminalHandoffResult | PasteFrontmostResult | EditorHandoffResult {
   if (kind === 'browser-open') {
     if (!payload.url) return { ok: false, error: 'No URL provided' }
-    return openInBrowser(payload.url)
+    return openInBrowser(payload.url, platform)
   }
   if (kind === 'terminal-paste') {
-    return pasteInTerminal(resolveTerminalAppName(payload.terminalApp))
+    return pasteInTerminal(resolveTerminalAppName(payload.terminalApp, platform), platform)
   }
   if (kind === 'terminal-run') {
-    return runInTerminal(resolveTerminalAppName(payload.terminalApp))
+    return runInTerminal(resolveTerminalAppName(payload.terminalApp, platform), platform)
   }
   if (kind === 'paste-frontmost') {
-    return pasteIntoFrontmostApp()
+    return pasteIntoFrontmostApp(platform)
   }
   if (!payload.filePath) return { ok: false, error: 'No file path provided' }
-  return openInEditorUtil(payload.filePath, payload.editorApp)
+  return openInEditorUtil(payload.filePath, payload.editorApp, platform)
 }
 
 const HANDOFF_ERROR_CODES: Record<HandoffKind, string> = {

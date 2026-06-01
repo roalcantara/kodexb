@@ -28,7 +28,7 @@ For every phase:
 2. Inspect current commands before editing.
 3. Implement only that phase.
 4. Run the phase-specific verification commands.
-5. Update the task inventory ledger and checappoxes in this file.
+5. Update the task inventory ledger and checkboxes in this file.
 6. Run `git diff --check` for touched files.
 7. Run `bash .agents/skills/app-quality-gate/scripts/gate.sh` when executable
    workflow behavior changed.

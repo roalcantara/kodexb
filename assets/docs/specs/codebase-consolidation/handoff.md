@@ -46,7 +46,7 @@ Workflow:
    a. Dispatch one implementer subagent scoped to that track only.
    b. Hand the subagent the full track section from `tasks.md` plus
       this handoff's "Subagent rules" block below.
-   c. Tick checappoxes in `tasks.md` as the subagent completes each
+   c. Tick checkboxes in `tasks.md` as the subagent completes each
       sub-step. Do this incrementally so progress is visible.
    d. Run the track's "Track close" verification commands.
    e. Update the track's "Verification" line in `tasks.md` with the
@@ -135,7 +135,7 @@ Track-by-track checkpoints (mirror these in PR description):
 
 Completion:
 The work is complete only when:
-- every checappox in `tasks.md` is ticked;
+- every checkbox in `tasks.md` is ticked;
 - every track's "Verification" line carries a real commit SHA and the
   measured acceptance numbers;
 - `bun test`, `bun run typecheck`, `bun run lint`, `bun run build`,

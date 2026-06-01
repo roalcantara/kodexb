@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 3 — Core Domain Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Land Phase 3 of the app foundation roadmap as a single `feat(core)` commit on `chore-add-domain` — the pure domain layer (`src/core/`) plus the pure-only slice of `src/shared/` (crc32, env types) — with 7 existing + 10 new unit specs (per-public-export rule). Quarantine all out-of-scope work (Phases 4–7 + planning docs) into 5 named stashes so each can be restored when its phase begins.
 

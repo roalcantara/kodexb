@@ -4,9 +4,9 @@ import { resolveFrontmostAppBundleId } from './resolve_frontmost_app.util'
 
 export type BrowserHandoffResult = { ok: true } | { ok: false; error: string }
 
-export function openInBrowser(url: string): BrowserHandoffResult {
+export function openInBrowser(url: string, platform?: NodeJS.Platform): BrowserHandoffResult {
   try {
-    const bundleId = resolveFrontmostAppBundleId()
+    const bundleId = resolveFrontmostAppBundleId(platform)
     const knownBundleId = bundleId && KNOWN_BROWSER_BUNDLE_IDS.has(bundleId) ? bundleId : undefined
 
     if (knownBundleId) {

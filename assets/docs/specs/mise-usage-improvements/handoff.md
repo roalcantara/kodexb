@@ -11,7 +11,7 @@ exact public task surface, exact package script surface, Usage contracts,
 workflow commands, documentation references, and command validation matrix all
 match this document.
 
-Every implementation task in `tasks.md` has acceptance criteria. A checappox is
+Every implementation task in `tasks.md` has acceptance criteria. A checkbox is
 not complete unless the task's command-specific validation commands have been
 run and recorded under that task's `Evidence:` bullet.
 
@@ -46,7 +46,7 @@ Load these skills:
 
 - Do not add deprecated compatibility wrappers.
 - Do not weaken the policy checker to make it pass.
-- Do not mark checappoxes complete with a bulk script.
+- Do not mark checkboxes complete with a bulk script.
 - Do not mark a task complete until its acceptance criteria and command
   validation checks pass.
 - Do not execute destructive repository, release, publish, remote deletion, or
@@ -380,7 +380,7 @@ declaring completion.
 Implement the full task contract cleanup from
 assets/docs/specs/mise-usage-improvements/tasks.md. Do not add deprecated
 compatibility wrappers. Do not weaken the policy checker. Do not bulk-edit
-checappoxes. Every checked task must include an Evidence bullet naming changed
+checkboxes. Every checked task must include an Evidence bullet naming changed
 files, exact commands, and the command-level acceptance criteria that passed.
 
 The expected public task surface is exactly the output recorded in

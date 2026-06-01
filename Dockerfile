@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # ─────────────────────────────────────────────────────────────────────────────
-# Multi-stage Dockerfile — Electrobun Linux bundle for app
+# Multi-stage Dockerfile — Electrobun Linux bundle for kb
 #
 # STAGES:
 #   builder → oven/bun:1-slim (Debian-slim + Bun), compiles the Electrobun
@@ -8,7 +8,7 @@
 #             and core binaries are dynamically linked against glibc and crash
 #             with ENOEXEC on Alpine + gcompat.
 #   final   → debian:bookworm-slim with only the bundled application. Same
-#             glibc ABI as the builder so /opt/app/bin/launcher runs cleanly.
+#             glibc ABI as the builder so /opt/kb/bin/launcher runs cleanly.
 #
 # USAGE:
 #   mise run docker:build --nocache --platform amd64        # via mise task
@@ -52,7 +52,9 @@ COPY . .
 # the final stage does not need to know the host arch or env.
 ARG ELECTROBUN_ENV=dev
 RUN set -eu; \
-    bun run build; \
+    bash tools/scripts/compile_renderer_styles.sh; \
+    rm -f node_modules/electrobun/bin/electrobun; \
+    bun run build:ci; \
     arch="$(uname -m)"; \
     case "$arch" in \
       x86_64)  suffix="x64" ;; \
@@ -62,11 +64,11 @@ RUN set -eu; \
     bundle_root="build/${ELECTROBUN_ENV}-linux-${suffix}"; \
     app_dir="$(find "$bundle_root" -mindepth 1 -maxdepth 1 -type d -print -quit)"; \
     [ -n "$app_dir" ] || { echo "no bundle dir under $bundle_root" >&2; ls -la "$bundle_root" >&2; exit 1; }; \
-    mv "$app_dir" /opt/app
+    mv "$app_dir" /opt/kb
 
 # ── STAGE 2: final ────────────────────────────────────────────────────────────
 FROM debian:bookworm-slim AS final
-WORKDIR /opt/app
+WORKDIR /opt/kb
 
 # Minimal runtime deps for the Electrobun launcher + bundled Bun. CEF/GTK libs
 # are only required when actually displaying the app; the container-structure
@@ -77,11 +79,11 @@ RUN apt-get update \
        libstdc++6 \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /opt/app /opt/app
-RUN ln -sf /opt/app/bin/launcher /usr/local/bin/app
+COPY --from=builder /opt/kb /opt/kb
+RUN ln -sf /opt/kb/bin/launcher /usr/local/bin/kb
 
-LABEL org.opencontainers.image.title="app"
+LABEL org.opencontainers.image.title="kb"
 LABEL org.opencontainers.image.description="Native desktop knowledge management app built on Electrobun"
 LABEL org.opencontainers.image.source="https://github.com/roalcantara/kb"
 
-ENTRYPOINT ["/opt/app/bin/launcher"]
+ENTRYPOINT ["/opt/kb/bin/launcher"]

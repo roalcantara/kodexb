@@ -108,7 +108,7 @@ mise exec -- actionlint   # validates all .github/workflows/*.yml
 ## Workflow: review.yml
 
 **Trigger:** PR opened / synchronized / reopened / ready-for-review.
-**Concurrency:** `kb-${{ github.ref }}`, cancel-in-progress.
+**Concurrency:** `app-${{ github.ref }}`, cancel-in-progress.
 
 Jobs:
 
@@ -134,7 +134,7 @@ Jobs:
 
 ## Workflow: release.yml
 
-**Trigger:** push to `main`. **Concurrency:** `kb-release`,
+**Trigger:** push to `main`. **Concurrency:** `app-release`,
 **cancel-in-progress: false** — never interrupt an in-flight release.
 
 Steps (in order):
@@ -276,7 +276,7 @@ locally (CI-ephemeral keychain, GitHub OIDC token, repo write).
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | Workflow can't find composite action                    | Missing `actions/checkout@v4` step before the `uses: ./.github/...` reference                          |
 | `setup_mode: mise` step fails silently in caching       | Stale `~/.bun/install/cache` key; bump the cache key or delete it via UI                               |
-| Two `release.yml` runs racing                           | Concurrency group is per-`kb-release` and `cancel-in-progress: false` — let one finish                 |
+| Two `release.yml` runs racing                           | Concurrency group is per-`app-release` and `cancel-in-progress: false` — let one finish                |
 | Tag created but no draft release                        | release-it ran with no releasable commits (`chore:` only, etc.) — expected                             |
 | Draft release exists but `publish.yml` doesn't fire     | Trigger is `workflow_run: completed` — only fires when Release completes successfully                  |
 | ARM Linux leg fails with `bash: bun: command not found` | `setup-bun-project` action didn't install on `ubuntu-24.04-arm`; verify mise.toml has `bun = "latest"` |

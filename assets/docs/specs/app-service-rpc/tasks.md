@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 5 — App Service + Elysia RPC — Tasks
 
-> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement Phase 5 as defined in [`requirements.md`](requirements.md) and [`design.md`](design.md), using the concrete execution detail in [`implementation-plan.md`](implementation-plan.md).
 

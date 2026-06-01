@@ -2,7 +2,7 @@
 
 # Compact filter overlay rebuild — implementation plan
 
-> **For agentic workers:** Implement task-by-task in order. Use checappoxes in [tasks.md](tasks.md) for verification gates. Requirements: [requirements.md](requirements.md). Design: [design.md](design.md).
+> **For agentic workers:** Implement task-by-task in order. Use checkboxes in [tasks.md](tasks.md) for verification gates. Requirements: [requirements.md](requirements.md). Design: [design.md](design.md).
 
 **Goal:** Rebuild the compact (⌘K) filter overlay so Types/Tags are scrollable and the keyboard-highlighted row is always fully visible, with the same visual design and unchanged filter/RPC semantics.
 

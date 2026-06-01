@@ -6,7 +6,7 @@ Execute in order, **one commit per track** (R13). After each track:
 
 1. Run the track's per-task verifications.
 2. Run the **track close** block (typecheck + lint + targeted tests).
-3. Update this file: tick checappoxes, fill in the **Verification** line
+3. Update this file: tick checkboxes, fill in the **Verification** line
    with the commit SHA and the actual command output.
 4. Commit using the suggested message.
 5. Only then move to the next track.

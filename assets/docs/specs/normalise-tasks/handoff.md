@@ -36,7 +36,7 @@ Workflow:
 9. Update references in README, AGENTS, CLAUDE, package scripts, guides, and
    specs after canonical commands change.
 10. Run phase-specific verification.
-11. Update the ledger and checappoxes in `tasks.md`.
+11. Update the ledger and checkboxes in `tasks.md`.
 12. Run the full quality gate when executable workflow behavior changed.
 13. Commit exactly that phase's files using the suggested commit command.
 

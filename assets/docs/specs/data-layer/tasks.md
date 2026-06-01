@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 4 — Data Layer Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Land Phase 4 of the app foundation roadmap as a single `feat(data)` commit on `chore-add-domain` — the SQLite data substrate (`src/shell/app/db/`), the YAML import service, the config layer (TypeBox replaces Zod), the logging adapter, the test infrastructure (Fishery factories + curated YAML corpus), and the agent-skill drift fixes — while collapsing the 5 leftover phase stashes into a single `phase-pending` stash for cleaner future recovery.
 

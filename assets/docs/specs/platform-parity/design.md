@@ -2,8 +2,8 @@
 
 # macOS / Linux platform parity — Design
 
-**Audit date:** 2026-06-01  
-**Scope:** `src/shell/main/`, handoff adapters, shell window chrome, parity tests.  
+**Audit date:** 2026-06-01
+**Scope:** `src/shell/main/`, handoff adapters, shell window chrome, parity tests.
 **Normative feature specs:** [`entry-action-handoff/`](../entry-action-handoff/), [`shell-window-nav/`](../shell-window-nav/).
 
 ---

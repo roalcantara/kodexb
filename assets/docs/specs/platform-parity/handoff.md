@@ -2,8 +2,8 @@
 
 # macOS / Linux platform parity — Handoff
 
-**Status:** Phases 1–5 complete.  
-**Date:** 2026-06-01  
+**Status:** Phases 1–5 complete.
+**Date:** 2026-06-01
 **Branch context:** `feat-add-stats-panel`
 
 ---

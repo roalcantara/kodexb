@@ -17,7 +17,7 @@ Before editing executable task behavior, load:
   versions
 - `docs-writer` when editing Markdown
 
-Do not bulk-edit checappoxes. Mark an item complete only after the work is done,
+Do not bulk-edit checkboxes. Mark an item complete only after the work is done,
 and add an `Evidence:` bullet under that item with the files changed and
 commands run for that specific item.
 

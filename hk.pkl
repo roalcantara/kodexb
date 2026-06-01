@@ -157,6 +157,14 @@ local ciProfileSteps = new Mapping<String, Step> {
         profiles = List("ci")
         check = "mkdir -p tmp/reports/linters && bun run lint:ast-grep | tee tmp/reports/linters/ast-grep.txt"
     }
+    ["renderer-css-ci"] {
+        profiles = List("ci")
+        check = "mkdir -p tmp/reports/linters && bun run lint:renderer-css | tee tmp/reports/linters/renderer-css.txt"
+    }
+    ["spec-guide-ci"] {
+        profiles = List("ci")
+        check = "mkdir -p tmp/reports/linters && bun run lint:spec-guide | tee tmp/reports/linters/spec-guide.txt"
+    }
     ["typecheck-ci"] {
         profiles = List("ci")
         check = "bun run typecheck"

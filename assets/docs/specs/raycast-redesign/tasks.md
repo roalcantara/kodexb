@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # app UX/UI Redesign — Implementation Plan
 
-> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Redesign the UI to PowerToys Run aesthetics with Raycast UX patterns — search-first, compact rows, chip filtering, no toolbar.
 

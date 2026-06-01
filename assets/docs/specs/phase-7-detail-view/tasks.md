@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 7 — Detail View: Populate `doc` column — Implementation Plan
 
-> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Wire `assembleDoc()` into `toKnowledge()` so every `Knowledge` row carries pre-assembled Markdown in its `doc` column, and switch `DetailPageView` to render `entry.doc` instead of client-side assembly.
 

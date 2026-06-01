@@ -25,7 +25,8 @@ function linuxPaste(): PasteFrontmostResult {
   const result = Bun.spawnSync(['xdotool', 'key', 'ctrl+v'])
   if (result.exitCode !== 0) {
     log.debug('paste frontmost (linux) failed', { exitCode: result.exitCode, stderr: String(result.stderr) })
-    return { ok: false, error: `xdotool key failed (${String(result.stderr).trim() || 'exit ' + result.exitCode})` }
+    const detail = String(result.stderr).trim() || `exit ${result.exitCode}`
+    return { ok: false, error: `xdotool key failed (${detail})` }
   }
   return { ok: true }
 }

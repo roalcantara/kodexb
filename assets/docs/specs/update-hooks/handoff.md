@@ -183,4 +183,4 @@ The implementation should be rejected if:
 - The HK commit-message script accepts a missing body.
 - The invalid fixture output differs from the prompt.
 - CI installs hooks instead of validating HK directly.
-- `tasks.md` checappoxes are marked complete without evidence bullets.
+- `tasks.md` checkboxes are marked complete without evidence bullets.

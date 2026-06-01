@@ -35,7 +35,7 @@ For every phase:
 3. Run the phase-specific verification commands.
 4. Compare the phase result against the baseline and previous phase.
 5. Update the phase row in the impact ledger below.
-6. Mark that phase's checappoxes in this file.
+6. Mark that phase's checkboxes in this file.
 7. Run `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
 8. Commit only that phase's files with the suggested commit command.
 9. Continue to the next phase.

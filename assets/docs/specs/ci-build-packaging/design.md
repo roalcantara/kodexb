@@ -782,7 +782,7 @@ The Phase 2 implementation is complete when **all** of the following hold:
 [1]: https://github.com/release-it/release-it 'release-it'
 [2]: https://github.com/release-it/conventional-changelog '@release-it/conventional-changelog'
 [3]: https://www.conventionalcommits.org 'Conventional Commits'
-[4]: https://blackboardsh/electrobun 'Electrobun'
+[4]: https://blackboard.sh/electrobun 'Electrobun'
 [5]: https://docs.github.com/en/actions 'GitHub Actions'
 [6]: https://docs.github.com/en/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds 'Build provenance attestations'
 [7]: https://github.com/webfactory/ssh-agent 'webfactory/ssh-agent'

@@ -1,6 +1,6 @@
 # Shell window chrome, placement, and detail navigation — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Ship centered frameless (or best fallback) main window on macOS first, with ArrowLeft reliably retreating from full detail to split; Linux best-effort parity afterward.
 

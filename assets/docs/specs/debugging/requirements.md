@@ -250,7 +250,7 @@ request story.
 5. WHEN the request context is bound via `withContext(...)`, THEN a `debug`
    record emitted from a repository inside that handler SHALL include
    `requestId` in its structured props without the repository needing to
-   know the request exists. The `kb-rpc` skill SHALL document this behavior.
+   know the request exists. The `app-rpc` skill SHALL document this behavior.
 
 ## Requirement DBG-5: Renderer logging
 

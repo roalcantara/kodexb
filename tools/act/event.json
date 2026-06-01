@@ -6,7 +6,7 @@
       "ref": "local-act",
       "sha": "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
       "repo": {
-        "full_name": "roalcantara/kb"
+        "full_name": "roalcantara/kodexb"
       }
     },
     "base": {
@@ -14,7 +14,7 @@
     }
   },
   "repository": {
-    "full_name": "roalcantara/kb",
+    "full_name": "roalcantara/kodexb",
     "default_branch": "main"
   }
 }

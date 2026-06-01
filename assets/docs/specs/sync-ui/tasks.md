@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 11 — Sync UI — Implementation Plan
 
-> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add a visual progress bar, auto-dismissing completion toast with error details, and concurrent sync prevention to the sync workflow.
 

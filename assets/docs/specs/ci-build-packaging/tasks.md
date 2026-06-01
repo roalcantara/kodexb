@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 2 — CI / Build / Packaging Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Stand up the three GitHub Actions workflows (`review`, `release`, `publish`), three composite actions, `release-it` configuration, env-gated macOS signing, local mirror tasks under `mise run ci:*`, and the supporting documentation needed to ship signed Electrobun builds for macOS arm64 and Linux x64/arm64.
 

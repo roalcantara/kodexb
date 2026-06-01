@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 9 — Task Management — Implementation Plan
 
-> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement the full task mutation write-path: create, edit, delete, status/priority cycling, reorder, and dependency management — persisting to both SQLite and YAML sources.
 

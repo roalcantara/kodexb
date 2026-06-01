@@ -1,12 +1,7 @@
-import { afterAll, beforeAll, describe, expect, it, mock } from 'bun:test'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test'
 import { installBunDollarMock, uninstallBunDollarMock } from '@testing'
 
-let frontmostBundleId: string | null = null
 let openExternalResult: boolean | 'throw' = true
-
-mock.module('./resolve_frontmost_app.util', () => ({
-  resolveFrontmostAppBundleId: () => frontmostBundleId
-}))
 
 mock.module('electrobun/bun', () => ({
   Utils: {
@@ -22,29 +17,36 @@ afterAll(() => uninstallBunDollarMock())
 
 describe('openInBrowser()', () => {
   describe('when frontmost is a known browser bundle', () => {
+    let restoreSpawn: typeof Bun.spawnSync
+
+    beforeEach(() => {
+      restoreSpawn = Bun.spawnSync
+      Bun.spawnSync = (() => ({ stdout: Buffer.from('com.google.Chrome') })) as unknown as typeof Bun.spawnSync
+    })
+    afterEach(() => {
+      Bun.spawnSync = restoreSpawn
+    })
+
     it('returns ok:true', async () => {
-      frontmostBundleId = 'com.google.Chrome'
       const { openInBrowser } = await import('./browser_handoff.util')
-      expect(openInBrowser('https://example.com')).toEqual({ ok: true })
+      expect(openInBrowser('https://example.com', 'darwin')).toEqual({ ok: true })
     })
   })
 
   describe('when frontmost is unknown (Linux equivalent)', () => {
     describe('when Utils.openExternal returns true', () => {
       it('returns ok:true', async () => {
-        frontmostBundleId = null
         openExternalResult = true
         const { openInBrowser } = await import('./browser_handoff.util')
-        expect(openInBrowser('https://example.com')).toEqual({ ok: true })
+        expect(openInBrowser('https://example.com', 'linux')).toEqual({ ok: true })
       })
     })
 
     describe('when Utils.openExternal returns false', () => {
       it('returns error', async () => {
-        frontmostBundleId = null
         openExternalResult = false
         const { openInBrowser } = await import('./browser_handoff.util')
-        expect(openInBrowser('https://example.com')).toEqual({
+        expect(openInBrowser('https://example.com', 'linux')).toEqual({
           ok: false,
           error: expect.stringContaining('openExternal')
         })
@@ -54,10 +56,9 @@ describe('openInBrowser()', () => {
 
   describe('when Utils.openExternal throws', () => {
     it('returns error with thrown message', async () => {
-      frontmostBundleId = null
       openExternalResult = 'throw'
       const { openInBrowser } = await import('./browser_handoff.util')
-      expect(openInBrowser('https://example.com')).toEqual({ ok: false, error: 'Error: bridge error' })
+      expect(openInBrowser('https://example.com', 'linux')).toEqual({ ok: false, error: 'Error: bridge error' })
     })
   })
 })

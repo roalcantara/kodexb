@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 10 — Actions System (⌘K) — Implementation Plan
 
-> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checappox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the ⌘K stub with a working command palette and implement `pasteInTerminal`/`openInEditor` App methods via configurable shell hooks.
 

@@ -1,4 +1,5 @@
 import { afterEach, beforeAll } from 'bun:test'
+import fs from 'node:fs/promises'
 import { join } from 'node:path'
 import { configureMainLogging, rpcCommonPlugins } from '@shared/logging'
 import {
@@ -43,18 +44,25 @@ export function mountRouteModule(app: App, routes: RpcRoutePluginFactory) {
   return new Elysia({ prefix: '/api' }).use(rpcCommonPlugins).use(routes(app))
 }
 
+/** Isolated sources + DB paths; copies minimal fixtures so task write-back never touches git. */
+async function rpcRouteSpecLoadedConfig(tmp: TempDir): Promise<LoadedConfig> {
+  const sourcesDir = join(tmp.dir, 'sources')
+  await fs.cp(testingPaths.minimal, sourcesDir, { recursive: true })
+  return factoryFor('loadedConfig', {
+    overrides: {
+      configPath: join(tmp.dir, 'config.yaml'),
+      database: { path: join(tmp.dir, 'kb.sqlite') },
+      sources: { path: sourcesDir },
+      writeTarget: join(sourcesDir, 'tasks.yml')
+    }
+  })
+}
+
 export function createRpcRouteSpecHarness(options: { onTempDir: (tmp: TempDir) => void }) {
   async function loadedFixture(): Promise<LoadedConfig> {
-    const tmp = await createTempDir('kb-rpc-server-')
+    const tmp = await createTempDir('rpc-route-spec-')
     options.onTempDir(tmp)
-    return factoryFor('loadedConfig', {
-      overrides: {
-        configPath: join(tmp.dir, 'config.yaml'),
-        database: { path: join(tmp.dir, 'kb.sqlite') },
-        sources: { path: testingPaths.minimal },
-        writeTarget: join(tmp.dir, 'tasks.yml')
-      }
-    })
+    return rpcRouteSpecLoadedConfig(tmp)
   }
 
   async function importedApp(): Promise<App> {

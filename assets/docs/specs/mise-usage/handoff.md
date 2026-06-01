@@ -212,7 +212,7 @@ or reset behavior.
 
 ## Completion evidence
 
-Do not bulk-edit checappoxes. Each checked item in `tasks.md` must include an
+Do not bulk-edit checkboxes. Each checked item in `tasks.md` must include an
 `Evidence:` bullet naming the files changed and the commands that verified that
 specific item. The final report must include:
 
@@ -268,7 +268,7 @@ still works as expected with the new Usage syntax. For each changed or merged
 task, verify help output and a safe smoke or dry-run path. For unsafe tasks,
 verify metadata, help output, and syntax only.
 
-Do not mark checappoxes complete with a bulk script. Each checked item must have
+Do not mark checkboxes complete with a bulk script. Each checked item must have
 an Evidence bullet naming changed files and commands. The final
 NO_COLOR=1 COLUMNS=120 mise tasks output must byte-for-byte match the expected
 public task surface recorded in handoff.md. Do not edit that expected task

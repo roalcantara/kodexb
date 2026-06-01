@@ -151,5 +151,5 @@ validation evidence required before the refactor can be called complete.
 9. IF a task is unsafe to execute, THEN validation SHALL use Usage metadata,
    help output, syntax checks, and negative parsing checks instead of executing
    the mutation.
-10. WHEN checappoxes are marked complete, THEN each item SHALL include an
+10. WHEN checkboxes are marked complete, THEN each item SHALL include an
    `Evidence:` bullet with changed files and exact commands.

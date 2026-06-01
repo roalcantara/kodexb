@@ -1,8 +1,5 @@
 # Triggered on every non-draft PR targeting main.
-# 1. lint    — hadolint + bun lint
-# 2. test    — bun test
-# 3. cst     — build amd64 image (load only), run Container Structure Tests
-# 4. preview — push to DockerHub, set "review" env, post PR comment (only if CST passes)
+# Mirrors the passing Review layout (lint + test + build in parallel).
 name: Review
 
 on:
@@ -11,7 +8,7 @@ on:
     branches: [main]
 
 concurrency:
-  group: kb-${{ github.ref }}
+  group: app-${{ github.ref }}
   cancel-in-progress: true
 
 defaults:
@@ -26,8 +23,7 @@ env:
 
 jobs:
   hk:
-    # Ensure these jobs run only for PRs from branches in the main repo, not forks
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    if: ${{ !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
     name: HK - Enforces the local git-hook policy in CI so the policy doesn't depend on the honor system
     runs-on: ubuntu-24.04
     permissions:
@@ -40,58 +36,30 @@ jobs:
       - uses: ./.github/actions/setup-bun-project
         with:
           setup_mode: mise
-      - name: Validate HK config
-        run: mise exec -- hk validate
-      - name: Check HK hook steps
+      - name: HK hygiene (pre-commit parity)
         run: mise exec -- hk check --all --check
-      - name: HK CI profile (parity; keeps existing lint job until parity proven)
+      - name: HK CI profile (linters, validate, HEAD commit message)
         run: mise exec -- hk check --all --profile ci --check
-      - name: Validate HEAD commit message
-        run: |
-          tmp="$(mktemp)"
-          git log -1 --format=%B > "$tmp"
-          mise exec -- hk run commit-msg "$tmp"
-          rm -f "$tmp"
-
-  lint:
-    # Ensure these jobs run only for PRs from branches in the main repo, not forks
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-    name: Lint - Runs the lint chain
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      checks: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-bun-project
-        with:
-          setup_mode: mise
-      - name: Run lint chain (aggregated exit code)
-        run: |
-          set +e
-          mkdir -p tmp/reports/linters
-          e=0
-          mise run lint check --biome --ci || e=$?
-          mise run lint check --knip --ci || e=$?
-          mise run lint check --depcruise --ci || e=$?
-          mise run lint check --jscpd --ci || e=$?
-          mise run lint check --ls --ci || e=$?
-          mise run lint check --hadolint --ci || e=$?
-          mise run lint check --ast-grep --ci || e=$?
-          mise run lint check --mise --ci || e=$?
-          bun run typecheck || e=$?
-          exit $e
-      - name: Write summary table
+      - name: Write lint summary table
         if: always()
         run: |
           {
             echo "## Lint summary"
             echo
+            echo "Reports are produced by the **HK CI profile** step (\`hk.pkl\` \`ci\` steps under \`tmp/reports/linters/\`). Biome also emits GitHub annotations and is not listed as a file here."
+            echo
             echo "| Tool | Report |"
             echo "| ---- | ------ |"
+            shopt -s nullglob
+            count=0
             for f in tmp/reports/linters/*; do
-              [ -f "$f" ] && printf '| `%s` | see artifact |\n' "$(basename "$f")"
+              [ -f "$f" ] || continue
+              count=$((count + 1))
+              printf "| \`%s\` | see artifact |\n" "$(basename "$f")"
             done
+            if [ "$count" -eq 0 ]; then
+              echo "| _none_ | HK CI profile did not write \`tmp/reports/linters/\` |"
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         if: always()
@@ -99,10 +67,10 @@ jobs:
           name: report-linters
           path: tmp/reports/linters
           retention-days: 7
+          if-no-files-found: ignore
 
   test:
-    # Ensure these jobs run only for PRs from branches in the main repo, not forks
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    if: ${{ !github.event.pull_request.draft }}
     name: Test - Runs the test suite
     runs-on: ubuntu-24.04
     permissions:
@@ -113,13 +81,19 @@ jobs:
       - uses: ./.github/actions/setup-bun-project
         with:
           setup_mode: mise
-      - run: mise run test ci
+      - name: Run tests (JUnit + coverage)
+        run: |
+          mkdir -p tmp/reports/tests
+          bun test --pass-with-no-tests \
+            --reporter=junit \
+            --reporter-outfile=tmp/reports/tests/junit.xml \
+            --coverage \
+            --coverage-dir=tmp/reports/tests/coverage
       - name: Append JUnit summary
         if: always()
         uses: ./.github/actions/junit-summary
         with:
           xml_path: tmp/reports/tests/junit.xml
-          output_path: ${{ github.step_summary }}
           title: Test Results
       - uses: actions/upload-artifact@v4
         if: always()
@@ -135,8 +109,8 @@ jobs:
           require_tests: true
 
   cst:
-    # Ensure these jobs run only for PRs from branches in the main repo, not forks
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    # Skip drafts, and skip fork PRs (Docker build needs in-repo secrets/cache).
+    if: ${{ !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
     name: CST - Runs the Container Structure Tests
     runs-on: ubuntu-24.04
     permissions:
@@ -163,7 +137,6 @@ jobs:
         uses: ./.github/actions/junit-summary
         with:
           xml_path: tmp/reports/cst/junit.xml
-          output_path: ${{ github.step_summary }}
           title: Container Structure Tests
       - uses: actions/upload-artifact@v4
         if: always()
@@ -179,12 +152,18 @@ jobs:
           require_tests: true
           check_name: Container Structure Tests
 
-  preview:
-    # Ensure these jobs run only for PRs from branches in the main repo, not forks
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-    name: Preview - Builds the project
+  build:
+    # hk/cst are skipped on fork PRs; without `always()` + skipped checks, build
+    # is skipped when any needed job is skipped (GitHub default success() gate).
+    name: Build - Smoke build (unsigned)
     runs-on: ubuntu-24.04
-    needs: [lint, test, cst]
+    needs: [hk, test, cst]
+    if: >-
+      always() &&
+      !github.event.pull_request.draft &&
+      needs.test.result == 'success' &&
+      (needs.hk.result == 'success' || needs.hk.result == 'skipped') &&
+      (needs.cst.result == 'success' || needs.cst.result == 'skipped')
     permissions:
       contents: read
     steps:
@@ -200,10 +179,15 @@ jobs:
             electrobun-${{ runner.os }}-
       - name: Ensure ElectroBun home exists
         run: mkdir -p ~/.electrobun
+      - name: Compile renderer styles
+        run: bash tools/scripts/compile_renderer_styles.sh
       - name: Smoke build (forced unsigned)
         env:
           ELECTROBUN_DEVELOPER_ID: ''
-        run: bun run build
+        run: |
+          # Drop OS-specific CLI stub so electrobun.cjs fetches linux-x64 from releases.
+          rm -f node_modules/electrobun/bin/electrobun
+          bun run build:ci
       - uses: actions/upload-artifact@v4
         with:
           name: build-smoke-linux-x64

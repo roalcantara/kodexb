@@ -12,62 +12,62 @@ schemaVersion: '2.0.0'
 fileExistenceTests:
   # ── Launcher entrypoint ─────────────────────────────────────────────────────
   - name: Electrobun launcher binary exists
-    path: /opt/app/bin/launcher
+    path: /opt/kb/bin/launcher
     shouldExist: true
     permissions: '-rwxr-xr-x'
-  - name: launcher is symlinked to /usr/local/bin/app
-    path: /usr/local/bin/app
+  - name: launcher is symlinked to /usr/local/bin/kb
+    path: /usr/local/bin/kb
     shouldExist: true
 
   # ── Native runtime + GTK wrapper ────────────────────────────────────────────
   - name: bundled Bun runtime exists
-    path: /opt/app/bin/bun
+    path: /opt/kb/bin/bun
     shouldExist: true
     permissions: '-rwxr-xr-x'
   - name: GTK-only native wrapper shared library exists
-    path: /opt/app/bin/libNativeWrapper.so
+    path: /opt/kb/bin/libNativeWrapper.so
     shouldExist: true
   - name: asar shared library exists
-    path: /opt/app/bin/libasar.so
+    path: /opt/kb/bin/libasar.so
     shouldExist: true
   - name: bspatch helper exists
-    path: /opt/app/bin/bspatch
+    path: /opt/kb/bin/bspatch
     shouldExist: true
   - name: zig-zstd helper exists
-    path: /opt/app/bin/zig-zstd
+    path: /opt/kb/bin/zig-zstd
     shouldExist: true
 
   # ── App payload (main process + renderer) ───────────────────────────────────
   - name: main process bundle exists
-    path: /opt/app/Resources/app/bun/index.js
+    path: /opt/kb/Resources/app/bun/index.js
     shouldExist: true
   - name: renderer shell directory exists
-    path: /opt/app/Resources/app/views/shell
+    path: /opt/kb/Resources/app/views/shell
     shouldExist: true
   - name: app icon exists
-    path: /opt/app/Resources/app/icon.png
+    path: /opt/kb/Resources/app/icon.png
     shouldExist: true
 
   # ── Linux desktop integration ───────────────────────────────────────────────
   - name: Linux desktop entry exists
-    path: /opt/app/app.desktop
+    path: /opt/kb/kb.desktop
     shouldExist: true
   - name: Info.plist sidecar exists
-    path: /opt/app/Info.plist
+    path: /opt/kb/Info.plist
     shouldExist: true
 
 fileContentTests:
-  - name: desktop file declares the app application
-    path: /opt/app/app.desktop
-    expectedContents: ['app']
+  - name: desktop file declares the kb application
+    path: /opt/kb/kb.desktop
+    expectedContents: ['kb']
   - name: main process bundle is a non-empty JavaScript file
-    path: /opt/app/Resources/app/bun/index.js
+    path: /opt/kb/Resources/app/bun/index.js
     expectedContents: ['import|require|export|function|var ']
 
 metadataTest:
-  entrypoint: ['/opt/app/bin/launcher']
+  entrypoint: ['/opt/kb/bin/launcher']
   labels:
     - key: org.opencontainers.image.title
-      value: app
+      value: kb
     - key: org.opencontainers.image.source
       value: 'https://github.com/roalcantara/kb'

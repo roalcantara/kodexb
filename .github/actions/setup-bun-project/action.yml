@@ -14,7 +14,7 @@ inputs:
   mise_version:
     description: Mise version when setup_mode=mise
     required: false
-    default: '2026.3.9'
+    default: '2026.3.17'
 
 runs:
   using: composite

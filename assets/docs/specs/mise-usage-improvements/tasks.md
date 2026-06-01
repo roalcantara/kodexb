@@ -4,7 +4,7 @@
 ## Overview
 
 Use this checklist to implement the full task contract cleanup. Do not bulk-edit
-checappoxes. Mark an item complete only after the item is actually done, and add
+checkboxes. Mark an item complete only after the item is actually done, and add
 an `Evidence:` bullet with changed files and exact commands.
 
 Each task has acceptance criteria. A task is not complete when the file edits

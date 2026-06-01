@@ -6,6 +6,9 @@ set -eu -o pipefail
 ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
 
+GATE_OUT="$(mktemp "${TMPDIR:-/tmp}/app-quality-gate-out.XXXXXX")"
+trap 'rm -f "${GATE_OUT:-}"' EXIT
+
 PASS="\033[0;32m✔\033[0m"
 FAIL="\033[0;31m✘\033[0m"
 
@@ -20,7 +23,7 @@ run_check() {
   if [[ "$mode" == "tee" ]]; then
     # Pipeline exit status is tee's without pipefail; use PIPESTATUS[0] for "$@".
     set +e
-    "$@" 2>&1 | tee /tmp/kb-gate-out
+    "$@" 2>&1 | tee "$GATE_OUT"
     local cmd_status="${PIPESTATUS[0]}"
     set -e
     if [[ "$cmd_status" -eq 0 ]]; then
@@ -32,11 +35,11 @@ run_check() {
     return
   fi
   echo -n "  $label … "
-  if "$@" > /tmp/kb-gate-out 2>&1; then
+  if "$@" >"$GATE_OUT" 2>&1; then
     echo -e "$PASS"
   else
     echo -e "$FAIL"
-    cat /tmp/kb-gate-out
+    cat "$GATE_OUT"
     exit 1
   fi
 }

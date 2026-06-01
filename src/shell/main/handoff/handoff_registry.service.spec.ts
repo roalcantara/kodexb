@@ -6,10 +6,6 @@ let clipboardContent = ''
 let openPathResult: boolean | 'throw' = false
 let openExternalResult: boolean | 'throw' = false
 
-mock.module('./resolve_frontmost_app.util', () => ({
-  resolveFrontmostAppBundleId: () => null
-}))
-
 mock.module('electrobun/bun', () => ({
   Utils: {
     openExternal: () => {
@@ -30,10 +26,6 @@ mock.module('./electrobun_clipboard.port', () => ({
   }
 }))
 
-mock.module('./resolve_terminal_app_name.util', () => ({
-  resolveTerminalAppName: () => 'Terminal'
-}))
-
 beforeAll(() => installBunDollarMock())
 beforeEach(() => {
   clipboardContent = ''
@@ -43,6 +35,9 @@ beforeEach(() => {
   setBunDollarThrow(true)
 })
 afterAll(() => uninstallBunDollarMock())
+
+/** Registry specs assert osascript/Bun.$ behaviour; pin darwin so Linux CI does not require xdotool. */
+const HANDOFF_TEST_PLATFORM = 'darwin' as const
 
 const makeServices = () => {
   const calls: string[] = []
@@ -69,14 +64,14 @@ describe('runEntryHandoff', () => {
       clipboardContent = 'clip'
       const { runEntryHandoff } = await import('./handoff_registry.service')
       const services = makeServices()
-      const result = runEntryHandoff('browser-open', {}, services)
+      const result = runEntryHandoff('browser-open', {}, services, HANDOFF_TEST_PLATFORM)
       expect(result).toEqual({ ok: false, error: 'No URL provided', code: 'browser-open-failed' })
     })
 
     it('calls hide, show, and disarmGuard', async () => {
       const { runEntryHandoff } = await import('./handoff_registry.service')
       const services = makeServices()
-      runEntryHandoff('browser-open', {}, services)
+      runEntryHandoff('browser-open', {}, services, HANDOFF_TEST_PLATFORM)
       expect(services.calls).toContain('hide')
       expect(services.calls).toContain('show')
       expect(services.calls).toContain('disarmGuard')
@@ -87,7 +82,7 @@ describe('runEntryHandoff', () => {
     it('returns false with editor-open-failed code', async () => {
       const { runEntryHandoff } = await import('./handoff_registry.service')
       const services = makeServices()
-      const result = runEntryHandoff('editor-open', {}, services)
+      const result = runEntryHandoff('editor-open', {}, services, HANDOFF_TEST_PLATFORM)
       expect(result).toEqual({ ok: false, error: 'No file path provided', code: 'editor-open-failed' })
     })
   })
@@ -98,7 +93,7 @@ describe('runEntryHandoff', () => {
       setBunDollarThrow(false)
       const { runEntryHandoff } = await import('./handoff_registry.service')
       const services = makeServices()
-      const result = runEntryHandoff('terminal-paste', { cmd: 'ls -la' }, services)
+      const result = runEntryHandoff('terminal-paste', { cmd: 'ls -la' }, services, HANDOFF_TEST_PLATFORM)
 
       expect(result).toEqual({ ok: true })
       expect(services.calls).toContain('disarmGuard')
@@ -114,7 +109,7 @@ describe('runEntryHandoff', () => {
       setBunDollarThrow(true)
       const { runEntryHandoff } = await import('./handoff_registry.service')
       const services = makeServices()
-      const result = runEntryHandoff('terminal-paste', { cmd: 'ls -la' }, services)
+      const result = runEntryHandoff('terminal-paste', { cmd: 'ls -la' }, services, HANDOFF_TEST_PLATFORM)
 
       expect(result).toMatchObject({ ok: false, code: 'terminal-paste-failed' })
       expect(clipboardContent).toBe('original-clip')
@@ -130,7 +125,7 @@ describe('runEntryHandoff', () => {
       setBunDollarThrow(false)
       const { runEntryHandoff } = await import('./handoff_registry.service')
       const services = makeServices()
-      const result = runEntryHandoff('terminal-run', { cmd: 'npm test' }, services)
+      const result = runEntryHandoff('terminal-run', { cmd: 'npm test' }, services, HANDOFF_TEST_PLATFORM)
 
       expect(result).toEqual({ ok: true })
       expect(clipboardContent).toBe('clip')
@@ -154,7 +149,7 @@ describe('runEntryHandoff', () => {
         Bun.spawnSync = (() => ({ exitCode: 0, stdout: '', stderr: '' })) as unknown as typeof Bun.spawnSync
         const { runEntryHandoff } = await import('./handoff_registry.service')
         const services = makeServices()
-        const result = runEntryHandoff('paste-frontmost', { doc: 'paste-content' }, services)
+        const result = runEntryHandoff('paste-frontmost', { doc: 'paste-content' }, services, HANDOFF_TEST_PLATFORM)
 
         expect(result).toEqual({ ok: true })
         expect(clipboardContent).toBe('original-clip')
@@ -170,7 +165,7 @@ describe('runEntryHandoff', () => {
         setBunDollarThrow(true)
         const { runEntryHandoff } = await import('./handoff_registry.service')
         const services = makeServices()
-        const result = runEntryHandoff('paste-frontmost', { doc: 'paste-content' }, services)
+        const result = runEntryHandoff('paste-frontmost', { doc: 'paste-content' }, services, HANDOFF_TEST_PLATFORM)
 
         expect(result).toMatchObject({ ok: false, code: 'paste-doc-failed' })
         expect(clipboardContent).toBe('original-clip')
@@ -184,7 +179,7 @@ describe('runEntryHandoff', () => {
       openExternalResult = true
       const { runEntryHandoff } = await import('./handoff_registry.service')
       const services = makeServices()
-      const result = runEntryHandoff('browser-open', { url: 'https://example.com' }, services)
+      const result = runEntryHandoff('browser-open', { url: 'https://example.com' }, services, HANDOFF_TEST_PLATFORM)
 
       expect(result).toEqual({ ok: true })
       expect(services.calls).toContain('armGuard')
@@ -213,7 +208,7 @@ describe('runEntryHandoff', () => {
         clipboardContent = ''
         const { runEntryHandoff } = await import('./handoff_registry.service')
         const services = makeServices()
-        const result = runEntryHandoff(kind, payload, services)
+        const result = runEntryHandoff(kind, payload, services, HANDOFF_TEST_PLATFORM)
         expect(result).toMatchObject({ ok: false, code: wantCode })
         expect(result).toMatchObject({ error: expect.stringContaining(wantError) })
       })

@@ -1,7 +1,7 @@
 <!-- markdownlint-disable-file -->
 # Phase 5 — App Service + Elysia RPC Implementation Plan
 
-> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan **task-by-task**. Steps use checappox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan **task-by-task**. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the manual Electrobun request map (`src/shell/main/rpc/requests.ts` + `parseRpcPayload`) and the ad-hoc preview `/api/*` switch with a **single Elysia `RpcApp`**: `createRpcServer(app)` in `src/shell/main/rpc/server.ts`, bound to **Electrobun IPC** in the desktop main process and to **HTTP** in `tools/preview/server.ts`. The renderer uses **Eden Treaty** (`@elysiajs/eden`) for all **request/response** RPC; **main→renderer sync progress** stays on the existing **`webview.messages`** channel (`syncProgress`, `syncComplete`) via a **hybrid** bridge (Eden + Electrobun messages only).
 

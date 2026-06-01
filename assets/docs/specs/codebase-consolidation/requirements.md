@@ -184,4 +184,4 @@ the gate).
 - **A5** — `bun run build` exits zero.
 - **A6** — `bash .agents/skills/app-quality-gate/scripts/gate.sh` exits zero (with the host-permission caveat already documented in the best-practices audit).
 - **A7** — `git log --oneline feat-add-stats-panel..HEAD` lists exactly six commits for this work, each titled `refactor(scope): ...` per [`assets/guides/GIT_COMMITS_GUIDE.md`](../../guides/GIT_COMMITS_GUIDE.md).
-- **A8** — `tasks.md` shows every checappox checked; each phase's "Verification" line is filled in with the captured command output (commit hash + pass/fail).
+- **A8** — `tasks.md` shows every checkbox checked; each phase's "Verification" line is filled in with the captured command output (commit hash + pass/fail).
