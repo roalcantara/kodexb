@@ -12,6 +12,7 @@ type CommandPaletteDeps = {
   onEditTask: (entry: RpcKnowledge) => void
   onNewTask: () => void
   onSync: () => void
+  onOpenSettings: () => void
   pushToast: (msg: string, type: 'success' | 'error') => void
   /** Shared ctx (entry filled per build); when omitted, built internally. */
   actionCtx?: EntryActionContext
@@ -28,6 +29,7 @@ export function useCommandPalette({
   onEditTask,
   onNewTask,
   onSync,
+  onOpenSettings,
   pushToast,
   actionCtx: sharedActionCtx,
   setFilterOpen,
@@ -36,8 +38,8 @@ export function useCommandPalette({
 }: CommandPaletteDeps) {
   const [open, setOpen] = useState(false)
   const entry = useMemo(() => rows.find(r => r.id === selectedId) ?? null, [rows, selectedId])
-  const depsRef = useRef({ selectedId, rows, onEditTask, onNewTask, onSync, pushToast })
-  depsRef.current = { selectedId, rows, onEditTask, onNewTask, onSync, pushToast }
+  const depsRef = useRef({ selectedId, rows, onEditTask, onNewTask, onSync, onOpenSettings, pushToast })
+  depsRef.current = { selectedId, rows, onEditTask, onNewTask, onSync, onOpenSettings, pushToast }
 
   const actionCtx = useMemo<EntryActionContext>(
     () =>
@@ -48,9 +50,10 @@ export function useCommandPalette({
             pushToast,
             onEditTask,
             onNewTask,
-            onSync
+            onSync,
+            onOpenSettings
           },
-    [sharedActionCtx, entry, pushToast, onEditTask, onNewTask, onSync]
+    [sharedActionCtx, entry, pushToast, onEditTask, onNewTask, onSync, onOpenSettings]
   )
 
   const actions = useMemo((): CommandPaletteAction[] => {

@@ -49,7 +49,8 @@ describe('useViewNavigation recordEntryVisit', () => {
         pushToast: () => undefined,
         onEditTask: () => undefined,
         onNewTask: () => undefined,
-        onSync: () => undefined
+        onSync: () => undefined,
+        onOpenSettings: () => undefined
       }
       const writeText = mock(() => Promise.resolve())
       await withMockClipboard(writeText, async () => {

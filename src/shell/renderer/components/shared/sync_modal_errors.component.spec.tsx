@@ -72,7 +72,8 @@ describe('SyncModal error UX', () => {
           inserted: 2,
           updated: 0,
           errors: ['/tmp/src/bad.yaml: parse error'],
-          warnings: []
+          warnings: [],
+          fileLog: []
         }
       })
       const statsStrip = document.querySelector('.cmp-sync-modal-stats-strip')
@@ -95,7 +96,8 @@ describe('SyncModal error UX', () => {
           inserted: 0,
           updated: 0,
           errors: ['/tmp/src/bad.yaml: parse error'],
-          warnings: []
+          warnings: [],
+          fileLog: []
         }
       })
       expect(document.querySelector('.cmp-sync-modal-summary-errors')).toBeNull()
@@ -115,7 +117,8 @@ describe('SyncModal error UX', () => {
           inserted: 0,
           updated: 0,
           errors: ['/tmp/src/bad.yaml: parse error'],
-          warnings: []
+          warnings: [],
+          fileLog: []
         }
       })
       expect(document.querySelector('.cmp-sync-modal-file-row--error')).toBeTruthy()
@@ -137,7 +140,8 @@ describe('SyncModal error UX', () => {
           inserted: 0,
           updated: 0,
           errors: ['/tmp/src/fail.yaml: error text'],
-          warnings: []
+          warnings: [],
+          fileLog: []
         }
       })
       expect(document.querySelector('.cmp-sync-modal-file-row--interactive')).toBeTruthy()
@@ -158,7 +162,8 @@ describe('SyncModal error UX', () => {
           inserted: 0,
           updated: 0,
           errors: ['/tmp/src/fail.yaml: first error'],
-          warnings: []
+          warnings: [],
+          fileLog: []
         }
       })
       const errorDetail = document.querySelector('.cmp-sync-modal-error-detail')
@@ -179,7 +184,8 @@ describe('SyncModal error UX', () => {
           inserted: 3,
           updated: 0,
           errors: ['/tmp/src/partial.yml: entry "bad-key": invalid tags'],
-          warnings: []
+          warnings: [],
+          fileLog: []
         }
       })
       expect(document.querySelector('.cmp-sync-modal-file-row--error')).toBeTruthy()
@@ -205,7 +211,8 @@ describe('SyncModal error UX', () => {
           inserted: 30,
           updated: 0,
           errors: [longError],
-          warnings: []
+          warnings: [],
+          fileLog: []
         }
       })
 

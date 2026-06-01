@@ -16,7 +16,8 @@ Feature: Sync resilience
   Scenario: Partial file import keeps valid rows and reports the bad entry
     When I run sync
     Then sync reports partial import from "partial_valid.yml"
-    And sync error detail mentions "broken"
+    And I expand sync errors for file "partial_valid.yml"
+    And sync error accordion for "partial_valid.yml" shows "broken"
     And the knowledge list includes "Sync Partial Alpha" after sync
 
   Scenario: Malformed file is skipped and listed as failed
@@ -26,8 +27,9 @@ Feature: Sync resilience
 
   Scenario: Sync summary shows file totals after errors
     When I run sync
-    Then sync reports completion
-    And sync summary shows at least 1 file with errors
+    Then sync summary shows at least 1 file with errors
+    And sync summary shows file totals
+    And sync reports completion
 
   Scenario: Expanding a failed file shows full error text
     When I run sync

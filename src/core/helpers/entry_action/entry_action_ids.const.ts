@@ -12,6 +12,7 @@ export const ENTRY_ACTION_IDS = [
   'paste-doc',
   'sync',
   'new-task',
+  'settings',
   'quit'
 ] as const
 

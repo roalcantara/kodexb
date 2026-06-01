@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import type { RpcImportResult } from '@shared/rpc'
 import { syncCompleteToastForResult } from './list_sync_complete_toast.util'
 
-const base: RpcImportResult = { filesProcessed: 1, inserted: 1, updated: 0, errors: [], warnings: [] }
+const base: RpcImportResult = { filesProcessed: 1, inserted: 1, updated: 0, errors: [], warnings: [], fileLog: [] }
 
 describe('syncCompleteToastForResult', () => {
   describe('when sync completes', () => {

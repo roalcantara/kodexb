@@ -36,6 +36,12 @@ function libraryActions(ctx: EntryActionContext): EntryAction[] {
       label: 'New Task',
       section: 'library',
       run: () => ctx.onNewTask()
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      section: 'library',
+      run: () => ctx.onOpenSettings()
     }
   ]
 }

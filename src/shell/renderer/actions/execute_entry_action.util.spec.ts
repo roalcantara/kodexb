@@ -16,7 +16,8 @@ const actionCtx = {
   pushToast: () => undefined,
   onEditTask: () => undefined,
   onNewTask: () => undefined,
-  onSync: () => undefined
+  onSync: () => undefined,
+  onOpenSettings: () => undefined
 }
 
 let executeEntryAction: (entry: RpcKnowledge, actionId: string, ctx: typeof actionCtx) => Promise<void>

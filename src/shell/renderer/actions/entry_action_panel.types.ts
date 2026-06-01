@@ -20,4 +20,5 @@ export type EntryActionContext = {
   onEditTask: (entry: RpcKnowledge) => void
   onNewTask: () => void
   onSync: () => void
+  onOpenSettings: () => void
 }

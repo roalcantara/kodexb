@@ -12,7 +12,8 @@ export class CreateTask implements Performable {
   }
 
   async performAs(actor: Actor): Promise<void> {
-    await actor.page.getByRole('button', { name: '+ New Task' }).click()
+    await actor.attemptsTo(OpenCommandPalette.now())
+    await actor.page.locator('.cmp-command-palette-action', { hasText: 'New Task' }).click()
     const dialog = actor.page.getByRole('dialog', { name: 'New task' })
     await dialog.waitFor({ state: 'visible' })
     await dialog.locator('#ts-key').fill(this.name)

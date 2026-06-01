@@ -84,7 +84,14 @@ describe('createDeferredSyncEmit', () => {
     const mkSyncEmitter = mock(() => ({ syncProgress, syncComplete }))
     const emit = createDeferredSyncEmit(() => rpc, mkSyncEmitter)
     const payload = { processed: 2, total: 5 }
-    const result = { filesProcessed: 5, inserted: 1, updated: 0, errors: [] as string[], warnings: [] as string[] }
+    const result = {
+      filesProcessed: 5,
+      inserted: 1,
+      updated: 0,
+      errors: [] as string[],
+      warnings: [] as string[],
+      fileLog: []
+    }
     emit.syncProgress(payload)
     emit.syncComplete(result)
     expect(mkSyncEmitter).toHaveBeenCalledWith(rpc)

@@ -144,7 +144,7 @@ Do not reuse the same phrase under different keywords.
 | the knowledge list uses page size {string}              | Then    | `EntryList.usesBatchSize(size)`          | N     |
 | I reset settings                                        | When    | `ResetSettings`                          | N     |
 | settings shows the persisted page size                  | Then    | `SettingsPage.showsPersistedPageSize()`  | N     |
-| I run sync                                              | When    | `RunSync` (⌘K → Sync)                    | N     |
+| I run sync                                              | When    | `RunSync` (⌘P → sync in palette)         | N     |
 | sync reports completion                                 | Then    | `SyncModal.reportsCompletion()`          | N     |
 | the knowledge list includes {string}                    | Then    | `EntryList.includesTitle(title)`         | N     |
 | sync reports the invalid file                           | Then    | `SyncModal.reportsInvalidFile()`         | N     |

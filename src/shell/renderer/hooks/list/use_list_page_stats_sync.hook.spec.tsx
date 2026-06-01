@@ -8,7 +8,7 @@ const setSyncMessageHandlersMock = mock<(handlers: { onProgress?: unknown; onCom
   () => undefined
 )
 const syncRpcMock = mock(() =>
-  Promise.resolve({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [] })
+  Promise.resolve({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [], fileLog: [] })
 )
 const getSyncInfoMock = mock(() => Promise.resolve({ sourcesDir: '/tmp', fileCount: 0 }))
 const pushToastMock = mock(() => undefined)
@@ -71,7 +71,7 @@ describe('useListPageStatsSync', () => {
       dbSize: 4096
     })
     setSyncMessageHandlersMock.mockImplementation(() => undefined)
-    syncRpcMock.mockResolvedValue({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [] })
+    syncRpcMock.mockResolvedValue({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [], fileLog: [] })
   })
 
   describe('when mount completes', () => {
@@ -112,7 +112,7 @@ describe('useListPageStatsSync', () => {
       getListStatsMock.mockReset()
       getListStatsMock.mockResolvedValueOnce(listStats)
       act(() => {
-        complete({ filesProcessed: 1, inserted: 1, updated: 0, errors: [], warnings: [] })
+        complete({ filesProcessed: 1, inserted: 1, updated: 0, errors: [], warnings: [], fileLog: [] })
       })
       await waitFor(() => expect(getListStatsMock).toHaveBeenCalledTimes(1))
     })
@@ -137,7 +137,7 @@ describe('useListPageStatsSync', () => {
       render(<HarnessWithMock />)
       await waitFor(() => expect(screen.getByTestId('total').textContent).toBe('4'))
       if (onComplete === undefined) throw new Error('onComplete not registered')
-      const result = { filesProcessed: 1, inserted: 1, updated: 0, errors: [], warnings: [] }
+      const result = { filesProcessed: 1, inserted: 1, updated: 0, errors: [], warnings: [], fileLog: [] }
       const doComplete = onComplete
       act(() => {
         doComplete(result)

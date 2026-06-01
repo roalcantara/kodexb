@@ -21,6 +21,8 @@ describe('ImportService', () => {
       expect(result.inserted).toBe(SAMPLE_INSERTED)
       expect(result.updated).toBe(0)
       expect(result.errors).toHaveLength(SAMPLE_ERRORS)
+      expect(result.fileLog).toHaveLength(SAMPLE_FILES_PROCESSED)
+      expect(result.fileLog.every(f => f.path.startsWith('/') || f.path.includes('mixed_invalid'))).toBe(true)
     })
 
     it('imports minimal fixture', async () => {
