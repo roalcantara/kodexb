@@ -162,6 +162,10 @@ e2e/.fixture-paths.json
 tmp/e2e/
 tmp/playwright-report/
 
+# Generated linter snapshots (jscpd JSON drifts under Biome lint:fix; CI uses
+# tmp/reports/linters/jscpd from hk.pkl / mise run lint check --jscpd)
+report/
+
 # Superpowers brainstorm scratch (local only)
 .superpowers/
 
