@@ -231,3 +231,5 @@ tools/benchmarks/results/latest.json
 
 # Local git worktrees (created by using-git-worktrees skill for isolated demos / spikes)
 .worktrees/
+assets/docs/specs/MILESTONE_02/00_scope/consolidated-review.md
+.copilot-specs-cache/
