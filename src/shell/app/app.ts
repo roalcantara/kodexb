@@ -31,7 +31,7 @@ import { buildListStatsForFilters } from './lib/app_list_stats_for_filters.util'
 import { fetchPreviewImageFromUrl } from './lib/app_preview_fetch.util'
 import type { AppShellHooks } from './lib/app_shell_hooks.types'
 import { createAppShellDelegates } from './lib/app_shell_surface.util'
-import { runSourceImportSync } from './lib/app_sync.util'
+import { type RunSourceImportSyncTestHooks, runSourceImportSync } from './lib/app_sync.util'
 import { getSyncInfoForSourcesDir } from './lib/app_sync_info.util'
 import { removeTaskFromSource, resolveCreateTaskTags, writeTaskToSource } from './lib/app_task_source.util'
 import { SyncDatabaseBusyError } from './lib/sync_database_busy.error'
@@ -142,18 +142,21 @@ export class App {
     return Promise.resolve(buildListStatsForFilters(raw, this.loaded, filters))
   }
 
-  async sync(sourcesDir?: string): Promise<RpcImportResult> {
+  async sync(sourcesDir?: string, testHooks?: RunSourceImportSyncTestHooks): Promise<RpcImportResult> {
     const dir = sourcesDir ?? this.loaded.sources.path
     const dbPath = this.loaded.database.path
+    const { raw: dbForSnapshot } = this.getDb()
     this.syncInFlight = true
     try {
       return await runSourceImportSync({
         sourcesDir: dir,
         dbPath,
+        dbForSnapshot,
         closeDb: () => this.closeDb(),
         invalidateListCache: () => this.invalidateListCache(),
         emit: this.emit,
-        log: this.log
+        log: this.log,
+        testHooks
       })
     } finally {
       this.syncInFlight = false
