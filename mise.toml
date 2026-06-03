@@ -44,7 +44,11 @@ HK_PKL_BACKEND = "pklr"
         ;;
       prepare)
         bun install ${usage_ci:+--frozen-lockfile}
-        ${usage_ci:-false} || hk install --mise
+        if [[ "${usage_ci:-false}" == "false" ]]; then
+          hk install --mise
+          uv tool install --upgrade code-review-graph
+          uv tool install --upgrade git+https://github.com/github/spec-kit.git
+        fi
         ;;
       clean)
         rm -rf dist tmp .electrobun-cache
@@ -101,7 +105,7 @@ HK_PKL_BACKEND = "pklr"
     REPO_ROOT="$(git rev-parse --show-toplevel)"
 
     install_crg() {
-      uv tool install --upgrade code-review-graph
+
     }
 
     setup_repo_mcp() {
@@ -2273,5 +2277,80 @@ if (!ok) process.exit(1)
         "${CST_CMD[@]}"
         ;;
       *) echo "docker: unknown action '${CMD}' (expected one of: build, run, test)"; exit 2 ;;
+    esac
+  ''' }
+"spec" = { description = "kb SDD spec checks: lint, trace, gate, legacy parity, worktrees", usage = '''
+    cmd "lint" {
+      flag "--all" help="Lint every assets/specs/NNN-*/spec.md"
+      flag "--root <root>" default="assets/specs" help="Spec root for --all"
+      flag "--strict" help="Exit non-zero on errors"
+      arg "<target>" help="Feature dir or spec.md path"
+    }
+    cmd "trace" {
+      flag "--features <dir>" default="assets/features/e2e" help="Executable .feature root"
+      flag "--strict" help="Exit non-zero on broken links"
+      arg "<feature_dir>" help="Feature dir holding spec.md"
+    }
+    cmd "gate" {
+      arg "<feature_dir>" help="Feature dir to lint + trace + gate.sh"
+    }
+    cmd "import-legacy" {
+      flag "--feature <slug>" help="NNN-slug folder name"
+    }
+    cmd "feature-init" {
+      flag "--id <id>" help="Three-digit id e.g. 001"
+      flag "--slug <slug>" help="Feature slug"
+    }
+    cmd "resume" {}
+    cmd "worktree-add" {
+      arg "<feature>" help="NNN-slug"
+    }
+    cmd "opencode-check" {}
+  ''', run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+    REPO_ROOT="$(git rev-parse --show-toplevel)"
+    cd "$REPO_ROOT"
+    CMD="${usage_cmd:-}"
+
+    case "$CMD" in
+      lint)
+        args=()
+        [[ "${usage_all:-false}" == "true" ]] && args+=(--all)
+        [[ -n "${usage_root:-}" ]] && args+=(--root "$usage_root")
+        [[ "${usage_strict:-false}" == "true" ]] && args+=(--strict)
+        [[ -n "${usage_target:-}" ]] && args+=("$usage_target")
+        exec bun tools/spec/lint.ts "${args[@]}"
+        ;;
+      trace)
+        args=("$usage_feature_dir")
+        [[ -n "${usage_features:-}" ]] && args+=(--features "$usage_features")
+        [[ "${usage_strict:-false}" == "true" ]] && args+=(--strict)
+        exec bun tools/spec/trace.ts "${args[@]}"
+        ;;
+      gate)
+        dir="${usage_feature_dir:-assets/specs/001-sync-frecency-persistence}"
+        exec bash tools/spec/gate.sh "$dir"
+        ;;
+      import-legacy)
+        feat="${usage_feature:-001-sync-frecency-persistence}"
+        exec bun tools/spec/import_legacy.ts --feature "$feat"
+        ;;
+      feature-init)
+        exec bun tools/spec/feature_init.ts --id "$usage_id" --slug "$usage_slug"
+        ;;
+      resume)
+        exec specify workflow resume
+        ;;
+      worktree-add)
+        exec bash tools/spec/worktree-add.sh "$usage_feature"
+        ;;
+      opencode-check)
+        exec bash tools/spec/opencode_check.sh
+        ;;
+      *)
+        echo "spec: unknown action ${CMD}" >&2
+        exit 2
+        ;;
     esac
   ''' }
