@@ -166,4 +166,4 @@ Foundation specs:
 - [`assets/docs/specs/foundation/requirements.md`](assets/docs/specs/foundation/requirements.md) — EARS specs V1-1 through V1-8
 - [`assets/docs/specs/foundation/roadmap.md`](assets/docs/specs/foundation/roadmap.md) — phase sequence, skills per phase, development loop
 
-Feature specs and plans belong under [`assets/docs/specs/`](assets/docs/specs/) (see [`assets/docs/specs/README.md`](assets/docs/specs/README.md)). **Do not add `docs/superpowers/`** — that path is a common external skill default and is **gitignored** in this repo to prevent drift.
+Feature specs and plans: active work under [`assets/specs/`](assets/specs/) (see [`assets/guides/SDD_WORKFLOW_GUIDE.md`](assets/guides/SDD_WORKFLOW_GUIDE.md)); legacy and foundation docs remain under [`assets/docs/specs/`](assets/docs/specs/) (see [`assets/docs/specs/README.md`](assets/docs/specs/README.md)). **Do not add `docs/superpowers/`** — that path is a common external skill default and is **gitignored** in this repo to prevent drift.

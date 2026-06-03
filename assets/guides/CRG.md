@@ -72,15 +72,15 @@ After setup, restart MCP clients so they load their new server configuration.
 Repo MCP configurations run `uvx code-review-graph serve` so teammates do not
 depend on a machine-specific Python path.
 
-| Agent | MCP config | Scope | Committed |
-| ----- | ---------- | ----- | --------- |
-| Codex | `~/.codex/config.toml` | user | no |
-| Claude Code | `.mcp.json` | repo | yes |
-| Cursor | `.cursor/mcp.json` | repo | yes |
-| OpenCode | `.opencode.json` | repo | yes |
-| Antigravity | `~/.gemini/antigravity/mcp_config.json` | user | no |
-| Gemini CLI | `.gemini/settings.json` | repo | yes |
-| GitHub Copilot | `.vscode/mcp.json` | repo | yes |
+| Agent          | MCP config                              | Scope | Committed |
+| -------------- | --------------------------------------- | ----- | --------- |
+| Codex          | `~/.codex/config.toml`                  | user  | no        |
+| Claude Code    | `.mcp.json`                             | repo  | yes       |
+| Cursor         | `.cursor/mcp.json`                      | repo  | yes       |
+| OpenCode       | `opencode.json`                         | repo  | yes       |
+| Antigravity    | `~/.gemini/antigravity/mcp_config.json` | user  | no        |
+| Gemini CLI     | `.gemini/settings.json`                 | repo  | yes       |
+| GitHub Copilot | `.vscode/mcp.json`                      | repo  | yes       |
 
 Agent instructions live in `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`,
 `.cursor/rules/code-review-graph.mdc`, and
@@ -100,14 +100,14 @@ Agents should use CRG MCP tools before broad codebase scans:
 
 CRG is active through these paths:
 
-| Activation path | Purpose |
-| --------------- | ------- |
-| `mise run graph setup` | Installs or upgrades CRG, refreshes repo MCP files without hooks, and builds the local graph. |
-| `code-review-graph daemon` | Preferred shared file watcher for incremental refresh across agents. |
-| `mise run graph watch` | Direct watcher command for a supervisor when the detached daemon is unhealthy. |
-| `hk.pkl` pre-commit step | Optional non-blocking `update --skip-flows` plus `detect-changes --brief` risk summary. |
-| Repo MCP files | Expose `uvx code-review-graph serve` to Claude Code, Cursor, OpenCode, Gemini CLI, and GitHub Copilot. |
-| User MCP files | Expose CRG to Codex and Antigravity after explicit local setup. |
+| Activation path            | Purpose                                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `mise run graph setup`     | Installs or upgrades CRG, refreshes repo MCP files without hooks, and builds the local graph.          |
+| `code-review-graph daemon` | Preferred shared file watcher for incremental refresh across agents.                                   |
+| `mise run graph watch`     | Direct watcher command for a supervisor when the detached daemon is unhealthy.                         |
+| `hk.pkl` pre-commit step   | Optional non-blocking `update --skip-flows` plus `detect-changes --brief` risk summary.                |
+| Repo MCP files             | Expose `uvx code-review-graph serve` to Claude Code, Cursor, OpenCode, Gemini CLI, and GitHub Copilot. |
+| User MCP files             | Expose CRG to Codex and Antigravity after explicit local setup.                                        |
 
 HK remains the only Git hook owner. Do not append CRG commands directly to
 `.git/hooks/pre-commit`, and do not add redundant per-agent edit hooks.

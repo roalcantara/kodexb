@@ -62,7 +62,8 @@ Gherkin scenarios. Policy: [`e2e/requirements.md` R11](assets/docs/specs/e2e/req
 
 - When a Superpowers skill mentions `docs/superpowers/specs` or
   `docs/superpowers/plans`, use the `spec-driven-development` skill shape
-  instead and map the output to **`assets/docs/specs/<scope>/`** in this repo.
+  instead and map the output to **`assets/specs/<scope>/`** (active) or
+  **`assets/docs/specs/<scope>/`** (legacy/foundation) in this repo.
   Use `requirements.md`, `design.md`, `tasks.md`, and optional `handoff.md`.
 - **Do not create `docs/superpowers/`**. That path is an external skill
   default and is gitignored here to prevent drift.
@@ -141,9 +142,9 @@ project skills live under **`.agents/skills/`**.
 
 At the start of work that might touch the desktop stack, **read the routing file**, then **Read** the relevant `SKILL.md` paths—do not guess Electrobun APIs.
 
-Optional: a **sessionStart** hook in [`.cursor/hooks.json`](.cursor/hooks.json) runs [`.cursor/hooks/electrobun_session_start.ts`](.cursor/hooks/electrobun_session_start.ts) to inject the same routing text when Cursor applies `additional_context` (if it does not appear, rely on the rule above).
+Optional: a **sessionStart** hook in [`.cursor/hooks.json`](.cursor/hooks.json) runs [`.cursor/hooks/electrobun_session_start.ts`](./.agents/hooks/electrobun_session_start.ts) to inject the same routing text when Cursor applies `additional_context` (if it does not appear, rely on the rule above).
 
-Repo docs: `assets/guides/ELECTROBUN.md`, `assets/docs/specs/foundation/design.md`. Feature specs: `assets/docs/specs/README.md` (never `docs/superpowers/` — gitignored).
+Repo docs: `assets/guides/ELECTROBUN.md`, `assets/docs/specs/foundation/design.md`. Active feature specs: [`assets/specs/README.md`](assets/specs/README.md) + [`assets/guides/SDD_WORKFLOW_GUIDE.md`](assets/guides/SDD_WORKFLOW_GUIDE.md). E2e contracts stay under `assets/docs/specs/e2e/` (never `docs/superpowers/` — gitignored).
 
 ---
 
@@ -161,3 +162,8 @@ The CRG daemon is the shared freshness owner. HK runs an additional
 non-blocking update and risk summary before commits. Do not install redundant
 per-agent edit hooks. Antigravity uses this file plus its user-level MCP config
 at `~/.gemini/antigravity/mcp_config.json`.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
