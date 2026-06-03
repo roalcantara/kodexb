@@ -1,0 +1,38 @@
+schema_version: "1.0"
+workflow:
+  id: "kb-hotfix"
+  name: "kb Hotfix"
+  version: "1.0.0"
+  author: "kb"
+  description: "Minimal spec → tasks → implement → scoped gate"
+
+requires:
+  speckit_version: ">=0.8.5"
+
+inputs:
+  spec:
+    type: string
+    required: true
+    prompt: "Hotfix description"
+  integration:
+    type: string
+    default: "auto"
+
+steps:
+  - id: specify
+    command: speckit.specify
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: tasks
+    command: speckit.tasks
+    integration: "{{ inputs.integration }}"
+
+  - id: implement
+    command: speckit.implement
+    integration: "{{ inputs.integration }}"
+
+  - id: spec-gate
+    type: shell
+    command: mise run spec gate -- "${SPECIFY_FEATURE_DIRECTORY}"

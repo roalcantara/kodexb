@@ -1,0 +1,9 @@
+---
+alwaysApply: true
+---
+
+<!-- SPECKIT START -->
+Active SDD specs: `assets/specs/<NNN>-<slug>/` (`spec.md`, `plan.md`, `tasks.md`).
+Workflow: [`assets/guides/SDD_WORKFLOW_GUIDE.md`](../../assets/guides/SDD_WORKFLOW_GUIDE.md).
+Gates: `mise run spec lint|trace|gate`. Legacy specs remain under `assets/docs/specs/`.
+<!-- SPECKIT END -->

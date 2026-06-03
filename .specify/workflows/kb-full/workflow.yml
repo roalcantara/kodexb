@@ -1,0 +1,60 @@
+schema_version: "1.0"
+workflow:
+  id: "kb-full"
+  name: "kb Full Feature"
+  version: "1.0.0"
+  author: "kb"
+  description: "Intake → specify → clarify → checklist → analyze → plan → tasks → implement → spec gate"
+
+requires:
+  speckit_version: ">=0.8.5"
+
+inputs:
+  spec:
+    type: string
+    required: true
+    prompt: "Feature description or intake prompt"
+  integration:
+    type: string
+    default: "auto"
+
+steps:
+  - id: specify
+    command: speckit.specify
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: review-spec
+    type: gate
+    message: "Review spec.md (EARS). Run mise run spec lint --strict on feature dir."
+    options: [approve, reject]
+    on_reject: abort
+
+  - id: clarify
+    command: speckit.clarify
+    integration: "{{ inputs.integration }}"
+
+  - id: checklist
+    command: speckit.checklist
+    integration: "{{ inputs.integration }}"
+
+  - id: analyze-req
+    command: speckit.analyze
+    integration: "{{ inputs.integration }}"
+
+  - id: plan
+    command: speckit.plan
+    integration: "{{ inputs.integration }}"
+
+  - id: tasks
+    command: speckit.tasks
+    integration: "{{ inputs.integration }}"
+
+  - id: implement
+    command: speckit.implement
+    integration: "{{ inputs.integration }}"
+
+  - id: spec-gate
+    type: shell
+    command: mise run spec gate -- "${SPECIFY_FEATURE_DIRECTORY:-assets/specs/001-sync-frecency-persistence}"

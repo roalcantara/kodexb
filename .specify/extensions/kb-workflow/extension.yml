@@ -1,0 +1,12 @@
+name: kb-workflow
+version: 1.0.0
+description: kb SDD handoff and implement preflight hooks
+commands:
+  - name: speckit.kb.handoff
+    file: commands/speckit.kb.handoff.md
+  - name: speckit.kb.preflight
+    file: commands/speckit.kb.preflight.md
+scripts:
+  bash:
+    - scripts/bash/kb-handoff.sh
+    - scripts/bash/kb-preflight.sh

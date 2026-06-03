@@ -1,0 +1,36 @@
+schema_version: "1.0"
+workflow:
+  id: "kb-slice"
+  name: "kb Brownfield Slice"
+  version: "1.0.0"
+  author: "kb"
+  description: "Checklist → analyze → tasks → implement → spec gate (skips clarify/plan regeneration)"
+
+requires:
+  speckit_version: ">=0.8.5"
+
+inputs:
+  integration:
+    type: string
+    default: "auto"
+
+steps:
+  - id: checklist
+    command: speckit.checklist
+    integration: "{{ inputs.integration }}"
+
+  - id: analyze
+    command: speckit.analyze
+    integration: "{{ inputs.integration }}"
+
+  - id: tasks
+    command: speckit.tasks
+    integration: "{{ inputs.integration }}"
+
+  - id: implement
+    command: speckit.implement
+    integration: "{{ inputs.integration }}"
+
+  - id: spec-gate
+    type: shell
+    command: mise run spec gate -- "${SPECIFY_FEATURE_DIRECTORY}"

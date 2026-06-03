@@ -1,0 +1,9 @@
+# Spec Kit workflow catalog — kb tiered SDD workflows
+# Register: specify workflow add .specify/workflows/kb-full/workflow.yml
+
+catalogs:
+  - name: kb
+    workflows:
+      - path: workflows/kb-full/workflow.yml
+      - path: workflows/kb-slice/workflow.yml
+      - path: workflows/kb-hotfix/workflow.yml
