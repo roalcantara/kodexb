@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "add-community-extension": {
+      "source": "github/spec-kit",
+      "sourceType": "github",
+      "skillPath": ".github/skills/add-community-extension/SKILL.md",
+      "computedHash": "074d140f32a6c1acd297ec8e58f53c5612e1cfa41f22304627efca54a7e220a8"
+    },
     "bdd-gherkin-specification": {
       "source": "jzallen/fred_simulations",
       "sourceType": "github",
@@ -314,6 +320,12 @@
       "sourceType": "github",
       "skillPath": "skills/spec-driven-development/SKILL.md",
       "computedHash": "3d35d416e1556d2df6d7c28338a0a2783e54ed91a50eba27da9bc9f26685920e"
+    },
+    "spec-kit-skill": {
+      "source": "feiskyer/claude-code-settings",
+      "sourceType": "github",
+      "skillPath": "skills/spec-kit-skill/SKILL.md",
+      "computedHash": "3cfc36c7d55442522876735674204f9d36a9fe93e28bbf5c7c5e06f5b9739c9d"
     },
     "subagent-driven-development": {
       "source": "obra/superpowers",
