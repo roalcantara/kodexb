@@ -32,7 +32,9 @@ export class ImportService {
   }
 
   private async loadParsedSourceBundles(sourcesDir: string): Promise<ParsedSourceBundle[]> {
-    const files = await glob('**/*.{yaml,yml}', { cwd: sourcesDir, absolute: true })
+    const files = (await glob('**/*.{yaml,yml}', { cwd: sourcesDir, absolute: true })).sort((a, b) =>
+      a.localeCompare(b)
+    )
     return Promise.all(files.map(filePath => this.loadParsedSourceBundleForPath(filePath)))
   }
 
@@ -128,7 +130,11 @@ export class ImportService {
 
   async runOnce(
     sourcesDir: string,
-    options?: { onProgress?: (payload: RpcSyncProgressPayload) => void }
+    options?: {
+      onProgress?: (payload: RpcSyncProgressPayload) => void
+      /** Test-only: stop after processing this many source bundles. */
+      maxBundles?: number
+    }
   ): Promise<RpcImportResult> {
     const { raw: db } = openDatabase(this.dbPath)
     try {
@@ -150,6 +156,8 @@ export class ImportService {
         if (!bundle) return
         const recentFile = this.persistParsedSourceBundle(db, bundle, result)
         options?.onProgress?.({ processed: index + 1, total, recentFile })
+        const maxBundles = options?.maxBundles
+        if (maxBundles !== undefined && index + 1 >= maxBundles) return
         await Bun.sleep(0)
         await processBundleAt(index + 1)
       }
@@ -166,7 +174,10 @@ export class ImportService {
 
   run(
     sourcesDir: string,
-    options?: { onProgress?: (payload: RpcSyncProgressPayload) => void }
+    options?: {
+      onProgress?: (payload: RpcSyncProgressPayload) => void
+      maxBundles?: number
+    }
   ): Promise<RpcImportResult> {
     return this.runOnce(sourcesDir, options)
   }

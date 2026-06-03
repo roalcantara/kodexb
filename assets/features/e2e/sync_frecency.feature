@@ -1,8 +1,9 @@
 @spec:sync-frecency
-Feature: Sync frecency persistence
-  Stretch scenario — release gate is integration tests in app_sync_frecency.spec.ts.
+Feature: My favorite items stay on top after sync
+  When I refresh my knowledge from disk, the app should not forget which
+  items I use most.
 
-  Scenario: Frecency survives sync
-    Given the preview harness has recorded entry visits
-    When the user triggers a full catalog sync
-    Then list sort order reflects pre-sync frecency for surviving entries
+  Scenario: Frequently opened items keep their place after sync
+    Given I have opened some items several times
+    When I sync my files from disk
+    Then the items I use most still appear before the ones I rarely open
