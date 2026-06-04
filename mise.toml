@@ -2306,6 +2306,11 @@ if (!ok) process.exit(1)
       arg "<feature>" help="NNN-slug"
     }
     cmd "opencode-check" {}
+    cmd "library-manifest" {
+      flag "--dry-run" help="Print rename plan only; do not write manifest or git mv"
+      flag "--apply" help="git mv each slug to NNN-slug per manifest"
+      flag "--verify" help="Fail if any unnumbered slug directory remains"
+    }
   ''', run = '''
     #!/usr/bin/env bash
     set -euo pipefail
@@ -2347,6 +2352,13 @@ if (!ok) process.exit(1)
         ;;
       opencode-check)
         exec bash tools/spec/opencode_check.sh
+        ;;
+      library-manifest)
+        args=()
+        [[ "${usage_dry_run:-false}" == "true" ]] && args+=(--dry-run)
+        [[ "${usage_apply:-false}" == "true" ]] && args+=(--apply)
+        [[ "${usage_verify:-false}" == "true" ]] && args+=(--verify)
+        exec bun tools/spec/library_manifest.ts "${args[@]}"
         ;;
       *)
         echo "spec: unknown action ${CMD}" >&2
