@@ -1,0 +1,504 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-29T12:00:00.000Z",
+  "reviewedBy": "agent:shortcuts-task-21-closure",
+  "scenarios": [
+    {
+      "id": "list_navigation.seeded_list_shows_main_types",
+      "feature": "assets/features/e2e/list_navigation.feature",
+      "priority": "p0",
+      "status": "passing",
+      "specs": [
+        "renderer-nav-flow",
+        "foundation"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "list_navigation.keyboard_cycles_views",
+      "feature": "assets/features/e2e/list_navigation.feature",
+      "priority": "p0",
+      "status": "passing",
+      "specs": [
+        "renderer-nav-flow"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "list_navigation.row_selection_in_split_view",
+      "feature": "assets/features/e2e/list_navigation.feature",
+      "priority": "p0",
+      "status": "passing",
+      "specs": [
+        "renderer-nav-flow"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "search_and_filter.search_narrows_entries",
+      "feature": "assets/features/e2e/search_and_filter.feature",
+      "priority": "p0",
+      "status": "passing",
+      "specs": [
+        "command-palette-filter-ux",
+        "compact-filter-redesign"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "search_and_filter.type_filters",
+      "feature": "assets/features/e2e/search_and_filter.feature",
+      "priority": "p0",
+      "status": "passing",
+      "specs": [
+        "command-palette-filter-ux",
+        "compact-filter-redesign"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "search_and_filter.tag_filters_with_search",
+      "feature": "assets/features/e2e/search_and_filter.feature",
+      "priority": "p0",
+      "status": "passing",
+      "specs": [
+        "command-palette-filter-ux"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "search_and_filter.task_view_filters",
+      "feature": "assets/features/e2e/search_and_filter.feature",
+      "priority": "p0",
+      "status": "passing",
+      "specs": [
+        "command-palette-filter-ux"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "detail_and_actions.detail_shows_metadata",
+      "feature": "assets/features/e2e/detail_and_actions.feature",
+      "priority": "p0",
+      "status": "passing",
+      "specs": [
+        "phase-7-detail-view"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "detail_and_actions.primary_action_result",
+      "feature": "assets/features/e2e/detail_and_actions.feature",
+      "priority": "p0",
+      "status": "passing",
+      "specs": [
+        "entry-action-panel",
+        "actions-system"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "detail_and_actions.copy_action",
+      "feature": "assets/features/e2e/detail_and_actions.feature",
+      "priority": "p0",
+      "status": "passing",
+      "specs": [
+        "entry-action-panel"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "detail_and_actions.open_source",
+      "feature": "assets/features/e2e/detail_and_actions.feature",
+      "priority": "p0",
+      "status": "passing",
+      "specs": [
+        "entry-action-panel"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "command_palette.library_when_unselected",
+      "feature": "assets/features/e2e/command_palette.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "command-palette-filter-ux",
+        "shortcuts"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "command_palette.entry_sections_when_selected",
+      "feature": "assets/features/e2e/command_palette.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "command-palette-filter-ux"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "command_palette.search_narrows_actions",
+      "feature": "assets/features/e2e/command_palette.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "command-palette-filter-ux"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "command_palette.escape_restores_list",
+      "feature": "assets/features/e2e/command_palette.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "command-palette-filter-ux"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "task_management.create_task",
+      "feature": "assets/features/e2e/task_management.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "task-management"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "task_management.edit_task",
+      "feature": "assets/features/e2e/task_management.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "task-management"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "task_management.cycle_fields",
+      "feature": "assets/features/e2e/task_management.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "task-management"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "task_management.reorder_tasks",
+      "feature": "assets/features/e2e/task_management.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "task-management"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "task_management.delete_task",
+      "feature": "assets/features/e2e/task_management.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "task-management"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "settings_and_sync.settings_shows_fixture_config",
+      "feature": "assets/features/e2e/settings_and_sync.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "foundation"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "settings_and_sync.save_page_size",
+      "feature": "assets/features/e2e/settings_and_sync.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "foundation"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "settings_and_sync.reset_settings",
+      "feature": "assets/features/e2e/settings_and_sync.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "foundation"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "settings_and_sync.sync_imports_changes",
+      "feature": "assets/features/e2e/settings_and_sync.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "sync-ui"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "settings_and_sync.sync_invalid_file",
+      "feature": "assets/features/e2e/settings_and_sync.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "sync-ui"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "frecency.detail_visit_ranks_entry",
+      "feature": "assets/features/e2e/frecency.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "list-frecency-sort",
+        "entry-action-panel"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "frecency.primary_action_ranks_entry",
+      "feature": "assets/features/e2e/frecency.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "list-frecency-sort",
+        "entry-action-panel"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "frecency.search_constrains_frecency",
+      "feature": "assets/features/e2e/frecency.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "list-frecency-sort"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "shortcuts_list.type_filter_shows_keymaps",
+      "feature": "assets/features/e2e/shortcuts_list.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "shortcuts"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "shortcuts_list.main_search_finds_keymap_by_action",
+      "feature": "assets/features/e2e/shortcuts_list.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "shortcuts"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "shortcuts_list.keymap_navigates_chord_detail_and_back",
+      "feature": "assets/features/e2e/shortcuts_list.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "shortcuts"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "shortcuts_overlay.opens_focused_closes_on_escape",
+      "feature": "assets/features/e2e/shortcuts_overlay.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "shortcuts"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "shortcuts_overlay.text_search_finds_binding_by_action",
+      "feature": "assets/features/e2e/shortcuts_overlay.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "shortcuts"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "shortcuts_overlay.chord_search_shows_conflicts_card",
+      "feature": "assets/features/e2e/shortcuts_overlay.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "shortcuts"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "shortcuts_overlay.hard_collision_row_shows_warning",
+      "feature": "assets/features/e2e/shortcuts_overlay.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "shortcuts"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "shortcuts_overlay.filter_modal_limits_to_one_app",
+      "feature": "assets/features/e2e/shortcuts_overlay.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "shortcuts"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "shortcuts_import.sync_reports_hard_global_collision",
+      "feature": "assets/features/e2e/shortcuts_import.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "shortcuts"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.footer_shows_open_in_browser_for_a_bookmark_without_secondary_action",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.footer_shows_paste_and_run_in_terminal_for_a_command",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.footer_shows_paste_doc_for_a_cheat_without_secondary_action",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.bookmark_primary_requests_external_open_handoff",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.command_primary_requests_paste_in_terminal_handoff",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.command_secondary_requests_run_in_terminal_handoff",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.cheat_primary_requests_paste_doc_handoff",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.copy_title_shortcut_shows_success_feedback",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.copy_description_shortcut_shows_success_feedback",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.open_source_shortcut_requests_editor_handoff",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "entry_action_handoff.handoff_failure_shows_error_toast_and_keeps_list_usable",
+      "feature": "assets/features/e2e/entry_action_handoff.feature",
+      "priority": "p1",
+      "status": "passing",
+      "specs": [
+        "entry-action-handoff"
+      ],
+      "qualityScore": 3
+    },
+    {
+      "id": "sync_frecency.frequently_opened_items_keep_their_place_after_sync",
+      "feature": "assets/features/e2e/sync_frecency.feature",
+      "priority": "p1",
+      "status": "implemented",
+      "specs": [
+        "sync-frecency-preserve"
+      ],
+      "qualityScore": 3
+    }
+  ]
+}
