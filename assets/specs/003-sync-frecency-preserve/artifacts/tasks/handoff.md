@@ -7,8 +7,9 @@
 ## Agent prompt
 
 ```text
-Implement spec 003-sync-frecency-preserve. Read spec.md, plan.md, tasks.md, handoff.md,
-contracts/sync-learned-state.md, and data-model.md.
+Implement spec 003-sync-frecency-preserve. Read spec.md, plan.md, tasks.md,
+artifacts/tasks/handoff.md, artifacts/plan/contracts/sync-learned-state.md, and
+artifacts/plan/data-model.md.
 
 Work tasks.md in phase order. Phase 2 (snapshot + sync wiring) blocks green integration tests.
 Partial-failure test (SF-3 AC4): use optional test-only hooks on runSourceImportSync args —
@@ -16,9 +17,7 @@ see plan.md Testing strategy.
 
 Before done:
   bun test src/shell/app/lib/app_sync_frecency.spec.ts
-  mise run spec lint --strict
-  mise run spec trace --feature 003-sync-frecency-preserve
-  bash .agents/skills/app-quality-gate/scripts/gate.sh
+  mise run spec gate assets/specs/003-sync-frecency-preserve
 ```
 
 ## Acceptance criteria tracker
@@ -37,7 +36,7 @@ Before done:
 
 ## Operator smoke (SF-3 AC3)
 
-Run after implementation (see also [quickstart.md](./quickstart.md)):
+Run after implementation (see also [quickstart.md](../plan/quickstart.md)):
 
 1. `mise run app dev` (or project dev task).
 2. Open several entries so frequently used items rise in the list.
@@ -47,9 +46,18 @@ Run after implementation (see also [quickstart.md](./quickstart.md)):
 
 Record result in this table (date / operator / pass-fail) before merge.
 
-| Date       | Operator | Pass                                     |
-| ---------- | -------- | ---------------------------------------- |
-| 2026-06-03 | —        | Pending — run quickstart.md manual smoke |
+| Date       | Operator    | Pass |
+| ---------- | ----------- | ---- |
+| 2026-06-03 | roalcantara | Pass |
+
+## Workflow closure (automated)
+
+| Check                               | Status           | Evidence                                                         |
+| ----------------------------------- | ---------------- | ---------------------------------------------------------------- |
+| `mise run spec audit --strict`      | pass             | 2026-06-03                                                       |
+| `mise run spec trace` (feature dir) | pass             | e2e link resolves                                                |
+| `mise run spec gate`                | pass             | 2026-06-03 — full quality gate                                   |
+| Draft PR + review-draft CI          | pending operator | `mise run spec pr-draft assets/specs/003-sync-frecency-preserve` |
 
 ## E2e (stretch)
 

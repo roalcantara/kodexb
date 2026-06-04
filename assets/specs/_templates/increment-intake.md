@@ -15,6 +15,9 @@ Paste into Companion Refine or pass as `$ARGUMENTS` to `/speckit-specify`.
 
 ## Gherkin (draft — refine on `assets/features/e2e/<slug>.feature`)
 
+Plain user language only — readable by PMs and non-engineers. No jargon (`frecency`,
+`catalog`, harness names). See [`BDD_GHERKIN_GUIDE.md`](../../guides/BDD_GHERKIN_GUIDE.md#audience-everyone-not-engineers).
+
 ```gherkin
 @spec:<slug>
 Feature: …

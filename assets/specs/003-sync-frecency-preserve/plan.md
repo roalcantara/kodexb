@@ -66,16 +66,17 @@ new snapshot util + one integration spec file
 ```text
 assets/specs/003-sync-frecency-preserve/
 ├── spec.md
-├── plan.md              # This file
-├── research.md
-├── data-model.md
-├── quickstart.md
-├── contracts/
-│   └── sync-learned-state.md
-├── checklists/
-│   └── requirements.md
-├── handoff.md
-└── tasks.md
+├── plan.md
+├── tasks.md
+├── READ_ORDER.md
+└── artifacts/
+    ├── spec/checklists/requirements.md
+    ├── plan/
+    │   ├── research.md
+    │   ├── data-model.md
+    │   ├── quickstart.md
+    │   └── contracts/sync-learned-state.md
+    └── tasks/handoff.md
 ```
 
 ### Source Code (repository root)

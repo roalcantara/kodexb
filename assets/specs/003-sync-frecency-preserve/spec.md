@@ -144,7 +144,7 @@ sources, so I can trust that catalog content matches disk after sync.
    an app restart or a second sync.
    - **Measure:** Manual smoke: trigger sync from UI once after YAML edits; list
      reflects disk in that operation.
-   - **Evidence:** `assets/specs/003-sync-frecency-preserve/handoff.md` SF-3 AC3 operator table
+   - **Evidence:** `assets/specs/003-sync-frecency-preserve/artifacts/tasks/handoff.md` SF-3 AC3 operator table
 
 4. WHEN full source sync fails before success, THEN the catalog SHALL reflect
    partial import progress AND usage SHALL match the pre-sync snapshot.

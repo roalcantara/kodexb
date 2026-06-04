@@ -10,7 +10,7 @@
 | [plan.md](./plan.md)                                                 | Design + file touch list     |
 | [data-model.md](./data-model.md)                                     | Tables + restore rules       |
 | [contracts/sync-learned-state.md](./contracts/sync-learned-state.md) | Sync phase invariants        |
-| [handoff.md](./handoff.md)                                           | AC tracker + operator smoke  |
+| [handoff.md](../tasks/handoff.md)                                    | AC tracker + operator smoke  |
 
 ## Code map
 

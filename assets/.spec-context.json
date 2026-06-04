@@ -1,0 +1,20 @@
+{
+  "workflow": "speckit",
+  "specName": "Assets",
+  "branch": "",
+  "currentStep": "analyze",
+  "status": "tasking",
+  "history": [
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": null,
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-03T21:52:40.250Z"
+    }
+  ]
+}

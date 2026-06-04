@@ -6,7 +6,7 @@ description: "Task list for Sync frecency preserve"
 
 **Input**: Design documents from `assets/specs/003-sync-frecency-preserve/`
 
-**Prerequisites**: plan.md, spec.md, handoff.md, research.md, data-model.md, contracts/sync-learned-state.md, quickstart.md
+**Prerequisites**: plan.md, spec.md, [handoff.md](artifacts/tasks/handoff.md), [research.md](artifacts/plan/research.md), [data-model.md](artifacts/plan/data-model.md), [contracts/sync-learned-state.md](artifacts/plan/contracts/sync-learned-state.md), [quickstart.md](artifacts/plan/quickstart.md)
 
 **Tests**: Integration tests are **required** — spec Evidence columns name `app_sync_frecency.spec.ts` as the release gate.
 
@@ -22,7 +22,7 @@ description: "Task list for Sync frecency preserve"
 
 **Purpose**: Confirm feature context and code touch points before implementation
 
-- [X] T001 Verify feature branch `003-sync-frecency-preserve` and read quickstart.md code map in `assets/specs/003-sync-frecency-preserve/quickstart.md`
+- [X] T001 Verify feature branch `003-sync-frecency-preserve` and read quickstart.md code map in `assets/specs/003-sync-frecency-preserve/artifacts/plan/quickstart.md`
 - [X] T002 [P] Trace current sync pipeline in `src/shell/app/app.ts` (`sync()`) and `src/shell/app/lib/app_sync.util.ts` (`runSourceImportSync`)
 - [X] T003 [P] Review learned-table schemas and upsert patterns in `src/shell/app/db/schema.ts`, `src/shell/app/db/frecency.repository.ts`, and `src/shell/app/db/binding_frecency.repository.ts`
 
@@ -34,10 +34,10 @@ description: "Task list for Sync frecency preserve"
 
 **⚠️ CRITICAL**: No user story verification can succeed until this phase completes
 
-- [X] T004 Define `LearnedSnapshot`, `exportLearnedSnapshot(db)`, and row types in `src/shell/app/lib/frecency_snapshot.util.ts` per `assets/specs/003-sync-frecency-preserve/data-model.md`
+- [X] T004 Define `LearnedSnapshot`, `exportLearnedSnapshot(db)`, and row types in `src/shell/app/lib/frecency_snapshot.util.ts` per `assets/specs/003-sync-frecency-preserve/artifacts/plan/data-model.md`
 - [X] T005 Implement `restoreLearnedSnapshot(db, snapshot)` with filtered upserts (`knowledges.id` / `entry_bindings.id` existence checks) and single transaction in `src/shell/app/lib/frecency_snapshot.util.ts`
 - [X] T006 [P] Add unit tests for export, filtered restore (skip removed ids), and upsert idempotency in `src/shell/app/lib/frecency_snapshot.util.spec.ts`
-- [X] T007 Wire Phase A export (before `closeDb`), Phase C restore (after `ImportService.run`), and `finally` restore on throw in `src/shell/app/lib/app_sync.util.ts` per `assets/specs/003-sync-frecency-preserve/contracts/sync-learned-state.md`
+- [X] T007 Wire Phase A export (before `closeDb`), Phase C restore (after `ImportService.run`), and `finally` restore on throw in `src/shell/app/lib/app_sync.util.ts` per `assets/specs/003-sync-frecency-preserve/artifacts/plan/contracts/sync-learned-state.md`
 - [X] T008 Add structured logging `frecency_snapshot_export` and `frecency_snapshot_restore` with counts in `src/shell/app/lib/app_sync.util.ts` using `getLogger(['kb', 'app', 'sync'])`
 
 **Checkpoint**: Manual or unit-level verify — export → delete/rebuild → restore preserves rows for surviving ids only
@@ -117,7 +117,7 @@ description: "Task list for Sync frecency preserve"
 
 - [X] T022 [P] Run `mise run spec lint --strict` and `mise run spec trace --feature 003-sync-frecency-preserve`
 - [X] T023 Run full quality gate: `bash .agents/skills/app-quality-gate/scripts/gate.sh`
-- [X] T024 [P] Record SF-3 AC3 operator smoke pass in `assets/specs/003-sync-frecency-preserve/handoff.md` (steps in quickstart.md)
+- [X] T024 [P] Record SF-3 AC3 operator smoke pass in `assets/specs/003-sync-frecency-preserve/artifacts/tasks/handoff.md` (steps in quickstart.md)
 - [X] T025 [P] Confirm plain-language e2e in `assets/features/e2e/sync_frecency.feature`; defer step-catalog/fixture updates until e2e steps are wired (stretch)
 
 ---
