@@ -131,13 +131,14 @@ jobs:
           if-no-files-found: ignore
 
   test:
-    if: ${{ !github.event.pull_request.draft }}
+    if: ${{ !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
     name: Test - Runs the test suite
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       checks: write
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/run-bun-test-junit
         with:
           summary_title: Test Results
