@@ -25,6 +25,7 @@
     "**/e2e/**",
     "**/.superpowers/**",
     ".agents/skills/**",
+    ".github/workflows/review.yml",
     "src/shell/app/db/import.service.spec.ts"
   ]
 }

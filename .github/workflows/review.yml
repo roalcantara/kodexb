@@ -29,6 +29,10 @@ jobs:
       contents: read
       checks: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+          sparse-checkout-cone-mode: true
       - uses: ./.github/actions/setup-bun-checkout
       - name: HK hygiene (pre-commit parity)
         run: mise exec -- hk check --all --check
@@ -41,6 +45,10 @@ jobs:
       contents: read
       checks: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+          sparse-checkout-cone-mode: true
       - uses: ./.github/actions/run-bun-test-junit
         with:
           summary_title: Test Results (draft)
@@ -54,6 +62,10 @@ jobs:
     permissions:
       contents: read
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+          sparse-checkout-cone-mode: true
       - uses: ./.github/actions/setup-bun-checkout
       - name: Spec gate on touched feature dirs
         run: |
