@@ -6,44 +6,39 @@ let clipboardContent = ''
 let openPathResult: boolean | 'throw' = false
 let openExternalResult: boolean | 'throw' = false
 
-function installHandoffRegistrySpecMocks(): void {
-  mock.module('electrobun/bun', () => ({
-    Utils: {
-      openExternal: () => {
-        if (openExternalResult === 'throw') throw new Error('openExternal failed')
-        return openExternalResult
-      },
-      openPath: () => {
-        if (openPathResult === 'throw') throw new Error('openPath failed')
-        return openPathResult
-      }
+mock.module('electrobun/bun', () => ({
+  Utils: {
+    openExternal: () => {
+      if (openExternalResult === 'throw') throw new Error('openExternal failed')
+      return openExternalResult
+    },
+    openPath: () => {
+      if (openPathResult === 'throw') throw new Error('openPath failed')
+      return openPathResult
     }
-  }))
-  mock.module('./electrobun_clipboard.port', () => ({
-    readSystemClipboard: () => clipboardContent,
-    writeSystemClipboard: (text: string) => {
-      clipboardContent = text
-    }
-  }))
-  mock.module('./resolve_frontmost_app.util', () => ({
-    resolveFrontmostAppBundleId: () => null
-  }))
-}
+  }
+}))
+
+mock.module('./electrobun_clipboard.port', () => ({
+  readSystemClipboard: () => clipboardContent,
+  writeSystemClipboard: (text: string) => {
+    clipboardContent = text
+  }
+}))
+
+mock.module('./resolve_frontmost_app.util', () => ({
+  resolveFrontmostAppBundleId: () => null
+}))
 
 beforeAll(() => installBunDollarMock())
 beforeEach(() => {
-  mock.restore()
-  installHandoffRegistrySpecMocks()
   clipboardContent = ''
   openPathResult = false
   openExternalResult = false
   resetBunDollarMock()
   setBunDollarThrow(true)
 })
-afterAll(() => {
-  mock.restore()
-  uninstallBunDollarMock()
-})
+afterAll(() => uninstallBunDollarMock())
 
 /** Registry specs assert osascript/Bun.$ behaviour; pin darwin so Linux CI does not require xdotool. */
 const HANDOFF_TEST_PLATFORM = 'darwin' as const
