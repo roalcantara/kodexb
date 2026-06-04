@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { useRef } from 'react'
 
 import { useListPageFocusRing } from './use_list_page_focus_ring.hook'
@@ -67,10 +67,16 @@ describe('useListPageFocusRing', () => {
   describe('on mount', () => {
     it('autofocuses search when ring is active', async () => {
       render(<RingHarness />)
-      const search = screen.getByRole('textbox', { name: 'Search' })
-      await waitFor(() => {
-        expect(document.activeElement).toBe(search)
-      })
+      const search = screen.getByRole<HTMLInputElement>('textbox', { name: 'Search' })
+      await flushDoubleRafUntilFocused(search)
+      expect(document.activeElement).toBe(search)
     })
   })
 })
+
+async function flushDoubleRafUntilFocused(search: HTMLInputElement, pass = 0): Promise<void> {
+  if (document.activeElement === search || pass >= 8) return
+  await new Promise<void>(r => queueMicrotask(r))
+  await new Promise<void>(r => requestAnimationFrame(() => r()))
+  return flushDoubleRafUntilFocused(search, pass + 1)
+}
