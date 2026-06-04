@@ -1,0 +1,321 @@
+{
+  "generated_at": "2026-06-04T16:15:35.231Z",
+  "specs_root": "assets/docs/specs",
+  "entries": [
+    {
+      "nnn": "001",
+      "slug": "foundation",
+      "birth_iso": "2026-05-08 16:30:15 -0300",
+      "from": "foundation",
+      "to": "001-foundation"
+    },
+    {
+      "nnn": "002",
+      "slug": "ci-build-packaging",
+      "birth_iso": "2026-05-08 16:30:15 -0300",
+      "from": "ci-build-packaging",
+      "to": "002-ci-build-packaging"
+    },
+    {
+      "nnn": "003",
+      "slug": "core-domain",
+      "birth_iso": "2026-05-08 21:03:44 -0300",
+      "from": "core-domain",
+      "to": "003-core-domain"
+    },
+    {
+      "nnn": "004",
+      "slug": "validators",
+      "birth_iso": "2026-05-08 21:03:44 -0300",
+      "from": "validators",
+      "to": "004-validators"
+    },
+    {
+      "nnn": "005",
+      "slug": "data-layer",
+      "birth_iso": "2026-05-11 15:06:09 -0300",
+      "from": "data-layer",
+      "to": "005-data-layer"
+    },
+    {
+      "nnn": "006",
+      "slug": "app-service-rpc",
+      "birth_iso": "2026-05-11 19:43:25 -0300",
+      "from": "app-service-rpc",
+      "to": "006-app-service-rpc"
+    },
+    {
+      "nnn": "007",
+      "slug": "phase-7-detail-view",
+      "birth_iso": "2026-05-11 19:43:25 -0300",
+      "from": "phase-7-detail-view",
+      "to": "007-phase-7-detail-view"
+    },
+    {
+      "nnn": "008",
+      "slug": "task-management",
+      "birth_iso": "2026-05-12 12:34:49 -0300",
+      "from": "task-management",
+      "to": "008-task-management"
+    },
+    {
+      "nnn": "009",
+      "slug": "actions-system",
+      "birth_iso": "2026-05-12 14:05:22 -0300",
+      "from": "actions-system",
+      "to": "009-actions-system"
+    },
+    {
+      "nnn": "010",
+      "slug": "sync-ui",
+      "birth_iso": "2026-05-12 15:00:36 -0300",
+      "from": "sync-ui",
+      "to": "010-sync-ui"
+    },
+    {
+      "nnn": "011",
+      "slug": "codebase-best-practices-audit",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "codebase-best-practices-audit",
+      "to": "011-codebase-best-practices-audit"
+    },
+    {
+      "nnn": "012",
+      "slug": "codebase-consolidation",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "codebase-consolidation",
+      "to": "012-codebase-consolidation"
+    },
+    {
+      "nnn": "013",
+      "slug": "codebase-quality-audit",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "codebase-quality-audit",
+      "to": "013-codebase-quality-audit"
+    },
+    {
+      "nnn": "014",
+      "slug": "command-palette-filter-ux",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "command-palette-filter-ux",
+      "to": "014-command-palette-filter-ux"
+    },
+    {
+      "nnn": "015",
+      "slug": "compact-filter-redesign",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "compact-filter-redesign",
+      "to": "015-compact-filter-redesign"
+    },
+    {
+      "nnn": "016",
+      "slug": "debugging",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "debugging",
+      "to": "016-debugging"
+    },
+    {
+      "nnn": "017",
+      "slug": "design-polishing",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "design-polishing",
+      "to": "017-design-polishing"
+    },
+    {
+      "nnn": "018",
+      "slug": "e2e",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "e2e",
+      "to": "018-e2e"
+    },
+    {
+      "nnn": "019",
+      "slug": "elysia-electrobun-capability-inventory",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "elysia-electrobun-capability-inventory",
+      "to": "019-elysia-electrobun-capability-inventory"
+    },
+    {
+      "nnn": "020",
+      "slug": "entry-action-handoff",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "entry-action-handoff",
+      "to": "020-entry-action-handoff"
+    },
+    {
+      "nnn": "021",
+      "slug": "entry-action-panel",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "entry-action-panel",
+      "to": "021-entry-action-panel"
+    },
+    {
+      "nnn": "022",
+      "slug": "graph",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "graph",
+      "to": "022-graph"
+    },
+    {
+      "nnn": "023",
+      "slug": "hk",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "hk",
+      "to": "023-hk"
+    },
+    {
+      "nnn": "024",
+      "slug": "keyboard-shortcuts-view",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "keyboard-shortcuts-view",
+      "to": "024-keyboard-shortcuts-view"
+    },
+    {
+      "nnn": "025",
+      "slug": "list-frecency-sort",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "list-frecency-sort",
+      "to": "025-list-frecency-sort"
+    },
+    {
+      "nnn": "026",
+      "slug": "mise-usage",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "mise-usage",
+      "to": "026-mise-usage"
+    },
+    {
+      "nnn": "027",
+      "slug": "mise-usage-improvements",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "mise-usage-improvements",
+      "to": "027-mise-usage-improvements"
+    },
+    {
+      "nnn": "028",
+      "slug": "normalise-biome-rules",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "normalise-biome-rules",
+      "to": "028-normalise-biome-rules"
+    },
+    {
+      "nnn": "029",
+      "slug": "normalise-specs",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "normalise-specs",
+      "to": "029-normalise-specs"
+    },
+    {
+      "nnn": "030",
+      "slug": "normalise-tasks",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "normalise-tasks",
+      "to": "030-normalise-tasks"
+    },
+    {
+      "nnn": "031",
+      "slug": "platform-parity",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "platform-parity",
+      "to": "031-platform-parity"
+    },
+    {
+      "nnn": "032",
+      "slug": "raycast-redesign",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "raycast-redesign",
+      "to": "032-raycast-redesign"
+    },
+    {
+      "nnn": "033",
+      "slug": "renderer-nav-flow",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "renderer-nav-flow",
+      "to": "033-renderer-nav-flow"
+    },
+    {
+      "nnn": "034",
+      "slug": "shell-chrome",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "shell-chrome",
+      "to": "034-shell-chrome"
+    },
+    {
+      "nnn": "035",
+      "slug": "shell-window-nav",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "shell-window-nav",
+      "to": "035-shell-window-nav"
+    },
+    {
+      "nnn": "036",
+      "slug": "shortcuts",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "shortcuts",
+      "to": "036-shortcuts"
+    },
+    {
+      "nnn": "037",
+      "slug": "skills-normalisation",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "skills-normalisation",
+      "to": "037-skills-normalisation"
+    },
+    {
+      "nnn": "038",
+      "slug": "stats-panel",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "stats-panel",
+      "to": "038-stats-panel"
+    },
+    {
+      "nnn": "039",
+      "slug": "suggest-tags",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "suggest-tags",
+      "to": "039-suggest-tags"
+    },
+    {
+      "nnn": "040",
+      "slug": "sync",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "sync",
+      "to": "040-sync"
+    },
+    {
+      "nnn": "041",
+      "slug": "telemetry-mvp",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "telemetry-mvp",
+      "to": "041-telemetry-mvp"
+    },
+    {
+      "nnn": "042",
+      "slug": "update-hooks",
+      "birth_iso": "2026-06-01 11:51:06 -0300",
+      "from": "update-hooks",
+      "to": "042-update-hooks"
+    },
+    {
+      "nnn": "043",
+      "slug": "ci-review-e2e",
+      "birth_iso": "2026-06-04 09:08:59 -0300",
+      "from": "ci-review-e2e",
+      "to": "043-ci-review-e2e"
+    },
+    {
+      "nnn": "044",
+      "slug": "electrobun-corpus-audit",
+      "birth_iso": "2026-06-04 09:08:59 -0300",
+      "from": "electrobun-corpus-audit",
+      "to": "044-electrobun-corpus-audit"
+    },
+    {
+      "nnn": "045",
+      "slug": "electrobun-utils-adoption",
+      "birth_iso": "2026-06-04 09:08:59 -0300",
+      "from": "electrobun-utils-adoption",
+      "to": "045-electrobun-utils-adoption"
+    }
+  ]
+}
