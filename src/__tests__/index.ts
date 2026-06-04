@@ -1,7 +1,20 @@
 export { expectBodyValidationError, parseValidationErrorEnvelope } from './expectations/validation_error.expectation'
 export { factoryFor } from './factories/factories.builder'
 export { syncFixtureDir } from './fixtures/sync'
+export {
+  installEntryActionPanelDepsMock,
+  installRecordEntryVisitMock,
+  withMockClipboard
+} from './helpers/entry_action.spec_setup.util'
 export { rpcBookmarkRow } from './helpers/rpc_knowledge_test_row.util'
+export {
+  createRpcRouteSpecHarness,
+  mountRouteModule,
+  RPC_SPEC_API_BASE,
+  type RpcRoutePluginFactory,
+  rpcSpecPostJson,
+  setupRpcRouteSpecSuite
+} from './helpers/rpc_route.spec.util'
 export { runRoute } from './helpers/run_route.util'
 export { recordingTerminalShellHook, throwingShellHook } from './helpers/shell_hook_spec.util'
 export { bindingRefFixture, bindingRefsForApps, bindingsCacheSample } from './helpers/testing.bindings.util'
@@ -12,6 +25,14 @@ export {
   setupBunDollarMock,
   uninstallBunDollarMock
 } from './helpers/testing.bun_dollar.mock'
+export {
+  type BunSpawnSyncStubResult,
+  installBunSpawnSyncMock,
+  resetBunSpawnSyncMock,
+  setBunSpawnSyncResult,
+  setupBunSpawnSyncMock,
+  uninstallBunSpawnSyncMock
+} from './helpers/testing.bun_spawn_sync.mock'
 export { createFactoryFor } from './helpers/testing.factory'
 export { configureQuietLogtape, noopLogSink } from './helpers/testing.quiet_stdio'
 export {

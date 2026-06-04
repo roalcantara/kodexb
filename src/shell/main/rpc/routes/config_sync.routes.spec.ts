@@ -1,9 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-
+import { setupRpcRouteSpecSuite } from '@testing'
 import { runRoute } from '@testing/helpers/run_route.util'
-
 import { configSyncRoutes } from './config_sync.routes'
-import { setupRpcRouteSpecSuite } from './utils/rpc_route_spec.util'
 
 describe('configSyncRoutes', () => {
   const { postViaRoutes } = setupRpcRouteSpecSuite()

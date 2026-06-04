@@ -3,6 +3,7 @@ import type { KeyboardEvent as ReactKeyboardEvent, RefObject } from 'react'
 import { useCallback, useEffect } from 'react'
 
 import { listPageFocusRingElements, tryApplyListPageTabRing } from '../../utils/list/list_keyboard.util'
+import { scheduleFocusSearchInputSelectAll } from '../../utils/list/list_scroll.util'
 
 export type ListPageFocusRingDeps = {
   showSettings: boolean
@@ -26,10 +27,7 @@ export function useListPageFocusRing(deps: ListPageFocusRingDeps) {
 
   useEffect(() => {
     if (!focusSearchWhenReady) return
-    const id = requestAnimationFrame(() => {
-      searchInputRef.current?.focus()
-    })
-    return () => cancelAnimationFrame(id)
+    scheduleFocusSearchInputSelectAll(searchInputRef)
   }, [focusSearchWhenReady, searchInputRef])
 
   const onListPageKeyDownCapture = useCallback(

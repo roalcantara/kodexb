@@ -67,13 +67,16 @@ describe('useListPageFocusRing', () => {
   describe('on mount', () => {
     it('autofocuses search when ring is active', async () => {
       render(<RingHarness />)
-      const search = screen.getByRole('textbox', { name: 'Search' })
-      await new Promise<void>(resolve => {
-        requestAnimationFrame(() => {
-          expect(document.activeElement).toBe(search)
-          resolve()
-        })
-      })
+      const search = screen.getByRole<HTMLInputElement>('textbox', { name: 'Search' })
+      await flushDoubleRafUntilFocused(search)
+      expect(document.activeElement).toBe(search)
     })
   })
 })
+
+async function flushDoubleRafUntilFocused(search: HTMLInputElement, pass = 0): Promise<void> {
+  if (document.activeElement === search || pass >= 8) return
+  await new Promise<void>(r => queueMicrotask(r))
+  await new Promise<void>(r => requestAnimationFrame(() => r()))
+  return flushDoubleRafUntilFocused(search, pass + 1)
+}

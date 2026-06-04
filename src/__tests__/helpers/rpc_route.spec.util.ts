@@ -2,26 +2,21 @@ import { afterEach, beforeAll } from 'bun:test'
 import fs from 'node:fs/promises'
 import { join } from 'node:path'
 import { configureMainLogging, rpcCommonPlugins } from '@shared/logging'
-import {
-  createTempDir,
-  factoryFor,
-  recordingTerminalShellHook,
-  type TempDir,
-  testingPaths,
-  throwingShellHook
-} from '@testing'
 import { Elysia } from 'elysia'
-
-import { App } from '../../../../app/app'
-import type { LoadedConfig } from '../../../../app/config/config.loader'
-import { ImportService } from '../../../../app/db/import.service'
-import type { AppShellHooks } from '../../../../app/lib/app_shell_hooks.types'
-import { createRpcServer, type RpcApp } from '../../server'
-import type { catalogRoutes } from '../catalog.routes'
-import type { configSyncRoutes } from '../config_sync.routes'
-import type { handoffRoutes } from '../handoff.routes'
-import type { shellRoutes } from '../shell.routes'
-import type { taskRoutes } from '../task.routes'
+import { App } from '../../shell/app/app'
+import type { LoadedConfig } from '../../shell/app/config/config.loader'
+import { ImportService } from '../../shell/app/db/import.service'
+import type { AppShellHooks } from '../../shell/app/lib/app_shell_hooks.types'
+import type { catalogRoutes } from '../../shell/main/rpc/routes/catalog.routes'
+import type { configSyncRoutes } from '../../shell/main/rpc/routes/config_sync.routes'
+import type { handoffRoutes } from '../../shell/main/rpc/routes/handoff.routes'
+import type { shellRoutes } from '../../shell/main/rpc/routes/shell.routes'
+import type { taskRoutes } from '../../shell/main/rpc/routes/task.routes'
+import { createRpcServer, type RpcApp } from '../../shell/main/rpc/server'
+import { factoryFor } from '../factories/factories.builder'
+import { testingPaths } from '../paths'
+import { recordingTerminalShellHook, throwingShellHook } from './shell_hook_spec.util'
+import { createTempDir, type TempDir } from './testing.tmp'
 
 export type RpcRoutePluginFactory =
   | typeof catalogRoutes

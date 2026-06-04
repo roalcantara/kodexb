@@ -1,11 +1,12 @@
 import { configureMainLogging, getLogger, parseLogVerbosity } from '@shared/logging'
-import { BrowserWindow, GlobalShortcut, Screen, Utils } from 'electrobun/bun'
+import Electrobun, { BrowserWindow, GlobalShortcut, Screen, Utils } from 'electrobun/bun'
 import { App } from '../app/app'
 import { loadConfig } from '../app/config/config.loader'
 import type { HandoffServices } from './handoff/handoff_registry.service'
 import { reportConfigLoadErrorAndExit } from './helpers/error.helper'
 import { createSyncEmitter, createWebviewRpc } from './rpc/host'
 import { createRpcServer } from './rpc/server'
+import { registerBeforeQuitShortcutTeardown } from './utils/register_before_quit_shortcuts.util'
 import {
   buildBrowserWindowCreateOptions,
   computeInitialFrameFromDisplay,
@@ -56,14 +57,12 @@ async function bootstrap() {
       () => win,
       {
         openExternal: url => Utils.openExternal(url),
-        openFileDialog: opts => Utils.openFileDialog(opts)
+        openFileDialog: opts => Utils.openFileDialog(opts),
+        openPath: path => Utils.openPath(path)
       },
       handoffServices
     ),
-    quit: () => {
-      GlobalShortcut.unregisterAll()
-      Utils.quit()
-    }
+    quit: () => Utils.quit()
   }
   const lateEmit = createDeferredSyncEmit(() => webviewRpc, createSyncEmitter)
 
@@ -107,6 +106,8 @@ async function bootstrap() {
       win.minimize()
     }
   })
+
+  registerBeforeQuitShortcutTeardown(Electrobun.events, GlobalShortcut)
 
   /**
    * Minimize the main window when it loses focus.

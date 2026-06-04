@@ -3,13 +3,21 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { SyncToast } from './sync_toast.component'
 
-const success = { filesProcessed: 10, inserted: 3, updated: 7, errors: [] as string[], warnings: [] as string[] }
+const success = {
+  filesProcessed: 10,
+  inserted: 3,
+  updated: 7,
+  errors: [] as string[],
+  warnings: [] as string[],
+  fileLog: []
+}
 const withErrors = {
   filesProcessed: 5,
   inserted: 1,
   updated: 2,
   errors: ['bad.yml: parse error', 'other.yml: validation'],
-  warnings: [] as string[]
+  warnings: [] as string[],
+  fileLog: []
 }
 
 const NOOP = () => {

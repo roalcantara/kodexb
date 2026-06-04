@@ -1,6 +1,13 @@
 import { expect } from '@playwright/test'
 import type { Actor, Answerable } from './actor.ability'
 
+const TYPE_SEMANTIC_CLASS: Record<string, string> = {
+  bookmark: 'semantic-url',
+  command: 'semantic-command',
+  cheat: 'semantic-cheat',
+  task: 'semantic-task-characteristic'
+}
+
 export class EntryListIncludesType implements Answerable {
   private constructor(private readonly type: string) {}
 
@@ -9,8 +16,9 @@ export class EntryListIncludesType implements Answerable {
   }
 
   async answeredBy(actor: Actor): Promise<void> {
-    const tag = actor.page.locator(`.cmp-tag--type-${this.type}`)
-    await expect(tag.first()).toBeVisible()
+    const cls = TYPE_SEMANTIC_CLASS[this.type]
+    const el = actor.page.locator(`.cmp-list-row-meta.${cls}`)
+    await expect(el.first()).toBeVisible()
   }
 }
 
@@ -42,11 +50,12 @@ export class EntryListAllHaveType implements Answerable {
   }
 
   async answeredBy(actor: Actor): Promise<void> {
+    const cls = TYPE_SEMANTIC_CLASS[this.type]
     const rows = actor.page.locator('button.cmp-list-row')
     const count = await rows.count()
     expect(count).toBeGreaterThan(0)
     for (let i = 0; i < count; i++) {
-      await expect(rows.nth(i).locator(`.cmp-tag--type-${this.type}`)).toBeVisible()
+      await expect(rows.nth(i).locator(`.cmp-list-row-meta.${cls}`)).toBeVisible()
     }
   }
 }
@@ -81,7 +90,7 @@ export class EntryListAllTasksInView implements Answerable {
     const count = await rows.count()
     expect(count).toBeGreaterThan(0)
     for (let i = 0; i < count; i++) {
-      await expect(rows.nth(i).locator('.cmp-tag--type-task')).toBeVisible()
+      await expect(rows.nth(i).locator('.cmp-list-row-meta.semantic-task-characteristic')).toBeVisible()
     }
   }
 }

@@ -17,7 +17,7 @@ describe('loadWindowStateFrom', () => {
   const parse = (text: string) => (text === 'ok' ? bounds : null)
 
   describe('when the reader returns null', () => {
-    it('returns null without calling parse on content', () => {
+    it('does not parse the content', () => {
       let parseCalls = 0
       const result = loadWindowStateFrom(
         '/tmp/config.yaml',
@@ -32,25 +32,29 @@ describe('loadWindowStateFrom', () => {
     })
   })
 
-  describe('when the reader returns text synchronously', () => {
-    it('returns parsed bounds', () => {
+  describe('when the reader returns valid text', () => {
+    it('parses the text', () => {
       expect(loadWindowStateFrom('/tmp/config.yaml', parse, () => 'ok')).toEqual(bounds)
     })
 
-    it('returns null when parse rejects the text', () => {
-      expect(loadWindowStateFrom('/tmp/config.yaml', parse, () => 'bad')).toBeNull()
+    describe('when the reader returns invalid text', () => {
+      it('returns null', () => {
+        expect(loadWindowStateFrom('/tmp/config.yaml', parse, () => 'bad')).toBeNull()
+      })
     })
   })
 
   describe('when the reader returns a promise', () => {
-    it('returns parsed bounds', async () => {
-      await expect(loadWindowStateFrom('/tmp/config.yaml', parse, async () => 'ok')).resolves.toEqual(bounds)
+    it('parses the text', () => {
+      expect(loadWindowStateFrom('/tmp/config.yaml', parse, async () => 'ok')).resolves.toEqual(bounds)
     })
 
-    it('returns null when the reader rejects', async () => {
-      await expect(
-        loadWindowStateFrom('/tmp/config.yaml', parse, async () => Promise.reject(new Error('read failed')))
-      ).resolves.toBeNull()
+    describe('when the reader rejects', () => {
+      it('returns null', () => {
+        expect(
+          loadWindowStateFrom('/tmp/config.yaml', parse, async () => Promise.reject(new Error('read failed')))
+        ).resolves.toBeNull()
+      })
     })
   })
 })

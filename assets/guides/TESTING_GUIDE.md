@@ -899,14 +899,22 @@ bun run test:watch
 `tsconfig.json` maps **`@testing`** to [`src/__tests__/index.ts`](../../src/__tests__/index.ts).
 Use it for Fishery factories, fixture paths, temp dirs, and seeded in-memory DBs.
 
-| Export                                                                    | Role                                                                                                                                                                                |
-| ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `factoryFor`                                                              | Typed defaults for `Env`, `RawConfig`, `LoadedConfig`, geometry, `Knowledge` variants, `Binding`, `BindingRef`, and named variants (`binding:goToFile`, `shortcut:vscodeKeymap`, …) |
-| `bindingsCacheSample`, `bindingRefFixture`, `bindingRefsForApps`          | Shared binding-ref scenarios for shortcuts/collision specs                                                                                                                          |
-| `testingPaths`, `minimalEntriesYml`                                       | Absolute paths under `src/__tests__/fixtures/`                                                                                                                                      |
-| `createSeededMemoryDb`, `seedMinimalFixture`, `readMinimalFixtureEntries` | Minimal YAML → `:memory:` SQLite + FTS                                                                                                                                              |
-| `createTempDir`                                                           | `mkdtemp` + `cleanup()` for disk-backed integration                                                                                                                                 |
-| `createFactoryFor`                                                        | Low-level wrapper when you add a new factory module                                                                                                                                 |
+**Placement rule (enforced):** shared helpers, harnesses, and `mock.module` setup live under
+`src/__tests__/` (usually `src/__tests__/helpers/`) and are re-exported from `@testing`.
+Co-located `*.spec.ts(x)` files may import `bun:test` directly; non-spec modules under `src/`
+may not. ast-grep rules: `tools/rules/no-bun-test-helper-outside-tests.yml`,
+`tools/rules/no-test-helper-filename-outside-tests.yml` (run via `bun run lint:ast-grep`).
+
+| Export                                                                      | Role                                                                                                                                                                                |
+| --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `factoryFor`                                                                | Typed defaults for `Env`, `RawConfig`, `LoadedConfig`, geometry, `Knowledge` variants, `Binding`, `BindingRef`, and named variants (`binding:goToFile`, `shortcut:vscodeKeymap`, …) |
+| `bindingsCacheSample`, `bindingRefFixture`, `bindingRefsForApps`            | Shared binding-ref scenarios for shortcuts/collision specs                                                                                                                          |
+| `testingPaths`, `minimalEntriesYml`                                         | Absolute paths under `src/__tests__/fixtures/`                                                                                                                                      |
+| `createSeededMemoryDb`, `seedMinimalFixture`, `readMinimalFixtureEntries`   | Minimal YAML → `:memory:` SQLite + FTS                                                                                                                                              |
+| `createTempDir`                                                             | `mkdtemp` + `cleanup()` for disk-backed integration                                                                                                                                 |
+| `createFactoryFor`                                                          | Low-level wrapper when you add a new factory module                                                                                                                                 |
+| `installBunDollarMock`, `setBunDollarThrow`, `setupBunDollarMock`           | Stub `Bun.$` for handoff/osascript specs (pair with `uninstallBunDollarMock`)                                                                                                       |
+| `installBunSpawnSyncMock`, `setBunSpawnSyncResult`, `setupBunSpawnSyncMock` | Stub `Bun.spawnSync` for frontmost-app / spawn specs (pair with `uninstallBunSpawnSyncMock`)                                                                                        |
 
 Keep DB specs on **`:memory:`** and avoid mocks for internal code; see [Definition of Done](./DoD.md).
 

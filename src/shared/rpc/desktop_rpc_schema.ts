@@ -57,6 +57,7 @@ export type RpcImportResult = {
   updated: number
   errors: string[]
   warnings: string[]
+  fileLog: RpcSyncFileResult[]
 }
 
 /** One source file finished (success or failure) during import. */

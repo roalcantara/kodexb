@@ -21,7 +21,13 @@ import { useTaskDragDrop } from './use_task_drag_drop.hook'
 import { useTaskKeyboard } from './use_task_keyboard.hook'
 
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: shell composes list, palette, task sheet, toasts
-export function useListPageShell({ showSettings }: { showSettings: boolean }) {
+export function useListPageShell({
+  showSettings,
+  onOpenSettings
+}: {
+  showSettings: boolean
+  onOpenSettings: () => void
+}) {
   const listSurfaceRef = useRef<HTMLDivElement>(null)
   const listSentinelRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
@@ -56,9 +62,10 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
       pushToast,
       onEditTask: handleEditTask,
       onNewTask: handleNewTask,
-      onSync: data.onSync
+      onSync: data.onSync,
+      onOpenSettings
     }),
-    [pushToast, handleEditTask, handleNewTask, data.onSync]
+    [pushToast, handleEditTask, handleNewTask, data.onSync, onOpenSettings]
   )
 
   const entryPanelDeps = useMemo(() => defaultEntryActionPanelDeps(), [])
@@ -111,6 +118,7 @@ export function useListPageShell({ showSettings }: { showSettings: boolean }) {
     onEditTask: handleEditTask,
     onNewTask: handleNewTask,
     onSync: data.onSync,
+    onOpenSettings,
     setFilterOpen: filter.setFilterOpen,
     shortcutsBlocked: showSettings || taskSheetVisible || quickLookup.open,
     entryPanelDeps

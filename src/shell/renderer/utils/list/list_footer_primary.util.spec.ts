@@ -21,7 +21,8 @@ describe('list_footer_primary.util', () => {
           pushToast: () => undefined,
           onEditTask: () => undefined,
           onNewTask: () => undefined,
-          onSync: () => undefined
+          onSync: () => undefined,
+          onOpenSettings: () => undefined
         },
         entryPanelDeps: defaultEntryActionPanelDeps()
       })

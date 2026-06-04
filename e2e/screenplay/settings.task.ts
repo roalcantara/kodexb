@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test'
 import type { Actor, Performable } from './actor.ability'
+import { OpenCommandPalette } from './command_palette.task'
 import { loadActiveConfig } from './settings.question'
 
 export class OpenSettings implements Performable {
@@ -8,7 +9,8 @@ export class OpenSettings implements Performable {
   }
 
   async performAs(actor: Actor): Promise<void> {
-    await actor.page.getByRole('button', { name: 'Settings' }).click()
+    await actor.attemptsTo(OpenCommandPalette.now())
+    await actor.page.locator('.cmp-command-palette-action', { hasText: 'Settings' }).click()
     await actor.page.locator('.cmp-settings').waitFor({ state: 'visible' })
     await actor.page.locator('.cmp-settings-title', { hasText: 'Settings' }).waitFor({ state: 'visible' })
   }

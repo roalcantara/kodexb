@@ -60,7 +60,7 @@ describe('SyncModal', () => {
         sourcesDir: '/tmp/src',
         totalFiles: 3,
         processed: 3,
-        summary: { filesProcessed: 3, inserted: 5, updated: 2, errors: [], warnings: [] }
+        summary: { filesProcessed: 3, inserted: 5, updated: 2, errors: [], warnings: [], fileLog: [] }
       })
       expect(screen.getByText('Sync finished')).toBeTruthy()
     })
@@ -78,7 +78,8 @@ describe('SyncModal', () => {
           inserted: 5,
           updated: 2,
           errors: [],
-          warnings: ['hard collision: cmd+space between app-a and app-b (A / B)']
+          warnings: ['hard collision: cmd+space between app-a and app-b (A / B)'],
+          fileLog: []
         }
       })
       expect(screen.getByText('hard collision: cmd+space between app-a and app-b (A / B)')).toBeTruthy()

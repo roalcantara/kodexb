@@ -1,11 +1,6 @@
 import { beforeAll, beforeEach, describe, expect, it } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
-import { factoryFor } from '@testing'
-import {
-  installEntryActionPanelDepsMock,
-  installRecordEntryVisitMock,
-  withMockClipboard
-} from './entry_action_spec_setup.util'
+import { factoryFor, installEntryActionPanelDepsMock, installRecordEntryVisitMock, withMockClipboard } from '@testing'
 
 installEntryActionPanelDepsMock()
 
@@ -16,7 +11,8 @@ const actionCtx = {
   pushToast: () => undefined,
   onEditTask: () => undefined,
   onNewTask: () => undefined,
-  onSync: () => undefined
+  onSync: () => undefined,
+  onOpenSettings: () => undefined
 }
 
 let executeEntryAction: (entry: RpcKnowledge, actionId: string, ctx: typeof actionCtx) => Promise<void>

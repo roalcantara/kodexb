@@ -70,7 +70,7 @@ export function DetailPage({
       onClose={onClose}
       onSelectEntry={onSelectEntry}
       onOpenExternal={url => fireAndForget(Promise.resolve(defaultOpenExternal(url)))}
-      bodyContent={renderBodyContent()}
+      bodyContent={entry?.type === 'shortcut' ? renderBodyContent() : undefined}
     />
   )
 }

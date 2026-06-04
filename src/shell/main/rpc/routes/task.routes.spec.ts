@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
+import { mountRouteModule, rpcSpecPostJson, setupRpcRouteSpecSuite } from '@testing'
 import { runRoute } from '@testing/helpers/run_route.util'
 import { catalogRoutes } from './catalog.routes'
 import { taskRoutes } from './task.routes'
-import { mountRouteModule, rpcSpecPostJson, setupRpcRouteSpecSuite } from './utils/rpc_route_spec.util'
 
 describe('taskRoutes', () => {
   const { postViaRoutes, importedApp } = setupRpcRouteSpecSuite()

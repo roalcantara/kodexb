@@ -22,7 +22,8 @@ const ctxBase: EntryActionContext = {
   pushToast: () => undefined,
   onEditTask: () => undefined,
   onNewTask: () => undefined,
-  onSync: () => undefined
+  onSync: () => undefined,
+  onOpenSettings: () => undefined
 }
 
 function panelFor(type: RpcKnowledge['type']): EntryAction[] {
@@ -34,7 +35,7 @@ describe('buildEntryActionPanel()', () => {
   describe('when entry is null', () => {
     it('returns library and app actions', () => {
       const panel = buildEntryActionPanel(ctxBase, noopDeps)
-      expect(panel.map(a => a.id)).toEqual(['sync', 'new-task', 'quit'])
+      expect(panel.map(a => a.id)).toEqual(['sync', 'new-task', 'settings', 'quit'])
     })
   })
 

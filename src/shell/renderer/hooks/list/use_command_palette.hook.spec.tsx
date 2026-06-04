@@ -22,6 +22,7 @@ const paletteCallbacks = {
   onEditTask: () => undefined,
   onNewTask: () => undefined,
   onSync: () => undefined,
+  onOpenSettings: () => undefined,
   pushToast: () => undefined,
   entryPanelDeps: testEntryPanelDeps
 }
@@ -47,7 +48,7 @@ describe('useCommandPalette', () => {
     it('orders globals library then app', () => {
       const { result } = renderPalette({ selectedId: null, rows: [] })
       const ids = result.current.actions.map(a => a.id)
-      expect(ids).toEqual(['sync', 'new-task', 'quit'])
+      expect(ids).toEqual(['sync', 'new-task', 'settings', 'quit'])
       const libraryAndApp = result.current.actions.filter(a => a.section === 'library' || a.section === 'app')
       expect(libraryAndApp.length).toBe(result.current.actions.length)
     })

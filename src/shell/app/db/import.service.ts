@@ -66,7 +66,7 @@ export class ImportService {
     if ('error' in bundle) {
       const msg = formatBundleError(bundle.filePath, bundle.error)
       result.errors.push(msg)
-      return {
+      const fileResult: RpcSyncFileResult = {
         path: bundle.filePath,
         label,
         ok: false,
@@ -74,6 +74,8 @@ export class ImportService {
         inserted: 0,
         updated: 0
       }
+      result.fileLog.push(fileResult)
+      return fileResult
     }
 
     const now = Date.now()
@@ -99,17 +101,19 @@ export class ImportService {
         label: bundle.filePath,
         dur_ms: (performance.now() - t0).toFixed(2)
       })
-      return {
+      const fileResult: RpcSyncFileResult = {
         path: bundle.filePath,
         label,
         ok: true,
         inserted: insertedInFile,
         updated: updatedInFile
       }
+      result.fileLog.push(fileResult)
+      return fileResult
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
       result.errors.push(formatBundleError(bundle.filePath, msg))
-      return {
+      const fileResult: RpcSyncFileResult = {
         path: bundle.filePath,
         label,
         ok: false,
@@ -117,6 +121,8 @@ export class ImportService {
         inserted: insertedInFile,
         updated: updatedInFile
       }
+      result.fileLog.push(fileResult)
+      return fileResult
     }
   }
 
@@ -131,7 +137,8 @@ export class ImportService {
         inserted: 0,
         updated: 0,
         errors: [],
-        warnings: []
+        warnings: [],
+        fileLog: []
       }
 
       const bundles = await this.loadParsedSourceBundles(sourcesDir)

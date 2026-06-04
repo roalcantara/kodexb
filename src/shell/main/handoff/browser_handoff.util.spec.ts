@@ -1,5 +1,10 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test'
-import { installBunDollarMock, uninstallBunDollarMock } from '@testing'
+import {
+  installBunDollarMock,
+  installBunSpawnSyncMock,
+  uninstallBunDollarMock,
+  uninstallBunSpawnSyncMock
+} from '@testing'
 
 let openExternalResult: boolean | 'throw' = true
 
@@ -17,14 +22,11 @@ afterAll(() => uninstallBunDollarMock())
 
 describe('openInBrowser()', () => {
   describe('when frontmost is a known browser bundle', () => {
-    let restoreSpawn: typeof Bun.spawnSync
-
     beforeEach(() => {
-      restoreSpawn = Bun.spawnSync
-      Bun.spawnSync = (() => ({ stdout: Buffer.from('com.google.Chrome') })) as unknown as typeof Bun.spawnSync
+      installBunSpawnSyncMock({ stdout: Buffer.from('com.google.Chrome') })
     })
     afterEach(() => {
-      Bun.spawnSync = restoreSpawn
+      uninstallBunSpawnSyncMock()
     })
 
     it('returns ok:true', async () => {

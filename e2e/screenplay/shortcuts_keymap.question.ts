@@ -97,7 +97,6 @@ export class EntryRowShowsShortcutGlyph implements Answerable {
 
   async answeredBy(actor: Actor): Promise<void> {
     const row = actor.page.locator('.cmp-list-row', { hasText: this.title }).first()
-    const glyph = row.locator('.cmp-tag--type-shortcut')
-    await expect(glyph).toBeVisible()
+    await expect(row.locator('.cmp-list-row-icon')).toBeVisible()
   }
 }

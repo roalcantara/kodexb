@@ -11,7 +11,7 @@ import {
   validateBounds
 } from './state'
 
-describe('validateBounds', () => {
+describe('validateBounds()', () => {
   describe('with non-positive dimensions', () => {
     it('returns false', () => {
       expect(validateBounds(factoryFor('rectangle', { overrides: { width: 0 } }))).toBe(false)
@@ -29,7 +29,7 @@ describe('validateBounds', () => {
   })
 })
 
-describe('parseWindowStateJson', () => {
+describe('parseWindowStateJson()', () => {
   describe('with corrupt or invalid JSON', () => {
     it('returns null', () => {
       expect(parseWindowStateJson('not json')).toBeNull()
@@ -49,7 +49,7 @@ describe('parseWindowStateJson', () => {
   })
 })
 
-describe('loadWindowState / saveWindowState', () => {
+describe('loadWindowStateAsync() / loadWindowStateSync()', () => {
   let tmp: Awaited<ReturnType<typeof createTempDir>> | undefined
 
   afterEach(async () => {

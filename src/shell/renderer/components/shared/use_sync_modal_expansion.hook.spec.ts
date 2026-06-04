@@ -33,7 +33,8 @@ describe('useSyncModalExpansion', () => {
         inserted: 0,
         updated: 0,
         errors: ['/src/bad.yml: fail'],
-        warnings: []
+        warnings: [],
+        fileLog: []
       }
     } satisfies HookProps)
 

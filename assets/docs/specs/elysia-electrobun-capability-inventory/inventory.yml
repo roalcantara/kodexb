@@ -1,5 +1,5 @@
 version: 1
-generated_at: '2026-05-22'
+generated_at: '2026-05-27'
 sources:
   - id: elysia
     name: Elysia
@@ -13,12 +13,14 @@ sources:
   - id: electrobun
     name: Electrobun
     root_url: https://blackboard.sh/electrobun/docs/
-    fetched_at: '2026-05-22'
+    fetched_at: '2026-05-27'
     notes:
-      - Documentation site reviewed for API surface; local repo evidence checked on 2026-05-18.
-      - No unreachable upstream pages during the 2026-05-18 scrape (CE-1.3).
+      - Documentation site reviewed for API surface; local repo evidence checked on 2026-05-18 and refreshed 2026-05-27.
+      - Full corpus audit recorded in assets/docs/specs/electrobun-corpus-audit/report.md (2026-05-27).
+      - 'Path /guides/migrating-from-0x-to-v1 redirected to marketing home during 2026-05-27 fetch (CE-1.3 style gap).'
       - File dialogs and dev/hot-reload workflow are covered under utils and build entries unless split later.
       - Coverage addendum on 2026-05-22 added prominent Electrobun guide/API pages that were missing from the first pass.
+      - Corpus refresh on 2026-05-27 added Screen, BuildConfig API, BrowserView navigation, WGPU tag, and getting-started cluster entries.
 capabilities:
   - id: elysia-routing
     ecosystem: elysia
@@ -858,9 +860,10 @@ capabilities:
       status: used
       evidence:
         - src/shell/main/main.ts
+        - src/shell/main/shell_hooks.util.ts
         - src/shell/main/window/state.ts
       confidence: high
-      notes: Main app window created with `views://shell/index.html`, custom frame, and attached RPC instance.
+      notes: 'Main window uses views://shell/index.html, titleBarStyle hidden on darwin, attached RPC, blur-to-minimize handler. Window state helpers exist but are not wired to launch or persist yet.'
     priority: undecided
     priority_signals:
       roi: []
@@ -1009,7 +1012,7 @@ capabilities:
         - mise.toml
       confidence: high
       notes: Config gates `codesign` and `notarize` on env vars (`ELECTROBUN_DEVELOPER_ID`, Apple ID credentials). Local dev and CI smoke builds typically run unsigned.
-    priority: undecided
+    priority: postponed
     priority_signals:
       roi: []
       technical_debt:
@@ -1044,7 +1047,7 @@ capabilities:
         - electrobun.config.ts
       confidence: high
       notes: No updater configuration or release.baseUrl in app config.
-    priority: undecided
+    priority: postponed
     priority_signals:
       roi:
         - Essential for distributing updates once app ships beyond maintainer machines.
@@ -1079,7 +1082,7 @@ capabilities:
         - src/shell/main/main.ts
       confidence: high
       notes: app development targets macOS (darwin title bar branch, primary platform). `electrobun.config.ts` includes linux stub; Windows not configured. No verified Windows/Linux release builds in repo.
-    priority: undecided
+    priority: postponed
     priority_signals:
       roi:
         - Expands addressable users if app ships cross-platform.
@@ -1112,8 +1115,8 @@ capabilities:
       evidence:
         - src/shell/main/main.ts
       confidence: high
-      notes: Registers `CommandOrControl+Alt+/` to toggle window minimize/restore.
-    priority: undecided
+      notes: Registers `CommandOrControl+Alt+/` to toggle window minimize/restore. Teardown via event-driven `registerBeforeQuitShortcutTeardown` — waits for before-quit event to call `GlobalShortcut.unregisterAll()` per electrobun-utils-adoption R4.
+    priority: must-have
     priority_signals:
       roi: []
       technical_debt: []
@@ -1126,22 +1129,26 @@ capabilities:
     app_touchpoints:
       - src/shell/main/main.ts
     candidate_stories: []
-    notes: []
+    notes:
+      - v0.10.0 scope — see assets/docs/specs/v0.10.0-scope.md
   - id: electrobun-utils
     ecosystem: electrobun
     area: utils
     feature: Utils (paths, dialogs, external open)
     source_urls:
       - https://blackboard.sh/electrobun/docs/apis/utils
-    summary: PATHS helpers plus native utilities such as openExternal, openFileDialog, showMessageBox, and quit.
+    summary: Native utilities including openExternal, openPath, openFileDialog, showMessageBox, quit, clipboard, notifications, Session, moveToTrash, and dock visibility helpers.
     current_usage:
-      status: partial
+      status: used
       evidence:
         - src/shell/main/main.ts
         - src/shell/main/helpers/error.helper.ts
+        - src/shell/main/handoff/electrobun_clipboard.port.ts
+        - src/shell/main/handoff/browser_handoff.util.ts
+        - src/shell/main/handoff/editor_handoff.util.ts
       confidence: high
-      notes: Uses `Utils.openExternal`, `Utils.openFileDialog`, `Utils.showMessageBox`, and `Utils.quit`. Does not use PATHS helpers for app data paths in these files.
-    priority: undecided
+      notes: Uses `Utils.openExternal` (boolean return handled), `Utils.openPath`, `Utils.openFileDialog`, `Utils.showMessageBox`, `Utils.quit`, `Utils.clipboardReadText`, `Utils.clipboardWriteText`. Teardown via event-driven `registerBeforeQuitShortcutTeardown`. Shell hooks propagate `false` returns as throws. Does not use showNotification, Session, moveToTrash, or dock helpers. PATHS covered under electrobun-paths-api. Adoption spec at electrobun-utils-adoption — Phases 1-3 complete.
+    priority: must-have
     priority_signals:
       roi: []
       technical_debt:
@@ -1157,7 +1164,8 @@ capabilities:
       - src/shell/app/lib/app_shell_hooks.types.ts
     candidate_stories:
       - Evaluate Electrobun PATHS for config/database default locations.
-    notes: []
+    notes:
+      - v0.10.0 scope — see assets/docs/specs/v0.10.0-scope.md
   - id: electrobun-menus
     ecosystem: electrobun
     area: native-ui
@@ -1171,7 +1179,7 @@ capabilities:
         - src/shell/main/main.ts
       confidence: high
       notes: No ApplicationMenu or ContextMenu registration; app relies on default webview/Electrobun behaviour.
-    priority: undecided
+    priority: postponed
     priority_signals:
       roi:
         - Could improve macOS-native editing shortcuts and app-specific commands.
@@ -1201,7 +1209,7 @@ capabilities:
       evidence: []
       confidence: high
       notes: No tray icon or tray menu in main process.
-    priority: undecided
+    priority: postponed
     priority_signals:
       roi:
         - Hypothesis — quick access while window is minimized.
@@ -1224,14 +1232,14 @@ capabilities:
     feature: App and window Events API
     source_urls:
       - https://blackboard.sh/electrobun/docs/apis/events
-    summary: Application lifecycle events (before-quit, window-all-closed, activate) and window events.
+    summary: Global and per-object events including before-quit (cancellable, async cleanup), open-url (macOS), will-navigate with e.response, and window close ordering.
     current_usage:
-      status: partial
+      status: used
       evidence:
         - src/shell/main/main.ts
-      confidence: medium
-      notes: Uses `win.on('blur', ...)` on BrowserWindow only. Does not register app-level Electrobun Events API handlers such as before-quit.
-    priority: undecided
+      confidence: high
+      notes: Uses `mainWin.on('blur', ...)` and `Electrobun.events.on('before-quit')` for shortcut teardown via `registerBeforeQuitShortcutTeardown`. No DB close yet. Linux system quit may skip before-quit per upstream docs.
+    priority: must-have
     priority_signals:
       roi: []
       technical_debt:
@@ -1246,7 +1254,8 @@ capabilities:
       - src/shell/main/window/state.ts
     candidate_stories:
       - Save window state on before-quit via Electrobun Events API.
-    notes: []
+    notes:
+      - v0.10.0 scope — see assets/docs/specs/v0.10.0-scope.md
   - id: electrobun-webgpu
     ecosystem: electrobun
     area: gpu
@@ -1259,7 +1268,7 @@ capabilities:
       evidence: []
       confidence: high
       notes: app has no GPU rendering requirements.
-    priority: undecided
+    priority: meh
     priority_signals:
       roi: []
       technical_debt: []
@@ -1934,11 +1943,12 @@ capabilities:
     summary: Renderer CSS or APIs for defining draggable regions in frameless/custom-frame windows.
     current_usage:
       evidence:
-        - src/shell/main/main.ts
-        - src/shell/renderer/styles/list.css
-      notes: Main window uses custom frame behaviour, but this pass did not prove whether Electrobun-specific draggable regions are configured.
-      status: unknown
-      confidence: low
+        - src/shell/main/shell_hooks.util.ts
+        - src/shell/renderer/hooks/list/use_window_drag.hook.ts
+        - src/shell/renderer/styles/components/app_shell.css
+      notes: 'App uses titleBarStyle hidden on darwin and renderer RPC drag (use_window_drag.hook.ts), not Electrobun draggable-region CSS/API.'
+      status: not-used
+      confidence: high
     priority: undecided
   - priority_signals:
       roi: []
@@ -2053,12 +2063,13 @@ capabilities:
     feature: Bundling CEF
     source_urls:
       - https://blackboard.sh/electrobun/docs/guides/bundling-cef
-    summary: Bundle Chromium Embedded Framework for renderer consistency across platforms.
+    summary: Bundle Chromium Embedded Framework for renderer consistency and Chrome DevTools Protocol debugging.
     current_usage:
       evidence:
         - electrobun.config.ts
-      notes: '`bundleCEF: false` is configured for macOS and Linux.'
-      status: not-used
+        - package.json
+      notes: Opt-in via `ELECTROBUN_RENDERER=cef` (`dev:cef`); default builds use native WebKit. `bundleCEF` and `defaultRenderer` follow env on macOS.
+      status: partial
       confidence: high
     priority: undecided
   - priority_signals:
@@ -2090,3 +2101,156 @@ capabilities:
       status: used
       confidence: high
     priority: undecided
+  - id: electrobun-screen
+    ecosystem: electrobun
+    area: display
+    feature: Screen (displays and cursor)
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/bun
+    summary: Display enumeration, work areas, primary display, and cursor screen point for multi-monitor window placement.
+    current_usage:
+      status: used
+      evidence:
+        - src/shell/main/main.ts
+        - src/shell/main/window/placement.util.ts
+      confidence: high
+      notes: Uses `Screen.getCursorScreenPoint()`, `Screen.getAllDisplays()`, and `Screen.getPrimaryDisplay()` for cursor-aware multi-monitor window placement per electrobun-utils-adoption R3.
+    priority: must-have
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - Foundation for Raycast-style cursor-adjacent window placement.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/main.ts
+      - src/shell/main/window/placement.util.ts
+    candidate_stories:
+      - Resolve display from cursor before initial BrowserWindow frame.
+    notes:
+      - v0.10.0 scope — see assets/docs/specs/v0.10.0-scope.md
+  - id: electrobun-build-config-api
+    ecosystem: electrobun
+    area: build
+    feature: BuildConfig runtime API
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/build-config
+    summary: Runtime access to build-time settings via BuildConfig.get() — defaultRenderer, availableRenderers, cefVersion, bunVersion, runtime section.
+    current_usage:
+      status: not-used
+      evidence:
+        - electrobun.config.ts
+        - src/shell/main/main.ts
+      confidence: high
+      notes: Config is static in electrobun.config.ts; main process does not call BuildConfig.get() or getCached() at startup.
+    priority: nice-to-have
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction:
+        - Could log renderer availability when debugging CEF vs native builds.
+    pros:
+      - Single source for whether CEF is bundled in the running artifact.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - src/shell/main/main.ts
+      - electrobun.config.ts
+    candidate_stories:
+      - Log BuildConfig at startup when LOG_LEVEL=verbose.
+    notes: []
+  - id: electrobun-browser-view-navigation
+    ecosystem: electrobun
+    area: webview
+    feature: BrowserView navigation rules and will-navigate
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/browser-view
+      - https://blackboard.sh/electrobun/docs/apis/events
+    summary: setNavigationRules, per-webview will-navigate handlers, and global Electrobun.events will-navigate with synchronous e.response allow/deny.
+    current_usage:
+      status: not-used
+      evidence:
+        - src/shell/main/main.ts
+        - assets/guides/ELECTROBUN.md
+      confidence: high
+      notes: Main window loads packaged views:// only; no external URLs, no setNavigationRules, no will-navigate handlers.
+    priority: postponed
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction:
+        - Required before loading any external or user-supplied URL in a webview.
+    pros: []
+    cons: []
+    risks:
+      - Loading external content without navigation rules weakens desktop security posture.
+    prerequisites:
+      - Product decision to embed external web content
+    app_touchpoints:
+      - src/shell/main/main.ts
+    candidate_stories:
+      - Add navigation allowlist if preview or embedded docs ever load http(s) URLs.
+    notes: []
+  - id: electrobun-wgpu-tag
+    ecosystem: electrobun
+    area: gpu
+    feature: WGPU tag (renderer)
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/apis/wgpu
+    summary: Renderer-side WGPU custom element for GPU surfaces alongside WebGPU/GpuWindow main-process APIs.
+    current_usage:
+      status: not-applicable
+      evidence: []
+      confidence: high
+      notes: app has no GPU rendering or WGPU tag usage; paired with electrobun-webgpu as N/A.
+    priority: meh
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros: []
+    cons:
+      - Irrelevant to knowledge-management UI.
+    risks: []
+    prerequisites: []
+    app_touchpoints: []
+    candidate_stories: []
+    notes:
+      - URL verified reachable 2026-05-27; distinct from main-process WebGPU page.
+  - id: electrobun-getting-started
+    ecosystem: electrobun
+    area: onboarding
+    feature: Getting started guides
+    source_urls:
+      - https://blackboard.sh/electrobun/docs/guides/quick-start/
+      - https://blackboard.sh/electrobun/docs/guides/hello-world/
+      - https://blackboard.sh/electrobun/docs/guides/what-is-electrobun/
+      - https://blackboard.sh/electrobun/docs/guides/creating-ui/
+    summary: Onboarding cluster — init, hello world, architecture pitch, and Creating UI (Electroview, views://, ApplicationMenu Edit roles).
+    current_usage:
+      status: partial
+      evidence:
+        - assets/guides/ELECTROBUN.md
+        - electrobun.config.ts
+        - src/shell/main/main.ts
+      confidence: high
+      notes: app implements patterns from these guides (views://, BrowserWindow, Electroview) but does not mirror hello-world layout. Canonical URLs use /guides/ prefix per ELECTROBUN.md; legacy /getting-started/ paths may redirect.
+    priority: meh
+    priority_signals:
+      roi: []
+      technical_debt: []
+      risk_reduction: []
+    pros:
+      - ELECTROBUN.md already maps kb wiring to these pages.
+    cons: []
+    risks: []
+    prerequisites: []
+    app_touchpoints:
+      - assets/guides/ELECTROBUN.md
+    candidate_stories: []
+    notes:
+      - Onboarding-only; no adoption tier beyond documentation alignment.

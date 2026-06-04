@@ -139,7 +139,7 @@ describe('Eden Treaty client', () => {
     describe('when sourcesDir is omitted', () => {
       it('posts an empty body', async () => {
         rpcCallMock.mockImplementation(() =>
-          okResponse({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [] })
+          okResponse({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [], fileLog: [] })
         )
         await syncRpc()
         const call = rpcCallMock.mock.calls[0]?.[0] as { body: string }
@@ -150,7 +150,7 @@ describe('Eden Treaty client', () => {
     describe('when sourcesDir is provided', () => {
       it('forwards it in the body', async () => {
         rpcCallMock.mockImplementation(() =>
-          okResponse({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [] })
+          okResponse({ filesProcessed: 0, inserted: 0, updated: 0, errors: [], warnings: [], fileLog: [] })
         )
         await syncRpc('/abs/path')
         const call = rpcCallMock.mock.calls[0]?.[0] as { body: string }
@@ -162,12 +162,19 @@ describe('Eden Treaty client', () => {
       const results: RpcImportResult[] = []
       const unsub = onAfterSyncComplete(r => results.push(r))
       rpcCallMock.mockImplementation(() =>
-        okResponse({ filesProcessed: 2, inserted: 1, updated: 1, errors: [], warnings: ['hard collision: cmd+space'] })
+        okResponse({
+          filesProcessed: 2,
+          inserted: 1,
+          updated: 1,
+          errors: [],
+          warnings: ['hard collision: cmd+space'],
+          fileLog: []
+        })
       )
       await syncRpc()
       unsub()
       expect(results).toEqual([
-        { filesProcessed: 2, inserted: 1, updated: 1, errors: [], warnings: ['hard collision: cmd+space'] }
+        { filesProcessed: 2, inserted: 1, updated: 1, errors: [], warnings: ['hard collision: cmd+space'], fileLog: [] }
       ])
     })
   })
@@ -214,7 +221,8 @@ describe('Eden Treaty client', () => {
         inserted: 1,
         updated: 0,
         errors: [],
-        warnings: []
+        warnings: [],
+        fileLog: []
       })
 
       expect(progress).toEqual([{ processed: 1, total: 10, recentFile }])

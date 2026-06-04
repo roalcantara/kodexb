@@ -8,10 +8,10 @@ import {
   ViewNavigationDesyncHarness,
   ViewNavigationHarness,
   ViewNavigationSearchHarness,
-  viewNavBookmarkRow
+  viewNavBookmarkRow,
+  withMockClipboard
 } from '@testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { withMockClipboard } from '../../actions/entry_action_spec_setup.util'
 
 function nextAnimationFrame(): Promise<void> {
   return new Promise(resolve => requestAnimationFrame(() => resolve()))

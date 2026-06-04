@@ -132,9 +132,9 @@ export function DetailPageView({
             ) : null}
           </header>
 
-          {md || bodyContent ? (
+          {md || bodyContent !== undefined ? (
             <section className="cmp-detail-page-body">
-              {bodyContent ?? <MdView markdown={md ?? ''} onOpenExternal={onOpenExternal} />}
+              {bodyContent === undefined ? <MdView markdown={md ?? ''} onOpenExternal={onOpenExternal} /> : bodyContent}
             </section>
           ) : null}
 

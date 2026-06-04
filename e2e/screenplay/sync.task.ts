@@ -2,6 +2,7 @@ import { cpSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'nod
 import path from 'node:path'
 import { expect } from '@playwright/test'
 import type { Actor, Performable } from './actor.ability'
+import { OpenCommandPalette, SearchPaletteActions } from './command_palette.task'
 
 function loadFixturePaths() {
   return JSON.parse(readFileSync(path.join(import.meta.dirname, '..', '.fixture-paths.json'), 'utf-8')) as {
@@ -62,8 +63,8 @@ export class RunSync implements Performable {
 
   async performAs(actor: Actor): Promise<void> {
     const page = actor.page
-    await page.keyboard.press('Meta+k')
-    await page.getByPlaceholder('Type an action...').waitFor({ state: 'visible', timeout: 10_000 })
+    await actor.attemptsTo(OpenCommandPalette.now())
+    await actor.attemptsTo(SearchPaletteActions.for('sync'))
     await page.locator('.cmp-command-palette-action', { hasText: /^Sync$/ }).click()
     await page.locator('.cmp-sync-modal').waitFor({ state: 'visible', timeout: 10_000 })
     await actor.eventually(async () => {

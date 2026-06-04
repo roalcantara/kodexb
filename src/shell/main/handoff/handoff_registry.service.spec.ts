@@ -1,40 +1,59 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test'
-import { installBunDollarMock, resetBunDollarMock, setBunDollarThrow, uninstallBunDollarMock } from '@testing'
+import {
+  installBunDollarMock,
+  installBunSpawnSyncMock,
+  resetBunDollarMock,
+  setBunDollarThrow,
+  setBunSpawnSyncResult,
+  uninstallBunDollarMock,
+  uninstallBunSpawnSyncMock
+} from '@testing'
 import type { HandoffKind } from './handoff_registry.service'
 
 let clipboardContent = ''
 let openPathResult: boolean | 'throw' = false
 let openExternalResult: boolean | 'throw' = false
 
-mock.module('electrobun/bun', () => ({
-  Utils: {
-    openExternal: () => {
-      if (openExternalResult === 'throw') throw new Error('openExternal failed')
-      return openExternalResult
-    },
-    openPath: () => {
-      if (openPathResult === 'throw') throw new Error('openPath failed')
-      return openPathResult
+function installHandoffRegistrySpecMocks(): void {
+  mock.module('electrobun/bun', () => ({
+    Utils: {
+      openExternal: () => {
+        if (openExternalResult === 'throw') throw new Error('openExternal failed')
+        return openExternalResult
+      },
+      openPath: () => {
+        if (openPathResult === 'throw') throw new Error('openPath failed')
+        return openPathResult
+      }
     }
-  }
-}))
-
-mock.module('./electrobun_clipboard.port', () => ({
-  readSystemClipboard: () => clipboardContent,
-  writeSystemClipboard: (text: string) => {
-    clipboardContent = text
-  }
-}))
+  }))
+  mock.module('./electrobun_clipboard.port', () => ({
+    readSystemClipboard: () => clipboardContent,
+    writeSystemClipboard: (text: string) => {
+      clipboardContent = text
+    }
+  }))
+}
 
 beforeAll(() => installBunDollarMock())
 beforeEach(() => {
+  mock.restore()
+  installHandoffRegistrySpecMocks()
   clipboardContent = ''
   openPathResult = false
   openExternalResult = false
   resetBunDollarMock()
   setBunDollarThrow(true)
+  /** No known browser in front — forces openExternal path without mock.module leakage. */
+  installBunSpawnSyncMock({ stdout: Buffer.from(''), stderr: Buffer.alloc(0), exitCode: 0 })
 })
-afterAll(() => uninstallBunDollarMock())
+afterEach(() => {
+  uninstallBunSpawnSyncMock()
+})
+afterAll(() => {
+  mock.restore()
+  uninstallBunDollarMock()
+})
 
 /** Registry specs assert osascript/Bun.$ behaviour; pin darwin so Linux CI does not require xdotool. */
 const HANDOFF_TEST_PLATFORM = 'darwin' as const
@@ -134,19 +153,11 @@ describe('runEntryHandoff', () => {
   })
 
   describe('paste-frontmost tests', () => {
-    let restoreSpawn: typeof Bun.spawnSync
-    beforeEach(() => {
-      restoreSpawn = Bun.spawnSync
-    })
-    afterEach(() => {
-      Bun.spawnSync = restoreSpawn
-    })
-
     describe('when paste-frontmost with doc succeeds', () => {
       it('restores clipboard and returns ok:true', async () => {
         clipboardContent = 'original-clip'
         setBunDollarThrow(false)
-        Bun.spawnSync = (() => ({ exitCode: 0, stdout: '', stderr: '' })) as unknown as typeof Bun.spawnSync
+        setBunSpawnSyncResult({ exitCode: 0, stdout: '', stderr: '' })
         const { runEntryHandoff } = await import('./handoff_registry.service')
         const services = makeServices()
         const result = runEntryHandoff('paste-frontmost', { doc: 'paste-content' }, services, HANDOFF_TEST_PLATFORM)
@@ -189,6 +200,21 @@ describe('runEntryHandoff', () => {
     })
   })
 
+  describe('when adapter returns ok:false after hide', () => {
+    it('calls show and returns browser-open-failed code', async () => {
+      clipboardContent = 'clip'
+      const { runEntryHandoff } = await import('./handoff_registry.service')
+      const services = makeServices()
+      const result = runEntryHandoff('browser-open', { url: 'https://example.com' }, services, HANDOFF_TEST_PLATFORM)
+
+      expect(result).toMatchObject({ ok: false, code: 'browser-open-failed' })
+      expect(services.calls).toContain('hide')
+      expect(services.calls).toContain('show')
+      expect(services.calls).toContain('disarmGuard')
+      expect(clipboardContent).toBe('clip')
+    })
+  })
+
   describe('error codes', () => {
     const cases: { kind: HandoffKind; payload: Record<string, string>; wantCode: string; wantError: string }[] = [
       {
@@ -198,9 +224,24 @@ describe('runEntryHandoff', () => {
         wantError: 'openExternal'
       },
       { kind: 'editor-open', payload: { filePath: '/tmp/x' }, wantCode: 'editor-open-failed', wantError: 'openPath' },
-      { kind: 'terminal-paste', payload: {}, wantCode: 'terminal-paste-failed', wantError: 'Error: osascript failed' },
-      { kind: 'terminal-run', payload: {}, wantCode: 'terminal-run-failed', wantError: 'Error: osascript failed' },
-      { kind: 'paste-frontmost', payload: {}, wantCode: 'paste-doc-failed', wantError: 'Error: osascript failed' }
+      {
+        kind: 'terminal-paste',
+        payload: { cmd: 'ls' },
+        wantCode: 'terminal-paste-failed',
+        wantError: 'Error: osascript failed'
+      },
+      {
+        kind: 'terminal-run',
+        payload: { cmd: 'npm test' },
+        wantCode: 'terminal-run-failed',
+        wantError: 'Error: osascript failed'
+      },
+      {
+        kind: 'paste-frontmost',
+        payload: { doc: 'test' },
+        wantCode: 'paste-doc-failed',
+        wantError: 'Error: osascript failed'
+      }
     ]
 
     for (const { kind, payload, wantCode, wantError } of cases) {

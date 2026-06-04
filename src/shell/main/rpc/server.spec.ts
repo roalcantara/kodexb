@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 
-import { RPC_SPEC_API_BASE, rpcSpecPostJson, setupRpcRouteSpecSuite } from './routes/utils/rpc_route_spec.util'
+import { RPC_SPEC_API_BASE, rpcSpecPostJson, setupRpcRouteSpecSuite } from '@testing'
 import { createRpcServer } from './server'
 
 describe('createRpcServer', () => {

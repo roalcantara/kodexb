@@ -131,8 +131,19 @@ describe('resolveDisplayForPlacement()', () => {
     const secondary = fakeDisplay(factoryFor('rectangle', { overrides: { x: 1920, width: 1920, height: 1080 } }))
     const displays = [secondary, primary]
 
-    it('returns the cursor display', () => {
+    it('returns the cursor display when secondary is to the right', () => {
       const result = resolveDisplayForPlacement(screen({ x: 2500, y: 500 }, displays), findDisplay)
+      expect(result.id).toBe(secondary.id)
+    })
+  })
+
+  describe('when cursor is on a left-side secondary display', () => {
+    const primary = fakeDisplay(factoryFor('rectangle', { overrides: { x: 1920, width: 1920, height: 1080 } }))
+    const secondary = fakeDisplay(factoryFor('rectangle', { overrides: { x: 0, width: 1920, height: 1080 } }))
+    const displays = [secondary, primary]
+
+    it('returns the cursor display', () => {
+      const result = resolveDisplayForPlacement(screen({ x: 1000, y: 500 }, displays), findDisplay)
       expect(result.id).toBe(secondary.id)
     })
   })

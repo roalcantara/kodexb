@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-
-import { expectBodyValidationError } from '@testing'
+import { expectBodyValidationError, setupRpcRouteSpecSuite } from '@testing'
 import { runRoute } from '@testing/helpers/run_route.util'
-
 import { catalogRoutes } from './catalog.routes'
-import { setupRpcRouteSpecSuite } from './utils/rpc_route_spec.util'
 
 describe('catalogRoutes', () => {
   const { postViaRoutes } = setupRpcRouteSpecSuite()
