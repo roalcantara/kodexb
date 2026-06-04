@@ -141,9 +141,16 @@ hooks:
   - extension: kb-workflow
     command: speckit.kb.handoff
     enabled: true
-    optional: true
+    optional: false
     prompt: Refresh handoff.md from tasks?
     description: kb handoff generator after tasks
+    condition: null
+  - extension: kb-workflow
+    command: speckit.kb.audit
+    enabled: true
+    optional: false
+    prompt: Run spec audit before analyze?
+    description: Deterministic handoff and task-order checks before /speckit-analyze
     condition: null
   after_implement:
   - extension: git

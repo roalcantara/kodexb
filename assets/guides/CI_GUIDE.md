@@ -7,11 +7,23 @@ contract).
 
 ## Overview
 
-| Workflow      | Trigger                                                | Runner        | Outcome                                 |
-| ------------- | ------------------------------------------------------ | ------------- | --------------------------------------- |
-| `review.yml`  | PR opened / synchronized / reopened                    | ubuntu-latest | Lint + test + Linux smoke build         |
-| `release.yml` | Push to `main`                                         | ubuntu-latest | Draft GitHub Release via release-it     |
-| `publish.yml` | `workflow_run` from Release **or** `workflow_dispatch` | matrix        | Native binaries → attached → un-drafted |
+| Workflow      | Trigger                                                | Runner        | Outcome                                               |
+| ------------- | ------------------------------------------------------ | ------------- | ----------------------------------------------------- |
+| `review.yml`  | PR to `main` (draft: review-draft; ready: full Review) | ubuntu-latest | Draft: HK hygiene + tests + spec gate; ready: + build |
+| `release.yml` | Push to `main`                                         | ubuntu-latest | Draft GitHub Release via release-it                   |
+| `publish.yml` | `workflow_run` from Release **or** `workflow_dispatch` | matrix        | Native binaries → attached → un-drafted               |
+
+### Draft PR vs ready for review
+
+While a PR is **Draft**, `review.yml` runs only:
+
+- `Review (draft) - HK hygiene`
+- `Review (draft) - Tests`
+- `Review (draft) - Spec gate` (when `assets/specs/NNN-*` changed)
+
+**Skipped on draft** (run after **Ready for review**): full HK CI profile, E2E smoke/regression, CST, build smoke.
+
+If E2E or full HK show as failed/skipped on a draft PR, re-open checks after marking the PR ready, or push a commit that includes the workflow fix above.
 
 Build targets:
 

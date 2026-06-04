@@ -1,5 +1,4 @@
-# Triggered on every non-draft PR targeting main.
-# Mirrors the passing Review layout (lint + test + build in parallel).
+# PRs targeting main: full Review on ready PRs; review-draft on draft PRs.
 name: Review
 
 on:
@@ -22,6 +21,56 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  review-draft-hk:
+    if: ${{ github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
+    name: Review (draft) - HK hygiene
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: ./.github/actions/setup-bun-checkout
+      - name: HK hygiene (pre-commit parity)
+        run: mise exec -- hk check --all --check
+
+  review-draft-test:
+    if: ${{ github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
+    name: Review (draft) - Tests
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      checks: write
+    steps:
+      - uses: ./.github/actions/run-bun-test-junit
+        with:
+          summary_title: Test Results (draft)
+          check_name: Tests (draft)
+          artifact_name: report-tests-draft
+
+  review-draft-spec:
+    if: ${{ github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
+    name: Review (draft) - Spec gate
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: ./.github/actions/setup-bun-checkout
+      - name: Spec gate on touched feature dirs
+        run: |
+          mapfile -t dirs < <(
+            git diff --name-only "origin/${GITHUB_BASE_REF}...HEAD" \
+              | rg '^assets/specs/[0-9]{3}-[^/]+/' -o \
+              | sort -u
+          )
+          if [[ ${#dirs[@]} -eq 0 ]]; then
+            echo "No assets/specs/NNN-* changes; skipping spec gate"
+            exit 0
+          fi
+          for dir in "${dirs[@]}"; do
+            echo "── spec gate: ${dir} ──"
+            mise run spec gate "$dir"
+          done
+
   hk:
     if: ${{ !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
     name: HK - Enforces the local git-hook policy in CI so the policy doesn't depend on the honor system
@@ -77,39 +126,14 @@ jobs:
       contents: read
       checks: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-bun-project
+      - uses: ./.github/actions/run-bun-test-junit
         with:
-          setup_mode: mise
-      - name: Run tests (JUnit + coverage)
-        run: |
-          mkdir -p tmp/reports/tests
-          bun test --pass-with-no-tests \
-            --reporter=junit \
-            --reporter-outfile=tmp/reports/tests/junit.xml \
-            --coverage \
-            --coverage-dir=tmp/reports/tests/coverage
-      - name: Append JUnit summary
-        if: always()
-        uses: ./.github/actions/junit-summary
-        with:
-          xml_path: tmp/reports/tests/junit.xml
-          title: Test Results
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: report-tests
-          path: tmp/reports/tests
-          retention-days: 7
-      - uses: mikepenz/action-junit-report@v5
-        if: always()
-        with:
-          report_paths: tmp/reports/tests/junit.xml
-          fail_on_failure: true
-          require_tests: true
+          summary_title: Test Results
+          check_name: Test
+          artifact_name: report-tests
 
   e2e-smoke:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    if: ${{ !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
     name: E2E Smoke - Runs the Playwright BDD smoke suite
     runs-on: ubuntu-24.04
     timeout-minutes: 25
@@ -147,7 +171,7 @@ jobs:
           check_name: E2E Smoke
 
   e2e-regression:
-    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    if: ${{ !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
     name: E2E Regression - Runs the Playwright BDD regression suite
     runs-on: ubuntu-24.04
     timeout-minutes: 45

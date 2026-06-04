@@ -97,6 +97,9 @@ HK_PKL_BACKEND = "pklr"
     cmd "update" {}
     cmd "status" {}
     cmd "watch" {}
+    cmd "usage-report" {
+      flag "--days <n>" default="7" help="Window in days"
+    }
   ''', run = '''
     #!/usr/bin/env bash
     set -euo pipefail
@@ -105,7 +108,7 @@ HK_PKL_BACKEND = "pklr"
     REPO_ROOT="$(git rev-parse --show-toplevel)"
 
     install_crg() {
-
+      command -v code-review-graph >/dev/null 2>&1 || uv tool install --upgrade code-review-graph
     }
 
     setup_repo_mcp() {
@@ -189,8 +192,12 @@ HK_PKL_BACKEND = "pklr"
       watch)
         exec code-review-graph watch --repo "$REPO_ROOT"
         ;;
+      usage-report)
+        days="${usage_days:-7}"
+        exec bun tools/graph/usage_report.ts --days "$days"
+        ;;
       *)
-        echo "graph: unknown action '${CMD}' (expected one of: install, setup, build, update, status, watch)" >&2
+        echo "graph: unknown action '${CMD}' (expected one of: install, setup, build, update, status, watch, usage-report)" >&2
         exit 2
         ;;
     esac
@@ -2306,6 +2313,13 @@ if (!ok) process.exit(1)
       arg "<feature>" help="NNN-slug"
     }
     cmd "opencode-check" {}
+    cmd "audit" {
+      flag "--strict" help="Exit non-zero on errors"
+      arg "<feature_dir>" help="Feature dir under assets/specs"
+    }
+    cmd "pr-draft" {
+      arg "<feature_dir>" help="Feature dir (gate must pass first)"
+    }
   ''', run = '''
     #!/usr/bin/env bash
     set -euo pipefail
@@ -2347,6 +2361,19 @@ if (!ok) process.exit(1)
         ;;
       opencode-check)
         exec bash tools/spec/opencode_check.sh
+        ;;
+      audit)
+        dir="${usage_feature_dir:-}"
+        [[ -n "$dir" ]] || { echo "spec audit: feature dir required" >&2; exit 2; }
+        strict=()
+        [[ "${usage_strict:-false}" == "true" ]] && strict=(--strict)
+        bun tools/spec/tasks_audit.ts "$dir" "${strict[@]}"
+        bun tools/spec/lint.ts "$dir" --strict
+        echo "spec audit: deterministic checks OK — run /speckit-analyze for cross-artifact review"
+        ;;
+      pr-draft)
+        dir="${usage_feature_dir:-}"
+        exec bash tools/spec/pr_draft.sh "$dir"
         ;;
       *)
         echo "spec: unknown action ${CMD}" >&2

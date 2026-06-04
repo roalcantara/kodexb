@@ -3,7 +3,13 @@
   "hooks": {
     "sessionStart": [
       {
-        "command": "bun .cursor/hooks/electrobun_session_start.ts"
+        "command": "bun .agents/hooks/electrobun_session_start.ts"
+      }
+    ],
+    "afterMCPExecution": [
+      {
+        "command": "bun tools/graph/log_mcp_usage.ts",
+        "matcher": "code-review-graph|MCP:.*code-review-graph"
       }
     ]
   }

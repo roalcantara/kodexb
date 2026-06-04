@@ -1,0 +1,45 @@
+name: Run bun test with JUnit
+description: Run bun test and append JUnit summary for Review workflows
+inputs:
+  summary_title:
+    description: Title for the JUnit step summary
+    required: true
+  check_name:
+    description: check_name for mikepenz/action-junit-report
+    required: true
+  artifact_name:
+    description: upload-artifact name for test reports
+    required: false
+    default: report-tests
+runs:
+  using: composite
+  steps:
+    - uses: ./.github/actions/setup-bun-checkout
+    - name: Run tests (JUnit + coverage)
+      shell: bash
+      run: |
+        mkdir -p tmp/reports/tests
+        bun test --pass-with-no-tests \
+          --reporter=junit \
+          --reporter-outfile=tmp/reports/tests/junit.xml \
+          --coverage \
+          --coverage-dir=tmp/reports/tests/coverage
+    - name: Append JUnit summary
+      if: always()
+      uses: ./.github/actions/junit-summary
+      with:
+        xml_path: tmp/reports/tests/junit.xml
+        title: ${{ inputs.summary_title }}
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ${{ inputs.artifact_name }}
+        path: tmp/reports/tests
+        retention-days: 7
+    - uses: mikepenz/action-junit-report@v5
+      if: always()
+      with:
+        report_paths: tmp/reports/tests/junit.xml
+        fail_on_failure: true
+        require_tests: true
+        check_name: ${{ inputs.check_name }}

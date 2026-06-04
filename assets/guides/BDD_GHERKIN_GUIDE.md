@@ -11,6 +11,47 @@ matching Playwright BDD step definitions under `e2e/steps/`.
 Seed titles and tags MUST match
 [`assets/docs/specs/e2e/fixture-manifest.md`](../docs/specs/e2e/fixture-manifest.md).
 
+## Audience: everyone, not engineers
+
+BDD is **not** for developers. Gherkin is the shared language of the Three
+Amigos — product, delivery, and engineering — plus anyone who reads release
+notes or signs off on behavior. A C-level reader, a manager, or a ten-year-old
+should understand **what the product promises** without a glossary.
+
+| Layer                           | Who reads it       | Language                                    |
+| ------------------------------- | ------------------ | ------------------------------------------- |
+| `assets/features/e2e/*.feature` | Everyone           | Plain, user-visible behavior                |
+| `spec.md` / `plan.md`           | Engineers + agents | EARS, tables, file paths, measures          |
+| `step-catalog.md`               | Implementers       | Maps plain Gherkin phrases to harness steps |
+
+**In `.feature` files — avoid:** harness, fixture, RPC, SQLite, component names,
+`frecency`, `catalog`, `projection`, `binding_frecency`, `preview harness`,
+`surviving entries`, integration spec file names.
+
+**Use instead:** “items I open often”, “sync my files from disk”, “shortcuts I
+use”, “still near the top”, “still in the same order”.
+
+**Pilot (needs rewrite):** [`sync_frecency.feature`](../features/e2e/sync_frecency.feature)
+— tracked as **BDD-1** in [`assets/specs/README.md`](../specs/README.md).
+
+Example target shape (step text must still match step-catalog entries after
+rewrite):
+
+```gherkin
+@spec:sync-frecency
+Feature: My favorite items stay on top after sync
+  When I refresh my knowledge from disk, the app should not forget which
+  items I use most.
+
+  Scenario: Frequently opened items keep their place after sync
+    Given I have opened some items several times
+    When I sync my files from disk
+    Then the items I use most still appear before the ones I rarely open
+```
+
+Engineering proof (`app_sync_frecency.spec.ts`, snapshot/restore) belongs in
+`spec.md` — not in the Feature narrative.
+
 ## Cucumber Given / When / Then (required)
 
 From the [Cucumber Gherkin reference](https://cucumber.io/docs/gherkin/reference/):
@@ -39,7 +80,8 @@ Before committing a `.feature` file, verify every item in this checklist.
 - The file has one `Feature`.
 - The `Feature` names a user-visible capability, not an implementation unit.
 - Each `Scenario` describes one behavior.
-- Each scenario uses business language that a product maintainer can read.
+- Each scenario uses plain language a child or executive can read (see
+  [Audience](#audience-everyone-not-engineers)).
 - Each scenario has one main `When`.
 - Most scenarios have three to seven steps.
 - Scenario variants use `Scenario Outline` and `Examples`.

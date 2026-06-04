@@ -1,10 +1,9 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.2.0 → 1.3.0
-Bump rationale: MINOR. SDD path migration to assets/specs/, spec.md/plan.md
-  authority, deterministic spec lint/trace gates, Gherkin in assets/features/e2e/,
-  git-config auto_commit documented, SDD_WORKFLOW_GUIDE reference.
+Version change: 1.3.0 → 1.3.1
+- Fixed path to spec-kit-constitution-log.md;
+- Added link to Git Commits Guide.
 -->
 
 # kb — Project Constitution
@@ -30,7 +29,7 @@ in Bun, Electrobun, and TypeBox. Inspired by [GitHub Spec Kit — spec-driven.md
 | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Specs as lingua franca** | Normative `spec.md`, `plan.md`, `tasks.md`, `handoff.md` under `assets/specs/<NNN-slug>/`; backlog in [`assets/specs/README.md`](../../assets/specs/README.md). Guide: [`SDD_WORKFLOW_GUIDE.md`](../../assets/guides/SDD_WORKFLOW_GUIDE.md). |
 | **Executable specs**       | EARS in `spec.md` with **Measure** + **Evidence**; Gherkin in `assets/features/e2e/` when declared.                                                                                                                                          |
-| **Continuous refinement**  | `/speckit-clarify`, `/speckit-checklist`, `/speckit-analyze` — not one-shot doc dumps.                                                                                                                                                       |
+| **Continuous refinement**  | `/speckit-clarify`, `/speckit-checklist`, `/speckit-analyze` (mandatory after tasks, before implement) — not one-shot doc dumps.                                                                                                             |
 | **Intent-driven change**   | Pivots update requirements/design first; implementation and tests follow.                                                                                                                                                                    |
 | **Operational feedback**   | Incidents and review findings become new requirements or backlog rows — not silent code-only fixes.                                                                                                                                          |
 
@@ -183,17 +182,17 @@ Measure/Evidence.
 kb uses **Spec Kit** commands aligned to [spec-driven.md][16] — not a separate
 `spw.*` toolchain. Custom workflows live in `.specify/workflows/` when added.
 
-| Step | Command / artifact                                                   | Purpose                                              |
-| ---- | -------------------------------------------------------------------- | ---------------------------------------------------- |
-| 0    | **Constitution** — this file; `/speckit-constitution` to amend       | Governance + gates                                   |
-| 1    | **Specify** — `/speckit-specify` → `spec.md`                         | EARS behavior + ACs                                  |
-| 2    | **Clarify** — `/speckit-clarify`                                     | Resolve open questions in `spec.md`                  |
-| 3    | **Checklist** — `/speckit-checklist`                                 | Requirements-quality pass (advisory)                 |
-| 4    | **Plan** — `/speckit-plan` → `plan.md`                               | Design + E2e traceability (Gherkin in `.feature`)    |
-| 5    | **Tasks** — `/speckit-tasks` → `tasks.md`, `handoff.md`              | Ordered work + Done when + Evidence                  |
-| 6    | **Analyze** — `/speckit-analyze`                                     | Constitution + cross-artifact consistency (advisory) |
-| 7    | **Implement** — `/speckit-implement` + `handoff.md`                  | Code + tests                                         |
-| 8    | **Review** — `mise run spec gate` + handoff AC table + [`DoD.md`][4] | lint + trace + `gate.sh`                             |
+| Step | Command / artifact                                                     | Purpose                                                                   |
+| ---- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 0    | **Constitution** — this file; `/speckit-constitution` to amend         | Governance + gates                                                        |
+| 1    | **Specify** — `/speckit-specify` → `spec.md`                           | EARS behavior + ACs                                                       |
+| 2    | **Clarify** — `/speckit-clarify`                                       | Resolve open questions in `spec.md`                                       |
+| 3    | **Checklist** — `/speckit-checklist`                                   | Requirements-quality pass (advisory)                                      |
+| 4    | **Plan** — `/speckit-plan` → `plan.md`                                 | Design + E2e traceability (Gherkin in `.feature`)                         |
+| 5    | **Tasks** — `/speckit-tasks` → `tasks.md`, `handoff.md`                | Ordered work + Done when + Evidence                                       |
+| 6    | **Analyze** — `/speckit-analyze` after `tasks` + `mise run spec audit` | Constitution + cross-artifact consistency (**required** before implement) |
+| 7    | **Implement** — `/speckit-implement` + `handoff.md`                    | Code + tests                                                              |
+| 8    | **Review** — `mise run spec gate` + handoff AC table + [`DoD.md`][4]   | lint + trace + `gate.sh`                                                  |
 
 **Feature path:** `.specify/feature.json` → `feature_directory` under
 `assets/specs/<NNN-slug>/` (Companion glob `[0-9][0-9][0-9]-*`).
@@ -207,7 +206,7 @@ kb uses **Spec Kit** commands aligned to [spec-driven.md][16] — not a separate
 3. **Constitution check** — `/speckit-analyze` SHOULD flag conflicts as **CRITICAL**;
    **`mise run spec lint --strict`** enforces EARS shape deterministically.
 4. **Human gates** — prototype approval; operator runs `mise run spec gate` before merge.
-5. **Chat agents commit WHEN ASKED**; workflow shell MAY commit after approved gate
+5. **Chat agents commit WHEN ASKED**; workflow shell MAY [commit][10] after approved gate
    via `mise run spec commit`. Git extension `auto_commit.*` remains **false** in
    [`git-config.yml`](../extensions/git/git-config.yml).
 5. **Creative ambiguity** — load `brainstorming` when intent is unclear; record
@@ -292,7 +291,7 @@ No production `src/` feature work from a prototype until explicit approval
 | **Compliance** | Analyze = CRITICAL on conflict; `gate.sh` = executable enforcement                                   |
 | **Authority**  | Guides own engineering detail; this file owns Spec Kit + SDD workflow                                |
 
-**Version**: 1.3.0 | **Ratified**: 2026-06-02 | **Last Amended**: 2026-06-03
+**Version**: 1.3.1 | **Ratified**: 2026-06-02 | **Last Amended**: 2026-06-03
 
 [0]: ../../assets/guides/ 'Canonical guides'
 [1]: ../../assets/guides/FCIS.guide.md 'FCIS Guide'
@@ -305,7 +304,7 @@ No production `src/` feature work from a prototype until explicit approval
 [9]: ../../assets/guides/ELECTROBUN.md 'Electrobun Guide'
 [10]: ../../assets/guides/GIT_COMMITS_GUIDE.md 'Git Commits Guide'
 [11]: ../../assets/guides/CI_GUIDE.md 'CI Guide'
-[12]: ../../assets/docs/specs/MILESTONE_02/00_scope/spec-kit-constitution-log.md 'Spec Kit constitution log'
+[12]: ../../assets/docs/specs/spec-kit-constitution-log.md 'Spec Kit constitution log'
 [13]: https://github.com/blackboardsh/electrobun 'Electrobun'
 [14]: ../../CLAUDE.md
 [15]: ../../AGENTS.md

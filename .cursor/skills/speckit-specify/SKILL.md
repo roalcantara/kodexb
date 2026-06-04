@@ -207,12 +207,12 @@ Given that feature description, do this:
 
            **Suggested Answers**:
 
-           | Option | Answer | Implications |
-           |--------|--------|--------------|
-           | A      | [First suggested answer] | [What this means for the feature] |
-           | B      | [Second suggested answer] | [What this means for the feature] |
-           | C      | [Third suggested answer] | [What this means for the feature] |
-           | Custom | Provide your own answer | [Explain how to provide custom input] |
+            | Option | Answer                    | Implications                          |
+            | ------ | ------------------------- | ------------------------------------- |
+            | A      | [First suggested answer]  | [What this means for the feature]     |
+            | B      | [Second suggested answer] | [What this means for the feature]     |
+            | C      | [Third suggested answer]  | [What this means for the feature]     |
+            | Custom | Provide your own answer   | [Explain how to provide custom input] |
 
            **Your choice**: _[Wait for user response]_
            ```
@@ -266,11 +266,11 @@ Check if `.specify/extensions.yml` exists in the project root.
 
 ## Completion Report
 
-Report completion to the user with:
-- `SPECIFY_FEATURE_DIRECTORY` — the feature directory path
-- `SPEC_FILE` — the spec file path
-- Checklist results summary
-- Readiness for the next phase (`/speckit-clarify` or `/speckit-plan`)
+On **success** (no blocking errors): reply with one line only:
+
+`OK — <SPECIFY_FEATURE_DIRECTORY>/spec.md`
+
+On **failure** or checklist gaps: include paths, checklist summary, and next step (`/speckit-clarify` or `/speckit-plan`). Use `--verbose` in user input to force the full table.
 
 **NOTE:** Branch creation is handled by the `before_specify` hook (git extension). Spec directory and file creation are always handled by this core command.
 

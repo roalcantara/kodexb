@@ -61,8 +61,8 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Fill Technical Context (mark unknowns as "NEEDS CLARIFICATION")
    - Fill Constitution Check section from constitution
    - Evaluate gates (ERROR if violations unjustified)
-   - Phase 0: Generate research.md (resolve all NEEDS CLARIFICATION)
-   - Phase 1: Generate data-model.md, contracts/, quickstart.md
+   - Phase 0: Generate `artifacts/plan/research.md` (resolve all NEEDS CLARIFICATION)
+   - Phase 1: Generate `artifacts/plan/data-model.md`, `artifacts/plan/contracts/`, `artifacts/plan/quickstart.md`
    - Phase 1: Update agent context by running the agent script
    - Re-evaluate Constitution Check post-design
 
@@ -102,7 +102,9 @@ Check if `.specify/extensions.yml` exists in the project root.
 
 ## Completion Report
 
-Command ends after Phase 2 planning. Report branch, IMPL_PLAN path, and generated artifacts.
+On **success**: `OK — <FEATURE_DIR>/plan.md` (one line). On failure or NEEDS CLARIFICATION blockers: branch, paths, and artifacts list. User `--verbose` forces full report.
+
+**Context loading:** constitution + feature dir + routed project skills (`app-context`, `app-testing`, `app-rpc` when RPC). Do **not** load all of `assets/guides/*`.
 
 ## Phases
 
@@ -122,23 +124,23 @@ Command ends after Phase 2 planning. Report branch, IMPL_PLAN path, and generate
      Task: "Find best practices for {tech} in {domain}"
    ```
 
-3. **Consolidate findings** in `research.md` using format:
+3. **Consolidate findings** in `artifacts/plan/research.md` using format:
    - Decision: [what was chosen]
    - Rationale: [why chosen]
    - Alternatives considered: [what else evaluated]
 
-**Output**: research.md with all NEEDS CLARIFICATION resolved
+**Output**: `artifacts/plan/research.md` with all NEEDS CLARIFICATION resolved
 
 ### Phase 1: Design & Contracts
 
-**Prerequisites:** `research.md` complete
+**Prerequisites:** `artifacts/plan/research.md` complete
 
-1. **Extract entities from feature spec** → `data-model.md`:
+1. **Extract entities from feature spec** → `artifacts/plan/data-model.md`:
    - Entity name, fields, relationships
    - Validation rules from requirements
    - State transitions if applicable
 
-2. **Define interface contracts** (if project has external interfaces) → `/contracts/`:
+2. **Define interface contracts** (if project has external interfaces) → `artifacts/plan/contracts/`:
    - Identify what interfaces the project exposes to users or other systems
    - Document the contract format appropriate for the project type
    - Examples: public APIs for libraries, command schemas for CLI tools, endpoints for web services, grammars for parsers, UI contracts for applications

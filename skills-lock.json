@@ -262,6 +262,54 @@
       "skillPath": "skills/finishing-a-development-branch/SKILL.md",
       "computedHash": "932d23af11a3eb2b758f5b1d9aec7b6d28ddd26658328414f87f34dff7179d19"
     },
+    "hermes-agent": {
+      "source": "nousresearch/hermes-agent",
+      "sourceType": "github",
+      "skillPath": "skills/autonomous-ai-agents/hermes-agent/SKILL.md",
+      "computedHash": "09abbbc686df2cea5faf9cbd821a3be3b02e1f0848708f5399c51393daa7165c"
+    },
+    "hermes-agent-architecture": {
+      "source": "aradotso/hermes-skills",
+      "sourceType": "github",
+      "skillPath": "skills/hermes-agent-architecture/SKILL.md",
+      "computedHash": "ea8ff076d5644566769f0660ed2d82572ab5870ed5377baad2a0a71a6d2d230a"
+    },
+    "hermes-agent-control-room": {
+      "source": "aradotso/hermes-skills",
+      "sourceType": "github",
+      "skillPath": "skills/hermes-agent-control-room/SKILL.md",
+      "computedHash": "7d3571183e3060a7372f03a1fd0cc5d14cc1fcd5de49203538f7cdfc10db4bef"
+    },
+    "hermes-agent-framework": {
+      "source": "aradotso/hermes-skills",
+      "sourceType": "github",
+      "skillPath": "skills/hermes-agent-framework/SKILL.md",
+      "computedHash": "c986432712b394db04924000bdc9e93480e799979255963aaf1afec9f01bed37"
+    },
+    "hermes-agent-mission-control": {
+      "source": "aradotso/hermes-skills",
+      "sourceType": "github",
+      "skillPath": "skills/hermes-agent-mission-control/SKILL.md",
+      "computedHash": "64aecfb377d43fe5d7d581cfbb5d5a66f9a76506ca04b7f56173d660977898a8"
+    },
+    "hermes-agent-self-evolution": {
+      "source": "aradotso/hermes-skills",
+      "sourceType": "github",
+      "skillPath": "skills/hermes-agent-self-evolution/SKILL.md",
+      "computedHash": "7684874621fbc3290b90f81b2b8322ceb72cebc802d33a51c359edfa4703464c"
+    },
+    "hermes-desktop-companion": {
+      "source": "aradotso/hermes-skills",
+      "sourceType": "github",
+      "skillPath": "skills/hermes-desktop-companion/SKILL.md",
+      "computedHash": "a074b8728e104bccf903f6ac2181ce2a397d1f3249c5f833ebe0bfbc54e369aa"
+    },
+    "hermes-workspace-ai-agent-ui": {
+      "source": "aradotso/hermes-skills",
+      "sourceType": "github",
+      "skillPath": "skills/hermes-workspace-ai-agent-ui/SKILL.md",
+      "computedHash": "582481ec14c34f36449b4e3d7a4c739650e9e9e155cce6e5b4058b66c29306b7"
+    },
     "jest-advanced": {
       "source": "thebushidocollective/han",
       "sourceType": "github",

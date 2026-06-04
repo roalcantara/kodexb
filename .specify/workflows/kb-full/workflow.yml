@@ -2,9 +2,9 @@ schema_version: "1.0"
 workflow:
   id: "kb-full"
   name: "kb Full Feature"
-  version: "1.0.0"
+  version: "1.1.0"
   author: "kb"
-  description: "Intake → specify → clarify → checklist → analyze → plan → tasks → implement → spec gate"
+  description: "Intake → specify → clarify → checklist → plan → tasks → handoff → analyze → implement → spec gate → draft PR"
 
 requires:
   speckit_version: ">=0.8.5"
@@ -39,10 +39,6 @@ steps:
     command: speckit.checklist
     integration: "{{ inputs.integration }}"
 
-  - id: analyze-req
-    command: speckit.analyze
-    integration: "{{ inputs.integration }}"
-
   - id: plan
     command: speckit.plan
     integration: "{{ inputs.integration }}"
@@ -51,10 +47,42 @@ steps:
     command: speckit.tasks
     integration: "{{ inputs.integration }}"
 
+  - id: handoff
+    command: speckit.kb.handoff
+    integration: "{{ inputs.integration }}"
+
+  - id: spec-audit
+    type: shell
+    command: mise run spec audit -- "${SPECIFY_FEATURE_DIRECTORY}"
+
+  - id: analyze
+    command: speckit.analyze
+    integration: "{{ inputs.integration }}"
+
+  - id: analyze-gate
+    type: gate
+    message: "Review /speckit-analyze report. Abort if any CRITICAL remains; waive HIGH explicitly to continue."
+    options: [fix-and-reanalyze, approve-waive, abort]
+    on_reject: abort
+
   - id: implement
     command: speckit.implement
     integration: "{{ inputs.integration }}"
 
   - id: spec-gate
     type: shell
-    command: mise run spec gate -- "${SPECIFY_FEATURE_DIRECTORY:-assets/specs/001-sync-frecency-persistence}"
+    command: mise run spec gate -- "${SPECIFY_FEATURE_DIRECTORY}"
+
+  - id: push-branch
+    type: shell
+    command: git push -u origin HEAD
+
+  - id: draft-pr
+    type: shell
+    command: mise run spec pr-draft -- "${SPECIFY_FEATURE_DIRECTORY}"
+
+  - id: ci-wait
+    type: gate
+    message: "Open the draft PR checks (review-draft jobs). Continue when green or waive."
+    options: [checks-green, waive, abort]
+    on_reject: abort

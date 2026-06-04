@@ -6,6 +6,10 @@ commands:
     file: commands/speckit.kb.handoff.md
   - name: speckit.kb.preflight
     file: commands/speckit.kb.preflight.md
+  - name: speckit.kb.pr-draft
+    file: commands/speckit.kb.pr-draft.md
+  - name: speckit.kb.audit
+    file: commands/speckit.kb.audit.md
 scripts:
   bash:
     - scripts/bash/kb-handoff.sh

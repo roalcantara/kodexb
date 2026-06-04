@@ -121,17 +121,13 @@ Check if `.specify/extensions.yml` exists in the project root.
 
 ## Completion Report
 
-Output path to generated tasks.md and summary:
-- Total task count
-- Task count per user story
-- Parallel opportunities identified
-- Independent test criteria for each story
-- Suggested MVP scope (typically just User Story 1)
-- Format validation: Confirm ALL tasks follow the checklist format (checkbox, ID, labels, file paths)
+On **success**: `OK — <FEATURE_DIR>/tasks.md` (one line). On format validation failure: list offending tasks. User `--verbose` adds counts per story, parallel notes, MVP scope.
 
 Context for task generation: $ARGUMENTS
 
 The tasks.md should be immediately executable - each task must be specific enough that an LLM can complete it without additional context.
+
+**Next (required before implement):** `mise run spec audit <dir>` then `/speckit-analyze` (or kb-full analyze step).
 
 ## Task Generation Rules
 

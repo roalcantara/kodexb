@@ -6,4 +6,5 @@ alwaysApply: true
 Active SDD specs: `assets/specs/<NNN>-<slug>/` (`spec.md`, `plan.md`, `tasks.md`).
 Workflow: [`assets/guides/SDD_WORKFLOW_GUIDE.md`](../../assets/guides/SDD_WORKFLOW_GUIDE.md).
 Gates: `mise run spec lint|trace|gate`. Legacy specs remain under `assets/docs/specs/`.
+Current plan: [`assets/specs/003-sync-frecency-preserve/plan.md`](../../assets/specs/003-sync-frecency-preserve/plan.md).
 <!-- SPECKIT END -->

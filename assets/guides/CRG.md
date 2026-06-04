@@ -112,6 +112,24 @@ CRG is active through these paths:
 HK remains the only Git hook owner. Do not append CRG commands directly to
 `.git/hooks/pre-commit`, and do not add redundant per-agent edit hooks.
 
+## Usage metrics (local)
+
+kb records **local, gitignored** usage to judge whether CRG is worth keeping:
+
+| Log               | Source                          | Path                                |
+| ----------------- | ------------------------------- | ----------------------------------- |
+| MCP agent queries | Cursor `afterMCPExecution` hook | `.code-review-graph/usage.jsonl`    |
+| HK risk scan      | `hk.pkl` pre-commit step        | `.code-review-graph/hk-usage.jsonl` |
+
+```sh
+mise run graph usage-report
+mise run graph usage-report --days 14
+```
+
+**Interpretation:** High MCP counts during implement/review sessions suggest agents use the graph. Near-zero MCP over several features while HK/daemon still runs suggests demoting CRG for agents. HK lines measure commit-time maintenance, not agent reliance.
+
+Hooks: [`.agents/hooks.json`](../../.agents/hooks.json). Report after the 004 pilot (two-week window).
+
 ## Common commands
 
 ```sh

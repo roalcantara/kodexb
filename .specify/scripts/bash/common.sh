@@ -251,6 +251,17 @@ find_feature_dir_by_prefix() {
     fi
 }
 
+# Return first path that exists (files or dirs); else first candidate for downstream checks.
+first_existing_path() {
+    for candidate in "$@"; do
+        if [[ -e "$candidate" ]]; then
+            echo "$candidate"
+            return 0
+        fi
+    done
+    echo "$1"
+}
+
 get_feature_paths() {
     local repo_root=$(get_repo_root)
     local current_branch=$(get_current_branch)
@@ -296,10 +307,11 @@ get_feature_paths() {
     printf 'FEATURE_SPEC=%q\n' "$feature_dir/spec.md"
     printf 'IMPL_PLAN=%q\n' "$feature_dir/plan.md"
     printf 'TASKS=%q\n' "$feature_dir/tasks.md"
-    printf 'RESEARCH=%q\n' "$feature_dir/research.md"
-    printf 'DATA_MODEL=%q\n' "$feature_dir/data-model.md"
-    printf 'QUICKSTART=%q\n' "$feature_dir/quickstart.md"
-    printf 'CONTRACTS_DIR=%q\n' "$feature_dir/contracts"
+    printf 'RESEARCH=%q\n' "$(first_existing_path "$feature_dir/artifacts/plan/research.md" "$feature_dir/research.md")"
+    printf 'DATA_MODEL=%q\n' "$(first_existing_path "$feature_dir/artifacts/plan/data-model.md" "$feature_dir/data-model.md")"
+    printf 'QUICKSTART=%q\n' "$(first_existing_path "$feature_dir/artifacts/plan/quickstart.md" "$feature_dir/quickstart.md")"
+    printf 'CONTRACTS_DIR=%q\n' "$(first_existing_path "$feature_dir/artifacts/plan/contracts" "$feature_dir/contracts")"
+    printf 'HANDOFF=%q\n' "$(first_existing_path "$feature_dir/artifacts/tasks/handoff.md" "$feature_dir/handoff.md")"
 }
 
 # Check if jq is available for safe JSON construction

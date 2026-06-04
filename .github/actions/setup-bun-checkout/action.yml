@@ -1,0 +1,16 @@
+name: Checkout and setup Bun project
+description: Standard Review workflow checkout + mise setup
+inputs:
+  fetch_depth:
+    description: fetch-depth for actions/checkout
+    required: false
+    default: '0'
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: ${{ inputs.fetch_depth }}
+    - uses: ./.github/actions/setup-bun-project
+      with:
+        setup_mode: mise
