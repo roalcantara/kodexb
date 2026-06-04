@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 
+import { resolveFrontmostAppBundleId } from './resolve_frontmost_app.util'
+
 let spawnSyncResult: { stdout: Buffer } | 'throw' = { stdout: Buffer.from('') }
 
 const origSpawnSync = Bun.spawnSync
@@ -16,33 +18,29 @@ afterEach(() => {
 describe('resolveFrontmostAppBundleId()', () => {
   describe('when platform is darwin', () => {
     describe('when osascript returns a bundle id', () => {
-      it('returns the trimmed bundle id', async () => {
+      it('returns the trimmed bundle id', () => {
         spawnSyncResult = { stdout: Buffer.from('com.apple.Safari') }
-        const { resolveFrontmostAppBundleId } = await import('./resolve_frontmost_app.util')
         expect(resolveFrontmostAppBundleId('darwin')).toBe('com.apple.Safari')
       })
     })
 
     describe('when osascript returns empty stdout', () => {
-      it('returns null', async () => {
+      it('returns null', () => {
         spawnSyncResult = { stdout: Buffer.from('') }
-        const { resolveFrontmostAppBundleId } = await import('./resolve_frontmost_app.util')
         expect(resolveFrontmostAppBundleId('darwin')).toBeNull()
       })
     })
 
     describe('when Bun.spawnSync throws', () => {
-      it('returns null', async () => {
+      it('returns null', () => {
         spawnSyncResult = 'throw'
-        const { resolveFrontmostAppBundleId } = await import('./resolve_frontmost_app.util')
         expect(resolveFrontmostAppBundleId('darwin')).toBeNull()
       })
     })
   })
 
   describe('when platform is not darwin', () => {
-    it('returns null', async () => {
-      const { resolveFrontmostAppBundleId } = await import('./resolve_frontmost_app.util')
+    it('returns null', () => {
       expect(resolveFrontmostAppBundleId('linux')).toBeNull()
     })
   })
