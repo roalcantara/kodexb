@@ -6,39 +6,44 @@ let clipboardContent = ''
 let openPathResult: boolean | 'throw' = false
 let openExternalResult: boolean | 'throw' = false
 
-mock.module('electrobun/bun', () => ({
-  Utils: {
-    openExternal: () => {
-      if (openExternalResult === 'throw') throw new Error('openExternal failed')
-      return openExternalResult
-    },
-    openPath: () => {
-      if (openPathResult === 'throw') throw new Error('openPath failed')
-      return openPathResult
+function installHandoffRegistrySpecMocks(): void {
+  mock.module('electrobun/bun', () => ({
+    Utils: {
+      openExternal: () => {
+        if (openExternalResult === 'throw') throw new Error('openExternal failed')
+        return openExternalResult
+      },
+      openPath: () => {
+        if (openPathResult === 'throw') throw new Error('openPath failed')
+        return openPathResult
+      }
     }
-  }
-}))
-
-mock.module('./electrobun_clipboard.port', () => ({
-  readSystemClipboard: () => clipboardContent,
-  writeSystemClipboard: (text: string) => {
-    clipboardContent = text
-  }
-}))
-
-mock.module('./resolve_frontmost_app.util', () => ({
-  resolveFrontmostAppBundleId: () => null
-}))
+  }))
+  mock.module('./electrobun_clipboard.port', () => ({
+    readSystemClipboard: () => clipboardContent,
+    writeSystemClipboard: (text: string) => {
+      clipboardContent = text
+    }
+  }))
+  mock.module('./resolve_frontmost_app.util', () => ({
+    resolveFrontmostAppBundleId: () => null
+  }))
+}
 
 beforeAll(() => installBunDollarMock())
 beforeEach(() => {
+  mock.restore()
+  installHandoffRegistrySpecMocks()
   clipboardContent = ''
   openPathResult = false
   openExternalResult = false
   resetBunDollarMock()
   setBunDollarThrow(true)
 })
-afterAll(() => uninstallBunDollarMock())
+afterAll(() => {
+  mock.restore()
+  uninstallBunDollarMock()
+})
 
 /** Registry specs assert osascript/Bun.$ behaviour; pin darwin so Linux CI does not require xdotool. */
 const HANDOFF_TEST_PLATFORM = 'darwin' as const
@@ -217,9 +222,24 @@ describe('runEntryHandoff', () => {
         wantError: 'openExternal'
       },
       { kind: 'editor-open', payload: { filePath: '/tmp/x' }, wantCode: 'editor-open-failed', wantError: 'openPath' },
-      { kind: 'terminal-paste', payload: {}, wantCode: 'terminal-paste-failed', wantError: 'Error: osascript failed' },
-      { kind: 'terminal-run', payload: {}, wantCode: 'terminal-run-failed', wantError: 'Error: osascript failed' },
-      { kind: 'paste-frontmost', payload: {}, wantCode: 'paste-doc-failed', wantError: 'Error: osascript failed' }
+      {
+        kind: 'terminal-paste',
+        payload: { cmd: 'ls' },
+        wantCode: 'terminal-paste-failed',
+        wantError: 'Error: osascript failed'
+      },
+      {
+        kind: 'terminal-run',
+        payload: { cmd: 'npm test' },
+        wantCode: 'terminal-run-failed',
+        wantError: 'Error: osascript failed'
+      },
+      {
+        kind: 'paste-frontmost',
+        payload: { doc: 'test' },
+        wantCode: 'paste-doc-failed',
+        wantError: 'Error: osascript failed'
+      }
     ]
 
     for (const { kind, payload, wantCode, wantError } of cases) {
