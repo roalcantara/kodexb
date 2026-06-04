@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it, mock } from 'bun:test'
+import { afterEach, beforeAll, describe, expect, it, mock } from 'bun:test'
 
 import { factoryFor } from '@testing'
 import { SAFE_FALLBACK_X, SAFE_FALLBACK_Y } from '../window/placement.util'
@@ -7,33 +7,25 @@ import {
   computeInitialFrameFromDisplay,
   createDeferredSyncEmit,
   MAIN_WINDOW_DEFAULT_SIZE,
-  MAIN_WINDOW_RENDERER_URL
+  MAIN_WINDOW_RENDERER_URL,
+  type RunEntryHandoff
 } from './shell_hooks.util'
 
 const mockRunEntryHandoffCalls: unknown[][] = []
 
-function installHandoffRegistryMock(): void {
-  mock.module('../handoff/handoff_registry.service', () => ({
-    HandoffServices: class {},
-    runEntryHandoff: (...args: unknown[]) => {
-      mockRunEntryHandoffCalls.push(args)
-      const kind = args[0] as string
-      const payload = args[1] as Record<string, unknown>
-      if (kind === 'browser-open' && !payload.url) {
-        return { ok: false, error: 'No URL provided', code: 'browser-open-failed' }
-      }
-      if (kind === 'editor-open' && !payload.filePath) {
-        return { ok: false, error: 'No file path provided', code: 'editor-open-failed' }
-      }
-      return { ok: true }
+/** Injected via `createShellHooks` — never `mock.module` the registry (parallel CI leak). */
+function makeStubRunHandoff(): RunEntryHandoff {
+  return (kind, payload, services) => {
+    mockRunEntryHandoffCalls.push([kind, payload, services])
+    if (kind === 'browser-open' && !payload.url) {
+      return { ok: false, error: 'No URL provided', code: 'browser-open-failed' }
     }
-  }))
+    if (kind === 'editor-open' && !payload.filePath) {
+      return { ok: false, error: 'No file path provided', code: 'editor-open-failed' }
+    }
+    return { ok: true }
+  }
 }
-
-/** Avoid leaking the handoff stub into other spec files in the same parallel worker. */
-afterAll(() => {
-  mock.restore()
-})
 
 describe('computeInitialFrameFromDisplay', () => {
   afterEach(() => {
@@ -110,12 +102,7 @@ describe('createShellHooks', () => {
   let createShellHooks: typeof import('./shell_hooks.util').createShellHooks
 
   beforeAll(async () => {
-    installHandoffRegistryMock()
     ;({ createShellHooks } = await import('./shell_hooks.util'))
-  })
-
-  afterAll(() => {
-    mock.restore()
   })
 
   function makeWin(position = { x: 0, y: 0 }) {
@@ -295,7 +282,7 @@ describe('createShellHooks', () => {
 
   describe('runInTerminal and pasteDoc delegation', () => {
     it('runInTerminal delegates to runEntryHandoff with terminal-run kind', () => {
-      const hooks = createShellHooks(() => null, makeUtils(), makeHandoffServices())
+      const hooks = createShellHooks(() => null, makeUtils(), makeHandoffServices(), makeStubRunHandoff())
       hooks.runInTerminal?.('npm test', 'Terminal')
 
       const call = mockRunEntryHandoffCalls.find(c => c[0] === 'terminal-run')
@@ -304,7 +291,7 @@ describe('createShellHooks', () => {
     })
 
     it('pasteDoc delegates to runEntryHandoff with paste-frontmost kind', () => {
-      const hooks = createShellHooks(() => null, makeUtils(), makeHandoffServices())
+      const hooks = createShellHooks(() => null, makeUtils(), makeHandoffServices(), makeStubRunHandoff())
       hooks.pasteDoc?.('docs-content')
 
       const call = mockRunEntryHandoffCalls.find(c => c[0] === 'paste-frontmost')
