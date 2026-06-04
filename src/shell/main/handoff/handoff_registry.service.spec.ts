@@ -1,5 +1,13 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test'
-import { installBunDollarMock, resetBunDollarMock, setBunDollarThrow, uninstallBunDollarMock } from '@testing'
+import {
+  installBunDollarMock,
+  installBunSpawnSyncMock,
+  resetBunDollarMock,
+  setBunDollarThrow,
+  setBunSpawnSyncResult,
+  uninstallBunDollarMock,
+  uninstallBunSpawnSyncMock
+} from '@testing'
 import type { HandoffKind } from './handoff_registry.service'
 
 let clipboardContent = ''
@@ -26,8 +34,6 @@ mock.module('./electrobun_clipboard.port', () => ({
   }
 }))
 
-const origSpawnSync = Bun.spawnSync
-
 beforeAll(() => installBunDollarMock())
 beforeEach(() => {
   clipboardContent = ''
@@ -36,14 +42,10 @@ beforeEach(() => {
   resetBunDollarMock()
   setBunDollarThrow(true)
   /** No known browser in front — forces openExternal path without mock.module leakage. */
-  Bun.spawnSync = (() => ({
-    stdout: Buffer.from(''),
-    stderr: Buffer.alloc(0),
-    exitCode: 0
-  })) as unknown as typeof Bun.spawnSync
+  installBunSpawnSyncMock({ stdout: Buffer.from(''), stderr: Buffer.alloc(0), exitCode: 0 })
 })
 afterEach(() => {
-  Bun.spawnSync = origSpawnSync
+  uninstallBunSpawnSyncMock()
 })
 afterAll(() => uninstallBunDollarMock())
 
@@ -145,19 +147,11 @@ describe('runEntryHandoff', () => {
   })
 
   describe('paste-frontmost tests', () => {
-    let restoreSpawn: typeof Bun.spawnSync
-    beforeEach(() => {
-      restoreSpawn = Bun.spawnSync
-    })
-    afterEach(() => {
-      Bun.spawnSync = restoreSpawn
-    })
-
     describe('when paste-frontmost with doc succeeds', () => {
       it('restores clipboard and returns ok:true', async () => {
         clipboardContent = 'original-clip'
         setBunDollarThrow(false)
-        Bun.spawnSync = (() => ({ exitCode: 0, stdout: '', stderr: '' })) as unknown as typeof Bun.spawnSync
+        setBunSpawnSyncResult({ exitCode: 0, stdout: '', stderr: '' })
         const { runEntryHandoff } = await import('./handoff_registry.service')
         const services = makeServices()
         const result = runEntryHandoff('paste-frontmost', { doc: 'paste-content' }, services, HANDOFF_TEST_PLATFORM)

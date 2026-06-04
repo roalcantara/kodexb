@@ -25,6 +25,14 @@ export {
   setupBunDollarMock,
   uninstallBunDollarMock
 } from './helpers/testing.bun_dollar.mock'
+export {
+  type BunSpawnSyncStubResult,
+  installBunSpawnSyncMock,
+  resetBunSpawnSyncMock,
+  setBunSpawnSyncResult,
+  setupBunSpawnSyncMock,
+  uninstallBunSpawnSyncMock
+} from './helpers/testing.bun_spawn_sync.mock'
 export { createFactoryFor } from './helpers/testing.factory'
 export { configureQuietLogtape, noopLogSink } from './helpers/testing.quiet_stdio'
 export {
