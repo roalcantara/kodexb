@@ -1,0 +1,22 @@
+# Filename conventions reserved for shared test infrastructure under src/__tests__/.
+id: no-test-helper-filename-outside-tests
+language: TypeScript
+files:
+  - 'src/**/*spec_setup*.ts'
+  - 'src/**/*spec_setup*.tsx'
+  - 'src/**/*.mock.ts'
+  - 'src/**/*.mock.tsx'
+  - 'src/**/*harness*.util.ts'
+  - 'src/**/*harness*.util.tsx'
+  - 'src/**/*_spec.util.ts'
+  - 'src/**/*_spec.util.tsx'
+ignores:
+  - 'src/__tests__/**'
+severity: error
+rule:
+  kind: program
+message: >
+  Test helpers, harnesses, and mocks belong under src/__tests__/ (typically
+  src/__tests__/helpers/). Export shared setup from @testing instead of
+  placing *spec_setup*, *harness*, *.mock, or *_spec.util modules in src/.
+note: See assets/guides/TESTING_GUIDE.md — Shared test helpers (@testing).

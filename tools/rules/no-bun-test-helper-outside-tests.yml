@@ -1,0 +1,22 @@
+# Shared test helpers and mock setup belong under src/__tests__/ (re-export via @testing).
+# Co-located *.spec.ts / *.spec.tsx may import bun:test; non-spec modules may not.
+id: no-bun-test-helper-outside-tests
+language: TypeScript
+files:
+  - 'src/**/*.ts'
+  - 'src/**/*.tsx'
+ignores:
+  - 'src/__tests__/**'
+  - 'src/**/*.spec.ts'
+  - 'src/**/*.spec.tsx'
+severity: error
+rule:
+  any:
+    - pattern: import { $$$NAMES } from 'bun:test'
+    - pattern: import { $$$NAMES } from "bun:test"
+    - pattern: import $DEFAULT from 'bun:test'
+    - pattern: import $DEFAULT from "bun:test"
+message: >
+  Test helpers and mocks belong under src/__tests__/ (export via @testing).
+  Only co-located *.spec.ts(x) files outside that tree may import bun:test.
+note: See assets/guides/TESTING_GUIDE.md — Shared test helpers (@testing).
