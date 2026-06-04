@@ -25,10 +25,9 @@ function installHandoffRegistrySpecMocks(): void {
       clipboardContent = text
     }
   }))
-  mock.module('./resolve_frontmost_app.util', () => ({
-    resolveFrontmostAppBundleId: () => null
-  }))
 }
+
+const origSpawnSync = Bun.spawnSync
 
 beforeAll(() => installBunDollarMock())
 beforeEach(() => {
@@ -39,6 +38,15 @@ beforeEach(() => {
   openExternalResult = false
   resetBunDollarMock()
   setBunDollarThrow(true)
+  /** No known browser in front — forces openExternal path without mock.module leakage. */
+  Bun.spawnSync = (() => ({
+    stdout: Buffer.from(''),
+    stderr: Buffer.alloc(0),
+    exitCode: 0
+  })) as unknown as typeof Bun.spawnSync
+})
+afterEach(() => {
+  Bun.spawnSync = origSpawnSync
 })
 afterAll(() => {
   mock.restore()
