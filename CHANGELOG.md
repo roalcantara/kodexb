@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.10.0](https://github.com/roalcantara/kodexb/compare/v0.9.0...v0.10.0) (2026-06-04)
+
+### Features
+
+* **e2e:** Enhance Sync and integration coverage ([69325af](https://github.com/roalcantara/kodexb/commit/69325af888ad7d4f638f6030dd45d809f0df00bb))
+
 ## [0.9.0](https://github.com/roalcantara/kodexb/compare/v0.8.0...v0.9.0) (2026-06-01)
 
 ### Features
