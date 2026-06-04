@@ -2,8 +2,18 @@ import type { RpcSyncProgressPayload } from '@shared/rpc'
 import type { Display } from 'electrobun/bun'
 import type { SyncEmitter } from '../../app/app'
 import type { AppShellHooks } from '../../app/lib/app_shell_hooks.types'
-import { type HandoffServices, runEntryHandoff } from '../handoff/handoff_registry.service'
+import {
+  runEntryHandoff as defaultRunEntryHandoff,
+  type HandoffResult,
+  type HandoffServices
+} from '../handoff/handoff_registry.service'
 import { isUsableWorkArea, resolveInitialFrame, type Size, type WindowFrame } from '../window/placement.util'
+
+export type RunEntryHandoff = (
+  kind: Parameters<typeof defaultRunEntryHandoff>[0],
+  payload: Parameters<typeof defaultRunEntryHandoff>[1],
+  services: HandoffServices
+) => HandoffResult
 
 export const MAIN_WINDOW_DEFAULT_SIZE = { width: 680, height: 600 } as const satisfies Size
 export const MAIN_WINDOW_RENDERER_URL = 'views://shell/index.html' as const
@@ -66,7 +76,8 @@ export function createDeferredSyncEmit<Rpc>(
 export function createShellHooks(
   getWin: () => MainWindowLike | null,
   utils: ShellHooksUtils,
-  handoffServices?: HandoffServices
+  handoffServices?: HandoffServices,
+  runHandoff: RunEntryHandoff = defaultRunEntryHandoff
 ): AppShellHooks {
   return {
     resizeWindow: (width, height) => {
@@ -79,7 +90,7 @@ export function createShellHooks(
     setWindowPosition: (x, y) => {
       getWin()?.setPosition(x, y)
     },
-    openExternal: url => openExternalWithFallback(url, utils, handoffServices),
+    openExternal: url => openExternalWithFallback(url, utils, handoffServices, runHandoff),
     showOpenDialog: async opts => {
       const properties = opts?.properties ?? []
       const canChooseDirectory = properties.includes('openDirectory')
@@ -93,20 +104,26 @@ export function createShellHooks(
       return paths[0] ?? null
     },
     pasteInTerminal: (cmd, terminalApp) =>
-      terminalHandoffWithFallback('terminal-paste', cmd, terminalApp, utils, handoffServices),
+      terminalHandoffWithFallback('terminal-paste', cmd, terminalApp, utils, handoffServices, runHandoff),
     runInTerminal: (cmd, terminalApp) =>
-      terminalHandoffWithFallback('terminal-run', cmd, terminalApp, utils, handoffServices),
-    pasteDoc: doc => pasteDocWithFallback(doc, handoffServices),
-    openInEditor: (filePath, editorApp) => openInEditorWithFallback(filePath, editorApp, utils, handoffServices)
+      terminalHandoffWithFallback('terminal-run', cmd, terminalApp, utils, handoffServices, runHandoff),
+    pasteDoc: doc => pasteDocWithFallback(doc, handoffServices, runHandoff),
+    openInEditor: (filePath, editorApp) =>
+      openInEditorWithFallback(filePath, editorApp, utils, handoffServices, runHandoff)
   }
 }
 
-function openExternalWithFallback(url: string, utils: ShellHooksUtils, h?: HandoffServices): void {
+function openExternalWithFallback(
+  url: string,
+  utils: ShellHooksUtils,
+  h: HandoffServices | undefined,
+  runHandoff: RunEntryHandoff
+): void {
   if (!h) {
     if (!utils.openExternal(url)) throw new Error(`openExternal failed for URL: ${url}`)
     return
   }
-  const result = runEntryHandoff('browser-open', { url }, h)
+  const result = runHandoff('browser-open', { url }, h)
   if (!result.ok) throw new Error(`openExternal failed: ${result.error}`)
 }
 
@@ -115,19 +132,20 @@ function terminalHandoffWithFallback(
   cmd: string,
   terminalApp: string | undefined,
   utils: ShellHooksUtils,
-  h?: HandoffServices
+  h: HandoffServices | undefined,
+  runHandoff: RunEntryHandoff
 ): void {
   if (!h) {
     if (terminalApp && !utils.openExternal(terminalApp)) throw new Error(`${kind} failed for terminal: ${terminalApp}`)
     return
   }
-  const result = runEntryHandoff(kind, { cmd, terminalApp }, h)
+  const result = runHandoff(kind, { cmd, terminalApp }, h)
   if (!result.ok) throw new Error(`${kind} failed: ${result.error}`)
 }
 
-function pasteDocWithFallback(doc: string, h?: HandoffServices): void {
+function pasteDocWithFallback(doc: string, h: HandoffServices | undefined, runHandoff: RunEntryHandoff): void {
   if (!h) return
-  const result = runEntryHandoff('paste-frontmost', { doc }, h)
+  const result = runHandoff('paste-frontmost', { doc }, h)
   if (!result.ok) throw new Error(`pasteDoc failed: ${result.error}`)
 }
 
@@ -135,14 +153,15 @@ function openInEditorWithFallback(
   filePath: string,
   editorApp: string | undefined,
   utils: ShellHooksUtils,
-  h?: HandoffServices
+  h: HandoffServices | undefined,
+  runHandoff: RunEntryHandoff
 ): void {
   if (!h) {
     if (editorApp) throw new Error('openInEditor failed: editorApp provided without handoffServices')
     if (!utils.openPath(filePath)) throw new Error(`openInEditor failed for path: ${filePath}`)
     return
   }
-  const result = runEntryHandoff('editor-open', { filePath, editorApp }, h)
+  const result = runHandoff('editor-open', { filePath, editorApp }, h)
   if (!result.ok) throw new Error(`openInEditor failed: ${result.error}`)
 }
 
