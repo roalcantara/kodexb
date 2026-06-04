@@ -1,11 +1,11 @@
 import { beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test'
-import { rpcBookmarkRow } from '@testing/helpers/rpc_knowledge_test_row.util'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import {
   installEntryActionPanelDepsMock,
   installRecordEntryVisitMock,
+  rpcBookmarkRow,
   withMockClipboard
-} from '../../actions/entry_action_spec_setup.util'
+} from '@testing'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 installEntryActionPanelDepsMock()
 const recordEntryVisitFireAndForget = installRecordEntryVisitMock()

@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'bun:test'
+import { mountRouteModule, rpcSpecPostJson, setupRpcRouteSpecSuite } from '@testing'
 import { runRoute } from '@testing/helpers/run_route.util'
 import type { AppShellHooks } from '../../../app/lib/app_shell_hooks.types'
-
 import { handoffRoutes } from './handoff.routes'
-import { mountRouteModule, rpcSpecPostJson, setupRpcRouteSpecSuite } from './utils/rpc_route_spec.util'
 
 describe('handoffRoutes', () => {
   const { postViaRoutes, memoryApp, recordingTerminalShellHook, throwingShellHook } = setupRpcRouteSpecSuite()

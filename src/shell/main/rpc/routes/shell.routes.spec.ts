@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-
+import { setupRpcRouteSpecSuite } from '@testing'
 import { shellRoutes } from './shell.routes'
-import { setupRpcRouteSpecSuite } from './utils/rpc_route_spec.util'
 
 describe('shellRoutes', () => {
   const { postDefaultShellViaRoutes, shellHookViaRoutes } = setupRpcRouteSpecSuite()
