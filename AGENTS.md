@@ -44,18 +44,22 @@ criteria in their spec (`requirements.md` + `tasks.md`) and update
 and [`step-catalog.md`](assets/docs/specs/e2e/step-catalog.md) when adding
 Gherkin scenarios. Policy: [`e2e/requirements.md` R11](assets/docs/specs/e2e/requirements.md#r11---cross-feature-e2e-acceptance).
 
+### Spec orientation
+
+**Legacy SDD:** [`PRODUCT_DESIGN.md`](assets/docs/specs/PRODUCT_DESIGN.md) + [`PRODUCT_REQUIREMENTS.md`](assets/docs/specs/PRODUCT_REQUIREMENTS.md) (current decisions/outcomes); drill-down `NNN-<slug>/` folders. Active Spec Kit: `assets/specs/`.
+
 ### Skill routing ledger
 
 - The project skill registry and adoption rationale live in
   **`assets/guides/SKILLS.md`**.
 - The structured source of truth for skill automation lives in
-  **`assets/guides/SKILLS.yml`**.
+  **`assets/catalog/SKILLS.yaml`**.
 - **`mise run skill install`** restores Skills CLI-managed project skills from
   `skills-lock.json` into `.agents/skills/`.
 - **`mise run skill sync`** rewrites generated routing snippets from the YAML
   registry.
 - Optional global companions named in the guide remain under
-  `$HOME/.agents/skills/` unless `assets/guides/SKILLS.yml` marks them as
+  `$HOME/.agents/skills/` unless `assets/catalog/SKILLS.yaml` marks them as
   `location: project` or `location: owned`.
 
 ### Superpowers skill adaptation

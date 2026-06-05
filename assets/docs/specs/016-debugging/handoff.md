@@ -115,7 +115,7 @@ The work is partitioned into six phases by `tasks.md`:
 | **2** | Mount `rpcCommonPlugins` on `createRpcServer` + preview server.                                                                                                                                                           | `LOG_LEVEL=verbose bun run dev` shows `Started`/`Completed` per RPC; `LOG_LEVEL=debug` adds `Parameters`; error path flushes the fingers-crossed buffer.                                |
 | **3** | Refactor each repository to `repositoryStmts(db, 'Noun', { …sql })`.                                                                                                                                                      | `LOG_LEVEL=debug bun run dev` shows one SQL line per query; default-overhead benchmark within 2 % of baseline.                                                                          |
 | **4** | Replace `createLogger()` calls in 6 files with `getLogger([…])`; delete `console.logger.ts` + spec; update barrel.                                                                                                        | `bunx knip` clean of `createLogger` leakage; `bunx tsc --noEmit` clean; `rg "createLogger" src/ tools/` empty.                                                                          |
-| **5** | Documentation cascade: `CLAUDE.md`, `AGENTS.md`, `README.md`, `CODESTYLE_GUIDE.md`, `TESTING_GUIDE.md`, `foundation/design.md` + `roadmap.md`, `SKILLS.md`/`SKILLS.yml`, new `LOGGING_GUIDE.md`, new `app-logging` skill. | Reviewer pass + quality gate.                                                                                                                                                           |
+| **5** | Documentation cascade: `CLAUDE.md`, `AGENTS.md`, `README.md`, `CODESTYLE_GUIDE.md`, `TESTING_GUIDE.md`, `foundation/design.md` + `roadmap.md`, `SKILLS.md`/`SKILLS.yaml`, new `LOGGING_GUIDE.md`, new `app-logging` skill. | Reviewer pass + quality gate.                                                                                                                                                           |
 | **6** | Closure — run the closure command set and a four-level smoke test.                                                                                                                                                        | `bun test` + `bunx tsc --noEmit` + `bunx knip` + quality gate + `git diff --check` all exit 0; verbosity smoke test matches the four format examples in `design.md` §"Log line format". |
 
 Open `tasks.md` and execute each task in order. After each phase (or each
@@ -204,7 +204,7 @@ evidence, and:
 - `assets/guides/LOGGING_GUIDE.md` exists and includes the
   Observability roadmap section per `requirements.md` DBG-7 §2.
 - `.agents/skills/app-logging/SKILL.md` exists and is registered in
-  `assets/guides/SKILLS.md` + `assets/guides/SKILLS.yml`.
+  `assets/guides/SKILLS.md` + `assets/catalog/SKILLS.yaml`.
 - The receiving agent has run the closure command set from Task 6.1
   and recorded its output in `tasks.md`.
 ```

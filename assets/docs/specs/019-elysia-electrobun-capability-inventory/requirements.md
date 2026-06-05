@@ -91,7 +91,7 @@ the inventory.
 ### Acceptance criteria
 
 1. WHEN evaluating Elysia capabilities, THEN the agent SHALL compare them with
-   `app-rpc`, `assets/guides/SKILLS.yml`, `assets/guides/ELECTROBUN.md`, and the
+   `app-rpc`, `assets/catalog/SKILLS.yaml`, `assets/guides/ELECTROBUN.md`, and the
    current RPC files under `src/shell/main/rpc/` and `src/shell/renderer/rpc/`.
 2. WHEN evaluating Electrobun capabilities, THEN the agent SHALL compare them
    with `electrobun-best-practices`, `.cursor/electrobun-skill-routing.md`,

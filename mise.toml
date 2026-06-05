@@ -1800,351 +1800,62 @@ HK_PKL_BACKEND = "pklr"
 
   ''' }
 "skill" = { description = "Validate, generate, install, and report skill registry artifacts", usage = '''
-cmd "validate" {}
-cmd "sync" {}
-cmd "install" {}
-cmd "all" {}
+cmd "validate" {
+  flag "--raw" help="Plain text output (no gum)"
+  flag "--json" help="Machine-readable JSON output"
+}
+cmd "sync" {
+  flag "--dry-run" help="Validate intended writes without changing files"
+}
+cmd "install" {
+  flag "--dry-run" help="Print install plan without running Skills CLI"
+}
+cmd "all" {
+  flag "--dry-run" help="Dry-run sync and install"
+}
 cmd "report" {
   flag "--json" help="Print machine-readable report output"
+  flag "--raw" help="Plain text output (no gum)"
+  flag "--list-skills" help="Append full skill catalog after dashboard"
 }
-flag "--dry-run" help="Validate intended writes without changing files"
+cmd "list" {
+  flag "--raw" help="Plain text output (no gum)"
+  flag "--json" help="Machine-readable JSON output"
+  flag "--verbose" help="Include usage summary and load triggers"
+  flag "--owned" help="Include owned skills"
+  flag "--project" help="Include project skills"
+  flag "--include-global" help="Include global skills"
+  flag "--installed" help="Only installed skills"
+  flag "--missing" help="Only skills missing on disk"
+}
+cmd "add" {
+  arg "<url>" help="Skill package URL or repo"
+  flag "--type" help="Policy type: optional, reference, required, or routed"
+  flag "--rationale" help="Registry rationale (required for routed)"
+  flag "--dry-run" help="Print plan without installing"
+}
+cmd "reconcile" {
+  flag "--dry-run" help="Report drift without writing YAML scaffolds"
+  flag "--raw" help="Plain text output (no gum)"
+  flag "--json" help="Machine-readable JSON output"
+}
+cmd "create" {
+  arg "<skill-id>" help="Owned skill id (kebab-case)"
+  flag "--type" help="Policy type: required or optional"
+  flag "--rationale" help="Registry rationale"
+  flag "--description" help="SKILL.md frontmatter description"
+  flag "--dry-run" help="Print plan without creating files"
+}
+cmd "prune" {
+  flag "--dry-run" help="Report orphan installs without removing"
+}
 ''', run = '''
-#!/usr/bin/env bun
-import { existsSync, readFileSync, writeFileSync } from "node:fs"
-import { join } from "node:path"
-import { pathToFileURL } from "node:url"
-
-const ACTION = process.env.usage_cmd || ""
-const JSON_OUT = process.env.usage_json === "true"
-const DRY_RUN = process.env.usage_dry_run === "true"
-const VALID_ACTIONS = ["validate", "sync", "install", "all", "report"]
-
-if (!VALID_ACTIONS.includes(ACTION)) {
-  console.error("skill: action is required: validate, sync, install, all, or report")
-  process.exit(1)
-}
-
-function gitRoot() {
-  const r = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"])
-  if (r.exitCode !== 0) { console.error("skill: run from inside the app git checkout"); process.exit(1) }
-  return new TextDecoder().decode(r.stdout).trim()
-}
-
-function isRecord(v) { return v !== null && typeof v === "object" && !Array.isArray(v) }
-
-function loadRegistry() {
-  const root = gitRoot()
-  const url = pathToFileURL(join(root, "assets/guides/SKILLS.yml")).href
-  return import(url, { with: { type: "yaml" } }).then(m => m.default)
-}
-
-function loadSkillLock(root) {
-  const fp = join(root, "skills-lock.json")
-  if (!existsSync(fp)) return new Set()
-  const lock = JSON.parse(readFileSync(fp, "utf8"))
-  return new Set(Object.keys(lock.skills ?? {}))
-}
-
-function loadActualProjectSkills(root) {
-  const child = Bun.spawnSync(["skills", "list", "--json"], { cwd: root })
-  if (child.exitCode !== 0) {
-    console.error("skill validate: skills CLI unavailable — this registry requires the Skills CLI")
-    return null
-  }
-  try {
-    const list = JSON.parse(new TextDecoder().decode(child.stdout))
-    return new Set(
-      list
-        .filter(s => s.scope === "project" && (s.path || "").includes(".agents/skills/"))
-        .map(s => (s.path || "").split("/").pop() || "")
-        .filter(Boolean)
-    )
-  } catch {
-    return null
-  }
-}
-
-function diffSets(actual, expected) {
-  const missing = [...expected].filter(s => !actual.has(s))
-  const extra = [...actual].filter(s => !expected.has(s))
-  return { missing, extra }
-}
-
-let validateOk = false
-let drift = null
-
-const ALLOWED_LOCATIONS = new Set(["owned", "project", "global"])
-const ALLOWED_TYPES = new Set(["required", "routed", "optional", "reference", "blocked"])
-const FORBIDDEN_SKILL_FIELDS = ["source", "install", "link", "decision", "load"]
-const REDUNDANT_NOTES = new Set(["owned", "project", "global only"])
-
-let ok = true
-function check(cond, msg) { if (!cond) { console.error("skill validate: " + msg); ok = false } }
-
-async function validate() {
-  ok = true
-  drift = null
-  const root = gitRoot()
-  const registry = await loadRegistry()
-  const lockedSkills = loadSkillLock(root)
-  const registryProjectSkills = new Set()
-
-  check(registry?.schema_version === 3, "schema_version must be 3")
-  check(isRecord(registry?.skills), "skills must be a mapping")
-  check(!Object.hasOwn(registry ?? {}, "electrobun_routing"), "top-level electrobun_routing must not exist")
-
-  const skills = registry.skills ?? {}
-  for (const [name, skill] of Object.entries(skills)) {
-    check(isRecord(skill), name + " must be a mapping")
-    if (!isRecord(skill)) continue
-
-    check(ALLOWED_LOCATIONS.has(skill.location), name + ".location invalid: " + skill.location)
-    check(typeof skill.rationale === "string" && skill.rationale.trim() !== "", name + ".rationale required")
-    check(isRecord(skill.policy), name + ".policy must be a mapping")
-    if (!isRecord(skill.policy)) continue
-    check(ALLOWED_TYPES.has(skill.policy.type), name + ".policy.type invalid: " + skill.policy.type)
-    if (skill.location === "project") {
-      registryProjectSkills.add(name)
-      check(lockedSkills.has(name), name + ": location project requires an entry in skills-lock.json")
-    } else {
-      check(!lockedSkills.has(name), name + ": only location project entries may appear in skills-lock.json")
-    }
-
-    for (const f of FORBIDDEN_SKILL_FIELDS) {
-      check(!Object.hasOwn(skill, f), name + " must not have forbidden field: " + f)
-    }
-
-    const t = skill.policy.type
-    const hasUsage = isRecord(skill.policy.usage)
-    const hasRouting = isRecord(skill.policy.routing)
-    const hasSurfaces = isRecord(skill.policy.surfaces)
-    const hasReason = typeof skill.policy.reason === "string" && skill.policy.reason.trim() !== ""
-    const hasRedirect = Array.isArray(skill.policy.redirect_to)
-
-    if (t === "required") {
-      check(hasUsage, name + ": required must have usage")
-      check(!hasRouting, name + ": required must not have routing")
-      check(!hasSurfaces, name + ": required must not have surfaces")
-      check(!hasReason, name + ": required must not have reason")
-      check(!hasRedirect, name + ": required must not have redirect_to")
-    } else if (t === "routed") {
-      check(hasUsage, name + ": routed must have usage")
-      check(hasRouting && Object.keys(skill.policy.routing).length > 0, name + ": routed must have non-empty routing")
-      check(!hasSurfaces, name + ": routed must not have surfaces")
-      check(!hasReason, name + ": routed must not have reason")
-      check(!hasRedirect, name + ": routed must not have redirect_to")
-    } else if (t === "optional") {
-      check(hasUsage, name + ": optional must have usage")
-      check(!hasRouting, name + ": optional must not have routing")
-      check(!hasReason, name + ": optional must not have reason")
-      check(!hasRedirect, name + ": optional must not have redirect_to")
-    } else if (t === "reference") {
-      check(hasUsage, name + ": reference must have usage")
-      check(!hasRouting, name + ": reference must not have routing")
-      check(!hasSurfaces, name + ": reference must not have surfaces")
-      check(!hasReason, name + ": reference must not have reason")
-      check(!hasRedirect, name + ": reference must not have redirect_to")
-    } else if (t === "blocked") {
-      check(hasReason, name + ": blocked must have reason")
-      check(!hasUsage, name + ": blocked must not have usage")
-      check(!hasRouting, name + ": blocked must not have routing")
-      check(!hasSurfaces, name + ": blocked must not have surfaces")
-      check(skill.location === "global", name + ": blocked requires location: global")
-    }
-
-    if (hasUsage) {
-      check(typeof skill.policy.usage.summary === "string" && skill.policy.usage.summary.trim() !== "", name + ".usage.summary required")
-      const load = skill.policy.usage.when?.load
-      check(Array.isArray(load) && load.length > 0, name + ".usage.when.load must be a non-empty list")
-      if (Array.isArray(load)) {
-        for (const item of load) check(typeof item === "string" && item.trim() !== "", name + ".usage.when.load entries must be non-empty strings")
-      }
-      const avoid = skill.policy.usage.when?.avoid
-      check(Array.isArray(avoid), name + ".usage.when.avoid must be a list")
-    }
-
-    if (hasRouting) {
-      for (const [surface, routes] of Object.entries(skill.policy.routing)) {
-        check(Array.isArray(routes), name + ".routing." + surface + " must be a list")
-        if (!Array.isArray(routes)) continue
-        for (const route of routes) {
-          check(isRecord(route), name + ".routing." + surface + " entries must be mappings")
-          if (!isRecord(route)) continue
-          check(typeof route.order === "number", name + ".routing." + surface + ".order must be numeric")
-          check(Array.isArray(route.triggers) && route.triggers.length > 0, name + ".routing." + surface + ".triggers must be non-empty list")
-          if (Array.isArray(route.triggers)) {
-            for (const t of route.triggers) check(typeof t === "string" && t.trim() !== "", name + ".routing." + surface + ".triggers entries must be non-empty strings")
-          }
-          if (Object.hasOwn(route, "note")) {
-            check(typeof route.note === "string" && route.note.trim() !== "", name + ".routing." + surface + ".note must be non-empty string when present")
-            check(!REDUNDANT_NOTES.has(route.note?.trim()), name + ".routing." + surface + ".note must not be a redundant status note: " + route.note)
-          }
-        }
-      }
-    }
-  }
-  for (const lockedName of lockedSkills) {
-    check(registryProjectSkills.has(lockedName), lockedName + ": skills-lock.json entry requires a matching location project registry entry")
-  }
-
-  // Actual project installs check via Skills CLI
-  const actualSkills = loadActualProjectSkills(root)
-  if (actualSkills === null) {
-    check(false, "skills CLI unavailable — cannot validate actual project installs")
-  } else {
-    const expectedSkills = new Set()
-    for (const [name, skill] of Object.entries(skills)) {
-      if (skill.location === "owned" || skill.location === "project") expectedSkills.add(name)
-    }
-    const { missing, extra } = diffSets(actualSkills, expectedSkills)
-    for (const m of missing) check(false, m + ": expected project skill not installed — run mise run skill install")
-    for (const e of extra) check(false, e + ": installed project skill not in registry as owned or project")
-    drift = { actual_skills: [...actualSkills].sort(), expected_skills: [...expectedSkills].sort(), missing, extra }
-  }
-
-  validateOk = ok
-  if (!ok && !JSON_OUT) return // validation-only exits with failure below; report collects drift
-}
-
-// ── Replace Managed Block ─────────────────────────────────────────────
-
-function replaceManaged(root, relativePath, marker, content) {
-  const fp = join(root, relativePath)
-  const start = "<!-- skills:" + marker + ":start -->"
-  const end = "<!-- skills:" + marker + ":end -->"
-  const orig = readFileSync(fp, "utf8")
-  const si = orig.indexOf(start), ei = orig.indexOf(end)
-  if (si === -1 || ei === -1 || ei < si) { console.error("skill sync: missing markers for " + marker + " in " + relativePath); process.exit(1) }
-  const next = orig.slice(0, si + start.length) + "\n" + content.trimEnd() + "\n" + orig.slice(ei)
-  if (DRY_RUN) {
-    const status = next === orig ? "up to date" : "would update"
-    console.log("skill sync: dry-run " + status + " " + relativePath + ":" + marker)
-    return
-  }
-  writeFileSync(fp, next)
-}
-
-function statusNote(location) {
-  if (location === "project") return "project"
-  if (location === "owned") return "owned"
-  return "global only"
-}
-
-// ── Sync ──────────────────────────────────────────────────────────────
-
-async function sync() {
-  await validate()
-  const registry = await loadRegistry()
-  const root = gitRoot()
-  const skills = registry.skills ?? {}
-
-  // Optional companions
-  const optionals = Object.entries(skills)
-    .filter(([, s]) => s.policy.type === "optional" && isRecord(s.policy.surfaces))
-    .map(([name, s]) => ({ name, ...s }))
-
-  const claudeList = optionals
-    .map(s => "- `" + s.name + "` - " + s.policy.surfaces.claude_optional)
-    .join("\n")
-  replaceManaged(root, "CLAUDE.md", "optional-companions", claudeList)
-
-  const ctxTable = [
-    "| Skill | When |",
-    "| --- | --- |",
-    ...optionals.map(s => "| **" + s.name + "** | " + s.policy.surfaces.app_context_optional + " |"),
-  ].join("\n")
-  replaceManaged(root, ".agents/skills/app-context/SKILL.md", "optional-companions", ctxTable)
-
-  // Electrobun routing
-  const ebRoutes = []
-  for (const [name, skill] of Object.entries(skills)) {
-    const eb = isRecord(skill.policy?.routing) ? skill.policy.routing.electrobun : undefined
-    if (!Array.isArray(eb)) continue
-    for (const route of eb) ebRoutes.push({ name, ...route })
-  }
-  ebRoutes.sort((a, b) => a.order - b.order)
-
-  const ebTable = [
-    "| When the task involves... | Read this skill first | Note |",
-    "| --- | --- | --- |",
-    ...ebRoutes.map(r => {
-      const skill = skills[r.name]
-      let note = statusNote(skill.location)
-      if (r.note) note += " - " + r.note
-      const triggers = (r.triggers ?? []).join(", ")
-      return "| " + triggers + " | `" + r.name + "` | " + note + " |"
-    }),
-  ].join("\n")
-  replaceManaged(root, ".cursor/electrobun-skill-routing.md", "electrobun-routing", ebTable)
-}
-
-// ── Install ────────────────────────────────────────────────────────────
-
-async function install() {
-  await validate()
-  if (DRY_RUN) {
-    console.log("skill install: dry-run would run skills experimental_install")
-    return
-  }
-  const child = Bun.spawnSync(["skills", "experimental_install"], {
-    cwd: gitRoot(),
-    stdout: "inherit",
-    stderr: "inherit",
-  })
-  if (child.exitCode !== 0) process.exit(child.exitCode ?? 1)
-}
-
-// ── Report ─────────────────────────────────────────────────────────────
-
-async function report() {
-  await validate()
-  const registry = await loadRegistry()
-  const skills = registry.skills ?? {}
-  const byLoc = {}, byType = {}
-  let ebTotal = 0
-  for (const [, s] of Object.entries(skills)) {
-    const loc = s.location || "?"
-    const t = s.policy?.type || "?"
-    byLoc[loc] = (byLoc[loc] || 0) + 1
-    byType[t] = (byType[t] || 0) + 1
-    const eb = isRecord(s.policy?.routing) ? s.policy.routing.electrobun : undefined
-    if (Array.isArray(eb)) ebTotal += eb.length
-  }
-  const data = {
-    schema_version: registry.schema_version,
-    total_skills: Object.keys(skills).length,
-    by_location: byLoc,
-    by_policy_type: byType,
-    electrobun_routes: ebTotal,
-    valid: validateOk,
-    drift: drift ?? {},
-  }
-  if (JSON_OUT) {
-    console.log(JSON.stringify(data, null, 2))
-  } else {
-    console.log("schema_version:", data.schema_version)
-    console.log("total_skills:", data.total_skills)
-    console.log("by_location:", JSON.stringify(data.by_location))
-    console.log("by_policy_type:", JSON.stringify(data.by_policy_type))
-    console.log("electrobun_routes:", data.electrobun_routes)
-    console.log("valid:", data.valid)
-    if (drift) {
-      if (drift.missing.length) console.log("missing:", JSON.stringify(drift.missing))
-      if (drift.extra.length) console.log("extra:", JSON.stringify(drift.extra))
-      else console.log("drift: none")
-    }
-  }
-}
-
-// ── Dispatch ───────────────────────────────────────────────────────────
-
-if (ACTION === "validate") { await validate(); if (!validateOk) process.exit(1) }
-else if (ACTION === "sync") { await sync(); if (!validateOk) process.exit(1) }
-else if (ACTION === "install") { await install(); if (!validateOk) process.exit(1) }
-else if (ACTION === "all") { await sync(); await install() }
-else if (ACTION === "report") { await report(); if (!validateOk) process.exit(1) }
-
-if (!ok) process.exit(1)
+#!/usr/bin/env bash
+set -euo pipefail
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+CMD="${usage_cmd:-}"
+exec bun tools/skill/skill_registry.script.ts "$CMD" "$@"
 ''' }
 # mise run docker build
 # mise run docker build --nocache --platform amd64
@@ -2364,5 +2075,30 @@ if (!ok) process.exit(1)
         echo "spec: unknown action ${CMD}" >&2
         exit 2
         ;;
+    esac
+  ''' }
+"feature" = { description = "Find or run unit + Gherkin tests by catalog key or @tag", usage = '''
+    cmd "find" {
+      arg "<tag>" help="Catalog key or run tag e.g. command_palette or @command_palette"
+    }
+    cmd "exec" {
+      arg "<tag>" help="Catalog key or run tag e.g. command_palette or @command_palette"
+      flag "--unit-only" help="Run co-located unit specs only"
+      flag "--e2e-only" help="Run Gherkin (playwright grep) only"
+    }
+  ''', run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+    REPO_ROOT="$(git rev-parse --show-toplevel)"
+    cd "$REPO_ROOT"
+    CMD="${usage_cmd:-}"
+    TAG="${usage_tag:-}"
+    args=()
+    [[ "${usage_unit_only:-false}" == "true" ]] && args+=(--unit-only)
+    [[ "${usage_e2e_only:-false}" == "true" ]] && args+=(--e2e-only)
+    case "$CMD" in
+      find) exec bun tools/feature/feature.script.ts find "$TAG" ;;
+      exec) exec bun tools/feature/feature.script.ts exec "$TAG" "${args[@]}" ;;
+      *) echo "feature: unknown action ${CMD} (expected find|exec)" >&2; exit 2 ;;
     esac
   ''' }

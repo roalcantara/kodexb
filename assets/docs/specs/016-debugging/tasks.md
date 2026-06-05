@@ -563,7 +563,7 @@ graph so future contributors do not re-derive it.
 
 - [x] 5.10 Register the new skill.
   - Add the row to `assets/guides/SKILLS.md`.
-  - Add the structured row to `assets/guides/SKILLS.yml`.
+  - Add the structured row to `assets/catalog/SKILLS.yaml`.
   - **Acceptance criteria:**
     - `mise run skill validate` (or the equivalent task) reports green.
   - _Requirements: DBG-7 §3_
@@ -582,7 +582,7 @@ graph so future contributors do not re-derive it.
        `foundation/design.md`, `foundation/roadmap.md`.
     3. New guide: `LOGGING_GUIDE.md`.
     4. New skill + registration: `app-logging` skill, `SKILLS.md`,
-       `SKILLS.yml`, `app-context` skill update.
+       `SKILLS.yaml`, `app-context` skill update.
   - Use `/commit-staged` for each chunk.
   - **Acceptance criteria:**
     - The commit subjects follow `GIT_COMMITS_GUIDE.md`.
@@ -685,6 +685,6 @@ graph so future contributors do not re-derive it.
   outside `repositoryStmts` so test fixtures without FTS do not crash at
   prepare time (`rebuildFts` stays a raw `db.query`)
 - **Phase 5 docs**: 10 files edited, 2 created (`LOGGING_GUIDE.md`,
-  `app-logging/SKILL.md`); skill registered in `SKILLS.md` + `SKILLS.yml`
+  `app-logging/SKILL.md`); skill registered in `SKILLS.md` + `SKILLS.yaml`
 - **Phase 6 closure**: every acceptance criterion in this file is
   satisfied; the gate is green on the working tree

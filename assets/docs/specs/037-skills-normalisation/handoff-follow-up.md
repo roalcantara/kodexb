@@ -15,7 +15,7 @@ and actual Skills CLI project state all agree.
 
 The previous implementation mostly works:
 
-- `assets/guides/SKILLS.yml` uses `schema_version: 3`.
+- `assets/catalog/SKILLS.yaml` uses `schema_version: 3`.
 - Skill entries use `location: owned | project | global`.
 - Skill behavior uses `policy.type: required | routed | optional | reference | blocked`.
 - `mise run skill validate`, `mise run skill report`, `mise run skill sync`,
@@ -23,7 +23,7 @@ The previous implementation mostly works:
 
 However, a code review found these remaining issues:
 
-1. `mise run skill validate` only compares `SKILLS.yml` with
+1. `mise run skill validate` only compares `SKILLS.yaml` with
    `skills-lock.json`; it does not detect project skills that are still
    installed on disk through the Skills CLI but are no longer approved by the
    registry or lock file.
@@ -54,13 +54,13 @@ project skills.
 
 The actual project skill set must equal:
 
-- all `location: owned` entries from `assets/guides/SKILLS.yml`
-- all `location: project` entries from `assets/guides/SKILLS.yml`
+- all `location: owned` entries from `assets/catalog/SKILLS.yaml`
+- all `location: project` entries from `assets/catalog/SKILLS.yaml`
 
 Validation must fail when:
 
 - an actual project-installed skill exists but is not `location: owned` or
-  `location: project` in `SKILLS.yml`
+  `location: project` in `SKILLS.yaml`
 - a `location: owned` or `location: project` entry is missing from actual
   project installs
 - a `location: global` or blocked skill is installed as a project skill
@@ -79,7 +79,7 @@ Implementation notes:
   CLI-backed.
 - Do not validate `.claude/skills/*` symlinks as a separate source of truth.
   They are agent materialization details produced by the Skills CLI. The source
-  of truth is `SKILLS.yml`, `skills-lock.json`, and the project skill list from
+  of truth is `SKILLS.yaml`, `skills-lock.json`, and the project skill list from
   `skills list --json`.
 - `skill report --json` should include enough information to debug drift,
   preferably `actual_project_skills`, `expected_project_skills`, and any
@@ -94,12 +94,12 @@ At review time, the actual project skill list still included:
 - `electrobun-debugging`
 - `electrobun-release`
 
-Those were no longer present in `skills-lock.json` or `SKILLS.yml`.
+Those were no longer present in `skills-lock.json` or `SKILLS.yaml`.
 
 Choose one consistent resolution:
 
 - If these skills are still recommended for app, re-add them to
-  `skills-lock.json` and `assets/guides/SKILLS.yml` as `location: project`, and
+  `skills-lock.json` and `assets/catalog/SKILLS.yaml` as `location: project`, and
   restore the Electrobun routing/docs rows.
 - If they are no longer recommended, remove them from the actual project skill
   installation with the Skills CLI, and make sure generated routing/docs do not
@@ -121,7 +121,7 @@ Required wording changes:
 - Use `mise run skill install`, not `mise run link:skills`.
 - Describe project skills as Skills CLI-managed project skills restored from
   `skills-lock.json`, not as approved linked companions.
-- Describe `SKILLS.yml` as using `location: owned | project | global`.
+- Describe `SKILLS.yaml` as using `location: owned | project | global`.
 - In `handoff.md`, update the TOML example to:
 
 ```toml
@@ -142,7 +142,7 @@ run = '''
 
 ### 4. Keep generated sections generated
 
-If `SKILLS.yml` or generation logic changes, run:
+If `SKILLS.yaml` or generation logic changes, run:
 
 ```bash
 mise run skill sync
@@ -167,7 +167,7 @@ mise run skill report --json
 mise run skill sync
 mise run skill all --dry-run
 bun run lint:mise
-git diff --check -- assets/guides/SKILLS.yml assets/guides/SKILLS.md mise.toml CLAUDE.md AGENTS.md README.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md .cursor/rules/electrobun-skills.mdc assets/docs/specs/skills-normalisation/requirements.md assets/docs/specs/skills-normalisation/handoff.md assets/docs/specs/skills-normalisation/handoff-follow-up.md
+git diff --check -- assets/catalog/SKILLS.yaml assets/guides/SKILLS.md mise.toml CLAUDE.md AGENTS.md README.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md .cursor/rules/electrobun-skills.mdc assets/docs/specs/skills-normalisation/requirements.md assets/docs/specs/skills-normalisation/handoff.md assets/docs/specs/skills-normalisation/handoff-follow-up.md
 ```
 
 Also run these consistency checks and report the result:
@@ -180,13 +180,13 @@ rg -n "mise run (skills:sync|link:skills)|approved linked|linked companions|choi
 Expected outcome:
 
 - `mise run skill validate` fails if actual Skills CLI project installs drift
-  from `SKILLS.yml`.
+  from `SKILLS.yaml`.
 - `mise run skill report --json` exposes expected, actual, missing, and extra
   project skill information.
 - No docs still instruct users to run `mise run skills:sync` or
   `mise run link:skills` as the current workflow.
 - `README.md`, `.cursor/rules/electrobun-skills.mdc`, `SKILLS.md`,
-  `SKILLS.yml`, and `skills-lock.json` describe the same skill model.
-- Actual project skills, `skills-lock.json`, and `SKILLS.yml` have no
+  `SKILLS.yaml`, and `skills-lock.json` describe the same skill model.
+- Actual project skills, `skills-lock.json`, and `SKILLS.yaml` have no
   unapproved drift.
 ```

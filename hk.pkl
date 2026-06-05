@@ -169,6 +169,10 @@ local ciProfileSteps = new Mapping<String, Step> {
         profiles = List("ci")
         check = "bun run typecheck"
     }
+    ["skill-registry-ci"] {
+        profiles = List("ci")
+        check = "mise run skill validate --raw"
+    }
     // Baseline only — report findings without failing CI until triaged (HK-4).
     ["gitleaks-baseline-ci"] {
         profiles = List("ci")
@@ -247,6 +251,14 @@ local preCommitSteps = (hygieneSteps) {
     ["no_commit_to_branch"] = Builtins.no_commit_to_branch
     ["check_executables_have_shebangs"] = Builtins.check_executables_have_shebangs
     ["check_symlinks"] = Builtins.check_symlinks
+    ["skill-registry-validate"] {
+        glob = List(
+            "assets/catalog/SKILLS.yaml",
+            "skills-lock.json",
+            ".agents/skills/**/SKILL.md"
+        )
+        check = "mise run skill validate --raw"
+    }
     ["code-review-graph-risk-summary"] {
         check = """
           if command -v code-review-graph >/dev/null 2>&1; then

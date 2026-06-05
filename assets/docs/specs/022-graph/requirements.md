@@ -41,7 +41,7 @@ Adopt CRG only:
 - Comparison article:
   https://dev.to/mir_mursalin_ankur/graphify-code-review-graph-build-a-self-updating-knowledge-graph-for-claude-code-and-other-ai-j1m
 - Project hook contract: `hk.pkl`
-- Project skill registry: `assets/guides/SKILLS.yml`
+- Project skill registry: `assets/catalog/SKILLS.yaml`
 - Maintainer CRG guide: `assets/guides/CRG.md`
 
 ## Current state
@@ -63,7 +63,7 @@ quality exclusions are removed.
   `update --skip-flows` and `detect-changes --brief` step when the CLI is
   installed.
 - `build-graph` and `code-review-graph` are classified in
-  `assets/guides/SKILLS.yml`, documented in `assets/guides/SKILLS.md`, and
+  `assets/catalog/SKILLS.yaml`, documented in `assets/guides/SKILLS.md`, and
   restored with `mise run skill install`.
 - Maintainer operations: [`assets/guides/CRG.md`](../../../guides/CRG.md) and
   [`handoff.md`](handoff.md).
@@ -204,7 +204,7 @@ quality exclusions are removed.
 ### Acceptance criteria
 
 1. WHEN `skills-lock.json` contains `build-graph` and `code-review-graph`, THEN
-   `assets/guides/SKILLS.yml` SHALL classify both as project-managed skills.
+   `assets/catalog/SKILLS.yaml` SHALL classify both as project-managed skills.
 2. WHEN the project skill ledger is updated, THEN `assets/guides/SKILLS.md`
    SHALL explain that `build-graph` is the operational MCP workflow and
    `code-review-graph` is supporting reference guidance.

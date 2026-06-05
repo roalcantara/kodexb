@@ -1,6 +1,7 @@
+# Agent skill registry (catalog). Schema and workflow: assets/guides/SKILLS.md
 schema_version: 3
-description: Project skill registry. This file drives validation, generated routing snippets, and consistency
-  checks against skills-lock.json.
+description: Project skill registry. Install project skills via `mise run skill add` only — do not run raw `skills add`
+  without updating this file. Drives validation, generated routing snippets, and consistency checks against skills-lock.json.
 locations:
   owned: Project-authored skill committed under .agents/skills/<skill-id>.
   project: External skill managed by the Skills CLI, recorded in skills-lock.json, and restored into .agents/skills/<skill-id>.

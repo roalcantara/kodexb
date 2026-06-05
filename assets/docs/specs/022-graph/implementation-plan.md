@@ -44,7 +44,7 @@ Modify:
 - `.ls-lint.yml`, `biome.jsonc`, `hk.pkl`, `package.json`
 - `AGENTS.md`, `CLAUDE.md`, `README.md`, `mise.toml`
 - `assets/docs/specs/README.md`
-- `assets/guides/SKILLS.yml`, `assets/guides/SKILLS.md`
+- `assets/catalog/SKILLS.yaml`, `assets/guides/SKILLS.md`
 - `assets/docs/specs/graph/tasks.md`, `assets/docs/specs/graph/handoff.md`
 
 Delete:
@@ -76,7 +76,7 @@ the existing Git pre-commit hook remains HK-owned.
 ## Task 2: Register the downloaded CRG skills
 
 - [ ] Add `build-graph` and `code-review-graph` project entries to
-  `assets/guides/SKILLS.yml`.
+  `assets/catalog/SKILLS.yaml`.
 - [ ] Add matching human-readable ledger rows to `assets/guides/SKILLS.md`.
 - [ ] Run `mise run skill validate`.
 - [ ] Run `mise run skill sync` and review generated routing changes.

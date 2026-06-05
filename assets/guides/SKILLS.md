@@ -6,10 +6,10 @@ description: How the project classifies agent skills and how the project keeps t
 
 This guide explains how the project classifies agent skills and how the
 project keeps that classification consistent. The structured source of truth
-is [`SKILLS.yml`](SKILLS.yml); this Markdown file is the human-facing
-explanation of the same policy.
+is [`SKILLS.yaml`](../catalog/SKILLS.yaml) in `assets/catalog/`; this
+Markdown file is the human-facing explanation of the same policy.
 
-Run `mise run skill validate` after editing `SKILLS.yml`. Run
+Run `mise run skill validate` after editing `SKILLS.yaml`. Run
 `mise run skill sync` to refresh generated snippets in `CLAUDE.md`,
 `.agents/skills/app-context/SKILL.md`, and
 `.cursor/electrobun-skill-routing.md`. Run `mise run skill install` to restore
@@ -17,7 +17,7 @@ project-managed external skills from `skills-lock.json` through the Skills CLI.
 
 ## Schema
 
-`SKILLS.yml` keeps one `skills:` entry per relevant skill. Each entry has a
+`SKILLS.yaml` keeps one `skills:` entry per relevant skill. Each entry has a
 single `location`, a `rationale`, and one discriminated `policy.type`.
 
 | Field               | Meaning                                                                                                                  |
@@ -49,12 +49,12 @@ contradictions.
 The registry and lock file must agree:
 
 - Every `location: project` entry must appear in `skills-lock.json`.
-- Every `skills-lock.json` entry must appear in `SKILLS.yml` as
+- Every `skills-lock.json` entry must appear in `SKILLS.yaml` as
   `location: project`.
 - `location: owned` and `location: global` entries must not appear in
   `skills-lock.json`.
 - The Skills CLI owns how project skills are materialized under
-  `.agents/skills/`; the project does not model copy versus symlink in `SKILLS.yml`.
+  `.agents/skills/`; the project does not model copy versus symlink in `SKILLS.yaml`.
 
 ## Decision Rules
 
@@ -77,36 +77,36 @@ project-specific situation.
 
 ## Current Project Skills
 
-| Skill                          | Location  | Policy      | Rationale                                                                     |
-| ------------------------------ | --------- | ----------- | ----------------------------------------------------------------------------- |
-| `app-context`                  | `owned`   | `required`  | Mandatory project orientation and guide routing.                              |
-| `app-rpc`                      | `owned`   | `required`  | Canonical app-level Elysia, Eden Treaty, and TypeBox RPC guidance.            |
-| `app-testing`                  | `owned`   | `required`  | Canonical testing workflow for co-located Bun specs and harnesses.            |
-| `app-quality-gate`             | `owned`   | `required`  | Executable completion and commit-readiness gate.                              |
-| `app-logging`                  | `owned`   | `required`  | Structured logging with LogTape, `LOG_LEVEL` dial, and DB/RPC instrumentation.|
-| `build-graph`                  | `project` | `required`  | Operational CRG MCP workflow for graph initialization and refresh.            |
-| `code-review-graph`            | `project` | `reference` | CRG concepts, subordinate to upstream CLI docs and KB graph policy.           |
-| `electrobun-best-practices`    | `project` | `required`  | Baseline for desktop stack work before narrower Electrobun skills.            |
-| `electrobun-plugin-guide`      | `project` | `routed`    | Entry point when the right Electrobun skill is unclear.                       |
-| `electrobun-config`            | `project` | `routed`    | Electrobun configuration, build views, and asset wiring.                      |
-| `electrobun-core`              | `project` | `routed`    | Main process, windows, views, and lifecycle behavior.                         |
-| `electrobun-window-management` | `project` | `required`  | Multi-window and BrowserView orchestration.                                   |
-| `electrobun-native-ui`         | `project` | `required`  | Menus, dialogs, tray, shortcuts, and clipboard behavior.                      |
-| `electrobun-rpc`               | `project` | `routed`    | Native Electrobun IPC only; app-level RPC remains `app-rpc`.                  |
-| `electrobun-dev`               | `project` | `routed`    | Electrobun dev server, hot reload, and devtools workflow.                     |
-| `electrobun-build`             | `project` | `routed`    | Electrobun build pipeline and CI build behavior.                              |
-| `electrobun-platform`          | `project` | `routed`    | macOS, Windows, Linux, CEF, and platform differences.                         |
-| `electrobun-distribution`      | `project` | `required`  | Packaging, signing, notarization, and distribution artifacts.                 |
-| `electrobun-sdlc`              | `project` | `routed`    | Electrobun feature lifecycle guidance, subordinate to project specs and gate. |
-| `electrobun-workflow`          | `project` | `routed`    | Electrobun dev/build/ship workflow questions.                                 |
-| `electrobun-kitchen-sink`      | `project` | `routed`    | Upstream examples and `defineTest` reference, adapted to project rules.       |
-| `electrobun-testing`           | `project` | `routed`    | Electrobun-specific test framework patterns, with `app-testing` as authority. |
-| `electrobun-webgpu`            | `project` | `routed`    | WebGPU, `GpuWindow`, and WGSL work only.                                      |
-| `electrobun-milady`            | `project` | `routed`    | Upstream milady repository conventions.                                       |
-| `electrobun`                   | `project` | `reference` | Broad upstream Electrobun overview.                                           |
-| `electrobun-rpc-patterns`      | `project` | `optional`  | Advanced native IPC patterns after the base RPC boundary is understood.       |
-| `bun-development`              | `project` | `optional`  | Bun implementation details alongside the project Bun guide.                   |
-| `bun-runtime`                  | `project` | `optional`  | Bun runtime, package manager, and test-runner behavior.                       |
+| Skill                          | Location  | Policy      | Rationale                                                                      |
+| ------------------------------ | --------- | ----------- | ------------------------------------------------------------------------------ |
+| `app-context`                  | `owned`   | `required`  | Mandatory project orientation and guide routing.                               |
+| `app-rpc`                      | `owned`   | `required`  | Canonical app-level Elysia, Eden Treaty, and TypeBox RPC guidance.             |
+| `app-testing`                  | `owned`   | `required`  | Canonical testing workflow for co-located Bun specs and harnesses.             |
+| `app-quality-gate`             | `owned`   | `required`  | Executable completion and commit-readiness gate.                               |
+| `app-logging`                  | `owned`   | `required`  | Structured logging with LogTape, `LOG_LEVEL` dial, and DB/RPC instrumentation. |
+| `build-graph`                  | `project` | `required`  | Operational CRG MCP workflow for graph initialization and refresh.             |
+| `code-review-graph`            | `project` | `reference` | CRG concepts, subordinate to upstream CLI docs and KB graph policy.            |
+| `electrobun-best-practices`    | `project` | `required`  | Baseline for desktop stack work before narrower Electrobun skills.             |
+| `electrobun-plugin-guide`      | `project` | `routed`    | Entry point when the right Electrobun skill is unclear.                        |
+| `electrobun-config`            | `project` | `routed`    | Electrobun configuration, build views, and asset wiring.                       |
+| `electrobun-core`              | `project` | `routed`    | Main process, windows, views, and lifecycle behavior.                          |
+| `electrobun-window-management` | `project` | `required`  | Multi-window and BrowserView orchestration.                                    |
+| `electrobun-native-ui`         | `project` | `required`  | Menus, dialogs, tray, shortcuts, and clipboard behavior.                       |
+| `electrobun-rpc`               | `project` | `routed`    | Native Electrobun IPC only; app-level RPC remains `app-rpc`.                   |
+| `electrobun-dev`               | `project` | `routed`    | Electrobun dev server, hot reload, and devtools workflow.                      |
+| `electrobun-build`             | `project` | `routed`    | Electrobun build pipeline and CI build behavior.                               |
+| `electrobun-platform`          | `project` | `routed`    | macOS, Windows, Linux, CEF, and platform differences.                          |
+| `electrobun-distribution`      | `project` | `required`  | Packaging, signing, notarization, and distribution artifacts.                  |
+| `electrobun-sdlc`              | `project` | `routed`    | Electrobun feature lifecycle guidance, subordinate to project specs and gate.  |
+| `electrobun-workflow`          | `project` | `routed`    | Electrobun dev/build/ship workflow questions.                                  |
+| `electrobun-kitchen-sink`      | `project` | `routed`    | Upstream examples and `defineTest` reference, adapted to project rules.        |
+| `electrobun-testing`           | `project` | `routed`    | Electrobun-specific test framework patterns, with `app-testing` as authority.  |
+| `electrobun-webgpu`            | `project` | `routed`    | WebGPU, `GpuWindow`, and WGSL work only.                                       |
+| `electrobun-milady`            | `project` | `routed`    | Upstream milady repository conventions.                                        |
+| `electrobun`                   | `project` | `reference` | Broad upstream Electrobun overview.                                            |
+| `electrobun-rpc-patterns`      | `project` | `optional`  | Advanced native IPC patterns after the base RPC boundary is understood.        |
+| `bun-development`              | `project` | `optional`  | Bun implementation details alongside the project Bun guide.                    |
+| `bun-runtime`                  | `project` | `optional`  | Bun runtime, package manager, and test-runner behavior.                        |
 
 ## Optional Companion Matrix
 
@@ -153,9 +153,36 @@ Blocked skills must not be used directly in this project:
 
 ## Updating Skills
 
-Use this workflow when changing the registry:
+Do **not** run raw `skills add` without updating this registry. Use the Mise
+workflows below.
 
-1. Edit `assets/guides/SKILLS.yml`.
+| Goal                       | Command                                                                   |
+| -------------------------- | ------------------------------------------------------------------------- |
+| Browse registry            | `mise run skill list` or `mise run skill report --list-skills`            |
+| Add upstream/project skill | `mise run skill add <url> --type <optional\|reference\|required\|routed>` |
+| Create owned skill         | `mise run skill create <id> [--type required\|optional]`                  |
+| Fix lock ↔ YAML drift      | `mise run skill reconcile` (dry-run first with `--dry-run`)               |
+| Remove orphan installs     | `mise run skill prune`                                                    |
+| Fresh clone restore        | `mise run skill install`                                                  |
+| Health check               | `mise run skill validate`                                                 |
+
+Decision tree:
+
+```txt
+Project-specific authored content?     → skill create (owned)
+Upstream / shared skill from registry? → skill add (project)
+Lock changed without YAML?             → skill reconcile
+Fresh clone?                           → skill install
+Validate red after drift?              → reconcile → curate → prune → validate
+```
+
+The **Current Project Skills** table below is narrative documentation.
+`mise run skill list` is the live catalog sourced from `SKILLS.yaml`.
+
+After policy edits:
+
+1. Edit `assets/catalog/SKILLS.yaml` (or use `skill add` / `skill create` /
+   `skill reconcile`).
 2. Run `mise run skill validate`.
 3. Run `mise run skill sync` when generated snippets must change.
 4. Run `mise run skill install` when project-managed external skills must be
@@ -164,3 +191,12 @@ Use this workflow when changing the registry:
    `.agents/skills/app-context/SKILL.md`, and
    `.cursor/electrobun-skill-routing.md` together when the change affects
    routing or optional companion guidance.
+
+### Global vs project inventory
+
+- **`location: owned`** — project-authored under `.agents/skills/`; never in
+  `skills-lock.json`.
+- **`location: project`** — Skills CLI managed; must appear in
+  `skills-lock.json` and `.agents/skills/` after `skill install`.
+- **`location: global`** — optional companions in `$HOME/.agents/skills/`;
+  registry-only in YAML; must **not** appear in `skills-lock.json`.

@@ -114,15 +114,25 @@ Use this shape:
 mise run skill validate
 mise run skill sync
 mise run skill install
+mise run skill list
+mise run skill report --list-skills
+mise run skill add <url> --type optional
+mise run skill create <skill-id>
+mise run skill reconcile --dry-run
+mise run skill prune --dry-run
 ```
+
+The `skill` task implementation lives in
+[`tools/skill/skill_registry.script.ts`](../../tools/skill/skill_registry.script.ts).
+Structured registry: [`assets/catalog/SKILLS.yaml`](../catalog/SKILLS.yaml).
+Use `--raw` or `--json` for CI and scripting. On a TTY (default), output uses
+**gum** via the shared module [`tools/cli/gum.theme.ts`](../../tools/cli/gum.theme.ts)
+(Andromeda Void palette — titles, badges, tables, semantic glyphs). Falls back
+to plain text when gum is unavailable. Other Bun-backed mise tasks should import
+the same helpers and [`tools/cli/render_mode.ts`](../../tools/cli/render_mode.ts)
+for `--raw` / `--json` / TTY dispatch.
 
 Avoid this shape for new public tasks:
-
-```sh
-mise run skill validate
-mise run skill sync
-mise run skill install
-```
 
 Keep tasks separate only when separation protects clarity or safety:
 

@@ -2,7 +2,7 @@
 # Skills normalisation handoff
 
 Use this prompt to hand the final schema-normalisation pass to another agent.
-The goal is to make `assets/guides/SKILLS.yml` safe by construction: one
+The goal is to make `assets/catalog/SKILLS.yaml` safe by construction: one
 `location` field replaces `source + install`, and one discriminated
 `policy.type` replaces `decision + link + load + when`.
 
@@ -11,7 +11,7 @@ The goal is to make `assets/guides/SKILLS.yml` safe by construction: one
 ```markdown
 You are working in `/Users/roalcantara/Work/bun/app`.
 
-Goal: Refactor `assets/guides/SKILLS.yml` to the final no-contradiction skill
+Goal: Refactor `assets/catalog/SKILLS.yaml` to the final no-contradiction skill
 registry schema. The new schema must eliminate contradictory states by using:
 
 - `location: owned | project | global`
@@ -29,7 +29,7 @@ Before editing:
 3. Because this writes Markdown, use the docs-writing guidance available in
    this repo/session.
 4. Keep the change scoped to:
-   - `assets/guides/SKILLS.yml`
+   - `assets/catalog/SKILLS.yaml`
    - `mise.toml`
    - generated outputs from `mise run skill sync`
    - `assets/guides/SKILLS.md`
@@ -290,7 +290,7 @@ Use a positional `action` rather than multiple public task names:
 
 | Command                   | Expected behavior                                                                     |
 | ------------------------- | ------------------------------------------------------------------------------------- |
-| `mise run skill validate` | Validate `assets/guides/SKILLS.yml` only.                                             |
+| `mise run skill validate` | Validate `assets/catalog/SKILLS.yaml` only.                                             |
 | `mise run skill sync`     | Validate, then rewrite generated snippets.                                            |
 | `mise run skill install`  | Validate, then restore project skills from `skills-lock.json` through the Skills CLI. |
 | `mise run skill all`      | Validate, sync snippets, then restore project skills from `skills-lock.json`.         |
@@ -362,7 +362,7 @@ Update `assets/guides/SKILLS.md`.
 
 Make sure it says:
 
-- `SKILLS.yml` keeps one canonical `skills:` entry per skill.
+- `SKILLS.yaml` keeps one canonical `skills:` entry per skill.
 - `location` is the only install/materialization field.
 - `location` uses `owned`, `project`, or `global` to align with the `skills`
   CLI project/global model while preserving project-authored skill ownership.
@@ -407,13 +407,13 @@ Run a Skills CLI consistency check to confirm:
 Run:
 
 ```bash
-git diff --check -- assets/guides/SKILLS.yml assets/guides/SKILLS.md mise.toml CLAUDE.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md assets/docs/specs/skills-normalisation/requirements.md assets/docs/specs/skills-normalisation/handoff.md
+git diff --check -- assets/catalog/SKILLS.yaml assets/guides/SKILLS.md mise.toml CLAUDE.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md assets/docs/specs/skills-normalisation/requirements.md assets/docs/specs/skills-normalisation/handoff.md
 ```
 
 Search to confirm:
 
 ```bash
-rg "(^    (source|install|link|decision|load):)|skill\\.(source|install|link|decision|load)\\b|electrobun_routing|registry\\.electrobun_routing|^\\s+trigger:" assets/guides/SKILLS.yml mise.toml assets/guides/SKILLS.md assets/docs/specs/skills-normalisation
+rg "(^    (source|install|link|decision|load):)|skill\\.(source|install|link|decision|load)\\b|electrobun_routing|registry\\.electrobun_routing|^\\s+trigger:" assets/catalog/SKILLS.yaml mise.toml assets/guides/SKILLS.md assets/docs/specs/skills-normalisation
 ```
 
 Expected search result:
@@ -429,7 +429,7 @@ Expected search result:
 
 ## Expected outcome
 
-- `assets/guides/SKILLS.yml` has one canonical entry per skill.
+- `assets/catalog/SKILLS.yaml` has one canonical entry per skill.
 - Every skill entry has `location`, `rationale`, and `policy.type`.
 - No skill entry has contradictory source/install or policy state.
 - Blocked policies cannot route or define usage.

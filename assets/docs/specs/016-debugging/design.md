@@ -468,7 +468,7 @@ EDIT docs (Phase E):
 | `assets/docs/specs/foundation/design.md`  | Add Observability decision.                                    |
 | `assets/docs/specs/foundation/roadmap.md` | Slot the feature in.                                           |
 | `assets/guides/SKILLS.md`                 | Register `app-logging` skill.                                  |
-| `assets/guides/SKILLS.yml`                | Same; structured row.                                          |
+| `assets/catalog/SKILLS.yaml`                | Same; structured row.                                          |
 | `.agents/skills/app-context/SKILL.md`     | One paragraph on logging architecture.                         |
 
 ## Call-site migration map

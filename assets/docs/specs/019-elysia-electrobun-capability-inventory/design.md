@@ -27,7 +27,7 @@ Local comparison sources:
 - `.agents/skills/app-rpc/SKILL.md`
 - `.agents/skills/electrobun-best-practices/SKILL.md`
 - `.cursor/electrobun-skill-routing.md`
-- `assets/guides/SKILLS.yml`
+- `assets/catalog/SKILLS.yaml`
 - `assets/guides/ELECTROBUN.md`
 - `src/shell/main/rpc/`
 - `src/shell/renderer/rpc/`

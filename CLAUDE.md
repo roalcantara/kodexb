@@ -120,6 +120,8 @@ in this repo. Use `requirements.md`, `design.md`, `tasks.md`, and optional
 Do not create `docs/superpowers/`. That path is a common external skill
 default and is gitignored in this repo to prevent drift.
 
+**Legacy spec orientation:** [`PRODUCT_DESIGN.md`](assets/docs/specs/PRODUCT_DESIGN.md) + [`PRODUCT_REQUIREMENTS.md`](assets/docs/specs/PRODUCT_REQUIREMENTS.md) for current decisions/outcomes; drill-down `NNN-<slug>/` folders. Active Spec Kit: `assets/specs/`.
+
 For tests, project rules override generic Superpowers examples: follow
 [`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md), use
 `bun:test`, prefer `it(...)`, and follow the repo's Better Specs and Fishery
@@ -155,7 +157,7 @@ with this `CLAUDE.md`, **the guides win** — open a PR to fix `CLAUDE.md`.
 - [`assets/guides/GIT_COMMITS_GUIDE.md`](assets/guides/GIT_COMMITS_GUIDE.md) — Conventional Commits, ≤ 50-char subject
 - [`assets/guides/MISE_GUIDE.md`](assets/guides/MISE_GUIDE.md) — when to use `mise run` vs `bun run`
 - [`assets/guides/SKILLS.md`](assets/guides/SKILLS.md) — skill adoption ledger, routing rationale, optional companions
-- [`assets/guides/SKILLS.yml`](assets/guides/SKILLS.yml) — structured skill registry used by `mise run skill validate`, `mise run skill sync`, and `mise run skill install`
+- [`assets/catalog/SKILLS.yaml`](assets/catalog/SKILLS.yaml) — structured skill registry; use `mise run skill add|create|reconcile|validate|sync|install|list|report` (see [`assets/guides/SKILLS.md`](assets/guides/SKILLS.md))
 - [`assets/guides/CI_GUIDE.md`](assets/guides/CI_GUIDE.md) — review/release/publish workflows
 - [`assets/guides/BUN_RUNTIME.md`](assets/guides/BUN_RUNTIME.md) — Bun YAML/JSON5/SQLite quick reference
 - [`assets/guides/ELECTROBUN.md`](assets/guides/ELECTROBUN.md) — Electrobun official-docs map + RPC shape

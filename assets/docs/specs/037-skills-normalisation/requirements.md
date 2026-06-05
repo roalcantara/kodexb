@@ -5,7 +5,7 @@
 ## Overview
 
 This spec defines the final no-contradiction schema for
-`assets/guides/SKILLS.yml`. The registry must describe each skill once, encode
+`assets/catalog/SKILLS.yaml`. The registry must describe each skill once, encode
 where the skill is materialized with a single `location` field, and encode how
 agents treat the skill with one discriminated `policy.type`. The schema must
 not allow contradictory combinations such as blocked skills with routing,
@@ -22,7 +22,7 @@ cannot drift from separate category lists.
 
 #### Acceptance criteria
 
-1. WHEN a skill is represented in `assets/guides/SKILLS.yml`
+1. WHEN a skill is represented in `assets/catalog/SKILLS.yaml`
    THEN the registry SHALL define that skill exactly once under `skills`.
 
 2. WHEN a skill entry is validated
@@ -224,13 +224,13 @@ state.
 ### R9 — Generated documentation consistency
 
 **User story:** As an agent, I want generated routing snippets to come from
-`SKILLS.yml`, so that `CLAUDE.md`, `app-context`, and Cursor routing docs remain
+`SKILLS.yaml`, so that `CLAUDE.md`, `app-context`, and Cursor routing docs remain
 consistent after registry edits.
 
 #### Acceptance criteria
 
 1. WHEN `mise run skill sync` runs
-   THEN the task SHALL validate `assets/guides/SKILLS.yml` before writing any
+   THEN the task SHALL validate `assets/catalog/SKILLS.yaml` before writing any
    generated snippet.
 
 2. WHEN `mise run skill sync` rewrites a managed snippet
@@ -242,25 +242,25 @@ consistent after registry edits.
 
 4. WHEN generated snippets are refreshed
    THEN the generated Electrobun routing table SHALL remain semantically
-   equivalent to the nested routes in `SKILLS.yml`.
+   equivalent to the nested routes in `SKILLS.yaml`.
 
 ### R10 — Human guide consistency
 
 **User story:** As a maintainer, I want `assets/guides/SKILLS.md` to explain
-the registry schema, so that humans can update `SKILLS.yml` without reverse
+the registry schema, so that humans can update `SKILLS.yaml` without reverse
 engineering the mise tasks.
 
 #### Acceptance criteria
 
-1. WHEN `SKILLS.yml` uses `location`
+1. WHEN `SKILLS.yaml` uses `location`
    THEN `assets/guides/SKILLS.md` SHALL explain `owned`, `project`, and
    `global`.
 
-2. WHEN `SKILLS.yml` uses `policy.type`
+2. WHEN `SKILLS.yaml` uses `policy.type`
    THEN `assets/guides/SKILLS.md` SHALL explain `required`, `routed`,
    `optional`, `reference`, and `blocked`.
 
-3. WHEN `SKILLS.yml` uses `policy.usage`
+3. WHEN `SKILLS.yaml` uses `policy.usage`
    THEN `assets/guides/SKILLS.md` SHALL explain `summary`,
    `when.load`, and `when.avoid`.
 
@@ -293,7 +293,7 @@ interpretation.
    THEN `bun run lint:mise` SHALL pass.
 
 5. WHEN changed files are checked for whitespace errors
-   THEN `git diff --check -- assets/guides/SKILLS.yml assets/guides/SKILLS.md mise.toml CLAUDE.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md` SHALL pass.
+   THEN `git diff --check -- assets/catalog/SKILLS.yaml assets/guides/SKILLS.md mise.toml CLAUDE.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md` SHALL pass.
 
 6. WHEN the repository is searched for obsolete schema fields
    THEN no active automation SHALL reference skill-level `source`, `install`,
@@ -302,7 +302,7 @@ interpretation.
 
 ## Acceptance
 
-- A1: `assets/guides/SKILLS.yml` has one canonical `skills:` entry per skill.
+- A1: `assets/catalog/SKILLS.yaml` has one canonical `skills:` entry per skill.
 - A2: Every skill entry uses `location` and `policy.type`.
 - A3: No skill entry uses skill-level `source`, `install`, `link`,
   `decision`, or `load`.
@@ -313,6 +313,6 @@ interpretation.
 - A7: Route notes derive `project`, `owned`, or `global only` from `location`.
 - A8: Generated snippets in `CLAUDE.md`,
   `.agents/skills/app-context/SKILL.md`, and
-  `.cursor/electrobun-skill-routing.md` are refreshed from `SKILLS.yml`.
+  `.cursor/electrobun-skill-routing.md` are refreshed from `SKILLS.yaml`.
 - A9: The project skill set in `skills-lock.json` is represented by
-  `location: project` entries in `SKILLS.yml`.
+  `location: project` entries in `SKILLS.yaml`.

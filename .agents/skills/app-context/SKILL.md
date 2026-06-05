@@ -18,7 +18,7 @@ wrong validation, and naming drift.
 - **Project skill ledger**:
   [`assets/guides/SKILLS.md`](../../../assets/guides/SKILLS.md) records which
   skills are project-authored, managed by the Skills CLI as project skills, or
-  kept as optional global companions. [`assets/guides/SKILLS.yml`](../../../assets/guides/SKILLS.yml)
+  kept as optional global companions. [`assets/catalog/SKILLS.yaml`](../../../assets/catalog/SKILLS.yaml)
   is the structured registry used by `mise run skill validate`,
   `mise run skill sync`, and `mise run skill install`.
 - **Electrobun skills** adopted for the project: same folder (e.g.

@@ -180,7 +180,7 @@ The user has already downloaded:
 - `build-graph` from `tirth8205/code-review-graph`
 - `code-review-graph` from `aradotso/trending-skills`
 
-Both belong in `assets/guides/SKILLS.yml` as `location: project` because
+Both belong in `assets/catalog/SKILLS.yaml` as `location: project` because
 `skills-lock.json` records them. Their policies differ:
 
 - `build-graph`: required operational workflow for CRG initialization and

@@ -272,7 +272,7 @@ The canonical engineering and agent definitions are split by purpose:
 | [CLAUDE.md][24]          | Primary agent instructions: stack, FCIS layers, required skills, and reference docs.                      |
 | [AGENTS.md][23]          | Repo-wide agent guardrails, commit workflow, prototype gate, and Electrobun process rules.                |
 | [SKILLS.md][21]          | Skill adoption ledger: owned skills, Skills CLI-managed project skills, global companions, and rationale. |
-| [SKILLS.yml][26]         | Structured skill registry used by `mise run skill sync` and `mise run skill install`.                     |
+| [SKILLS.yaml][26]        | Structured skill registry used by `mise run skill sync` and `mise run skill install`.                     |
 | [MISE_GUIDE.md][22]      | Task-runner policy: prefer mise tasks for project workflows and avoid ad-hoc project scripts.             |
 | [Electrobun routing][25] | Which Electrobun skill to read for desktop shell, build, platform, RPC, and automation work.              |
 
@@ -356,7 +356,7 @@ agent skill wiring, UI smoke checks, and maintenance workflows:
 | -------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | `mise run project setup`         | Installing tool versions, dependencies, and hooks after cloning.                                         |
 | `mise run prepare`               | Refreshing Bun dependencies and commit hooks without reinstalling tools.                                 |
-| `mise run skill sync`            | Rewriting generated skill routing snippets from `assets/guides/SKILLS.yml`.                              |
+| `mise run skill sync`            | Rewriting generated skill routing snippets from `assets/catalog/SKILLS.yaml`.                            |
 | `mise run skill install`         | Restoring Skills CLI-managed project skills from `skills-lock.json`.                                     |
 | `mise run test e2e --smoke`      | Playwright smoke suite (`bun run e2e:smoke`) — list nav, filters, shortcuts list.                        |
 | `mise run test e2e --regression` | Playwright regression suite — overlay, tasks, settings, shortcuts overlay.                               |
@@ -448,5 +448,5 @@ The project is available as open source under the terms of the [MIT][1] [License
 [23]: AGENTS.md 'Agent notes'
 [24]: CLAUDE.md 'Claude Code instructions'
 [25]: .cursor/electrobun-skill-routing.md 'Electrobun skill routing'
-[26]: assets/guides/SKILLS.yml 'Structured skill registry'
+[26]: assets/catalog/SKILLS.yaml 'Structured skill registry'
 [27]: skills-lock.json 'Skills CLI project lock file'

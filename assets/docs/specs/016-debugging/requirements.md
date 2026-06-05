@@ -348,7 +348,7 @@ spec or the codebase.
 3. WHEN this spec is complete, THEN `.agents/skills/app-logging/SKILL.md`
    SHALL exist with the same structural shape as
    `.agents/skills/app-rpc/SKILL.md` and SHALL be registered in both
-   `assets/guides/SKILLS.md` and `assets/guides/SKILLS.yml`.
+   `assets/guides/SKILLS.md` and `assets/catalog/SKILLS.yaml`.
 4. WHEN this spec is complete, THEN `CLAUDE.md` and `AGENTS.md` SHALL
    each contain a logging policy block stating: (a) use
    `getLogger([...])`, never `console.*` or `createLogger()`; (b)

@@ -65,7 +65,7 @@ Before editing implementation files, load:
 ## Phase 1 - Adopt the CRG skills
 
 - [x] 1.1 Classify downloaded skills.
-  - Add `build-graph` and `code-review-graph` to `assets/guides/SKILLS.yml` as
+  - Add `build-graph` and `code-review-graph` to `assets/catalog/SKILLS.yaml` as
     `location: project`.
   - Classify `build-graph` as the required operational workflow.
   - Classify `code-review-graph` as a reference companion whose summary remains
@@ -77,7 +77,7 @@ Before editing implementation files, load:
       reproduced and CRG adds no new violation.
     - `mise run skill sync` refreshes generated snippets when required.
   - **Evidence:** Added matching `build-graph` and `code-review-graph` entries
-    in `assets/guides/SKILLS.yml` and `assets/guides/SKILLS.md`; ran
+    in `assets/catalog/SKILLS.yaml` and `assets/guides/SKILLS.md`; ran
     `mise run skill validate`; reproduced its unrelated baseline failure from
     detached `HEAD` and confirmed no CRG-specific validator violation.
   - _Requirements: GR-6_

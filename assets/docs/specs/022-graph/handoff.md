@@ -44,7 +44,7 @@ Commit:
 - `.vscode/mcp.json`
 - `.github/instructions/code-review-graph.instructions.md`
 - CRG usage guidance in `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and Cursor rules
-- CRG skill classifications in `assets/guides/SKILLS.yml` and
+- CRG skill classifications in `assets/catalog/SKILLS.yaml` and
   `assets/guides/SKILLS.md`
 - Brief CRG overview and guide link in `README.md`
 - Maintainer usage, hook, monitoring, best-practice, and troubleshooting
