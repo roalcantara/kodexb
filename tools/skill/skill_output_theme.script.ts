@@ -1,6 +1,6 @@
 /** Skill-registry semantic colors (domain-specific; not shared across mise tasks). */
 
-import { GUM, gumBadge, gumFail, gumOk, gumSectionBanner } from '../cli/gum.theme.ts'
+import { GUM, gumBadge, gumFail, gumOk, gumSectionBanner } from '../cli/gum_theme.script.ts'
 
 export const CATEGORY_COLORS: Record<string, string> = {
   lock_without_yaml: GUM.warn,

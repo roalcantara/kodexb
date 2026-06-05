@@ -59,7 +59,7 @@ commands or test results.
 
 1. WHEN the desktop app boots, THEN the main process SHALL instantiate one
    `RpcApp` from `createRpcServer(app)` and use it as the transport contract.
-2. WHEN the preview server runs (`bun tools/preview/server.ts`), THEN it SHALL
+2. WHEN the preview server runs (`bun tools/preview/server.script.ts`), THEN it SHALL
    forward `/api/*` requests through the **same `RpcApp` implementation**
    (no duplicated switch/case logic).
 3. WHEN routes are added or removed in `src/shell/main/rpc/server.ts`, THEN the

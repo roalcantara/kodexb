@@ -488,7 +488,7 @@ are caught before ship.
    and shortcuts Task 21.
 
 8. WHEN a maintainer validates shortcuts in the preview harness, THEN
-   `tools/preview/server.ts` (with shortcut seed sources imported per
+   `tools/preview/server.script.ts` (with shortcut seed sources imported per
    [design.md](design.md) § Preview) SHALL expose all four UI states using
    **real renderer components** (not static prototype HTML): quick-lookup
    overlay in text mode, overlay in chord mode (conflicts-first card),

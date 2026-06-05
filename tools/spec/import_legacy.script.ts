@@ -3,7 +3,7 @@
  * spec import-legacy — diff legacy M02 requirements.md EARS vs new spec.md.
  *
  * Usage:
- *   bun tools/spec/import_legacy.ts --feature 001-sync-frecency-persistence
+ *   bun tools/spec/import_legacy.script.ts --feature 001-sync-frecency-persistence
  */
 import path from 'node:path'
 
@@ -29,7 +29,7 @@ async function main(): Promise<void> {
   const fIdx = args.indexOf('--feature')
   const feature = fIdx >= 0 ? args[fIdx + 1] : undefined
   if (!feature) {
-    console.error('usage: bun tools/spec/import_legacy.ts --feature <NNN-slug>')
+    console.error('usage: bun tools/spec/import_legacy.script.ts --feature <NNN-slug>')
     process.exit(2)
   }
 

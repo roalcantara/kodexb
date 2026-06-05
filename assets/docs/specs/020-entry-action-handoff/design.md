@@ -292,7 +292,7 @@ runInTerminal: { cmd: string }      // → terminal-run
 openInEditor: { filePath: string }
 ```
 
-Mirror all routes in `tools/preview/server.ts`.
+Mirror all routes in `tools/preview/server.script.ts`.
 
 ---
 

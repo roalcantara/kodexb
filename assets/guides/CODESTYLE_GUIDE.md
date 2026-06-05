@@ -145,15 +145,34 @@ For role-suffixed source files, place the test marker after the role suffix:
 `requests.spec.ts`. This keeps the source role visible while still marking the
 file as a test.
 
+#### Tools directory (`tools/`)
+
+Repo tooling is TypeScript-first. Every `.ts` file under `tools/` (except
+`tools/scripts/` shell helpers) uses the **`.script.ts`** artifact suffix — mise
+entrypoints, domain libraries, hooks, and preview servers alike. Co-located tests
+use **`.script.spec.ts`**. Type-only modules keep **`.types.ts`**.
+
+| Pattern           | Example                                                        |
+| ----------------- | -------------------------------------------------------------- |
+| `.script.ts`      | `tools/catalog/catalog.script.ts`, `tools/mise/test.script.ts` |
+| `.script.spec.ts` | `tools/catalog/tag.script.spec.ts`                             |
+| `.types.ts`       | `tools/skill/skill_registry.types.ts`                          |
+
+ast-grep rules live under `tools/rules/` as **`<id>.rule.yml`**. Enforced by
+ast-grep (`tools-must-use-script-suffix`, `tools-rules-must-use-rule-suffix`) and
+ls-lint (see `.ls-lint.yml`).
+
 ### ❌ Banned / deprecated suffixes
 
 These were found in the codebase and are being migrated out. Do not use them in new files.
 
-| Banned suffix | Use instead      | Migration status                   |
-| ------------- | ---------------- | ---------------------------------- |
-| `.consts.ts`  | `.const.ts`      | Cursor task: `naming-alignment.md` |
-| `.type.ts`    | `.types.ts`      | Cursor task: `naming-alignment.md` |
-| `.view.tsx`   | `.component.tsx` | Cursor task: `naming-alignment.md` |
+| Banned suffix                         | Use instead      | Migration status                   |
+| ------------------------------------- | ---------------- | ---------------------------------- |
+| `.consts.ts`                          | `.const.ts`      | Cursor task: `naming-alignment.md` |
+| `.type.ts`                            | `.types.ts`      | Cursor task: `naming-alignment.md` |
+| `.view.tsx`                           | `.component.tsx` | Cursor task: `naming-alignment.md` |
+| `.lib.ts`, bare `.ts` under `tools/`  | `.script.ts`     | Enforced by ast-grep + ls-lint     |
+| `tools/rules/*.yml` (without `.rule`) | `*.rule.yml`     | Enforced by ast-grep + ls-lint     |
 
 ### Exceptions (no suffix)
 

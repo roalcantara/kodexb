@@ -40,7 +40,7 @@ defined by an [Elysia][10] app exported from `src/shell/main/rpc/server.ts`.
   any code generation step.
 - Elysia's `t` (TypeBox) provides runtime validation at the transport boundary
   using the same TypeBox dialect as the rest of the codebase (see Decision 2).
-- The same Elysia app runs over HTTP in the preview server (`tools/preview/server.ts`)
+- The same Elysia app runs over HTTP in the preview server (`tools/preview/server.script.ts`)
   without any mock shims — identical behaviour in dev and production.
 
 **Files eliminated vs. the old approach:**

@@ -5,7 +5,7 @@
  *      ⇒ assets/features/e2e/*.feature  (@spec:<slug> tag + Scenario name)
  *
  * Usage:
- *   bun tools/spec/trace.ts <feature-dir> [--features assets/features/e2e] [--strict]
+ *   bun tools/spec/trace.script.ts <feature-dir> [--features assets/features/e2e] [--strict]
  */
 import path from 'node:path'
 

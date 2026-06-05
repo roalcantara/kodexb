@@ -11,7 +11,7 @@ list-page integration, per [design.md](design.md).
 
 **Primary verification:** `bash .agents/skills/app-quality-gate/scripts/gate.sh`
 green (lint, typecheck, tests, build, route-parity). For UI-touching tasks,
-also exercise the prototypes in `tools/preview/server.ts`.
+also exercise the prototypes in `tools/preview/server.script.ts`.
 
 **Architecture rules (CLAUDE.md non-negotiables):**
 
@@ -19,7 +19,7 @@ also exercise the prototypes in `tools/preview/server.ts`.
 - `bun:sqlite` directly. No Drizzle, no drizzle-typebox.
 - Fishery `factoryFor` for typed test factories. No drizzle-seed.
 - `getLogger(['kb', …])` from `@shared/logging`. No `console.*` in `src/`.
-- Every new Elysia route registered in `tools/preview/server.ts`.
+- Every new Elysia route registered in `tools/preview/server.script.ts`.
 - Every new file in `src/` ships with a co-located `.spec.ts(x)`.
 - Naming: ls-lint patterns in `.ls-lint.yml`; snake_case file segments.
 
@@ -597,11 +597,11 @@ Commit: `chore(quality): Pass full gate for shortcut feature`.
       defers Enter to the keymap-row handler when focus is inside `.cmp-shortcut-keymap`
       or `.cmp-chord-detail`.)
 - [ ] Prototype HTML states reachable via real components in
-      `tools/preview/server.ts` (import fixture sources first).
+      `tools/preview/server.script.ts` (import fixture sources first).
       (**S-10 AC8** — preview checklist below; prototypes in design.md are
       visual reference only.)
 
-      Preview checklist (pass/fail in browser at `tools/preview/server.ts`
+      Preview checklist (pass/fail in browser at `tools/preview/server.script.ts`
       after importing shortcut seed sources):
 
       1. Open overlay (`⌘/`) — text mode, search input focused.

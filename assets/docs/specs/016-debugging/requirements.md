@@ -165,7 +165,7 @@ log.
    `src/shell/main/rpc/server.ts`) is constructed, THEN it SHALL mount the
    composed plugin bundle `rpcCommonPlugins` exactly once, which in turn
    provides both `rpcErrorContract` and the RPC logger middleware.
-8. WHEN the preview server (`tools/preview/server.ts`) is constructed, THEN
+8. WHEN the preview server (`tools/preview/server.script.ts`) is constructed, THEN
    it SHALL also mount `rpcCommonPlugins`. The preview server SHALL NOT
    duplicate the error-contract or logger definition inline.
 

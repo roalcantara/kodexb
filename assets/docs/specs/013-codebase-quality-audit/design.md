@@ -62,7 +62,7 @@ Captured from worktree at `3fcd6ee`. Markdown or skill docs that **mention** `bi
 | `src/shell/renderer/hooks/list/use_task_sheet.hook.ts`             | 20            | noExcessiveLinesPerFunction                | Extract sheet state machine                                                        |
 | `src/shell/renderer/hooks/list/use_view_navigation.hook.ts`        | 53            | noExcessiveCognitiveComplexity             | Table-driven routing or smaller handlers                                           |
 | `src/shell/renderer/rpc/client.spec.tsx`                           | 11, 27        | useNamingConvention                        | Mirror helpers                                                                     |
-| `tools/preview/mock_electroview.ts`                                | 57            | useNamingConvention                        | Wrapper types                                                                      |
+| `tools/preview/mock_electroview.script.ts`                                | 57            | useNamingConvention                        | Wrapper types                                                                      |
 
 ## VERIFICATION
 

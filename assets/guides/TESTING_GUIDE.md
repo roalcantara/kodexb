@@ -902,8 +902,8 @@ Use it for Fishery factories, fixture paths, temp dirs, and seeded in-memory DBs
 **Placement rule (enforced):** shared helpers, harnesses, and `mock.module` setup live under
 `src/__tests__/` (usually `src/__tests__/helpers/`) and are re-exported from `@testing`.
 Co-located `*.spec.ts(x)` files may import `bun:test` directly; non-spec modules under `src/`
-may not. ast-grep rules: `tools/rules/no-bun-test-helper-outside-tests.yml`,
-`tools/rules/no-test-helper-filename-outside-tests.yml` (run via `bun run lint:ast-grep`).
+may not. ast-grep rules: `tools/rules/no-bun-test-helper-outside-tests.rule.yml`,
+`tools/rules/no-test-helper-filename-outside-tests.rule.yml` (run via `bun run lint:ast-grep`).
 
 | Export                                                                      | Role                                                                                                                                                                                |
 | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

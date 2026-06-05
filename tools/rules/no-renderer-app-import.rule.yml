@@ -17,4 +17,4 @@ rule:
 message: >
   Renderer files must not import from src/shell/app/ directly.
   Use the Eden Treaty RPC client: import { rpc } from '@rpc/client'.
-note: See assets/docs/design.md — FCIS layer rules and Decision 1 (Eden Treaty).
+note: See assets/guides/FCIS.guide.md — FCIS layer rules and Eden Treaty RPC.

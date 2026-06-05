@@ -33,4 +33,4 @@ rule:
                     - pattern: Bun.YAML.stringify
 message: >
   src/core/ must be pure — no Bun APIs or Node built-ins allowed. If this code needs I/O, it belongs in src/shell/, not src/core/.
-note: See assets/docs/design.md — FCIS layer rules (Functional Core).
+note: See assets/guides/FCIS.guide.md — Functional Core (no I/O in core/).

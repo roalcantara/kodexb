@@ -66,7 +66,7 @@ Existing code to study before writing anything:
   `rpcErrorContract` definition that gets lifted in Task 1.6
 - `src/shell/main/rpc/host.ts` — Electrobun ↔ Elysia bridge (no edits in
   this spec; read to understand the request-context entry point)
-- `tools/preview/server.ts` — preview server (must mirror main RPC)
+- `tools/preview/server.script.ts` — preview server (must mirror main RPC)
 - `src/shell/app/db/entry.repository.ts` — example repository for the
   DB instrumentation migration (Phase 3)
 - `src/shell/main/main.ts` — current `createLogger` call site
@@ -93,7 +93,7 @@ Existing code to study before writing anything:
 - **Logging**: use `getLogger(['kb', '<area>', …])` from `@shared/logging`.
   **Never** `console.*` in `src/`. **Never** introduce a new `createLogger`.
 - **RPC mirroring**: every new route in `src/shell/main/rpc/server.ts`
-  must also exist in `tools/preview/server.ts` (this spec adds no
+  must also exist in `tools/preview/server.script.ts` (this spec adds no
   routes, but Task 2.2 changes plugin composition — both files stay in
   lockstep).
 - **Layer rules** (dependency-cruiser + ast-grep enforce):
@@ -137,7 +137,7 @@ the exact commands you ran.
 - Co-located `<name>.spec.ts(x)` for every new file (except trivial
   re-export-only modules like `logger.ts`).
 - Each new Elysia route in `src/shell/main/rpc/server.ts` must also
-  exist in `tools/preview/server.ts` (this spec changes plugin
+  exist in `tools/preview/server.script.ts` (this spec changes plugin
   composition; both files stay in lockstep).
 - Never weaken the quality stack: Biome, knip, dependency-cruiser,
   ast-grep, ls-lint, jscpd, `tsc` strictness. If a finding looks

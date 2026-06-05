@@ -2,8 +2,8 @@
  * spec lint — deterministic EARS structural check for kb `spec.md` files.
  *
  * Usage:
- *   bun tools/spec/lint.ts <feature-dir-or-spec.md> [--strict]
- *   bun tools/spec/lint.ts --all [--root assets/specs] [--strict]
+ *   bun tools/spec/lint.script.ts <feature-dir-or-spec.md> [--strict]
+ *   bun tools/spec/lint.script.ts --all [--root assets/specs] [--strict]
  */
 import path from 'node:path'
 

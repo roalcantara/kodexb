@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { join } from 'node:path'
-import { rendererLogEnvPlugin } from './renderer_log_env.plugin'
+import { rendererLogEnvPlugin } from './renderer_log_env.script'
 
 const root = join(import.meta.dir, '../..')
 const rendererBuildEnv = join(root, 'src/shared/logging/renderer_build_env.ts')

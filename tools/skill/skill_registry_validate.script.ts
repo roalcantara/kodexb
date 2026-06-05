@@ -1,3 +1,4 @@
+import type { DriftReport, Finding, FindingCategory, ValidatePayload } from './skill_registry.types.ts'
 import {
   ALLOWED_LOCATIONS,
   ALLOWED_TYPES,
@@ -12,8 +13,7 @@ import {
   loadSkillLock,
   REDUNDANT_NOTES,
   summarizeCounts
-} from './skill_registry.lib.ts'
-import type { DriftReport, Finding, FindingCategory, ValidatePayload } from './skill_registry.types.ts'
+} from './skill_registry_core.script.ts'
 
 function bumpSummary(summary: Record<string, number>, category: FindingCategory): void {
   summary[category] = (summary[category] ?? 0) + 1

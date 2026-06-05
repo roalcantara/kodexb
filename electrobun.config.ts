@@ -1,7 +1,7 @@
 import type { ElectrobunConfig } from 'electrobun'
 import packageJson from './package.json'
-import { rendererLogEnvPlugin } from './tools/build/renderer_log_env.plugin'
-import { tsconfigPathsPlugin } from './tools/build/tsconfig_paths.plugin'
+import { rendererLogEnvPlugin } from './tools/build/renderer_log_env.script'
+import { tsconfigPathsPlugin } from './tools/build/tsconfig_paths.script'
 
 const appIconset = 'assets/icons/app-logo.iconset'
 const tsconfigPath = new URL('./tsconfig.json', import.meta.url).pathname

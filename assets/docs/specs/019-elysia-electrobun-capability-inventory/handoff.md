@@ -64,7 +64,7 @@ Local comparison sources:
 - `src/shell/main/rpc/`
 - `src/shell/renderer/rpc/`
 - `src/shell/main/`
-- `tools/preview/server.ts`
+- `tools/preview/server.script.ts`
 
 Validation:
 Run exactly:

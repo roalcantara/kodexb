@@ -77,8 +77,8 @@ Required project context:
 Helpful references:
 - Existing Playwright config: `playwright.config.ts`.
 - Existing preview smoke: `e2e/preview_list_nav.e2e.spec.ts`.
-- Preview server: `tools/preview/server.ts`.
-- Preview Electrobun mock: `tools/preview/mock_electroview.ts`.
+- Preview server: `tools/preview/server.script.ts`.
+- Preview Electrobun mock: `tools/preview/mock_electroview.script.ts`.
 - RPC server: `src/shell/main/rpc/server.ts`.
 - App orchestrator: `src/shell/app/app.ts`.
 - Test helpers/factories: `src/__tests__/`.

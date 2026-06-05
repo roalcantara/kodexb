@@ -18,7 +18,7 @@ The implementation has four parts:
    hardcoded level by `NODE_ENV`).
 2. **An Elysia plugin bundle** — `rpcCommonPlugins` composes the existing
    `rpcErrorContract` with a new `rpcLogger` plugin. The bundle is used by
-   `createRpcServer` (production) and `tools/preview/server.ts` (preview).
+   `createRpcServer` (production) and `tools/preview/server.script.ts` (preview).
    The plugin binds `requestId`, `action`, `method`, `path` to Logtape's
    `contextLocalStorage`, so every downstream `getLogger([...]).info|debug(…)`
    call inside the handler chain inherits those fields.
@@ -276,7 +276,7 @@ export function createRpcServer(appInstance: AppService) {
     // …
 }
 
-// tools/preview/server.ts
+// tools/preview/server.script.ts
 const previewApp = new Elysia({ prefix: '/api' })
   .use(rpcCommonPlugins)
   .post('/list', /* … mirror of production routes … */)
@@ -445,7 +445,7 @@ EDITS under `src/shell/`:
 | `app/lib/app_sync.util.ts`                | `createLogger` → `getLogger(['kb','app','sync'])`.                                              |
 | `renderer/app.tsx`                        | Add `configureRendererLogging()` as first executable statement.                                 |
 
-EDIT in `tools/preview/server.ts`:
+EDIT in `tools/preview/server.script.ts`:
 
 - Use `rpcCommonPlugins`; remove duplicated error contract definition.
 

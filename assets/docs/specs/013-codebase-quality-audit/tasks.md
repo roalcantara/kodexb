@@ -20,7 +20,7 @@ Execute in order in **one** repo clone on the agreed integration branch. After e
 - [ ] **T2.1** `src/__tests__/helpers/testing.factory.ts`: remove `noExplicitAny` ignore with proper generics.
 - [ ] **T2.2** `src/__tests__/factories/factories.builder.ts`: remove naming ignore via snake_case identifiers (no `biome.json` overrides without R6 approval).
 - [ ] **T2.3** `src/shell/main/rpc/host.spec.ts`: remove `useImportsFirst` ignores or document allowlist with Bun mock constraint.
-- [ ] **T2.4** `src/shell/renderer/rpc/client.spec.tsx`, `use_cmdk_palette.hook.spec.tsx`, `tools/preview/mock_electroview.ts`: remove naming ignores via shared Electrobun test types.
+- [ ] **T2.4** `src/shell/renderer/rpc/client.spec.tsx`, `use_cmdk_palette.hook.spec.tsx`, `tools/preview/mock_electroview.script.ts`: remove naming ignores via shared Electrobun test types.
 
 ## Phase 3 — App shell
 

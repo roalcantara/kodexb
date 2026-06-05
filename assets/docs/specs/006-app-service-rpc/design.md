@@ -20,7 +20,7 @@ the data layer remains unchanged.
 
 | Decision                 | Choice                                    | Rationale                                                                                          |
 | ------------------------ | ----------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| HTTP API shape           | **Keep** `POST /api/<method>`             | Matches existing `tools/preview/mock_electroview.ts` and preview server. Avoids UI refactor churn. |
+| HTTP API shape           | **Keep** `POST /api/<method>`             | Matches existing `tools/preview/mock_electroview.script.ts` and preview server. Avoids UI refactor churn. |
 | Sync progress/completion | **Hybrid**: Electrobun `webview.messages` | Eden/Elysia is request/response; progress is push. Preserve existing message names.                |
 | Task mutation semantics  | **No behaviour change**                   | `App` methods remain `Not implemented` where they already are; Phase 5 only migrates transport.    |
 | Validation library       | **TypeBox only**                          | Matches foundation decision; no Zod.                                                               |
@@ -67,7 +67,7 @@ the data layer remains unchanged.
 
 ### Preview server
 
-- `tools/preview/server.ts`
+- `tools/preview/server.script.ts`
   - Builds renderer bundle as today.
   - For `POST /api/*`, forwards the request to `rpc.handle(...)`.
   - Does not implement per-method switch/case.
@@ -121,7 +121,7 @@ Routes are listed as path → request schema → `App` call.
 
 with HTTP status `500`.
 
-Rationale: this matches existing preview behaviour (`tools/preview/server.ts`)
+Rationale: this matches existing preview behaviour (`tools/preview/server.script.ts`)
 and avoids introducing new error plumbing during a transport-only refactor.
 
 ---
@@ -147,5 +147,5 @@ These are handled in the renderer via `Electroview.defineRPC({ handlers: { messa
 - **Renderer:** unit tests on the wrapper functions in
   `src/shell/renderer/rpc/client.spec.ts` (or similar), verifying that the Eden
   client is invoked and errors surface consistently.
-- **Preview:** smoke test via `bun tools/preview/server.ts` plus a `curl` POST
+- **Preview:** smoke test via `bun tools/preview/server.script.ts` plus a `curl` POST
   to `/api/getStats`.

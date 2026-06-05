@@ -9,7 +9,7 @@ increment. The suite SHALL start from the current app architecture:
 
 - Electrobun desktop shell with a React renderer.
 - Elysia + Eden Treaty RPC as the app transport.
-- `tools/preview/server.ts` as the existing browser-runnable harness for the
+- `tools/preview/server.script.ts` as the existing browser-runnable harness for the
   real renderer bundle plus real RPC.
 - Existing SDD/EARS specs under `assets/docs/specs/` as the behavioral source
   map.

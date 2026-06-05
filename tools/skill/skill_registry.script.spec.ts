@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'bun:test'
-import { renderValidate } from './skill_output.ts'
+import { renderValidate } from './skill_output.script.ts'
+import type { SkillRegistry, ValidatePayload } from './skill_registry.types.ts'
 import {
   collectSkillListRows,
   formatScaffoldBlock,
   hasTodoText,
   ownedYamlBlock,
   SKILL_ID_RE
-} from './skill_registry.lib.ts'
-import type { SkillRegistry, ValidatePayload } from './skill_registry.types.ts'
+} from './skill_registry_core.script.ts'
 
 describe('skill registry helpers', () => {
   it('formatScaffoldBlock includes project location and policy type', () => {

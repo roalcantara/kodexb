@@ -157,6 +157,43 @@ ls:
   src/core/domain/models/sources/parsers:
     .ts: regex:([a-z][a-z0-9_]*\.parser(\.spec)?|index)
 
+  # ── Tools: .script.ts artifact (see CODESTYLE_GUIDE.md) ─────────────────────
+  tools/rules:
+    .yml: regex:^[a-z][a-z0-9-]+\.rule$
+
+  tools/shared:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/catalog:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/mise:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/spec:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/skill:
+    .ts: regex:^([a-z][a-z0-9_]*\.script(\.spec)?|skill_registry\.types)$
+
+  tools/cli:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/preview:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/build:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/hooks:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/e2e:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/tmp:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
 ignore:
   - .DS_Store
   - .venv

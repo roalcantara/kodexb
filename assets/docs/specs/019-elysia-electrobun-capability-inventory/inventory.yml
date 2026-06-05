@@ -171,7 +171,7 @@ capabilities:
     prerequisites: []
     app_touchpoints:
       - src/shell/main/rpc/server.ts
-      - tools/preview/server.ts
+      - tools/preview/server.script.ts
     candidate_stories: []
     notes: []
   - id: elysia-eden-test
@@ -345,7 +345,7 @@ capabilities:
       status: not-used
       evidence:
         - src/shell/main/rpc/server.ts
-        - tools/preview/server.ts
+        - tools/preview/server.script.ts
       confidence: high
       notes: Neither production RPC nor preview server enables AOT or precompile flags.
     priority: undecided
@@ -360,7 +360,7 @@ capabilities:
     risks: []
     prerequisites: []
     app_touchpoints:
-      - tools/preview/server.ts
+      - tools/preview/server.script.ts
     candidate_stories:
       - Benchmark AOT/precompile impact on preview-server startup before adoption.
     notes:
@@ -393,7 +393,7 @@ capabilities:
       - '@elysia/openapi package'
       - Preview server remains HTTP-accessible for doc UI
     app_touchpoints:
-      - tools/preview/server.ts
+      - tools/preview/server.script.ts
       - src/shell/main/rpc/schemas.ts
     candidate_stories:
       - Generate OpenAPI docs for preview server endpoints only.
@@ -443,7 +443,7 @@ capabilities:
     current_usage:
       status: not-used
       evidence:
-        - tools/preview/server.ts
+        - tools/preview/server.script.ts
       confidence: medium
       notes: Preview server does not register `@elysia/cors`; relevance is limited to local browser preview if cross-origin access is needed.
     priority: undecided
@@ -461,7 +461,7 @@ capabilities:
       - '@elysia/cors package'
       - Browser clients accessing preview server from a different origin
     app_touchpoints:
-      - tools/preview/server.ts
+      - tools/preview/server.script.ts
     candidate_stories: []
     notes:
       - Upstream HTTP plugin; not required for desktop IPC architecture.
@@ -559,7 +559,7 @@ capabilities:
       status: not-used
       evidence:
         - electrobun.config.ts
-        - tools/preview/server.ts
+        - tools/preview/server.script.ts
       confidence: high
       notes: Electrobun serves bundled renderer via `views://`; preview server uses Bun.serve routing, not `@elysia/static`.
     priority: undecided
@@ -574,7 +574,7 @@ capabilities:
     prerequisites: []
     app_touchpoints:
       - electrobun.config.ts
-      - tools/preview/server.ts
+      - tools/preview/server.script.ts
     candidate_stories: []
     notes: []
   - id: elysia-cron
@@ -633,7 +633,7 @@ capabilities:
     prerequisites:
       - HTTP preview server path
     app_touchpoints:
-      - tools/preview/server.ts
+      - tools/preview/server.script.ts
     candidate_stories: []
     notes: []
   - id: elysia-file-upload
@@ -1358,7 +1358,7 @@ capabilities:
       - Benchmark or debugging need for RPC latency
     app_touchpoints:
       - src/shell/main/rpc/server.ts
-      - tools/preview/server.ts
+      - tools/preview/server.script.ts
     candidate_stories:
       - Prototype trace instrumentation for preview-only RPC latency debugging.
     notes: []
@@ -1442,7 +1442,7 @@ capabilities:
     prerequisites:
       - Decision to expose app RPC over HTTP
     app_touchpoints:
-      - tools/preview/server.ts
+      - tools/preview/server.script.ts
     candidate_stories: []
     notes:
       - Recorded to make the deploy capability explicitly reviewed rather than silently skipped.
@@ -1455,7 +1455,7 @@ capabilities:
     summary: HTTP deployment patterns for Elysia across server runtimes and hosting targets.
     current_usage:
       evidence:
-        - tools/preview/server.ts
+        - tools/preview/server.script.ts
         - src/shell/main/rpc/host.ts
       notes: Production app does not deploy Elysia as a public HTTP service; preview is local-only.
       status: not-applicable
@@ -1472,7 +1472,7 @@ capabilities:
     risks: []
     prerequisites: []
     app_touchpoints:
-      - tools/preview/server.ts
+      - tools/preview/server.script.ts
       - vite.config.ts
     candidate_stories: []
     notes: []
@@ -1485,7 +1485,7 @@ capabilities:
     summary: Use Elysia as a development server for full-stack web projects.
     current_usage:
       evidence:
-        - tools/preview/server.ts
+        - tools/preview/server.script.ts
         - electrobun.config.ts
       notes: app uses an Electrobun renderer build plus a custom Bun preview server, not Elysia full-stack dev-server integration.
       status: not-used
@@ -1594,7 +1594,7 @@ capabilities:
       - '@elysiajs/swagger package'
       - Preview HTTP endpoint documentation need
     app_touchpoints:
-      - tools/preview/server.ts
+      - tools/preview/server.script.ts
     candidate_stories: []
     notes: []
     id: elysia-swagger-plugin
@@ -1664,7 +1664,7 @@ capabilities:
     current_usage:
       evidence:
         - src/shell/main/rpc/host.ts
-        - tools/preview/server.ts
+        - tools/preview/server.script.ts
       notes: app runs Elysia inside Bun/Electrobun and a local preview server, not hosted web frameworks.
       status: not-applicable
       confidence: high

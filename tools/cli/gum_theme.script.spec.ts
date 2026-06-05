@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { GUM, gumAvailable, gumStyle, gumSubprocessEnv, gumTitle } from './gum.theme.ts'
+import { GUM, gumAvailable, gumStyle, gumSubprocessEnv, gumTitle } from './gum_theme.script.ts'
 
 describe('gumSubprocessEnv', () => {
   it('forces color when NO_COLOR is unset', () => {

@@ -17,7 +17,7 @@ DeepSeek) running `/speckit-specify` skips the guardrail.
 **Edit:**
 - Keep the template replacement (`.specify/templates/spec-template.md`) — it is
   read by every provider. ✅ feasible.
-- Add a **deterministic** `mise run spec lint --strict` (see `tools/spec/lint.ts`)
+- Add a **deterministic** `mise run spec lint --strict` (see `tools/spec/lint.script.ts`)
   as the real gate. The LLM skills become advisory, not load-bearing.
 - In the step tables, change "checklist/analyze enforce EARS" → "checklist/analyze
   advise; `spec lint` enforces."
@@ -84,7 +84,7 @@ constitution leads a guide that contradicts it. **Edit:** move the guide into P0
 
 ### 9. Add cross-file traceability check
 spec.md pointer ⇄ plan.md scenario ⇄ `.feature` tag has nothing checking the
-full chain. `gherkin-lint` only checks structure. → `tools/spec/trace.ts`
+full chain. `gherkin-lint` only checks structure. → `tools/spec/trace.script.ts`
 (drafted) resolves each `@spec:<slug>` end-to-end. Add to `spec gate`.
 
 ### 10. Pin parallel-worktree branch base

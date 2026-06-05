@@ -293,7 +293,7 @@ HK_PKL_BACKEND = "pklr"
       *) echo "ci: unknown command $CMD"; exit 2 ;;
     esac
   ''' }
-"test" = { description = "Run unit, CI, e2e preview, spec audit, and style checks", usage = '''
+"test" = { description = "Run unit, CI, e2e preview, spec audit, style checks, and catalog tag tests", usage = '''
     cmd "unit" {}
     cmd "ci" {}
     cmd "spec-audit" {
@@ -316,269 +316,14 @@ HK_PKL_BACKEND = "pklr"
       flag "--metrics-compare" help="Compare latest metrics to quality-baseline.json"
       flag "--write-baseline" help="Maintainer: refresh quality-baseline.json from latest run"
     }
-  ''', run = '''
-    #!/usr/bin/env bun
-    import { existsSync, mkdirSync } from 'node:fs'
-    import path from 'node:path'
-
-    const ACTION = process.env.usage_cmd ?? 'unit'
-    const STRICT = process.env.usage_strict === 'true'
-    const STYLE_FORMAT = process.env.usage_format ?? 'text'
-    const UPDATE_LEDGER =
-      process.env.usage_update_ledger === 'true' || process.env['usage_update-ledger'] === 'true'
-
-    function die(msg: string, code = 1): never {
-      console.error(msg)
-      process.exit(code)
+    cmd "tag" {
+      flag "--list" help="List tagged executables; do not run tests"
+      flag "--e2e" help="Include or run Gherkin layer only"
+      flag "--unit" help="Include or run unit layer only"
+      flag "--json" help="Machine-readable output (list mode)"
+      arg "[key]" help="Catalog key; append extra keys after -- for multiple"
     }
-
-    function chdirToGitRoot(): string {
-      const r = Bun.spawnSync(['git', 'rev-parse', '--show-toplevel'])
-      const root = r.stdout.toString().trim()
-      if (!r.success || !root) die('test: run from inside the app git checkout')
-      process.chdir(root)
-      return root
-    }
-
-    function runInherit(cmd: string[]): never {
-      const r = Bun.spawnSync(cmd, { stdout: 'inherit', stderr: 'inherit', stdin: 'inherit' })
-      process.exit(r.exitCode ?? (r.success ? 0 : 1))
-    }
-
-    const ROOT = chdirToGitRoot()
-    const SRC = path.join(ROOT, 'src')
-
-    function runSpecAudit(): void {
-      const EXEMPT_SUFFIXES = ['.d.ts', '.types.ts', '.const.ts', '.guard.ts']
-      const EXEMPT_FILES = ['index.ts', 'main.ts', 'registry.ts', 'generated.ts']
-      const TS_EXT_RE = /\.tsx?$/
-      const SOURCE_GLOB = new Bun.Glob('**/*.{ts,tsx}')
-
-      function hasSpec(filePath: string): boolean {
-        const stem = filePath.replace(TS_EXT_RE, '')
-        return existsSync(`${stem}.spec.ts`) || existsSync(`${stem}.spec.tsx`)
-      }
-
-      function isExempt(rel: string): boolean {
-        if (!rel.startsWith('src/')) return true
-        if (EXEMPT_SUFFIXES.some(suffix => rel.endsWith(suffix))) return true
-        const base = rel.split('/').pop() ?? ''
-        if (EXEMPT_FILES.some(f => base === f || base.endsWith(`.${f}`))) return true
-        if (base.endsWith('.schema.ts') || base.endsWith('.schemas.ts')) return true
-        if (base === 'index.ts' || base === 'shared.ts') return true
-        return rel.includes('__tests__/fixtures') || rel.includes('generated')
-      }
-
-      const missing = [...SOURCE_GLOB.scanSync(SRC)]
-        .flatMap(name => {
-          const full = path.join(SRC, name)
-          const rel = path.relative(ROOT, full).replace(/\\/g, '/')
-          if (isExempt(rel) || hasSpec(full)) return []
-          return [rel]
-        })
-        .sort()
-
-      for (const m of missing) console.log(m)
-      if (missing.length > 0) {
-        console.error('missing specs:', missing.length)
-        if (STRICT) process.exit(1)
-      }
-    }
-
-    async function runSpecStyle(): Promise<void> {
-      const LEDGER_START = '<!-- phase-12-style-audit:start -->'
-      const LEDGER_END = '<!-- phase-12-style-audit:end -->'
-      const TRAILING_SLASH_RE = /\/$/
-      const SPEC_GLOB = new Bun.Glob('**/*.spec.{ts,tsx}')
-      const SCOPE_ALIASES: Record<string, string> = {
-        'test-helper': 'src/__tests__',
-        core: 'src/core',
-        shared: 'src/shared',
-        'shell-app': 'src/shell/app',
-        'shell-main': 'src/shell/main',
-        'shell-renderer': 'src/shell/renderer',
-      }
-      const LEDGER = path.join(ROOT, 'assets/docs/specs/normalise-specs/tasks.md')
-
-      type StyleIssue = { file: string; category: string; message: string }
-
-      function normalizeScope(raw: string): string {
-        const value = SCOPE_ALIASES[raw] || raw || 'src'
-        const scoped = value.startsWith('src') ? value : `src/${value}`
-        return path.normalize(scoped).replace(/\\/g, '/').replace(TRAILING_SLASH_RE, '')
-      }
-
-      const scope = normalizeScope(process.env.usage_scope || 'src')
-      const relPath = (full: string) => path.relative(ROOT, full).replace(/\\/g, '/')
-      const inScope = (rel: string) => rel === scope || rel.startsWith(`${scope}/`)
-
-      async function loadFactoryNames(): Promise<Set<string>> {
-        const file = Bun.file(path.join(ROOT, 'src/__tests__/factories/factories.builder.ts'))
-        if (!(await file.exists())) return new Set()
-        const c = await file.text()
-        const start = c.indexOf('const factories = {')
-        const end = c.indexOf('} as const', start)
-        if (start < 0 || end < start) return new Set()
-        return new Set(
-          [...c.slice(start, end).matchAll(/(?:'([^']+)'|(\w+))\s*:/g)]
-            .map(x => x[1] ?? x[2])
-            .filter((name): name is string => name !== undefined),
-        )
-      }
-
-      function auditSpec(rel: string, c: string, knownFactories: Set<string>): StyleIssue[] {
-        const findings: StyleIssue[] = []
-        const add = (category: string, message: string) => findings.push({ file: rel, category, message })
-
-        if (/import\s*\{[^}]*\btest\b/.test(c)) add('test usage', 'imports test from bun:test (use it)')
-        if (/^\s*test\(/m.test(c)) add('test usage', 'uses test() (use it)')
-        if (!c.includes('describe(')) add('no describe', 'no describe block')
-        if (c.includes('describe(') && !/describe\(['"]when |describe\(['"]with |describe\(['"]without /.test(c)) {
-          add('no situation', 'no when/with/without situation describe')
-        }
-        for (const l of c.split('\n')) {
-          const m = l.match(/^\s*it\('(.{41,})'\)/)
-          if (m) {
-            add('long description', `${m[1]?.slice(0, 60) ?? ''}: description > 40 chars`)
-            break
-          }
-        }
-        if (/expect\([^)]*===/.test(c) && /\.toBe\(true\)|\.toBe\(false\)/.test(c)) {
-          add('opaque boolean matcher', 'opaque boolean matcher (use readable matcher)')
-        }
-        if (/window\.dispatchEvent/.test(c) || /document\.dispatchEvent/.test(c)) {
-          add('global dispatchEvent', 'uses global dispatchEvent')
-        }
-        if (/\bmock\s*\(/.test(c) || /\bspyOn\s*\(/.test(c) || /\bmock\.module\s*\(/.test(c)) {
-          add('mock usage', 'uses mock, spyOn, or mock.module')
-        }
-        for (const [, name] of c.matchAll(/factoryFor\('([^']+)'/g)) {
-          if (name && !knownFactories.has(name)) {
-            add('unknown factory', `factoryFor('${name}') not in factories.builder.ts`)
-          }
-        }
-        return findings
-      }
-
-      function categoryCounts(findings: StyleIssue[]): [string, number][] {
-        const counts = new Map<string, number>()
-        for (const { category } of findings) counts.set(category, (counts.get(category) ?? 0) + 1)
-        return [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]))
-      }
-
-      function render(specCount: number, findings: StyleIssue[], asMarkdown: boolean): string {
-        const counts = categoryCounts(findings)
-        if (!asMarkdown) {
-          const lines = [`scope: ${scope}`, `specs scanned: ${specCount}`]
-          for (const [category, count] of counts) lines.push(`${category}: ${count}`)
-          for (const issue of findings) lines.push(`${issue.file}: ${issue.message}`)
-          lines.push(`style issues: ${findings.length}`)
-          return lines.join('\n')
-        }
-        const lines = [
-          '### Better Specs style audit',
-          '',
-          `- Scope: \`${scope}\``,
-          `- Specs scanned: ${specCount}`,
-          `- Style issues: ${findings.length}`,
-          '',
-          '| Category | Count |',
-          '| --- | ---: |',
-          ...(counts.length === 0 ? ['| none | 0 |'] : counts.map(([c, n]) => `| ${c} | ${n} |`)),
-          '',
-        ]
-        if (findings.length > 0) {
-          lines.push('<details>', '<summary>Findings</summary>', '')
-          for (const issue of findings) lines.push(`- \`${issue.file}\` — ${issue.message}`)
-          lines.push('', '</details>')
-        }
-        return lines.join('\n')
-      }
-
-      async function updateLedger(ledgerBody: string): Promise<void> {
-        const file = Bun.file(LEDGER)
-        if (!(await file.exists())) die(`ledger not found: ${path.relative(ROOT, LEDGER)}`)
-        const current = await file.text()
-        const start = current.lastIndexOf(LEDGER_START)
-        const end = current.indexOf(LEDGER_END, start)
-        if (start < 0 || end < 0) die('ledger markers not found')
-        const replacement = `${LEDGER_START}\n${ledgerBody}\n${LEDGER_END}`
-        await Bun.write(LEDGER, current.slice(0, start) + replacement + current.slice(end + LEDGER_END.length))
-      }
-
-      const specPaths = [...SPEC_GLOB.scanSync(SRC)]
-        .map(name => path.join(SRC, name))
-        .filter(full => inScope(relPath(full)))
-        .sort()
-
-      const factoryNames = await loadFactoryNames()
-      const specTexts = await Promise.all(specPaths.map(full => Bun.file(full).text()))
-      const issues = specPaths.flatMap((full, index) =>
-        auditSpec(relPath(full), specTexts[index] ?? '', factoryNames),
-      )
-
-      const markdown = render(specPaths.length, issues, true)
-      const report = STYLE_FORMAT === 'markdown' ? markdown : render(specPaths.length, issues, false)
-      console.log(report)
-      if (UPDATE_LEDGER) await updateLedger(markdown)
-      if (issues.length > 0 && STRICT) process.exit(1)
-    }
-
-    switch (ACTION) {
-      case 'unit':
-        runInherit(['bun', 'test', '--pass-with-no-tests'])
-        break
-      case 'ci': {
-        mkdirSync(path.join(ROOT, 'tmp/reports/tests'), { recursive: true })
-        runInherit([
-          'bun',
-          'test',
-          '--pass-with-no-tests',
-          '--reporter=junit',
-          '--reporter-outfile=tmp/reports/tests/junit.xml',
-          '--coverage',
-          '--coverage-dir=tmp/reports/tests/coverage',
-        ])
-      }
-      case 'spec-audit':
-        runSpecAudit()
-        break
-      case 'spec-style':
-        await runSpecStyle()
-        break
-      case 'e2e-preview':
-        runInherit(['bun', 'run', 'e2e:preview'])
-        break
-      case 'e2e': {
-        const smoke = process.env.usage_smoke === 'true'
-        const regression = process.env.usage_regression === 'true'
-        const debug = process.env.usage_debug === 'true'
-        const metricsReport = process.env.usage_metrics_report === 'true' || process.env['usage_metrics-report'] === 'true'
-        const metricsCompare = process.env.usage_metrics_compare === 'true' || process.env['usage_metrics-compare'] === 'true'
-        const writeBaseline = process.env.usage_write_baseline === 'true' || process.env['usage_write-baseline'] === 'true'
-        if (metricsReport) {
-          runInherit(['bun', 'tools/e2e/e2e_metrics.script.ts', 'report'])
-        } else if (metricsCompare) {
-          runInherit(['bun', 'tools/e2e/e2e_metrics.script.ts', 'compare'])
-        } else if (writeBaseline) {
-          runInherit(['bun', 'tools/e2e/e2e_metrics.script.ts', 'write-baseline'])
-        } else if (smoke) {
-          runInherit(['bun', 'run', 'e2e:smoke'])
-        } else if (regression) {
-          runInherit(['bun', 'run', 'e2e:regression'])
-        } else if (debug) {
-          runInherit(['bun', 'run', 'e2e:bddgen'])
-          runInherit(['bunx', 'playwright', 'test', '--ui'])
-        } else {
-          runInherit(['bun', 'run', 'e2e'])
-        }
-        break
-      }
-      default:
-        die(`test: unknown action ${ACTION}`, 2)
-    }
-
-  ''' }
+  ''', run = "bun tools/mise/test.script.ts" }
 "perf" = { description = "Run preview-server performance benchmark workflows", usage = '''
     cmd "run" {
       flag "--port <port>" default="3457" help="Preview server port for run action"
@@ -2036,13 +1781,13 @@ exec bun tools/skill/skill_registry.script.ts "$CMD" "$@"
         [[ -n "${usage_root:-}" ]] && args+=(--root "$usage_root")
         [[ "${usage_strict:-false}" == "true" ]] && args+=(--strict)
         [[ -n "${usage_target:-}" ]] && args+=("$usage_target")
-        exec bun tools/spec/lint.ts "${args[@]}"
+        exec bun tools/spec/lint.script.ts "${args[@]}"
         ;;
       trace)
         args=("$usage_feature_dir")
         [[ -n "${usage_features:-}" ]] && args+=(--features "$usage_features")
         [[ "${usage_strict:-false}" == "true" ]] && args+=(--strict)
-        exec bun tools/spec/trace.ts "${args[@]}"
+        exec bun tools/spec/trace.script.ts "${args[@]}"
         ;;
       gate)
         dir="${usage_feature_dir:-assets/specs/001-sync-frecency-persistence}"
@@ -2050,10 +1795,10 @@ exec bun tools/skill/skill_registry.script.ts "$CMD" "$@"
         ;;
       import-legacy)
         feat="${usage_feature:-001-sync-frecency-persistence}"
-        exec bun tools/spec/import_legacy.ts --feature "$feat"
+        exec bun tools/spec/import_legacy.script.ts --feature "$feat"
         ;;
       feature-init)
-        exec bun tools/spec/feature_init.ts --id "$usage_id" --slug "$usage_slug"
+        exec bun tools/spec/feature_init.script.ts --id "$usage_id" --slug "$usage_slug"
         ;;
       resume)
         exec specify workflow resume
@@ -2069,7 +1814,7 @@ exec bun tools/skill/skill_registry.script.ts "$CMD" "$@"
         [[ "${usage_dry_run:-false}" == "true" ]] && args+=(--dry-run)
         [[ "${usage_apply:-false}" == "true" ]] && args+=(--apply)
         [[ "${usage_verify:-false}" == "true" ]] && args+=(--verify)
-        exec bun tools/spec/library_manifest.ts "${args[@]}"
+        exec bun tools/spec/library_manifest.script.ts "${args[@]}"
         ;;
       *)
         echo "spec: unknown action ${CMD}" >&2
@@ -2077,28 +1822,9 @@ exec bun tools/skill/skill_registry.script.ts "$CMD" "$@"
         ;;
     esac
   ''' }
-"feature" = { description = "Find or run unit + Gherkin tests by catalog key or @tag", usage = '''
-    cmd "find" {
-      arg "<tag>" help="Catalog key or run tag e.g. command_palette or @command_palette"
+"catalog" = { description = "Shipped-feature registry (catalog.yaml metadata)", usage = '''
+    cmd "list" {
+      flag "--json" help="Machine-readable JSON output"
+      flag "--raw" help="Plain text output (reserved for gum)"
     }
-    cmd "exec" {
-      arg "<tag>" help="Catalog key or run tag e.g. command_palette or @command_palette"
-      flag "--unit-only" help="Run co-located unit specs only"
-      flag "--e2e-only" help="Run Gherkin (playwright grep) only"
-    }
-  ''', run = '''
-    #!/usr/bin/env bash
-    set -euo pipefail
-    REPO_ROOT="$(git rev-parse --show-toplevel)"
-    cd "$REPO_ROOT"
-    CMD="${usage_cmd:-}"
-    TAG="${usage_tag:-}"
-    args=()
-    [[ "${usage_unit_only:-false}" == "true" ]] && args+=(--unit-only)
-    [[ "${usage_e2e_only:-false}" == "true" ]] && args+=(--e2e-only)
-    case "$CMD" in
-      find) exec bun tools/feature/feature.script.ts find "$TAG" ;;
-      exec) exec bun tools/feature/feature.script.ts exec "$TAG" "${args[@]}" ;;
-      *) echo "feature: unknown action ${CMD} (expected find|exec)" >&2; exit 2 ;;
-    esac
-  ''' }
+  ''', run = "bun tools/mise/catalog.script.ts" }

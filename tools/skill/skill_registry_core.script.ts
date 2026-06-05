@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
+import { repoRoot } from '../shared/repo_root.script.ts'
 import type { PolicyType, SkillListRow, SkillLocation, SkillRegistry } from './skill_registry.types.ts'
 
 export const ALLOWED_LOCATIONS = new Set<SkillLocation>(['owned', 'project', 'global'])
@@ -10,13 +11,9 @@ export const REDUNDANT_NOTES = new Set(['owned', 'project', 'global only'])
 export const POLICY_GROUP_ORDER: PolicyType[] = ['required', 'routed', 'optional', 'reference', 'blocked']
 export const SKILL_ID_RE = /^[a-z][a-z0-9-]*$/
 
+/** @deprecated Use repoRoot from tools/shared/repo_root.script.ts */
 export function gitRoot(): string {
-  const r = Bun.spawnSync(['git', 'rev-parse', '--show-toplevel'])
-  if (r.exitCode !== 0) {
-    console.error('skill: run from inside the app git checkout')
-    process.exit(1)
-  }
-  return new TextDecoder().decode(r.stdout).trim()
+  return repoRoot()
 }
 
 export function isRecord(v: unknown): v is Record<string, unknown> {

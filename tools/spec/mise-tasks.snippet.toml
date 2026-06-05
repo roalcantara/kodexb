@@ -50,13 +50,13 @@
         [[ -n "${usage_root:-}" ]] && args+=(--root "$usage_root")
         [[ "${usage_strict:-false}" == "true" ]] && args+=(--strict)
         [[ -n "${usage_target:-}" ]] && args+=("$usage_target")
-        exec bun tools/spec/lint.ts "${args[@]}"
+        exec bun tools/spec/lint.script.ts "${args[@]}"
         ;;
       trace)
         args=("$usage_feature_dir")
         [[ -n "${usage_features:-}" ]] && args+=(--features "$usage_features")
         [[ "${usage_strict:-false}" == "true" ]] && args+=(--strict)
-        exec bun tools/spec/trace.ts "${args[@]}"
+        exec bun tools/spec/trace.script.ts "${args[@]}"
         ;;
       gate)
         dir="${usage_feature_dir:-assets/specs/001-sync-frecency-persistence}"
@@ -64,10 +64,10 @@
         ;;
       import-legacy)
         feat="${usage_feature:-001-sync-frecency-persistence}"
-        exec bun tools/spec/import_legacy.ts --feature "$feat"
+        exec bun tools/spec/import_legacy.script.ts --feature "$feat"
         ;;
       feature-init)
-        exec bun tools/spec/feature_init.ts --id "$usage_id" --slug "$usage_slug"
+        exec bun tools/spec/feature_init.script.ts --id "$usage_id" --slug "$usage_slug"
         ;;
       resume)
         exec specify workflow resume

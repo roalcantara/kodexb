@@ -126,7 +126,7 @@ works as a real HTTP server for the renderer bundle. This gives a real browser e
 where keyboard events behave correctly.
 
 ```bash
-bun tools/preview/server.ts  # starts on :3456
+bun tools/preview/server.script.ts  # starts on :3456
 npx playwright test tools/test/nav-flow.spec.ts
 ```
 

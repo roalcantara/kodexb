@@ -15,4 +15,4 @@ rule:
     - pattern: import z from "zod"
 message: >
   Do not import Zod in src/. Use TypeBox (@sinclair/typebox) and Value.Check/Value.Errors instead.
-note: See assets/docs/specs/foundation/design.md for validation policy.
+note: See assets/guides/CODESTYLE_GUIDE.md — TypeBox validation in Elysia routes.

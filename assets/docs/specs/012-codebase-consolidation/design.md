@@ -228,7 +228,7 @@ file rename.
 | `src/shell/renderer/actions/*` (8 files) | Each maps to a single concrete entry-action; cohesion already maximal. |
 | `src/core/helpers/entry_action/*` (6 files) | Mirrors `src/shell/renderer/actions/` — domain owner for action rules. |
 | Biome `noExcessiveLinesPerFunction` suppression on `useListPageShell` | Owned by [`../codebase-quality-audit/`](../codebase-quality-audit/). |
-| `tools/preview/server.ts` Elysia route registration | Tracked by `CLAUDE.md` rule; this audit does not add new routes. |
+| `tools/preview/server.script.ts` Elysia route registration | Tracked by `CLAUDE.md` rule; this audit does not add new routes. |
 
 ## Risk register
 

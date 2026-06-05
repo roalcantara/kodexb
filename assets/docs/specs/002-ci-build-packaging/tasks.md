@@ -42,7 +42,7 @@
 - `entitlements.mac.plist` — Electrobun reads inline `build.mac.entitlements` and writes the plist itself.
 - `.release-it.json` — inlined under the `release-it` key in `package.json`.
 - Per-workflow guide files — single consolidated `assets/guides/CI_GUIDE.md`.
-- `tools/preview/server.ts` route updates — preview server is a Phase 3+ concern (Elysia not yet introduced).
+- `tools/preview/server.script.ts` route updates — preview server is a Phase 3+ concern (Elysia not yet introduced).
 
 ---
 

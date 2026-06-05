@@ -3,7 +3,7 @@
 
 > **For agentic workers:** Use `subagent-driven-development` (recommended) or `executing-plans` to implement this plan **task-by-task**. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace the manual Electrobun request map (`src/shell/main/rpc/requests.ts` + `parseRpcPayload`) and the ad-hoc preview `/api/*` switch with a **single Elysia `RpcApp`**: `createRpcServer(app)` in `src/shell/main/rpc/server.ts`, bound to **Electrobun IPC** in the desktop main process and to **HTTP** in `tools/preview/server.ts`. The renderer uses **Eden Treaty** (`@elysiajs/eden`) for all **request/response** RPC; **main→renderer sync progress** stays on the existing **`webview.messages`** channel (`syncProgress`, `syncComplete`) via a **hybrid** bridge (Eden + Electrobun messages only).
+**Goal:** Replace the manual Electrobun request map (`src/shell/main/rpc/requests.ts` + `parseRpcPayload`) and the ad-hoc preview `/api/*` switch with a **single Elysia `RpcApp`**: `createRpcServer(app)` in `src/shell/main/rpc/server.ts`, bound to **Electrobun IPC** in the desktop main process and to **HTTP** in `tools/preview/server.script.ts`. The renderer uses **Eden Treaty** (`@elysiajs/eden`) for all **request/response** RPC; **main→renderer sync progress** stays on the existing **`webview.messages`** channel (`syncProgress`, `syncComplete`) via a **hybrid** bridge (Eden + Electrobun messages only).
 
 **Architecture:** `App` (`src/shell/app/app.ts`) remains the sole orchestrator for DB, import, config, and shell hooks. Elysia routes are **thin**: validate with TypeBox (`@sinclair/typebox` schemas shared from `schemas.ts`), call `App` methods, return JSON-serializable values. No `zod`. No repository imports from route files. `RpcApp = ReturnType<typeof createRpcServer>` becomes the **transport contract**; `appDesktopRpcSchema`’s **`bun.requests`** half is retired once Eden is live (keep **`webview.messages`** types until a slimmer shared type file exists).
 
@@ -48,7 +48,7 @@
 | RPC + app tests | `bun test src/shell/main/rpc src/shell/app src/shell/renderer/rpc` |
 | Full suite      | `bun test`                                                         |
 | Lint gate       | `bun run lint`                                                     |
-| Preview smoke   | `bun tools/preview/server.ts` then open `http://localhost:3456`    |
+| Preview smoke   | `bun tools/preview/server.script.ts` then open `http://localhost:3456`    |
 
 ---
 
@@ -64,8 +64,8 @@
 | `src/shell/main/main.ts`                  | Boot `loadConfig` → `App` + `emit` + `createRpcServer` + host + window                                          |
 | `src/shell/main/index.ts`                 | May stay one line importing `main.ts`                                                                           |
 | `src/shell/renderer/rpc/client.ts`        | Eden `treaty<RpcApp>` + thin wrappers; **keep** `setSyncMessageHandlers` + Electrobun **messages** registration |
-| `tools/preview/server.ts`                 | Delegate `/api/*` to same `createRpcServer(app)`                                                                |
-| `tools/preview/mock_electroview.ts`       | Optional: route through Eden with `window.location.origin` instead of raw `fetch` proxy                         |
+| `tools/preview/server.script.ts`                 | Delegate `/api/*` to same `createRpcServer(app)`                                                                |
+| `tools/preview/mock_electroview.script.ts`       | Optional: route through Eden with `window.location.origin` instead of raw `fetch` proxy                         |
 | `src/shell/main/rpc/requests.ts`          | Delete after parity + tests moved (or keep thin re-export only if needed temporarily)                           |
 | `src/shell/main/rpc/requests.spec.ts`     | Migrate assertions to `server.spec.ts`, then delete                                                             |
 | `src/shared/rpc/app_rpc_schema.ts`        | Remove `bun.requests` from schema type; keep `webview.messages` for Electrobun typing until simplified          |
@@ -479,7 +479,7 @@ git commit -m "feat(renderer): use Eden Treaty for RpcApp"
 
 ## Task 8: Preview server — single `handle`
 
-**Files:** Modify `tools/preview/server.ts`
+**Files:** Modify `tools/preview/server.script.ts`
 
 **Goal:** Remove the `switch (method)` RPC block. For `POST` under `/api/*`, build `Request` with full URL and forward:
 
@@ -495,12 +495,12 @@ if (req.method === 'POST' && url.pathname.startsWith('/api/')) {
 
 Ensure **Content-Type** and body stream are preserved. If `req.body` is consumed, clone first.
 
-- [ ] **Step 1: Edit `tools/preview/server.ts`** per above; delete duplicated per-method cases.
+- [ ] **Step 1: Edit `tools/preview/server.script.ts`** per above; delete duplicated per-method cases.
 
 - [ ] **Step 2: Smoke**
 
 ```bash
-bun tools/preview/server.ts
+bun tools/preview/server.script.ts
 # curl smoke:
 curl -s -X POST http://localhost:3456/api/getStats -H 'Content-Type: application/json' -d '{}' | head -c 200
 ```
@@ -510,7 +510,7 @@ Expected: JSON stats object, not `404`.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add tools/preview/server.ts
+git add tools/preview/server.script.ts
 git commit -m "feat(preview): forward HTTP to Elysia RpcApp"
 ```
 

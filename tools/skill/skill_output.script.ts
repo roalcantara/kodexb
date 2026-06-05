@@ -16,10 +16,15 @@ import {
   gumTable,
   gumTitle,
   gumWarn
-} from '../cli/gum.theme.ts'
-import type { RenderMode } from '../cli/render_mode.ts'
-import { CATEGORY_COLORS, installGlyph, locationBadge, POLICY_COLORS, policySection } from './skill_output.theme.ts'
-import { POLICY_GROUP_ORDER } from './skill_registry.lib.ts'
+} from '../cli/gum_theme.script.ts'
+import type { RenderMode } from '../cli/render_mode.script.ts'
+import {
+  CATEGORY_COLORS,
+  installGlyph,
+  locationBadge,
+  POLICY_COLORS,
+  policySection
+} from './skill_output_theme.script.ts'
 import type {
   Finding,
   ListFormat,
@@ -28,9 +33,10 @@ import type {
   SkillListRow,
   ValidatePayload
 } from './skill_registry.types.ts'
+import { POLICY_GROUP_ORDER } from './skill_registry_core.script.ts'
 
-export type { RenderMode } from '../cli/render_mode.ts'
-export { chooseRenderer } from '../cli/render_mode.ts'
+export type { RenderMode } from '../cli/render_mode.script.ts'
+export { chooseRenderer } from '../cli/render_mode.script.ts'
 
 function findingsByCategory(findings: Finding[]): Map<string, Finding[]> {
   const map = new Map<string, Finding[]>()

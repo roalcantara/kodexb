@@ -240,7 +240,7 @@ flowchart LR
 
 ### Preview server (development)
 
-`tools/preview/server.ts` runs the **same Elysia `RpcApp`** over HTTP so you can
+`tools/preview/server.script.ts` runs the **same Elysia `RpcApp`** over HTTP so you can
 exercise list/filter behaviour in a browser without the full desktop shell. Any new
 route in `rpc/server.ts` must be mirrored there ([`CLAUDE.md`](CLAUDE.md)).
 
@@ -261,7 +261,7 @@ route in `rpc/server.ts` must be mirrored there ([`CLAUDE.md`](CLAUDE.md)).
 | **ImportService**           | `src/shell/app/db/import.service.ts` | Walks sources dir, validates YAML, upserts SQLite, rebuilds FTS — transactional bulk path.                                                                                                                                      |
 | **Repository**              | `src/shell/app/db/*.repository.ts`   | Typed SQL accessors; routes must not import repositories directly (go through **App**).                                                                                                                                         |
 | **Electrobun IPC**          | `rpc/host.ts`                        | Bridges Elysia handlers to the webview RPC channel (`app-app`).                                                                                                                                                                 |
-| **Preview server**          | `tools/preview/server.ts`            | HTTP mirror of production RPC for Playwright / local UI smoke tests.                                                                                                                                                            |
+| **Preview server**          | `tools/preview/server.script.ts`            | HTTP mirror of production RPC for Playwright / local UI smoke tests.                                                                                                                                                            |
 
 ### Project definitions and agent routing
 

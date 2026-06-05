@@ -1,10 +1,10 @@
 /**
  * Part I — build ordered NNN-slug rename manifest for assets/docs/specs/.
  *
- *   bun tools/spec/library_manifest.ts           # write manifest + print plan
- *   bun tools/spec/library_manifest.ts --dry-run # print only
- *   bun tools/spec/library_manifest.ts --apply   # git mv per manifest
- *   bun tools/spec/library_manifest.ts --verify  # fail if unnumbered slug dirs remain
+ *   bun tools/spec/library_manifest.script.ts           # write manifest + print plan
+ *   bun tools/spec/library_manifest.script.ts --dry-run # print only
+ *   bun tools/spec/library_manifest.script.ts --apply   # git mv per manifest
+ *   bun tools/spec/library_manifest.script.ts --verify  # fail if unnumbered slug dirs remain
  */
 import { spawnSync } from 'node:child_process'
 import { readdirSync, statSync } from 'node:fs'
@@ -13,6 +13,9 @@ import path from 'node:path'
 const REPO_ROOT = path.resolve(import.meta.dir, '../..')
 const SPECS_ROOT = path.join(REPO_ROOT, 'assets/docs/specs')
 const MANIFEST_PATH = path.join(SPECS_ROOT, 'library_manifest.json')
+const MILESTONE_DIR = /^MILESTONE_/i
+const NUMBERED_SLUG_DIR = /^\d{3}-/
+const NNN_WIDTH = 3
 
 const ROOT_FILE_NAMES = new Set([
   'README.md',
@@ -42,8 +45,8 @@ type Manifest = {
 
 function isSlugDir(name: string): boolean {
   if (ROOT_FILE_NAMES.has(name)) return false
-  if (/^MILESTONE_/i.test(name)) return false
-  if (/^\d{3}-/.test(name)) return false
+  if (MILESTONE_DIR.test(name)) return false
+  if (NUMBERED_SLUG_DIR.test(name)) return false
   const full = path.join(SPECS_ROOT, name)
   try {
     return statSync(full).isDirectory()
@@ -109,7 +112,7 @@ function buildManifest(): Manifest {
   ordered.push(...ranked)
 
   const entries: ManifestEntry[] = ordered.map((row, i) => {
-    const nnn = String(i + 1).padStart(3, '0')
+    const nnn = String(i + 1).padStart(NNN_WIDTH, '0')
     const from = row.slug
     const to = `${nnn}-${row.slug}`
     return {
@@ -128,20 +131,20 @@ function buildManifest(): Manifest {
   }
 }
 
-function printPlan(manifest: Manifest): void {
-  console.log(`# library manifest (${manifest.entries.length} folders)\n`)
-  for (const e of manifest.entries) {
+function printPlan(plan: Manifest): void {
+  console.log(`# library manifest (${plan.entries.length} folders)\n`)
+  for (const e of plan.entries) {
     console.log(`${e.nnn}  ${e.birth_iso.slice(0, 10)}  ${e.from}/  →  ${e.to}/`)
   }
 }
 
-async function writeManifest(manifest: Manifest): Promise<void> {
-  await Bun.write(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`)
+async function writeManifest(plan: Manifest): Promise<void> {
+  await Bun.write(MANIFEST_PATH, `${JSON.stringify(plan, null, 2)}\n`)
   console.log(`wrote ${path.relative(REPO_ROOT, MANIFEST_PATH)}`)
 }
 
-function applyRenames(manifest: Manifest): void {
-  for (const e of manifest.entries) {
+function applyRenames(plan: Manifest): void {
+  for (const e of plan.entries) {
     const fromPath = path.join(SPECS_ROOT, e.from)
     const toPath = path.join(SPECS_ROOT, e.to)
     if (!statSync(fromPath).isDirectory()) {

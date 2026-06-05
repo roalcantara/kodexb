@@ -87,7 +87,7 @@ boundary as plain values, not imported I/O.
   from the renderer.
 - **Preview mirror**: every POST `/api/...` handler added or changed **must**
   have a matching branch in
-  [`tools/preview/server.ts`](../../../tools/preview/server.ts) (see
+  [`tools/preview/server.script.ts`](../../../tools/preview/server.script.ts) (see
   `CLAUDE.md`).
 
 ## Data layer
@@ -161,7 +161,7 @@ Full tokens and patterns:
    do not add `@libsql/client` ORM layers or drizzle dependencies.
 3. **Renderer isolation** — if you need data, add/adjust an RPC method and call
    it through Eden; never reach into `shell/app/`.
-4. **Preview drift** — forgetting `tools/preview/server.ts` breaks local preview
+4. **Preview drift** — forgetting `tools/preview/server.script.ts` breaks local preview
    and CI assumptions; mirror every new `/api/*` route.
 5. **`bun test` vs Playwright** — `bun test` only discovers tests under `src/`
    (`bunfig.toml` `[test] root = "src"`), so Playwright files in `e2e/` are not

@@ -142,7 +142,7 @@ criteria, and suggested **evidence** commands.
 - **Requirements:** SY-1
 - **Work:**
   - If sync route behavior changes error envelope, mirror in
-    `tools/preview/server.ts` per `app-rpc` skill.
+    `tools/preview/server.script.ts` per `app-rpc` skill.
 - **Done when:** Preview smoke unchanged or updated intentionally.
 - **Evidence:** `bun test tools/preview/` (if applicable)
 

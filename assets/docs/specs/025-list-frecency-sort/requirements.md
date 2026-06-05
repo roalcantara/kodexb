@@ -54,7 +54,7 @@ Rank **entry rows** in List View and Split View by **frecency** (frequency + rec
 
 ## R8 — RPC
 
-- The renderer **shall** call `POST /api/recordEntryVisit` with `{ id }` via Eden Treaty; route **shall** mirror in `tools/preview/server.ts` through the shared `RpcApp`.
+- The renderer **shall** call `POST /api/recordEntryVisit` with `{ id }` via Eden Treaty; route **shall** mirror in `tools/preview/server.script.ts` through the shared `RpcApp`.
 
 ## R9 — Testing
 

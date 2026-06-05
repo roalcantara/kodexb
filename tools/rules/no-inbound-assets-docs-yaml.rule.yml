@@ -1,0 +1,16 @@
+# YAML scalars (e.g. ast-grep rule notes, config) must not reference assets/docs/*.
+id: no-inbound-assets-docs-yaml
+language: Yaml
+severity: error
+ignores:
+  - "**/assets/docs/**"
+  - "**/graphify-out/**"
+  - "tools/rules/no-inbound-assets-docs-*.rule.yml"
+rule:
+  all:
+    - kind: plain_scalar
+    - regex: assets/docs/
+message: >
+  YAML config and rule notes must not reference assets/docs/*.
+  Point to assets/guides/ instead.
+note: See assets/guides/DOC_AUTHORITY.md

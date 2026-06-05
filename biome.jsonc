@@ -20,6 +20,7 @@
       "!.code-review-graph",
       "!e2e/.generated",
       "!tmp",
+      "!tools/graphify-out",
       "!.venv",
       "!.worktrees",
       "!.opencode"

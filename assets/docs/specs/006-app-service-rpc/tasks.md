@@ -58,13 +58,13 @@
 
 ## Task 5: Preview server parity (forward to `rpc.handle`)
 
-**Files:** Modify `tools/preview/server.ts`
+**Files:** Modify `tools/preview/server.script.ts`
 
 - [ ] Follow **Implementation Plan Task 8**
 - [ ] Verify:
 
 ```bash
-bun tools/preview/server.ts
+bun tools/preview/server.script.ts
 curl -s -X POST http://localhost:3456/api/getStats -H 'Content-Type: application/json' -d '{}'
 ```
 

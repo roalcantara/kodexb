@@ -5,7 +5,7 @@
 
 **Goal:** Land Phase 4 of the app foundation roadmap as a single `feat(data)` commit on `chore-add-domain` — the SQLite data substrate (`src/shell/app/db/`), the YAML import service, the config layer (TypeBox replaces Zod), the logging adapter, the test infrastructure (Fishery factories + curated YAML corpus), and the agent-skill drift fixes — while collapsing the 5 leftover phase stashes into a single `phase-pending` stash for cleaner future recovery.
 
-**Architecture:** I/O lives under `src/shell/app/`. SQLite uses `bun:sqlite` directly — no Drizzle, no `drizzle-typebox`, no `drizzle-seed`. YAML parsing uses `Bun.YAML.parse()` everywhere (already standard in `@core` per `tools/rules/no-bun-in-core.yml`). Validation uses TypeBox at every boundary. Test fixtures use Fishery factories for typed rows; YAML fixtures only exist for `import.service.spec.ts` end-to-end paths.
+**Architecture:** I/O lives under `src/shell/app/`. SQLite uses `bun:sqlite` directly — no Drizzle, no `drizzle-typebox`, no `drizzle-seed`. YAML parsing uses `Bun.YAML.parse()` everywhere (already standard in `@core` per `tools/rules/no-bun-in-core.rule.yml`). Validation uses TypeBox at every boundary. Test fixtures use Fishery factories for typed rows; YAML fixtures only exist for `import.service.spec.ts` end-to-end paths.
 
 **Tech Stack:** Bun 1.x runtime + `bun:test` (Better Specs `describe`/`it`). `bun:sqlite` with typed prepared statements. `@sinclair/typebox` + `@sinclair/typebox/value`. `@logtape/logtape` + `@logtape/pretty`. `fast-glob`. `fishery`. `happy-dom`. **No** Drizzle, **no** Zod, **no** `js-yaml`.
 
@@ -48,7 +48,7 @@ This plan produces ONE commit. All other tasks are non-commit operations (audit,
 | Knip on full repo                | `bunx knip`                                                          |
 | Dependency-cruiser               | `bunx depcruise src --config .dependency-cruiser.cjs`                |
 | ls-lint                          | `bunx @ls-lint/ls-lint`                                              |
-| ast-grep no-bun-in-core          | `bunx @ast-grep/cli scan --rule tools/rules/no-bun-in-core.yml`      |
+| ast-grep no-bun-in-core          | `bunx @ast-grep/cli scan --rule tools/rules/no-bun-in-core.rule.yml`      |
 | Lint pipeline (all of the above) | `bun run lint`                                                       |
 | Build smoke (macOS)              | `bun run build`                                                      |
 | Drizzle absent                   | `bun pm ls --all 2>/dev/null \| grep -i drizzle \|\| echo CLEAN`     |
@@ -370,7 +370,7 @@ Expected: no `drizzle`; no `async`; ≥ 5 typed `db.query<…>` call sites; no t
 
 - Modify: `src/shell/app/db/import.service.ts`
 
-**Why:** Per design §IMPORT SERVICE, the public class shape stays the same (`runOnce(sourcesDir, opts?)`) but the body uses the new `upsert(db, row)` directly and `db.transaction(() => { … })()` for atomic per-bundle commits. YAML reading is delegated to `@core` `parseSourceFile` (which uses `Bun.YAML.parse` internally per `tools/rules/no-bun-in-core.yml`). FTS5 rebuild happens once at the end. Partial failure (V1-2 §3) is captured per file.
+**Why:** Per design §IMPORT SERVICE, the public class shape stays the same (`runOnce(sourcesDir, opts?)`) but the body uses the new `upsert(db, row)` directly and `db.transaction(() => { … })()` for atomic per-bundle commits. YAML reading is delegated to `@core` `parseSourceFile` (which uses `Bun.YAML.parse` internally per `tools/rules/no-bun-in-core.rule.yml`). FTS5 rebuild happens once at the end. Partial failure (V1-2 §3) is captured per file.
 
 - [ ] **Step 1: Open the legacy reference**
 
@@ -417,7 +417,7 @@ Expected: no Drizzle; one `db.transaction(` call site; one `rebuildFts(` call si
 - Modify: `src/shell/app/config/config.schema.ts`
 - Modify: `src/shell/app/config/config.loader.ts`
 
-**Why:** Per design Decision 2 and §VALIDATION FLOW, Zod is removed entirely; the last hold-out (`config.schema.ts`) migrates to TypeBox. `parseConfig(raw): Result<RawConfig, string[]>` replaces Zod's `safeParse`. `config.loader.ts` reads YAML via `Bun.YAML.parse()` (project standard per `tools/rules/no-bun-in-core.yml`).
+**Why:** Per design Decision 2 and §VALIDATION FLOW, Zod is removed entirely; the last hold-out (`config.schema.ts`) migrates to TypeBox. `parseConfig(raw): Result<RawConfig, string[]>` replaces Zod's `safeParse`. `config.loader.ts` reads YAML via `Bun.YAML.parse()` (project standard per `tools/rules/no-bun-in-core.rule.yml`).
 
 - [ ] **Step 1: Replace `config/config.schema.ts`**
 
@@ -488,7 +488,7 @@ rg -n "from '@logtape" src/shared/logging/ | head -5
 rg -n "from 'bun:" src/shared/logging/ || echo "NO bun: imports"
 ```
 
-Expected: `@logtape/logtape` + `@logtape/pretty` imports present. The `tools/rules/no-bun-in-core.yml` rule does NOT cover `src/shared/logging/`, so Bun globals are allowed here — but logging code typically uses `console` directly.
+Expected: `@logtape/logtape` + `@logtape/pretty` imports present. The `tools/rules/no-bun-in-core.rule.yml` rule does NOT cover `src/shared/logging/`, so Bun globals are allowed here — but logging code typically uses `console` directly.
 
 - [ ] **Step 3: Restore `logger.types` re-export in `src/shared/types/index.ts`**
 

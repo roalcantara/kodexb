@@ -9,7 +9,7 @@ existing preview server, not a second e2e stack. The current repo already has:
 - `playwright.config.ts` pointing at `e2e/`.
 - `e2e/preview_list_nav.e2e.spec.ts` proving Chromium can exercise the real
   renderer bundle.
-- `tools/preview/server.ts` building the renderer and mounting the same Elysia
+- `tools/preview/server.script.ts` building the renderer and mounting the same Elysia
   `RpcApp` used by the desktop main process.
 - Extensive unit/component specs that identify high-risk flows.
 
@@ -119,7 +119,7 @@ flowchart LR
   features --> bddgen["playwright-bdd bddgen"]
   bddgen --> generated["generated Playwright tests"]
   generated --> runner["Playwright Test"]
-  runner --> preview["tools/preview/server.ts"]
+  runner --> preview["tools/preview/server.script.ts"]
   preview --> renderer["real React renderer bundle"]
   preview --> rpc["real Elysia RpcApp"]
   rpc --> app["App orchestrator"]
@@ -134,7 +134,7 @@ The suite has four layers:
 | Behavior   | Living Gherkin scenarios and tags                     | `assets/features/e2e/*.feature`                           |
 | Glue       | Thin step definitions                                 | `e2e/steps/*.steps.ts`                                    |
 | Screenplay | Reusable abilities, tasks, questions, interactions    | `e2e/screenplay/*.{ability,task,question,interaction}.ts` |
-| Harness    | Deterministic config, fixture seed, preview lifecycle | `e2e/support/*.support.ts`, `tools/preview/server.ts`     |
+| Harness    | Deterministic config, fixture seed, preview lifecycle | `e2e/support/*.support.ts`, `tools/preview/server.script.ts`     |
 
 No production code under `src/` is required for the first task unless the
 preview server cannot accept an isolated config through existing inputs.
@@ -643,7 +643,7 @@ Initial P0/P1 candidate backlog from the current scan:
 
 | Priority | Flow                                            | Source evidence                                                      |
 | -------- | ----------------------------------------------- | -------------------------------------------------------------------- |
-| P0       | Deterministic preview fixture and app boot      | `tools/preview/server.ts`, `playwright.config.ts`, `app-service-rpc` |
+| P0       | Deterministic preview fixture and app boot      | `tools/preview/server.script.ts`, `playwright.config.ts`, `app-service-rpc` |
 | P0       | List renders all entry types                    | `foundation`, `data-layer`, renderer list components                 |
 | P0       | Search filters entries and updates footer       | `list-frecency-sort`, list hooks/util specs                          |
 | P0       | Type/tag/task-view filter overlay               | `command-palette-filter-ux`, `compact-filter-redesign`               |

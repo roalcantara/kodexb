@@ -90,7 +90,7 @@
   - _Requirements: R1_
 
 - [ ] **T2.2 - Route preview server through isolated config**
-  - Update `tools/preview/server.ts` to accept a test config path through a
+  - Update `tools/preview/server.script.ts` to accept a test config path through a
     clearly named env var.
   - Keep default behavior unchanged for normal preview usage.
   - Add tests or a focused smoke proving default and env-config paths.

@@ -137,7 +137,7 @@ mise run e2e:preview
 ### Stage 3 — Preview-server smoke test
 
 ```bash
-bun tools/preview/server.ts &
+bun tools/preview/server.script.ts &
 SERVER_PID=$!
 sleep 3
 curl -sf http://localhost:3456/ | grep -q 'app — preview' && echo PASS || echo FAIL
@@ -145,7 +145,7 @@ kill "$SERVER_PID"
 ```
 
 Confirms every Elysia route added in this change has a matching mirror in
-`tools/preview/server.ts` (CLAUDE.md mandate).
+`tools/preview/server.script.ts` (CLAUDE.md mandate).
 
 ### Stage 4 — Build smoke
 
@@ -164,7 +164,7 @@ a developer machine before a release commit.
 Read it once per phase and tick each item. The project-specific extras the
 guide does not fully spell out:
 
-- Every new Elysia route is mirrored in `tools/preview/server.ts`.
+- Every new Elysia route is mirrored in `tools/preview/server.script.ts`.
 - `dependency-cruiser` reports zero violations — in particular no
   `renderer/` → `shell/app/` and no `core/` → `shell/` imports.
 - Every new file under `src/` has a co-located `.spec.ts(x)` (DoD §2 +
@@ -193,7 +193,7 @@ Non-negotiable bits:
 | dep-cruiser violation             | `core/` imported from `src/shell/` or `src/shared/logging` | Pass the dep in as a parameter (FCIS rule)                         |
 | TypeBox / validation drift        | Used `z.*` or non–TypeBox shapes in an Elysia route        | Use `t.*` / TypeBox only; `zod` is not a dependency                |
 | Coverage < 80%                    | New branch/function not exercised                          | Add spec cases for uncovered paths                                 |
-| Preview-server route missing      | Added Elysia route but forgot to mirror                    | Add matching `case` in `tools/preview/server.ts`                   |
+| Preview-server route missing      | Added Elysia route but forgot to mirror                    | Add matching `case` in `tools/preview/server.script.ts`                   |
 | Subject line > 50 chars           | Wrote subject in 72-char "body width" mode                 | Rewrite — HK's commit-message-policy will reject the commit anyway |
 | `console.log` in `src/`           | Debug statement left in                                    | Delete; logging goes through `@shared/logging`                     |
 

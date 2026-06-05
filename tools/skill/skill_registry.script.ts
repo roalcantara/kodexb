@@ -13,7 +13,15 @@ import {
   renderSync,
   renderValidate,
   type SyncLine
-} from './skill_output.ts'
+} from './skill_output.script.ts'
+import type {
+  CliOptions,
+  ListFormat,
+  PolicyType,
+  ReconcilePayload,
+  ReportPayload,
+  SkillLocation
+} from './skill_registry.types.ts'
 import {
   agentsSkillsDir,
   appendYamlScaffolds,
@@ -34,16 +42,8 @@ import {
   statusNote,
   summarizeCounts,
   writeSkillLock
-} from './skill_registry.lib.ts'
-import type {
-  CliOptions,
-  ListFormat,
-  PolicyType,
-  ReconcilePayload,
-  ReportPayload,
-  SkillLocation
-} from './skill_registry.types.ts'
-import { runValidate } from './skill_registry.validate.ts'
+} from './skill_registry_core.script.ts'
+import { runValidate } from './skill_registry_validate.script.ts'
 
 const VALID_ACTIONS = new Set([
   'validate',

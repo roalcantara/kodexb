@@ -21,4 +21,4 @@ rule:
 message: >
   Use getLogger([...]) from @shared/logging instead of console.*.
   Structured log lines are written to the Electrobun console via Logtape.
-note: See assets/docs/design.md — §Observability (phase labels, structured output).
+note: See assets/guides/LOGGING_GUIDE.md — structured logging in src/.

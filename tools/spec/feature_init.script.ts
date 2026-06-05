@@ -3,7 +3,7 @@
  * spec feature-init — scaffold assets/specs/<NNN>-<slug>/ from kb templates.
  *
  * Usage:
- *   bun tools/spec/feature_init.ts --id 001 --slug sync-frecency-persistence
+ *   bun tools/spec/feature_init.script.ts --id 001 --slug sync-frecency-persistence
  */
 import path from 'node:path'
 
@@ -22,7 +22,7 @@ async function main(): Promise<void> {
   const id = idIdx >= 0 ? args[idIdx + 1] : undefined
   const slug = slugIdx >= 0 ? args[slugIdx + 1] : undefined
   if (!id || !slug) {
-    console.error('usage: bun tools/spec/feature_init.ts --id 001 --slug my-feature')
+    console.error('usage: bun tools/spec/feature_init.script.ts --id 001 --slug my-feature')
     process.exit(2)
   }
 

@@ -279,7 +279,7 @@ exactly as before.
       continue to infer without manual hints.
   - _Requirements: DBG-2 §7_
 
-- [x] 2.2 Mirror the change in `tools/preview/server.ts`.
+- [x] 2.2 Mirror the change in `tools/preview/server.script.ts`.
   - Replace the local error contract with `.use(rpcCommonPlugins)`.
   - Remove any duplicated error-contract definition.
   - **Acceptance criteria:**
@@ -324,7 +324,7 @@ exactly as before.
   - _Requirements: DBG-2 §4, DBG-4 §3_
 
 - [x] 2.6 Commit Phase 2.
-  - Stage `src/shell/main/rpc/server.ts` and `tools/preview/server.ts`.
+  - Stage `src/shell/main/rpc/server.ts` and `tools/preview/server.script.ts`.
   - Use `/commit-staged`.
   - **Acceptance criteria:**
     - Commit message follows policy.

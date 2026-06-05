@@ -36,7 +36,7 @@ Do NOT:
   - Keep activateHttpUrl / activateDefaultBrowser double-nudge or activateTerminalApp double open -a
   - Pre-copy command in renderer before pasteInTerminal RPC
   - Add src/ changes without co-located .spec.ts
-  - Skip tools/preview/server.ts route mirror (uses createRpcServer — add route in src/shell/main/rpc/server.ts)
+  - Skip tools/preview/server.script.ts route mirror (uses createRpcServer — add route in src/shell/main/rpc/server.ts)
   - Rewrite assets/features/e2e/entry_action_handoff.feature (frozen — implement steps only per e2e/step-catalog.md)
   - Weaken quality gate or commit unless user asks
 
@@ -128,7 +128,7 @@ Done when: bash .agents/skills/app-quality-gate/scripts/gate.sh passes; tasks.md
 | `POST /api/pasteInTerminal` | Exists — change handler only                                  |
 | `POST /api/runInTerminal`   | **Add** (TypeBox schema, App method, Eden client, `.spec.ts`) |
 
-Preview server (`tools/preview/server.ts`) uses `createRpcServer` — new routes in `server.ts` automatically appear in preview.
+Preview server (`tools/preview/server.script.ts`) uses `createRpcServer` — new routes in `server.ts` automatically appear in preview.
 
 ---
 

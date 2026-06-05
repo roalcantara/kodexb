@@ -25,7 +25,6 @@ async function loadTsconfig(tsconfigPath: string): Promise<{ baseDir: string; pa
 
   while (cursor && !visited.has(cursor)) {
     visited.add(cursor)
-    // biome-ignore lint/performance/noAwaitInLoops: each iteration depends on the previous tsconfig's `extends`
     const mod = (await import(cursor)) as { default: TsconfigJson }
     const parsed: TsconfigJson = mod.default
     if (parsed.compilerOptions?.paths && !collected) {

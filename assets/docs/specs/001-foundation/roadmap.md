@@ -237,7 +237,7 @@ contract:
   `BrowserView.defineRPC` request (`rpcCall`) that rebuilds a `Request` and
   delegates to `RpcApp.handle()`. Sync push (`syncProgress`/`syncComplete`)
   still rides Electrobun `webview.messages`.
-- **Preview**: `tools/preview/server.ts` forwards every `/api/*` request to
+- **Preview**: `tools/preview/server.script.ts` forwards every `/api/*` request to
   the same `createRpcServer(app).handle(req)` — no parallel switch/case.
 - **Renderer**: `src/shell/renderer/rpc/client.ts` uses Eden Treaty
   (`treaty<RpcApp>`) with a custom fetcher that tunnels requests through the
@@ -343,7 +343,7 @@ Each pending phase follows this Superpowers workflow:
    /test-driven-development  RED → GREEN → REFACTOR per task
 7. /finishing-a-development-branch
    ↳ runs app-quality-gate (gate.sh must exit 0 before merge)
-8.  Evaluate in preview server: bun tools/preview/server.ts
+8.  Evaluate in preview server: bun tools/preview/server.script.ts
 9. Go to 1 for next phase
 ```
 

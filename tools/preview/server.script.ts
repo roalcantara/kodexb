@@ -1,7 +1,7 @@
 /**
  * Preview server — serves the kb renderer with real data from ~/.config/kb/.
  * Replaces electrobun/view with a fetch-based mock at build time.
- * Run with: bun tools/preview/server.ts (default port 3456; set PORT to override)
+ * Run with: bun tools/preview/server.script.ts (default port 3456; set PORT to override)
  */
 import path from 'node:path'
 import { App } from '../../src/shell/app/app'
@@ -25,7 +25,7 @@ const built = await Bun.build({
       name: 'mock-electrobun-view',
       setup(build) {
         build.onResolve({ filter: ELECTROBUN_VIEW_RE }, () => ({
-          path: path.join(ROOT, 'tools/preview/mock_electroview.ts'),
+          path: path.join(ROOT, 'tools/preview/mock_electroview.script.ts'),
           namespace: 'file'
         }))
       }

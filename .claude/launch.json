@@ -4,7 +4,7 @@
     {
       "name": "kb-preview",
       "runtimeExecutable": "bun",
-      "runtimeArgs": ["tools/preview/server.ts"],
+      "runtimeArgs": ["tools/preview/server.script.ts"],
       "port": 3456
     }
   ]

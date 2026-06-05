@@ -55,7 +55,7 @@ Settings and Command palette → App. They are **not** bound to `⌘/` in v1.
 | Core constants | `src/core/domain/constants/`      | extend `entry.const.ts` only                                                                                                                            |
 | Shell (I/O)    | `src/shell/app/db/`               | `schema.ts` extension, `binding.repository.ts`, `binding_frecency.repository.ts`, `import.service.ts` extension; **`App` methods** in `app.ts`          |
 | Main RPC       | `src/shell/main/rpc/`             | extend `server.ts` + `schemas.ts` (no separate GET `/bindings` router)                                                                                  |
-| Preview        | `tools/preview/server.ts`         | same `createRpcServer(app)` — no route fork                                                                                                             |
+| Preview        | `tools/preview/server.script.ts`         | same `createRpcServer(app)` — no route fork                                                                                                             |
 | Renderer       | `src/shell/renderer/`             | components, hooks, css for both surfaces                                                                                                                |
 
 No new top-level module boundaries. No new validation library. No ORM. All
@@ -361,7 +361,7 @@ The Eden Treaty client (`src/shell/renderer/rpc/client.ts`) exposes thin
 wrappers (e.g. `listBindings()`, `listBindingsByChord(hash)`,
 `recordBindingVisit(id, weight)`).
 
-Per the **non-negotiable rule** in CLAUDE.md, `tools/preview/server.ts` mounts
+Per the **non-negotiable rule** in CLAUDE.md, `tools/preview/server.script.ts` mounts
 the **same** `createRpcServer(app)` — no duplicate route table. Bindings in
 preview/e2e come from the SQLite DB after import (fixture sources or dev
 sources), not a parallel mock router.

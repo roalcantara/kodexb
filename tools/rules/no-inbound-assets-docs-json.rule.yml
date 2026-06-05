@@ -1,0 +1,17 @@
+# JSON string values must not reference assets/docs/*.
+id: no-inbound-assets-docs-json
+language: Json
+severity: error
+ignores:
+  - "**/assets/docs/**"
+  - "**/graphify-out/**"
+  - "**/node_modules/**"
+  - ".jscpd.json"
+rule:
+  all:
+    - kind: string
+    - regex: assets/docs/
+message: >
+  JSON config must not reference assets/docs/*.
+  Use assets/guides/ for normative documentation paths.
+note: See assets/guides/DOC_AUTHORITY.md

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { chooseRenderer } from './render_mode.ts'
+import { chooseRenderer } from './render_mode.script.ts'
 
 describe('chooseRenderer', () => {
   it('json wins over tty', () => {
