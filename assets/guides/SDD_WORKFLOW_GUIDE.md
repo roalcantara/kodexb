@@ -6,14 +6,14 @@ features. Document authority and layer rules live in
 
 ## Where specs live
 
-| Layer | Path | When to open |
-| ----- | ---- | ------------ |
-| **In-flight SDD** | `assets/specs/NNN-<slug>/` | Only when your task names that slug |
-| **Shipped registry** | `assets/catalog/catalog.yaml` | What exists in the product (YAML metadata) |
-| **Gherkin** | `assets/features/**/*.feature` | User-visible behaviour |
-| **Unit/component** | `src/**/*.spec.ts(x)` | Implementation contracts |
-| **Legacy archive** | See [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md) § Document layers | Archaeology after ship — not an agent entrypoint |
-| **Process** | `assets/guides/` | Cross-cutting rules for every PR |
+| Layer                | Path                                                         | When to open                                     |
+| -------------------- | ------------------------------------------------------------ | ------------------------------------------------ |
+| **In-flight SDD**    | `assets/specs/NNN-<slug>/`                                   | Only when your task names that slug              |
+| **Shipped registry** | `assets/catalog/catalog.yaml`                                | What exists in the product (YAML metadata)       |
+| **Gherkin**          | `assets/features/**/*.feature`                               | User-visible behaviour                           |
+| **Unit/component**   | `src/**/*.spec.ts(x)`                                        | Implementation contracts                         |
+| **Legacy archive**   | See [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md) § Document layers | Archaeology after ship — not an agent entrypoint |
+| **Process**          | `assets/guides/`                                             | Cross-cutting rules for every PR                 |
 
 Normative files per in-flight feature:
 
@@ -92,11 +92,11 @@ Run `mise run spec lint -- --all --strict` before a release that touches multipl
 
 Every normative requirement must map to executable evidence before ship:
 
-| Evidence | Owner |
-| -------- | ----- |
-| User-visible behaviour | Gherkin — line-1 `@<catalog_key>` on `.feature` files |
-| Algorithms, utils, components | Co-located `*.spec.ts(x)` under `src/` |
-| Cross-cutting repo rules | Guides + tool configs (Biome, ast-grep, etc.) |
+| Evidence                      | Owner                                                 |
+| ----------------------------- | ----------------------------------------------------- |
+| User-visible behaviour        | Gherkin — line-1 `@<catalog_key>` on `.feature` files |
+| Algorithms, utils, components | Co-located `*.spec.ts(x)` under `src/`                |
+| Cross-cutting repo rules      | Guides + tool configs (Biome, ast-grep, etc.)         |
 
 E2e step contracts (when declared): `assets/features/e2e/contracts/`.
 
@@ -104,17 +104,17 @@ Catalog membership: [`assets/catalog/catalog.yaml`](../catalog/catalog.yaml) + `
 
 ## Spec Kit command map
 
-| Phase | Cursor skill | Primary artifact |
-| ----- | ------------ | ---------------- |
-| Constitution | `/speckit-constitution` | `.specify/memory/constitution.md` |
-| Specify | `/speckit-specify` | `spec.md` |
-| Clarify | `/speckit-clarify` | `spec.md` updates |
-| Plan | `/speckit-plan` | `plan.md` |
-| Tasks | `/speckit-tasks` | `tasks.md` |
-| Implement | `/speckit-implement` | `src/` + tests |
-| Checklist | `/speckit-checklist` | `checklists/` |
-| Analyze | `/speckit-analyze` | consistency report |
-| Issues | `/speckit-taskstoissues` | GitHub issues (optional) |
+| Phase        | Cursor skill             | Primary artifact                  |
+| ------------ | ------------------------ | --------------------------------- |
+| Constitution | `/speckit-constitution`  | `.specify/memory/constitution.md` |
+| Specify      | `/speckit-specify`       | `spec.md`                         |
+| Clarify      | `/speckit-clarify`       | `spec.md` updates                 |
+| Plan         | `/speckit-plan`          | `plan.md`                         |
+| Tasks        | `/speckit-tasks`         | `tasks.md`                        |
+| Implement    | `/speckit-implement`     | `src/` + tests                    |
+| Checklist    | `/speckit-checklist`     | `checklists/`                     |
+| Analyze      | `/speckit-analyze`       | consistency report                |
+| Issues       | `/speckit-taskstoissues` | GitHub issues (optional)          |
 
 Resume an interrupted workflow: `mise run spec resume` (wraps `specify workflow resume`).
 
