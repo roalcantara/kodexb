@@ -1,0 +1,120 @@
+schema_version: "1.0"
+workflow:
+  id: "orchestrated-handoff"
+  name: "Orchestrated Handoff SDD Cycle"
+  version: "0.1.0"
+  author: "kb"
+  description: >
+    Full SDD cycle with dual analyze passes (after plan, after tasks) and a
+    documented handoff-emit seam between analyze-tasks and implement. The seam
+    itself is invoked outside this YAML via mise run spec handoff-generate.
+    Final review runs mise run spec gate (deterministic).
+
+requires:
+  # ``auto`` integration resolution requires spec-kit >= 0.8.5.
+  speckit_version: ">=0.8.5"
+  integrations:
+    # Advisory compatibility hint; the workflow runs against any integration
+    # providing the speckit.* commands referenced in steps.
+    any:
+      - "claude"
+      - "copilot"
+      - "gemini"
+      - "opencode"
+
+inputs:
+  spec:
+    type: string
+    required: true
+    prompt: "Describe what you want to build (or feature dir slug for resume)"
+  feature_dir:
+    type: string
+    default: ""
+    prompt: "Existing assets/specs/NNN-slug (leave empty for greenfield)"
+  integration:
+    type: string
+    default: "auto"
+    prompt: "Integration (claude, copilot, gemini, opencode; 'auto' uses project default)"
+
+steps:
+  - id: specify
+    command: speckit.specify
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: review-spec
+    type: gate
+    message: "Review spec.md before clarify."
+    options: [approve, reject]
+    on_reject: abort
+
+  - id: clarify
+    command: speckit.clarify
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: checklist
+    command: speckit.checklist
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: plan
+    command: speckit.plan
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: review-plan
+    type: gate
+    message: "Review plan.md before the plan-pass analyze."
+    options: [approve, reject]
+    on_reject: abort
+
+  - id: analyze-plan
+    command: speckit.analyze
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: tasks
+    command: speckit.tasks
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: review-tasks
+    type: gate
+    message: "Review tasks.md + handoff.md before the tasks-pass analyze."
+    options: [approve, reject]
+    on_reject: abort
+
+  - id: analyze-tasks
+    command: speckit.analyze
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  # Handoff emit happens outside this YAML (see spec OHW-1 AC2 + clarifications):
+  #   mise run spec handoff-generate --feature {{ inputs.feature_dir }} --focus gherkin
+  # See assets/guides/SDD_WORKFLOW_GUIDE.md § orchestrated-handoff.
+
+  - id: review-handoff
+    type: gate
+    message: "Emit the opencode worker handoff (mise run spec handoff-generate) if Gherkin work is involved, then approve to implement."
+    options: [approve, reject]
+    on_reject: abort
+
+  - id: implement
+    command: speckit.implement
+    integration: "{{ inputs.integration }}"
+    input:
+      args: "{{ inputs.spec }}"
+
+  - id: review-final
+    type: gate
+    message: "Run `mise run spec gate {{ inputs.feature_dir }}` before merge."
+    options: [approve, reject]
+    on_reject: abort
