@@ -141,8 +141,8 @@
 
 - [ ] **T3.4 - Scenario IDs and quality sidecar**
   - Register scenario IDs from `step-catalog.md` in metrics tooling.
-  - Add `assets/docs/specs/e2e/scenario-scores.json` validated by
-    `scenario-scores.schema.json`.
+  - Add `tools/metrics/baselines/e2e-quality/scenario-scores.json` validated by
+    `scenario-scores.schema.json` in the same directory.
   - Score scenarios during T6.4 using `design.md#quality-model`.
   - Evidence: sample sidecar entry for one P0 scenario.
   - _Requirements: R9, R10_
@@ -229,11 +229,11 @@
   - _Requirements: R7, R8_
 
 - [x] **T6.4 - Score implemented scenarios**
-  - Sidecar: `assets/docs/specs/e2e/scenario-scores.json` — 27 scenarios, qualityScore 3, 100% P0/P1 tagged.
+  - Sidecar: `tools/metrics/baselines/e2e-quality/scenario-scores.json` — 27 scenarios, qualityScore 3, 100% P0/P1 tagged.
   - _Requirements: R9_
 
 - [x] **T6.5 - Persist and compare quality metrics**
-  - `tools/e2e/e2e_metrics.script.ts` → `tmp/e2e/metrics/latest.json`; baseline at `quality-baseline.json`.
+  - `tools/metrics/harnesses/e2e-quality/e2e_metrics.script.ts` → `tmp/e2e/metrics/latest.json`; baseline at `tools/metrics/baselines/e2e-quality/quality-baseline.json`.
   - `mise run test e2e --metrics-report` / `--metrics-compare` / `--write-baseline`.
   - Evidence: `bun run e2e:metrics-report && bun run e2e:write-baseline` on green regression run.
   - _Requirements: R10_

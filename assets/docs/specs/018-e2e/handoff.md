@@ -142,7 +142,7 @@ Constraints:
 - Do not keep release smoke scenarios that skip on empty data.
 - Do not remove `@todo` from a scenario until it has automation and quality
   score evidence.
-- Do not update `assets/docs/specs/e2e/quality-baseline.json` as a side effect
+- Do not update `tools/metrics/baselines/e2e-quality/quality-baseline.json` as a side effect
   of an ordinary test run; move the baseline only after release/milestone
   review.
 - Do not weaken Biome, knip, dependency-cruiser, ast-grep, ls-lint, jscpd,
@@ -162,7 +162,7 @@ Validation expectations:
   - `mise run test e2e --smoke`
   - `mise run test e2e --regression`
   - metrics comparison against
-    `assets/docs/specs/e2e/quality-baseline.json`, if the baseline exists
+    `tools/metrics/baselines/e2e-quality/quality-baseline.json`, if the baseline exists
   - `git diff --check`
 
 Task evidence:

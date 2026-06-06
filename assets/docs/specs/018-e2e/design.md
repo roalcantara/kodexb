@@ -521,7 +521,7 @@ implementation SHALL write two forms of output:
 | Output           | Path                                                   | Lifecycle                                                                 |
 | ---------------- | ------------------------------------------------------ | ------------------------------------------------------------------------- |
 | Run report       | `tmp/e2e/metrics/latest.json` and timestamped siblings | Generated on every smoke/regression run and uploaded by CI when available |
-| Release baseline | `assets/docs/specs/e2e/quality-baseline.json`          | Updated deliberately at release or milestone boundaries after review      |
+| Release baseline | `tools/metrics/baselines/e2e-quality/quality-baseline.json` | Updated deliberately at release or milestone boundaries after review      |
 
 The run report is operational evidence. It may change on every run and should
 not be committed by default. The release baseline is the stable comparison point
@@ -591,8 +591,8 @@ Recommended report shape:
 | `undefinedSteps`        | Non-zero `bddgen` exit / missing step in catalog                                        |
 | `averageP0QualityScore` | Mean `qualityScore` for `@p0` in sidecar                                                |
 
-Human scores live in `assets/docs/specs/e2e/scenario-scores.json` (validated by
-[`scenario-scores.schema.json`](scenario-scores.schema.json)). Automated run
+Human scores live in `tools/metrics/baselines/e2e-quality/scenario-scores.json` (validated by
+[`scenario-scores.schema.json`](../../../tools/metrics/baselines/e2e-quality/scenario-scores.schema.json)). Automated run
 output merges sidecar + Playwright results into `tmp/e2e/metrics/latest.json`.
 
 Commands (implemented in T1.3 / T6.5):

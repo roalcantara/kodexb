@@ -8,10 +8,7 @@
       "feature": "assets/features/e2e/list_navigation.feature",
       "priority": "p0",
       "status": "passing",
-      "specs": [
-        "renderer-nav-flow",
-        "foundation"
-      ],
+      "specs": ["renderer-nav-flow", "foundation"],
       "qualityScore": 3
     },
     {
@@ -19,9 +16,7 @@
       "feature": "assets/features/e2e/list_navigation.feature",
       "priority": "p0",
       "status": "passing",
-      "specs": [
-        "renderer-nav-flow"
-      ],
+      "specs": ["renderer-nav-flow"],
       "qualityScore": 3
     },
     {
@@ -29,9 +24,7 @@
       "feature": "assets/features/e2e/list_navigation.feature",
       "priority": "p0",
       "status": "passing",
-      "specs": [
-        "renderer-nav-flow"
-      ],
+      "specs": ["renderer-nav-flow"],
       "qualityScore": 3
     },
     {
@@ -39,10 +32,7 @@
       "feature": "assets/features/e2e/search_and_filter.feature",
       "priority": "p0",
       "status": "passing",
-      "specs": [
-        "command-palette-filter-ux",
-        "compact-filter-redesign"
-      ],
+      "specs": ["command-palette-filter-ux", "compact-filter-redesign"],
       "qualityScore": 3
     },
     {
@@ -50,10 +40,7 @@
       "feature": "assets/features/e2e/search_and_filter.feature",
       "priority": "p0",
       "status": "passing",
-      "specs": [
-        "command-palette-filter-ux",
-        "compact-filter-redesign"
-      ],
+      "specs": ["command-palette-filter-ux", "compact-filter-redesign"],
       "qualityScore": 3
     },
     {
@@ -61,9 +48,7 @@
       "feature": "assets/features/e2e/search_and_filter.feature",
       "priority": "p0",
       "status": "passing",
-      "specs": [
-        "command-palette-filter-ux"
-      ],
+      "specs": ["command-palette-filter-ux"],
       "qualityScore": 3
     },
     {
@@ -71,9 +56,7 @@
       "feature": "assets/features/e2e/search_and_filter.feature",
       "priority": "p0",
       "status": "passing",
-      "specs": [
-        "command-palette-filter-ux"
-      ],
+      "specs": ["command-palette-filter-ux"],
       "qualityScore": 3
     },
     {
@@ -81,9 +64,7 @@
       "feature": "assets/features/e2e/detail_and_actions.feature",
       "priority": "p0",
       "status": "passing",
-      "specs": [
-        "phase-7-detail-view"
-      ],
+      "specs": ["phase-7-detail-view"],
       "qualityScore": 3
     },
     {
@@ -91,10 +72,7 @@
       "feature": "assets/features/e2e/detail_and_actions.feature",
       "priority": "p0",
       "status": "passing",
-      "specs": [
-        "entry-action-panel",
-        "actions-system"
-      ],
+      "specs": ["entry-action-panel", "actions-system"],
       "qualityScore": 3
     },
     {
@@ -102,9 +80,7 @@
       "feature": "assets/features/e2e/detail_and_actions.feature",
       "priority": "p0",
       "status": "passing",
-      "specs": [
-        "entry-action-panel"
-      ],
+      "specs": ["entry-action-panel"],
       "qualityScore": 3
     },
     {
@@ -112,9 +88,7 @@
       "feature": "assets/features/e2e/detail_and_actions.feature",
       "priority": "p0",
       "status": "passing",
-      "specs": [
-        "entry-action-panel"
-      ],
+      "specs": ["entry-action-panel"],
       "qualityScore": 3
     },
     {
@@ -122,10 +96,7 @@
       "feature": "assets/features/e2e/command_palette.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "command-palette-filter-ux",
-        "shortcuts"
-      ],
+      "specs": ["command-palette-filter-ux", "shortcuts"],
       "qualityScore": 3
     },
     {
@@ -133,9 +104,7 @@
       "feature": "assets/features/e2e/command_palette.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "command-palette-filter-ux"
-      ],
+      "specs": ["command-palette-filter-ux"],
       "qualityScore": 3
     },
     {
@@ -143,9 +112,7 @@
       "feature": "assets/features/e2e/command_palette.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "command-palette-filter-ux"
-      ],
+      "specs": ["command-palette-filter-ux"],
       "qualityScore": 3
     },
     {
@@ -153,9 +120,7 @@
       "feature": "assets/features/e2e/command_palette.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "command-palette-filter-ux"
-      ],
+      "specs": ["command-palette-filter-ux"],
       "qualityScore": 3
     },
     {
@@ -163,9 +128,7 @@
       "feature": "assets/features/e2e/task_management.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "task-management"
-      ],
+      "specs": ["task-management"],
       "qualityScore": 3
     },
     {
@@ -173,9 +136,7 @@
       "feature": "assets/features/e2e/task_management.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "task-management"
-      ],
+      "specs": ["task-management"],
       "qualityScore": 3
     },
     {
@@ -183,9 +144,7 @@
       "feature": "assets/features/e2e/task_management.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "task-management"
-      ],
+      "specs": ["task-management"],
       "qualityScore": 3
     },
     {
@@ -193,9 +152,7 @@
       "feature": "assets/features/e2e/task_management.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "task-management"
-      ],
+      "specs": ["task-management"],
       "qualityScore": 3
     },
     {
@@ -203,9 +160,7 @@
       "feature": "assets/features/e2e/task_management.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "task-management"
-      ],
+      "specs": ["task-management"],
       "qualityScore": 3
     },
     {
@@ -213,9 +168,7 @@
       "feature": "assets/features/e2e/settings_and_sync.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "foundation"
-      ],
+      "specs": ["foundation"],
       "qualityScore": 3
     },
     {
@@ -223,9 +176,7 @@
       "feature": "assets/features/e2e/settings_and_sync.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "foundation"
-      ],
+      "specs": ["foundation"],
       "qualityScore": 3
     },
     {
@@ -233,9 +184,7 @@
       "feature": "assets/features/e2e/settings_and_sync.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "foundation"
-      ],
+      "specs": ["foundation"],
       "qualityScore": 3
     },
     {
@@ -243,9 +192,7 @@
       "feature": "assets/features/e2e/settings_and_sync.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "sync-ui"
-      ],
+      "specs": ["sync-ui"],
       "qualityScore": 3
     },
     {
@@ -253,9 +200,7 @@
       "feature": "assets/features/e2e/settings_and_sync.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "sync-ui"
-      ],
+      "specs": ["sync-ui"],
       "qualityScore": 3
     },
     {
@@ -263,10 +208,7 @@
       "feature": "assets/features/e2e/frecency.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "list-frecency-sort",
-        "entry-action-panel"
-      ],
+      "specs": ["list-frecency-sort", "entry-action-panel"],
       "qualityScore": 3
     },
     {
@@ -274,10 +216,7 @@
       "feature": "assets/features/e2e/frecency.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "list-frecency-sort",
-        "entry-action-panel"
-      ],
+      "specs": ["list-frecency-sort", "entry-action-panel"],
       "qualityScore": 3
     },
     {
@@ -285,9 +224,7 @@
       "feature": "assets/features/e2e/frecency.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "list-frecency-sort"
-      ],
+      "specs": ["list-frecency-sort"],
       "qualityScore": 3
     },
     {
@@ -295,9 +232,7 @@
       "feature": "assets/features/e2e/shortcuts_list.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "shortcuts"
-      ],
+      "specs": ["shortcuts"],
       "qualityScore": 3
     },
     {
@@ -305,9 +240,7 @@
       "feature": "assets/features/e2e/shortcuts_list.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "shortcuts"
-      ],
+      "specs": ["shortcuts"],
       "qualityScore": 3
     },
     {
@@ -315,9 +248,7 @@
       "feature": "assets/features/e2e/shortcuts_list.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "shortcuts"
-      ],
+      "specs": ["shortcuts"],
       "qualityScore": 3
     },
     {
@@ -325,9 +256,7 @@
       "feature": "assets/features/e2e/shortcuts_overlay.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "shortcuts"
-      ],
+      "specs": ["shortcuts"],
       "qualityScore": 3
     },
     {
@@ -335,9 +264,7 @@
       "feature": "assets/features/e2e/shortcuts_overlay.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "shortcuts"
-      ],
+      "specs": ["shortcuts"],
       "qualityScore": 3
     },
     {
@@ -345,9 +272,7 @@
       "feature": "assets/features/e2e/shortcuts_overlay.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "shortcuts"
-      ],
+      "specs": ["shortcuts"],
       "qualityScore": 3
     },
     {
@@ -355,9 +280,7 @@
       "feature": "assets/features/e2e/shortcuts_overlay.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "shortcuts"
-      ],
+      "specs": ["shortcuts"],
       "qualityScore": 3
     },
     {
@@ -365,9 +288,7 @@
       "feature": "assets/features/e2e/shortcuts_overlay.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "shortcuts"
-      ],
+      "specs": ["shortcuts"],
       "qualityScore": 3
     },
     {
@@ -375,9 +296,7 @@
       "feature": "assets/features/e2e/shortcuts_import.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "shortcuts"
-      ],
+      "specs": ["shortcuts"],
       "qualityScore": 3
     },
     {
@@ -385,9 +304,7 @@
       "feature": "assets/features/e2e/entry_action_handoff.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "entry-action-handoff"
-      ],
+      "specs": ["entry-action-handoff"],
       "qualityScore": 3
     },
     {
@@ -395,9 +312,7 @@
       "feature": "assets/features/e2e/entry_action_handoff.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "entry-action-handoff"
-      ],
+      "specs": ["entry-action-handoff"],
       "qualityScore": 3
     },
     {
@@ -405,9 +320,7 @@
       "feature": "assets/features/e2e/entry_action_handoff.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "entry-action-handoff"
-      ],
+      "specs": ["entry-action-handoff"],
       "qualityScore": 3
     },
     {
@@ -415,9 +328,7 @@
       "feature": "assets/features/e2e/entry_action_handoff.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "entry-action-handoff"
-      ],
+      "specs": ["entry-action-handoff"],
       "qualityScore": 3
     },
     {
@@ -425,9 +336,7 @@
       "feature": "assets/features/e2e/entry_action_handoff.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "entry-action-handoff"
-      ],
+      "specs": ["entry-action-handoff"],
       "qualityScore": 3
     },
     {
@@ -435,9 +344,7 @@
       "feature": "assets/features/e2e/entry_action_handoff.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "entry-action-handoff"
-      ],
+      "specs": ["entry-action-handoff"],
       "qualityScore": 3
     },
     {
@@ -445,9 +352,7 @@
       "feature": "assets/features/e2e/entry_action_handoff.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "entry-action-handoff"
-      ],
+      "specs": ["entry-action-handoff"],
       "qualityScore": 3
     },
     {
@@ -455,9 +360,7 @@
       "feature": "assets/features/e2e/entry_action_handoff.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "entry-action-handoff"
-      ],
+      "specs": ["entry-action-handoff"],
       "qualityScore": 3
     },
     {
@@ -465,9 +368,7 @@
       "feature": "assets/features/e2e/entry_action_handoff.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "entry-action-handoff"
-      ],
+      "specs": ["entry-action-handoff"],
       "qualityScore": 3
     },
     {
@@ -475,9 +376,7 @@
       "feature": "assets/features/e2e/entry_action_handoff.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "entry-action-handoff"
-      ],
+      "specs": ["entry-action-handoff"],
       "qualityScore": 3
     },
     {
@@ -485,9 +384,7 @@
       "feature": "assets/features/e2e/entry_action_handoff.feature",
       "priority": "p1",
       "status": "passing",
-      "specs": [
-        "entry-action-handoff"
-      ],
+      "specs": ["entry-action-handoff"],
       "qualityScore": 3
     }
   ]

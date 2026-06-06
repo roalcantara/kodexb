@@ -4,11 +4,7 @@
   "title": "E2e scenario quality scores",
   "description": "Sidecar for human review scores and automated flags per scenario. Run metrics merge this file with Playwright/bddgen output.",
   "type": "object",
-  "required": [
-    "schemaVersion",
-    "updatedAt",
-    "scenarios"
-  ],
+  "required": ["schemaVersion", "updatedAt", "scenarios"],
   "properties": {
     "schemaVersion": {
       "type": "integer",
@@ -82,13 +78,7 @@
     },
     "scenarioScore": {
       "type": "object",
-      "required": [
-        "id",
-        "feature",
-        "priority",
-        "status",
-        "qualityScore"
-      ],
+      "required": ["id", "feature", "priority", "status", "qualityScore"],
       "properties": {
         "id": {
           "type": "string",
@@ -102,20 +92,11 @@
         },
         "priority": {
           "type": "string",
-          "enum": [
-            "p0",
-            "p1",
-            "p2"
-          ]
+          "enum": ["p0", "p1", "p2"]
         },
         "status": {
           "type": "string",
-          "enum": [
-            "todo",
-            "implemented",
-            "deferred_native",
-            "unit_only"
-          ]
+          "enum": ["todo", "implemented", "deferred_native", "unit_only"]
         },
         "specs": {
           "type": "array",

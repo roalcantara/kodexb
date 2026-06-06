@@ -1,6 +1,6 @@
 /**
  * Merge Playwright JUnit output with scenario-scores.json into tmp/e2e/metrics/latest.json.
- * Compare runs against assets/docs/specs/e2e/quality-baseline.json.
+ * Compare runs against tools/metrics/baselines/e2e-quality/quality-baseline.json.
  *
  * Usage:
  *   bun tools/metrics/harnesses/e2e-quality/e2e_metrics.script.ts report [--command "mise run test e2e --smoke"]
@@ -11,8 +11,9 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 const ROOT = path.resolve(import.meta.dir, '../../../..')
-const SCORES_PATH = path.join(ROOT, 'assets/docs/specs/e2e/scenario-scores.json')
-const BASELINE_PATH = path.join(ROOT, 'assets/docs/specs/e2e/quality-baseline.json')
+const E2E_QUALITY_BASELINE = path.join(ROOT, 'tools/metrics/baselines/e2e-quality')
+const SCORES_PATH = path.join(E2E_QUALITY_BASELINE, 'scenario-scores.json')
+const BASELINE_PATH = path.join(E2E_QUALITY_BASELINE, 'quality-baseline.json')
 const JUNIT_PATH = path.join(ROOT, 'tmp/e2e/junit.xml')
 const METRICS_DIR = path.join(ROOT, 'tmp/e2e/metrics')
 const LATEST_PATH = path.join(METRICS_DIR, 'latest.json')
