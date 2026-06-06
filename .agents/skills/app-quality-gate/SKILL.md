@@ -77,7 +77,7 @@ tree or index **adds** new inline suppressions under `src/`, `tools/`, or
 `electrobun.config.ts` (`biome-ignore*`, `@ts-expect-error`, `@ts-ignore`,
 `eslint-disable`) unless a maintainer has approved weakening and you export
 `GATE_APPROVED_TOOL_WEAKENING=1` for that gate run (see `AGENTS.md` and
-`assets/docs/specs/codebase-quality-audit/requirements.md` R6).
+[`assets/guides/DoD.md`](../../../assets/guides/DoD.md)).
 
 It **warns** when guard configs change (`biome.jsonc`, `knip.jsonc`,
 `.dependency-cruiser.cjs`, `tsconfig.json`, `.ls-lint.yml`, `sgconfig.yml`) so you double-check

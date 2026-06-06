@@ -9,8 +9,8 @@ core domain, config). Zod is **not** a dependency.
 `bun:sqlite` directly — no Drizzle ORM, no drizzle-typebox, no drizzle-kit,
 no drizzle-seed. Fishery `factoryFor` for typed test factories; YAML
 fixtures only for end-to-end import tests. See
-[`assets/docs/specs/foundation/design.md`](assets/docs/specs/foundation/design.md)
-Decisions 2–5 for the rationale.
+[`assets/guides/FCIS.guide.md`](assets/guides/FCIS.guide.md) and
+[`assets/guides/ELECTROBUN.md`](assets/guides/ELECTROBUN.md).
 
 ## Architecture — FCIS layers
 
@@ -113,14 +113,14 @@ and Skills CLI-managed project skills live at `.agents/skills/`;
 
 When a Superpowers skill mentions `docs/superpowers/specs` or
 `docs/superpowers/plans`, use the `spec-driven-development` skill shape
-instead and map the output to [`assets/docs/specs/<scope>/`](assets/docs/specs/)
-in this repo. Use `requirements.md`, `design.md`, `tasks.md`, and optional
-`handoff.md`.
+instead and map the output to **`assets/specs/<NNN-slug>/`** (Spec Kit) per
+[`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md). Use
+`spec.md`, `plan.md`, `tasks.md`, and optional handoff artifacts.
 
 Do not create `docs/superpowers/`. That path is a common external skill
 default and is gitignored in this repo to prevent drift.
 
-**Legacy spec orientation:** [`PRODUCT_DESIGN.md`](assets/docs/specs/PRODUCT_DESIGN.md) + [`PRODUCT_REQUIREMENTS.md`](assets/docs/specs/PRODUCT_REQUIREMENTS.md) for current decisions/outcomes; drill-down `NNN-<slug>/` folders. Active Spec Kit: `assets/specs/`.
+In-flight Spec Kit: **`assets/specs/NNN-<slug>/`**. Legacy archaeology: task-scoped only — see [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md).
 
 For tests, project rules override generic Superpowers examples: follow
 [`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md), use
@@ -162,10 +162,4 @@ with this `CLAUDE.md`, **the guides win** — open a PR to fix `CLAUDE.md`.
 - [`assets/guides/BUN_RUNTIME.md`](assets/guides/BUN_RUNTIME.md) — Bun YAML/JSON5/SQLite quick reference
 - [`assets/guides/ELECTROBUN.md`](assets/guides/ELECTROBUN.md) — Electrobun official-docs map + RPC shape
 
-Foundation specs:
-
-- [`assets/docs/specs/foundation/design.md`](assets/docs/specs/foundation/design.md) — architecture decisions, layer rules, RPC contract
-- [`assets/docs/specs/foundation/requirements.md`](assets/docs/specs/foundation/requirements.md) — EARS specs V1-1 through V1-8
-- [`assets/docs/specs/foundation/roadmap.md`](assets/docs/specs/foundation/roadmap.md) — phase sequence, skills per phase, development loop
-
-Feature specs and plans belong under [`assets/docs/specs/`](assets/docs/specs/) (see [`assets/docs/specs/README.md`](assets/docs/specs/README.md)). **Do not add `docs/superpowers/`** — that path is a common external skill default and is **gitignored** in this repo to prevent drift.
+Active feature specs: [`assets/specs/README.md`](assets/specs/README.md) + [`assets/guides/SDD_WORKFLOW_GUIDE.md`](assets/guides/SDD_WORKFLOW_GUIDE.md). Document authority: [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md). **Do not add `docs/superpowers/`** — that path is a common external skill default and is **gitignored** in this repo to prevent drift.

@@ -18,6 +18,6 @@ When a task may involve **Electrobun** (desktop shell, webview/renderer, typed R
 
 If nothing matches, read **`electrobun-plugin-guide`** first, then narrow.
 
-Prefer repo guides for **project-specific** wiring: `assets/guides/ELECTROBUN.md`, `assets/docs/specs/foundation/design.md`.
+Prefer repo guides for **project-specific** wiring: `assets/guides/ELECTROBUN.md`, `assets/guides/FCIS.guide.md`.
 
 Do **not** rely on memory alone for Electrobun APIs when a skill covers the topic—read the skill, then implement.

@@ -151,7 +151,7 @@ values, timestamps).
 reference. Use this for `Knowledge` variants (bookmark/command/cheat/task),
 `Env`, `RawConfig`, `LoadedConfig`, and any other typed object that must
 satisfy domain validation. The repo does **not** use `drizzle-seed` (see
-[`assets/docs/specs/foundation/design.md`](../../../assets/docs/specs/foundation/design.md)
+[`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md)
 Decision 4).
 
 ```ts

@@ -48,13 +48,11 @@ and `CLAUDE.md` disagree, **CLAUDE.md wins** — open a PR to fix the skill.
 
 ## Feature specs (where to write design docs)
 
-- **Canonical root:** [`assets/docs/specs/<feature-slug>/`](../../../assets/docs/specs/) — `requirements.md`, `design.md`, `tasks.md`, optional `implementation-plan.md`, prototypes. Index: [`assets/docs/specs/README.md`](../../../assets/docs/specs/README.md).
-- **Superpowers adaptation:** when a Superpowers skill mentions `docs/superpowers/specs` or `docs/superpowers/plans`, use the `spec-driven-development` skill shape instead and map the output to `assets/docs/specs/<scope>/`. Use `requirements.md`, `design.md`, `tasks.md`, and optional `handoff.md`.
-- **`docs/superpowers/`** is **not used** in this project; it is **gitignored** (some external skills default there). Always redirect new specs into `assets/docs/specs/`.
-- **E2e acceptance:** release-facing features MUST include Gherkin traceability
-  and an e2e task per [`assets/docs/specs/e2e/requirements.md` R11](../../../assets/docs/specs/e2e/requirements.md#r11---cross-feature-e2e-acceptance).
-  Update `fixture-manifest.md` and `step-catalog.md` when adding scenarios.
-- **Subagent prompts:** include the project path, testing, e2e policy, and validation overrides explicitly because subagents may not inherit this skill's full context.
+- **In-flight Spec Kit:** [`assets/specs/NNN-<slug>/`](../../../assets/specs/) — `spec.md`, `plan.md`, `tasks.md`. Index: [`assets/specs/README.md`](../../../assets/specs/README.md).
+- **Document authority:** [`assets/guides/DOC_AUTHORITY.md`](../../../assets/guides/DOC_AUTHORITY.md) — guides are normative; legacy SDD is task-scoped archaeology only.
+- **Superpowers adaptation:** map output to `assets/specs/<NNN-slug>/` (Spec Kit shape), not `docs/superpowers/`.
+- **E2e acceptance:** release-facing features MUST satisfy [`TESTING_GUIDE` R11](../../../assets/guides/TESTING_GUIDE.md#cross-feature-e2e-acceptance-r11).
+- **Subagent prompts:** include project path, testing, e2e policy, and validation overrides explicitly.
 
 ## FCIS directory layout
 
@@ -138,14 +136,13 @@ classes; "Andromeda Void" is the visual spec name only. When building UI:
   `ease-out`.
 
 Full tokens and patterns:
-[`assets/docs/specs/foundation/design.md`](../../../assets/docs/specs/foundation/design.md)
-(Design system section).
+[`assets/guides/STYLING_GUIDE.md`](../../../assets/guides/STYLING_GUIDE.md).
 
 ## Deep dives (open as needed)
 
 | Topic              | Guide                                                                                               |
 | ------------------ | --------------------------------------------------------------------------------------------------- |
-| Architecture + RPC | [`assets/docs/specs/foundation/design.md`](../../../assets/docs/specs/foundation/design.md)         |
+| Architecture + RPC | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md) + [`ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md) |
 | FCIS layer rules   | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md)                               |
 | Naming + SOLID     | [`assets/guides/CODESTYLE_GUIDE.md`](../../../assets/guides/CODESTYLE_GUIDE.md)                     |
 | Electrobun wiring  | [`assets/guides/ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md)                               |
