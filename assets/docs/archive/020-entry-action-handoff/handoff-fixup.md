@@ -18,10 +18,10 @@ Do NOT mark tasks.md complete until ALL acceptance criteria below pass with evid
 MANDATORY process (AGENTS.md):
   Load: app-context, app-rpc, app-testing, app-quality-gate
   Electrobun main: electrobun-best-practices + .cursor/electrobun-skill-routing.md
-  Read: assets/docs/specs/entry-action-handoff/handoff-fixup.md (this file)
+  Read: assets/docs/archive/entry-action-handoff/handoff-fixup.md (this file)
 
 Do NOT rewrite assets/features/e2e/entry_action_handoff.feature prose.
-Implement steps per assets/docs/specs/e2e/step-catalog.md §Entry action handoff steps.
+Implement steps per assets/docs/archive/e2e/step-catalog.md §Entry action handoff steps.
 
 ---
 
@@ -96,7 +96,7 @@ C5. paste-doc RPC contract for HandoffApi.receivedPasteDoc():
 C6. Evidence:
     bun run e2e:bddgen  # must succeed
     CI=1 bun run e2e:regression --grep entry_action_handoff  # all non-@todo green
-    Update assets/docs/specs/e2e/scenario-scores.json for handoff scenario IDs
+    Update assets/docs/archive/e2e/scenario-scores.json for handoff scenario IDs
     Uncheck then re-check tasks.md Phase 7 items with command output in evidence
 
 ---

@@ -97,9 +97,9 @@
 
 **Files:**
 
-- Modify: `assets/docs/specs/README.md`
-- Modify: `assets/docs/specs/list-frecency-sort/requirements.md` (R2 cross-link only)
-- Check: `assets/docs/specs/entry-action-panel/tasks.md` boxes
+- Modify: `assets/docs/archive/README.md`
+- Modify: `assets/docs/archive/list-frecency-sort/requirements.md` (R2 cross-link only)
+- Check: `assets/docs/archive/entry-action-panel/tasks.md` boxes
 
 - [ ] `bun test` on all touched paths.
 - [ ] `bash .agents/skills/app-quality-gate/scripts/gate.sh`.

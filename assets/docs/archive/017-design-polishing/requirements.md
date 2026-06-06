@@ -346,7 +346,7 @@ Every visible surface in the renderer must be migrated. The **Surface Inventory*
 **Acceptance criteria:**
 1. WHEN the implementor finishes THEN they SHALL produce a single git commit covering all migration changes.
 2. WHEN the commit message is inspected THEN its subject SHALL match Conventional Commits format with type `feat` or `refactor`, optional scope `(renderer)`, and SHALL be ≤ 50 characters.
-3. WHEN the commit body is inspected THEN it SHALL explain WHAT changed (Tailwind v4 added, Andromeda Void theme realised, list.css decomposed) and WHY (v0 design polish, single source of truth, maintainability), and SHALL reference the spec path `assets/docs/specs/design-polishing/`.
+3. WHEN the commit body is inspected THEN it SHALL explain WHAT changed (Tailwind v4 added, Andromeda Void theme realised, list.css decomposed) and WHY (v0 design polish, single source of truth, maintainability), and SHALL reference the spec path `assets/docs/archive/design-polishing/`.
 4. WHEN the commit lands THEN HK pre-commit hooks SHALL pass without `--no-verify`.
 
 ---

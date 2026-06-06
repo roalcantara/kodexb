@@ -11,11 +11,11 @@ Use this prompt to hand implementation to another agent.
 
 The e2e rollout is large and touches harness, mise, and test deps. Step 0 keeps
 that work off the primary checkout and stacks on the current integration branch
-(same pattern as `feat-hk-orchestration` in `assets/docs/specs/hk/tasks.md`).
+(same pattern as `feat-hk-orchestration` in `assets/docs/archive/hk/tasks.md`).
 
 ```md
 You are taking over `/Users/roalcantara/Work/bun/kb` to implement the e2e
-regression suite specified in `assets/docs/specs/e2e/`.
+regression suite specified in `assets/docs/archive/e2e/`.
 
 Goal:
 Build a deterministic, BDD-oriented e2e test suite that protects first-release
@@ -68,11 +68,11 @@ Required project context:
 - Read `assets/guides/TESTING_GUIDE.md`.
 - Read `assets/guides/BDD_GUIDE.md`.
 - Read `assets/guides/BDD_GHERKIN_GUIDE.md`.
-- Read `assets/docs/specs/e2e/fixture-manifest.md`.
-- Read `assets/docs/specs/e2e/step-catalog.md`.
-- Read `assets/docs/specs/e2e/requirements.md`.
-- Read `assets/docs/specs/e2e/design.md`.
-- Execute `assets/docs/specs/e2e/tasks.md` in order.
+- Read `assets/docs/archive/e2e/fixture-manifest.md`.
+- Read `assets/docs/archive/e2e/step-catalog.md`.
+- Read `assets/docs/archive/e2e/requirements.md`.
+- Read `assets/docs/archive/e2e/design.md`.
+- Execute `assets/docs/archive/e2e/tasks.md` in order.
 
 Helpful references:
 - Existing Playwright config: `playwright.config.ts`.
@@ -82,7 +82,7 @@ Helpful references:
 - RPC server: `src/shell/main/rpc/server.ts`.
 - App orchestrator: `src/shell/app/app.ts`.
 - Test helpers/factories: `src/__tests__/`.
-- Existing SDD specs: `assets/docs/specs/`.
+- Existing SDD specs: `assets/docs/archive/`.
 
 Skill routing:
 - Load `app-context` before any project work.
@@ -166,7 +166,7 @@ Validation expectations:
   - `git diff --check`
 
 Task evidence:
-For every checked task in `assets/docs/specs/e2e/tasks.md`, add an Evidence
+For every checked task in `assets/docs/archive/e2e/tasks.md`, add an Evidence
 bullet with changed files, commands run, and exact pass/fail status. Do not
 bulk-check boxes without evidence.
 

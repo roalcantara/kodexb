@@ -44,7 +44,7 @@
 | `src/shell/main/utils/register_before_quit_shortcuts.util.ts` | Replaced with `registerBeforeQuitShortcutTeardown` |
 | `src/shell/main/utils/register_before_quit_shortcuts.util.spec.ts` | Rewritten (no `mock.module`) |
 | `src/shell/main/utils/register_before_quit_shortcut_teardown.types.ts` | New types file |
-| `assets/docs/specs/elysia-electrobun-capability-inventory/inventory.yml` | Updated usage notes |
+| `assets/docs/archive/elysia-electrobun-capability-inventory/inventory.yml` | Updated usage notes |
 
 ## Out of scope for this handoff
 

@@ -34,7 +34,7 @@
 ## Maintainer sign-off (2026-06-01)
 
 - Adoption matrix reviewed; implementation vehicle for Should-tier work is electrobun-utils-adoption Phases 1–3.
-- v0.10.0 scope contract: assets/docs/specs/v0.10.0-scope.md
+- v0.10.0 scope contract: assets/docs/archive/v0.10.0-scope.md
 - Inventory priorities assigned for 14 Electrobun capability ids; all Elysia ids remain undecided.
 - Window persistence, updater, menus, and tray are postponed to post–v0.10.0 specs.
 - Step complete; no src/ changes in this pass.
@@ -54,7 +54,7 @@
 ## Verification (docs-only)
 
 ```sh
-ruby -e "require 'yaml'; YAML.load_file('assets/docs/specs/elysia-electrobun-capability-inventory/inventory.yml')"
+ruby -e "require 'yaml'; YAML.load_file('assets/docs/archive/elysia-electrobun-capability-inventory/inventory.yml')"
 ```
 
 No `src/` quality gate required for this audit commit.

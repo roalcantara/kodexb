@@ -47,9 +47,9 @@ For each phase:
   - Execute exactly:
 
     ```sh
-    sed -n '1,240p' assets/docs/specs/elysia-electrobun-capability-inventory/requirements.md
-    sed -n '1,260p' assets/docs/specs/elysia-electrobun-capability-inventory/design.md
-    sed -n '1,220p' assets/docs/specs/elysia-electrobun-capability-inventory/inventory.yml
+    sed -n '1,240p' assets/docs/archive/elysia-electrobun-capability-inventory/requirements.md
+    sed -n '1,260p' assets/docs/archive/elysia-electrobun-capability-inventory/design.md
+    sed -n '1,220p' assets/docs/archive/elysia-electrobun-capability-inventory/inventory.yml
     ```
 
   - Confirm that `inventory.yml` contains `sources` and an empty
@@ -60,7 +60,7 @@ For each phase:
   - Execute exactly:
 
     ```sh
-    ruby -e "require 'yaml'; YAML.load_file('assets/docs/specs/elysia-electrobun-capability-inventory/inventory.yml')"
+    ruby -e "require 'yaml'; YAML.load_file('assets/docs/archive/elysia-electrobun-capability-inventory/inventory.yml')"
     ```
 
   - If Ruby is unavailable, use the project-available YAML parser and record
@@ -200,7 +200,7 @@ priorities.
   - Execute exactly:
 
     ```sh
-    ruby -e "require 'yaml'; YAML.load_file('assets/docs/specs/elysia-electrobun-capability-inventory/inventory.yml')"
+    ruby -e "require 'yaml'; YAML.load_file('assets/docs/archive/elysia-electrobun-capability-inventory/inventory.yml')"
     ```
 
   - _Acceptance criteria: CE-6.2_
@@ -209,7 +209,7 @@ priorities.
   - Execute exactly:
 
     ```sh
-    rg -n "priority: (must-have|nice-to-have|postponed|meh)|MUST-HAVE|NICE-TO-HAVE|POSTPONED|MEH" assets/docs/specs/elysia-electrobun-capability-inventory
+    rg -n "priority: (must-have|nice-to-have|postponed|meh)|MUST-HAVE|NICE-TO-HAVE|POSTPONED|MEH" assets/docs/archive/elysia-electrobun-capability-inventory
     ```
 
   - The only allowed matches are the definitions in `requirements.md`,
@@ -221,8 +221,8 @@ priorities.
   - Execute exactly:
 
     ```sh
-    ruby -e "require 'yaml'; y=YAML.load_file('assets/docs/specs/elysia-electrobun-capability-inventory/inventory.yml'); puts [y['capabilities'].length, y['generated_at'].class, y['sources'].first['fetched_at'].class].join(' | ')"
-    git diff --check -- assets/docs/specs/elysia-electrobun-capability-inventory
+    ruby -e "require 'yaml'; y=YAML.load_file('assets/docs/archive/elysia-electrobun-capability-inventory/inventory.yml'); puts [y['capabilities'].length, y['generated_at'].class, y['sources'].first['fetched_at'].class].join(' | ')"
+    git diff --check -- assets/docs/archive/elysia-electrobun-capability-inventory
     ```
 
   - Also run the Bun schema-shape check (array fields on every capability):
@@ -230,7 +230,7 @@ priorities.
     ```sh
     bun - <<'JS'
     import YAML from 'yaml'
-    const doc = YAML.parse(await Bun.file('assets/docs/specs/elysia-electrobun-capability-inventory/inventory.yml').text())
+    const doc = YAML.parse(await Bun.file('assets/docs/archive/elysia-electrobun-capability-inventory/inventory.yml').text())
     const issues = []
     for (const c of doc.capabilities ?? []) {
       for (const k of ['source_urls','pros','cons','risks','prerequisites','app_touchpoints','candidate_stories','notes']) {

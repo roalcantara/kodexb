@@ -8,7 +8,7 @@ next pass must make every public task self-documenting, remove task-family
 duplication, remove confusing `package.json` CI aliases, and prove that each
 remaining command still works through the new Usage syntax.
 
-This spec supersedes the older handoff in `assets/docs/specs/mise-usage/` for
+This spec supersedes the older handoff in `assets/docs/archive/mise-usage/` for
 the final task-contract cleanup. The earlier spec remains useful for the policy
 checker rationale, but this spec defines the accepted public surface and the
 validation evidence required before the refactor can be called complete.

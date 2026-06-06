@@ -14,10 +14,10 @@
 ## Required reading (in order)
 
 1. `AGENTS.md` — FCIS, naming, quality gate, prototype N/A (approved feature).
-2. `assets/docs/specs/sync/requirements.md`
-3. `assets/docs/specs/sync/design.md`
-4. `assets/docs/specs/sync/tasks.md`
-5. `assets/docs/specs/sync-ui/design.md` — UI consumption only
+2. `assets/docs/archive/sync/requirements.md`
+3. `assets/docs/archive/sync/design.md`
+4. `assets/docs/archive/sync/tasks.md`
+5. `assets/docs/archive/sync-ui/design.md` — UI consumption only
 6. `src/shell/app/db/import.service.ts`
 7. `src/shell/app/lib/app_sync.util.ts`
 8. `src/core/domain/models/entries/parsers/source_document.parser.ts`
@@ -35,7 +35,7 @@
 - Do **not** weaken Biome, knip, dependency-cruiser, or gate thresholds.
 - Every new `src/` file needs co-located `.spec.ts`.
 - Use `getLogger` in `src/` — no `console.*`.
-- Map specs to `assets/docs/specs/` — never `docs/superpowers/`.
+- Map specs to `assets/docs/archive/` — never `docs/superpowers/`.
 
 ## Acceptance criteria (release checklist)
 
@@ -102,7 +102,7 @@ Add fixtures, unit tests, and @spec:sync e2e scenarios.
 ## Agent execution prompt (paste to next session)
 
 ```txt
-Implement assets/docs/specs/sync/ (requirements SY-1–SY-6, design, tasks).
+Implement assets/docs/archive/sync/ (requirements SY-1–SY-6, design, tasks).
 
 Goal: Source sync must ALWAYS finish and return RpcImportResult with errors[]
 listing file paths and messages. Import valid rows per file; skip file only on
@@ -116,7 +116,7 @@ Verify devbox_like fixture matches: tag regex ^[a-z0-9_]+$ failure.
 Run app-quality-gate before claiming done. Do not edit user ~/.config/kodexb
 sources unless asked.
 
-Read handoff: assets/docs/specs/sync/handoff.md
+Read handoff: assets/docs/archive/sync/handoff.md
 ```
 
 ---
@@ -127,7 +127,7 @@ Read handoff: assets/docs/specs/sync/handoff.md
 the **Agent execution prompt** there (modal accordion + stats strip, SY-7).
 
 ```txt
-Implement Phase 7 (SY-7) sync modal error UX per assets/docs/specs/sync/.
+Implement Phase 7 (SY-7) sync modal error UX per assets/docs/archive/sync/.
 Read handoff-phase-7-modal-errors.md first. Do not change import pipeline.
 ```
 

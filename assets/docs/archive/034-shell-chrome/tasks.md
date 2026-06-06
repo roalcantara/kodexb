@@ -68,7 +68,7 @@ Run gate before marking done: `bash .agents/skills/app-quality-gate/scripts/gate
 
 - [ ] **5.1** Add `assets/features/e2e/shell_chrome.feature` (`@spec:shell-chrome`).
 - [ ] **5.2** Update `e2e/screenplay/sync.task.ts` — `RunSync` via palette “Sync sources”.
-- [ ] **5.3** Update `assets/docs/specs/e2e/step-catalog.md`.
+- [ ] **5.3** Update `assets/docs/archive/e2e/step-catalog.md`.
 - [ ] **5.4** Scenario: list has no Sync toolbar button.
 
 **Done when:** Sync e2e scenarios pass without main-list Sync button.
@@ -80,7 +80,7 @@ Run gate before marking done: `bash .agents/skills/app-quality-gate/scripts/gate
 **Requirements:** all
 
 - [ ] **6.1** `bash .agents/skills/app-quality-gate/scripts/gate.sh` green.
-- [ ] **6.2** Update `assets/docs/specs/README.md` index with `shell-chrome` link.
+- [ ] **6.2** Update `assets/docs/archive/README.md` index with `shell-chrome` link.
 
 ---
 

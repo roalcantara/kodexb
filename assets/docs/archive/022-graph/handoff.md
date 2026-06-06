@@ -13,9 +13,9 @@ ownership, build the graph, verify the daemon, and create one final commit.
 2. `.agents/skills/app-context/SKILL.md`
 3. `.agents/skills/build-graph/SKILL.md`
 4. `.agents/skills/code-review-graph/SKILL.md`
-5. `assets/docs/specs/graph/requirements.md`
-6. `assets/docs/specs/graph/design.md`
-7. `assets/docs/specs/graph/tasks.md`
+5. `assets/docs/archive/graph/requirements.md`
+6. `assets/docs/archive/graph/design.md`
+7. `assets/docs/archive/graph/tasks.md`
 8. `.agents/skills/app-quality-gate/SKILL.md`
 
 ## Non-negotiable constraints
@@ -157,7 +157,7 @@ existing entries, and validate with `jq empty`.
 ```sh
 git ls-files graphify-out
 rg -n "graphify|Graphify|graphify-out|GRAPH_REPORT" . \
-  --glob '!assets/docs/specs/graph/**' \
+  --glob '!assets/docs/archive/graph/**' \
   --glob '!assets/guides/CRG.md' \
   --glob '!report/**' \
   --glob '!node_modules/**' \

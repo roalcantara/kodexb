@@ -21,12 +21,12 @@ Read these files before editing:
 
 - `AGENTS.md`
 - `assets/guides/MISE_GUIDE.md`
-- `assets/docs/specs/mise-usage/requirements.md`
-- `assets/docs/specs/mise-usage/design.md`
-- `assets/docs/specs/mise-usage/tasks.md`
-- `assets/docs/specs/mise-usage-improvements/requirements.md`
-- `assets/docs/specs/mise-usage-improvements/design.md`
-- `assets/docs/specs/mise-usage-improvements/tasks.md`
+- `assets/docs/archive/mise-usage/requirements.md`
+- `assets/docs/archive/mise-usage/design.md`
+- `assets/docs/archive/mise-usage/tasks.md`
+- `assets/docs/archive/mise-usage-improvements/requirements.md`
+- `assets/docs/archive/mise-usage-improvements/design.md`
+- `assets/docs/archive/mise-usage-improvements/tasks.md`
 - `mise.toml`
 - `package.json`
 - `.github/workflows/review.yml`
@@ -339,9 +339,9 @@ safe matrix and keep the real mutation out of automation.
 Run these searches and resolve current-doc hits:
 
 ```sh
-rg -n "bun run [^\\n]*:ci|release:ci|lint:depcruise:graph" package.json .github README.md AGENTS.md CLAUDE.md .cursor assets/guides assets/docs/specs
-rg -n "mise run (release|publish|repo|icons)(\\s|$)" README.md AGENTS.md CLAUDE.md .cursor assets/guides assets/docs/specs
-rg -n "usage_action" mise.toml assets/guides assets/docs/specs
+rg -n "bun run [^\\n]*:ci|release:ci|lint:depcruise:graph" package.json .github README.md AGENTS.md CLAUDE.md .cursor assets/guides assets/docs/archive
+rg -n "mise run (release|publish|repo|icons)(\\s|$)" README.md AGENTS.md CLAUDE.md .cursor assets/guides assets/docs/archive
+rg -n "usage_action" mise.toml assets/guides assets/docs/archive
 ```
 
 Historical references may remain only when the surrounding document explicitly
@@ -369,8 +369,8 @@ Copy and paste this prompt into another agent if needed:
 ```txt
 Continue the Mise usage improvements work in /Users/roalcantara/Work/bun/app.
 
-Read AGENTS.md, assets/guides/MISE_GUIDE.md, assets/docs/specs/mise-usage/,
-assets/docs/specs/mise-usage-improvements/, mise.toml, package.json, and
+Read AGENTS.md, assets/guides/MISE_GUIDE.md, assets/docs/archive/mise-usage/,
+assets/docs/archive/mise-usage-improvements/, mise.toml, package.json, and
 .github/workflows/{review,release,publish}.yml before editing.
 
 Load app-context, mise-tasks, and docs-writer. Load mise-expert only if you touch
@@ -378,13 +378,13 @@ Load app-context, mise-tasks, and docs-writer. Load mise-expert only if you touc
 declaring completion.
 
 Implement the full task contract cleanup from
-assets/docs/specs/mise-usage-improvements/tasks.md. Do not add deprecated
+assets/docs/archive/mise-usage-improvements/tasks.md. Do not add deprecated
 compatibility wrappers. Do not weaken the policy checker. Do not bulk-edit
 checkboxes. Every checked task must include an Evidence bullet naming changed
 files, exact commands, and the command-level acceptance criteria that passed.
 
 The expected public task surface is exactly the output recorded in
-assets/docs/specs/mise-usage-improvements/handoff.md. The expected
+assets/docs/archive/mise-usage-improvements/handoff.md. The expected
 package.json script key list is exactly the output recorded in the same handoff.
 Do not edit either expected snapshot unless the maintainer explicitly approves a
 new snapshot before implementation.

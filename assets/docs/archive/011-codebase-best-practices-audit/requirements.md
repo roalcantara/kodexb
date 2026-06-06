@@ -114,14 +114,14 @@ truth.
 
 1. WHEN suppression cleanup begins
    THEN the agent SHALL refresh
-   `assets/docs/specs/codebase-quality-audit/design.md` against the current
+   `assets/docs/archive/codebase-quality-audit/design.md` against the current
    branch before changing source files.
 2. WHEN a suppression is removed
    THEN the related task in
-   `assets/docs/specs/codebase-quality-audit/tasks.md` SHALL be updated.
+   `assets/docs/archive/codebase-quality-audit/tasks.md` SHALL be updated.
 3. IF a suppression cannot be removed by code changes
    THEN it SHALL remain only with explicit maintainer approval as defined in
-   `assets/docs/specs/codebase-quality-audit/requirements.md`.
+   `assets/docs/archive/codebase-quality-audit/requirements.md`.
 4. WHEN this best-practices audit references suppression cleanup
    THEN it SHALL point to the existing codebase-quality-audit spec rather than
    creating a competing inventory.

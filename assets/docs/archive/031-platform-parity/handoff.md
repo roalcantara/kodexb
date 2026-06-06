@@ -11,7 +11,7 @@
 ## Copy-paste prompt for implementor
 
 ```text
-Implement macOS/Linux platform parity per assets/docs/specs/platform-parity/
+Implement macOS/Linux platform parity per assets/docs/archive/platform-parity/
 (requirements.md, design.md, tasks.md) Phases 1–5 in order. Phase 6 is optional.
 
 Goal: Every user-visible handoff feature that works on macOS shall work on Linux
@@ -31,10 +31,10 @@ ApplicationMenu paste role is in-app webview only; Linux app menus unsupported u
 See platform-parity/design.md §Electrobun native API survey before removing xdotool paths.
 
 Read first (order):
-  1. assets/docs/specs/platform-parity/requirements.md
-  2. assets/docs/specs/platform-parity/design.md  (parity matrix + drift table)
-  3. assets/docs/specs/platform-parity/tasks.md
-  4. assets/docs/specs/entry-action-handoff/design.md §Terminal, §Cheat paste, §Browser
+  1. assets/docs/archive/platform-parity/requirements.md
+  2. assets/docs/archive/platform-parity/design.md  (parity matrix + drift table)
+  3. assets/docs/archive/platform-parity/tasks.md
+  4. assets/docs/archive/entry-action-handoff/design.md §Terminal, §Cheat paste, §Browser
   5. src/shell/main/handoff/*.ts and *.spec.ts
 
 Phase 1 — Spec/test drift (tasks.md §Phase 1):

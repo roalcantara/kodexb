@@ -11,7 +11,7 @@
 ## Agent execution prompt
 
 ```txt
-Implement shell-chrome per assets/docs/specs/shell-chrome/.
+Implement shell-chrome per assets/docs/archive/shell-chrome/.
 
 Read requirements SC-1–SC-7, design.md decisions D-SC-001–006, tasks Phase 1–6.
 

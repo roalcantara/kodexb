@@ -133,7 +133,7 @@ The 5 phase stashes (`phase-4-data-layer` … `phase-misc-docs`) created
 during Phase 3 were nested supersets, not deltas. Splitting them into
 proper deltas would have required ~150 conflict resolutions. They were
 collapsed into a single working-tree apply at the start of Phase 4
-(see `assets/docs/specs/data-layer/design.md` § PRE-FLIGHT — STASH
+(see `assets/docs/archive/data-layer/design.md` § PRE-FLIGHT — STASH
 RECONCILIATION).
 
 After the Phase 4 commit, everything that did NOT land in the commit is
@@ -147,7 +147,7 @@ re-stashed as a single `phase-pending` entry (see Task 18).
 
 ## Phase 4 commit (`feat(data)`) lands ~150 paths
 
-See `assets/docs/specs/data-layer/design.md` § ARCHITECTURE — FILE INVENTORY.
+See `assets/docs/archive/data-layer/design.md` § ARCHITECTURE — FILE INVENTORY.
 
 ## phase-pending stash (after Task 18)
 
@@ -1074,7 +1074,7 @@ Expected: exit 0.
 Add at the end of the file:
 
 ```gitignore
-# Brainstorming-skill default path; app uses assets/docs/specs/ instead.
+# Brainstorming-skill default path; app uses assets/docs/archive/ instead.
 docs/superpowers/
 ```
 

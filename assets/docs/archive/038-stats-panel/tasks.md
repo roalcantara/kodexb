@@ -15,9 +15,9 @@
 
 **Files:** none
 
-- [ ] Read `assets/docs/specs/stats-panel/design.md`
-- [ ] Read `assets/docs/specs/stats-panel/requirements.md`
-- [ ] Read `assets/docs/specs/foundation/requirements.md` — V1-5 section
+- [ ] Read `assets/docs/archive/stats-panel/design.md`
+- [ ] Read `assets/docs/archive/stats-panel/requirements.md`
+- [ ] Read `assets/docs/archive/foundation/requirements.md` — V1-5 section
 
 ---
 
@@ -167,7 +167,7 @@ expect(typeof data.dbSize).toBe('number')
 
 ## Task 6: Mark Phase 12 complete in roadmap
 
-**Files:** Modify `assets/docs/specs/foundation/roadmap.md`
+**Files:** Modify `assets/docs/archive/foundation/roadmap.md`
 
 - [ ] Update: `⬜ pending` → `✔ done` for Phase 12.
 - [ ] Commit: `docs(roadmap): Mark Phase 12 Stats Panel as done`

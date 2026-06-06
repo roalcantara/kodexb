@@ -218,7 +218,7 @@ New `assets/features/e2e/sync_resilience.feature` tagged `@spec:sync` `@p1`:
 
 Update `settings_and_sync.feature` invalid-file scenario tags: add `@spec:sync`.
 
-**Step catalog** additions in `assets/docs/specs/e2e/step-catalog.md`:
+**Step catalog** additions in `assets/docs/archive/e2e/step-catalog.md`:
 
 - `Given the fixture sources include the sync resilience corpus`
 - `Then sync finishes within 60 seconds`

@@ -30,8 +30,8 @@
 
 **Files:** none
 
-- [ ] Read `assets/docs/specs/phase-7-detail-view/design.md`
-- [ ] Read `assets/docs/specs/foundation/{requirements,design,roadmap}.md` — V1-4 section
+- [ ] Read `assets/docs/archive/phase-7-detail-view/design.md`
+- [ ] Read `assets/docs/archive/foundation/{requirements,design,roadmap}.md` — V1-4 section
 - [ ] Read `.agents/skills/app-context/SKILL.md`, `.agents/skills/app-testing/SKILL.md`
 
 ---
@@ -673,7 +673,7 @@ git commit -m "chore: Phase 7 verification — all tests green, lint clean"
 
 ## Task 9: Mark Phase 7 complete in roadmap
 
-**Files:** Modify `assets/docs/specs/foundation/roadmap.md`
+**Files:** Modify `assets/docs/archive/foundation/roadmap.md`
 
 - [ ] **Step 1: Update Phase 7 status in roadmap**
 
@@ -687,6 +687,6 @@ Change line 24:
 - [ ] **Step 2: Commit**
 
 ```bash
-git add assets/docs/specs/foundation/roadmap.md
+git add assets/docs/archive/foundation/roadmap.md
 git commit -m "docs(roadmap): mark Phase 7 Detail View as done"
 ```

@@ -29,7 +29,7 @@ However, a code review found these remaining issues:
    registry or lock file.
 2. `README.md` and `.cursor/rules/electrobun-skills.mdc` still mention the old
    linked-skill workflow, `mise run skills:sync`, and `mise run link:skills`.
-3. `assets/docs/specs/skills-normalisation/handoff.md` still has a TOML example
+3. `assets/docs/archive/skills-normalisation/handoff.md` still has a TOML example
    that says `link` instead of `install`.
 
 Before editing:
@@ -113,7 +113,7 @@ Replace old linked-skill wording with the new model in:
 
 - `README.md`
 - `.cursor/rules/electrobun-skills.mdc`
-- `assets/docs/specs/skills-normalisation/handoff.md`
+- `assets/docs/archive/skills-normalisation/handoff.md`
 
 Required wording changes:
 
@@ -167,14 +167,14 @@ mise run skill report --json
 mise run skill sync
 mise run skill all --dry-run
 bun run lint:mise
-git diff --check -- assets/catalog/SKILLS.yaml assets/guides/SKILLS.md mise.toml CLAUDE.md AGENTS.md README.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md .cursor/rules/electrobun-skills.mdc assets/docs/specs/skills-normalisation/requirements.md assets/docs/specs/skills-normalisation/handoff.md assets/docs/specs/skills-normalisation/handoff-follow-up.md
+git diff --check -- assets/catalog/SKILLS.yaml assets/guides/SKILLS.md mise.toml CLAUDE.md AGENTS.md README.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md .cursor/rules/electrobun-skills.mdc assets/docs/archive/skills-normalisation/requirements.md assets/docs/archive/skills-normalisation/handoff.md assets/docs/archive/skills-normalisation/handoff-follow-up.md
 ```
 
 Also run these consistency checks and report the result:
 
 ```bash
 skills list --json
-rg -n "mise run (skills:sync|link:skills)|approved linked|linked companions|choices \"validate\" \"sync\" \"link\"" README.md .cursor/rules/electrobun-skills.mdc assets/docs/specs/skills-normalisation/handoff.md assets/docs/specs/skills-normalisation/requirements.md assets/guides/SKILLS.md AGENTS.md CLAUDE.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md mise.toml
+rg -n "mise run (skills:sync|link:skills)|approved linked|linked companions|choices \"validate\" \"sync\" \"link\"" README.md .cursor/rules/electrobun-skills.mdc assets/docs/archive/skills-normalisation/handoff.md assets/docs/archive/skills-normalisation/requirements.md assets/guides/SKILLS.md AGENTS.md CLAUDE.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md mise.toml
 ```
 
 Expected outcome:

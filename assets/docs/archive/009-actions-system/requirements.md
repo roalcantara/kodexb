@@ -7,7 +7,7 @@ Phase 10 delivers a keyboard-driven ⌘K action palette that offers context-sens
 actions for the focused entry. It also implements the `pasteInTerminal` and
 `openInEditor` App methods (currently stubs) using configurable shell hooks.
 
-This phase implements [V1-8](https://github.com/roalcantara/kodexb/blob/main/assets/docs/specs/foundation/requirements.md#requirement-v1-8-actions-k-palette)
+This phase implements [V1-8](https://github.com/roalcantara/kodexb/blob/main/assets/docs/archive/foundation/requirements.md#requirement-v1-8-actions-k-palette)
 from the foundation requirements.
 
 ---

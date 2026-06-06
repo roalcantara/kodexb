@@ -534,7 +534,7 @@ WHY
 - Component-partial decomposition makes future style edits a
   local change rather than a hunt through a 2,200-line monolith.
 
-Spec: assets/docs/specs/design-polishing/
+Spec: assets/docs/archive/design-polishing/
 ```
 
 ### Completion conditions
@@ -650,5 +650,5 @@ A higher-level checklist for the implementor:
 - [x] Every requirement REQ-001 … REQ-031 has at least one task that satisfies it (REQ-014/015 visual details completed in Task 14).
 - [x] Single atomic conventional commit on the working branch for migration (`b0d7dcc`).
 - [x] `handoff.md` not modified (planning artifact).
-- [x] Implementor reported: branch `feat-add-stats-panel`, commit `b0d7dcc`, spec under `assets/docs/specs/design-polishing/`.
+- [x] Implementor reported: branch `feat-add-stats-panel`, commit `b0d7dcc`, spec under `assets/docs/archive/design-polishing/`.
 - [x] **Deviation (resolved):** wireframe layout parity landed in follow-up after `b0d7dcc` (Task 14).

@@ -66,7 +66,7 @@
 
 **Files:**
 
-- Modify: `assets/docs/specs/README.md`
+- Modify: `assets/docs/archive/README.md`
 - Mark tasks in `tasks.md`.
 
 - [ ] Run targeted `bun test` and Biome on touched paths.

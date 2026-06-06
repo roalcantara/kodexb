@@ -156,7 +156,7 @@ Before editing implementation files, load:
   - **Acceptance criteria:**
     - Each quality tool still excludes only the local generated graph path.
     - No quality rule, threshold, or strictness flag is weakened.
-    - `rg -n "graphify|Graphify|graphify-out|GRAPH_REPORT" . --glob '!assets/docs/specs/graph/**'`
+    - `rg -n "graphify|Graphify|graphify-out|GRAPH_REPORT" . --glob '!assets/docs/archive/graph/**'`
       has no active integration or quality-tool matches.
   - **Evidence:** Updated `.gitignore`, `.dockerignore`, `.jscpd.json`,
     `.dependency-cruiser.cjs`, `.ls-lint.yml`, `biome.jsonc`, `hk.pkl`, and
@@ -216,7 +216,7 @@ Before editing implementation files, load:
   - _Requirements: GR-4, GR-5_
 
 - [x] 3.3 Add local activation documentation.
-  - Create `assets/docs/specs/graph/handoff.md`.
+  - Create `assets/docs/archive/graph/handoff.md`.
   - Document user-level Codex and Antigravity MCP config changes.
   - Document CLI installation, daemon registration, daemon start, and agent
     restart requirements.
@@ -224,19 +224,19 @@ Before editing implementation files, load:
   - **Acceptance criteria:**
     - A teammate can reproduce local activation without reading source code.
     - Local-only mutations are clearly separated from committed files.
-  - **Evidence:** Updated `assets/docs/specs/graph/handoff.md` with Graphify
+  - **Evidence:** Updated `assets/docs/archive/graph/handoff.md` with Graphify
     removal, user-level MCP setup, upstream daemon defect, and macOS
     LaunchAgent fallback commands.
   - _Requirements: GR-1, GR-4, GR-5_
 
 - [x] 3.4 Add graph spec to the canonical index.
-  - Update `assets/docs/specs/README.md`.
+  - Update `assets/docs/archive/README.md`.
   - Add one feature-spec index entry linking `requirements.md`, `design.md`,
     `tasks.md`, and `handoff.md`.
   - **Acceptance criteria:**
     - The canonical spec index links the CRG migration package.
   - **Evidence:** Added the graph package entry to
-    `assets/docs/specs/README.md`.
+    `assets/docs/archive/README.md`.
   - _Requirements: GR-8_
 
 - [x] 3.5 Add a brief CRG overview to the root README.
@@ -456,7 +456,7 @@ Before editing implementation files, load:
     ```sh
     git ls-files graphify-out
     rg -n "graphify|Graphify|graphify-out|GRAPH_REPORT" . \
-      --glob '!assets/docs/specs/graph/**' \
+      --glob '!assets/docs/archive/graph/**' \
       --glob '!assets/guides/CRG.md' \
       --glob '!report/**' \
       --glob '!node_modules/**' \

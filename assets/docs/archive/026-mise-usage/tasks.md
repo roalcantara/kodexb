@@ -33,13 +33,13 @@ task behavior.
     standalone script rules, destructive-task safety, and verification.
   - _Requirements: MU-1_
 
-- [x] 0.2 Create SDD artifacts under `assets/docs/specs/mise-usage/`.
+- [x] 0.2 Create SDD artifacts under `assets/docs/archive/mise-usage/`.
   - Add `requirements.md`, `design.md`, `tasks.md`, and `handoff.md`.
   - Record the decision to implement locally unless the thread needs a handoff.
   - _Requirements: MU-1, MU-8_
 
 - [x] 0.3 Verify documentation-only changes.
-  - Run `git diff --check -- assets/guides/MISE_GUIDE.md assets/docs/specs/mise-usage`.
+  - Run `git diff --check -- assets/guides/MISE_GUIDE.md assets/docs/archive/mise-usage`.
   - Review links and command examples.
   - _Requirements: MU-1, MU-7_
 

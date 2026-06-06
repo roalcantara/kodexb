@@ -15,7 +15,7 @@ kb uses a **narrow but deep** slice of Electrobun: single `BrowserWindow` with `
 
 This report maps **~38 doc URLs** to inventory ids and assigns kb-specific adoption tiers (**Should / Could / Defer / Skip**). Inventory entries remain `priority: undecided` per the neutral inventory spec.
 
-> **Maintainer sign-off (2026-06-01):** Should-tier items 1–4 are in v0.10.0 via electrobun-utils-adoption. Inventory priorities for 14 Electrobun ids are assigned in inventory.yml; see assets/docs/specs/v0.10.0-scope.md.
+> **Maintainer sign-off (2026-06-01):** Should-tier items 1–4 are in v0.10.0 via electrobun-utils-adoption. Inventory priorities for 14 Electrobun ids are assigned in inventory.yml; see assets/docs/archive/v0.10.0-scope.md.
 
 ---
 

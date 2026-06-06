@@ -55,7 +55,7 @@ schema, repositories, import service` (subject ≤ 50 chars).
 | `DbHandle` shape                                 | **`type DbHandle = Database`**                                     | Single API surface. No `{ db, raw }` flowing through every signature.                                                                                                       |
 | Commit strategy                                  | **one atomic commit**                                              | Mirrors Phase 3. Subject `feat(data): Add SQLite schema, repositories, import service`.                                                                                     |
 | Stash topology                                   | **collapse to single `phase-pending`**                             | Existing `phase-{4..misc-docs}` stashes are nested supersets, not deltas. Conflict-free recovery requires consolidation before Phase 4 work begins.                         |
-| `docs/superpowers/`                              | **delete + add to `.gitignore`**                                   | This path is a brainstorming-skill default; app uses `assets/docs/specs/<slug>/` instead. Never lands in any commit or stash.                                               |
+| `docs/superpowers/`                              | **delete + add to `.gitignore`**                                   | This path is a brainstorming-skill default; app uses `assets/docs/archive/<slug>/` instead. Never lands in any commit or stash.                                               |
 | Recovery source                                  | **`~/Work/bun/app_legacy` worktree at `cc3d08b`**                  | The "phase-4-data-layer" stash's `entry.repository.ts` is truncated to ~80 lines; the legacy version is the complete 193-line implementation.                               |
 
 [2]: ../foundation/design.md
@@ -855,7 +855,7 @@ Verify these forbidden-import rules exist (add if missing):
 Append at the end of the file:
 
 ```gitignore
-# Brainstorming-skill default path; app uses assets/docs/specs/ instead.
+# Brainstorming-skill default path; app uses assets/docs/archive/ instead.
 docs/superpowers/
 ```
 
@@ -907,10 +907,10 @@ docs/superpowers/
 
 ## RELATED DOCS
 
-- [`assets/docs/specs/foundation/design.md`](../foundation/design.md) — full
+- [`assets/docs/archive/foundation/design.md`](../foundation/design.md) — full
   architecture (Decisions 1–5, RPC contract, schema layers, migration
   mechanism, design system).
-- [`assets/docs/specs/foundation/requirements.md`](../foundation/requirements.md) — V1-2 (Sync), V1-3 (List), V1-5 (Stats), V1-7 (Tasks).
-- [`assets/docs/specs/foundation/roadmap.md`](../foundation/roadmap.md) — Phase 4 entry.
-- [`assets/docs/specs/core-domain/design.md`](../core-domain/design.md) — Phase 3 (committed).
+- [`assets/docs/archive/foundation/requirements.md`](../foundation/requirements.md) — V1-2 (Sync), V1-3 (List), V1-5 (Stats), V1-7 (Tasks).
+- [`assets/docs/archive/foundation/roadmap.md`](../foundation/roadmap.md) — Phase 4 entry.
+- [`assets/docs/archive/core-domain/design.md`](../core-domain/design.md) — Phase 3 (committed).
 - [`assets/guides/DoD.md`](../../../guides/DoD.md), [`assets/guides/TESTING_GUIDE.md`](../../../guides/TESTING_GUIDE.md), [`assets/guides/FISHERY_GUIDE.md`](../../../guides/FISHERY_GUIDE.md), [`assets/guides/CODESTYLE_GUIDE.md`](../../../guides/CODESTYLE_GUIDE.md), [`assets/guides/FCIS.guide.md`](../../../guides/FCIS.guide.md), [`assets/guides/GIT_COMMITS_GUIDE.md`](../../../guides/GIT_COMMITS_GUIDE.md), [`assets/guides/BUN_RUNTIME.md`](../../../guides/BUN_RUNTIME.md), [`assets/guides/ELECTROBUN.md`](../../../guides/ELECTROBUN.md).

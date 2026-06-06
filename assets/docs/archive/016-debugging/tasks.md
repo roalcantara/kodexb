@@ -526,7 +526,7 @@ graph so future contributors do not re-derive it.
       `@logtape/logtape`'s `MemorySink` (or an equivalent fixture sink).
   - _Requirements: DBG-7 §6_
 
-- [x] 5.6 Update `assets/docs/specs/foundation/design.md`.
+- [x] 5.6 Update `assets/docs/archive/foundation/design.md`.
   - Add an Observability architectural decision. Reference this spec as
     the implementation of record.
   - **Acceptance criteria:**
@@ -534,7 +534,7 @@ graph so future contributors do not re-derive it.
       surrounding decisions.
   - _Requirements: DBG-7 §7_
 
-- [x] 5.7 Update `assets/docs/specs/foundation/roadmap.md`.
+- [x] 5.7 Update `assets/docs/archive/foundation/roadmap.md`.
   - Slot the debug-logging feature into the appropriate phase row.
   - **Acceptance criteria:**
     - The roadmap reflects the work and links back to this spec folder.

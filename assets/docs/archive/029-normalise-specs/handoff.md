@@ -4,7 +4,7 @@
 Use this prompt to hand the implementation to another agent.
 
 ```md
-You are taking over `assets/docs/specs/normalise-specs/`.
+You are taking over `assets/docs/archive/normalise-specs/`.
 
 Goal:
 Normalise source spec files so they consistently follow
@@ -17,9 +17,9 @@ Required context:
 - Use the `subagent-driven-development` skill for execution.
 - Read `assets/guides/TESTING_GUIDE.md`.
 - Read `assets/guides/FISHERY_GUIDE.md`.
-- Read `assets/docs/specs/normalise-specs/requirements.md`.
-- Read `assets/docs/specs/normalise-specs/design.md`.
-- Execute `assets/docs/specs/normalise-specs/tasks.md` phase by phase.
+- Read `assets/docs/archive/normalise-specs/requirements.md`.
+- Read `assets/docs/archive/normalise-specs/design.md`.
+- Execute `assets/docs/archive/normalise-specs/tasks.md` phase by phase.
 
 Workflow:
 1. Pick the next incomplete phase in `tasks.md`.

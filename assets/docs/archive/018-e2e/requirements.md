@@ -11,7 +11,7 @@ increment. The suite SHALL start from the current app architecture:
 - Elysia + Eden Treaty RPC as the app transport.
 - `tools/preview/server.script.ts` as the existing browser-runnable harness for the
   real renderer bundle plus real RPC.
-- Existing SDD/EARS specs under `assets/docs/specs/` as the behavioral source
+- Existing SDD/EARS specs under `assets/docs/archive/` as the behavioral source
   map.
 - Existing `bun:test` unit/component coverage as the lower-level safety net.
 
@@ -29,7 +29,7 @@ schema) live beside this spec:
 ## Non-goals
 
 - The first implementation SHALL NOT automate every historical requirement in
-  `assets/docs/specs/`.
+  `assets/docs/archive/`.
 - The first implementation SHALL NOT add CodeceptJS unless a later task proves
   Playwright BDD cannot express a needed desktop-preview flow.
 - The first implementation SHALL NOT require the developer's real
@@ -180,7 +180,7 @@ instead of ad hoc browsing.
 #### Acceptance criteria
 
 1. WHEN implementation begins, THEN the agent SHALL scan
-   `assets/docs/specs/*/requirements.md`, `design.md`, and `tasks.md` for
+   `assets/docs/archive/*/requirements.md`, `design.md`, and `tasks.md` for
    release-facing flows and map them to backlog entries.
 2. WHEN backlog entries are created, THEN each entry SHALL include priority,
    source spec, flow name, proposed feature file, implementation status, and
@@ -218,7 +218,7 @@ order, so that implementation can proceed without redoing the investigation.
 
 #### Acceptance criteria
 
-1. WHEN this planning work is complete, THEN `assets/docs/specs/e2e/` SHALL
+1. WHEN this planning work is complete, THEN `assets/docs/archive/e2e/` SHALL
    contain `requirements.md`, `design.md`, `tasks.md`, and `handoff.md`.
 2. WHEN implementation starts, THEN the agent SHALL execute `tasks.md` in order
    and update task evidence as work lands.
@@ -284,13 +284,13 @@ regressions are caught in the same increment as unit tests.
 
 #### Acceptance criteria
 
-1. WHEN a new feature spec is created under `assets/docs/specs/<slug>/`, THEN
+1. WHEN a new feature spec is created under `assets/docs/archive/<slug>/`, THEN
    `requirements.md` SHALL include at least one requirement block (or AC
    clauses) that trace to Gherkin scenarios under `assets/features/e2e/`.
 
 2. WHEN a feature ships UI, keyboard, or persistence behavior, THEN
    `tasks.md` SHALL include an e2e task (or explicit cross-link to
-   `assets/docs/specs/e2e/tasks.md`) that lists feature files, fixture manifest
+   `assets/docs/archive/e2e/tasks.md`) that lists feature files, fixture manifest
    updates, and step-catalog phrases before the feature is marked beta-ready.
 
 3. WHEN e2e scenarios are planned, THEN authors SHALL update
@@ -315,4 +315,4 @@ regressions are caught in the same increment as unit tests.
    SHALL appear as at least one numbered AC in the feature `requirements.md`
    and/or a Gherkin scenario under `assets/features/e2e/` before the feature
    is marked beta-ready. Task-only or handoff-only checks are not sufficient.
-   See [`assets/docs/specs/README.md`](../README.md#verifiable-acceptance-no-orphan-checks).
+   See [`assets/docs/archive/README.md`](../README.md#verifiable-acceptance-no-orphan-checks).

@@ -16,7 +16,7 @@ Complete entry-action-handoff fixup 2 in /Users/roalcantara/Work/bun/kb.
 Fixup 1 is merged in tree: hooks, panel, footer, seed, e2e steps, 7/11 scenarios green.
 Do NOT rewrite assets/features/e2e/entry_action_handoff.feature prose.
 
-Read: assets/docs/specs/entry-action-handoff/handoff-fixup-2.md
+Read: assets/docs/archive/entry-action-handoff/handoff-fixup-2.md
 
 Load: app-context, app-rpc, app-testing, app-quality-gate
 

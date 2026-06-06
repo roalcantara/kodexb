@@ -691,7 +691,7 @@ Single comprehensive guide. Section outline:
 .github/actions/package-electrobun/action.yml
 CHANGELOG.md
 assets/guides/CI_GUIDE.md
-assets/docs/specs/ci-build-packaging/design.md
+assets/docs/archive/ci-build-packaging/design.md
 ```
 
 `CHANGELOG.md` is initially empty (created with just the header); release-it

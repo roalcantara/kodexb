@@ -135,13 +135,13 @@ and to ordered work in [tasks.md](tasks.md).
 
 ### Acceptance criteria
 
-1. WHEN `assets/docs/specs/foundation/design.md` is inspected, THEN
+1. WHEN `assets/docs/archive/foundation/design.md` is inspected, THEN
    Decision 2 SHALL state "TypeBox throughout (Zod removed)" with rationale
    referencing the schema/parser split.
-2. WHEN `assets/docs/specs/foundation/requirements.md` line 170 is
+2. WHEN `assets/docs/archive/foundation/requirements.md` line 170 is
    inspected, THEN it SHALL read "WHEN a file fails YAML parsing or TypeBox
    validation".
-3. WHEN `assets/docs/specs/foundation/roadmap.md` line 233 is inspected,
+3. WHEN `assets/docs/archive/foundation/roadmap.md` line 233 is inspected,
    THEN it SHALL state "TypeBox is the sole validation library across core
    and transport — Zod was removed in a prior refactor."
 4. WHEN `.agents/skills/app-context/SKILL.md` is inspected, THEN the Zod /
@@ -149,7 +149,7 @@ and to ordered work in [tasks.md](tasks.md).
    `src/core/` and the transport layer."
 5. WHEN `.agents/skills/app-rpc/SKILL.md` is inspected, THEN the dependency
    table SHALL list `@sinclair/typebox` for the Domain layer (not `zod`).
-6. WHEN `rg -i "\\bzod\\b" assets/docs/specs/foundation/
+6. WHEN `rg -i "\\bzod\\b" assets/docs/archive/foundation/
    .agents/skills/app-context/ .agents/skills/app-rpc/` runs, THEN the system
    SHALL produce zero matches.
 

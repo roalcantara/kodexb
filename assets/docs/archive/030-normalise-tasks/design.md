@@ -101,7 +101,7 @@ commands are updated in:
 - `AGENTS.md`,
 - `CLAUDE.md`,
 - `assets/guides/*.md`,
-- `assets/docs/specs/**/*.md`,
+- `assets/docs/archive/**/*.md`,
 - `.cursor` guidance when relevant.
 
 ## Error handling

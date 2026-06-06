@@ -8,7 +8,7 @@
 
 **Tech stack:** Bun, Electrobun (`electrobun/bun`), React 19, `bun:test`, Playwright preview E2E.
 
-**Canonical path:** This file lives next to the feature design under `assets/docs/specs/shell-window-nav/` (app does not use `docs/superpowers/`).
+**Canonical path:** This file lives next to the feature design under `assets/docs/archive/shell-window-nav/` (app does not use `docs/superpowers/`).
 
 ---
 

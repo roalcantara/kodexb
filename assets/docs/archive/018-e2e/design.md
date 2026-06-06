@@ -114,7 +114,7 @@ and Gherkin generation in parallel. The Codecept tutorial's locator guidance
 
 ```mermaid
 flowchart LR
-  specs["assets/docs/specs/* EARS requirements"] --> backlog["e2e backlog inventory"]
+  specs["assets/docs/archive/* EARS requirements"] --> backlog["e2e backlog inventory"]
   backlog --> features["assets/features/e2e/*.feature"]
   features --> bddgen["playwright-bdd bddgen"]
   bddgen --> generated["generated Playwright tests"]

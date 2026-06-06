@@ -54,7 +54,7 @@ Each `## REQUIREMENT SY-N` maps to [design.md](design.md) and [tasks.md](tasks.m
 
 **Verifiable acceptance:** Every release-critical behavior appears here and/or
 in Gherkin under `assets/features/e2e/` tagged `@spec:sync`. See
-[`assets/docs/specs/README.md`](../README.md#verifiable-acceptance-no-orphan-checks).
+[`assets/docs/archive/README.md`](../README.md#verifiable-acceptance-no-orphan-checks).
 
 ---
 

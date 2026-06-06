@@ -15,9 +15,9 @@
 
 **Files:** none
 
-- [ ] Read `assets/docs/specs/sync-ui/design.md`
-- [ ] Read `assets/docs/specs/sync-ui/requirements.md`
-- [ ] Read `assets/docs/specs/foundation/requirements.md` — V1-2 §4–5
+- [ ] Read `assets/docs/archive/sync-ui/design.md`
+- [ ] Read `assets/docs/archive/sync-ui/requirements.md`
+- [ ] Read `assets/docs/archive/foundation/requirements.md` — V1-2 §4–5
 
 ---
 
@@ -279,7 +279,7 @@ test('dismiss button calls onDismiss', () => {
 
 ## Task 7: Mark Phase 11 complete in roadmap
 
-**Files:** Modify `assets/docs/specs/foundation/roadmap.md`
+**Files:** Modify `assets/docs/archive/foundation/roadmap.md`
 
 - [ ] Update: `⬜ pending` → `✔ done` for Phase 11.
 - [ ] Commit: `docs(roadmap): Mark Phase 11 Sync UI as done`

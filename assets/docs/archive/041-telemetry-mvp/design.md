@@ -269,7 +269,7 @@ Eight events to start. The taxonomy is owned by this spec; expansions require an
 | **N ≥ ~50 installs** | D-005 | Self-Stats becomes a candidate *user-facing product feature*; re-evaluate as such. |
 | **N ≥ ~100 installs** | D-003 | Aptabase / PostHog Cloud / TelemetryDeck may now justify their switching cost (cohort retention, freemium-cut hypotheses). |
 | **Public commitment "your data never leaves your device"** | D-003 | Swap `FirebaseTelemetry` for `TelemetryDeckTelemetry` or `NoopTelemetry` (one file, ~1 hour). |
-| **Sync service ships (Phase 2)** | D-004 | OpenTelemetry re-opens — multi-component instrumentation now justifies a collector. New spec under `assets/docs/specs/observability/`. |
+| **Sync service ships (Phase 2)** | D-004 | OpenTelemetry re-opens — multi-component instrumentation now justifies a collector. New spec under `assets/docs/archive/observability/`. |
 | **Firebase free-tier limits bite** | D-003 | Will not happen at < 50k MAU. If it does, revisit vendor or upgrade plan. |
 | **Sentry free-tier limits bite** | D-001 | Reduce sample rates, or migrate to GlitchTip (self-host) / upgrade plan. |
 

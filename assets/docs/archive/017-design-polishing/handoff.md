@@ -12,7 +12,7 @@
 | Created                         | 2026-05-27                                            |
 | Project                         | `/Users/roalcantara/Work/bun/kb`                      |
 | Spec slug                       | `design-polishing`                                    |
-| Spec folder                     | `assets/docs/specs/design-polishing/`                 |
+| Spec folder                     | `assets/docs/archive/design-polishing/`                 |
 | Planning agent                  | Planner (specs-only; **no implementation performed**) |
 | Implementor agent               | YOU                                                   |
 | Working branch at planning time | `feat-add-stats-panel` (unrelated WIP — see §1)       |
@@ -21,7 +21,7 @@
 
 ## 1. Current state summary
 
-A planning pass produced four spec artifacts under `assets/docs/specs/design-polishing/`:
+A planning pass produced four spec artifacts under `assets/docs/archive/design-polishing/`:
 
 1. `requirements.md` — 31 EARS-format requirements organised into 5 epics.
 2. `design.md` — the normative technical contract: 12 decisions (`D-001` … `D-012`), Surface Inventory (§3), DESIGN.md vs wireframe conflict-resolution table (§4), build-pipeline shape (§5), full `@theme` token skeleton (§6), migration playbook (§7).
@@ -72,11 +72,11 @@ Optional but recommended when blockers appear:
 ### Step 2 — Read the spec
 
 ```
-1. assets/docs/specs/design-polishing/requirements.md   (full)
-2. assets/docs/specs/design-polishing/design.md         (full)
-3. assets/docs/specs/design-polishing/tasks.md          (full)
+1. assets/docs/archive/design-polishing/requirements.md   (full)
+2. assets/docs/archive/design-polishing/design.md         (full)
+3. assets/docs/archive/design-polishing/tasks.md          (full)
 4. DESIGN.md                                            (source-of-truth tokens)
-5. assets/docs/specs/design-polishing/wireframe.html    (layout/spacing reference)
+5. assets/docs/archive/design-polishing/wireframe.html    (layout/spacing reference)
 6. src/shell/renderer/styles/list.css                   (the monolith you are decomposing)
 7. assets/guides/DoD.md                                 (acceptance gate)
 8. assets/guides/GIT_COMMITS_GUIDE.md                   (commit format)
@@ -102,7 +102,7 @@ When Task 13 completes (single atomic commit), report to the user:
 
 - Working branch name
 - Commit SHA + subject
-- Links to the four spec artifacts in `assets/docs/specs/design-polishing/`
+- Links to the four spec artifacts in `assets/docs/archive/design-polishing/`
 - Any deviation from the spec (there should be none — if there is, see §7 "Escalation rule")
 
 ---
@@ -122,7 +122,7 @@ When Task 13 completes (single atomic commit), report to the user:
 | File                                                | Purpose                                                                            | Relevance                                                                    |
 | --------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | `DESIGN.md`                                         | Andromeda Void design system (colours, type, spacing, semantic styles, components) | Source of truth for tokens. Mapped 1:1 into `theme.css` `@theme` block.      |
-| `assets/docs/specs/design-polishing/wireframe.html` | Single-screen prototype for List view                                              | Source of truth for *layout/spacing* per D-006 / §4 conflict table.          |
+| `assets/docs/archive/design-polishing/wireframe.html` | Single-screen prototype for List view                                              | Source of truth for *layout/spacing* per D-006 / §4 conflict table.          |
 | `src/shell/renderer/styles/list.css`                | 2,276-line monolith with ~75 `theme-*` classes across 10+ surfaces                 | The thing you are decomposing.                                               |
 | `src/shell/renderer/index.ts`                       | Renderer entry; imports CSS                                                        | Edit in Task 1 to swap `./styles/list.css` for `./styles/generated/app.css`. |
 | `src/shell/renderer/index.html`                     | Renderer HTML shell                                                                | Untouched.                                                                   |
@@ -264,11 +264,11 @@ Both should terminate cleanly with `⌃C` and `mise run dev:kill`.
 
 | Artifact                    | Path                                                 | Role                                                                                                                    |
 | --------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Requirements                | `assets/docs/specs/design-polishing/requirements.md` | EARS-format acceptance criteria; 31 REQ-IDs across 5 epics.                                                             |
-| Design                      | `assets/docs/specs/design-polishing/design.md`       | Normative technical contract: decisions, Surface Inventory, token map, migration playbook.                              |
-| Tasks                       | `assets/docs/specs/design-polishing/tasks.md`        | 13 ordered tracer-bullet slices with REQ traceability and completion conditions.                                        |
-| Handoff                     | `assets/docs/specs/design-polishing/handoff.md`      | This file. Bootstrap + decision log + ambiguity register + gotchas.                                                     |
-| Wireframe                   | `assets/docs/specs/design-polishing/wireframe.html`  | Single-screen prototype; authoritative for layout/spacing per D-006.                                                    |
+| Requirements                | `assets/docs/archive/design-polishing/requirements.md` | EARS-format acceptance criteria; 31 REQ-IDs across 5 epics.                                                             |
+| Design                      | `assets/docs/archive/design-polishing/design.md`       | Normative technical contract: decisions, Surface Inventory, token map, migration playbook.                              |
+| Tasks                       | `assets/docs/archive/design-polishing/tasks.md`        | 13 ordered tracer-bullet slices with REQ traceability and completion conditions.                                        |
+| Handoff                     | `assets/docs/archive/design-polishing/handoff.md`      | This file. Bootstrap + decision log + ambiguity register + gotchas.                                                     |
+| Wireframe                   | `assets/docs/archive/design-polishing/wireframe.html`  | Single-screen prototype; authoritative for layout/spacing per D-006.                                                    |
 | Design system               | `DESIGN.md`                                          | Andromeda Void colour, type, spacing, semantic-style and component tokens; authoritative for semantic colour per D-006. |
 | Legacy CSS                  | `src/shell/renderer/styles/list.css`                 | 2,276-line monolith being decomposed.                                                                                   |
 | DoD                         | `assets/guides/DoD.md`                               | The acceptance gate every task must clear.                                                                              |

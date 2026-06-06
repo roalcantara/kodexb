@@ -7,7 +7,7 @@ Phase 9 delivers full task lifecycle management from the desktop UI. Users can
 create, edit, delete, reorder, and cycle status/priority on tasks without editing
 YAML files directly. Mutations persist to both SQLite and YAML sources.
 
-This phase implements [V1-7](https://github.com/roalcantara/kodexb/blob/main/assets/docs/specs/foundation/requirements.md#requirement-v1-7-task-management)
+This phase implements [V1-7](https://github.com/roalcantara/kodexb/blob/main/assets/docs/archive/foundation/requirements.md#requirement-v1-7-task-management)
 from the foundation requirements. The read path (list badges, detail view, dep
 graph) already exists — this phase builds the write path.
 

@@ -4,7 +4,7 @@
 Use this prompt to hand the implementation to another agent.
 
 ```md
-You are taking over `assets/docs/specs/normalise-biome-rules/`.
+You are taking over `assets/docs/archive/normalise-biome-rules/`.
 
 Goal:
 Adopt additional Biome rules one rule at a time, making every adopted rule pass
@@ -17,9 +17,9 @@ Required context:
 - Read `.agents/skills/app-testing/SKILL.md` for test-rule phases.
 - Use `biome-developer`.
 - Use `subagent-driven-development`.
-- Read `assets/docs/specs/normalise-biome-rules/requirements.md`.
-- Read `assets/docs/specs/normalise-biome-rules/design.md`.
-- Execute `assets/docs/specs/normalise-biome-rules/tasks.md` phase by phase.
+- Read `assets/docs/archive/normalise-biome-rules/requirements.md`.
+- Read `assets/docs/archive/normalise-biome-rules/design.md`.
+- Execute `assets/docs/archive/normalise-biome-rules/tasks.md` phase by phase.
 
 Workflow:
 1. Pick the next unchecked phase in `tasks.md`.

@@ -227,7 +227,7 @@ Expected implementation files:
 - `package.json`, only if aliases need to point at HK profiles
 - `.github/workflows/review.yml`, only for CI parity/adoption
 - `.agents/skills/app-quality-gate/scripts/gate.sh`, only if delegating to HK
-- `assets/docs/specs/hk/*`
+- `assets/docs/archive/hk/*`
 - possible docs in `assets/guides/` if current command guidance changes
 
 No source files under `src/` are expected for the orchestration pass.

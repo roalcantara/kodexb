@@ -11,7 +11,7 @@
 ## Copy-paste prompt for a new agent
 
 ```text
-Implement assets/docs/specs/entry-action-handoff/ per requirements.md, design.md, and tasks.md (phases 1–8 in order).
+Implement assets/docs/archive/entry-action-handoff/ per requirements.md, design.md, and tasks.md (phases 1–8 in order).
 
 MANDATORY process (AGENTS.md):
   Claude → load skills → code → gate

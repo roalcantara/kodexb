@@ -5,7 +5,7 @@
 Use this prompt to hand the implementation to another agent.
 
 ```md
-You are taking over `assets/docs/specs/codebase-consolidation/`.
+You are taking over `assets/docs/archive/codebase-consolidation/`.
 
 Goal:
 Reduce file count, eliminate duplicate constants, and move pure domain
@@ -15,10 +15,10 @@ track A–F, on the integration branch `feat-add-stats-panel`.
 
 Required reading (in this order):
 - `CLAUDE.md` (project guardrails).
-- `assets/docs/specs/codebase-consolidation/report.md` (findings + metrics).
-- `assets/docs/specs/codebase-consolidation/requirements.md` (EARS).
-- `assets/docs/specs/codebase-consolidation/design.md` (target shape).
-- `assets/docs/specs/codebase-consolidation/tasks.md` (execute these).
+- `assets/docs/archive/codebase-consolidation/report.md` (findings + metrics).
+- `assets/docs/archive/codebase-consolidation/requirements.md` (EARS).
+- `assets/docs/archive/codebase-consolidation/design.md` (target shape).
+- `assets/docs/archive/codebase-consolidation/tasks.md` (execute these).
 - `assets/guides/CODESTYLE_GUIDE.md` (naming, FCIS layout).
 - `assets/guides/TESTING_GUIDE.md` (Better Specs, no-mock rule).
 - `assets/guides/FCIS.guide.md` (pure-core / imperative-shell rules).

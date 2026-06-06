@@ -218,7 +218,7 @@ Replace old-tool references in active guidance:
 - `.agents/skills/app-quality-gate/scripts/gate_policy.sh`: update the comment
   that says staged diff exists for pre-commit.
 
-Historical specs under `assets/docs/specs/**` may mention the old tools as
+Historical specs under `assets/docs/archive/**` may mention the old tools as
 history. Active guidance must not.
 
 ## Pkl Backend

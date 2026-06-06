@@ -39,23 +39,23 @@
   - _Requirements: R2, R5, R7_
 
 - [ ] **T1.5 - Publish fixture manifest**
-  - Keep `assets/docs/specs/e2e/fixture-manifest.md` aligned with seed code.
+  - Keep `assets/docs/archive/e2e/fixture-manifest.md` aligned with seed code.
   - Seed implementation MUST use exact titles/tags from the manifest.
   - Evidence: manifest cross-check against `assets/features/e2e/*.feature`.
   - _Requirements: R1, R2_
 
 - [ ] **T1.6 - Publish step catalog**
-  - Keep `assets/docs/specs/e2e/step-catalog.md` aligned with feature files.
+  - Keep `assets/docs/archive/e2e/step-catalog.md` aligned with feature files.
   - Every Gherkin phrase in features MUST appear in the catalog before T3.3.
   - Evidence: diff review; no orphan steps.
   - _Requirements: R2, R5, R9_
 
 - [ ] **T1.2 - Build the EARS-to-e2e backlog**
-  - Scan `assets/docs/specs/*/{requirements,design,tasks}.md`.
+  - Scan `assets/docs/archive/*/{requirements,design,tasks}.md`.
   - Map release-facing flows to priority, source specs, proposed feature files,
     and implementation status.
   - Deduplicate overlapping scenarios across specs.
-  - Store the inventory in task evidence or `assets/docs/specs/e2e/backlog.md`
+  - Store the inventory in task evidence or `assets/docs/archive/e2e/backlog.md`
     if it is too large.
   - Evidence: backlog file or table plus command/search notes.
   - _Requirements: R4, R6_

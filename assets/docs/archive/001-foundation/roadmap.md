@@ -334,7 +334,7 @@ path — everything from Phase 7 onward builds on the Eden Treaty client.
 Each pending phase follows this Superpowers workflow:
 
 ```
-1. /brainstorming          Design + SDD spec → assets/docs/specs/<slug>/
+1. /brainstorming          Design + SDD spec → assets/docs/archive/<slug>/
 2.  ↳ review & approve
 3. /using-git-worktrees    Isolated branch for the phase
 4. /writing-plans          2-4h task plan with TDD markers
@@ -349,7 +349,7 @@ Each pending phase follows this Superpowers workflow:
 
 When Superpowers skills mention `docs/superpowers/specs` or
 `docs/superpowers/plans`, use the `spec-driven-development` shape in
-`assets/docs/specs/<slug>/` instead.
+`assets/docs/archive/<slug>/` instead.
 
 The `app-quality-gate` skill is the gate for step 7. Running
 `.agents/skills/app-quality-gate/scripts/gate.sh` is how

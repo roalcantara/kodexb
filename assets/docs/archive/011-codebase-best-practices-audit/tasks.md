@@ -64,7 +64,7 @@ cannot run an optional command.
 | Spec coverage backlog  | `mise run test:spec-audit` after phase 7                                                         | Missing non-exempt spec count is visible and does not grow without explanation.                     |
 | Preview/e2e confidence | `mise run e2e:preview` when available                                                            | Renderer-risky phases either pass preview e2e or record the exact blocker.                          |
 | Cohesion               | `wc -l src/shell/renderer/components/list/list_main.component.tsx` and extracted component count | `ListMain` gets smaller while extracted components keep co-located specs.                           |
-| Suppression inventory  | `assets/docs/specs/codebase-quality-audit/tasks.md`                                              | Suppression rows are updated instead of duplicated in this spec.                                    |
+| Suppression inventory  | `assets/docs/archive/codebase-quality-audit/tasks.md`                                              | Suppression rows are updated instead of duplicated in this spec.                                    |
 
 ## Phase impact ledger
 
@@ -147,7 +147,7 @@ EOF
   - _Acceptance criteria: R7.5, R12.1_
 
 - [x] 0.4 Review the source audit report.
-  - Read `assets/docs/specs/codebase-best-practices-audit/report.md`.
+  - Read `assets/docs/archive/codebase-best-practices-audit/report.md`.
   - Confirm the task order still matches current project priorities.
   - If the report has drifted, update `report.md` before source changes.
   - _Acceptance criteria: R12.1_
@@ -617,7 +617,7 @@ EOF
 ```
 
 - [x] 10.1 Refresh suppression cleanup inventory.
-  - Read `assets/docs/specs/codebase-quality-audit/`.
+  - Read `assets/docs/archive/codebase-quality-audit/`.
   - Refresh rows for `ListMain`, list hooks, task sheet, sync modal, and view navigation against the current branch.
   - Do not create a second suppression inventory.
   - _Acceptance criteria: R5.1, R5.3, R5.4, R9.1_
@@ -647,7 +647,7 @@ EOF
   - Run `mise run perf run`.
   - Run `mise run perf compare` when `tools/benchmarks/results/baseline.json` exists.
   - Run the full quality gate.
-  - Update `assets/docs/specs/codebase-quality-audit/tasks.md` with the current partial extraction status; do not mark suppression rows complete until the related suppressions are actually removed.
+  - Update `assets/docs/archive/codebase-quality-audit/tasks.md` with the current partial extraction status; do not mark suppression rows complete until the related suppressions are actually removed.
   - Update the phase 10 impact ledger row with `ListMain` line-count delta, extracted component count, co-located spec count, preview e2e result or blocker, and performance benchmark result or blocker.
   - _Acceptance criteria: R5.2, R5.3, R9.5, R11.1, R11.3, R12.1_
 
@@ -687,7 +687,7 @@ EOF
 - [x] 11.2 Update audit documentation.
   - Update `report.md` with completed items and remaining follow-ups.
   - Mark completed tasks in this file.
-  - If work moved to `assets/docs/specs/codebase-quality-audit/`, link the
+  - If work moved to `assets/docs/archive/codebase-quality-audit/`, link the
     exact rows or tasks.
   - _Acceptance criteria: R5.2, R5.4, R12.1_
 

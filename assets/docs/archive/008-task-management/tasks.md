@@ -15,9 +15,9 @@
 
 **Files:** none
 
-- [ ] Read `assets/docs/specs/task-management/design.md`
-- [ ] Read `assets/docs/specs/task-management/requirements.md`
-- [ ] Read `assets/docs/specs/foundation/requirements.md` — V1-7 section
+- [ ] Read `assets/docs/archive/task-management/design.md`
+- [ ] Read `assets/docs/archive/task-management/requirements.md`
+- [ ] Read `assets/docs/archive/foundation/requirements.md` — V1-7 section
 - [ ] Read `.agents/skills/app-context/SKILL.md`, `.agents/skills/app-testing/SKILL.md`, `.agents/skills/app-rpc/SKILL.md`
 
 ---
@@ -924,7 +924,7 @@ git commit -m "chore: Phase 9 verification — all tests green, lint clean"
 
 ## Task 14: Mark Phase 9 complete in roadmap
 
-**Files:** Modify `assets/docs/specs/foundation/roadmap.md`
+**Files:** Modify `assets/docs/archive/foundation/roadmap.md`
 
 - [ ] **Step 1: Update Phase 9 status**
 
@@ -936,6 +936,6 @@ git commit -m "chore: Phase 9 verification — all tests green, lint clean"
 - [ ] **Step 2: Commit**
 
 ```bash
-git add assets/docs/specs/foundation/roadmap.md
+git add assets/docs/archive/foundation/roadmap.md
 git commit -m "docs(roadmap): mark Phase 9 Task Management as done"
 ```

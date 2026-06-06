@@ -151,4 +151,6 @@ Until shared contracts finish migrating, these **tools** may still embed paths (
 
 **Rogue reference inventory:** `mise run audit rogue-refs` (writes `tmp/audit/`; diagnostic, not a merge gate).
 
+**Spec system backlog:** root [`TODO.md`](../../TODO.md) tracks remaining P0–P2 migration items.
+
 Listed in ast-grep `ignores` for the inbound-link rules.

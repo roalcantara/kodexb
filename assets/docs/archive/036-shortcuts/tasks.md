@@ -649,9 +649,9 @@ Commit: `chore(quality): Pass full gate for shortcut feature`.
 **Files:** add / modify (cross-spec)
 - `assets/features/e2e/shortcuts_overlay.feature` *(may already exist — extend)*
 - `assets/features/e2e/shortcuts_list.feature` *(may already exist — extend)*
-- `assets/docs/specs/e2e/fixture-manifest.md`
-- `assets/docs/specs/e2e/step-catalog.md`
-- `assets/docs/specs/e2e/tasks.md` (Phase 7)
+- `assets/docs/archive/e2e/fixture-manifest.md`
+- `assets/docs/archive/e2e/step-catalog.md`
+- `assets/docs/archive/e2e/tasks.md` (Phase 7)
 - `e2e/steps/shortcuts.steps.ts` *(create if missing)*
 - `e2e/screenplay/` tasks and questions as needed
 - `e2e/support/seed_fixture.support.ts` (shortcut YAML seed)

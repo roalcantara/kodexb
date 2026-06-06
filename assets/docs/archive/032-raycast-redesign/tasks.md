@@ -15,8 +15,8 @@
 
 **Files:** none
 
-- [ ] Read `assets/docs/specs/raycast-redesign/design.md`
-- [ ] Read `assets/docs/specs/raycast-redesign/requirements.md`
+- [ ] Read `assets/docs/archive/raycast-redesign/design.md`
+- [ ] Read `assets/docs/archive/raycast-redesign/requirements.md`
 
 ---
 

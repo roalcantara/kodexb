@@ -13,8 +13,8 @@
 
 **Files:** none
 
-- [ ] Read `assets/docs/specs/app-service-rpc/{requirements,design,implementation-plan}.md`
-- [ ] Read `assets/docs/specs/foundation/{design,roadmap}.md` Phase 5 section
+- [ ] Read `assets/docs/archive/app-service-rpc/{requirements,design,implementation-plan}.md`
+- [ ] Read `assets/docs/archive/foundation/{design,roadmap}.md` Phase 5 section
 - [ ] Read `.agents/skills/app-context/SKILL.md`, `.agents/skills/app-rpc/SKILL.md`, `.agents/skills/app-testing/SKILL.md`, `.agents/skills/app-quality-gate/SKILL.md`
 - [ ] Read `.cursor/electrobun-skill-routing.md` then the referenced Electrobun RPC skills (do not guess IPC binding APIs)
 
@@ -111,7 +111,7 @@ Expected: JSON response (not 404).
 
 ## Task 10: Quality gate + roadmap update
 
-**Files:** Modify `assets/docs/specs/foundation/roadmap.md`
+**Files:** Modify `assets/docs/archive/foundation/roadmap.md`
 
 - [ ] Run:
 
@@ -120,4 +120,4 @@ bun test
 bun run lint
 ```
 
-- [ ] Only after passing verification, mark Phase 5 done in `assets/docs/specs/foundation/roadmap.md`
+- [ ] Only after passing verification, mark Phase 5 done in `assets/docs/archive/foundation/roadmap.md`

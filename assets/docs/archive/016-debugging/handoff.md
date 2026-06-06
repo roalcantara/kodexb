@@ -8,7 +8,7 @@ executes `tasks.md` phase by phase; the EARS acceptance criteria in
 `requirements.md` are the invariant outputs that prevent drift.
 
 ```md
-You are taking over `assets/docs/specs/debugging/`.
+You are taking over `assets/docs/archive/debugging/`.
 
 ## Goal
 
@@ -30,11 +30,11 @@ Workspace rules (already always-applied; re-read for grounding):
 - `AGENTS.md`
 
 SDD artifacts for this spec:
-- `assets/docs/specs/debugging/requirements.md` — EARS acceptance criteria
+- `assets/docs/archive/debugging/requirements.md` — EARS acceptance criteria
   (DBG-1 … DBG-8). These are the invariant outputs.
-- `assets/docs/specs/debugging/design.md` — normative technical contract.
+- `assets/docs/archive/debugging/design.md` — normative technical contract.
   Concrete values everywhere; no placeholders.
-- `assets/docs/specs/debugging/tasks.md` — phase-by-phase checklist with
+- `assets/docs/archive/debugging/tasks.md` — phase-by-phase checklist with
   individual acceptance criteria per task and `_Requirements:_` traceability.
 
 Project skills (under `.agents/skills/`):
@@ -55,8 +55,8 @@ In-repo guides:
 - `assets/guides/FISHERY_GUIDE.md` — `factoryFor` usage
 - `assets/guides/GIT_COMMITS_GUIDE.md` — Conventional Commits
 - `assets/guides/DoD.md` — Definition of Done
-- `assets/docs/specs/foundation/design.md` — architectural decisions
-- `assets/docs/specs/foundation/requirements.md` — EARS template (V1-1…V1-8)
+- `assets/docs/archive/foundation/design.md` — architectural decisions
+- `assets/docs/archive/foundation/requirements.md` — EARS template (V1-1…V1-8)
 
 Existing code to study before writing anything:
 - `src/shared/logging/` — current 4-file logging layer

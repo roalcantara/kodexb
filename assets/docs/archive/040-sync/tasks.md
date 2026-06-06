@@ -154,7 +154,7 @@ criteria, and suggested **evidence** commands.
 
 - **Requirements:** SY-3
 - **Work:**
-  - Update `assets/docs/specs/data-layer/design.md` and `mixed_invalid.yml`
+  - Update `assets/docs/archive/data-layer/design.md` and `mixed_invalid.yml`
     comment to match entry-level behavior.
 - **Done when:** No contradiction between data-layer table and sync spec.
 - **Evidence:** Doc review in PR.
@@ -163,7 +163,7 @@ criteria, and suggested **evidence** commands.
 
 - **Requirements:** —
 - **Work:**
-  - Add bullet under [assets/docs/specs/README.md](../README.md) feature index.
+  - Add bullet under [assets/docs/archive/README.md](../README.md) feature index.
 - **Done when:** Link trio `sync/{requirements,design,tasks}.md` + handoff.
 - **Evidence:** README renders links.
 

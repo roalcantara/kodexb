@@ -196,7 +196,7 @@ Every surface below is in scope. The implementor migrates each into a dedicated 
 
 ## 4. Conflict Resolution Table (DESIGN.md vs wireframe.html)
 
-Where the two sources disagree, the **Winner** column is binding. `wireframe.html` is at `assets/docs/specs/design-polishing/wireframe.html`.
+Where the two sources disagree, the **Winner** column is binding. `wireframe.html` is at `assets/docs/archive/design-polishing/wireframe.html`.
 
 | Aspect                                                   | DESIGN.md                                  | wireframe.html                                            | **Winner**                                                 | Note                                                                                                      |
 | -------------------------------------------------------- | ------------------------------------------ | --------------------------------------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |

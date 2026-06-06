@@ -1455,7 +1455,7 @@ EOF
 
 The follow-up implementation must update these files:
 
-- `assets/docs/specs/normalise-specs/tasks.md` — inventory counts, checked
+- `assets/docs/archive/normalise-specs/tasks.md` — inventory counts, checked
   items, accepted exceptions, and verification evidence.
 - Source specs reported by the `test()` scan — convert behavior examples to
   `it()` and add subject `describe` groups where missing.
@@ -1494,8 +1494,8 @@ The follow-up implementation must update these files:
 These files should not need more changes unless implementation reveals a policy
 gap:
 
-- `assets/docs/specs/normalise-specs/requirements.md` — update only if a new
+- `assets/docs/archive/normalise-specs/requirements.md` — update only if a new
   testing rule appears beyond the explicit-subject and factory-first rules.
-- `assets/docs/specs/normalise-specs/design.md` — update only if the
+- `assets/docs/archive/normalise-specs/design.md` — update only if the
   implementation strategy changes beyond the guided manual cleanup and audit
   task.

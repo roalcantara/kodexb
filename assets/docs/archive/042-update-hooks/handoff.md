@@ -4,13 +4,13 @@
 ## Copy-paste Prompt
 
 ```txt
-You are implementing the SDD spec in /Users/roalcantara/Work/bun/app/assets/docs/specs/update-hooks/.
+You are implementing the SDD spec in /Users/roalcantara/Work/bun/app/assets/docs/archive/update-hooks/.
 
 Read these files first, in this order:
 1. /Users/roalcantara/Work/bun/app/AGENTS.md
-2. /Users/roalcantara/Work/bun/app/assets/docs/specs/update-hooks/requirements.md
-3. /Users/roalcantara/Work/bun/app/assets/docs/specs/update-hooks/design.md
-4. /Users/roalcantara/Work/bun/app/assets/docs/specs/update-hooks/tasks.md
+2. /Users/roalcantara/Work/bun/app/assets/docs/archive/update-hooks/requirements.md
+3. /Users/roalcantara/Work/bun/app/assets/docs/archive/update-hooks/design.md
+4. /Users/roalcantara/Work/bun/app/assets/docs/archive/update-hooks/tasks.md
 5. /Users/roalcantara/Work/bun/app/.agents/skills/app-quality-gate/SKILL.md
 
 Implement exactly the plan in tasks.md. Do not redesign it. Do not keep pre-commit, gitlint, .gitlint, or .pre-commit-config.yaml as active tooling. Do not add deprecated wrappers. Do not add a new top-level public Mise task for hooks. Do not install global HK hooks. Use repo-local `hk install --mise` through `mise run project prepare`.
@@ -155,7 +155,7 @@ Required validation commands:
 19. `mise run project prepare --ci`
 20. `rg -n "hk validate|hk check --all --check|hk run commit-msg" .github/workflows/review.yml`
 21. `rg -n "hk install" .github/workflows` prints no output.
-22. `rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" AGENTS.md README.md assets/guides .cursor .agents/skills/app-quality-gate .github mise.toml package.json --glob '!assets/docs/specs/**'` prints no output.
+22. `rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" AGENTS.md README.md assets/guides .cursor .agents/skills/app-quality-gate .github mise.toml package.json --glob '!assets/docs/archive/**'` prints no output.
 23. `bun run lint:mise`
 24. `mise exec -- actionlint`
 25. `bun run typecheck`

@@ -608,7 +608,7 @@ Piecemeal doc updates can introduce contradictions.
 **Mitigation:** All doc updates land inside the single amend commit. No
 partial state.
 
-**Verification:** `rg -i "\\bzod\\b" assets/docs/specs/foundation/
+**Verification:** `rg -i "\\bzod\\b" assets/docs/archive/foundation/
 .agents/skills/app-context/ .agents/skills/app-rpc/` returns zero matches.
 
 ### Risk 9 — Amend safety
@@ -648,7 +648,7 @@ rg "\"zod\":" package.json src/     # zero matches
 find src -name package.json -type f # zero results
 
 # 5. Doc consistency
-rg -i "\\bzod\\b" assets/docs/specs/foundation/ \
+rg -i "\\bzod\\b" assets/docs/archive/foundation/ \
                   .agents/skills/app-context/ \
                   .agents/skills/app-rpc/        # zero matches
 

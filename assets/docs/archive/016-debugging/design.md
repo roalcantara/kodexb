@@ -465,8 +465,8 @@ EDIT docs (Phase E):
 | `README.md`                               | One-paragraph Debugging subsection with `LOG_LEVEL` reference. |
 | `assets/guides/CODESTYLE_GUIDE.md`        | Logging section.                                               |
 | `assets/guides/TESTING_GUIDE.md`          | "Asserting on log output" subsection.                          |
-| `assets/docs/specs/foundation/design.md`  | Add Observability decision.                                    |
-| `assets/docs/specs/foundation/roadmap.md` | Slot the feature in.                                           |
+| `assets/docs/archive/foundation/design.md`  | Add Observability decision.                                    |
+| `assets/docs/archive/foundation/roadmap.md` | Slot the feature in.                                           |
 | `assets/guides/SKILLS.md`                 | Register `app-logging` skill.                                  |
 | `assets/catalog/SKILLS.yaml`                | Same; structured row.                                          |
 | `.agents/skills/app-context/SKILL.md`     | One paragraph on logging architecture.                         |
@@ -559,7 +559,7 @@ instances per `assets/guides/TESTING_GUIDE.md`.
 - [`handoff.md`](handoff.md) — the prompt for the receiving agent.
 - [`assets/guides/LOGGING_GUIDE.md`](../../guides/LOGGING_GUIDE.md) — created
   in Phase E; living implementer reference.
-- [`assets/docs/specs/foundation/design.md`](../foundation/design.md) §
+- [`assets/docs/archive/foundation/design.md`](../foundation/design.md) §
   Observability — created in Phase E; architectural decision record.
 - [`CLAUDE.md`](../../../CLAUDE.md), [`AGENTS.md`](../../../AGENTS.md) —
   updated in Phase E.

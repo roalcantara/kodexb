@@ -39,7 +39,7 @@ Requirements: [requirements.md](requirements.md). Design: [design.md](design.md)
 
 ## T8 — Docs and cross-links
 
-- [x] Index entry in `assets/docs/specs/README.md`.
+- [x] Index entry in `assets/docs/archive/README.md`.
 - [x] Cross-link in `list-frecency-sort/requirements.md` R2.
 
 ## T9 — Quality gate

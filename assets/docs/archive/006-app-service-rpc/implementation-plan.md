@@ -69,7 +69,7 @@
 | `src/shell/main/rpc/requests.ts`          | Delete after parity + tests moved (or keep thin re-export only if needed temporarily)                           |
 | `src/shell/main/rpc/requests.spec.ts`     | Migrate assertions to `server.spec.ts`, then delete                                                             |
 | `src/shared/rpc/app_rpc_schema.ts`        | Remove `bun.requests` from schema type; keep `webview.messages` for Electrobun typing until simplified          |
-| `assets/docs/specs/foundation/roadmap.md` | Mark Phase 5 done when verified                                                                                 |
+| `assets/docs/archive/foundation/roadmap.md` | Mark Phase 5 done when verified                                                                                 |
 
 ---
 
@@ -562,7 +562,7 @@ git commit -m "refactor(rpc): slim Electrobun schema to messages-only"
 
 ## Task 11: Documentation + roadmap
 
-**Files:** `assets/docs/specs/app-service-rpc/requirements.md`, `design.md`, `assets/docs/specs/foundation/roadmap.md`
+**Files:** `assets/docs/archive/app-service-rpc/requirements.md`, `design.md`, `assets/docs/archive/foundation/roadmap.md`
 
 - [ ] **Step 1:** Write/adjust `requirements.md` + `design.md` to match what shipped (route table, hybrid sync, IPC bridge file names).
 
@@ -571,7 +571,7 @@ git commit -m "refactor(rpc): slim Electrobun schema to messages-only"
 - [ ] **Step 3: Commit**
 
 ```bash
-git add assets/docs/specs/app-service-rpc assets/docs/specs/foundation/roadmap.md
+git add assets/docs/archive/app-service-rpc assets/docs/archive/foundation/roadmap.md
 git commit -m "docs(rpc): record Phase 5 app service + Elysia RPC"
 ```
 
@@ -619,7 +619,7 @@ git commit -m "chore(rpc): quality gate after Phase 5"
 
 ## Execution handoff
 
-**Plan complete and saved to** `assets/docs/specs/app-service-rpc/implementation-plan.md`.
+**Plan complete and saved to** `assets/docs/archive/app-service-rpc/implementation-plan.md`.
 
 **Two execution options:**
 

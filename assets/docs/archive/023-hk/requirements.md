@@ -19,7 +19,7 @@ current gate or removing existing CI/reporting paths before parity is proven.
 
 ## Sources
 
-- Research report: `assets/docs/specs/hk/report.md`
+- Research report: `assets/docs/archive/hk/report.md`
 - HK configuration docs: https://hk.jdx.dev/configuration.html
 - HK builtins docs: https://hk.jdx.dev/builtins.html
 - HK hooks docs: https://hk.jdx.dev/hooks.html
@@ -157,7 +157,7 @@ current gate or removing existing CI/reporting paths before parity is proven.
 
 ### Acceptance criteria
 
-1. WHEN implementation changes HK orchestration, THEN `assets/docs/specs/hk/`
+1. WHEN implementation changes HK orchestration, THEN `assets/docs/archive/hk/`
    SHALL document the final profile model, command mapping, and deferred
    builtins.
 2. WHEN docs mention current quality commands, THEN they SHALL distinguish

@@ -4,7 +4,7 @@
 Use this prompt to hand the implementation to another agent.
 
 ```md
-You are taking over `assets/docs/specs/normalise-tasks/`.
+You are taking over `assets/docs/archive/normalise-tasks/`.
 
 Goal:
 Update `assets/guides/MISE_GUIDE.md` and normalize project automation so
@@ -16,9 +16,9 @@ Required context:
 - Read `.agents/skills/app-context/SKILL.md`.
 - Read `.agents/skills/app-quality-gate/SKILL.md`.
 - Read `assets/guides/MISE_GUIDE.md`.
-- Read `assets/docs/specs/normalise-tasks/requirements.md`.
-- Read `assets/docs/specs/normalise-tasks/design.md`.
-- Execute `assets/docs/specs/normalise-tasks/tasks.md` phase by phase.
+- Read `assets/docs/archive/normalise-tasks/requirements.md`.
+- Read `assets/docs/archive/normalise-tasks/design.md`.
+- Execute `assets/docs/archive/normalise-tasks/tasks.md` phase by phase.
 - Load `mise-tasks` before creating or updating mise tasks.
 - Load `mise-expert` before editing tool versions, `[env]`, setup behavior, or
   environment assumptions.

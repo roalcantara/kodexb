@@ -365,9 +365,9 @@ spec or the codebase.
    fixture sink pattern, how to capture and assert on `LogRecord[]`, and
    why snapshotting pretty-formatter output is forbidden.
 7. WHEN this spec is complete, THEN
-   `assets/docs/specs/foundation/design.md` SHALL include an "Observability"
+   `assets/docs/archive/foundation/design.md` SHALL include an "Observability"
    architectural decision pointing at this spec as the implementation of
-   record. `assets/docs/specs/foundation/roadmap.md` SHALL include this
+   record. `assets/docs/archive/foundation/roadmap.md` SHALL include this
    feature in its phase ordering.
 8. WHEN this spec is complete, THEN `README.md` SHALL include a one-
    paragraph "Debugging" subsection describing

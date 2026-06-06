@@ -248,7 +248,7 @@ quality exclusions are removed.
    files SHALL be staged.
 7. WHEN the migration is committed, THEN all intentional repo changes SHALL
    be recorded in one Conventional Commit with an HK-valid subject and body.
-8. WHEN the graph spec is added, THEN `assets/docs/specs/README.md` SHALL link
+8. WHEN the graph spec is added, THEN `assets/docs/archive/README.md` SHALL link
    to its requirements, design, tasks, and handoff files.
 9. WHEN the migration is documented for maintainers, THEN the root `README.md`
    SHALL contain a brief CRG overview linking to `assets/guides/CRG.md`.

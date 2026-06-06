@@ -43,9 +43,9 @@ Modify:
 - `.gitignore`, `.dockerignore`, `.jscpd.json`, `.dependency-cruiser.cjs`
 - `.ls-lint.yml`, `biome.jsonc`, `hk.pkl`, `package.json`
 - `AGENTS.md`, `CLAUDE.md`, `README.md`, `mise.toml`
-- `assets/docs/specs/README.md`
+- `assets/docs/archive/README.md`
 - `assets/catalog/SKILLS.yaml`, `assets/guides/SKILLS.md`
-- `assets/docs/specs/graph/tasks.md`, `assets/docs/specs/graph/handoff.md`
+- `assets/docs/archive/graph/tasks.md`, `assets/docs/archive/graph/handoff.md`
 
 Delete:
 
@@ -121,8 +121,8 @@ and each repo-scoped client has one portable CRG MCP entry.
 - [ ] Add `assets/guides/CRG.md` with usage, authoritative references, project
   benefits, activation hooks, monitoring commands, best practices, and
   troubleshooting.
-- [ ] Update `assets/docs/specs/README.md` with the graph migration package.
-- [ ] Refresh `assets/docs/specs/graph/handoff.md` with final local activation
+- [ ] Update `assets/docs/archive/README.md` with the graph migration package.
+- [ ] Refresh `assets/docs/archive/graph/handoff.md` with final local activation
   details.
 
 Expected: agents and maintainers can use CRG without reading installer source.

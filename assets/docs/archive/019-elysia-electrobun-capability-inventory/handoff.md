@@ -4,7 +4,7 @@
 Use this prompt to hand the research pass to another agent.
 
 ```md
-You are taking over `assets/docs/specs/elysia-electrobun-capability-inventory/`.
+You are taking over `assets/docs/archive/elysia-electrobun-capability-inventory/`.
 
 Goal:
 Create a decision-neutral inventory of Elysia and Electrobun capabilities so
@@ -25,10 +25,10 @@ Required context:
 - Use `elysia` or `elysiajs` as an upstream reference only; app rules override
   generic Elysia scaffolding advice.
 - Read:
-  - `assets/docs/specs/elysia-electrobun-capability-inventory/requirements.md`
-  - `assets/docs/specs/elysia-electrobun-capability-inventory/design.md`
-  - `assets/docs/specs/elysia-electrobun-capability-inventory/tasks.md`
-  - `assets/docs/specs/elysia-electrobun-capability-inventory/inventory.yml`
+  - `assets/docs/archive/elysia-electrobun-capability-inventory/requirements.md`
+  - `assets/docs/archive/elysia-electrobun-capability-inventory/design.md`
+  - `assets/docs/archive/elysia-electrobun-capability-inventory/tasks.md`
+  - `assets/docs/archive/elysia-electrobun-capability-inventory/inventory.yml`
 
 Workflow:
 1. Execute `tasks.md` phase by phase.
@@ -70,8 +70,8 @@ Validation:
 Run exactly:
 
 ```sh
-ruby -e "require 'yaml'; YAML.load_file('assets/docs/specs/elysia-electrobun-capability-inventory/inventory.yml')"
-git diff --check -- assets/docs/specs/elysia-electrobun-capability-inventory
+ruby -e "require 'yaml'; YAML.load_file('assets/docs/archive/elysia-electrobun-capability-inventory/inventory.yml')"
+git diff --check -- assets/docs/archive/elysia-electrobun-capability-inventory
 ```
 
 If Ruby is unavailable, use another available YAML parser and record the

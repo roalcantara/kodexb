@@ -22,12 +22,12 @@ After syncing 64 files with 7 errors:
 
 ## Required reading
 
-1. `assets/docs/specs/sync/requirements.md` — **SY-7**
-2. `assets/docs/specs/sync/design.md` — § Follow-up — Sync modal error UX
-3. `assets/docs/specs/sync/tasks.md` — **Phase 7** (Tasks 7.1–7.5)
+1. `assets/docs/archive/sync/requirements.md` — **SY-7**
+2. `assets/docs/archive/sync/design.md` — § Follow-up — Sync modal error UX
+3. `assets/docs/archive/sync/tasks.md` — **Phase 7** (Tasks 7.1–7.5)
 4. `src/shell/renderer/components/shared/sync_modal.component.tsx`
 5. `src/shell/renderer/styles/components/sync.css`
-6. `assets/docs/specs/sync-ui/design.md` — legacy Phase 11 context only
+6. `assets/docs/archive/sync-ui/design.md` — legacy Phase 11 context only
 
 ## Skills
 
@@ -83,7 +83,7 @@ Validate: `bun tools/hooks/commit_message.script.ts`
 ## Agent execution prompt
 
 ```txt
-Implement Phase 7 (SY-7) from assets/docs/specs/sync/.
+Implement Phase 7 (SY-7) from assets/docs/archive/sync/.
 
 Read handoff-phase-7-modal-errors.md, requirements SY-7, design § Follow-up,
 tasks Phase 7.

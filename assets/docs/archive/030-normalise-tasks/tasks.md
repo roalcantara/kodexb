@@ -144,7 +144,7 @@ EOF
 
 - [x] 1.4 Verify phase 1.
   - Run `bun run lint:mise`.
-  - Run `git diff --check -- assets/docs/specs/normalise-tasks/tasks.md`.
+  - Run `git diff --check -- assets/docs/archive/normalise-tasks/tasks.md`.
   - Update the ledger row.
   - _Acceptance criteria: NT-7.1_
 
@@ -368,7 +368,7 @@ EOF
   - _Acceptance criteria: NT-6.1, NT-6.2, NT-6.3_
 
 - [x] 6.2 Update guides and specs.
-  - Search `assets/guides/` and `assets/docs/specs/` for old task names.
+  - Search `assets/guides/` and `assets/docs/archive/` for old task names.
   - Update references to the canonical commands.
   - Do not alter historical context unless it instructs future behavior.
   - _Acceptance criteria: NT-6.1, NT-6.2, NT-6.4_

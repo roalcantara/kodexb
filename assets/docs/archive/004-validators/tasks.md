@@ -473,10 +473,10 @@ Expected: typecheck exits 0; tests pass; no nested `package.json`.
 
 **Files:**
 
-- `assets/docs/specs/foundation/design.md` (UPDATE Decision 2 + line 165
+- `assets/docs/archive/foundation/design.md` (UPDATE Decision 2 + line 165
   data-flow diagram)
-- `assets/docs/specs/foundation/requirements.md` (UPDATE line 170)
-- `assets/docs/specs/foundation/roadmap.md` (UPDATE line 233)
+- `assets/docs/archive/foundation/requirements.md` (UPDATE line 170)
+- `assets/docs/archive/foundation/roadmap.md` (UPDATE line 233)
 
 **Why:** [REQUIREMENT
 V-5](requirements.md#requirement-v-5-foundation-docs-reflect-the-inverted-decision).
@@ -509,7 +509,7 @@ the inverted Zod/TypeBox decision before the amend lands.
 - [ ] **Step 5: Verify**
 
 ```bash
-rg -i "\\bzod\\b" assets/docs/specs/foundation/  # zero matches expected
+rg -i "\\bzod\\b" assets/docs/archive/foundation/  # zero matches expected
 ```
 
 ---
@@ -606,7 +606,7 @@ find src -name package.json -type f   # zero
 - [ ] **Step 5: Doc consistency**
 
 ```bash
-rg -i "\\bzod\\b" assets/docs/specs/foundation/ \
+rg -i "\\bzod\\b" assets/docs/archive/foundation/ \
                   .agents/skills/app-context/ \
                   .agents/skills/app-rpc/   # zero matches
 ```
@@ -677,15 +677,15 @@ git add \
   package.json \
   bun.lock \
   .dependency-cruiser.cjs \
-  assets/docs/specs/foundation/design.md \
-  assets/docs/specs/foundation/requirements.md \
-  assets/docs/specs/foundation/roadmap.md \
+  assets/docs/archive/foundation/design.md \
+  assets/docs/archive/foundation/requirements.md \
+  assets/docs/archive/foundation/roadmap.md \
   .agents/skills/app-context/SKILL.md \
   .agents/skills/app-rpc/SKILL.md
 ```
 
 NEVER `git add -A` or `git add .`. The `validators/` design files
-(`assets/docs/specs/validators/{requirements,design,tasks}.md`) get a
+(`assets/docs/archive/validators/{requirements,design,tasks}.md`) get a
 SEPARATE commit AFTER the amend (see Task 16).
 
 - [ ] **Step 2: Stage deletions**
@@ -764,7 +764,7 @@ amend so the historical record stays clean.
 - [ ] **Step 1: Stage `validators/` spec dir**
 
 ```bash
-git add assets/docs/specs/validators/
+git add assets/docs/archive/validators/
 ```
 
 - [ ] **Step 2: Commit**
@@ -825,7 +825,7 @@ unused).
 - [ ] **Step 4: Final no-Zod sweep**
 
 ```bash
-rg "\\bzod\\b" src/ assets/docs/specs/foundation/ .agents/skills/app-context/ .agents/skills/app-rpc/
+rg "\\bzod\\b" src/ assets/docs/archive/foundation/ .agents/skills/app-context/ .agents/skills/app-rpc/
 ```
 
 Expected: zero matches anywhere.

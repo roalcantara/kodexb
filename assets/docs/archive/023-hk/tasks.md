@@ -11,9 +11,9 @@ Before editing, load:
 
 - `AGENTS.md`
 - `/Users/roalcantara/.agents/skills/hk/SKILL.md`
-- `assets/docs/specs/hk/report.md`
-- `assets/docs/specs/hk/requirements.md`
-- `assets/docs/specs/hk/design.md`
+- `assets/docs/archive/hk/report.md`
+- `assets/docs/archive/hk/requirements.md`
+- `assets/docs/archive/hk/design.md`
 - `.agents/skills/app-quality-gate/SKILL.md`
 
 Do not weaken Biome, knip, dependency-cruiser, ast-grep, ls-lint, jscpd,
@@ -46,7 +46,7 @@ TypeScript, gate policy, or CI reporting to make HK adoption easier.
     - The task evidence includes the current command mapping.
     - Any proposed policy change is flagged for maintainer approval instead of
       being hidden in implementation.
-  - Evidence: mapping recorded in `assets/docs/specs/hk/report.md` (current state +
+  - Evidence: mapping recorded in `assets/docs/archive/hk/report.md` (current state +
     implementation record); knip remains `--no-exit-code`; no strictness changes.
   - _Requirements: HK-3, HK-5, HK-7_
 
@@ -147,7 +147,7 @@ TypeScript, gate policy, or CI reporting to make HK adoption easier.
     `rumdl`, `markdown_lint`, `yamllint`, `yamlfmt`, and
     `editorconfig-checker`.
   - **Acceptance criteria:**
-    - `assets/docs/specs/hk/report.md` or a follow-up section records the
+    - `assets/docs/archive/hk/report.md` or a follow-up section records the
       adoption decision for each candidate.
     - No noisy checker becomes required without baseline evidence.
   - _Requirements: HK-4, HK-7_
@@ -201,7 +201,7 @@ TypeScript, gate policy, or CI reporting to make HK adoption easier.
 - [x] 5.2 Compare HK CI output with existing CI commands.
   - Compare planned steps to `.github/workflows/review.yml`.
   - Compare report files under `tmp/reports/linters`.
-  - Record gaps in `assets/docs/specs/hk/report.md` or `tasks.md`.
+  - Record gaps in `assets/docs/archive/hk/report.md` or `tasks.md`.
   - **Acceptance criteria:**
     - Every current CI lint command is represented in HK or explicitly
       deferred with a reason.
@@ -238,7 +238,7 @@ TypeScript, gate policy, or CI reporting to make HK adoption easier.
 **Goal:** Leave a clear implementation record for future agents.
 
 - [x] 7.1 Update HK documentation.
-  - Update `assets/docs/specs/hk/report.md` with final adopted/deferred
+  - Update `assets/docs/archive/hk/report.md` with final adopted/deferred
     builtins.
   - Add final command examples for the new profiles.
   - Update active guides if public quality commands changed.
@@ -267,7 +267,7 @@ Worktree: `.worktrees/feat-hk-orchestration` on branch `feat-hk-orchestration`
 (base `feat-add-stats-panel` @ `5fdb974`).
 
 **Changed files:** `hk.pkl`, `mise.toml` (+`gitleaks`), `.github/workflows/review.yml`,
-`assets/docs/specs/hk/report.md`, `assets/docs/specs/hk/tasks.md`.
+`assets/docs/archive/hk/report.md`, `assets/docs/archive/hk/tasks.md`.
 
 **Passed:**
 

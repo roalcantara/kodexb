@@ -716,7 +716,7 @@ logged only when enabled. Default verbosity is unchanged.
 **Roadmap items (deferred):** OpenTelemetry export, Sentry sink, file
 sink, SQLite sink, renderer→main ferry, field-level redaction.
 
-**Reference:** `assets/docs/specs/debugging/design.md`
+**Reference:** `assets/docs/archive/debugging/design.md`
 
 ---
 

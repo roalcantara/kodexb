@@ -10,7 +10,7 @@
 | Field | Value |
 |---|---|
 | Spec slug | `telemetry-mvp` |
-| Spec folder | `assets/docs/specs/telemetry-mvp/` |
+| Spec folder | `assets/docs/archive/telemetry-mvp/` |
 | Planning agent | Planner + Lean Startup principles |
 | Implementor agent | YOU |
 
@@ -42,9 +42,9 @@ git switch -c feat-telemetry-mvp main
 ### Step 1 — Read (in this order)
 
 ```
-1. assets/docs/specs/telemetry-mvp/requirements.md   (full — ~80 lines)
-2. assets/docs/specs/telemetry-mvp/design.md         (FULL — Decision Log §3 is the contract)
-3. assets/docs/specs/telemetry-mvp/tasks.md          (full — 4 tasks)
+1. assets/docs/archive/telemetry-mvp/requirements.md   (full — ~80 lines)
+2. assets/docs/archive/telemetry-mvp/design.md         (FULL — Decision Log §3 is the contract)
+3. assets/docs/archive/telemetry-mvp/tasks.md          (full — 4 tasks)
 4. CLAUDE.md                                         (project conventions)
 5. assets/guides/DoD.md                              (acceptance gate)
 6. assets/guides/GIT_COMMITS_GUIDE.md                (commit format)

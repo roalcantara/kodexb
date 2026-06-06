@@ -113,7 +113,7 @@ Before editing files, load:
   - Replace `usage_action` with `usage_cmd` wherever a task has subcommands.
   - Use `cmd` help text for command-specific behavior.
   - **Acceptance criteria:**
-    - `rg -n "usage_action" mise.toml assets/guides assets/docs/specs` has no
+    - `rg -n "usage_action" mise.toml assets/guides assets/docs/archive` has no
       current-command hits.
     - `mise run policy check --strict` reports no generic action-arg finding.
   - _Requirements: MUI-2, MUI-3_

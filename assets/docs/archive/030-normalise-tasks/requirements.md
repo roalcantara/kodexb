@@ -110,7 +110,7 @@ automation belongs in `mise.toml`.
 
 1. WHEN a canonical task command changes, THEN the implementer SHALL update
    related references in `README.md`, `AGENTS.md`, `CLAUDE.md`, `package.json`,
-   `assets/guides/`, and `assets/docs/specs/`.
+   `assets/guides/`, and `assets/docs/archive/`.
 2. WHEN compatibility wrappers remain, THEN docs SHALL point to the canonical
    command and mention wrappers only when useful.
 3. WHEN package scripts delegate to mise, THEN their names and purpose SHALL be

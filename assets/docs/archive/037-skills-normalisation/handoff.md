@@ -33,7 +33,7 @@ Before editing:
    - `mise.toml`
    - generated outputs from `mise run skill sync`
    - `assets/guides/SKILLS.md`
-   - `assets/docs/specs/skills-normalisation/*` only if the implementation
+   - `assets/docs/archive/skills-normalisation/*` only if the implementation
      reveals a gap in this handoff
 5. Do not revert unrelated dirty files.
 
@@ -407,13 +407,13 @@ Run a Skills CLI consistency check to confirm:
 Run:
 
 ```bash
-git diff --check -- assets/catalog/SKILLS.yaml assets/guides/SKILLS.md mise.toml CLAUDE.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md assets/docs/specs/skills-normalisation/requirements.md assets/docs/specs/skills-normalisation/handoff.md
+git diff --check -- assets/catalog/SKILLS.yaml assets/guides/SKILLS.md mise.toml CLAUDE.md .agents/skills/app-context/SKILL.md .cursor/electrobun-skill-routing.md assets/docs/archive/skills-normalisation/requirements.md assets/docs/archive/skills-normalisation/handoff.md
 ```
 
 Search to confirm:
 
 ```bash
-rg "(^    (source|install|link|decision|load):)|skill\\.(source|install|link|decision|load)\\b|electrobun_routing|registry\\.electrobun_routing|^\\s+trigger:" assets/catalog/SKILLS.yaml mise.toml assets/guides/SKILLS.md assets/docs/specs/skills-normalisation
+rg "(^    (source|install|link|decision|load):)|skill\\.(source|install|link|decision|load)\\b|electrobun_routing|registry\\.electrobun_routing|^\\s+trigger:" assets/catalog/SKILLS.yaml mise.toml assets/guides/SKILLS.md assets/docs/archive/skills-normalisation
 ```
 
 Expected search result:

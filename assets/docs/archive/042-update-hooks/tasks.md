@@ -22,13 +22,13 @@ Before editing implementation files, load:
 
 - [x] 0.1 Capture the starting state.
   - Run `git status --short`.
-  - Run `rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" AGENTS.md README.md assets/guides .cursor .agents/skills/app-quality-gate .github mise.toml package.json .pre-commit-config.yaml .gitlint --glob '!assets/docs/specs/**'`.
+  - Run `rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" AGENTS.md README.md assets/guides .cursor .agents/skills/app-quality-gate .github mise.toml package.json .pre-commit-config.yaml .gitlint --glob '!assets/docs/archive/**'`.
   - Record the current tool wiring in implementation notes before editing.
   - **Acceptance criteria:**
     - Baseline output is recorded in this task's `Evidence:` bullet.
     - Pre-existing unrelated changes are identified and not reverted.
   - _Requirements: UH-1, UH-5, UH-8_
-  - **Evidence:** `git status --short` shows only untracked `assets/docs/specs/update-hooks/*` files. `rg` baseline confirms 16 files contain old-tool references: README.md (pre-commit, gitlint), .gitlint, mise.toml (pre-commit = "4.4", pre-commit install), .pre-commit-config.yaml, AGENTS.md (gitlint in commit command summaries), assets/guides/DoD.md (pre-commit hooks pass), .cursor/commands/ (commit-all, commit-staged, commit-fixup all reference gitlint/pre-commit), .cursor/rules/gitlint-commit-messages.mdc (full gitlint contract), assets/guides/GIT_GUIDE.md (gitlint reference), .agents/skills/app-quality-gate/ (SKILL.md mentions gitlint, gate_policy.sh has pre-commit comment), assets/guides/FCIS.guide.md (Pre-Commit Checklist heading only, no tool references). No pre-existing unrelated changes.
+  - **Evidence:** `git status --short` shows only untracked `assets/docs/archive/update-hooks/*` files. `rg` baseline confirms 16 files contain old-tool references: README.md (pre-commit, gitlint), .gitlint, mise.toml (pre-commit = "4.4", pre-commit install), .pre-commit-config.yaml, AGENTS.md (gitlint in commit command summaries), assets/guides/DoD.md (pre-commit hooks pass), .cursor/commands/ (commit-all, commit-staged, commit-fixup all reference gitlint/pre-commit), .cursor/rules/gitlint-commit-messages.mdc (full gitlint contract), assets/guides/GIT_GUIDE.md (gitlint reference), .agents/skills/app-quality-gate/ (SKILL.md mentions gitlint, gate_policy.sh has pre-commit comment), assets/guides/FCIS.guide.md (Pre-Commit Checklist heading only, no tool references). No pre-existing unrelated changes.
 
 ## Phase 1 — Add HK and remove old tool entrypoints
 
@@ -176,7 +176,7 @@ Before editing implementation files, load:
     rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" \
       AGENTS.md README.md assets/guides .cursor .agents/skills/app-quality-gate \
       .github mise.toml package.json \
-      --glob '!assets/docs/specs/**'
+      --glob '!assets/docs/archive/**'
     ```
   - **Acceptance criteria:**
     - The command prints no output.
@@ -272,7 +272,7 @@ Before editing implementation files, load:
 - **`mise run project prepare --ci`**: exits 0, no hooks installed ✓
 - **`rg -n "hk validate|hk check --all --check|hk run commit-msg" .github/workflows/review.yml`**: all 3 found ✓
 - **`rg -n "hk install" .github/workflows`**: no output ✓
-- **`rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" AGENTS.md README.md assets/guides .cursor .agents/skills/app-quality-gate .github mise.toml package.json --glob '!assets/docs/specs/**'`**: only 2 intentional references (HK pre-commit concept, not old tool) ✓
+- **`rg -n "pre-commit|gitlint|\\.gitlint|\\.pre-commit-config" AGENTS.md README.md assets/guides .cursor .agents/skills/app-quality-gate .github mise.toml package.json --glob '!assets/docs/archive/**'`**: only 2 intentional references (HK pre-commit concept, not old tool) ✓
 - **`bun run lint:mise`**: pass ✓
 - **`mise exec -- actionlint`**: pass ✓
 - **`bun run typecheck`**: clean ✓

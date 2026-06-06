@@ -7,7 +7,7 @@ This handoff is for implementing HK-based quality orchestration in
 `/Users/roalcantara/Work/bun/kb`.
 
 The research report is complete. The next agent should implement the SDD tasks
-in `assets/docs/specs/hk/tasks.md` without weakening the current quality gate.
+in `assets/docs/archive/hk/tasks.md` without weakening the current quality gate.
 The goal is to make HK the shared orchestration layer for local, PR, CI, and
 full-gate checks while preserving existing tool policy.
 
@@ -17,17 +17,17 @@ Read these files before editing:
 
 - `AGENTS.md`
 - `/Users/roalcantara/.agents/skills/hk/SKILL.md`
-- `assets/docs/specs/hk/report.md`
-- `assets/docs/specs/hk/requirements.md`
-- `assets/docs/specs/hk/design.md`
-- `assets/docs/specs/hk/tasks.md`
+- `assets/docs/archive/hk/report.md`
+- `assets/docs/archive/hk/requirements.md`
+- `assets/docs/archive/hk/design.md`
+- `assets/docs/archive/hk/tasks.md`
 - `hk.pkl`
 - `mise.toml`
 - `package.json`
 - `.github/workflows/review.yml`
 - `.agents/skills/app-quality-gate/SKILL.md`
 - `.agents/skills/app-quality-gate/scripts/gate.sh`
-- `assets/docs/specs/codebase-quality-audit/requirements.md`
+- `assets/docs/archive/codebase-quality-audit/requirements.md`
 
 If touching Electrobun build or desktop packaging behavior, also follow the
 Electrobun routing in `AGENTS.md`.
@@ -45,7 +45,7 @@ Subagent prompts must explicitly include this repo override:
 
 ```txt
 Do not create docs/superpowers/. Put SDD artifacts under
-assets/docs/specs/hk/. Do not weaken the quality stack. Use bun:test and repo
+assets/docs/archive/hk/. Do not weaken the quality stack. Use bun:test and repo
 testing guidance if tests are needed. Preserve existing user changes.
 ```
 
@@ -72,7 +72,7 @@ Implement the HK quality orchestration SDD in
 /Users/roalcantara/Work/bun/kb.
 
 Start by reading AGENTS.md, /Users/roalcantara/.agents/skills/hk/SKILL.md,
-and all files under assets/docs/specs/hk/. Follow tasks.md in order.
+and all files under assets/docs/archive/hk/. Follow tasks.md in order.
 
 Goal:
 - Promote HK from lightweight hook runner to shared quality orchestration.

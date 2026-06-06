@@ -16,7 +16,7 @@ sources:
     fetched_at: '2026-05-27'
     notes:
       - Documentation site reviewed for API surface; local repo evidence checked on 2026-05-18 and refreshed 2026-05-27.
-      - Full corpus audit recorded in assets/docs/specs/electrobun-corpus-audit/report.md (2026-05-27).
+      - Full corpus audit recorded in assets/docs/archive/electrobun-corpus-audit/report.md (2026-05-27).
       - 'Path /guides/migrating-from-0x-to-v1 redirected to marketing home during 2026-05-27 fetch (CE-1.3 style gap).'
       - File dialogs and dev/hot-reload workflow are covered under utils and build entries unless split later.
       - Coverage addendum on 2026-05-22 added prominent Electrobun guide/API pages that were missing from the first pass.
@@ -781,7 +781,7 @@ capabilities:
     prerequisites: []
     app_touchpoints:
       - src/shell/app/db/
-      - assets/docs/specs/foundation/design.md
+      - assets/docs/archive/foundation/design.md
     candidate_stories: []
     notes:
       - Upstream integration example only; not a app adoption candidate.
@@ -1130,7 +1130,7 @@ capabilities:
       - src/shell/main/main.ts
     candidate_stories: []
     notes:
-      - v0.10.0 scope — see assets/docs/specs/v0.10.0-scope.md
+      - v0.10.0 scope — see assets/docs/archive/v0.10.0-scope.md
   - id: electrobun-utils
     ecosystem: electrobun
     area: utils
@@ -1165,7 +1165,7 @@ capabilities:
     candidate_stories:
       - Evaluate Electrobun PATHS for config/database default locations.
     notes:
-      - v0.10.0 scope — see assets/docs/specs/v0.10.0-scope.md
+      - v0.10.0 scope — see assets/docs/archive/v0.10.0-scope.md
   - id: electrobun-menus
     ecosystem: electrobun
     area: native-ui
@@ -1255,7 +1255,7 @@ capabilities:
     candidate_stories:
       - Save window state on before-quit via Electrobun Events API.
     notes:
-      - v0.10.0 scope — see assets/docs/specs/v0.10.0-scope.md
+      - v0.10.0 scope — see assets/docs/archive/v0.10.0-scope.md
   - id: electrobun-webgpu
     ecosystem: electrobun
     area: gpu
@@ -2131,7 +2131,7 @@ capabilities:
     candidate_stories:
       - Resolve display from cursor before initial BrowserWindow frame.
     notes:
-      - v0.10.0 scope — see assets/docs/specs/v0.10.0-scope.md
+      - v0.10.0 scope — see assets/docs/archive/v0.10.0-scope.md
   - id: electrobun-build-config-api
     ecosystem: electrobun
     area: build

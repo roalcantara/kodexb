@@ -16,7 +16,7 @@ domains just because a few rules in that group are useful.
 ## Out of scope
 
 - Replacing `tools/test_spec_style_audit.ts` or the Better Specs cleanup in
-  `assets/docs/specs/normalise-specs/`.
+  `assets/docs/archive/normalise-specs/`.
 - Adding ESLint, Jest ESLint plugins, or another lint runner.
 - Enabling whole Biome domains such as `react = "all"` or `types = "all"`.
 - Weakening existing Biome, knip, dependency-cruiser, ast-grep, ls-lint, jscpd,

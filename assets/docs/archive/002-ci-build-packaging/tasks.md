@@ -1948,7 +1948,7 @@ Expected: no errors.
 - [ ] **Step 4: Verify the design cross-link resolves**
 
 ```bash
-ls assets/docs/specs/ci-build-packaging/design.md
+ls assets/docs/archive/ci-build-packaging/design.md
 ```
 
 Expected: file exists (referenced by relative link `../docs/specs/ci-build-packaging/design.md`).

@@ -146,8 +146,8 @@ Because this spec is documentation and research-only, validation focuses on
 parsing and reviewability:
 
 ```sh
-ruby -e "require 'yaml'; YAML.load_file('assets/docs/specs/elysia-electrobun-capability-inventory/inventory.yml')"
-git diff --check -- assets/docs/specs/elysia-electrobun-capability-inventory
+ruby -e "require 'yaml'; YAML.load_file('assets/docs/archive/elysia-electrobun-capability-inventory/inventory.yml')"
+git diff --check -- assets/docs/archive/elysia-electrobun-capability-inventory
 ```
 
 If the Ruby YAML parser is not available on the host, use any repository

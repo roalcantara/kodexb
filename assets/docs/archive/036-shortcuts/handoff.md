@@ -118,8 +118,8 @@ Load **before** the task range that needs them. Project skills live under
 
 Also read: [`assets/guides/TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md),
 [`assets/guides/BDD_GUIDE.md`](../../../assets/guides/BDD_GUIDE.md),
-[`assets/docs/specs/e2e/fixture-manifest.md`](../e2e/fixture-manifest.md),
-[`assets/docs/specs/e2e/step-catalog.md`](../e2e/step-catalog.md).
+[`assets/docs/archive/e2e/fixture-manifest.md`](../e2e/fixture-manifest.md),
+[`assets/docs/archive/e2e/step-catalog.md`](../e2e/step-catalog.md).
 
 **E2e policy:** every release-facing feature (including shortcuts) MUST satisfy
 [requirements.md S-10](requirements.md#requirement-s-10-end-to-end-acceptance)
@@ -222,10 +222,10 @@ Copy the **agent prompt** below into a new session.
 You are implementing kb shortcuts Tasks 13–14 (keymap + chord detail on the list
 Detail Page). Read first:
 
-1. assets/docs/specs/shortcuts/handoff.md (locked decisions)
-2. assets/docs/specs/shortcuts/design.md — § Detail page orchestration (Tasks 13–14),
+1. assets/docs/archive/shortcuts/handoff.md (locked decisions)
+2. assets/docs/archive/shortcuts/design.md — § Detail page orchestration (Tasks 13–14),
    § Cache + entry join, § Detail pane keymap/chord
-3. assets/docs/specs/shortcuts/tasks.md — Tasks 13–14
+3. assets/docs/archive/shortcuts/tasks.md — Tasks 13–14
 4. Prototypes: prototype.keymap.html, prototype.chord-detail.html
 
 Non-negotiable wiring (do not relitigate):

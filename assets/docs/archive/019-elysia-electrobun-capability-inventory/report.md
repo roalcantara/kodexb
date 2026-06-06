@@ -20,7 +20,7 @@ Normalized inventory for maintainer review: **74** capabilities (**41** Elysia, 
 
 Every capability follows the schema in `design.md`: structured `current_usage` (status, evidence paths, confidence, notes), `source_urls` arrays, and `priority_signals` buckets (`roi`, `technical_debt`, `risk_reduction`). The **DONE** column renders `✔` when `current_usage.status` is `used` (single source of truth; no separate `done` field).
 
-Maintainer sign-off: assets/docs/specs/v0.10.0-scope.md (2026-06-01).
+Maintainer sign-off: assets/docs/archive/v0.10.0-scope.md (2026-06-01).
 
 ## Known limitations
 

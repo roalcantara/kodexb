@@ -20,10 +20,10 @@ pending.
 
 ## What this handoff creates
 
-1. `assets/docs/specs/ci-review-e2e/` — requirements, design, tasks, handoff
+1. `assets/docs/archive/ci-review-e2e/` — requirements, design, tasks, handoff
 2. `.github/actions/setup-e2e-preview/action.yml` — composite action
 3. `e2e-smoke` + `e2e-regression` jobs in `review.yml` (bootstrap mode)
-4. `assets/docs/specs/README.md` — ci-review-e2e index entry
+4. `assets/docs/archive/README.md` — ci-review-e2e index entry
 
 ## What needs the agent
 

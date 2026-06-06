@@ -53,7 +53,7 @@ Each `## REQUIREMENT S-N` block maps to a section in
 (including “manual” dogfood) MUST appear as at least one numbered AC in this
 file and/or a Gherkin scenario under `assets/features/e2e/` tagged
 `@spec:shortcuts`. Do not leave orphan checks only in `tasks.md` or handoff
-prose — see [`assets/docs/specs/README.md`](../README.md#verifiable-acceptance-no-orphan-checks).
+prose — see [`assets/docs/archive/README.md`](../README.md#verifiable-acceptance-no-orphan-checks).
 
 ## GLOSSARY
 

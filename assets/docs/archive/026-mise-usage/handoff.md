@@ -42,10 +42,10 @@ the product has not released a public command contract.
 
 - `AGENTS.md`
 - `assets/guides/MISE_GUIDE.md`
-- `assets/docs/specs/mise-usage/requirements.md`
-- `assets/docs/specs/mise-usage/design.md`
-- `assets/docs/specs/mise-usage/tasks.md`
-- `assets/docs/specs/normalise-tasks/` as historical context only
+- `assets/docs/archive/mise-usage/requirements.md`
+- `assets/docs/archive/mise-usage/design.md`
+- `assets/docs/archive/mise-usage/tasks.md`
+- `assets/docs/archive/normalise-tasks/` as historical context only
 - `mise.toml`
 - `package.json`
 - `[tasks.policy]` inline Bun script in `mise.toml`
@@ -248,15 +248,15 @@ Use this prompt if another agent needs to complete the work:
 Continue the Mise usage policy refactor in /Users/roalcantara/Work/bun/app.
 
 First read AGENTS.md, assets/guides/MISE_GUIDE.md, the full
-assets/docs/specs/mise-usage/ spec package, mise.toml, package.json, and
-the `[tasks.policy]` run block in mise.toml. Treat assets/docs/specs/normalise-tasks/ as
+assets/docs/archive/mise-usage/ spec package, mise.toml, package.json, and
+the `[tasks.policy]` run block in mise.toml. Treat assets/docs/archive/normalise-tasks/ as
 historical context only.
 
 Load app-context, docs-writer, mise-tasks, and app-quality-gate. Load mise-expert
 only if you touch [tools], [env], setup behavior, or tool versions.
 
 Phase 1 already exists: mise run policy check reports the current advisory
-baseline. Complete Phases 2 through 5 in assets/docs/specs/mise-usage/tasks.md.
+baseline. Complete Phases 2 through 5 in assets/docs/archive/mise-usage/tasks.md.
 Resolve policy findings by refactoring tasks, package scripts, and docs. Do not
 weaken the checker, do not add deprecated compatibility wrappers, and do not
 execute destructive tasks without explicit user approval.

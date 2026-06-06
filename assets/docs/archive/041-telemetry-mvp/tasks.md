@@ -124,7 +124,7 @@
 3. `bun run test` — must pass 100% with 0 skipped tests.
 4. `bun run build` — must succeed.
 5. `bun run build:prod` — must succeed.
-6. Update `CLAUDE.md` with a short line + link to `assets/docs/specs/telemetry-mvp/` under a new (or existing) "Observability" section. **One line and a link is enough**; do not duplicate the Decision Log.
+6. Update `CLAUDE.md` with a short line + link to `assets/docs/archive/telemetry-mvp/` under a new (or existing) "Observability" section. **One line and a link is enough**; do not duplicate the Decision Log.
 7. Stage **only** the spec-related paths: `src/shared/telemetry/**`, `src/shell/main/index.ts`, `src/shell/renderer/index.ts`, instrumented component files, `src/shell/main/<menu-handler>`, `package.json`, `bun.lock`, `.dependency-cruiser.cjs`, `README.md`, `CLAUDE.md`. No `.env`, no DSN literals, no unrelated changes.
 8. Commit using the template below (HEREDOC body, subject ≤ 50 chars).
 9. Confirm HK pre-commit passes without `--no-verify`.
@@ -147,7 +147,7 @@ WHY
   no self-host, no consent-UI ceremony
 - Telemetry interface keeps the vendor list swappable when N>1
 
-Spec: assets/docs/specs/telemetry-mvp/
+Spec: assets/docs/archive/telemetry-mvp/
 
 Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
 ```
