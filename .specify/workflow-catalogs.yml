@@ -1,0 +1,7 @@
+# Spec Kit workflow catalog — default upstream SDD cycle
+# Register: specify workflow add .specify/workflows/speckit/workflow.yml
+
+catalogs:
+  - name: default
+    workflows:
+      - path: workflows/speckit/workflow.yml
