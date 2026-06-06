@@ -1,9 +1,9 @@
 /**
- * Part I — build ordered NNN-slug rename manifest for assets/docs/archive/.
+ * Part I — build ordered NNN-slug index for assets/docs/archive/.
  *
- *   bun tools/governance/specs/library_manifest.script.ts           # write manifest + print plan
+ *   bun tools/governance/specs/library_manifest.script.ts           # write index + print plan
  *   bun tools/governance/specs/library_manifest.script.ts --dry-run # print only
- *   bun tools/governance/specs/library_manifest.script.ts --apply   # git mv per manifest
+ *   bun tools/governance/specs/library_manifest.script.ts --apply   # git mv per index (legacy)
  *   bun tools/governance/specs/library_manifest.script.ts --verify  # fail if unnumbered slug dirs remain
  */
 import { spawnSync } from 'node:child_process'
@@ -12,7 +12,7 @@ import path from 'node:path'
 
 const REPO_ROOT = path.resolve(import.meta.dir, '../../..')
 const SPECS_ROOT = path.join(REPO_ROOT, 'assets/docs/archive')
-const MANIFEST_PATH = path.join(SPECS_ROOT, 'library_manifest.json')
+const MANIFEST_PATH = path.join(REPO_ROOT, 'assets/catalog/library.yaml')
 const MILESTONE_DIR = /^MILESTONE_/i
 const NUMBERED_SLUG_DIR = /^\d{3}-/
 const NNN_WIDTH = 3
@@ -23,23 +23,20 @@ const ROOT_FILE_NAMES = new Set([
   'PROJECT_CONTEXT.md',
   'REFERENCE_FIX_LIST.csv',
   'v0.10.0-scope.md',
-  'library_manifest.json',
   'PRODUCT_DESIGN.md',
-  'PRODUCT_REQUIREMENTS.md',
-  'SPEC_SYSTEM_BACKLOG.md'
+  'PRODUCT_REQUIREMENTS.md'
 ])
 
 type ManifestEntry = {
   nnn: string
   slug: string
+  folder: string
   birth_iso: string
-  from: string
-  to: string
 }
 
 type Manifest = {
   generated_at: string
-  specs_root: string
+  archive_root: string
   entries: ManifestEntry[]
 }
 
@@ -113,48 +110,48 @@ function buildManifest(): Manifest {
 
   const entries: ManifestEntry[] = ordered.map((row, i) => {
     const nnn = String(i + 1).padStart(NNN_WIDTH, '0')
-    const from = row.slug
-    const to = `${nnn}-${row.slug}`
+    const folder = `${nnn}-${row.slug}`
     return {
       nnn,
       slug: row.slug,
-      birth_iso: row.birth_iso,
-      from,
-      to
+      folder,
+      birth_iso: row.birth_iso
     }
   })
 
   return {
     generated_at: new Date().toISOString(),
-    specs_root: 'assets/docs/archive',
+    archive_root: 'assets/docs/archive',
     entries
   }
 }
 
 function printPlan(plan: Manifest): void {
-  console.log(`# library manifest (${plan.entries.length} folders)\n`)
+  console.log(`# library index (${plan.entries.length} folders)\n`)
   for (const e of plan.entries) {
-    console.log(`${e.nnn}  ${e.birth_iso.slice(0, 10)}  ${e.from}/  →  ${e.to}/`)
+    console.log(`${e.nnn}  ${e.birth_iso.slice(0, 10)}  ${e.folder}/`)
   }
 }
 
 async function writeManifest(plan: Manifest): Promise<void> {
-  await Bun.write(MANIFEST_PATH, `${JSON.stringify(plan, null, 2)}\n`)
+  const yaml = `# Legacy SDD archive index — script-generated; do not hand-edit.\n# Shipped features: assets/catalog/catalog.yaml (different registry).\n${Bun.YAML.stringify(plan)}\n`
+  await Bun.write(MANIFEST_PATH, yaml)
   console.log(`wrote ${path.relative(REPO_ROOT, MANIFEST_PATH)}`)
 }
 
 function applyRenames(plan: Manifest): void {
   for (const e of plan.entries) {
-    const fromPath = path.join(SPECS_ROOT, e.from)
-    const toPath = path.join(SPECS_ROOT, e.to)
+    const fromSlug = e.slug
+    const fromPath = path.join(SPECS_ROOT, fromSlug)
+    const toPath = path.join(SPECS_ROOT, e.folder)
     if (!statSync(fromPath).isDirectory()) {
-      console.error(`missing source: ${e.from}`)
+      console.error(`missing source: ${fromSlug}`)
       process.exit(1)
     }
     if (fromPath === toPath) continue
     try {
       statSync(toPath)
-      console.error(`target exists: ${e.to}`)
+      console.error(`target exists: ${e.folder}`)
       process.exit(1)
     } catch {
       /* ok */
@@ -163,7 +160,7 @@ function applyRenames(plan: Manifest): void {
     const relTo = path.relative(REPO_ROOT, toPath)
     const r = spawnSync('git', ['mv', relFrom, relTo], { cwd: REPO_ROOT, stdio: 'inherit' })
     if (r.status !== 0) process.exit(r.status ?? 1)
-    console.log(`mv ${e.from} → ${e.to}`)
+    console.log(`mv ${fromSlug} → ${e.folder}`)
   }
 }
 

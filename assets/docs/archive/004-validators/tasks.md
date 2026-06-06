@@ -773,8 +773,8 @@ git add assets/docs/archive/validators/
 git commit -m 'docs(specs): Add validators migration spec' -m '
 Captures the brainstorming output for the TypeBox migration:
 requirements (EARS), design (architecture, patterns, risks),
-and ordered tasks. Sibling to docs/specs/foundation and
-docs/specs/core-domain.'
+and ordered tasks. Sibling to assets/docs/archive/foundation and
+assets/docs/archive/core-domain.'
 ```
 
 - [ ] **Step 3: Verify**

@@ -971,15 +971,15 @@ See also [BDD_GUIDE.md](./BDD_GUIDE.md) and [DoD.md](./DoD.md).
 KB is migrating from legacy Playwright specs to Playwright BDD + Gherkin. Two
 entrypoints exist during the transition:
 
-| Command                               | Status         | Purpose                                                         |
-| ------------------------------------- | -------------- | --------------------------------------------------------------- |
-| `mise run test e2e` / `bun run e2e`   | **Active**     | Full BDD suite (`bddgen` + all `@e2e` scenarios, no tag filter) |
-| `mise run test e2e-preview`           | **Legacy**     | Runs `e2e/preview_list_nav.e2e.spec.ts`; may skip on empty DB   |
-| `mise run test e2e --smoke`           | **Active**     | P0 Gherkin smoke only (`@smoke`)                                |
-| `mise run test e2e --regression`      | **Active**     | Scenarios tagged `@regression` (includes smoke-tagged rows)     |
-| `mise run test e2e --debug`           | **Active**     | Playwright UI for the BDD suite                                 |
-| `mise run test e2e --metrics-report`  | **Active**     | Writes `tmp/e2e/metrics/latest.json`                            |
-| `mise run test e2e --metrics-compare` | **Active**     | Compares latest metrics to `quality-baseline.json`              |
+| Command                               | Status         | Purpose                                                               |
+| ------------------------------------- | -------------- | --------------------------------------------------------------------- |
+| `mise run test e2e` / `bun run e2e`   | **Active**     | Full BDD suite (`bddgen` + all `@e2e` scenarios, no tag filter)       |
+| `mise run test e2e-preview`           | **Legacy**     | Runs `e2e/preview_list_nav.e2e.spec.ts`; may skip on empty DB         |
+| `mise run test e2e --smoke`           | **Active**     | P0 Gherkin smoke only (`@smoke`)                                      |
+| `mise run test e2e --regression`      | **Active**     | Scenarios tagged `@regression` (includes smoke-tagged rows)           |
+| `mise run test e2e --debug`           | **Active**     | Playwright UI for the BDD suite                                       |
+| `mise run test e2e --metrics-report`  | **Active**     | Writes `tmp/e2e/metrics/latest.json`                                  |
+| `mise run test e2e --metrics-compare` | **Active**     | Compares latest metrics to `quality-baseline.json`                    |
 | `mise run test e2e --write-baseline`  | **Maintainer** | Refreshes e2e-quality baseline (`mise run test e2e --write-baseline`) |
 
 Equivalent `package.json` scripts: `e2e` (full suite), `e2e:smoke`, `e2e:regression`, `e2e:metrics-report`,
@@ -1007,7 +1007,7 @@ notes. If a command cannot run, report the exact blocker (missing Chromium,
 missing `playwright-bdd`, seed failure) rather than treating the default gate as
 equivalent coverage.
 
-See also [`BDD_GUIDE.md`](BDD_GUIDE.md). Contract docs: [`step-catalog.md`](../features/e2e/contracts/step-catalog.md), [`fixture-manifest.md`](../features/e2e/contracts/fixture-manifest.md).
+See also [`BDD_GUIDE.md`](BDD_GUIDE.md). Contract docs: [`step-catalog.md`](../features/e2e/contracts/step-catalog.md), [`fixture-manifest.md`](../features/e2e/contracts/fixture-manifest.md), [`README.md`](../features/e2e/contracts/README.md).
 
 A maintainer-triggered CI workflow for preview e2e may be added later, but
 the default gate must remain fast and portable.

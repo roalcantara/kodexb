@@ -5,7 +5,7 @@ Aligned with [requirements.md](requirements.md) **V1-1 … V1-8** and
 [design.md](design.md).
 
 Per-feature task breakdowns are generated on demand by the `sdd` skill and
-stored at `docs/specs/<feature-slug>/tasks.md`. This file tracks phase
+stored at `assets/docs/archive/<feature-slug>/tasks.md`. This file tracks phase
 sequencing, delivery value, and recommended skills only.
 
 ---

@@ -16,7 +16,7 @@ Where rules and feature specs live, and what may link to what.
 | Layer              | Path                                   | Purpose                                                                                                  |
 | ------------------ | -------------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | **Process**        | `assets/guides/`                       | How we work on any feature (FCIS, testing policy, commits, tools taxonomy)                                 |
-| **Catalog**        | `assets/catalog/`                      | Shipped feature + skill registries (`catalog.yaml`, `SKILLS.yaml`) — YAML only, no prose                 |
+| **Catalog**        | `assets/catalog/`                      | Shipped feature + skill registries (`catalog.yaml`, `library.yaml`, `SKILLS.yaml`) — YAML only, no prose |
 | **Gherkin**        | `assets/features/*.feature`            | Product-visible behaviour (executable)                                                                   |
 | **Unit/component** | `src/**/*.spec.ts(x)`                  | Implementation contracts (executable)                                                                    |
 | **In-flight SDD**  | `assets/specs/NNN-<slug>/`             | Spec Kit workspace while building                                                                        |
@@ -145,7 +145,7 @@ Do not treat `assets/docs/` or legacy spec folders as a second source of truth f
 
 Until shared contracts finish migrating, these **tools** may still embed paths (not documentation links):
 
-- `tools/governance/specs/library_manifest.script.ts` — renames under legacy spec tree
+- `tools/governance/specs/library_manifest.script.ts` — reads/writes `assets/catalog/library.yaml`; renames under legacy spec tree
 - `tools/metrics/harnesses/e2e-quality/e2e_metrics.script.ts` — reads `tools/metrics/baselines/e2e-quality/*`
 - `tools/governance/policies/rogue_refs.script.ts` — inventories inbound legacy links
 

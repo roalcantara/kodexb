@@ -9,7 +9,7 @@ Historical feature specifications migrated from in-flight to archaeology.
 
 Numbered `NNN-<slug>/` folders with archived SDD artifacts
 (`requirements.md`, `design.md`, `tasks.md`, `handoff.md`). Index in
-[`library_manifest.json`](library_manifest.json).
+`assets/catalog/library.yaml` (tool-generated).
 
 ## Where new work goes
 

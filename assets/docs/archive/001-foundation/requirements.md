@@ -47,7 +47,7 @@ Acceptance criteria use EARS-style phrasing:
 
 Traceability: each __REQUIREMENT V1-__* block maps to [design.md](design.md),
 [roadmap.md](roadmap.md), and test cases in `src/__tests__/` with the same identifier.
-Per-feature task breakdowns live in `docs/specs/<feature-slug>/tasks.md` (generated
+Per-feature task breakdowns live in `assets/docs/archive/<feature-slug>/tasks.md` (generated
 by the `sdd` skill per phase).
 
 ---

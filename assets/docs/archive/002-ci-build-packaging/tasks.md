@@ -1653,7 +1653,7 @@ ls assets/guides/ || mkdir -p assets/guides
 # CI / CD Guide
 
 Operational manual for app's GitHub Actions pipeline. Pairs with
-[`design.md`](../docs/specs/ci-build-packaging/design.md) (the normative
+[`design.md`](../assets/docs/archive/ci-build-packaging/design.md) (the normative
 contract).
 
 ## Overview
@@ -1951,7 +1951,7 @@ Expected: no errors.
 ls assets/docs/archive/ci-build-packaging/design.md
 ```
 
-Expected: file exists (referenced by relative link `../docs/specs/ci-build-packaging/design.md`).
+Expected: file exists (referenced by relative link `../assets/docs/archive/ci-build-packaging/design.md`).
 
 - [ ] **Step 5: Commit**
 

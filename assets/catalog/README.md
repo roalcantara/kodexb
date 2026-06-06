@@ -5,6 +5,7 @@ YAML registries only — no feature prose, no skill prose. Human process lives i
 | File                           | Purpose                                                                                                                                                                                                                           |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`catalog.yaml`](catalog.yaml) | Shipped-feature registry (metadata + lifecycle). List: `mise run catalog list`. Validate: `mise run catalog validate`. Ship gate: `mise run catalog ship <key>`. Executables: `mise run test tag <key> --list` via `@<key>` tags. |
+| [`library.yaml`](library.yaml) | Legacy SDD archive folder index (NNN-slug → path). Tool-generated from `tools/governance/specs/library_manifest.script.ts`. Do not hand-edit.                        |
 | [`SKILLS.yaml`](SKILLS.yaml)   | Agent skill registry (owned / project / global). Edit via `mise run skill add`, `create`, or `reconcile`; validate with `mise run skill validate`.                                                                                |
 
 ```bash

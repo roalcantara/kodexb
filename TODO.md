@@ -7,9 +7,9 @@ Migration metadata for the legacy spec library and document authority work.
 ## Checkbox ledger
 
 - [x] **P0-e2e-contracts** — promoted step-catalog + fixture-manifest to `assets/features/e2e/contracts/`; rewired guide links; e2e contracts README added
-- [ ] **P0-fcis-architecture** — no CLAUDE / app-context links to legacy foundation spec; FCIS rules live in guides
-- [ ] **P1-logging** — LOGGING_GUIDE self-contained; no inbound legacy debugging spec links
-- [ ] **P1-styling** — STYLING_GUIDE self-contained; no inbound design-polishing spec links
+- [x] **P0-fcis-architecture** — no CLAUDE / app-context links to legacy foundation spec; FCIS rules live in guides
+- [x] **P1-logging** — LOGGING_GUIDE self-contained; no inbound legacy debugging spec links
+- [x] **P1-styling** — STYLING_GUIDE self-contained; no inbound design-polishing spec links
 - [x] **P1-crg** — CRG.md self-contained for graph tooling policy
 - [x] **P1-ci** — CI_GUIDE self-contained for packaging pipeline policy
 - [x] **P2-archive-rename** — `git mv assets/docs/specs/` → `assets/docs/archive/`; internal path sweep done; rogue-refs green
@@ -24,7 +24,7 @@ Remaining work: action each category according to priority in the CSV.
 ## Archive hygiene
 
 - [x] Sweep `assets/docs/specs` → `assets/docs/archive` inside `assets/docs/archive/**`
-- [ ] Verify library_manifest entries match on-disk folders after rename
+- [x] Verify library_manifest entries match on-disk folders after rename
 - [ ] Retire `rogue_refs.script.ts` when all rows are clean
 
 Inventory: `mise run audit rogue-refs` (diagnostic).
