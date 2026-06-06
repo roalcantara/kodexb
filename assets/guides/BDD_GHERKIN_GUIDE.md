@@ -99,7 +99,7 @@ bunx bddgen --tags "@smoke and not @todo"
 ## Step vocabulary
 
 The table below is a **starter** subset. The full inventory lives in
-[`step-catalog.md`](../docs/specs/e2e/step-catalog.md). Add a new phrase only
+[`step-catalog.md`](../features/e2e/contracts/step-catalog.md). Add a new phrase only
 when existing shapes cannot express the behavior; update the catalog in the same
 PR.
 
@@ -241,7 +241,8 @@ Put that behavior behind `e2e/screenplay/*.{task,question,interaction}.ts`.
 
 References: [Serenity Screenplay](https://serenity-bdd.github.io/docs/screenplay/screenplay_fundamentals),
 [@cucumber/screenplay.js](https://github.com/cucumber/screenplay.js/) (patterns,
-not necessarily the npm package — see `design.md` T1.1).
+not necessarily the npm package — see
+[step-catalog.md](../features/e2e/contracts/step-catalog.md) § Step definition shape).
 
 ## First e2e slice boundaries
 
@@ -249,7 +250,7 @@ The first executable slice should be small enough to stabilize quickly and broad
 enough to catch release-breaking regressions.
 
 - Include deterministic app boot with seeded bookmark, command, cheat, and task
-  entries.
+  entries ([fixture-manifest.md](../features/e2e/contracts/fixture-manifest.md)).
 - Include search, type/tag/task filters, keyboard navigation, detail preview,
   and one observable primary action.
 - Exclude packaged native-only behavior until preview smoke is trustworthy.

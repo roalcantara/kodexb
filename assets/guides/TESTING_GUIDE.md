@@ -965,6 +965,7 @@ See also [BDD_GUIDE.md](./BDD_GUIDE.md) and [DoD.md](./DoD.md).
 
 - **Harness:** isolated config via `APP_CONFIG_PATH`, `NODE_ENV=test`, release seed in `e2e/support/seed_fixture.support.ts` — not the developer's `~/.config/kb` database.
 - **Metrics baselines:** `mise run test e2e --metrics-compare` / `--write-baseline` (series `e2e-quality`; see [TOOLS_GUIDE.md](./TOOLS_GUIDE.md)).
+- **Contract docs:** [`step-catalog.md`](../features/e2e/contracts/step-catalog.md) (Gherkin phrase inventory, screenplay mapping, scenario IDs) and [`fixture-manifest.md`](../features/e2e/contracts/fixture-manifest.md) (seed data, env, actor memory keys).
 - **Step phrases:** unique across Given/When/Then; implement in `e2e/steps/` before merge ([BDD_GHERKIN_GUIDE.md](./BDD_GHERKIN_GUIDE.md)).
 
 KB is migrating from legacy Playwright specs to Playwright BDD + Gherkin. Two
@@ -1006,7 +1007,7 @@ notes. If a command cannot run, report the exact blocker (missing Chromium,
 missing `playwright-bdd`, seed failure) rather than treating the default gate as
 equivalent coverage.
 
-See also [`BDD_GUIDE.md`](BDD_GUIDE.md).
+See also [`BDD_GUIDE.md`](BDD_GUIDE.md). Contract docs: [`step-catalog.md`](../features/e2e/contracts/step-catalog.md), [`fixture-manifest.md`](../features/e2e/contracts/fixture-manifest.md).
 
 A maintainer-triggered CI workflow for preview e2e may be added later, but
 the default gate must remain fast and portable.
