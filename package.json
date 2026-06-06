@@ -1,6 +1,6 @@
 {
   "name": "kb",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "Native desktop knowledge management app built on Electrobun",
   "type": "module",
   "private": true,
