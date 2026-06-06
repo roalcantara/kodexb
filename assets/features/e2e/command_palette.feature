@@ -1,4 +1,4 @@
-@e2e @regression @p1 @spec:command-palette-filter-ux
+@e2e @regression @p1 @spec:command-palette-filter-ux @command_palette
 Feature: Command palette
   As a keyboard-first kb user
   I want the command palette to expose contextual actions

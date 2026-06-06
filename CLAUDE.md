@@ -48,7 +48,7 @@ src/shell/renderer/  React UI. Calls main via Eden Treaty client ONLY.
   Use `repositoryStmts(db, 'Noun', { ...sql })` for DB instrumentation.
   Use `withContext(...)` when adding per-request metadata.
   See `assets/guides/LOGGING_GUIDE.md` for canonical reference.
-- **Every new Elysia route** must also appear in `tools/preview/server.script.ts`.
+- **Every new Elysia route** must also appear in `tools/dev/preview/server.script.ts`.
 - **Every new file** in `src/` needs a co-located `.spec.ts(x)`.
 - **Exports**: unused exports are a knip error — delete or use before committing.
 - **Renderer styling**: Tailwind v4 via `src/shell/renderer/styles/` (`app.css`, `theme.css`,

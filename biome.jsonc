@@ -275,7 +275,7 @@
       }
     },
     {
-      "includes": ["tools/skill/**"],
+      "includes": ["tools/governance/registries/skill/**"],
       "linter": {
         "rules": {
           "complexity": {
@@ -330,7 +330,7 @@
       }
     },
     {
-      "includes": ["tools/skill/**/*.script.ts"],
+      "includes": ["tools/governance/registries/skill/**/*.script.ts"],
       "linter": {
         "rules": {
           "nursery": {

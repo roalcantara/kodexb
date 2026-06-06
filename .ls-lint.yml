@@ -158,37 +158,43 @@ ls:
     .ts: regex:([a-z][a-z0-9_]*\.parser(\.spec)?|index)
 
   # ── Tools: .script.ts artifact (see CODESTYLE_GUIDE.md) ─────────────────────
-  tools/rules:
+  tools/governance/policies/ast-grep:
     .yml: regex:^[a-z][a-z0-9-]+\.rule$
 
-  tools/shared:
+  tools/governance/policies/hooks:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/catalog:
+  tools/governance/registries/catalog:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/mise:
-    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
-
-  tools/spec:
-    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
-
-  tools/skill:
+  tools/governance/registries/skill:
     .ts: regex:^([a-z][a-z0-9_]*\.script(\.spec)?|skill_registry\.types)$
 
-  tools/cli:
+  tools/governance/specs:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/preview:
+  tools/governance/policies:
+    .ts: regex:^layout_validate\.script(\.spec)?$
+
+  tools/bin:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/build:
+  tools/support/lib/shared:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/hooks:
+  tools/support/lib/cli:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/e2e:
+  tools/dev/preview:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/dev/build:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/metrics/harnesses/perf:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/metrics/harnesses/e2e-quality:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
   tools/tmp:

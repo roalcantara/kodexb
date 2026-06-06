@@ -129,7 +129,7 @@ local ciProfileSteps = new Mapping<String, Step> {
         check = """
           tmp="$(mktemp)"
           git log -1 --format=%B > "$tmp"
-          bun tools/hooks/commit_message.script.ts "$tmp"
+          bun tools/governance/policies/hooks/commit_message.script.ts "$tmp"
           rm -f "$tmp"
           """
     }
@@ -173,6 +173,10 @@ local ciProfileSteps = new Mapping<String, Step> {
         profiles = List("ci")
         check = "mise run skill validate --raw"
     }
+    ["catalog-validate-ci"] {
+        profiles = List("ci")
+        check = "mise run catalog validate --raw"
+    }
     // Baseline only — report findings without failing CI until triaged (HK-4).
     ["gitleaks-baseline-ci"] {
         profiles = List("ci")
@@ -215,7 +219,7 @@ local fullProfileSteps = new Mapping<String, Step> {
         profiles = List("full")
         depends = List("gate-test")
         check = """
-          bun tools/preview/server.script.ts &
+          bun tools/dev/preview/server.script.ts &
           SERVER_PID=$!
           sleep 3
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3456/ || echo 000)
@@ -259,6 +263,10 @@ local preCommitSteps = (hygieneSteps) {
         )
         check = "mise run skill validate --raw"
     }
+    ["catalog-validate"] {
+        glob = List("assets/catalog/catalog.yaml")
+        check = "mise run catalog validate --raw"
+    }
     ["code-review-graph-risk-summary"] {
         check = """
           if command -v code-review-graph >/dev/null 2>&1; then
@@ -280,7 +288,7 @@ local checkSteps = (hygieneSteps) {
 
 local commitMsgSteps = new Mapping<String, Step> {
     ["commit-message-policy"] {
-        check = "bun tools/hooks/commit_message.script.ts {{commit_msg_file}}"
+        check = "bun tools/governance/policies/hooks/commit_message.script.ts {{commit_msg_file}}"
     }
 }
 

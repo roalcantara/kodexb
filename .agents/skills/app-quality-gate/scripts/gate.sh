@@ -68,7 +68,7 @@ run_check "bun test" bun test
 
 echo ""
 echo "3 / Preview server smoke"
-bun tools/preview/server.script.ts &
+bun tools/dev/preview/server.script.ts &
 SERVER_PID=$!
 sleep 3
 # Do not use curl -f: on 4xx/5xx it exits non-zero and would mask %{http_code} in diagnostics.

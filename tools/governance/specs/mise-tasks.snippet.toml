@@ -1,0 +1,86 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Draft `spec` task namespace for mise.toml — wires the deterministic checkers.
+# Paste under [tasks] in mise.toml and adjust to taste. Entrypoints are mise
+# tasks only (per the plan); tools/governance/specs/*.ts stay implementation detail.
+#
+# Usage once wired:
+#   mise run spec lint  -- --all --strict
+#   mise run spec trace -- assets/specs/001-sync-frecency-persistence --strict
+#   mise run spec gate  -- assets/specs/001-sync-frecency-persistence
+# ─────────────────────────────────────────────────────────────────────────────
+
+"spec" = { description = "kb SDD spec checks: lint (EARS shape), trace (cross-file), gate (both)", usage = '''
+    cmd "lint" {
+      flag "--all" help="Lint every assets/specs/NNN-*/spec.md"
+      flag "--root <root>" default="assets/specs" help="Spec root for --all"
+      flag "--strict" help="Exit non-zero on errors (use in gates)"
+      arg "<target>" help="Feature dir or spec.md path"
+    }
+    cmd "trace" {
+      flag "--features <dir>" default="assets/features/e2e" help="Executable .feature root"
+      flag "--strict" help="Exit non-zero on broken links"
+      arg "<feature_dir>" help="Feature dir holding spec.md + plan.md"
+    }
+    cmd "gate" {
+      arg "<feature_dir>" help="Feature dir to lint + trace as a hard gate"
+    }
+    cmd "import-legacy" {
+      flag "--feature <slug>" help="NNN-slug folder name"
+    }
+    cmd "feature-init" {
+      flag "--id <id>" help="Three-digit id e.g. 001"
+      flag "--slug <slug>" help="Feature slug"
+    }
+    cmd "resume" {}
+    cmd "worktree-add" {
+      arg "<feature>" help="NNN-slug"
+    }
+    cmd "opencode-check" {}
+  ''', run = '''
+    #!/usr/bin/env bash
+    set -euo pipefail
+    REPO_ROOT="$(git rev-parse --show-toplevel)"
+    cd "$REPO_ROOT"
+    CMD="${usage_cmd:-}"
+
+    case "$CMD" in
+      lint)
+        args=()
+        [[ "${usage_all:-false}" == "true" ]] && args+=(--all)
+        [[ -n "${usage_root:-}" ]] && args+=(--root "$usage_root")
+        [[ "${usage_strict:-false}" == "true" ]] && args+=(--strict)
+        [[ -n "${usage_target:-}" ]] && args+=("$usage_target")
+        exec bun tools/governance/specs/lint.script.ts "${args[@]}"
+        ;;
+      trace)
+        args=("$usage_feature_dir")
+        [[ -n "${usage_features:-}" ]] && args+=(--features "$usage_features")
+        [[ "${usage_strict:-false}" == "true" ]] && args+=(--strict)
+        exec bun tools/governance/specs/trace.script.ts "${args[@]}"
+        ;;
+      gate)
+        dir="${usage_feature_dir:-assets/specs/001-sync-frecency-persistence}"
+        exec bash tools/governance/specs/gate.sh "$dir"
+        ;;
+      import-legacy)
+        feat="${usage_feature:-001-sync-frecency-persistence}"
+        exec bun tools/governance/specs/import_legacy.script.ts --feature "$feat"
+        ;;
+      feature-init)
+        exec bun tools/governance/specs/feature_init.script.ts --id "$usage_id" --slug "$usage_slug"
+        ;;
+      resume)
+        exec specify workflow resume
+        ;;
+      worktree-add)
+        exec bash tools/governance/specs/worktree-add.sh "$usage_feature"
+        ;;
+      opencode-check)
+        exec bash tools/governance/specs/opencode_check.sh
+        ;;
+      *)
+        echo "spec: unknown action ${CMD}" >&2
+        exit 2
+        ;;
+    esac
+  ''' }

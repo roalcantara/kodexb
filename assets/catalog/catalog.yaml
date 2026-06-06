@@ -1,7 +1,7 @@
 # Shipped-feature catalog — YAML registry only (metadata + lifecycle).
 # Executable membership: tag @<key> on Gherkin Feature lines and unit specs (line 1).
 # Discovery: mise run test tag <key> --list (grep — no path lists here).
-# See assets/docs/specs/000-governance/design.md
+# See assets/guides/DOC_AUTHORITY.md
 
 command_palette:
   title: Command palette and filter UX
