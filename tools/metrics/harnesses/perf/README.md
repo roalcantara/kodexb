@@ -1,8 +1,8 @@
 # Performance benchmarks (PERF-0)
 
-Observability baseline for the **preview server** (`tools/preview/server.script.ts`):
+Observability baseline for the **preview server** (`tools/dev/preview/server.script.ts`):
 same HTTP RPC surface the renderer uses via the fetch mock
-(`tools/preview/mock_electroview.script.ts`). This is not a full Electrobun WebView
+(`tools/dev/preview/mock_electroview.script.ts`). This is not a full Electrobun WebView
 load test.
 
 The benchmark task is defined in the root [`mise.toml`](../../mise.toml) as
@@ -14,7 +14,7 @@ one usage-driven task. Run it from the repo root with `mise run perf <action>`.
 
 | ID     | What is measured                                                                                       | Threshold                     | Rationale                                                  |
 | ------ | ------------------------------------------------------------------------------------------------------ | ----------------------------- | ---------------------------------------------------------- |
-| **P1** | Cold start: spawn `bun tools/preview/server.script.ts` with `PORT=3457`, time until first `GET /` returns 200 | &lt; 300 ms                 | Snappy dev / preview feedback with CI headroom             |
+| **P1** | Cold start: spawn `bun tools/dev/preview/server.script.ts` with `PORT=3457`, time until first `GET /` returns 200 | &lt; 300 ms                 | Snappy dev / preview feedback with CI headroom             |
 | **P2** | FTS: `POST /api/list` with `{ "query": "bun", "limit": 50 }` — p50 / p99 over 100 samples              | p50 &lt; 2 ms, p99 &lt; 4 ms | Keeps list search comfortably below frame budget           |
 | **P3** | Type filter: `POST /api/list` with `{ "types": ["task"], "limit": 50 }` — p50 / p99                    | p50 &lt; 2 ms, p99 &lt; 3 ms | Exercises `AppService.list` filter path                    |
 | **P4** | Throughput: 10 s, 10 concurrent inline fetch workers, `POST /api/list` with FTS body                   | ≥ 8000 req/s                | Sustained RPC load sanity check                            |

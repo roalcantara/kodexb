@@ -3,14 +3,14 @@
  * Compare runs against assets/docs/specs/e2e/quality-baseline.json.
  *
  * Usage:
- *   bun tools/e2e/e2e_metrics.script.ts report [--command "mise run test e2e --smoke"]
- *   bun tools/e2e/e2e_metrics.script.ts compare
- *   bun tools/e2e/e2e_metrics.script.ts write-baseline [--command "..."]
+ *   bun tools/metrics/harnesses/e2e-quality/e2e_metrics.script.ts report [--command "mise run test e2e --smoke"]
+ *   bun tools/metrics/harnesses/e2e-quality/e2e_metrics.script.ts compare
+ *   bun tools/metrics/harnesses/e2e-quality/e2e_metrics.script.ts write-baseline [--command "..."]
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
-const ROOT = path.resolve(import.meta.dir, '../..')
+const ROOT = path.resolve(import.meta.dir, '../../../..')
 const SCORES_PATH = path.join(ROOT, 'assets/docs/specs/e2e/scenario-scores.json')
 const BASELINE_PATH = path.join(ROOT, 'assets/docs/specs/e2e/quality-baseline.json')
 const JUNIT_PATH = path.join(ROOT, 'tmp/e2e/junit.xml')

@@ -14,7 +14,7 @@
     "assets/docs/**",
     "assets/wireframe/**",
     ".code-review-graph/**",
-    "**/tools/benchmarks/results/**",
+    "**/tmp/metrics/**",
     ".cursor/commands/**",
     "**/tmp/**",
     "**/*.spec.tsx",
