@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.12.0](https://github.com/roalcantara/kodexb/compare/v0.11.0...v0.12.0) (2026-06-06)
+
+### Features
+
+* **sync,spec-kit:** Preserve frecency + bootstrap Spec Kit ([#14](https://github.com/roalcantara/kodexb/issues/14)) ([7ba3a36](https://github.com/roalcantara/kodexb/commit/7ba3a36a028613181ca154fbb80da780fec15e61))
+
 ## [0.11.0](https://github.com/roalcantara/kodexb/compare/v0.10.0...v0.11.0) (2026-06-06)
 
 ### Features
