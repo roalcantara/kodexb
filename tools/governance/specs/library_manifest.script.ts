@@ -1,22 +1,21 @@
 /**
- * Part I — build ordered NNN-slug index for assets/docs/archive/.
+ * Part II — build / verify library.yaml index for assets/docs/archive/.
  *
  *   bun tools/governance/specs/library_manifest.script.ts           # write index + print plan
  *   bun tools/governance/specs/library_manifest.script.ts --dry-run # print only
- *   bun tools/governance/specs/library_manifest.script.ts --apply   # git mv per index (legacy)
- *   bun tools/governance/specs/library_manifest.script.ts --verify  # fail if unnumbered slug dirs remain
+ *   bun tools/governance/specs/library_manifest.script.ts --verify  # validate YAML ↔ disk
+ *
+ * Exports for spec tests:
+ *   buildManifest() — scan numbered dirs on disk
+ *   verifyManifest(yaml, onDisk) — bidirectional check
  */
 import { spawnSync } from 'node:child_process'
-import { readdirSync, statSync } from 'node:fs'
+import { readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 
 const REPO_ROOT = path.resolve(import.meta.dir, '../../..')
 const SPECS_ROOT = path.join(REPO_ROOT, 'assets/docs/archive')
 const MANIFEST_PATH = path.join(REPO_ROOT, 'assets/catalog/library.yaml')
-const MILESTONE_DIR = /^MILESTONE_/i
-const NUMBERED_SLUG_DIR = /^\d{3}-/
-const NNN_WIDTH = 3
-
 const ROOT_FILE_NAMES = new Set([
   'README.md',
   'ARCHIVE_PROPOSAL.md',
@@ -26,24 +25,29 @@ const ROOT_FILE_NAMES = new Set([
   'PRODUCT_DESIGN.md',
   'PRODUCT_REQUIREMENTS.md'
 ])
+const NUMBERED_DIR_RE = /^(\d{3})-(.+)$/
 
-type ManifestEntry = {
+export type ManifestEntry = {
   nnn: string
   slug: string
   folder: string
   birth_iso: string
 }
 
-type Manifest = {
+export type Manifest = {
   generated_at: string
   archive_root: string
   entries: ManifestEntry[]
 }
 
-function isSlugDir(name: string): boolean {
-  if (ROOT_FILE_NAMES.has(name)) return false
-  if (MILESTONE_DIR.test(name)) return false
-  if (NUMBERED_SLUG_DIR.test(name)) return false
+function isRootOrMilestone(name: string): boolean {
+  const MILESTONE_RE = /^MILESTONE_/i
+  return ROOT_FILE_NAMES.has(name) || MILESTONE_RE.test(name)
+}
+
+export function isNumberedDir(name: string): boolean {
+  if (isRootOrMilestone(name)) return false
+  if (!NUMBERED_DIR_RE.test(name)) return false
   const full = path.join(SPECS_ROOT, name)
   try {
     return statSync(full).isDirectory()
@@ -52,8 +56,33 @@ function isSlugDir(name: string): boolean {
   }
 }
 
-function gitBirthIso(slug: string): string | null {
-  const rel = `assets/docs/archive/${slug}/`
+export function isUnnumberedSlugDir(name: string): boolean {
+  if (isRootOrMilestone(name)) return false
+  if (NUMBERED_DIR_RE.test(name)) return false
+  const full = path.join(SPECS_ROOT, name)
+  try {
+    return statSync(full).isDirectory()
+  } catch {
+    return false
+  }
+}
+
+export function parseNumberedDir(name: string): { nnn: string; slug: string } | null {
+  const m = NUMBERED_DIR_RE.exec(name)
+  if (!m) return null
+  return { nnn: String(m[1]), slug: String(m[2]) }
+}
+
+function listNumberedDirs(): string[] {
+  return readdirSync(SPECS_ROOT).filter(isNumberedDir).sort()
+}
+
+export function listUnnumberedSlugDirs(): string[] {
+  return readdirSync(SPECS_ROOT).filter(isUnnumberedSlugDir).sort()
+}
+
+function gitBirthIso(folderName: string): string | null {
+  const rel = `assets/docs/archive/${folderName}/`
   const r = spawnSync('git', ['log', '--diff-filter=A', '--format=%ai', '--reverse', '--', rel], {
     cwd: REPO_ROOT,
     encoding: 'utf8'
@@ -62,8 +91,8 @@ function gitBirthIso(slug: string): string | null {
   return line || null
 }
 
-function mtimeFallbackIso(slug: string): string {
-  const dir = path.join(SPECS_ROOT, slug)
+function mtimeFallbackIso(folderName: string): string {
+  const dir = path.join(SPECS_ROOT, folderName)
   const candidates = ['design.md', 'requirements.md', 'tasks.md', 'handoff.md']
   let oldest = Number.POSITIVE_INFINITY
   for (const file of candidates) {
@@ -85,39 +114,24 @@ function mtimeFallbackIso(slug: string): string {
   return new Date(oldest).toISOString()
 }
 
-function birthIso(slug: string): string {
-  return gitBirthIso(slug) ?? mtimeFallbackIso(slug)
+function birthIso(folderName: string): string {
+  return gitBirthIso(folderName) ?? mtimeFallbackIso(folderName)
 }
 
-function listSlugDirs(): string[] {
-  return readdirSync(SPECS_ROOT).filter(isSlugDir).sort()
-}
+export function buildManifest(): Manifest {
+  const folders = listNumberedDirs()
+  const entries: ManifestEntry[] = []
 
-const FOUNDATION_SLUG = 'foundation'
-
-function buildManifest(): Manifest {
-  const slugs = listSlugDirs()
-  const foundation = slugs.includes(FOUNDATION_SLUG) ? FOUNDATION_SLUG : null
-  const rest = slugs.filter(s => s !== FOUNDATION_SLUG)
-  const ranked = rest.map(slug => ({ slug, birth_iso: birthIso(slug) }))
-  ranked.sort((a, b) => a.birth_iso.localeCompare(b.birth_iso) || a.slug.localeCompare(b.slug))
-
-  const ordered: { slug: string; birth_iso: string }[] = []
-  if (foundation) {
-    ordered.push({ slug: foundation, birth_iso: birthIso(foundation) })
-  }
-  ordered.push(...ranked)
-
-  const entries: ManifestEntry[] = ordered.map((row, i) => {
-    const nnn = String(i + 1).padStart(NNN_WIDTH, '0')
-    const folder = `${nnn}-${row.slug}`
-    return {
-      nnn,
-      slug: row.slug,
+  for (const folder of folders) {
+    const parsed = parseNumberedDir(folder)
+    if (!parsed) continue
+    entries.push({
+      nnn: parsed.nnn,
+      slug: parsed.slug,
       folder,
-      birth_iso: row.birth_iso
-    }
-  })
+      birth_iso: birthIso(folder)
+    })
+  }
 
   return {
     generated_at: new Date().toISOString(),
@@ -134,50 +148,66 @@ function printPlan(plan: Manifest): void {
 }
 
 async function writeManifest(plan: Manifest): Promise<void> {
-  const yaml = `# Legacy SDD archive index — script-generated; do not hand-edit.\n# Shipped features: assets/catalog/catalog.yaml (different registry).\n${Bun.YAML.stringify(plan)}\n`
+  const yaml = [
+    '# Legacy SDD archive index — script-generated; do not hand-edit.',
+    '# Shipped features: assets/catalog/catalog.yaml (different registry).',
+    Bun.YAML.stringify(plan).trimEnd(),
+    ''
+  ].join('\n')
   await Bun.write(MANIFEST_PATH, yaml)
   console.log(`wrote ${path.relative(REPO_ROOT, MANIFEST_PATH)}`)
 }
 
-function applyRenames(plan: Manifest): void {
-  for (const e of plan.entries) {
-    const fromSlug = e.slug
-    const fromPath = path.join(SPECS_ROOT, fromSlug)
-    const toPath = path.join(SPECS_ROOT, e.folder)
-    if (!statSync(fromPath).isDirectory()) {
-      console.error(`missing source: ${fromSlug}`)
-      process.exit(1)
+export function verifyManifest(yamlManifest: Manifest, onDiskFolders: string[]): string[] {
+  const errors: string[] = []
+
+  for (const e of yamlManifest.entries) {
+    if (!onDiskFolders.includes(e.folder)) {
+      errors.push(`YAML entry ${e.nnn}-${e.slug}: folder "${e.folder}" not found on disk`)
     }
-    if (fromPath === toPath) continue
-    try {
-      statSync(toPath)
-      console.error(`target exists: ${e.folder}`)
-      process.exit(1)
-    } catch {
-      /* ok */
-    }
-    const relFrom = path.relative(REPO_ROOT, fromPath)
-    const relTo = path.relative(REPO_ROOT, toPath)
-    const r = spawnSync('git', ['mv', relFrom, relTo], { cwd: REPO_ROOT, stdio: 'inherit' })
-    if (r.status !== 0) process.exit(r.status ?? 1)
-    console.log(`mv ${fromSlug} → ${e.folder}`)
   }
+
+  const yamlFolders = new Set(yamlManifest.entries.map(e => e.folder))
+  for (const folder of onDiskFolders) {
+    if (!yamlFolders.has(folder)) {
+      errors.push(`Disk folder "${folder}" missing from YAML entries`)
+    }
+  }
+
+  const unnumbered = listUnnumberedSlugDirs()
+  if (unnumbered.length > 0) {
+    errors.push(`Unnumbered slug directories still present: ${unnumbered.join(', ')}`)
+  }
+
+  return errors
 }
 
 function verify(): void {
-  const bad = listSlugDirs()
-  if (bad.length === 0) {
-    console.log('verify: ok (no unnumbered slug directories)')
+  let yamlManifest: Manifest
+  try {
+    const yaml = readFileSync(MANIFEST_PATH, 'utf8')
+    yamlManifest = Bun.YAML.parse(yaml) as Manifest
+  } catch {
+    console.error(`verify: cannot read ${path.relative(REPO_ROOT, MANIFEST_PATH)}`)
+    process.exit(1)
+  }
+
+  const onDiskFolders = listNumberedDirs()
+  const errors = verifyManifest(yamlManifest, onDiskFolders)
+
+  if (errors.length === 0) {
+    console.log(`verify: ok (${yamlManifest.entries.length} entries, ${onDiskFolders.length} on-disk folders)`)
     return
   }
-  console.error('verify: unnumbered directories still present:')
-  for (const d of bad) console.error(`  - ${d}`)
+
+  console.error('verify: errors:')
+  for (const e of errors) console.error(`  - ${e}`)
   process.exit(1)
 }
 
 const args = process.argv.slice(2)
 const dryRun = args.includes('--dry-run')
-const apply = args.includes('--apply')
+const apply = args.includes('--legacy-apply')
 const verifyOnly = args.includes('--verify')
 
 if (verifyOnly) {
@@ -189,13 +219,13 @@ const manifest = buildManifest()
 printPlan(manifest)
 
 if (dryRun) {
-  console.log('\n(dry-run: no manifest write, no git mv)')
+  console.log('\n(dry-run: no manifest write)')
   process.exit(0)
 }
 
-await writeManifest(manifest)
-
 if (apply) {
-  applyRenames(manifest)
-  verify()
+  console.error('--legacy-apply: rename migration is complete; remove this flag and use --dry-run + manual write')
+  process.exit(1)
 }
+
+await writeManifest(manifest)

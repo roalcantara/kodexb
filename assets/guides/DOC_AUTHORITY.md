@@ -80,6 +80,32 @@ Implementation: `tools/bin/test.script.ts`, `tools/bin/catalog.script.ts`; domai
 
 **Catalog key rules:** stable after ship; grep-safe names; legacy `@spec:<slug>` deprecated for new work.
 
+### Library index schema (`assets/catalog/library.yaml`)
+
+Tool-generated index of legacy SDD archive folders. **Do not hand-edit.**
+
+```yaml
+archive_root: assets/docs/archive
+generated_at: "2026-06-06T16:30:00.000Z"
+entries:
+  - nnn: "001"
+    slug: foundation
+    folder: 001-foundation
+    birth_iso: "2026-05-08 16:30:15 -0300"
+```
+
+| Field                       | Required | Meaning                            |
+| --------------------------- | -------- | ---------------------------------- |
+| `archive_root`              | yes      | Parent directory for all entries   |
+| `generated_at`              | yes      | ISO-8601 timestamp of regeneration |
+| `entries[].nnn`             | yes      | Three-digit sort key               |
+| `entries[].slug`            | yes      | Feature name slug                  |
+| `entries[].folder`          | yes      | `NNN-slug` directory name          |
+| `entries[].birth_iso`       | yes      | Git birth or mtime fallback        |
+
+Regenerate or verify: `bun tools/governance/specs/library_manifest.script.ts`
+(flags: `--dry-run`, `--verify`). Not merged into `catalog.yaml`.
+
 ### Catalog schema (`assets/catalog/catalog.yaml`)
 
 YAML map keyed by **canonical feature id** (`snake_case`). **Registry only** — no file path lists.
