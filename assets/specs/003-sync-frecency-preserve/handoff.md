@@ -15,7 +15,7 @@ Partial-failure test (SF-3 AC4): use optional test-only hooks on runSourceImport
 see plan.md Testing strategy.
 
 Before done:
-  bun test src/shell/app/lib/app_sync_frecency.spec.ts
+  mise run test tag sync_frecency_preserve
   mise run spec lint --strict
   mise run spec trace --feature 003-sync-frecency-preserve
   bash .agents/skills/app-quality-gate/scripts/gate.sh
@@ -54,5 +54,5 @@ Record result in this table (date / operator / pass-fail) before merge.
 ## E2e (stretch)
 
 Integration spec is the release gate. Gherkin pilot:
-`assets/features/e2e/sync_frecency.feature` (`@sync`). Step-catalog and
+`assets/features/e2e/sync_frecency.feature` (`@sync_frecency_preserve`). Step-catalog and
 fixture-manifest updates deferred until e2e steps are implemented.

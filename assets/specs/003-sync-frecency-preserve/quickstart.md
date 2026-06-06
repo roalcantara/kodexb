@@ -53,6 +53,9 @@ Update `handoff.md` manually when tasks or acceptance criteria change.
 ## Gates before merge
 
 ```bash
+mise run test tag sync_frecency_preserve --list
+mise run test tag sync_frecency_preserve
+mise run catalog ship sync_frecency_preserve
 mise run spec lint assets/specs/003-sync-frecency-preserve --strict
 mise run spec trace assets/specs/003-sync-frecency-preserve --strict
 mise run spec gate assets/specs/003-sync-frecency-preserve

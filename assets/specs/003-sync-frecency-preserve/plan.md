@@ -183,11 +183,11 @@ Add structured log lines: `frecency_snapshot_export` (counts),
 
 ## E2e traceability
 
-| Requirement | Feature file                                | Scenario                                            | Notes                                       |
-| ----------- | ------------------------------------------- | --------------------------------------------------- | ------------------------------------------- |
-| SF-1        | `assets/features/e2e/sync_frecency.feature` | Frequently opened items keep their place after sync | `@sync`; stretch — integration spec is gate |
-| SF-2        | —                                           | —                                                   | Integration gate only this increment        |
-| SF-3        | —                                           | —                                                   | Integration gate only this increment        |
+| Requirement | Feature file                                | Scenario                                            | Notes                                                         |
+| ----------- | ------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------- |
+| SF-1        | `assets/features/e2e/sync_frecency.feature` | Frequently opened items keep their place after sync | `@sync_frecency_preserve`; stretch — integration spec is gate |
+| SF-2        | —                                           | —                                                   | Integration gate only this increment                          |
+| SF-3        | —                                           | —                                                   | Integration gate only this increment                          |
 
 Normative Gherkin text lives in the feature file only (plain-language pilot per
 BDD guide). Step catalog / fixture manifest updates deferred until e2e steps are wired

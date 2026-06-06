@@ -1,4 +1,4 @@
-// @sync
+// @sync_frecency_preserve
 import { afterEach, describe, expect, it } from 'bun:test'
 import fs, { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'

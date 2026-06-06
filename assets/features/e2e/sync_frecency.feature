@@ -1,4 +1,4 @@
-@e2e @regression @p1 @sync
+@e2e @regression @p1 @sync_frecency_preserve
 Feature: My favorite items stay on top after sync
   When I refresh my knowledge from disk, the app should not forget which
   items I use most.

@@ -1,4 +1,4 @@
-// @sync
+// @sync_frecency_preserve
 import { describe, expect, it } from 'bun:test'
 import { factoryFor } from '@testing'
 import { upsertBindings } from '../db/binding.repository'
