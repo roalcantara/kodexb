@@ -160,6 +160,7 @@ playwright-report
 e2e/.generated/
 e2e/.fixture-paths.json
 tmp/e2e/
+tmp/metrics/
 tmp/playwright-report/
 
 # Generated linter snapshots (jscpd JSON drifts under Biome lint:fix; CI uses
