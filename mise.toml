@@ -14,6 +14,7 @@ act = "latest"
 gum = "latest"
 biome = "latest"
 shellcheck = "latest"
+"npm:skills" = "1.5.10"
 
 [env]
 HK_MISE = "1"
