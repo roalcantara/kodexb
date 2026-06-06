@@ -101,8 +101,8 @@ async function runTagSubcommand(root: string): Promise<void> {
     return
   }
 
-  if (catalogKeys.length === 0) {
-    die('test tag: specify at least one catalog key to run, or use --list', 2)
+  if (catalogKeys.length === 0 && !acTag) {
+    die('test tag: specify at least one catalog key or an AC tag to run, or use --list', 2)
   }
 
   const resolutions = await Promise.all(catalogKeys.map(k => resolveTagKey(k)))

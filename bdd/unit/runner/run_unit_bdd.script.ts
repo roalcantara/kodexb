@@ -34,7 +34,7 @@ function parseArgs(argv: string[]): { catalogTags: string[]; acTag?: string; dry
 function consumeTagArg(argv: string[], i: number): { i: number; value: string } | undefined {
   if (argv[i] !== '--tags') return
   const val = argv[i + 1]
-  if (!val) return
+  if (!val || val.startsWith('--')) return
   return { i: i + 1, value: val }
 }
 

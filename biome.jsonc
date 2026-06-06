@@ -19,7 +19,6 @@
       "!.agents",
       "!.code-review-graph",
       "!bdd/e2e/.generated",
-      "!bdd/e2e/.generated",
       "!tmp",
       "!tools/graphify-out",
       "!.venv",

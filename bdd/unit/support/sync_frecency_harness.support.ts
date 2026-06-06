@@ -52,6 +52,12 @@ async function writeSources(sourcesDir: string, files: Record<string, string>): 
 }
 
 export async function createSyncHarness(initialFiles: Record<string, string>): Promise<SyncHarness> {
+  if (activeHarness) {
+    throw new Error(
+      'sync harness already active — a previous scenario may not have cleaned up. ' +
+        'Ensure After hooks call disposeActiveSyncHarness().'
+    )
+  }
   await disposeActiveSyncHarness()
   const workDir = await mkdtemp(join(tmpdir(), 'kb-sync-frecency-'))
   const sourcesDir = join(workDir, 'sources')
@@ -67,7 +73,12 @@ export async function createSyncHarness(initialFiles: Record<string, string>): P
   }
 
   const importer = new ImportService(loaded.database.path)
-  await importer.run(sourcesDir)
+  try {
+    await importer.run(sourcesDir)
+  } catch (err) {
+    await rm(workDir, { recursive: true, force: true })
+    throw err
+  }
 
   activeHarness = { workDir, sourcesDir, app: new App(loaded) }
   return activeHarness
@@ -78,7 +89,7 @@ export async function listKeys(app: App, limit = 20): Promise<string[]> {
 }
 
 export function appRawDb(app: App) {
-  return (app as unknown as { getDb: () => { raw: import('bun:sqlite').Database } }).getDb().raw
+  return app.getRawDbForTesting()
 }
 
 export function frecencyScore(app: App, entryId: number): number {

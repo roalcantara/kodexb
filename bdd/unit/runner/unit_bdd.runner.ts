@@ -64,7 +64,12 @@ export async function validateUnitBdd(options: UnitBddRunOptions): Promise<numbe
     return 1
   }
 
-  await loadSupport({ sources: runConfiguration.sources, support: {} })
+  try {
+    await loadSupport({ sources: runConfiguration.sources, support: {} })
+  } catch (err) {
+    console.error('unit bdd: loadSupport failed:', err)
+    return 1
+  }
   return 0
 }
 

@@ -82,6 +82,11 @@ export class App {
     }
   }
 
+  /** Test-only: exposes the raw SQLite handle for direct queries. */
+  getRawDbForTesting(): import('bun:sqlite').Database {
+    return this.getDb().raw
+  }
+
   invalidateListCache() {
     this.listCache.clear()
     this.listStatsCache = null
