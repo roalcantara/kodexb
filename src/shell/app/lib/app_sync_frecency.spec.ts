@@ -162,6 +162,18 @@ describe('App.sync frecency preserve', () => {
       expect(frecencyScore(app, frequentId)).toBeGreaterThan(0)
     })
 
+    it('skipLearnedRestore rebuilds without learned rows', async () => {
+      harness = await createSyncHarness({ 'entries.yml': BASE_ENTRIES_YML })
+      const { app } = harness
+      const frequentId = deriveId('bookmark', FREQUENT_KEY)
+
+      await app.recordEntryVisit(frequentId)
+      await app.recordEntryVisit(frequentId)
+      await app.sync(harness.sourcesDir, { skipLearnedRestore: true })
+
+      expect(frecencyScore(app, frequentId)).toBe(0)
+    })
+
     it('ranks new entries below frequently visited items until first open', async () => {
       harness = await createSyncHarness({ 'entries.yml': BASE_ENTRIES_YML })
       const { app, sourcesDir } = harness

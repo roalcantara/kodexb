@@ -78,6 +78,7 @@ sync:
   status: shipped
   specs:
     - 040-sync
+    - 003-sync-frecency-preserve
   superseded_by: null
 
 sync_ui:

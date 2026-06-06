@@ -1,4 +1,4 @@
-import { readFileSync, rmSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { Given } from '../support/fixtures.support'
 import type { FixturePaths } from '../support/seed_fixture.support'
@@ -10,11 +10,10 @@ function loadFixturePaths(): FixturePaths {
 }
 
 async function reseedDatabase(baseUrl: string, paths: FixturePaths): Promise<void> {
-  rmSync(paths.dbPath, { force: true })
   const res = await fetch(`${baseUrl}/api/sync`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ sourcesDir: paths.sourcesPath })
+    body: JSON.stringify({ sourcesDir: paths.sourcesPath, skipLearnedRestore: true })
   })
   if (!res.ok) throw new Error(`Reseed sync failed: ${res.status} ${await res.text()}`)
 }

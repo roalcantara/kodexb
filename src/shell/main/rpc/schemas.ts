@@ -55,7 +55,8 @@ export const getEntryParams = Type.Object({ id: Type.Integer() }, { additionalPr
 
 export const syncParamsInner = Type.Object(
   {
-    sourcesDir: Type.Optional(Type.String({ minLength: 1 }))
+    sourcesDir: Type.Optional(Type.String({ minLength: 1 })),
+    skipLearnedRestore: Type.Optional(Type.Boolean())
   },
   { additionalProperties: false }
 )
