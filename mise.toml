@@ -313,8 +313,8 @@ HK_PKL_BACKEND = "pklr"
       flag "--regression" help="P0+P1 Gherkin regression (@regression) only"
       flag "--debug" help="Playwright debug UI for BDD suite"
       flag "--metrics-report" help="Write tmp/e2e/metrics/latest.json from JUnit + scenario scores"
-      flag "--metrics-compare" help="Compare latest metrics to quality-baseline.json"
-      flag "--write-baseline" help="Maintainer: refresh quality-baseline.json from latest run"
+      flag "--metrics-compare" help="Compare latest metrics to tools/metrics/baselines/e2e-quality/quality-baseline.json"
+      flag "--write-baseline" help="Maintainer: refresh tools/metrics/baselines/e2e-quality/quality-baseline.json"
     }
     cmd "tag" {
       flag "--list" help="List tagged executables; do not run tests"
@@ -1383,6 +1383,9 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       *) echo "docker: unknown action '${CMD}' (expected one of: build, run, test)"; exit 2 ;;
     esac
   ''' }
+"audit" = { description = "Documentation hygiene diagnostics (non-gating)", usage = '''
+    cmd "rogue-refs" help="Inventory inbound assets/docs/ links on guides and agent entry docs"
+  ''', run = "bun tools/bin/audit.script.ts" }
 "spec" = { description = "kb SDD spec checks: lint, trace, gate, legacy parity, worktrees", usage = '''
     cmd "lint" {
       flag "--all" help="Lint every assets/specs/NNN-*/spec.md"

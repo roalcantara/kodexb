@@ -160,6 +160,7 @@ playwright-report
 e2e/.generated/
 e2e/.fixture-paths.json
 tmp/e2e/
+tmp/audit/
 tmp/metrics/
 tmp/playwright-report/
 
