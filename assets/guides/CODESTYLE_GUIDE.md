@@ -419,7 +419,7 @@ The `testing.` prefix is a convention for files that only make sense in a test c
 
 - **File size** — Refactor when files exceed 200-300 lines.
 - **Scripts** — Avoid one-off scripts in files. Prefer `mise.toml` tasks.
-- **Module ownership** — Serialization of type T lives in T's module (see `.cursor/rules/module-ownership.mdc` and specs under `assets/docs/specs/` when present).
+- **Module ownership** — Serialization of type T lives in T's module (see `.cursor/rules/module-ownership.mdc`). Legacy SDD drill-down only when the task names a slug ([`DOC_AUTHORITY.md`](./DOC_AUTHORITY.md)).
 
 ## Asset File Conventions
 

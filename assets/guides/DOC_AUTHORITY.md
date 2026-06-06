@@ -143,10 +143,13 @@ Do not treat `assets/docs/` or legacy spec folders as a second source of truth f
 
 ## Runtime path exceptions
 
-Until shared contracts move out of `assets/docs/` (see `SPEC_SYSTEM_BACKLOG.md`), these **tools** may still embed paths (not documentation links):
+Until shared contracts finish migrating (see [`SPEC_SYSTEM_BACKLOG.md`](../docs/specs/SPEC_SYSTEM_BACKLOG.md)), these **tools** may still embed paths (not documentation links):
 
-- `tools/governance/specs/library_manifest.script.ts` — renames under `assets/docs/specs/`
+- `tools/governance/specs/library_manifest.script.ts` — renames under legacy spec tree
 - `tools/governance/specs/import_legacy.script.ts` — legacy import
-- `tools/metrics/harnesses/e2e-quality/e2e_metrics.script.ts` — e2e metrics/baseline paths
+- `tools/metrics/harnesses/e2e-quality/e2e_metrics.script.ts` — reads `tools/metrics/baselines/e2e-quality/*`
+- `tools/governance/policies/rogue_refs.script.ts` — inventories inbound legacy links
+
+**Rogue reference inventory:** `mise run audit rogue-refs` (writes `tmp/audit/`; diagnostic, not a merge gate).
 
 Listed in ast-grep `ignores` for the inbound-link rules.

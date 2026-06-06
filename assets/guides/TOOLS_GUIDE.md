@@ -61,9 +61,7 @@ output path on `run`.
 | Series | Harness | Baseline (committed) | Generated (ephemeral) |
 | ------ | ------- | -------------------- | --------------------- |
 | perf | `metrics/harnesses/perf/` | `metrics/baselines/perf/baseline.json` | `tmp/metrics/perf/` |
-| e2e-quality | `metrics/harnesses/e2e-quality/` | `assets/docs/specs/e2e/quality-baseline.json` (spec-owned) | `tmp/metrics/e2e-quality/` or `tmp/e2e/metrics/` |
-
-E2e baseline asymmetry is intentional — quality baseline stays with the e2e spec contract.
+| e2e-quality | `metrics/harnesses/e2e-quality/` | `metrics/baselines/e2e-quality/quality-baseline.json` (+ `scenario-scores.json`, schema) | `tmp/metrics/e2e-quality/` or `tmp/e2e/metrics/` |
 
 ## `bin/` — narrow definition
 
@@ -106,8 +104,9 @@ Same pattern for skills: `tools/governance/registries/skill/` (code) vs `assets/
    - TS dispatcher for a domain → thin stub in `bin/`
    - Bash, harness, policy yaml → **in place** under the purpose family
 5. **Lifecycle** — dev loop, pre-commit, CI, on-demand?
-6. **Metrics lifecycle** — harness code → `metrics/harnesses/`; promoted JSON →
-   `metrics/baselines/` or `assets/` when spec-owned; ephemeral → `tmp/metrics/`
+6. **Metrics lifecycle** — harness code → `metrics/harnesses/`; promoted metric JSON →
+   `metrics/baselines/<series>/`; ephemeral → `tmp/metrics/`. No metric baselines under
+   `assets/` or legacy spec trees.
 
 ### Tie-breakers
 

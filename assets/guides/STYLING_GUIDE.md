@@ -1,8 +1,7 @@
 # Styling guide — renderer (Andromeda Void)
 
 Canonical reference for Tailwind v4 and CSS partials under `src/shell/renderer/styles/`.
-Design tokens and surface contracts live in [`DESIGN.md`](../../DESIGN.md) and
-[`assets/docs/specs/design-polishing/design.md`](../docs/specs/design-polishing/design.md).
+Design tokens and surface contracts live in [`DESIGN.md`](../../DESIGN.md).
 
 ## Pipeline
 

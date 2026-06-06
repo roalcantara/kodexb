@@ -6,9 +6,7 @@ description: Canonical reference for kb's LogTape-backed debug logging system
 
 # Logging Guide
 
-Normative reference: [`assets/docs/specs/debugging/design.md`](../docs/specs/debugging/design.md).
-This guide is the living implementer reference; the design spec is the authority
-when they conflict.
+This guide is the normative implementer reference for kb logging.
 
 ## At a glance
 

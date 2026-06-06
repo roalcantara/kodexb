@@ -6,10 +6,9 @@ KB uses Gherkin to describe user-visible app behavior as executable examples.
 Use this guide while writing `.feature` files under `assets/features/e2e/` and
 matching Playwright BDD step definitions under `e2e/steps/`.
 
-**Normative contracts:** every phrase MUST appear in
-[`assets/docs/specs/e2e/step-catalog.md`](../docs/specs/e2e/step-catalog.md).
-Seed titles and tags MUST match
-[`assets/docs/specs/e2e/fixture-manifest.md`](../docs/specs/e2e/fixture-manifest.md).
+**Normative contracts:** register every new Gherkin phrase in `e2e/steps/` before merge;
+seed titles and tags MUST match the release fixture (`e2e/support/seed_fixture.support.ts`).
+See [TESTING_GUIDE § E2e contracts](./TESTING_GUIDE.md#e2e-contracts) and this guide's step patterns below.
 
 ## Cucumber Given / When / Then (required)
 

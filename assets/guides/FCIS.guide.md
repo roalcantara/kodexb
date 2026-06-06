@@ -17,6 +17,15 @@ Cursor does not auto-load this file; link from `.cursor/rules/codestyle.mdc` / `
 
 Other workspace packages use their own trees (e.g. `@kb/kli` under `packages/kli/src/` with `core/` vs `shell/` inside that package). The **idea** is always the same: pure core, imperative shell; only the path prefix changes.
 
+In **this repo**, zones map to `src/core/`, `src/shared/`, `src/shell/app/`, `src/shell/main/`, and `src/shell/renderer/`. See [`ELECTROBUN.md`](./ELECTROBUN.md) for RPC wiring.
+
+## Stack decisions (normative)
+
+- **RPC:** Elysia app in main process; Eden Treaty client in renderer; preview server mirrors routes (`tools/dev/preview/server.script.ts`).
+- **Validation:** TypeBox everywhere (`t.*` / `Type.Object`); `zod` is not a dependency.
+- **Database:** `bun:sqlite` with typed prepared statements; no Drizzle ORM.
+- **Test data:** Fishery via `factoryFor`; YAML fixtures only under `src/__tests__/fixtures/sample/` for ImportService e2e.
+
 > 💡 **Shell (IMPURE)** fetches data, asks the core what to do, then acts on the answer.
 
 ```mermaid
