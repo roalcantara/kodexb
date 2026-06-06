@@ -148,6 +148,12 @@ Jobs:
 | `lint:depcruise` fails on layer violation | A renderer file imported `shell/app/`; move to RPC          |
 | Build cache miss every run                | Verify `~/.electrobun` cache key; check `package.json` hash |
 
+**Catalog / HK enforcement:**
+
+- `catalog-validate-ci` runs `mise run catalog validate --raw` on every CI job (covers all 13 shipped keys, schema, tag placement, orphan tags).
+- Pre-commit also runs `catalog validate` when `catalog.yaml`, Gherkin, or tagged unit specs change.
+- `library-manifest-verify` runs when archive folders change, verifying `library.yaml` is in sync.
+
 **Local mirror:** `mise run ci review`.
 
 ## Workflow: release.yml

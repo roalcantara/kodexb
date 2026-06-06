@@ -264,8 +264,17 @@ local preCommitSteps = (hygieneSteps) {
         check = "mise run skill validate --raw"
     }
     ["catalog-validate"] {
-        glob = List("assets/catalog/catalog.yaml")
+        glob = List(
+            "assets/catalog/catalog.yaml",
+            "assets/features/**/*.feature",
+            "src/**/*.spec.ts",
+            "src/**/*.spec.tsx"
+        )
         check = "mise run catalog validate --raw"
+    }
+    ["library-manifest-verify"] {
+        glob = List("assets/docs/archive/**")
+        check = "mise run spec library-manifest --verify"
     }
     ["code-review-graph-risk-summary"] {
         check = """

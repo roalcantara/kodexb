@@ -22,8 +22,8 @@ function bumpSummary(summary: Record<string, number>, category: CatalogFindingCa
   summary[category] = (summary[category] ?? 0) + 1
 }
 
-function findingLevel(category: CatalogFindingCategory): 'error' | 'warn' {
-  return category === 'orphan_tag' ? 'warn' : 'error'
+function findingLevel(_category: CatalogFindingCategory): 'error' | 'warn' {
+  return 'error'
 }
 
 function addFinding(
