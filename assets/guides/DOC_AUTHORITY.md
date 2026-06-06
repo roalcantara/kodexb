@@ -7,7 +7,7 @@ Where rules and feature specs live, and what may link to what.
 1. **Project rules** (every PR, every agent) live only in **`assets/guides/`** (and tool configs they reference: `biome.jsonc`, `hk.pkl`, etc.).
 2. **In-flight feature SDD** (Spec Kit) lives only in **`assets/specs/NNN-<slug>/`** — for the person implementing that feature; open **only when the task names that slug**.
 3. **Shipped feature registry** lives in **`assets/catalog/catalog.yaml`** — YAML metadata only (`title`, `status`, `specs`, `superseded_by`). **No** path lists, **no** per-feature prose. Membership = `@<catalog_key>` on Gherkin/units. Governance: **this file** § Catalog governance.
-4. **Legacy SDD** under **`assets/docs/specs/NNN-<slug>/`** is archaeology (stubbed after ship). Not an agent entrypoint.
+4. **Legacy SDD** under **`assets/docs/archive/NNN-<slug>/`** is archaeology (stubbed after ship). Not an agent entrypoint.
 5. A workspace spec may **link out** to a guide or the catalog (one pointer, no copy). Guides **must not** link into `assets/docs/*`.
 6. **No permanent doc** (`AGENTS.md`, `CLAUDE.md`, `README.md`, `assets/guides/**`, `.agents/skills/**`, `.cursor/rules/**`) may reference `assets/docs/*`. Enforced by ast-grep (`tools/governance/policies/ast-grep/no-inbound-assets-docs-*.rule.yml`).
 
@@ -20,7 +20,7 @@ Where rules and feature specs live, and what may link to what.
 | **Gherkin**        | `assets/features/*.feature`            | Product-visible behaviour (executable)                                                                   |
 | **Unit/component** | `src/**/*.spec.ts(x)`                  | Implementation contracts (executable)                                                                    |
 | **In-flight SDD**  | `assets/specs/NNN-<slug>/`             | Spec Kit workspace while building                                                                        |
-| **Legacy SDD**     | `assets/docs/specs/NNN-<slug>/`        | Pre–Spec Kit folders; stub after ship                                                                    |
+| **Legacy SDD**     | `assets/docs/archive/NNN-<slug>/`      | Pre–Spec Kit folders; stub after ship                                                                    |
 | **Onboarding**     | `README.md`                            | Stack, commands, link to catalog                                                                         |
 
 `assets/catalog/` holds **YAML registries only** — not feature prose, not tools layout. Tools
@@ -111,7 +111,7 @@ draft → active (assets/specs/NNN-slug/)
   ↓ ship (DoD gate)
 promote → catalog.yaml entry + tags on Gherkin + units
   ↓
-legacy assets/docs/specs/NNN-slug/ stubbed (if present)
+legacy assets/docs/archive/NNN-slug/ stubbed (if present)
   ↓ superseded
 superseded_by set in catalog
 ```
@@ -137,7 +137,7 @@ superseded_by set in catalog
 | Shipped features (what exists, where tests live) | `mise run catalog list` + `mise run test tag <catalog-key> --list` |
 | Tools folder layout                              | `assets/guides/TOOLS_GUIDE.md`                                     |
 | Implementing a named **in-flight** feature       | **`assets/specs/NNN-<slug>/`** (Spec Kit)                          |
-| Legacy SDD archaeology                           | `assets/docs/specs/NNN-<slug>/` **only when task names slug**      |
+| Legacy SDD archaeology                           | `assets/docs/archive/NNN-<slug>/` **only when task names slug**    |
 
 Do not treat `assets/docs/` or legacy spec folders as a second source of truth for rules.
 

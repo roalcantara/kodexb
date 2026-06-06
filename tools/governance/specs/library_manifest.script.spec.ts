@@ -3,7 +3,7 @@ import { readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 
 const REPO_ROOT = path.resolve(import.meta.dir, '../..')
-const MANIFEST = path.join(REPO_ROOT, 'assets/docs/specs/library_manifest.json')
+const MANIFEST = path.join(REPO_ROOT, 'assets/docs/archive/library_manifest.json')
 
 describe('library_manifest.json', () => {
   it('pins foundation as 001', () => {
@@ -29,7 +29,7 @@ describe('library_manifest.json', () => {
       entries: { to: string }[]
     }
     for (const e of m.entries) {
-      const p = path.join(REPO_ROOT, 'assets/docs/specs', e.to)
+      const p = path.join(REPO_ROOT, 'assets/docs/archive', e.to)
       expect(statSync(p).isDirectory()).toBe(true)
     }
   })

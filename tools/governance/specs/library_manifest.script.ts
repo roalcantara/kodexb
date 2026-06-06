@@ -1,5 +1,5 @@
 /**
- * Part I — build ordered NNN-slug rename manifest for assets/docs/specs/.
+ * Part I — build ordered NNN-slug rename manifest for assets/docs/archive/.
  *
  *   bun tools/governance/specs/library_manifest.script.ts           # write manifest + print plan
  *   bun tools/governance/specs/library_manifest.script.ts --dry-run # print only
@@ -11,7 +11,7 @@ import { readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 
 const REPO_ROOT = path.resolve(import.meta.dir, '../..')
-const SPECS_ROOT = path.join(REPO_ROOT, 'assets/docs/specs')
+const SPECS_ROOT = path.join(REPO_ROOT, 'assets/docs/archive')
 const MANIFEST_PATH = path.join(SPECS_ROOT, 'library_manifest.json')
 const MILESTONE_DIR = /^MILESTONE_/i
 const NUMBERED_SLUG_DIR = /^\d{3}-/
@@ -56,7 +56,7 @@ function isSlugDir(name: string): boolean {
 }
 
 function gitBirthIso(slug: string): string | null {
-  const rel = `assets/docs/specs/${slug}/`
+  const rel = `assets/docs/archive/${slug}/`
   const r = spawnSync('git', ['log', '--diff-filter=A', '--format=%ai', '--reverse', '--', rel], {
     cwd: REPO_ROOT,
     encoding: 'utf8'
@@ -126,7 +126,7 @@ function buildManifest(): Manifest {
 
   return {
     generated_at: new Date().toISOString(),
-    specs_root: 'assets/docs/specs',
+    specs_root: 'assets/docs/archive',
     entries
   }
 }

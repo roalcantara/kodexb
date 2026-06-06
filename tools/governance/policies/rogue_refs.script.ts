@@ -23,7 +23,7 @@ export const SCAN_TARGETS = [
 /** Files that may mention legacy paths when describing authority (not navigation). */
 export const POLICY_EXCEPTION_FILES = new Set([
   'assets/guides/DOC_AUTHORITY.md',
-  'assets/docs/specs/SPEC_SYSTEM_BACKLOG.md'
+  'assets/docs/archive/SPEC_SYSTEM_BACKLOG.md'
 ])
 
 export type RogueHit = {
