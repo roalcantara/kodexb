@@ -43,7 +43,7 @@ Companion scans only numbered feature folders:
 
 (VS Code / Cursor: [`.vscode/settings.json`](../../.vscode/settings.json).)
 
-**Deferred to a follow-up PR:** kb-specific workflows (`kb-full`, `kb-slice`, `kb-hotfix`) and
+**Deferred to a follow-up PR:** kb-specific workflows (`orchestrated-handoff`, `orchestrated-sliced`, `orchestrated-hotfix`) and
 the `kb-workflow` extension (preflight, handoff generators). Track in
 [`tools/governance/specs/PLAN_PUNCHLIST.md`](../../tools/governance/specs/PLAN_PUNCHLIST.md).
 
