@@ -34,7 +34,9 @@ export class EntryListIncludesTitle implements Answerable {
 
   async answeredBy(actor: Actor): Promise<void> {
     const row = actor.page.locator('button.cmp-list-row', { hasText: this.title })
-    await expect(row.first()).toBeVisible()
+    await actor.eventually(async () => {
+      await expect(row.first()).toBeVisible()
+    }, 3_000)
   }
 }
 
@@ -60,7 +62,9 @@ export class FixtureSourcesTaskFileIncludes implements Answerable {
 
   async answeredBy(actor: Actor): Promise<void> {
     const content = readTaskSourceYaml()
-    expect(content).toContain(this.text)
+    await actor.eventually(async () => {
+      expect(content).toContain(this.text)
+    }, 3_000)
   }
 }
 
@@ -73,7 +77,9 @@ export class FixtureSourcesTaskFileExcludes implements Answerable {
 
   async answeredBy(actor: Actor): Promise<void> {
     const content = readTaskSourceYaml()
-    expect(content).not.toContain(this.text)
+    await actor.eventually(async () => {
+      expect(content).not.toContain(this.text)
+    }, 3_000)
   }
 }
 

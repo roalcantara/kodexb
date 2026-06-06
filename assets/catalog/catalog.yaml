@@ -74,7 +74,14 @@ shortcuts:
   superseded_by: null
 
 sync:
-  title: Sync resilience
+  title: Sync
+  status: shipped
+  specs:
+    - 040-sync
+  superseded_by: null
+
+sync_resilience:
+  title: Sync partial file import resilience
   status: shipped
   specs:
     - 040-sync

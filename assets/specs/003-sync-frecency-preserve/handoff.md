@@ -25,15 +25,15 @@ Before done:
 
 | ID       | Done when                                                                 | Evidence                                               |
 | -------- | ------------------------------------------------------------------------- | ------------------------------------------------------ |
-| SF-1 AC1 | List order for surviving entries matches pre-sync ranking after full sync | `bun test src/shell/app/lib/app_sync_frecency.spec.ts` |
-| SF-1 AC2 | Entry removed from sources is absent from list; remaining order unchanged | `bun test src/shell/app/lib/app_sync_frecency.spec.ts` |
-| SF-1 AC3 | New entry ranks below frequently used entries until first open            | `bun test src/shell/app/lib/app_sync_frecency.spec.ts` |
-| SF-2 AC1 | Binding usage scores unchanged for surviving shortcuts after sync         | `bun test src/shell/app/lib/app_sync_frecency.spec.ts` |
-| SF-2 AC2 | Removed shortcut absent; remaining shortcut order unchanged               | `bun test src/shell/app/lib/app_sync_frecency.spec.ts` |
+| SF-1 AC1 | List order for surviving entries matches pre-sync ranking after full sync | `mise run test tag sync_frecency_preserve sf1ac1` |
+| SF-1 AC2 | Entry removed from sources is absent from list; remaining order unchanged | `mise run test tag sync_frecency_preserve sf1ac2` |
+| SF-1 AC3 | New entry ranks below frequently used entries until first open            | `mise run test tag sync_frecency_preserve sf1ac3` |
+| SF-2 AC1 | Binding usage scores unchanged for surviving shortcuts after sync         | `mise run test tag sync_frecency_preserve sf2ac1` |
+| SF-2 AC2 | Removed shortcut absent; remaining shortcut order unchanged               | `mise run test tag sync_frecency_preserve sf2ac2` |
 | SF-3 AC1 | Existing sync/import integration tests pass unchanged                     | `bun test src/shell/app` (sync-related specs)          |
-| SF-3 AC2 | YAML edits reflected in catalog; entry/binding usage preserved            | `bun test src/shell/app/lib/app_sync_frecency.spec.ts` |
+| SF-3 AC2 | YAML edits reflected in catalog; entry/binding usage preserved            | `mise run test tag sync_frecency_preserve sf3ac2` |
 | SF-3 AC3 | Sync completes in one UI operation (no extra app restart)                 | Operator smoke below — pending human run               |
-| SF-3 AC4 | Partial import: catalog at failure point; usage matches pre-sync snapshot | `bun test src/shell/app/lib/app_sync_frecency.spec.ts` |
+| SF-3 AC4 | Partial import: catalog at failure point; usage matches pre-sync snapshot | `mise run test tag sync_frecency_preserve sf3ac4` |
 
 ## Operator smoke (SF-3 AC3)
 
@@ -53,6 +53,7 @@ Record result in this table (date / operator / pass-fail) before merge.
 
 ## E2e (stretch)
 
-Integration spec is the release gate. Gherkin pilot:
-`assets/features/e2e/sync_frecency.feature` (`@sync_frecency_preserve`). Step-catalog and
-fixture-manifest updates deferred until e2e steps are implemented.
+Integration spec is the release gate. Gherkin:
+[`assets/features/sync.feature`](../../features/sync.feature) `@sync` `@sync_frecency_preserve`
+(`@unit` for App-layer ACs; `@e2e` for browser scenario). Step-catalog and
+fixture-manifest updates deferred until all e2e ACs are wired.
