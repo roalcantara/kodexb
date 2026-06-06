@@ -180,7 +180,7 @@ Steps (in order):
 
 | Symptom                                     | Cause / fix                                                       |
 | ------------------------------------------- | ----------------------------------------------------------------- |
-| `Merge commit detected on main`             | Branch protection allows non-squash merge; tighten settings       |
+| `Merge commit detected on main`             | PR merged with merge/rebase; use `gh pr merge <n> --squash` and disable other merge methods in repo settings |
 | `Signed commit missing gpgsig header`       | `RELEASE_SIGNING_SSH_KEY` not registered as signing key on GitHub |
 | `release-it: requireCleanWorkingDir failed` | Earlier step left files dirty; check `before:init` hooks          |
 | `release-it: requireBranch=main`            | Workflow somehow ran on a non-`main` ref (shouldn't happen)       |
