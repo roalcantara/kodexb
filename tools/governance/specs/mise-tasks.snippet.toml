@@ -59,10 +59,6 @@
         dir="${usage_feature_dir:-assets/specs/001-sync-frecency-persistence}"
         exec bash tools/governance/specs/gate.sh "$dir"
         ;;
-      import-legacy)
-        feat="${usage_feature:-001-sync-frecency-persistence}"
-        exec bun tools/governance/specs/import_legacy.script.ts --feature "$feat"
-        ;;
       feature-init)
         exec bun tools/governance/specs/feature_init.script.ts --id "$usage_id" --slug "$usage_slug"
         ;;

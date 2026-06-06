@@ -10,7 +10,7 @@ import { spawnSync } from 'node:child_process'
 import { readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 
-const REPO_ROOT = path.resolve(import.meta.dir, '../..')
+const REPO_ROOT = path.resolve(import.meta.dir, '../../..')
 const SPECS_ROOT = path.join(REPO_ROOT, 'assets/docs/archive')
 const MANIFEST_PATH = path.join(SPECS_ROOT, 'library_manifest.json')
 const MILESTONE_DIR = /^MILESTONE_/i

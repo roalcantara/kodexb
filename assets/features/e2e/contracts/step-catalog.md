@@ -9,7 +9,7 @@ stay in sync.
 **Cucumber rule:** step text must be unique across `Given`, `When`, and `Then`.
 Do not reuse the same phrase under different keywords.
 
-**References:** [Cucumber Gherkin reference](https://cucumber.io/docs/gherkin/reference/), [Screenplay fundamentals](https://serenity-bdd.github.io/docs/screenplay/screenplay_fundamentals), [BDD_GHERKIN_GUIDE.md#screenplay-mapping](../../guides/BDD_GHERKIN_GUIDE.md#screenplay-mapping).
+**References:** [Cucumber Gherkin reference](https://cucumber.io/docs/gherkin/reference/), [Screenplay fundamentals](https://serenity-bdd.github.io/docs/screenplay/screenplay_fundamentals), [BDD_GHERKIN_GUIDE.md#screenplay-mapping](../../../guides/BDD_GHERKIN_GUIDE.md#screenplay-mapping).
 
 ## Step definition files
 
@@ -153,8 +153,8 @@ Do not reuse the same phrase under different keywords.
 
 ## Shell chrome steps (`@spec:shell-chrome`)
 
-Normative for [`shell-chrome/requirements.md`](../shell-chrome/requirements.md). Feature:
-[`shell_chrome.feature`](../../features/e2e/shell_chrome.feature).
+Normative for `shell-chrome/requirements.md` (legacy archive). Feature:
+[`shell_chrome.feature`](../shell_chrome.feature).
 
 | Step                                                   | Keyword | Task / question                         | Weak? |
 | ------------------------------------------------------ | ------- | --------------------------------------- | ----- |
@@ -162,7 +162,7 @@ Normative for [`shell-chrome/requirements.md`](../shell-chrome/requirements.md).
 
 ## Sync resilience steps (`@spec:sync`)
 
-Normative for [`sync/requirements.md`](../sync/requirements.md). Implement in
+Normative for `sync/requirements.md` (legacy archive). Implement in
 `e2e/steps/` when adding `sync_resilience.feature`.
 
 | Step                                                   | Keyword | Task / question                               | Weak? |
@@ -178,7 +178,7 @@ Reuse **Settings and sync** steps `I run sync` and `sync reports completion` whe
 
 ## Sync modal error UX steps (`@spec:sync` Phase 7)
 
-Normative for [`sync/requirements.md` SY-7](../sync/requirements.md#requirement-sy-7-sync-modal-error-readability-follow-up).
+Normative for `sync/requirements.md` SY-7 (legacy archive).
 
 | Step                                               | Keyword | Task / question                               | Weak? |
 | -------------------------------------------------- | ------- | --------------------------------------------- | ----- |
@@ -275,8 +275,8 @@ Metrics registry IDs follow `{feature_file_stem}.{scenario_slug}`:
 
 ## Entry action handoff steps (`@spec:entry-action-handoff`)
 
-Normative feature: [`entry_action_handoff.feature`](../../features/e2e/entry_action_handoff.feature).
-Spec: [`entry-action-handoff/requirements.md`](../entry-action-handoff/requirements.md).
+Normative feature: [`entry_action_handoff.feature`](../entry_action_handoff.feature).
+Spec: `entry-action-handoff/requirements.md` (legacy archive).
 Fixture: [`fixture-manifest.md#handoff-e2e-entry-action-handoff`](fixture-manifest.md#handoff-e2e-entry-action-handoff).
 
 Implement **`e2e/steps/entry_action_handoff.steps.ts`** only — do **not** change the `.feature` prose unless requirements change.
@@ -378,7 +378,7 @@ Keep `@todo` on native scenarios until desktop harness exists; P1 green set excl
 | sync reports a hard collision for the clashing chord                                           | Then    | `SyncReportsHardCollision`   | S-3 AC8; asserts `meta+space`    |
 
 Reuse **Settings and sync** steps `I run sync` and overlay steps from **Shortcuts steps** above.
-Feature file: [`shortcuts_import.feature`](../../features/e2e/shortcuts_import.feature).
+Feature file: [`shortcuts_import.feature`](../shortcuts_import.feature).
 
 ## Step definition shape (required)
 
@@ -392,4 +392,4 @@ Then('the detail panel shows the selected entry', async ({ actor }) => {
 })
 ```
 
-Reject combined action+assertion steps (see [BDD_GHERKIN_GUIDE.md#screenplay-mapping](../../guides/BDD_GHERKIN_GUIDE.md#screenplay-mapping)).
+Reject combined action+assertion steps (see [BDD_GHERKIN_GUIDE.md#screenplay-mapping](../../../guides/BDD_GHERKIN_GUIDE.md#screenplay-mapping)).

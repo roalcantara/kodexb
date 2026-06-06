@@ -14,7 +14,7 @@ The manifest is the single source of truth for Gherkin strings such as
 
 Browser e2e uses the **test** profile (`NODE_ENV=test`). Development
 (`bun dev`) uses `~/.config/kb/…` and MUST NOT share this database. See
-[TESTING_GUIDE.md#e2e-contracts](../../guides/TESTING_GUIDE.md#e2e-contracts).
+[TESTING_GUIDE.md#e2e-contracts](../../../guides/TESTING_GUIDE.md#e2e-contracts).
 
 | Variable                 | Purpose                                                                                                        |
 | ------------------------ | -------------------------------------------------------------------------------------------------------------- |
@@ -142,7 +142,7 @@ Scenarios SHALL NOT assert `Page N of M` unless product copy restores that model
 
 ## Actor memory keys
 
-Screenplay support SHALL use stable recall keys (see [BDD_GHERKIN_GUIDE.md#actor-memory](../../guides/BDD_GHERKIN_GUIDE.md#screenplay-mapping)):
+Screenplay support SHALL use stable recall keys (see [BDD_GHERKIN_GUIDE.md#screenplay-mapping](../../../guides/BDD_GHERKIN_GUIDE.md#screenplay-mapping)):
 
 | Key                     | Set by               | Used by                           |
 | ----------------------- | -------------------- | --------------------------------- |

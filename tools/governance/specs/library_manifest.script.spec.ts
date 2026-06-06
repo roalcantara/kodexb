@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 
-const REPO_ROOT = path.resolve(import.meta.dir, '../..')
+const REPO_ROOT = path.resolve(import.meta.dir, '../../..')
 const MANIFEST = path.join(REPO_ROOT, 'assets/docs/archive/library_manifest.json')
 
 describe('library_manifest.json', () => {
