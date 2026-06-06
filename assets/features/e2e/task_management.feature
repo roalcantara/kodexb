@@ -6,6 +6,7 @@ Feature: Task management
 
   Background:
     Given the app is running with the release e2e fixture
+    And the release fixture is re-synced
     And I am viewing the knowledge list
 
   Scenario: Create a task from the app workflow

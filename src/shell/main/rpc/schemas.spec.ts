@@ -165,7 +165,8 @@ describe('syncParamsInner', () => {
   describe('when params are valid', () => {
     describe.each([
       ['empty params', {}],
-      ['custom sourcesDir', { sourcesDir: '/tmp/src' }]
+      ['custom sourcesDir', { sourcesDir: '/tmp/src' }],
+      ['e2e reseed flag', { skipLearnedRestore: true }]
     ])('with %s', (_, data) => {
       it('passes validation', () => {
         expect(isValid(syncParamsInner, data)).toBe(true)

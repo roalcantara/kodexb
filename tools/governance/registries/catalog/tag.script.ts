@@ -2,7 +2,6 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { Glob } from 'bun'
 import { repoRoot } from '../../../support/lib/shared/repo_root.script.ts'
-import { spawnInherit } from '../../../support/lib/shared/spawn_inherit.script.ts'
 import {
   type CatalogEntry,
   type CatalogFile,
@@ -238,13 +237,18 @@ export function formatTagListJson(resolutions: TagResolution[], filter: TagLayer
   }
 }
 
+function runCommand(cmd: string[], root: string): void {
+  const result = Bun.spawnSync(cmd, { cwd: root, stdout: 'inherit', stderr: 'inherit', stdin: 'inherit' })
+  if (result.exitCode !== 0) process.exit(result.exitCode ?? 1)
+}
+
 export function runTaggedTests(resolutions: TagResolution[], filter: TagLayerFilter, root: string): void {
   const filtered = resolutions.map(r => filterResolution(r, filter))
   const union = unionResolutions(filtered)
 
   if (filter.unit && union.units.length > 0) {
     console.log('==> unit tests')
-    spawnInherit(['bun', 'test', ...union.units], root)
+    runCommand(['bun', 'test', ...union.units], root)
   } else if (filter.unit) {
     console.log('==> unit tests: (none)')
   }
@@ -253,8 +257,8 @@ export function runTaggedTests(resolutions: TagResolution[], filter: TagLayerFil
     const withFeatures = filtered.some(r => r.features.length > 0)
     if (withFeatures) {
       console.log('==> e2e (playwright grep)')
-      spawnInherit(['bun', 'run', 'e2e:bddgen'], root)
-      spawnInherit(['bunx', 'playwright', 'test', '--grep', playwrightGrepPattern(union.tags)], root)
+      runCommand(['bun', 'run', 'e2e:bddgen'], root)
+      runCommand(['bunx', 'playwright', 'test', '--grep', playwrightGrepPattern(union.tags)], root)
     } else {
       console.log('==> e2e: (none)')
     }

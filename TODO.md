@@ -14,7 +14,7 @@ Migration metadata for the legacy spec library and document authority work.
 - [x] **P1-ci** — CI_GUIDE self-contained for packaging pipeline policy
 - [x] **P2-archive-rename** — `git mv assets/docs/specs/` → `assets/docs/archive/`; internal path sweep done; rogue-refs green
 - [x] **P2-built-layer** — shipped feature records promoted per doc-promotion policy
-- [ ] **P2-spec-kit-active** — in-flight work only under `assets/specs/NNN-slug/`; legacy tree task-scoped
+- [x] **P2-spec-kit-active** — in-flight work under `assets/specs/NNN-slug/`; see [`assets/specs/README.md`](assets/specs/README.md)
 
 ## Rogue CSV (pending)
 
