@@ -1,10 +1,11 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { expect } from '@playwright/test'
+import { FIXTURE_PATHS_FILE } from '../support/fixtures.support'
 import type { Actor, Answerable } from './actor.ability'
 
 function loadFixtureSourcesPath(): string {
-  const paths = JSON.parse(readFileSync(path.join(import.meta.dirname, '..', '.fixture-paths.json'), 'utf-8')) as {
+  const paths = JSON.parse(readFileSync(FIXTURE_PATHS_FILE, 'utf-8')) as {
     sourcesPath: string
   }
   return paths.sourcesPath

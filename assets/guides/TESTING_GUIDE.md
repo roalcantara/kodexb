@@ -943,7 +943,7 @@ to exit non-zero when missing specs exist.
 Release-facing features MUST satisfy [Cross-feature e2e acceptance (R11)](#cross-feature-e2e-acceptance-r11):
 
 - Add Gherkin scenarios under `assets/features/e2e/` with `@spec:<slug>`.
-- Register new phrases in `e2e/steps/`; keep seed data aligned with `e2e/support/seed_fixture.support.ts`.
+- Register new phrases in `bdd/e2e/steps/` (browser) or `bdd/unit/steps/` (`@unit`); keep seed data aligned with `bdd/e2e/support/seed_fixture.support.ts`.
 - Add an e2e task in the in-flight spec `tasks.md` when using Spec Kit.
 - Record `mise run test e2e --smoke` / `--regression` evidence before beta.
 
@@ -966,7 +966,7 @@ See also [BDD_GUIDE.md](./BDD_GUIDE.md) and [DoD.md](./DoD.md).
 - **Harness:** isolated config via `APP_CONFIG_PATH`, `NODE_ENV=test`, release seed in `e2e/support/seed_fixture.support.ts` — not the developer's `~/.config/kb` database.
 - **Metrics baselines:** `mise run test e2e --metrics-compare` / `--write-baseline` (series `e2e-quality`; see [TOOLS_GUIDE.md](./TOOLS_GUIDE.md)).
 - **Contract docs:** [`step-catalog.md`](../features/e2e/contracts/step-catalog.md) (Gherkin phrase inventory, screenplay mapping, scenario IDs), [`fixture-manifest.md`](../features/e2e/contracts/fixture-manifest.md) (seed data, env, actor memory keys), and [`README.md`](../features/e2e/contracts/README.md) (quality model, metrics registry).
-- **Step phrases:** unique across Given/When/Then; implement in `e2e/steps/` before merge ([BDD_GHERKIN_GUIDE.md](./BDD_GHERKIN_GUIDE.md)).
+- **Step phrases:** unique across Given/When/Then; implement in `bdd/e2e/steps/` or `bdd/unit/steps/` before merge ([BDD_GHERKIN_GUIDE.md](./BDD_GHERKIN_GUIDE.md)).
 
 KB is migrating from legacy Playwright specs to Playwright BDD + Gherkin. Two
 entrypoints exist during the transition:

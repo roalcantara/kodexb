@@ -37,25 +37,36 @@ documented in the active feature spec.
 
 ## Verification layers
 
-| Layer                | Location                                                       | Role                                                                                 |
-| -------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Process guides       | `assets/guides/`                                               | Normative testing, BDD, and e2e policy (R11).                                        |
-| In-flight SDD        | `assets/specs/NNN-<slug>/`                                     | Spec Kit workspace while building (task-scoped).                                     |
-| Gherkin features     | `assets/features/e2e/`                                         | Product-level examples that describe user-visible behavior.                          |
-| Playwright glue      | `e2e/steps/`, `e2e/screenplay/`, `e2e/support/`                | Executable step definitions, Screenplay tasks/questions, and deterministic fixtures. |
-| Unit/component specs | `src/**/*.spec.ts`, `src/**/*.test.ts`                         | Lower-level behavior and edge-case coverage.                                         |
+| Layer                | Location                                                    | Role                                                              |
+| -------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------- |
+| Process guides       | `assets/guides/`                                            | Normative testing, BDD, and e2e policy (R11).                     |
+| In-flight SDD        | `assets/specs/NNN-<slug>/`                                  | Spec Kit workspace while building (task-scoped).                  |
+| Gherkin features     | `assets/features/` (domain files + legacy `e2e/` subfolder) | Product-level examples; tag `@e2e` or `@unit` for runner routing. |
+| BDD browser glue     | `bdd/e2e/steps/`, `bdd/e2e/screenplay/`, `bdd/e2e/support/` | Playwright BDD step defs, Screenplay, preview harness.            |
+| BDD unit glue        | `bdd/unit/steps/`, `bdd/unit/support/`, `bdd/unit/runner/`  | Cucumber + Bun App-layer acceptance (`@unit`, `@ac:…`).           |
+| Unit/component specs | `src/**/*.spec.ts`, `src/**/*.test.ts`                      | Lower-level behavior and edge-case coverage.                      |
 
-The canonical feature domain for app e2e is `assets/features/e2e/`.
+The canonical feature root is `assets/features/` (domain files such as
+`sync.feature`; legacy suites remain under `assets/features/e2e/` until merged).
 
-## Folder layout
+## Folder layout (`bdd/`)
 
-- `assets/features/e2e/` — canonical Gherkin `.feature` files.
-- `e2e/steps/` — thin Playwright BDD step definitions.
-- `e2e/screenplay/` — actors, abilities, tasks, questions, and interactions.
-- `e2e/support/` — deterministic fixture setup, preview lifecycle, reports, and
-  metrics helpers.
-- `e2e/.generated/` — playwright-bdd output (gitignored).
-- `tmp/e2e/` — generated traces, reports, and per-run metrics.
+| Path                                                        | Runner                                       | Tags                    |
+| ----------------------------------------------------------- | -------------------------------------------- | ----------------------- |
+| `bdd/e2e/steps/`, `bdd/e2e/screenplay/`, `bdd/e2e/support/` | playwright-bdd + Playwright + preview server | `@e2e`                  |
+| `bdd/unit/steps/`, `bdd/unit/support/`, `bdd/unit/runner/`  | `@cucumber/cucumber` via `bun` (no browser)  | `@unit`, `@ac:SF-n_ACm` |
+| `bdd/e2e/.generated/`                                       | playwright-bdd output (gitignored)           | —                       |
+| `tmp/bdd/e2e/`                                              | Playwright traces, JUnit, metrics            | —                       |
+
+Commands:
+
+- `mise run test tag <catalog_key> <slice>` — AC slice runs Cucumber unit (`sf1ac1` → `@ac:SF-1_AC1`).
+- `bun run bdd:unit -- --tags @sync_frecency_preserve --tags @ac:SF-1_AC1`
+- `bun run bdd:e2e` / `mise run test e2e` — browser suite only (`@e2e` in `playwright.config.ts`).
+
+## Folder layout (legacy note)
+
+Older docs may still say top-level `e2e/`; that tree is now `bdd/e2e/`.
 
 ## Screenplay in KB
 
@@ -77,15 +88,18 @@ names cannot express the target.
 ## When to add what
 
 - New release-facing app behavior → add or update a scenario under
-  `assets/features/e2e/`, register steps under `e2e/steps/`, and satisfy
+  `assets/features/` (or legacy `assets/features/e2e/`), register steps under
+  `bdd/e2e/steps/` or `bdd/unit/steps/`, and satisfy
   [TESTING_GUIDE § Cross-feature e2e acceptance (R11)](./TESTING_GUIDE.md#cross-feature-e2e-acceptance-r11).
 - User-visible refactor of list, detail, palette, filter, sync, or settings →
   update or add e2e scenarios in the same increment unless the active spec
   documents an approved unit-only deferral.
-- Seed data or ordering change → update `e2e/support/seed_fixture.support.ts`
+- Seed data or ordering change → update `bdd/e2e/support/seed_fixture.support.ts`
   and matching Gherkin strings.
 - New test setup, browser operation, or assertion helper → add a suffixed
-  artifact under `e2e/steps/`, `e2e/screenplay/`, or `e2e/support/`.
+  artifact under `bdd/e2e/steps/`, `bdd/e2e/screenplay/`, or `bdd/e2e/support/`.
+- App-layer acceptance (no UI) → `bdd/unit/steps/` + register in
+  `bdd/unit/support/register_steps.support.ts`.
 - Shared testing rules → update `assets/guides/TESTING_GUIDE.md` or this guide.
 
 ## Related guides

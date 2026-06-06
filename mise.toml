@@ -311,7 +311,7 @@ HK_PKL_BACKEND = "pklr"
       flag "--smoke" help="P0 Gherkin smoke (@smoke) only"
       flag "--regression" help="P0+P1 Gherkin regression (@regression) only"
       flag "--debug" help="Playwright debug UI for BDD suite"
-      flag "--metrics-report" help="Write tmp/e2e/metrics/latest.json from JUnit + scenario scores"
+      flag "--metrics-report" help="Write tmp/bdd/e2e/metrics/latest.json from JUnit + scenario scores"
       flag "--metrics-compare" help="Compare latest metrics to tools/metrics/baselines/e2e-quality/quality-baseline.json"
       flag "--write-baseline" help="Maintainer: refresh tools/metrics/baselines/e2e-quality/quality-baseline.json"
     }
@@ -320,7 +320,8 @@ HK_PKL_BACKEND = "pklr"
       flag "--e2e" help="Include or run Gherkin layer only"
       flag "--unit" help="Include or run unit layer only"
       flag "--json" help="Machine-readable output (list mode)"
-      arg "[key]" help="Catalog key; append extra keys after -- for multiple"
+      arg "[key]" help="Catalog key (e.g. sync_frecency_preserve)"
+      arg "[slice]" help="Optional AC slice id (e.g. sf1ac1 maps to @ac:SF-1_AC1)"
     }
   ''', run = "bun tools/bin/test.script.ts" }
 "perf" = { description = "Run preview-server performance benchmark workflows", usage = '''

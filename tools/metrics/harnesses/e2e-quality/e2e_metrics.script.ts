@@ -1,5 +1,5 @@
 /**
- * Merge Playwright JUnit output with scenario-scores.json into tmp/e2e/metrics/latest.json.
+ * Merge Playwright JUnit output with scenario-scores.json into tmp/bdd/e2e/metrics/latest.json.
  * Compare runs against tools/metrics/baselines/e2e-quality/quality-baseline.json.
  *
  * Usage:
@@ -14,8 +14,8 @@ const ROOT = path.resolve(import.meta.dir, '../../../..')
 const E2E_QUALITY_BASELINE = path.join(ROOT, 'tools/metrics/baselines/e2e-quality')
 const SCORES_PATH = path.join(E2E_QUALITY_BASELINE, 'scenario-scores.json')
 const BASELINE_PATH = path.join(E2E_QUALITY_BASELINE, 'quality-baseline.json')
-const JUNIT_PATH = path.join(ROOT, 'tmp/e2e/junit.xml')
-const METRICS_DIR = path.join(ROOT, 'tmp/e2e/metrics')
+const JUNIT_PATH = path.join(ROOT, 'tmp/bdd/e2e/junit.xml')
+const METRICS_DIR = path.join(ROOT, 'tmp/bdd/e2e/metrics')
 const LATEST_PATH = path.join(METRICS_DIR, 'latest.json')
 
 type ScenarioScore = {

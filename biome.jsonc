@@ -18,7 +18,8 @@
       "!.opencode",
       "!.agents",
       "!.code-review-graph",
-      "!e2e/.generated",
+      "!bdd/e2e/.generated",
+      "!bdd/e2e/.generated",
       "!tmp",
       "!tools/graphify-out",
       "!.venv",
@@ -340,29 +341,31 @@
       }
     },
     {
-      "includes": ["e2e/screenplay/**/*.ts", "e2e/steps/**/*.ts", "e2e/support/**/*.ts"],
+      "includes": ["bdd/e2e/**/*.ts", "bdd/e2e/**/*.tsx", "bdd/unit/**/*.ts", "bdd/unit/**/*.tsx"],
       "linter": {
         "rules": {
+          "suspicious": {
+            "noMisplacedAssertion": "off",
+            "useAwait": "off"
+          },
+          "style": {
+            "noMagicNumbers": "off",
+            "noDefaultExport": "off",
+            "useConsistentMemberAccessibility": "off",
+            "useConsistentTypeDefinitions": "off"
+          },
+          "correctness": {
+            "noUnusedFunctionParameters": "off",
+            "noUnusedPrivateClassMembers": "off"
+          },
           "nursery": {
             "noExcessiveClassesPerFile": "off",
-            "useConsistentMethodSignatures": "off"
+            "useConsistentMethodSignatures": "off",
+            "useImportsFirst": "off"
           },
           "performance": {
             "noAwaitInLoops": "off",
             "useTopLevelRegex": "off"
-          },
-          "correctness": {
-            "noUnusedPrivateClassMembers": "off",
-            "noUnusedFunctionParameters": "off"
-          },
-          "style": {
-            "noMagicNumbers": "off",
-            "useConsistentTypeDefinitions": "off",
-            "noDefaultExport": "off",
-            "useConsistentMemberAccessibility": "off"
-          },
-          "suspicious": {
-            "useAwait": "off"
           },
           "security": {
             "noSecrets": "off"

@@ -9,10 +9,10 @@ const TEST_TIMEOUT_MS = 60_000
 const CI_TEST_TIMEOUT_MS = 180_000
 
 const bddTestDir = defineBddConfig({
-  features: 'assets/features/e2e/**/*.feature',
-  steps: ['e2e/support/fixtures.support.ts', 'e2e/steps/**/*.ts'],
-  outputDir: 'e2e/.generated',
-  tags: 'not @todo',
+  features: 'assets/features/**/*.feature',
+  steps: ['bdd/e2e/support/fixtures.support.ts', 'bdd/e2e/steps/**/*.ts'],
+  outputDir: 'bdd/e2e/.generated',
+  tags: '@e2e and not @todo',
   disableWarnings: { importTestFrom: true }
 })
 
@@ -22,13 +22,13 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   workers: 1,
-  globalTeardown: path.join(import.meta.dirname, 'e2e/support/global_teardown.support.ts'),
+  globalTeardown: path.join(import.meta.dirname, 'bdd/e2e/support/global_teardown.support.ts'),
   reporter: [
     ['list'],
     ['html', { open: 'never', outputFolder: 'tmp/playwright-report' }],
-    ['junit', { outputFile: 'tmp/e2e/junit.xml' }]
+    ['junit', { outputFile: 'tmp/bdd/e2e/junit.xml' }]
   ],
-  outputDir: 'tmp/e2e/test-results',
+  outputDir: 'tmp/bdd/e2e/test-results',
   timeout: process.env.CI ? CI_TEST_TIMEOUT_MS : TEST_TIMEOUT_MS,
   use: {
     baseURL: baseUrl,
@@ -46,7 +46,7 @@ export default defineConfig({
     }
   ],
   webServer: {
-    command: 'bun e2e/support/preview_with_fixture.support.ts',
+    command: 'bun bdd/e2e/support/preview_with_fixture.support.ts',
     url: `${baseUrl}/`,
     timeout: 180_000,
     reuseExistingServer: !process.env.CI,
