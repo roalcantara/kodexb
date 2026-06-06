@@ -66,7 +66,6 @@ function main(): void {
     case 'library-manifest': {
       const args: string[] = []
       if (envBool('usage_dry_run')) args.push('--dry-run')
-      if (envBool('usage_apply')) args.push('--apply')
       if (envBool('usage_verify')) args.push('--verify')
       spawnInherit(['bun', `${SPECS}/library_manifest.script.ts`, ...args], root)
       break

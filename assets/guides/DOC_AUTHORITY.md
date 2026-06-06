@@ -13,15 +13,15 @@ Where rules and feature specs live, and what may link to what.
 
 ## Document layers
 
-| Layer              | Path                                   | Purpose                                                                                                  |
-| ------------------ | -------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Process**        | `assets/guides/`                       | How we work on any feature (FCIS, testing policy, commits, tools taxonomy)                                 |
-| **Catalog**        | `assets/catalog/`                      | Shipped feature + skill registries (`catalog.yaml`, `library.yaml`, `SKILLS.yaml`) — YAML only, no prose |
-| **Gherkin**        | `assets/features/*.feature`            | Product-visible behaviour (executable)                                                                   |
-| **Unit/component** | `src/**/*.spec.ts(x)`                  | Implementation contracts (executable)                                                                    |
-| **In-flight SDD**  | `assets/specs/NNN-<slug>/`             | Spec Kit workspace while building                                                                        |
-| **Legacy SDD**     | `assets/docs/archive/NNN-<slug>/`      | Pre–Spec Kit folders; stub after ship                                                                    |
-| **Onboarding**     | `README.md`                            | Stack, commands, link to catalog                                                                         |
+| Layer              | Path                              | Purpose                                                                                                  |
+| ------------------ | --------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Process**        | `assets/guides/`                  | How we work on any feature (FCIS, testing policy, commits, tools taxonomy)                               |
+| **Catalog**        | `assets/catalog/`                 | Shipped feature + skill registries (`catalog.yaml`, `library.yaml`, `SKILLS.yaml`) — YAML only, no prose |
+| **Gherkin**        | `assets/features/*.feature`       | Product-visible behaviour (executable)                                                                   |
+| **Unit/component** | `src/**/*.spec.ts(x)`             | Implementation contracts (executable)                                                                    |
+| **In-flight SDD**  | `assets/specs/NNN-<slug>/`        | Spec Kit workspace while building                                                                        |
+| **Legacy SDD**     | `assets/docs/archive/NNN-<slug>/` | Pre–Spec Kit folders; stub after ship                                                                    |
+| **Onboarding**     | `README.md`                       | Stack, commands, link to catalog                                                                         |
 
 `assets/catalog/` holds **YAML registries only** — not feature prose, not tools layout. Tools
 automation taxonomy: [`TOOLS_GUIDE.md`](TOOLS_GUIDE.md).
@@ -61,11 +61,11 @@ PRD / requirements (in-flight under `assets/specs/`) are implemented in **code**
 
 Each catalog **key** is the single run tag: **`@<key>`** (e.g. `command_palette` → `@command_palette`).
 
-| Surface                  | Convention                     |
-| ------------------------ | ------------------------------ |
-| Catalog YAML key         | `snake_case` stable product id |
-| Gherkin Feature line     | Cucumber tag `@<key>`          |
-| Unit/component spec file | Comment on line 1              |
+| Surface                  | Convention                       |
+| ------------------------ | -------------------------------- |
+| Catalog YAML key         | `snake_case` stable product id   |
+| Gherkin Feature line     | Cucumber tag `@<key>`            |
+| Unit/component spec file | Comment on line 1                |
 | CLI                      | `mise run test tag <key> --list` |
 
 ```bash
@@ -94,17 +94,19 @@ entries:
     birth_iso: "2026-05-08 16:30:15 -0300"
 ```
 
-| Field                       | Required | Meaning                            |
-| --------------------------- | -------- | ---------------------------------- |
-| `archive_root`              | yes      | Parent directory for all entries   |
-| `generated_at`              | yes      | ISO-8601 timestamp of regeneration |
-| `entries[].nnn`             | yes      | Three-digit sort key               |
-| `entries[].slug`            | yes      | Feature name slug                  |
-| `entries[].folder`          | yes      | `NNN-slug` directory name          |
-| `entries[].birth_iso`       | yes      | Git birth or mtime fallback        |
+| Field                 | Required | Meaning                            |
+| --------------------- | -------- | ---------------------------------- |
+| `archive_root`        | yes      | Parent directory for all entries   |
+| `generated_at`        | yes      | ISO-8601 timestamp of regeneration |
+| `entries[].nnn`       | yes      | Three-digit sort key               |
+| `entries[].slug`      | yes      | Feature name slug                  |
+| `entries[].folder`    | yes      | `NNN-slug` directory name          |
+| `entries[].birth_iso` | yes      | Git birth or mtime fallback        |
 
 Regenerate or verify: `bun tools/governance/specs/library_manifest.script.ts`
 (flags: `--dry-run`, `--verify`). Not merged into `catalog.yaml`.
+
+Mise wrapper: `mise run spec library-manifest --verify`
 
 ### Catalog schema (`assets/catalog/catalog.yaml`)
 
@@ -119,12 +121,12 @@ command_palette:
   superseded_by: null
 ```
 
-| Field           | Required | Meaning                                      |
-| --------------- | -------- | -------------------------------------------- |
-| `title`         | yes      | Human label                                  |
-| `status`        | yes      | Lifecycle                                    |
-| `specs`         | yes      | Spec Kit or legacy slug reference            |
-| `superseded_by` | optional | Canonical id of replacement feature          |
+| Field           | Required | Meaning                             |
+| --------------- | -------- | ----------------------------------- |
+| `title`         | yes      | Human label                         |
+| `status`        | yes      | Lifecycle                           |
+| `specs`         | yes      | Spec Kit or legacy slug reference   |
+| `superseded_by` | optional | Canonical id of replacement feature |
 
 **Forbidden:** path lists, prose fields, per-feature markdown in catalog.
 
@@ -142,12 +144,8 @@ legacy assets/docs/archive/NNN-slug/ stubbed (if present)
 superseded_by set in catalog
 ```
 
-**Ship gate (Definition of Done)** — before `status: shipped`:
-
-- [ ] `catalog.yaml` entry; Gherkin + units tagged `@<key>`
-- [ ] No `enforced_by: none` on requirement lines
-- [ ] Spec folder stubbed; no permanent doc links to spec bodies
-- [ ] `mise run test tag <catalog-key> --list` lists expected artifacts
+**Ship gate (Definition of Done)** — before `status: shipped`: see
+[`DoD.md` § Ship gate (catalog promotion)](DoD.md#8-ship-gate-catalog-promotion).
 
 ### Duplication policy
 
@@ -171,7 +169,7 @@ Do not treat `assets/docs/` or legacy spec folders as a second source of truth f
 
 Until shared contracts finish migrating, these **tools** may still embed paths (not documentation links):
 
-- `tools/governance/specs/library_manifest.script.ts` — reads/writes `assets/catalog/library.yaml`; renames under legacy spec tree
+- `tools/governance/specs/library_manifest.script.ts` — generates and verifies `assets/catalog/library.yaml` (legacy archive folder index)
 - `tools/metrics/harnesses/e2e-quality/e2e_metrics.script.ts` — reads `tools/metrics/baselines/e2e-quality/*`
 - `tools/governance/policies/rogue_refs.script.ts` — inventories inbound legacy links
 

@@ -99,9 +99,21 @@ In order for a task to be considered completed, it MUST satisfy ALL of the follo
 - [ ] mise.toml updated with any new COMPLEX tasks (if needed)
 - [ ] Team notified of changes
 
+## 8. Ship gate (catalog promotion)
+
+Before setting `status: shipped` in [`assets/catalog/catalog.yaml`](../catalog/catalog.yaml),
+ALL of the following MUST be satisfied. Governance: [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md)
+§ Catalog governance.
+
+- [ ] `catalog.yaml` entry; Gherkin + units tagged `@<key>`
+- [ ] No `enforced_by: none` on requirement lines
+- [ ] Spec folder stubbed; no permanent doc links to spec bodies
+- [ ] `mise run test tag <catalog-key> --list` lists expected artifacts
+
 ## REFERENCES
 
 - [Bun Test Runner](https://bun.sh/docs/test)
 - [TypeScript Handbook](https://typescriptlang.org/docs/)
 - [Conventional Commits](https://conventionalcommits.org/)
 - [Commit Message Guidelines](./GIT_COMMITS_GUIDE.md)
+- [Document authority — catalog governance](./DOC_AUTHORITY.md#catalog-governance)

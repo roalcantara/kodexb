@@ -1,3 +1,185 @@
 # Legacy SDD archive index — script-generated; do not hand-edit.
 # Shipped features: assets/catalog/catalog.yaml (different registry).
-{generated_at: 2026-06-06T04:39:43.267Z,archive_root: assets/docs/archive,entries: [{nnn: "001",slug: foundation,folder: 001-foundation,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "002",slug: ci-build-packaging,folder: 002-ci-build-packaging,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "003",slug: core-domain,folder: 003-core-domain,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "004",slug: validators,folder: 004-validators,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "005",slug: data-layer,folder: 005-data-layer,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "006",slug: app-service-rpc,folder: 006-app-service-rpc,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "007",slug: phase-7-detail-view,folder: 007-phase-7-detail-view,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "008",slug: task-management,folder: 008-task-management,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "009",slug: actions-system,folder: 009-actions-system,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "010",slug: sync-ui,folder: 010-sync-ui,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "011",slug: codebase-best-practices-audit,folder: 011-codebase-best-practices-audit,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "012",slug: codebase-consolidation,folder: 012-codebase-consolidation,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "013",slug: codebase-quality-audit,folder: 013-codebase-quality-audit,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "014",slug: command-palette-filter-ux,folder: 014-command-palette-filter-ux,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "015",slug: compact-filter-redesign,folder: 015-compact-filter-redesign,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "016",slug: debugging,folder: 016-debugging,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "017",slug: design-polishing,folder: 017-design-polishing,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "018",slug: e2e,folder: 018-e2e,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "019",slug: elysia-electrobun-capability-inventory,folder: 019-elysia-electrobun-capability-inventory,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "020",slug: entry-action-handoff,folder: 020-entry-action-handoff,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "021",slug: entry-action-panel,folder: 021-entry-action-panel,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "022",slug: graph,folder: 022-graph,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "023",slug: hk,folder: 023-hk,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "024",slug: keyboard-shortcuts-view,folder: 024-keyboard-shortcuts-view,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "025",slug: list-frecency-sort,folder: 025-list-frecency-sort,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "026",slug: mise-usage,folder: 026-mise-usage,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "027",slug: mise-usage-improvements,folder: 027-mise-usage-improvements,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "028",slug: normalise-biome-rules,folder: 028-normalise-biome-rules,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "029",slug: normalise-specs,folder: 029-normalise-specs,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "030",slug: normalise-tasks,folder: 030-normalise-tasks,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "031",slug: platform-parity,folder: 031-platform-parity,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "032",slug: raycast-redesign,folder: 032-raycast-redesign,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "033",slug: renderer-nav-flow,folder: 033-renderer-nav-flow,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "034",slug: shell-chrome,folder: 034-shell-chrome,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "035",slug: shell-window-nav,folder: 035-shell-window-nav,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "036",slug: shortcuts,folder: 036-shortcuts,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "037",slug: skills-normalisation,folder: 037-skills-normalisation,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "038",slug: stats-panel,folder: 038-stats-panel,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "039",slug: suggest-tags,folder: 039-suggest-tags,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "040",slug: sync,folder: 040-sync,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "041",slug: telemetry-mvp,folder: 041-telemetry-mvp,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "042",slug: update-hooks,folder: 042-update-hooks,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "043",slug: ci-review-e2e,folder: 043-ci-review-e2e,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "044",slug: electrobun-corpus-audit,folder: 044-electrobun-corpus-audit,birth_iso: 2026-06-06 01:05:34 -0300},{nnn: "045",slug: electrobun-utils-adoption,folder: 045-electrobun-utils-adoption,birth_iso: 2026-06-06 01:05:34 -0300}]}
+archive_root: assets/docs/archive
+generated_at: "2026-06-06T04:45:18.210Z"
+entries:
+  - nnn: "001"
+    slug: foundation
+    folder: 001-foundation
+    birth_iso: "2026-05-08 16:30:15 -0300"
+  - nnn: "002"
+    slug: ci-build-packaging
+    folder: 002-ci-build-packaging
+    birth_iso: "2026-05-08 16:30:15 -0300"
+  - nnn: "003"
+    slug: core-domain
+    folder: 003-core-domain
+    birth_iso: "2026-05-08 21:03:44 -0300"
+  - nnn: "004"
+    slug: validators
+    folder: 004-validators
+    birth_iso: "2026-05-08 21:03:44 -0300"
+  - nnn: "005"
+    slug: data-layer
+    folder: 005-data-layer
+    birth_iso: "2026-05-11 15:06:09 -0300"
+  - nnn: "006"
+    slug: app-service-rpc
+    folder: 006-app-service-rpc
+    birth_iso: "2026-05-11 19:43:25 -0300"
+  - nnn: "007"
+    slug: phase-7-detail-view
+    folder: 007-phase-7-detail-view
+    birth_iso: "2026-05-11 19:43:25 -0300"
+  - nnn: "008"
+    slug: task-management
+    folder: 008-task-management
+    birth_iso: "2026-05-12 12:34:49 -0300"
+  - nnn: "009"
+    slug: actions-system
+    folder: 009-actions-system
+    birth_iso: "2026-05-12 14:05:22 -0300"
+  - nnn: "010"
+    slug: sync-ui
+    folder: 010-sync-ui
+    birth_iso: "2026-05-12 15:00:36 -0300"
+  - nnn: "011"
+    slug: codebase-best-practices-audit
+    folder: 011-codebase-best-practices-audit
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "012"
+    slug: codebase-consolidation
+    folder: 012-codebase-consolidation
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "013"
+    slug: codebase-quality-audit
+    folder: 013-codebase-quality-audit
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "014"
+    slug: command-palette-filter-ux
+    folder: 014-command-palette-filter-ux
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "015"
+    slug: compact-filter-redesign
+    folder: 015-compact-filter-redesign
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "016"
+    slug: debugging
+    folder: 016-debugging
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "017"
+    slug: design-polishing
+    folder: 017-design-polishing
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "018"
+    slug: e2e
+    folder: 018-e2e
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "019"
+    slug: elysia-electrobun-capability-inventory
+    folder: 019-elysia-electrobun-capability-inventory
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "020"
+    slug: entry-action-handoff
+    folder: 020-entry-action-handoff
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "021"
+    slug: entry-action-panel
+    folder: 021-entry-action-panel
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "022"
+    slug: graph
+    folder: 022-graph
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "023"
+    slug: hk
+    folder: 023-hk
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "024"
+    slug: keyboard-shortcuts-view
+    folder: 024-keyboard-shortcuts-view
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "025"
+    slug: list-frecency-sort
+    folder: 025-list-frecency-sort
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "026"
+    slug: mise-usage
+    folder: 026-mise-usage
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "027"
+    slug: mise-usage-improvements
+    folder: 027-mise-usage-improvements
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "028"
+    slug: normalise-biome-rules
+    folder: 028-normalise-biome-rules
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "029"
+    slug: normalise-specs
+    folder: 029-normalise-specs
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "030"
+    slug: normalise-tasks
+    folder: 030-normalise-tasks
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "031"
+    slug: platform-parity
+    folder: 031-platform-parity
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "032"
+    slug: raycast-redesign
+    folder: 032-raycast-redesign
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "033"
+    slug: renderer-nav-flow
+    folder: 033-renderer-nav-flow
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "034"
+    slug: shell-chrome
+    folder: 034-shell-chrome
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "035"
+    slug: shell-window-nav
+    folder: 035-shell-window-nav
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "036"
+    slug: shortcuts
+    folder: 036-shortcuts
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "037"
+    slug: skills-normalisation
+    folder: 037-skills-normalisation
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "038"
+    slug: stats-panel
+    folder: 038-stats-panel
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "039"
+    slug: suggest-tags
+    folder: 039-suggest-tags
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "040"
+    slug: sync
+    folder: 040-sync
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "041"
+    slug: telemetry-mvp
+    folder: 041-telemetry-mvp
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "042"
+    slug: update-hooks
+    folder: 042-update-hooks
+    birth_iso: "2026-06-01 11:51:06 -0300"
+  - nnn: "043"
+    slug: ci-review-e2e
+    folder: 043-ci-review-e2e
+    birth_iso: "2026-06-04 09:08:59 -0300"
+  - nnn: "044"
+    slug: electrobun-corpus-audit
+    folder: 044-electrobun-corpus-audit
+    birth_iso: "2026-06-04 09:08:59 -0300"
+  - nnn: "045"
+    slug: electrobun-utils-adoption
+    folder: 045-electrobun-utils-adoption
+    birth_iso: "2026-06-04 09:08:59 -0300"

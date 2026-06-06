@@ -81,14 +81,38 @@ export function listUnnumberedSlugDirs(): string[] {
   return readdirSync(SPECS_ROOT).filter(isUnnumberedSlugDir).sort()
 }
 
-function gitBirthIso(folderName: string): string | null {
-  const rel = `assets/docs/archive/${folderName}/`
-  const r = spawnSync('git', ['log', '--diff-filter=A', '--format=%ai', '--reverse', '--', rel], {
-    cwd: REPO_ROOT,
-    encoding: 'utf8'
-  })
-  const line = r.stdout.trim().split('\n')[0]
-  return line || null
+function gitBirthIso(folderName: string, slug: string): string | null {
+  const dir = path.join(SPECS_ROOT, folderName)
+  const canonicalFiles = ['design.md', 'requirements.md', 'tasks.md', 'handoff.md']
+
+  for (const file of canonicalFiles) {
+    const filePath = path.join(dir, file)
+    try {
+      if (statSync(filePath).isFile()) {
+        const rel = `assets/docs/archive/${folderName}/${file}`
+        const stdout =
+          spawnSync('git', ['log', '--follow', '--format=%ai', '--', rel], { cwd: REPO_ROOT, encoding: 'utf8' })
+            .stdout ?? ''
+        const lines = stdout.trim().split('\n').filter(Boolean)
+        if (lines.length > 0) return String(lines[lines.length - 1])
+      }
+    } catch {
+      /* skip */
+    }
+  }
+
+  const preRenamePaths = [`assets/docs/specs/${slug}/`, `assets/docs/archive/${slug}/`]
+  for (const p of preRenamePaths) {
+    const stdout =
+      spawnSync('git', ['log', '--diff-filter=A', '--format=%ai', '--reverse', '--', p], {
+        cwd: REPO_ROOT,
+        encoding: 'utf8'
+      }).stdout ?? ''
+    const line = stdout.trim().split('\n')[0]
+    if (line) return line
+  }
+
+  return null
 }
 
 function mtimeFallbackIso(folderName: string): string {
@@ -114,8 +138,8 @@ function mtimeFallbackIso(folderName: string): string {
   return new Date(oldest).toISOString()
 }
 
-function birthIso(folderName: string): string {
-  return gitBirthIso(folderName) ?? mtimeFallbackIso(folderName)
+function birthIso(folderName: string, slug: string): string {
+  return gitBirthIso(folderName, slug) ?? mtimeFallbackIso(folderName)
 }
 
 export function buildManifest(): Manifest {
@@ -129,7 +153,7 @@ export function buildManifest(): Manifest {
       nnn: parsed.nnn,
       slug: parsed.slug,
       folder,
-      birth_iso: birthIso(folder)
+      birth_iso: birthIso(folder, parsed.slug)
     })
   }
 
@@ -147,15 +171,23 @@ function printPlan(plan: Manifest): void {
   }
 }
 
-async function writeManifest(plan: Manifest): Promise<void> {
-  const yaml = [
+function manifestToYaml(manifest: Manifest): string {
+  const lines: string[] = [
     '# Legacy SDD archive index — script-generated; do not hand-edit.',
     '# Shipped features: assets/catalog/catalog.yaml (different registry).',
-    Bun.YAML.stringify(plan).trimEnd(),
-    ''
-  ].join('\n')
-  await Bun.write(MANIFEST_PATH, yaml)
-  console.log(`wrote ${path.relative(REPO_ROOT, MANIFEST_PATH)}`)
+    `archive_root: ${manifest.archive_root}`,
+    `generated_at: "${manifest.generated_at}"`,
+    'entries:'
+  ]
+
+  for (const e of manifest.entries) {
+    lines.push(`  - nnn: "${e.nnn}"`)
+    lines.push(`    slug: ${e.slug}`)
+    lines.push(`    folder: ${e.folder}`)
+    lines.push(`    birth_iso: "${e.birth_iso}"`)
+  }
+
+  return `${lines.join('\n')}\n`
 }
 
 export function verifyManifest(yamlManifest: Manifest, onDiskFolders: string[]): string[] {
@@ -205,27 +237,25 @@ function verify(): void {
   process.exit(1)
 }
 
-const args = process.argv.slice(2)
-const dryRun = args.includes('--dry-run')
-const apply = args.includes('--legacy-apply')
-const verifyOnly = args.includes('--verify')
+if (import.meta.main) {
+  const args = process.argv.slice(2)
+  const dryRun = args.includes('--dry-run')
+  const verifyOnly = args.includes('--verify')
 
-if (verifyOnly) {
-  verify()
-  process.exit(0)
+  if (verifyOnly) {
+    verify()
+    process.exit(0)
+  }
+
+  const manifest = buildManifest()
+  printPlan(manifest)
+
+  if (dryRun) {
+    console.log('\n(dry-run: no manifest write)')
+    process.exit(0)
+  }
+
+  const yaml = manifestToYaml(manifest)
+  await Bun.write(MANIFEST_PATH, yaml)
+  console.log(`wrote ${path.relative(REPO_ROOT, MANIFEST_PATH)}`)
 }
-
-const manifest = buildManifest()
-printPlan(manifest)
-
-if (dryRun) {
-  console.log('\n(dry-run: no manifest write)')
-  process.exit(0)
-}
-
-if (apply) {
-  console.error('--legacy-apply: rename migration is complete; remove this flag and use --dry-run + manual write')
-  process.exit(1)
-}
-
-await writeManifest(manifest)

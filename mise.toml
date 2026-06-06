@@ -1411,9 +1411,8 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
     }
     cmd "opencode-check" {}
     cmd "library-manifest" {
-      flag "--dry-run" help="Print rename plan only; do not write manifest or git mv"
-      flag "--apply" help="git mv each slug to NNN-slug per manifest"
-      flag "--verify" help="Fail if any unnumbered slug directory remains"
+      flag "--dry-run" help="Print plan only; do not write manifest"
+      flag "--verify" help="Bidirectional check: YAML entries ↔ on-disk folders; fail if mismatch"
     }
   ''', run = "bun tools/bin/spec.script.ts" }
 "catalog" = { description = "Shipped-feature registry (catalog.yaml metadata)", usage = '''
