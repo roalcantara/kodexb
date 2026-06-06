@@ -160,6 +160,8 @@ playwright-report
 e2e/.generated/
 e2e/.fixture-paths.json
 tmp/e2e/
+tmp/audit/
+tmp/metrics/
 tmp/playwright-report/
 
 # Generated linter snapshots (jscpd JSON drifts under Biome lint:fix; CI uses
@@ -179,6 +181,8 @@ report/
 !.agents/skills/app-rpc/**
 !.agents/skills/app-testing/
 !.agents/skills/app-testing/**
+!.agents/skills/app-logging/
+!.agents/skills/app-logging/**
 .claude/skills/*
 
 # code coverage
@@ -200,7 +204,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # IDE
 .idea
 
-# External skill / brainstorm default path — app specs live in assets/docs/specs/
+# External skill / brainstorm default path — legacy specs live in assets/docs/archive/
 docs/superpowers/
 
 # macOS
@@ -231,3 +235,4 @@ tools/benchmarks/results/latest.json
 
 # Local git worktrees (created by using-git-worktrees skill for isolated demos / spikes)
 .worktrees/
+graphify-out/

@@ -1,0 +1,17 @@
+# Every TypeScript module under tools/ must declare the .script.ts artifact suffix.
+# Exceptions: co-located tests (*.script.spec.ts) and type-only modules (*.types.ts).
+id: tools-must-use-script-suffix
+language: TypeScript
+files:
+  - 'tools/**/*.ts'
+ignores:
+  - 'tools/**/*.script.ts'
+  - 'tools/**/*.script.spec.ts'
+  - 'tools/**/*.types.ts'
+severity: error
+rule:
+  kind: program
+message: >
+  Tools TypeScript must use the .script.ts suffix (e.g. tools/governance/registries/catalog/catalog.script.ts).
+  Co-located tests use .script.spec.ts; type-only modules use .types.ts.
+note: See assets/guides/CODESTYLE_GUIDE.md — Tools directory naming.

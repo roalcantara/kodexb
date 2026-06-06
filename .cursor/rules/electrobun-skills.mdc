@@ -12,12 +12,12 @@ When a task may involve **Electrobun** (desktop shell, webview/renderer, typed R
    **`<repo>/.agents/skills/<skill-id>/SKILL.md`**
    (replace `<skill-id>` with the slug from the table, e.g. `electrobun-rpc`).
    If a routed project skill is missing there, run `mise run skill install`
-   (Skills CLI-managed project skills are defined in `assets/guides/SKILLS.yml`
+   (Skills CLI-managed project skills are defined in `assets/catalog/SKILLS.yaml`
    and `skills-lock.json`). For global-only skills, read from
    `$HOME/.agents/skills/` or `$HOME/.config/cursor/skills/`.
 
 If nothing matches, read **`electrobun-plugin-guide`** first, then narrow.
 
-Prefer repo guides for **project-specific** wiring: `assets/guides/ELECTROBUN.md`, `assets/docs/specs/foundation/design.md`.
+Prefer repo guides for **project-specific** wiring: `assets/guides/ELECTROBUN.md`, `assets/guides/FCIS.guide.md`.
 
 Do **not** rely on memory alone for Electrobun APIs when a skill covers the topic—read the skill, then implement.

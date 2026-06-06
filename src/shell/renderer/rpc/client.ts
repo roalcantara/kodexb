@@ -42,7 +42,7 @@ const syncListeners: {
  *   - push messages: `syncProgress`, `syncComplete` from `App.sync` emitters.
  *
  * In the preview server the `electrobun/view` import is swapped at bundle
- * time for `tools/preview/mock_electroview.ts`, which proxies `rpcCall`
+ * time for `tools/dev/preview/mock_electroview.script.ts`, which proxies `rpcCall`
  * through native `fetch` against the same `RpcApp` exposed over HTTP.
  */
 const webviewRpc = Electroview.defineRPC<DesktopRpcSchema>({

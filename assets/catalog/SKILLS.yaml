@@ -1,0 +1,911 @@
+# Agent skill registry (catalog). Schema and workflow: assets/guides/SKILLS.md
+schema_version: 3
+description: Project skill registry. Install project skills via `mise run skill add` only — do not run raw `skills add`
+  without updating this file. Drives validation, generated routing snippets, and consistency checks against skills-lock.json.
+locations:
+  owned: Project-authored skill committed under .agents/skills/<skill-id>.
+  project: External skill managed by the Skills CLI, recorded in skills-lock.json, and restored into .agents/skills/<skill-id>.
+  global: Global-only companion used from $HOME/.agents/skills/<skill-id> when available.
+skills:
+  app-context:
+    location: owned
+    rationale: Mandatory project orientation. It defines FCIS, allowed RPC shape, guide routing, and the project quality workflow.
+    policy:
+      type: required
+      usage:
+        summary: Always load at the start of any project task.
+        when:
+          load:
+            - any project task
+          avoid: []
+  app-rpc:
+    location: owned
+    rationale: Canonical app-level RPC guidance for Elysia, Eden Treaty, and TypeBox. It prevents drift toward unsupported
+      schema or ORM patterns.
+    policy:
+      type: required
+      usage:
+        summary: Load when touching app-level RPC.
+        when:
+          load:
+            - src/shell/main/rpc
+            - Eden Treaty client usage
+            - preview server route mirrors
+          avoid:
+            - native Electrobun IPC without app-level RPC changes
+  app-testing:
+    location: owned
+    rationale: Canonical testing workflow for co-located Bun specs, harnesses, and Electron/Electrobun-shaped test boundaries.
+    policy:
+      type: required
+      usage:
+        summary: Load when writing or changing tests.
+        when:
+          load:
+            - adding or changing specs
+            - test harness changes
+            - fixture or factory changes
+          avoid:
+            - documentation-only edits with no test impact
+  app-quality-gate:
+    location: owned
+    rationale: Executable completion gate. Prefer this over generic verification checklists when declaring work complete or
+      preparing commits.
+    policy:
+      type: required
+      usage:
+        summary: Load before declaring work complete or preparing commits.
+        when:
+          load:
+            - final verification
+            - commit preparation
+            - quality gate failures
+          avoid:
+            - exploratory reading with no change yet
+  app-logging:
+    location: owned
+    rationale: Canonical structured logging skill with LogTape, LOG_LEVEL dial, and DB/RPC instrumentation. Prevents
+      console.* drift and category misconfiguration.
+    policy:
+      type: required
+      usage:
+        summary: Load when writing or modifying logging code, categories, or verbosity configuration.
+        when:
+          load:
+            - getLogger
+            - configureMainLogging
+            - configureRendererLogging
+            - repositoryStmts
+            - LOG_LEVEL
+            - log level
+            - verbosity
+            - structured logging
+          avoid:
+            - documentation-only edits with no logging code change
+  build-graph:
+    location: project
+    rationale: Operational MCP workflow for building, refreshing, and verifying the local code-review-graph database.
+    policy:
+      type: required
+      usage:
+        summary: Use when initializing or refreshing the repository code graph.
+        when:
+          load:
+            - build the code review graph
+            - refresh the code review graph
+            - graph status
+          avoid:
+            - replacing project quality validation
+  code-review-graph:
+    location: project
+    rationale: Supporting CRG concept reference. Current upstream CLI documentation and KB graph specs remain authoritative.
+    policy:
+      type: reference
+      usage:
+        summary: Read for CRG concepts after the operational workflow and current KB graph spec.
+        when:
+          load:
+            - code-review-graph setup
+            - blast radius analysis
+            - CRG MCP configuration
+          avoid:
+            - overriding current upstream CLI behavior or KB hook policy
+  electrobun-best-practices:
+    location: project
+    rationale: Baseline for desktop stack work and the first stop before narrower Electrobun skills.
+    policy:
+      type: required
+      usage:
+        summary: Load before Electrobun desktop, config, shell, build, or distribution work.
+        when:
+          load:
+            - electrobun.config.ts
+            - src/shell/main
+            - windows, views, native UI, build, or distribution
+          avoid:
+            - renderer-only React work with no desktop shell behavior
+  electrobun:
+    location: project
+    rationale: General Electrobun reference. Prefer narrower routed skills when the task is specific.
+    policy:
+      type: reference
+      usage:
+        summary: General upstream Electrobun overview.
+        when:
+          load:
+            - broad Electrobun orientation
+            - comparing upstream concepts before choosing a routed skill
+          avoid:
+            - replacing narrower Electrobun routed skills
+  electrobun-plugin-guide:
+    location: project
+    rationale: Entry point for choosing a narrower Electrobun skill while still deferring to project routing.
+    policy:
+      type: routed
+      usage:
+        summary: Electrobun skill-selection entry point.
+        when:
+          load:
+            - unsure which Electrobun skill applies
+            - Electrobun overview questions
+          avoid:
+            - specific tasks already covered by a narrower route
+      routing:
+        electrobun:
+          - order: 10
+            triggers:
+              - Unsure where to start
+              - which electrobun skill
+              - overview
+  electrobun-config:
+    location: project
+    rationale: Supports configuration changes where Electrobun-specific behavior matters.
+    policy:
+      type: routed
+      usage:
+        summary: Electrobun configuration and asset wiring.
+        when:
+          load:
+            - electrobun.config.ts
+            - build.views
+            - copy assets
+          avoid:
+            - app feature code unrelated to Electrobun configuration
+      routing:
+        electrobun:
+          - order: 20
+            triggers:
+              - electrobun.config.ts
+              - build.views
+              - copy assets
+  electrobun-core:
+    location: project
+    rationale: Supports repeatable desktop shell work that the project regularly performs.
+    policy:
+      type: routed
+      usage:
+        summary: Electrobun main process, window, view, and lifecycle behavior.
+        when:
+          load:
+            - Main process
+            - BrowserWindow
+            - BrowserView
+            - lifecycle
+          avoid:
+            - app-level Elysia and Eden Treaty RPC
+      routing:
+        electrobun:
+          - order: 30
+            triggers:
+              - Main process
+              - BrowserWindow
+              - BrowserView
+              - lifecycle
+              - menus
+              - tray
+  electrobun-window-management:
+    location: project
+    rationale: Focused companion for window and view orchestration in the desktop shell.
+    policy:
+      type: required
+      usage:
+        summary: Electrobun window and BrowserView orchestration.
+        when:
+          load:
+            - multiple windows
+            - BrowserView orchestration
+            - window lifecycle and state
+          avoid:
+            - simple renderer-only layout changes
+  electrobun-native-ui:
+    location: project
+    rationale: Focused companion for native UI integration in the desktop shell.
+    policy:
+      type: required
+      usage:
+        summary: Electrobun native menus, dialogs, tray, shortcuts, and clipboard behavior.
+        when:
+          load:
+            - ApplicationMenu
+            - ContextMenu
+            - Tray
+            - native dialogs
+          avoid:
+            - custom React-only UI controls
+  electrobun-rpc:
+    location: project
+    rationale: Use for native Electrobun IPC only. App-level RPC remains owned by app-rpc.
+    policy:
+      type: routed
+      usage:
+        summary: Native Electrobun IPC.
+        when:
+          load:
+            - BrowserView.defineRPC
+            - Electroview.defineRPC
+            - ElectrobunRPCSchema
+          avoid:
+            - app-level Elysia and Eden Treaty RPC
+      routing:
+        electrobun:
+          - order: 40
+            triggers:
+              - Typed RPC
+              - Electroview.defineRPC
+              - schema bun/webview
+              - rpc.client
+            note: native IPC transport only
+  electrobun-dev:
+    location: project
+    rationale: Supports development-cycle troubleshooting without replacing the project workflow.
+    policy:
+      type: routed
+      usage:
+        summary: Electrobun development server and devtools workflow.
+        when:
+          load:
+            - electrobun dev
+            - watch or hot reload
+            - devtools
+          avoid:
+            - production build or release packaging
+      routing:
+        electrobun:
+          - order: 50
+            triggers:
+              - electrobun dev
+              - watch/hot
+              - devtools
+              - dev cycle
+  electrobun-build:
+    location: project
+    rationale: Supports build-specific Electrobun issues that generic Bun guidance does not cover.
+    policy:
+      type: routed
+      usage:
+        summary: Electrobun build pipeline and CI build behavior.
+        when:
+          load:
+            - electrobun build
+            - CI build failures
+            - signing-adjacent build concerns
+          avoid:
+            - local development server issues
+      routing:
+        electrobun:
+          - order: 60
+            triggers:
+              - electrobun build
+              - CI
+              - signing
+              - distribution failures
+  electrobun-platform:
+    location: project
+    rationale: Supports platform-specific desktop behavior while keeping the project guides authoritative.
+    policy:
+      type: routed
+      usage:
+        summary: Cross-platform Electrobun behavior.
+        when:
+          load:
+            - macOS differences
+            - Windows differences
+            - Linux differences
+            - CEF behavior
+          avoid:
+            - platform-neutral renderer code
+      routing:
+        electrobun:
+          - order: 70
+            triggers:
+              - Linux/Windows/macOS differences
+              - CEF
+              - multi-platform CI
+  electrobun-distribution:
+    location: project
+    rationale: Useful when the task crosses from local builds into packaging, signing, notarization, and distribution artifacts.
+    policy:
+      type: required
+      usage:
+        summary: Electrobun packaging and distribution artifacts.
+        when:
+          load:
+            - packaging
+            - code signing
+            - notarization
+            - distribution artifacts
+          avoid:
+            - app feature implementation with no packaging concern
+  electrobun-sdlc:
+    location: project
+    rationale: Useful for larger Electrobun feature planning, while the project's specs, prototype gate, and quality gate remain canonical.
+    policy:
+      type: routed
+      usage:
+        summary: Electrobun end-to-end feature lifecycle guidance.
+        when:
+          load:
+            - End-to-end Electrobun feature pipeline
+            - multi-agent SDLC
+          avoid:
+            - replacing project specs, prototype gate, or quality gate
+      routing:
+        electrobun:
+          - order: 80
+            triggers:
+              - End-to-end feature pipeline
+              - multi-agent SDLC
+  electrobun-workflow:
+    location: project
+    rationale: Useful for framework workflow questions but does not replace the project's feature/spec workflow.
+    policy:
+      type: routed
+      usage:
+        summary: Electrobun workflow stage guidance.
+        when:
+          load:
+            - Electrobun lifecycle stage questions
+            - dev/build/ship workflow questions
+          avoid:
+            - replacing project task or spec workflow
+      routing:
+        electrobun:
+          - order: 90
+            triggers:
+              - What stage next
+              - lifecycle between dev/build/ship
+  electrobun-kitchen-sink:
+    location: project
+    rationale: Reference examples only. Do not copy patterns without reconciling them with the project guides.
+    policy:
+      type: routed
+      usage:
+        summary: Upstream Electrobun examples and defineTest patterns.
+        when:
+          load:
+            - Kitchen sink examples
+            - defineTest
+            - upstream Electrobun test harness
+          avoid:
+            - copying examples without adapting to project conventions
+      routing:
+        electrobun:
+          - order: 100
+            triggers:
+              - Kitchen sink
+              - defineTest
+              - upstream Electrobun test harness
+  electrobun-testing:
+    location: project
+    rationale: Useful for framework-specific testing patterns, with app-testing as the project authority.
+    policy:
+      type: routed
+      usage:
+        summary: Electrobun-specific test framework patterns.
+        when:
+          load:
+            - Electrobun's own test framework patterns
+            - defineTest
+          avoid:
+            - normal project Bun specs that are covered by app-testing
+      routing:
+        electrobun:
+          - order: 110
+            triggers:
+              - Electrobun's own test framework patterns
+              - defineTest
+  electrobun-webgpu:
+    location: project
+    rationale: Load only for real WebGPU, GpuWindow, canvas, or WGSL work.
+    policy:
+      type: routed
+      usage:
+        summary: Electrobun WebGPU and GpuWindow behavior.
+        when:
+          load:
+            - WebGPU
+            - GpuWindow
+            - WGSL
+          avoid:
+            - normal desktop shell work with no GPU surface
+      routing:
+        electrobun:
+          - order: 120
+            triggers:
+              - WebGPU
+              - GpuWindow
+              - WGSL
+  electrobun-milady:
+    location: project
+    rationale: Helpful as upstream context for the milady repository, but not part of the project's normal feature workflow.
+    policy:
+      type: routed
+      usage:
+        summary: Upstream milady Electrobun repository conventions.
+        when:
+          load:
+            - milady-ai/milady repo PRs
+            - Electrobun conventions
+          avoid:
+            - project app feature implementation unless upstream milady context is needed
+      routing:
+        electrobun:
+          - order: 130
+            triggers:
+              - milady-ai/milady repo PRs
+              - Electrobun conventions
+  electrobun-rpc-patterns:
+    location: project
+    rationale: Useful for batching, streaming, and advanced IPC patterns, but not needed until the app has those requirements.
+    policy:
+      type: optional
+      usage:
+        summary: Advanced native Electrobun IPC patterns.
+        when:
+          load:
+            - batching native IPC
+            - streaming native IPC
+            - advanced Electrobun IPC after electrobun-rpc
+          avoid:
+            - normal project app-level RPC
+  bun-development:
+    location: project
+    rationale: Useful for Bun implementation details while the project Bun guide remains authoritative.
+    policy:
+      type: optional
+      usage:
+        summary: Bun implementation details.
+        when:
+          load:
+            - Bun APIs
+            - Bun test runner behavior
+            - Bun package or script behavior
+          avoid:
+            - replacing assets/guides/BUN_RUNTIME.md
+  bun-runtime:
+    location: project
+    rationale: Useful for runtime-specific Bun behavior while the project Bun guide remains authoritative.
+    policy:
+      type: optional
+      usage:
+        summary: Bun runtime, package manager, and test-runner behavior.
+        when:
+          load:
+            - runtime-specific Bun behavior
+            - package manager behavior
+            - test-runner behavior
+          avoid:
+            - replacing assets/guides/BUN_RUNTIME.md
+  systematic-debugging:
+    location: global
+    rationale: Gives a disciplined debugging loop for failures without weakening the project quality gate.
+    policy:
+      type: optional
+      usage:
+        summary: Debug failing tests, gate failures, regressions, or unexpected behavior.
+        when:
+          load:
+            - failing tests
+            - quality gate failures
+            - regressions
+            - unclear behavior
+          avoid:
+            - straightforward edits with no failure mode
+      surfaces:
+        claude_optional: before fixing failing tests, gate failures, or unexpected behavior
+        app_context_optional: Investigating failing tests, gate failures, regressions, or unexpected behavior.
+  elysia:
+    location: global
+    rationale: Useful for route mechanics, TypeBox route schemas, handler typing, and app.handle() testing. Do not follow
+      generic scaffolding that conflicts with the project.
+    policy:
+      type: optional
+      usage:
+        summary: Elysia route mechanics under app-rpc.
+        when:
+          load:
+            - Elysia route mechanics
+            - TypeBox route schemas
+            - app.handle() testing
+          avoid:
+            - generic scaffolding that conflicts with app-rpc
+      surfaces:
+        claude_optional: for Elysia route mechanics, after app-rpc
+        app_context_optional: Checking Elysia route mechanics after loading app-rpc.
+  receiving-code-review:
+    location: global
+    rationale: Useful when review feedback is ambiguous, broad, or likely to require careful sequencing.
+    policy:
+      type: optional
+      usage:
+        summary: Apply review feedback carefully.
+        when:
+          load:
+            - applying review feedback
+            - broad or ambiguous review comments
+          avoid:
+            - self-contained edits with no review context
+      surfaces:
+        claude_optional: when applying review feedback
+        app_context_optional: Applying review feedback, especially when feedback is ambiguous or broad.
+  requesting-code-review:
+    location: global
+    rationale: Useful for preparing reviewable summaries and surfacing residual risks.
+    policy:
+      type: optional
+      usage:
+        summary: Prepare review handoffs and PR summaries.
+        when:
+          load:
+            - preparing a review handoff
+            - preparing a PR summary
+            - surfacing residual risks
+          avoid:
+            - private scratch work with no review recipient
+      surfaces:
+        claude_optional: when preparing a review handoff or PR
+        app_context_optional: Preparing a review handoff, PR, or larger completed change for scrutiny.
+  mise-tasks:
+    location: global
+    rationale: Useful for mise task definitions, dependencies, aliases, arguments, and multi-step workflow orchestration.
+    policy:
+      type: optional
+      usage:
+        summary: Mise task orchestration.
+        when:
+          load:
+            - editing mise.toml
+            - task dependencies
+            - task usage arguments
+            - multi-step project workflows
+          avoid:
+            - runtime feature implementation with no task changes
+      surfaces:
+        claude_optional: when editing mise.toml or task orchestration
+        app_context_optional: Editing mise.toml, task dependencies, or multi-step project workflows.
+  mise-expert:
+    location: global
+    rationale: Useful for tool versions and environment setup questions that are broader than task orchestration.
+    policy:
+      type: optional
+      usage:
+        summary: Mise tool versions and environment setup.
+        when:
+          load:
+            - mise tool versions
+            - mise environment setup
+            - mise settings
+          avoid:
+            - ordinary task wiring covered by mise-tasks
+      surfaces:
+        claude_optional: when editing mise tool versions or environment setup
+        app_context_optional: Editing mise tool versions or environment setup.
+  ast-grep:
+    location: global
+    rationale: The quality stack already uses ast-grep, so this skill is useful for structural search and rewrite rules.
+    policy:
+      type: optional
+      usage:
+        summary: Structural search and rewrite rules.
+        when:
+          load:
+            - authoring ast-grep rules
+            - debugging ast-grep findings
+            - structural rewrites
+          avoid:
+            - text-only searches where rg is enough
+      surfaces:
+        claude_optional: for structural search or rewrite rules
+        app_context_optional: Authoring or debugging structural search and rewrite rules.
+  knip:
+    location: global
+    rationale: Useful for resolving knip findings and deciding whether unused symbols should be removed, exported, or configured.
+    policy:
+      type: optional
+      usage:
+        summary: Resolve unused exports, files, and dependencies.
+        when:
+          load:
+            - knip findings
+            - unused exports
+            - unused dependencies
+          avoid:
+            - deleting public API without project context
+      surfaces:
+        claude_optional: for unused exports, files, or dependencies
+        app_context_optional: Resolving unused exports, files, dependencies, or knip configuration findings.
+  jscpd:
+    location: global
+    rationale: Useful for duplication reports and for deciding whether a shared abstraction is worth the added indirection.
+    policy:
+      type: optional
+      usage:
+        summary: Duplication reports and extraction judgment.
+        when:
+          load:
+            - jscpd duplication findings
+            - duplicated code requiring extraction judgment
+          avoid:
+            - extracting incidental similarity that worsens clarity
+      surfaces:
+        claude_optional: for duplication reports and extraction judgment
+        app_context_optional: Investigating duplication reports and planning small shared abstractions.
+  dry-principle:
+    location: global
+    rationale: Useful for review judgment around duplication, subordinate to FCIS, CODESTYLE_GUIDE.md, and small-module rules.
+    policy:
+      type: optional
+      usage:
+        summary: Decide whether duplication warrants extraction.
+        when:
+          load:
+            - duplication refactor judgment
+            - deciding whether to extract shared behavior
+          avoid:
+            - forcing abstraction over clearer repetition
+      surfaces:
+        claude_optional: when deciding whether duplication warrants extraction
+        app_context_optional: Deciding whether duplication warrants extraction.
+  solid-principles:
+    location: global
+    rationale: Useful for class and module design review, subordinate to FCIS and existing project architecture rules.
+    policy:
+      type: optional
+      usage:
+        summary: Class and module design review.
+        when:
+          load:
+            - class design review
+            - module design review
+            - responsibility boundaries
+          avoid:
+            - overriding FCIS boundaries or local module conventions
+      surfaces:
+        claude_optional: for class or module design review
+        app_context_optional: Reviewing class or module design.
+  react:components:
+    location: global
+    rationale: Useful for component translation, but its Vite/npm assumptions must be adapted to the project's renderer, Bun, and
+      guide stack.
+    policy:
+      type: optional
+      usage:
+        summary: Translate design artifacts into renderer components.
+        when:
+          load:
+            - translating design artifacts into React components
+            - adapting component structure
+          avoid:
+            - bypassing project renderer conventions
+      surfaces:
+        claude_optional: when translating design artifacts into renderer components
+        app_context_optional: Translating design artifacts into renderer components, adapted to project conventions.
+  stitch-design:
+    location: global
+    rationale: Useful for design intake and prototypes. Production src changes still require explicit prototype approval first.
+    policy:
+      type: optional
+      usage:
+        summary: Design intake or prototypes under the prototype gate.
+        when:
+          load:
+            - design intake
+            - prototypes
+            - mock UI requests
+          avoid:
+            - production src changes without explicit prototype approval
+      surfaces:
+        claude_optional: for design intake or prototypes, under the prototype gate
+        app_context_optional: Design intake or prototypes, only under the prototype gate.
+  using-git-worktrees:
+    location: global
+    rationale: Useful for isolated parallel work, but worktrees should not be created automatically in the normal desktop session.
+    policy:
+      type: optional
+      usage:
+        summary: Isolated parallel work when requested or approved.
+        when:
+          load:
+            - user requests a worktree
+            - isolated parallel work is approved
+          avoid:
+            - normal single-worktree tasks
+      surfaces:
+        claude_optional: only when isolated parallel work is requested or approved
+        app_context_optional: Isolated parallel work, only when requested or approved.
+  verification-before-completion:
+    location: global
+    rationale: Helpful as a final reminder, but the executable authority is app-quality-gate plus the relevant project guide
+      checks.
+    policy:
+      type: optional
+      usage:
+        summary: Final verification reminder.
+        when:
+          load:
+            - final verification reminders
+            - completion claims
+          avoid:
+            - replacing app-quality-gate
+      surfaces:
+        claude_optional: as a reminder; app-quality-gate remains the executable authority
+        app_context_optional: Final reminder only; app-quality-gate is the executable authority.
+  agent-electrobun:
+    location: global
+    rationale: Useful for inspecting a running Electrobun app, but not a replacement for project tests or gates.
+    policy:
+      type: optional
+      usage:
+        summary: Running Electrobun app inspection through CDP-style automation.
+        when:
+          load:
+            - CDP
+            - automate the running app
+            - inspect a running Electrobun app
+          avoid:
+            - replacing project tests or quality gates
+  bash-scripting:
+    location: global
+    rationale: Useful for shell-heavy work, but the project should still prefer mise tasks over ad-hoc standalone scripts.
+    policy:
+      type: reference
+      usage:
+        summary: Shell-heavy hooks or embedded mise commands.
+        when:
+          load:
+            - shell-heavy hooks
+            - embedded mise script commands
+          avoid:
+            - replacing mise tasks with standalone scripts
+  bdd-gherkin-specification:
+    location: global
+    rationale: Useful for acceptance-language discovery, but the project does not currently use Gherkin as its canonical test format.
+    policy:
+      type: reference
+      usage:
+        summary: BDD acceptance-language discovery.
+        when:
+          load:
+            - explicit BDD specification work
+            - Gherkin acceptance-language exploration
+          avoid:
+            - converting normal Bun specs to Gherkin by default
+  bdd-patterns:
+    location: global
+    rationale: Helpful only for BDD-specific material and should not become a default feature or test workflow.
+    policy:
+      type: reference
+      usage:
+        summary: BDD-specific pattern reference.
+        when:
+          load:
+            - BDD pattern questions
+            - explicit BDD material
+          avoid:
+            - default project test workflow
+  bdd-principles:
+    location: global
+    rationale: Good conceptual background for BDD, but too broad to project-route by default.
+    policy:
+      type: reference
+      usage:
+        summary: BDD concept reference.
+        when:
+          load:
+            - BDD concept questions
+            - acceptance-test phrasing questions
+          avoid:
+            - replacing project specs or tests
+  bdd-scenarios:
+    location: global
+    rationale: Useful for scenario phrasing. Do not convert existing Bun specs to Gherkin by default.
+    policy:
+      type: reference
+      usage:
+        summary: Scenario phrasing reference.
+        when:
+          load:
+            - scenario phrasing
+            - explicit BDD examples
+          avoid:
+            - converting existing Bun specs to Gherkin by default
+  elysiajs:
+    location: global
+    rationale: Broad Elysia guidance can help check APIs, but it suggests Zod, Valibot, Drizzle, Better Auth, WebSockets,
+      deployment scaffolds, and online lookup that conflict with project defaults.
+    policy:
+      type: reference
+      usage:
+        summary: Broad upstream Elysia reference.
+        when:
+          load:
+            - upstream Elysia API checks
+            - framework reference after app-rpc
+          avoid:
+            - Zod, Valibot, Drizzle, Better Auth, WebSockets, or deployment scaffolds that conflict with the project
+  formatter-development:
+    location: global
+    rationale: Targets formatter implementation, not this repo's formatting workflow.
+    policy:
+      type: reference
+      usage:
+        summary: Formatter implementation reference only.
+        when:
+          load:
+            - formatter implementation work
+          avoid:
+            - normal Biome formatting usage in the project
+  playwright-bdd-gherkin-syntax:
+    location: global
+    rationale: Current preview and e2e workflows do not require Gherkin-backed Playwright syntax.
+    policy:
+      type: reference
+      usage:
+        summary: Gherkin syntax for Playwright-BDD only.
+        when:
+          load:
+            - explicit Playwright-BDD Gherkin work
+          avoid:
+            - current preview and e2e workflows
+  quality-assurance:
+    location: global
+    rationale: Useful for broad QA thinking, but project quality authorities are stricter.
+    policy:
+      type: reference
+      usage:
+        summary: Broad QA reference.
+        when:
+          load:
+            - broad QA planning
+            - supplemental QA thinking
+          avoid:
+            - replacing app-quality-gate, DoD.md, or TESTING_GUIDE.md
+  domain-name-brainstormer:
+    location: global
+    rationale: Product naming and domain brainstorming are unrelated to this repo's implementation and governance workflow.
+    policy:
+      type: blocked
+      reason: unrelated_to_project_workflow
+      avoid:
+        - any project implementation or governance task
+  functional-core-imperative-shell:
+    location: global
+    rationale: The project already has FCIS as an architecture rule, and the global skill's mandatory comments do not match
+      current source conventions.
+    policy:
+      type: blocked
+      reason: covered_by_project_guides
+      redirect_to:
+        - assets/guides/FCIS.guide.md
+        - .agents/skills/app-context/SKILL.md
+      avoid:
+        - direct adoption
+        - mandatory comments that do not match project conventions
+  stitch-loop:
+    location: global
+    rationale: Its autonomous website iteration workflow does not match the project's desktop app and gated implementation process.
+    policy:
+      type: blocked
+      reason: incompatible_workflow
+      avoid:
+        - any project implementation task

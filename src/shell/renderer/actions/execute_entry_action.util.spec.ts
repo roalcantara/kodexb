@@ -1,3 +1,4 @@
+// @actions_system
 import { beforeAll, beforeEach, describe, expect, it } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor, installEntryActionPanelDepsMock, installRecordEntryVisitMock, withMockClipboard } from '@testing'

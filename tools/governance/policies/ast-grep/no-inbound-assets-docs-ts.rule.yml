@@ -1,0 +1,23 @@
+# String literals in TS/JS must not reference assets/docs/* outside allowlisted tools.
+id: no-inbound-assets-docs-ts
+language: TypeScript
+severity: error
+ignores:
+  - "**/assets/docs/**"
+  - "**/graphify-out/**"
+  - "**/.opencode/**"
+  - "tools/metrics/harnesses/e2e-quality/**"
+  - "tools/governance/specs/library_manifest.script.ts"
+  - "tools/governance/specs/library_manifest.script.spec.ts"
+  - "tools/governance/policies/rogue_refs.script.ts"
+  - "tools/governance/policies/rogue_refs.script.spec.ts"
+  - "tools/bin/test.script.ts"
+  - "tools/governance/policies/ast-grep/no-inbound-assets-docs-*.rule.yml"
+rule:
+  all:
+    - kind: string
+    - regex: assets/docs/
+message: >
+  Do not embed assets/docs/* paths in source or tooling (except allowlisted manifest/e2e tools).
+  Hard rules belong in assets/guides/ only.
+note: See assets/guides/DOC_AUTHORITY.md

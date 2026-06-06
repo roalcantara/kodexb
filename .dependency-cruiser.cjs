@@ -55,6 +55,14 @@ module.exports = {
         path: '^src/shell/app/db/.+\\.repository\\.ts$',
       },
     },
+    {
+      name: 'tools-non-dev-no-import-src',
+      severity: 'error',
+      comment:
+        'Only tools/dev/** may import src/ — see assets/guides/TOOLS_GUIDE.md',
+      from: { path: '^tools/(?!dev/)' },
+      to: { path: '^src/' },
+    },
   ],
   options: {
     // Symlinks to external dirs can ELOOP or be unreadable in some envs

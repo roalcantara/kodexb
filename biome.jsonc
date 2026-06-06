@@ -20,6 +20,7 @@
       "!.code-review-graph",
       "!e2e/.generated",
       "!tmp",
+      "!tools/graphify-out",
       "!.venv",
       "!.worktrees",
       "!.opencode"
@@ -274,6 +275,27 @@
       }
     },
     {
+      "includes": ["tools/governance/registries/skill/**"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": "off",
+            "noExcessiveLinesPerFunction": "off"
+          },
+          "style": {
+            "noMagicNumbers": "off",
+            "useNamingConvention": "off"
+          },
+          "performance": {
+            "useTopLevelRegex": "off"
+          },
+          "nursery": {
+            "noExcessiveLinesPerFile": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["tools/**/*.script.ts"],
       "linter": {
         "rules": {
@@ -303,6 +325,16 @@
                 "skipBlankLines": true
               }
             }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["tools/governance/registries/skill/**/*.script.ts"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noExcessiveLinesPerFile": "off"
           }
         }
       }

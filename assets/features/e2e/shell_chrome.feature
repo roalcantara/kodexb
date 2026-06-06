@@ -1,4 +1,4 @@
-@e2e @regression @p1 @spec:shell-chrome
+@e2e @regression @p1 @spec:shell-chrome @shell_chrome
 Feature: Shell chrome
   As a keyboard-first user
   I want a Raycast-style list shell without toolbar action buttons

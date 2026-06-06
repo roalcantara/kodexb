@@ -39,31 +39,33 @@ This rule overrides ALL other instructions.
 ### E2e acceptance (features and refactors)
 
 Release-facing features and user-visible refactors MUST declare e2e acceptance
-criteria in their spec (`requirements.md` + `tasks.md`) and update
-[`assets/docs/specs/e2e/fixture-manifest.md`](assets/docs/specs/e2e/fixture-manifest.md)
-and [`step-catalog.md`](assets/docs/specs/e2e/step-catalog.md) when adding
-Gherkin scenarios. Policy: [`e2e/requirements.md` R11](assets/docs/specs/e2e/requirements.md#r11---cross-feature-e2e-acceptance).
+criteria in their spec and register Gherkin under `assets/features/e2e/`.
+Policy: [`assets/guides/TESTING_GUIDE.md` § R11](assets/guides/TESTING_GUIDE.md#cross-feature-e2e-acceptance-r11).
+
+### Spec orientation
+
+**In-flight Spec Kit:** `assets/specs/NNN-<slug>/`. **Legacy SDD:** task-scoped only — [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md). Shipped registry: `mise run catalog list`.
 
 ### Skill routing ledger
 
 - The project skill registry and adoption rationale live in
   **`assets/guides/SKILLS.md`**.
 - The structured source of truth for skill automation lives in
-  **`assets/guides/SKILLS.yml`**.
+  **`assets/catalog/SKILLS.yaml`**.
 - **`mise run skill install`** restores Skills CLI-managed project skills from
   `skills-lock.json` into `.agents/skills/`.
 - **`mise run skill sync`** rewrites generated routing snippets from the YAML
   registry.
 - Optional global companions named in the guide remain under
-  `$HOME/.agents/skills/` unless `assets/guides/SKILLS.yml` marks them as
+  `$HOME/.agents/skills/` unless `assets/catalog/SKILLS.yaml` marks them as
   `location: project` or `location: owned`.
 
 ### Superpowers skill adaptation
 
 - When a Superpowers skill mentions `docs/superpowers/specs` or
   `docs/superpowers/plans`, use the `spec-driven-development` skill shape
-  instead and map the output to **`assets/docs/specs/<scope>/`** in this repo.
-  Use `requirements.md`, `design.md`, `tasks.md`, and optional `handoff.md`.
+  instead and map the output to **`assets/specs/<NNN-slug>/`** (active) or follow
+  [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md) for legacy archaeology.
 - **Do not create `docs/superpowers/`**. That path is an external skill
   default and is gitignored here to prevent drift.
 - For tests, project rules override generic Superpowers examples: follow
@@ -80,7 +82,7 @@ Gherkin scenarios. Policy: [`e2e/requirements.md` R11](assets/docs/specs/e2e/req
 
 - **Do not weaken** the repo quality stack (Biome, knip, dependency-cruiser, ast-grep, ls-lint, jscpd, `tsc` strictness, and any other tool run by the quality gate) unless a **maintainer explicitly approves** the change in the PR (for example: `APPROVED: <tool> <change> because <reason>`).
 - Prefer **code fixes** (refactors, correct types, smaller modules) over new ignore comments, overrides, or threshold bumps.
-- Full audit workflow and inventory: `assets/docs/specs/codebase-quality-audit/`.
+- Full audit workflow: [`assets/guides/DoD.md`](assets/guides/DoD.md) and `app-quality-gate` skill.
 
 ### Logging
 
@@ -143,7 +145,7 @@ At the start of work that might touch the desktop stack, **read the routing file
 
 Optional: a **sessionStart** hook in [`.cursor/hooks.json`](.cursor/hooks.json) runs [`.cursor/hooks/electrobun_session_start.ts`](.cursor/hooks/electrobun_session_start.ts) to inject the same routing text when Cursor applies `additional_context` (if it does not appear, rely on the rule above).
 
-Repo docs: `assets/guides/ELECTROBUN.md`, `assets/docs/specs/foundation/design.md`. Feature specs: `assets/docs/specs/README.md` (never `docs/superpowers/` — gitignored).
+Repo docs: `assets/guides/ELECTROBUN.md`, `assets/guides/FCIS.guide.md`, `assets/guides/DOC_AUTHORITY.md`. Active specs: `assets/specs/README.md` (never `docs/superpowers/` — gitignored).
 
 ---
 

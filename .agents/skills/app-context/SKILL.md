@@ -18,7 +18,7 @@ wrong validation, and naming drift.
 - **Project skill ledger**:
   [`assets/guides/SKILLS.md`](../../../assets/guides/SKILLS.md) records which
   skills are project-authored, managed by the Skills CLI as project skills, or
-  kept as optional global companions. [`assets/guides/SKILLS.yml`](../../../assets/guides/SKILLS.yml)
+  kept as optional global companions. [`assets/catalog/SKILLS.yaml`](../../../assets/catalog/SKILLS.yaml)
   is the structured registry used by `mise run skill validate`,
   `mise run skill sync`, and `mise run skill install`.
 - **Electrobun skills** adopted for the project: same folder (e.g.
@@ -48,13 +48,11 @@ and `CLAUDE.md` disagree, **CLAUDE.md wins** — open a PR to fix the skill.
 
 ## Feature specs (where to write design docs)
 
-- **Canonical root:** [`assets/docs/specs/<feature-slug>/`](../../../assets/docs/specs/) — `requirements.md`, `design.md`, `tasks.md`, optional `implementation-plan.md`, prototypes. Index: [`assets/docs/specs/README.md`](../../../assets/docs/specs/README.md).
-- **Superpowers adaptation:** when a Superpowers skill mentions `docs/superpowers/specs` or `docs/superpowers/plans`, use the `spec-driven-development` skill shape instead and map the output to `assets/docs/specs/<scope>/`. Use `requirements.md`, `design.md`, `tasks.md`, and optional `handoff.md`.
-- **`docs/superpowers/`** is **not used** in this project; it is **gitignored** (some external skills default there). Always redirect new specs into `assets/docs/specs/`.
-- **E2e acceptance:** release-facing features MUST include Gherkin traceability
-  and an e2e task per [`assets/docs/specs/e2e/requirements.md` R11](../../../assets/docs/specs/e2e/requirements.md#r11---cross-feature-e2e-acceptance).
-  Update `fixture-manifest.md` and `step-catalog.md` when adding scenarios.
-- **Subagent prompts:** include the project path, testing, e2e policy, and validation overrides explicitly because subagents may not inherit this skill's full context.
+- **In-flight Spec Kit:** [`assets/specs/NNN-<slug>/`](../../../assets/specs/) — `spec.md`, `plan.md`, `tasks.md`. Index: [`assets/specs/README.md`](../../../assets/specs/README.md).
+- **Document authority:** [`assets/guides/DOC_AUTHORITY.md`](../../../assets/guides/DOC_AUTHORITY.md) — guides are normative; legacy SDD is task-scoped archaeology only.
+- **Superpowers adaptation:** map output to `assets/specs/<NNN-slug>/` (Spec Kit shape), not `docs/superpowers/`.
+- **E2e acceptance:** release-facing features MUST satisfy [`TESTING_GUIDE` R11](../../../assets/guides/TESTING_GUIDE.md#cross-feature-e2e-acceptance-r11).
+- **Subagent prompts:** include project path, testing, e2e policy, and validation overrides explicitly.
 
 ## FCIS directory layout
 
@@ -87,7 +85,7 @@ boundary as plain values, not imported I/O.
   from the renderer.
 - **Preview mirror**: every POST `/api/...` handler added or changed **must**
   have a matching branch in
-  [`tools/preview/server.ts`](../../../tools/preview/server.ts) (see
+  [`tools/preview/server.script.ts`](../../../tools/preview/server.script.ts) (see
   `CLAUDE.md`).
 
 ## Data layer
@@ -138,14 +136,13 @@ classes; "Andromeda Void" is the visual spec name only. When building UI:
   `ease-out`.
 
 Full tokens and patterns:
-[`assets/docs/specs/foundation/design.md`](../../../assets/docs/specs/foundation/design.md)
-(Design system section).
+[`assets/guides/STYLING_GUIDE.md`](../../../assets/guides/STYLING_GUIDE.md).
 
 ## Deep dives (open as needed)
 
 | Topic              | Guide                                                                                               |
 | ------------------ | --------------------------------------------------------------------------------------------------- |
-| Architecture + RPC | [`assets/docs/specs/foundation/design.md`](../../../assets/docs/specs/foundation/design.md)         |
+| Architecture + RPC | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md) + [`ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md) |
 | FCIS layer rules   | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md)                               |
 | Naming + SOLID     | [`assets/guides/CODESTYLE_GUIDE.md`](../../../assets/guides/CODESTYLE_GUIDE.md)                     |
 | Electrobun wiring  | [`assets/guides/ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md)                               |
@@ -161,7 +158,7 @@ Full tokens and patterns:
    do not add `@libsql/client` ORM layers or drizzle dependencies.
 3. **Renderer isolation** — if you need data, add/adjust an RPC method and call
    it through Eden; never reach into `shell/app/`.
-4. **Preview drift** — forgetting `tools/preview/server.ts` breaks local preview
+4. **Preview drift** — forgetting `tools/preview/server.script.ts` breaks local preview
    and CI assumptions; mirror every new `/api/*` route.
 5. **`bun test` vs Playwright** — `bun test` only discovers tests under `src/`
    (`bunfig.toml` `[test] root = "src"`), so Playwright files in `e2e/` are not

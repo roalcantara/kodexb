@@ -157,6 +157,49 @@ ls:
   src/core/domain/models/sources/parsers:
     .ts: regex:([a-z][a-z0-9_]*\.parser(\.spec)?|index)
 
+  # ── Tools: .script.ts artifact (see CODESTYLE_GUIDE.md) ─────────────────────
+  tools/governance/policies/ast-grep:
+    .yml: regex:^[a-z][a-z0-9-]+\.rule$
+
+  tools/governance/policies/hooks:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/governance/registries/catalog:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/governance/registries/skill:
+    .ts: regex:^([a-z][a-z0-9_]*\.script(\.spec)?|skill_registry\.types)$
+
+  tools/governance/specs:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/governance/policies:
+    .ts: regex:^layout_validate\.script(\.spec)?$
+
+  tools/bin:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/support/lib/shared:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/support/lib/cli:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/dev/preview:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/dev/build:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/metrics/harnesses/perf:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/metrics/harnesses/e2e-quality:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  tools/tmp:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
 ignore:
   - .DS_Store
   - .venv

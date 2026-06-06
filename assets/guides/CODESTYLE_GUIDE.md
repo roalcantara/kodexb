@@ -145,15 +145,35 @@ For role-suffixed source files, place the test marker after the role suffix:
 `requests.spec.ts`. This keeps the source role visible while still marking the
 file as a test.
 
+#### Tools directory (`tools/`)
+
+Repo tooling is TypeScript-first. Every `.ts` file under `tools/` (except
+`tools/orchestration/scripts/` shell helpers) uses the **`.script.ts`** artifact suffix.
+Co-located tests use **`.script.spec.ts`**. Type-only modules keep **`.types.ts`**.
+
+| Pattern           | Example                                                        |
+| ----------------- | -------------------------------------------------------------- |
+| `.script.ts`      | `tools/governance/registries/catalog/catalog.script.ts`        |
+| `.script.spec.ts` | `tools/governance/registries/catalog/tag.script.spec.ts`       |
+| `.types.ts`       | `tools/governance/registries/skill/skill_registry.types.ts`    |
+
+ast-grep rules live under `tools/governance/policies/ast-grep/` as **`<id>.rule.yml`**.
+Enforced by ast-grep (`tools-must-use-script-suffix`, `tools-rules-must-use-rule-suffix`) and
+ls-lint (see `.ls-lint.yml`).
+
+**Where files live** (purpose families, `bin/` stubs, import law): [`TOOLS_GUIDE.md`](TOOLS_GUIDE.md).
+
 ### ❌ Banned / deprecated suffixes
 
 These were found in the codebase and are being migrated out. Do not use them in new files.
 
-| Banned suffix | Use instead      | Migration status                   |
-| ------------- | ---------------- | ---------------------------------- |
-| `.consts.ts`  | `.const.ts`      | Cursor task: `naming-alignment.md` |
-| `.type.ts`    | `.types.ts`      | Cursor task: `naming-alignment.md` |
-| `.view.tsx`   | `.component.tsx` | Cursor task: `naming-alignment.md` |
+| Banned suffix                         | Use instead      | Migration status                   |
+| ------------------------------------- | ---------------- | ---------------------------------- |
+| `.consts.ts`                          | `.const.ts`      | Cursor task: `naming-alignment.md` |
+| `.type.ts`                            | `.types.ts`      | Cursor task: `naming-alignment.md` |
+| `.view.tsx`                           | `.component.tsx` | Cursor task: `naming-alignment.md` |
+| `.lib.ts`, bare `.ts` under `tools/`  | `.script.ts`     | Enforced by ast-grep + ls-lint     |
+| `tools/governance/policies/ast-grep/*.yml` (without `.rule`) | `*.rule.yml`     | Enforced by ast-grep + ls-lint     |
 
 ### Exceptions (no suffix)
 
@@ -399,7 +419,7 @@ The `testing.` prefix is a convention for files that only make sense in a test c
 
 - **File size** — Refactor when files exceed 200-300 lines.
 - **Scripts** — Avoid one-off scripts in files. Prefer `mise.toml` tasks.
-- **Module ownership** — Serialization of type T lives in T's module (see `.cursor/rules/module-ownership.mdc` and specs under `assets/docs/specs/` when present).
+- **Module ownership** — Serialization of type T lives in T's module (see `.cursor/rules/module-ownership.mdc`). Legacy SDD drill-down only when the task names a slug ([`DOC_AUTHORITY.md`](./DOC_AUTHORITY.md)).
 
 ## Asset File Conventions
 

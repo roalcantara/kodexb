@@ -5,7 +5,7 @@ description: >
   adding a new endpoint, modifying an existing route, updating TypeBox
   schemas, wiring the Eden Treaty client in the renderer, or syncing the
   preview server. RPC changes are cross-cutting: a route added to server.ts
-  must also appear in tools/preview/server.ts, and the Eden Treaty client
+  must also appear in tools/dev/preview/server.script.ts, and the Eden Treaty client
   type updates automatically. This skill prevents the most common mistakes
   (Zod in a route, missing preview-server mirror, wrong TypeBox optional
   semantics). Also load it if you're unsure whether a piece of logic belongs
@@ -113,7 +113,7 @@ export function startRpcHost(app: AppService) {
 }
 ```
 
-For the **preview server** (`tools/preview/server.ts`), Elysia runs over
+For the **preview server** (`tools/dev/preview/server.script.ts`), Elysia runs over
 HTTP on `PORT` (default 3456) and is wired identically — same routes,
 same `AppService`, no mock logic.
 
@@ -123,7 +123,7 @@ same `AppService`, no mock logic.
 - [ ] Register `.post(...)` in the matching `src/shell/main/rpc/routes/*.routes.ts` module
 - [ ] For expected user-visible failures (toast, not global 500): wrap with `invokeRoute` from `routes/utils/invoke_route.util.ts` (default HTTP 422; pass `{ failureStatus }` when needed)
 - [ ] If DB access needed, write typed prepared statements in the repository
-- [ ] No preview-server fork — `tools/preview/server.ts` mounts `createRpcServer(app)` as-is
+- [ ] No preview-server fork — `tools/dev/preview/server.script.ts` mounts `createRpcServer(app)` as-is
 - [ ] Write or extend a spec in the matching `src/shell/main/rpc/routes/*.routes.spec.ts`
 - [ ] Add composer-only coverage in `src/shell/main/rpc/server.spec.ts` when wiring changes
 - [ ] Run `bun test && bun run lint` — both must pass before commit

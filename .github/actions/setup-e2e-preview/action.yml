@@ -10,7 +10,7 @@ runs:
 
     - name: Compile renderer styles
       shell: bash
-      run: bash tools/scripts/compile_renderer_styles.sh
+      run: bash tools/orchestration/scripts/compile_renderer_styles.sh
 
     - uses: actions/cache@v4
       with:

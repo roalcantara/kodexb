@@ -1,0 +1,42 @@
+# tools/ layout contract — see assets/guides/TOOLS_GUIDE.md
+version = 1
+
+[[folder]]
+path = "bin"
+purpose_family = "bin"
+imports_src = false
+
+[[folder]]
+path = "dev"
+purpose_family = "dev"
+imports_src = true
+
+[[folder]]
+path = "governance"
+purpose_family = "governance"
+imports_src = false
+
+[[folder]]
+path = "inventory"
+purpose_family = "inventory"
+imports_src = false
+
+[[folder]]
+path = "metrics"
+purpose_family = "metrics"
+imports_src = false
+
+[[folder]]
+path = "orchestration"
+purpose_family = "orchestration"
+imports_src = false
+
+[[folder]]
+path = "support"
+purpose_family = "support"
+imports_src = false
+
+[[file]]
+path = "tools.manifest.toml"
+purpose_family = "governance"
+imports_src = false

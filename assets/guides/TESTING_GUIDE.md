@@ -902,8 +902,8 @@ Use it for Fishery factories, fixture paths, temp dirs, and seeded in-memory DBs
 **Placement rule (enforced):** shared helpers, harnesses, and `mock.module` setup live under
 `src/__tests__/` (usually `src/__tests__/helpers/`) and are re-exported from `@testing`.
 Co-located `*.spec.ts(x)` files may import `bun:test` directly; non-spec modules under `src/`
-may not. ast-grep rules: `tools/rules/no-bun-test-helper-outside-tests.yml`,
-`tools/rules/no-test-helper-filename-outside-tests.yml` (run via `bun run lint:ast-grep`).
+may not. ast-grep rules: `tools/governance/policies/ast-grep/no-bun-test-helper-outside-tests.rule.yml`,
+`tools/governance/policies/ast-grep/no-test-helper-filename-outside-tests.rule.yml` (run via `bun run lint:ast-grep`).
 
 | Export                                                                      | Role                                                                                                                                                                                |
 | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -940,55 +940,74 @@ to exit non-zero when missing specs exist.
 
 ### Feature and refactor acceptance
 
-Release-facing features MUST satisfy [`e2e/requirements.md` R11](../docs/specs/e2e/requirements.md#r11---cross-feature-e2e-acceptance):
+Release-facing features MUST satisfy [Cross-feature e2e acceptance (R11)](#cross-feature-e2e-acceptance-r11):
 
 - Add Gherkin scenarios under `assets/features/e2e/` with `@spec:<slug>`.
-- Update `assets/docs/specs/e2e/fixture-manifest.md` and `step-catalog.md`.
-- Add an e2e task in the feature `tasks.md` or `assets/docs/specs/e2e/tasks.md`.
+- Register new phrases in `e2e/steps/`; keep seed data aligned with `e2e/support/seed_fixture.support.ts`.
+- Add an e2e task in the in-flight spec `tasks.md` when using Spec Kit.
 - Record `mise run test e2e --smoke` / `--regression` evidence before beta.
+
+### Cross-feature e2e acceptance (R11)
+
+Every release-facing feature and user-visible refactor SHALL:
+
+1. Trace at least one requirement to Gherkin under `assets/features/e2e/`.
+2. Include an e2e task in the feature spec before beta (feature files, seed updates, step phrases).
+3. Update seed/step code in the same PR series as new `.feature` files.
+4. Add or update e2e scenarios before completing refactors to list, detail, palette, filter, sync, or settings flows unless a unit-only deferral is documented in task evidence.
+5. Use `@spec:<slug>` tags that map to exactly one feature slug.
+6. Record pass evidence (`mise run test e2e --smoke` and/or `--regression`) in task evidence.
+7. Treat manual dogfood / preview walkthroughs as supplementary — not a substitute for automated smoke.
+
+See also [BDD_GUIDE.md](./BDD_GUIDE.md) and [DoD.md](./DoD.md).
+
+### E2e contracts
+
+- **Harness:** isolated config via `APP_CONFIG_PATH`, `NODE_ENV=test`, release seed in `e2e/support/seed_fixture.support.ts` — not the developer's `~/.config/kb` database.
+- **Metrics baselines:** `mise run test e2e --metrics-compare` / `--write-baseline` (series `e2e-quality`; see [TOOLS_GUIDE.md](./TOOLS_GUIDE.md)).
+- **Contract docs:** [`step-catalog.md`](../features/e2e/contracts/step-catalog.md) (Gherkin phrase inventory, screenplay mapping, scenario IDs), [`fixture-manifest.md`](../features/e2e/contracts/fixture-manifest.md) (seed data, env, actor memory keys), and [`README.md`](../features/e2e/contracts/README.md) (quality model, metrics registry).
+- **Step phrases:** unique across Given/When/Then; implement in `e2e/steps/` before merge ([BDD_GHERKIN_GUIDE.md](./BDD_GHERKIN_GUIDE.md)).
 
 KB is migrating from legacy Playwright specs to Playwright BDD + Gherkin. Two
 entrypoints exist during the transition:
 
-| Command                               | Status         | Purpose                                                         |
-| ------------------------------------- | -------------- | --------------------------------------------------------------- |
-| `mise run test e2e` / `bun run e2e`   | **Active**     | Full BDD suite (`bddgen` + all `@e2e` scenarios, no tag filter) |
-| `mise run test e2e-preview`           | **Legacy**     | Runs `e2e/preview_list_nav.e2e.spec.ts`; may skip on empty DB   |
-| `mise run test e2e --smoke`           | **Active**     | P0 Gherkin smoke only (`@smoke`)                                |
-| `mise run test e2e --regression`      | **Active**     | Scenarios tagged `@regression` (includes smoke-tagged rows)     |
-| `mise run test e2e --debug`           | **Active**     | Playwright UI for the BDD suite                                 |
-| `mise run test e2e --metrics-report`  | **Active**     | Writes `tmp/e2e/metrics/latest.json`                            |
-| `mise run test e2e --metrics-compare` | **Active**     | Compares latest metrics to `quality-baseline.json`              |
-| `mise run test e2e --write-baseline`  | **Maintainer** | Refreshes `assets/docs/specs/e2e/quality-baseline.json`         |
+| Command                               | Status         | Purpose                                                               |
+| ------------------------------------- | -------------- | --------------------------------------------------------------------- |
+| `mise run test e2e` / `bun run e2e`   | **Active**     | Full BDD suite (`bddgen` + all `@e2e` scenarios, no tag filter)       |
+| `mise run test e2e-preview`           | **Legacy**     | Runs `e2e/preview_list_nav.e2e.spec.ts`; may skip on empty DB         |
+| `mise run test e2e --smoke`           | **Active**     | P0 Gherkin smoke only (`@smoke`)                                      |
+| `mise run test e2e --regression`      | **Active**     | Scenarios tagged `@regression` (includes smoke-tagged rows)           |
+| `mise run test e2e --debug`           | **Active**     | Playwright UI for the BDD suite                                       |
+| `mise run test e2e --metrics-report`  | **Active**     | Writes `tmp/e2e/metrics/latest.json`                                  |
+| `mise run test e2e --metrics-compare` | **Active**     | Compares latest metrics to `quality-baseline.json`                    |
+| `mise run test e2e --write-baseline`  | **Maintainer** | Refreshes e2e-quality baseline (`mise run test e2e --write-baseline`) |
 
 Equivalent `package.json` scripts: `e2e` (full suite), `e2e:smoke`, `e2e:regression`, `e2e:metrics-report`,
 `e2e:metrics-compare`, `e2e:write-baseline`. Regenerate specs with `bun run e2e:bddgen`
 before the first run or after editing `.feature` files (`e2e/.generated/` is gitignored).
 
 Install Chromium once with `bun run e2e:preview:install`. BDD smoke SHALL use
-isolated config via `APP_CONFIG_PATH` and the seed in
-[`fixture-manifest.md`](../docs/specs/e2e/fixture-manifest.md) — not the
-developer's `~/.config/kb` database.
+isolated config via `APP_CONFIG_PATH` and the release seed — not the
+developer's `~/.config/kb` database (see [E2e contracts](#e2e-contracts)).
 
 Preview e2e is intentionally **not** part of the default quality gate for speed
 and portability. Release prep SHOULD run `mise run test e2e --smoke`; full
 `--regression` is opt-in before merge or on a schedule. Gate stage 3 remains
-HTTP smoke on plain preview (see T6.2 rationale in `assets/docs/specs/e2e/tasks.md`).
+HTTP smoke on plain preview.
 
 **When to run:**
 
 - Changes touching list navigation, filters, task sheet, preview tooling, or
   Gherkin features under `assets/features/e2e/`
 - Renderer component refactors with structural changes
-- Before claiming e2e task completion in `assets/docs/specs/e2e/tasks.md`
+- Before claiming e2e task completion in the active feature spec
 
 **Reporting:** Include the appropriate e2e command results in implementation
 notes. If a command cannot run, report the exact blocker (missing Chromium,
 missing `playwright-bdd`, seed failure) rather than treating the default gate as
 equivalent coverage.
 
-See also [`BDD_GUIDE.md`](BDD_GUIDE.md) and
-[`assets/docs/specs/e2e/design.md`](../docs/specs/e2e/design.md).
+See also [`BDD_GUIDE.md`](BDD_GUIDE.md). Contract docs: [`step-catalog.md`](../features/e2e/contracts/step-catalog.md), [`fixture-manifest.md`](../features/e2e/contracts/fixture-manifest.md), [`README.md`](../features/e2e/contracts/README.md).
 
 A maintainer-triggered CI workflow for preview e2e may be added later, but
 the default gate must remain fast and portable.

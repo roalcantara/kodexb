@@ -1,3 +1,4 @@
+// @entry_action_panel
 import '@happy-dom/global-registrator'
 
 import { afterEach, describe, expect, it } from 'bun:test'

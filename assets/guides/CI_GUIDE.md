@@ -1,9 +1,27 @@
 <!-- markdownlint-disable-file -->
 # CI / CD Guide
 
-Operational manual for kb's GitHub Actions pipeline. Pairs with
-[`design.md`](../docs/specs/ci-build-packaging/design.md) (the normative
-contract).
+Operational manual for kb's three GitHub Actions workflows, their local mirror
+tasks, and the Electrobun build + signing pipeline.
+
+**Design context** (normative contract for the CI/CD system):
+
+- **In scope:** `review.yml` (lint+test+smoke), `release.yml` (draft GitHub
+  Release with signed commits/tags), `publish.yml` (matrix binaries,
+  attestations, publish). Apple Developer ID signing (optional, env-gated).
+  Local mirror under `mise run ci:*`.
+- **Out of scope:** Windows builds, Linux signing (no GPG), auto-update
+  delivery, Docker images.
+- **Adopted patterns:** grouped lint chain with aggregated exit codes, JUnit +
+  GitHub Checks for tests, squash-and-merge enforcement, SSH-agent signed
+  commits + tags, two-step signing self-test, draft→publish handoff with
+  `workflow_run` chaining + `workflow_dispatch` recovery, `fail-fast: false`
+  matrix with single-writer `attach_release`, SLSA build-provenance
+  attestations, composite `setup-bun-project` (mise mode + lockfile cache).
+- **Rejected patterns:** Hadolint, DockerHub preview images, multi-platform OCI
+  push, Bun cross-compile (needs native webview), hand-rolled `hdiutil` DMG
+  (Electrobun handles DMG+sign+notarize), standalone `entitlements.plist`
+  (Electrobun reads inline config).
 
 ## Overview
 
@@ -129,6 +147,12 @@ Jobs:
 | `lint:knip` fails on unused export        | Delete the export or use it; `mise run lint check --knip`   |
 | `lint:depcruise` fails on layer violation | A renderer file imported `shell/app/`; move to RPC          |
 | Build cache miss every run                | Verify `~/.electrobun` cache key; check `package.json` hash |
+
+**Catalog / HK enforcement:**
+
+- `catalog-validate-ci` runs `mise run catalog validate --raw` on every CI job (covers all 13 shipped keys, schema, tag placement, orphan tags).
+- Pre-commit also runs `catalog validate` when `catalog.yaml`, Gherkin, or tagged unit specs change.
+- `library-manifest-verify` runs when archive folders change, verifying `library.yaml` is in sync.
 
 **Local mirror:** `mise run ci review`.
 

@@ -22,7 +22,7 @@
 | milady-ai/milady repo PRs, Electrobun conventions                | `electrobun-milady`       | project                             |
 <!-- skills:electrobun-routing:end -->
 
-**Project-specific in-repo docs** (read when relevant): [`assets/guides/ELECTROBUN.md`](../assets/guides/ELECTROBUN.md), [`assets/docs/specs/foundation/design.md`](../assets/docs/specs/foundation/design.md) (RPC and layout).
+**Project-specific in-repo docs** (read when relevant): [`assets/guides/ELECTROBUN.md`](../assets/guides/ELECTROBUN.md), [`assets/guides/FCIS.guide.md`](../assets/guides/FCIS.guide.md) (RPC and layout).
 
 **Heuristic:** If the user edits under `src/shell/`, `electrobun.config.ts`, or `src/shared/rpc/`, load **`electrobun-core`** and/or **`electrobun-rpc`** before changing behavior.
 

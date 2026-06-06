@@ -1,4 +1,4 @@
-@e2e @regression @p1 @spec:task-management
+@e2e @regression @p1 @spec:task-management @task_management
 Feature: Task management
   As a user who keeps lightweight tasks in kb
   I want task edits to update both the UI and source data

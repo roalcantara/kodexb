@@ -1,3 +1,4 @@
+// @shell_chrome
 import { afterEach, describe, expect, it } from 'bun:test'
 import type { ListStats } from '@shared/rpc'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'

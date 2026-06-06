@@ -1,4 +1,4 @@
-@e2e @regression @p1 @spec:list-frecency-sort @spec:entry-action-panel
+@e2e @regression @p1 @spec:list-frecency-sort @spec:entry-action-panel @list_frecency_sort @entry_action_panel
 Feature: Frecency ranking
   As a returning kb user
   I want recently useful entries to rise in the list

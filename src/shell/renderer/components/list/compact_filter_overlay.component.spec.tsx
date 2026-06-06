@@ -1,3 +1,4 @@
+// @compact_filter
 import { describe, expect, it } from 'bun:test'
 import type { EntryType } from '@core/domain/types/entry.types'
 import type { ListStats, TaskView } from '@shared/rpc'

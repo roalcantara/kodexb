@@ -1,4 +1,4 @@
-@e2e @regression @p1 @spec:entry-action-handoff
+@e2e @regression @p1 @spec:entry-action-handoff @entry_action_handoff
 Feature: Entry action handoff
   As a kb user
   I want entry actions to hand off to external apps like the arkn Raycast extension

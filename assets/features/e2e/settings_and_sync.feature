@@ -1,4 +1,4 @@
-@e2e @regression @p1 @spec:sync-ui @spec:foundation
+@e2e @regression @p1 @spec:sync-ui @spec:foundation @sync_ui
 Feature: Settings and sync
   As a maintainer of my local knowledge base
   I want settings and sync to use the selected sources and database

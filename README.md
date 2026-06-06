@@ -44,8 +44,8 @@ database, filesystem, and RPC server; a **React** webview is the UI. Business ru
 live in a pure **functional core**; all I/O stays in the **imperative shell**.
 The renderer never touches SQLite or YAML directly — only typed RPC calls.
 
-Normative detail: [`assets/docs/specs/foundation/design.md`](assets/docs/specs/foundation/design.md) ·
-layer rules: [`assets/guides/FCIS.guide.md`](assets/guides/FCIS.guide.md).
+Normative detail: [`assets/guides/FCIS.guide.md`](assets/guides/FCIS.guide.md) ·
+[`assets/guides/ELECTROBUN.md`](assets/guides/ELECTROBUN.md).
 
 ### Startup sequence (which file runs first?)
 
@@ -240,7 +240,7 @@ flowchart LR
 
 ### Preview server (development)
 
-`tools/preview/server.ts` runs the **same Elysia `RpcApp`** over HTTP so you can
+`tools/preview/server.script.ts` runs the **same Elysia `RpcApp`** over HTTP so you can
 exercise list/filter behaviour in a browser without the full desktop shell. Any new
 route in `rpc/server.ts` must be mirrored there ([`CLAUDE.md`](CLAUDE.md)).
 
@@ -261,7 +261,7 @@ route in `rpc/server.ts` must be mirrored there ([`CLAUDE.md`](CLAUDE.md)).
 | **ImportService**           | `src/shell/app/db/import.service.ts` | Walks sources dir, validates YAML, upserts SQLite, rebuilds FTS — transactional bulk path.                                                                                                                                      |
 | **Repository**              | `src/shell/app/db/*.repository.ts`   | Typed SQL accessors; routes must not import repositories directly (go through **App**).                                                                                                                                         |
 | **Electrobun IPC**          | `rpc/host.ts`                        | Bridges Elysia handlers to the webview RPC channel (`app-app`).                                                                                                                                                                 |
-| **Preview server**          | `tools/preview/server.ts`            | HTTP mirror of production RPC for Playwright / local UI smoke tests.                                                                                                                                                            |
+| **Preview server**          | `tools/preview/server.script.ts`            | HTTP mirror of production RPC for Playwright / local UI smoke tests.                                                                                                                                                            |
 
 ### Project definitions and agent routing
 
@@ -272,7 +272,7 @@ The canonical engineering and agent definitions are split by purpose:
 | [CLAUDE.md][24]          | Primary agent instructions: stack, FCIS layers, required skills, and reference docs.                      |
 | [AGENTS.md][23]          | Repo-wide agent guardrails, commit workflow, prototype gate, and Electrobun process rules.                |
 | [SKILLS.md][21]          | Skill adoption ledger: owned skills, Skills CLI-managed project skills, global companions, and rationale. |
-| [SKILLS.yml][26]         | Structured skill registry used by `mise run skill sync` and `mise run skill install`.                     |
+| [SKILLS.yaml][26]        | Structured skill registry used by `mise run skill sync` and `mise run skill install`.                     |
 | [MISE_GUIDE.md][22]      | Task-runner policy: prefer mise tasks for project workflows and avoid ad-hoc project scripts.             |
 | [Electrobun routing][25] | Which Electrobun skill to read for desktop shell, build, platform, RPC, and automation work.              |
 
@@ -288,7 +288,7 @@ skills.
 
 ### Keyboard — command palette (⌘P) and filter (⌘K)
 
-Product rules for the list shell (normative for implementation). Full specs: [requirements](assets/docs/specs/command-palette-filter-ux/requirements.md) · [design](assets/docs/specs/command-palette-filter-ux/design.md) · [tasks](assets/docs/specs/command-palette-filter-ux/tasks.md) · [HANDOFF](assets/docs/specs/command-palette-filter-ux/HANDOFF.md). Visual reference (non-normative): [raycast.list_filter_opened.png](assets/wireframe/references/raycast.list_filter_opened.png).
+Product rules for the list shell (normative for implementation). Visual reference (non-normative): [raycast.list_filter_opened.png](assets/wireframe/references/raycast.list_filter_opened.png).
 
 | Shortcut                                                     | Action                                                                                                                                                                                                                                                 |
 | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -300,13 +300,13 @@ Product rules for the list shell (normative for implementation). Full specs: [re
 | **Filter** — **Enter** (commit path)                         | Compare current `{ types, tags, taskView }` to a **snapshot taken when the overlay opened** (tags sorted for equality). **Unchanged** → neutral toast, close, restore focus. **Changed** → optional success toast, close, restore focus.               |
 | **Full detail** + filter **Enter** + **changed**             | Same as commit path, and **also** leave full detail for **list view** (e.g. `closeToList`). **Esc** / toggle / click-outside without that Enter path → close overlay only, **no** forced list view.                                                    |
 | **Palette** — **↑/↓**                                        | Palette internal navigation only (unchanged); **not** main list selection.                                                                                                                                                                             |
-| **Palette** — actions                                        | **Entry-first** sections: This entry → Clipboard → Source → Library → App (see [design](assets/docs/specs/command-palette-filter-ux/design.md)). With **`selectedId === null`**: Library (Sync, New Task) then App (Quit). Headers are non-selectable. |
+| **Palette** — actions                                        | **Entry-first** sections: This entry → Clipboard → Source → Library → App. With **`selectedId === null`**: Library (Sync, New Task) then App (Quit). Headers are non-selectable. |
 | **Implementation**                                           | Prefer **`keydown` capture** on `window` (or one coordinator). Rename legacy **`cmdk_palette`** / **`app-cmdk-*`** to **`command_palette`** / **`app-command-palette-*`**.                                                                             |
 
 ### Keyboard — shortcuts quick-lookup (⌘/)
 
 Global overlay for finding keymap bindings by action text or chord, with
-collision analysis. Normative specs: [requirements](assets/docs/specs/shortcuts/requirements.md) · [design](assets/docs/specs/shortcuts/design.md) · [tasks](assets/docs/specs/shortcuts/tasks.md).
+collision analysis. See [`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md) for e2e policy; shipped behavior is registered in the feature catalog (`mise run catalog list`).
 
 | Shortcut                           | Action                                                                                                     |
 | ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
@@ -356,7 +356,7 @@ agent skill wiring, UI smoke checks, and maintenance workflows:
 | -------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | `mise run project setup`         | Installing tool versions, dependencies, and hooks after cloning.                                         |
 | `mise run prepare`               | Refreshing Bun dependencies and commit hooks without reinstalling tools.                                 |
-| `mise run skill sync`            | Rewriting generated skill routing snippets from `assets/guides/SKILLS.yml`.                              |
+| `mise run skill sync`            | Rewriting generated skill routing snippets from `assets/catalog/SKILLS.yaml`.                            |
 | `mise run skill install`         | Restoring Skills CLI-managed project skills from `skills-lock.json`.                                     |
 | `mise run test e2e --smoke`      | Playwright smoke suite (`bun run e2e:smoke`) — list nav, filters, shortcuts list.                        |
 | `mise run test e2e --regression` | Playwright regression suite — overlay, tasks, settings, shortcuts overlay.                               |
@@ -448,5 +448,5 @@ The project is available as open source under the terms of the [MIT][1] [License
 [23]: AGENTS.md 'Agent notes'
 [24]: CLAUDE.md 'Claude Code instructions'
 [25]: .cursor/electrobun-skill-routing.md 'Electrobun skill routing'
-[26]: assets/guides/SKILLS.yml 'Structured skill registry'
+[26]: assets/catalog/SKILLS.yaml 'Structured skill registry'
 [27]: skills-lock.json 'Skills CLI project lock file'

@@ -1,3 +1,4 @@
+// @entry_action_panel
 import { describe, expect, it, mock } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'

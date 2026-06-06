@@ -1,4 +1,4 @@
-@e2e @smoke @p0 @spec:phase-7-detail-view @spec:entry-action-panel @spec:actions-system
+@e2e @smoke @p0 @spec:phase-7-detail-view @spec:entry-action-panel @spec:actions-system @detail_view @entry_action_panel @actions_system
 Feature: Detail and entry actions
   As a kb user
   I want detail and primary actions to reflect the selected entry

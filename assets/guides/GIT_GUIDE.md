@@ -4,7 +4,7 @@ description: Git usage and commit message background; Conventional Commits detai
 ---
 <!-- markdownlint-disable-file -->
 
-For day-to-day commit format, prefer **`assets/docs/guides/GIT_COMMITS_GUIDE.md`** and `.cursor/rules/git-commits.mdc` (single source of truth for this repo).
+For day-to-day commit format, prefer [`GIT_COMMITS_GUIDE.md`](./GIT_COMMITS_GUIDE.md) and `.cursor/rules/git-commits.mdc` (single source of truth for this repo).
 
 ## COMMIT MESSAGES
 

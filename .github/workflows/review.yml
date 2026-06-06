@@ -256,7 +256,7 @@ jobs:
       - name: Ensure ElectroBun home exists
         run: mkdir -p ~/.electrobun
       - name: Compile renderer styles
-        run: bash tools/scripts/compile_renderer_styles.sh
+        run: bash tools/orchestration/scripts/compile_renderer_styles.sh
       - name: Smoke build (forced unsigned)
         env:
           ELECTROBUN_DEVELOPER_ID: ''

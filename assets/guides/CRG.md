@@ -31,9 +31,6 @@ artifact churn.
 - [CRG repository](https://github.com/tirth8205/code-review-graph)
 - [CRG install guide](https://code-review-graph.com/install)
 - [CRG PyPI package](https://pypi.org/project/code-review-graph/)
-- [KB migration requirements](../docs/specs/graph/requirements.md)
-- [KB migration design](../docs/specs/graph/design.md)
-- [KB migration tasks](../docs/specs/graph/tasks.md)
 
 ## Setup
 

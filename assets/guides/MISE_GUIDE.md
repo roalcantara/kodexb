@@ -33,23 +33,12 @@ straightforward.
 
 ```toml
 [tasks]
-"test" = { description = "Run project test workflows", dir = "{{cwd}}", usage = '''
-arg "<target>" help="Test target" {
-  choices "unit" "e2e-preview" "spec-audit" "spec-style"
-}
-flag "--strict" help="Exit non-zero when findings exist"
-''', run = '''
-#!/usr/bin/env bash
-set -euo pipefail
-
-case "${usage_target?}" in
-  unit) bun test --pass-with-no-tests ;;
-  e2e-preview) bunx playwright test e2e/preview_list_nav.e2e.spec.ts ;;
-  spec-audit) mise run test spec-audit ;;
-  spec-style) mise run test spec-style ;;
-esac
-''' }
+"test" = { description = "Run project test workflows", usage = '''
+cmd "unit" {}
+''', run = "bun tools/bin/test.script.ts" }
 ```
+
+Mise runs tasks from **`{{ config_root }}`** (the directory containing `mise.toml`) by default. Do **not** set `dir = "{{cwd}}"` on path-sensitive tasks unless the task must run from the user's shell directory. Do **not** `cd "$(git rev-parse …)"` in shims — resolve repo root inside TypeScript when scripts are invoked directly (`tools/support/lib/shared/repo_root.script.ts`).
 
 Allowed exceptions:
 
@@ -114,15 +103,77 @@ Use this shape:
 mise run skill validate
 mise run skill sync
 mise run skill install
+mise run skill list
+mise run skill report --list-skills
+mise run skill add <url> --type optional
+mise run skill create <skill-id>
+mise run skill reconcile --dry-run
+mise run skill prune --dry-run
+```
+
+The `skill` task implementation lives in
+[`tools/bin/skill.script.ts`](../../tools/bin/skill.script.ts) (dispatches to
+[`tools/governance/registries/skill/skill_registry.script.ts`](../../tools/governance/registries/skill/skill_registry.script.ts)).
+Structured registry: [`assets/catalog/SKILLS.yaml`](../catalog/SKILLS.yaml).
+Use `--raw` or `--json` for CI and scripting. On a TTY (default), output uses
+**gum** via the shared module [`tools/support/lib/cli/gum_theme.script.ts`](../../tools/support/lib/cli/gum_theme.script.ts)
+(Andromeda Void palette — titles, badges, tables, semantic glyphs). Falls back
+to plain text when gum is unavailable. Other Bun-backed mise tasks should import
+the same helpers and [`tools/support/lib/cli/render_mode.script.ts`](../../tools/support/lib/cli/render_mode.script.ts)
+for `--raw` / `--json` / TTY dispatch.
+
+## Mise task entrypoints (`tools/bin/`)
+
+Complex top-level tasks use **one Bun entrypoint** under `tools/bin/<task>.script.ts` (thin stub).
+`mise.toml` holds the `usage` spec and a **one-line** `run`:
+
+```toml
+"test" = { description = "…", usage = ''' … ''', run = "bun tools/bin/test.script.ts" }
+"catalog" = { description = "…", usage = ''' … ''', run = "bun tools/bin/catalog.script.ts" }
+```
+
+| Layer           | Location                      | Rule                                                   |
+| --------------- | ----------------------------- | ------------------------------------------------------ |
+| Task definition | `mise.toml`                   | `usage` + one-line `run` (no inline 100+ line scripts) |
+| Entrypoint      | `tools/bin/<task>.script.ts`  | Dispatches subcommands via `usage_cmd` / `usage_*` env |
+| Domain logic    | `tools/governance/*`          | Shared libraries; not user-facing commands             |
+
+Document **`mise run <task>`** for users and agents — not `bun tools/bin/…` except local debugging.
+Folder taxonomy: [`TOOLS_GUIDE.md`](TOOLS_GUIDE.md).
+
+| Task      | Entrypoint                                                                           | Notes                                                 |
+| --------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------- |
+| `test`    | [`tools/bin/test.script.ts`](../../tools/bin/test.script.ts)                         | unit, ci, e2e, spec-audit/style, **`tag`**            |
+| `catalog` | [`tools/bin/catalog.script.ts`](../../tools/bin/catalog.script.ts)                   | shipped-feature registry (`list`, `validate`, `ship`) |
+| `skill`   | [`tools/bin/skill.script.ts`](../../tools/bin/skill.script.ts)                       | skill registry CLI                                    |
+| `spec`    | [`tools/bin/spec.script.ts`](../../tools/bin/spec.script.ts)                         | Spec Kit lint, trace, gate                            |
+
+### Catalog tag tests
+
+Catalog **run tags** (`@<catalog_key>`) — not Cucumber `@smoke` / `@regression`:
+
+```sh
+mise run catalog list
+mise run test tag --list
+mise run test tag command_palette --list
+mise run test tag command_palette --list --e2e
+mise run test tag command_palette --list --unit
+mise run test tag command_palette
+mise run test tag command_palette --e2e
+mise run test tag command_palette --unit
+mise run test tag key1 key2 --list    # union
+```
+
+Registry metadata: `catalog list`. Executable membership: `test tag --list`.
+
+```sh
+mise run catalog validate
+mise run catalog validate --feature command_palette
+mise run catalog ship command_palette
+mise run catalog ship command_palette --json
 ```
 
 Avoid this shape for new public tasks:
-
-```sh
-mise run skill validate
-mise run skill sync
-mise run skill install
-```
 
 Keep tasks separate only when separation protects clarity or safety:
 
@@ -177,9 +228,9 @@ and agents to the Mise task, not directly to the script.
 
 ## Complex task bodies
 
-Use a shebang for complex inline task bodies.
+Prefer **`tools/bin/<task>.script.ts`** (see § Mise task entrypoints) over large inline `run` heredocs in `mise.toml`.
 
-Use Bash for shell orchestration:
+Use Bash only when the shim must branch before calling Bun (legacy tasks not yet migrated):
 
 ```toml
 run = '''

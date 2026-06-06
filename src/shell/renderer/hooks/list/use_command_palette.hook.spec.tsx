@@ -1,3 +1,4 @@
+// @command_palette
 import '@happy-dom/global-registrator'
 
 import { describe, expect, it, mock } from 'bun:test'
