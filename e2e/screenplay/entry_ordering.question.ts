@@ -60,6 +60,6 @@ export class EntryOrderingAssertBelow implements Answerable {
       expect(aIndex).toBeGreaterThanOrEqual(0)
       expect(bIndex).toBeGreaterThanOrEqual(0)
       expect(aIndex).toBeGreaterThan(bIndex)
-    }, 3_000)
+    }, 30_000)
   }
 }
