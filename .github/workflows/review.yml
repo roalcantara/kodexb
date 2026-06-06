@@ -127,21 +127,21 @@ jobs:
         if: always()
         uses: ./.github/actions/junit-summary
         with:
-          xml_path: tmp/e2e/junit.xml
+          xml_path: tmp/bdd/e2e/junit.xml
           title: E2E Smoke
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-e2e-smoke
           path: |
-            tmp/e2e/
+            tmp/bdd/e2e/
             tmp/playwright-report/
           retention-days: 7
           if-no-files-found: ignore
       - uses: mikepenz/action-junit-report@v5
         if: always()
         with:
-          report_paths: tmp/e2e/junit.xml
+          report_paths: tmp/bdd/e2e/junit.xml
           fail_on_failure: true
           require_tests: true
           check_name: E2E Smoke
@@ -165,21 +165,21 @@ jobs:
         if: always()
         uses: ./.github/actions/junit-summary
         with:
-          xml_path: tmp/e2e/junit.xml
+          xml_path: tmp/bdd/e2e/junit.xml
           title: E2E Regression
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: report-e2e-regression
           path: |
-            tmp/e2e/
+            tmp/bdd/e2e/
             tmp/playwright-report/
           retention-days: 7
           if-no-files-found: ignore
       - uses: mikepenz/action-junit-report@v5
         if: always()
         with:
-          report_paths: tmp/e2e/junit.xml
+          report_paths: tmp/bdd/e2e/junit.xml
           fail_on_failure: true
           require_tests: true
           check_name: E2E Regression

@@ -1,6 +1,7 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import { FIXTURE_PATHS_FILE } from './fixtures.support'
 
 export type FixturePaths = {
   root: string
@@ -142,31 +143,72 @@ display:
 `
 }
 
-export async function createFixture(): Promise<FixturePaths> {
-  const root = await mkdtemp(path.join(tmpdir(), 'kb-e2e-'))
-  const sourcesPath = path.join(root, 'sources')
-  const dbPath = path.join(root, 'knowledge.sqlite')
-  const configPath = path.join(root, 'config.yaml')
-
-  await mkdir(path.join(sourcesPath, 'bookmarks'), { recursive: true })
-  await mkdir(path.join(sourcesPath, 'commands'), { recursive: true })
-  await mkdir(path.join(sourcesPath, 'cheats'), { recursive: true })
-  await mkdir(path.join(sourcesPath, 'tasks'), { recursive: true })
-  await mkdir(path.join(sourcesPath, 'shortcuts'), { recursive: true })
-
+async function ensureReleaseSourceDirs(sourcesPath: string): Promise<void> {
   await Promise.all([
-    writeFile(configPath, configYaml(dbPath, sourcesPath)),
+    mkdir(path.join(sourcesPath, 'bookmarks'), { recursive: true }),
+    mkdir(path.join(sourcesPath, 'commands'), { recursive: true }),
+    mkdir(path.join(sourcesPath, 'cheats'), { recursive: true }),
+    mkdir(path.join(sourcesPath, 'tasks'), { recursive: true }),
+    mkdir(path.join(sourcesPath, 'shortcuts'), { recursive: true })
+  ])
+}
+
+async function writeReleaseFixtureSources(sourcesPath: string): Promise<void> {
+  await ensureReleaseSourceDirs(sourcesPath)
+  await Promise.all([
     writeFile(path.join(sourcesPath, 'bookmarks', 'release.yml'), BOOKMARKS_YAML),
     writeFile(path.join(sourcesPath, 'commands', 'release.yml'), COMMANDS_YAML),
     writeFile(path.join(sourcesPath, 'cheats', 'release.yml'), CHEATS_YAML),
     writeFile(path.join(sourcesPath, 'tasks', 'release.yml'), TASKS_YAML),
     writeFile(path.join(sourcesPath, 'shortcuts', 'release.yml'), SHORTCUTS_YAML)
   ])
+}
+
+/** E2e scenarios may add these under the shared preview sources tree. */
+const RESTORE_REMOVE_PATHS = [
+  'sync',
+  'invalid',
+  'tasks.yml',
+  'bookmarks/synced.yml',
+  'shortcuts/clash_e2e.yml'
+] as const
+
+export async function createFixture(): Promise<FixturePaths> {
+  const root = await mkdtemp(path.join(tmpdir(), 'kb-e2e-'))
+  const sourcesPath = path.join(root, 'sources')
+  const dbPath = path.join(root, 'knowledge.sqlite')
+  const configPath = path.join(root, 'config.yaml')
+
+  await writeFile(configPath, configYaml(dbPath, sourcesPath))
+  await writeReleaseFixtureSources(sourcesPath)
 
   return { root, configPath, dbPath, sourcesPath }
+}
+
+/** Soft reset: same temp root + preview App; drop cross-scenario source mutations. */
+export async function restoreReleaseFixtureSources(): Promise<FixturePaths> {
+  const raw = await readFile(FIXTURE_PATHS_FILE, 'utf-8')
+  const paths: FixturePaths = JSON.parse(raw)
+  await Promise.all(
+    RESTORE_REMOVE_PATHS.map(rel => rm(path.join(paths.sourcesPath, rel), { recursive: true, force: true }))
+  )
+  await writeReleaseFixtureSources(paths.sourcesPath)
+  return paths
 }
 
 export async function destroyFixture(paths: FixturePaths): Promise<void> {
   if (process.env.E2E_PRESERVE_ARTIFACTS) return
   await rm(paths.root, { recursive: true, force: true })
+}
+
+export async function pruneFixture(): Promise<void> {
+  try {
+    const raw = await readFile(FIXTURE_PATHS_FILE, 'utf-8')
+    const paths: FixturePaths = JSON.parse(raw)
+    await destroyFixture(paths)
+  } catch {
+    // fixture may already be cleaned or file missing
+  } finally {
+    await rm(FIXTURE_PATHS_FILE, { force: true })
+  }
 }

@@ -1,9 +1,16 @@
 import { describe, expect, it } from 'bun:test'
 import type { TagResolution } from './tag.script.ts'
 import {
+  acTagFromSliceId,
+  e2eTagExpression,
+  extractCatalogRunTagsFromLine,
   layerFilter,
+  lineHasAcTag,
   lineHasCatalogTag,
+  parseAcSliceId,
+  playwrightGrepAndPattern,
   playwrightGrepPattern,
+  sliceIdFromAcTag,
   splitTaggedPaths,
   unionResolutions
 } from './tag.script.ts'
@@ -77,10 +84,34 @@ describe('tag.lib', () => {
     expect(lineHasCatalogTag('Feature: @command_palette', '@command_palette')).toBe(true)
   })
 
-  it('lineHasCatalogTag does not match tags below line 1', () => {
+  it('lineHasCatalogTag does not match tags below line 1 in unit specs', () => {
     const multiLine = 'Feature: @sync_ui\nScenario: @sync tag'
     const firstLine = multiLine.split('\n')[0] ?? ''
     expect(lineHasCatalogTag(firstLine, '@sync')).toBe(false)
     expect(lineHasCatalogTag(firstLine, '@sync_ui')).toBe(true)
+  })
+
+  it('parseAcSliceId maps sf1ac1 to @ac:SF-1_AC1', () => {
+    expect(parseAcSliceId('sf1ac1')).toBe('@ac:SF-1_AC1')
+    expect(acTagFromSliceId('SF2AC3')).toBe('@ac:SF-2_AC3')
+    expect(sliceIdFromAcTag('@ac:SF-1_AC1')).toBe('sf1ac1')
+  })
+
+  it('lineHasAcTag finds colon tags on scenario lines', () => {
+    expect(lineHasAcTag('  @sync @sync_frecency_preserve @unit @ac:SF-1_AC1', '@ac:SF-1_AC1')).toBe(true)
+  })
+
+  it('e2eTagExpression requires @e2e and excludes @todo', () => {
+    expect(e2eTagExpression(['@sync_frecency_preserve'])).toBe('@sync_frecency_preserve and @e2e and not @todo')
+  })
+
+  it('playwrightGrepAndPattern requires all tags', () => {
+    const pattern = new RegExp(playwrightGrepAndPattern(['@sync_frecency_preserve', '@ac:SF-1_AC1']))
+    expect(pattern.test('@sync_frecency_preserve @ac:SF-1_AC1 @unit')).toBe(true)
+    expect(pattern.test('@sync_frecency_preserve @unit')).toBe(false)
+  })
+
+  it('extractCatalogRunTagsFromLine filters reserved tags and @native-handoff keeps only sync', () => {
+    expect(extractCatalogRunTagsFromLine('@sync @unit @todo @native-handoff')).toEqual(['sync'])
   })
 })

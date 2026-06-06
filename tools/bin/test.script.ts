@@ -5,8 +5,10 @@
 import { existsSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
 import {
+  acTagFromSliceId,
   formatTagListJson,
   formatTagListText,
+  isAcSliceId,
   layerFilter,
   resolveAllCatalogTags,
   resolveTagKey,
@@ -31,15 +33,24 @@ function parseTagCli(): {
   e2e: boolean
   unit: boolean
   json: boolean
-  keys: string[]
+  catalogKeys: string[]
+  acTag?: string
 } {
   let list = envBool('usage_list')
   let e2e = envBool('usage_e2e')
   let unit = envBool('usage_unit')
   const json = envBool('usage_json')
-  const keys: string[] = []
+  const catalogKeys: string[] = []
+  let acTag: string | undefined
   const usageKey = process.env.usage_key?.trim()
-  if (usageKey) keys.push(usageKey)
+  if (usageKey) {
+    if (isAcSliceId(usageKey)) acTag = acTagFromSliceId(usageKey) ?? undefined
+    else catalogKeys.push(usageKey)
+  }
+  const usageSlice = process.env.usage_slice?.trim()
+  if (usageSlice && isAcSliceId(usageSlice)) {
+    acTag = acTagFromSliceId(usageSlice) ?? undefined
+  }
 
   for (const arg of process.argv.slice(2)) {
     if (arg === 'tag') continue
@@ -57,20 +68,25 @@ function parseTagCli(): {
       case '--json':
         break
       default:
-        if (!arg.startsWith('--')) keys.push(arg)
+        if (!arg.startsWith('--')) {
+          if (isAcSliceId(arg)) acTag = acTagFromSliceId(arg) ?? undefined
+          else catalogKeys.push(arg)
+        }
     }
   }
 
-  return { list, e2e, unit, json, keys }
+  return { list, e2e, unit, json, catalogKeys, acTag }
 }
 
 async function runTagSubcommand(root: string): Promise<void> {
-  const { list, e2e, unit, json, keys } = parseTagCli()
+  const { list, e2e, unit, json, catalogKeys, acTag } = parseTagCli()
   const filter = layerFilter(e2e, unit)
 
   if (list) {
     const resolutions =
-      keys.length === 0 ? await resolveAllCatalogTags() : await Promise.all(keys.map(k => resolveTagKey(k)))
+      catalogKeys.length === 0
+        ? await resolveAllCatalogTags()
+        : await Promise.all(catalogKeys.map(k => resolveTagKey(k)))
     const filtered = resolutions.map(r => ({
       ...r,
       features: filter.e2e ? r.features : [],
@@ -81,21 +97,23 @@ async function runTagSubcommand(root: string): Promise<void> {
       return
     }
     console.log(formatTagListText(filtered, filter))
+    if (acTag) console.log(`\nAC slice: ${acTag}`)
     return
   }
 
-  if (keys.length === 0) {
-    die('test tag: specify at least one catalog key to run, or use --list', 2)
+  if (catalogKeys.length === 0 && !acTag) {
+    die('test tag: specify at least one catalog key or an AC tag to run, or use --list', 2)
   }
 
-  const resolutions = await Promise.all(keys.map(k => resolveTagKey(k)))
+  const resolutions = await Promise.all(catalogKeys.map(k => resolveTagKey(k)))
   if (!json) {
     for (const res of resolutions) {
       console.log(formatTagListText([res], { e2e: true, unit: true }))
       console.log('')
     }
+    if (acTag) console.log(`AC slice: ${acTag}\n`)
   }
-  runTaggedTests(resolutions, filter, root)
+  runTaggedTests(resolutions, filter, root, acTag)
 }
 
 function runSpecAudit(root: string, strict: boolean): void {

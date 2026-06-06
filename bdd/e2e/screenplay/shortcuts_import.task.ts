@@ -1,11 +1,12 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
+import { FIXTURE_PATHS_FILE } from '../support/fixtures.support'
 import type { Actor, Performable } from './actor.ability'
 
 export const E2E_CLASH_BINDING_ACTION = 'Release Clash E2E'
 
 function loadFixturePaths() {
-  return JSON.parse(readFileSync(path.join(import.meta.dirname, '..', '.fixture-paths.json'), 'utf-8')) as {
+  return JSON.parse(readFileSync(FIXTURE_PATHS_FILE, 'utf-8')) as {
     sourcesPath: string
   }
 }

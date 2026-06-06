@@ -80,7 +80,12 @@ async function readFirstLine(filePath: string): Promise<string> {
   return text.split('\n')[0] ?? ''
 }
 
-async function validateTagPlacement(
+async function readAllLines(filePath: string): Promise<string[]> {
+  const text = await Bun.file(filePath).text()
+  return text.split('\n')
+}
+
+export async function validateTagPlacement(
   findings: CatalogFinding[],
   summary: Record<string, number>,
   relPath: string,
@@ -89,15 +94,16 @@ async function validateTagPlacement(
   root: string
 ): Promise<void> {
   const full = path.join(root, relPath)
-  const first = await readFirstLine(full)
 
   if (relPath.endsWith('.feature')) {
-    if (!lineHasCatalogTag(first, tag)) {
+    const allLines = await readAllLines(full)
+    const tagFound = allLines.some(line => lineHasCatalogTag(line, tag))
+    if (!tagFound) {
       addFinding(
         findings,
         summary,
         'placement',
-        `${relPath}: catalog tag ${tag} must appear on Feature line (line 1)`,
+        `${relPath}: catalog tag ${tag} must appear on a Feature or Scenario tag line`,
         key,
         relPath
       )
@@ -106,6 +112,7 @@ async function validateTagPlacement(
   }
 
   if (relPath.includes('.spec.')) {
+    const first = await readFirstLine(full)
     const trimmed = first.trim()
     if (!trimmed.startsWith('//') || !lineHasCatalogTag(trimmed, tag)) {
       addFinding(
@@ -122,13 +129,18 @@ async function validateTagPlacement(
 
 async function collectMembershipTagsInFile(relPath: string, root: string): Promise<string[]> {
   const full = path.join(root, relPath)
-  const first = await readFirstLine(full)
 
   if (relPath.endsWith('.feature')) {
-    return extractCatalogRunTagsFromLine(first)
+    const allLines = await readAllLines(full)
+    const tags = new Set<string>()
+    for (const line of allLines) {
+      for (const t of extractCatalogRunTagsFromLine(line)) tags.add(t)
+    }
+    return [...tags]
   }
 
   if (relPath.includes('.spec.')) {
+    const first = await readFirstLine(full)
     const trimmed = first.trim()
     if (!trimmed.startsWith('//')) return []
     return extractCatalogRunTagsFromLine(trimmed)

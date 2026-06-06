@@ -21,7 +21,7 @@
     ".cursor/commands/**",
     "**/tmp/**",
     "**/*.spec.tsx",
-    "**/e2e/**",
+    "**/bdd/**",
     "**/.superpowers/**",
     ".agents/skills/**",
     "src/shell/app/db/import.service.spec.ts"

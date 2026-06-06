@@ -8,15 +8,15 @@
     "src/shared/utils/index.ts",
     "src/**/*.spec.ts",
     "src/**/*.spec.tsx",
-    "e2e/support/fixtures.support.ts",
-    "e2e/steps/**/*.ts",
-    "e2e/support/preview_with_fixture.support.ts",
+    "bdd/e2e/support/fixtures.support.ts",
+    "bdd/e2e/steps/**/*.ts",
+    "bdd/e2e/support/preview_with_fixture.support.ts",
     "tools/metrics/harnesses/e2e-quality/**/*.ts"
   ],
   "project": [
     "src/**/*.ts",
     "src/shell/renderer/**/*.tsx",
-    "e2e/**/*.ts",
+    "bdd/e2e/**/*.ts",
     "tools/metrics/harnesses/e2e-quality/**/*.ts"
   ],
   "ignoreExportsUsedInFile": true,

@@ -161,8 +161,10 @@ tmp
 # Playwright default output dirs (HTML report is under tmp/ via playwright.config)
 test-results
 playwright-report
-e2e/.generated/
-e2e/.fixture-paths.json
+bdd/e2e/.generated/
+bdd/e2e/.fixture-paths.json
+bdd/unit/.generated/
+tmp/bdd/
 tmp/e2e/
 tmp/audit/
 tmp/metrics/

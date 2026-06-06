@@ -1,10 +1,11 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { expect } from '@playwright/test'
+import { FIXTURE_PATHS_FILE } from '../support/fixtures.support'
 import type { Actor, Answerable } from './actor.ability'
 
 function loadFixtureSourcesPath(): string {
-  const paths = JSON.parse(readFileSync(path.join(import.meta.dirname, '..', '.fixture-paths.json'), 'utf-8')) as {
+  const paths = JSON.parse(readFileSync(FIXTURE_PATHS_FILE, 'utf-8')) as {
     sourcesPath: string
   }
   return paths.sourcesPath
@@ -33,7 +34,9 @@ export class EntryListIncludesTitle implements Answerable {
 
   async answeredBy(actor: Actor): Promise<void> {
     const row = actor.page.locator('button.cmp-list-row', { hasText: this.title })
-    await expect(row.first()).toBeVisible()
+    await actor.eventually(async () => {
+      await expect(row.first()).toBeVisible()
+    }, 3_000)
   }
 }
 
@@ -59,7 +62,9 @@ export class FixtureSourcesTaskFileIncludes implements Answerable {
 
   async answeredBy(actor: Actor): Promise<void> {
     const content = readTaskSourceYaml()
-    expect(content).toContain(this.text)
+    await actor.eventually(async () => {
+      expect(content).toContain(this.text)
+    }, 3_000)
   }
 }
 
@@ -72,7 +77,9 @@ export class FixtureSourcesTaskFileExcludes implements Answerable {
 
   async answeredBy(actor: Actor): Promise<void> {
     const content = readTaskSourceYaml()
-    expect(content).not.toContain(this.text)
+    await actor.eventually(async () => {
+      expect(content).not.toContain(this.text)
+    }, 3_000)
   }
 }
 
