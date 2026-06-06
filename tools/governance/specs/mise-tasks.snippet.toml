@@ -24,9 +24,6 @@
     cmd "gate" {
       arg "<feature_dir>" help="Feature dir to lint + trace as a hard gate"
     }
-    cmd "import-legacy" {
-      flag "--feature <slug>" help="NNN-slug folder name"
-    }
     cmd "feature-init" {
       flag "--id <id>" help="Three-digit id e.g. 001"
       flag "--slug <slug>" help="Feature slug"

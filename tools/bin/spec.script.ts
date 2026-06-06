@@ -41,11 +41,6 @@ function main(): void {
       spawnInherit(['bash', `${SPECS}/gate.sh`, dir], root)
       break
     }
-    case 'import-legacy': {
-      const feat = process.env.usage_feature ?? '001-sync-frecency-persistence'
-      spawnInherit(['bun', `${SPECS}/import_legacy.script.ts`, '--feature', feat], root)
-      break
-    }
     case 'feature-init':
       spawnInherit(
         [

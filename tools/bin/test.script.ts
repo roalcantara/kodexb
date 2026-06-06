@@ -136,10 +136,8 @@ function runSpecAudit(root: string, strict: boolean): void {
   }
 }
 
-async function runSpecStyle(root: string, strict: boolean, styleFormat: string, updateLedger: boolean): Promise<void> {
+async function runSpecStyle(root: string, strict: boolean, styleFormat: string): Promise<void> {
   const SRC = path.join(root, 'src')
-  const LEDGER_START = '<!-- phase-12-style-audit:start -->'
-  const LEDGER_END = '<!-- phase-12-style-audit:end -->'
   const TRAILING_SLASH_RE = /\/$/
   const SPEC_GLOB = new Bun.Glob('**/*.spec.{ts,tsx}')
   const SCOPE_ALIASES: Record<string, string> = {
@@ -150,7 +148,6 @@ async function runSpecStyle(root: string, strict: boolean, styleFormat: string, 
     'shell-main': 'src/shell/main',
     'shell-renderer': 'src/shell/renderer'
   }
-  const LEDGER = path.join(root, 'assets/docs/specs/normalise-specs/tasks.md')
 
   type StyleIssue = { file: string; category: string; message: string }
 
@@ -247,17 +244,6 @@ async function runSpecStyle(root: string, strict: boolean, styleFormat: string, 
     return lines.join('\n')
   }
 
-  async function writeLedger(ledgerBody: string): Promise<void> {
-    const file = Bun.file(LEDGER)
-    if (!(await file.exists())) die(`ledger not found: ${path.relative(root, LEDGER)}`)
-    const current = await file.text()
-    const start = current.lastIndexOf(LEDGER_START)
-    const end = current.indexOf(LEDGER_END, start)
-    if (start < 0 || end < 0) die('ledger markers not found')
-    const replacement = `${LEDGER_START}\n${ledgerBody}\n${LEDGER_END}`
-    await Bun.write(LEDGER, current.slice(0, start) + replacement + current.slice(end + LEDGER_END.length))
-  }
-
   const specPaths = [...SPEC_GLOB.scanSync(SRC)]
     .map(name => path.join(SRC, name))
     .filter(full => inScope(relPath(full)))
@@ -270,7 +256,6 @@ async function runSpecStyle(root: string, strict: boolean, styleFormat: string, 
   const markdown = render(specPaths.length, issues, true)
   const report = styleFormat === 'markdown' ? markdown : render(specPaths.length, issues, false)
   console.log(report)
-  if (updateLedger) await writeLedger(markdown)
   if (issues.length > 0 && strict) process.exit(1)
 }
 
@@ -279,7 +264,6 @@ async function main(): Promise<void> {
   const ACTION = process.env.usage_cmd ?? 'unit'
   const STRICT = envBool('usage_strict')
   const STYLE_FORMAT = process.env.usage_format ?? 'text'
-  const UPDATE_LEDGER = envBool('usage_update_ledger') || envBool('usage_update-ledger')
 
   switch (ACTION) {
     case 'unit':
@@ -306,7 +290,7 @@ async function main(): Promise<void> {
       runSpecAudit(ROOT, STRICT)
       break
     case 'spec-style':
-      await runSpecStyle(ROOT, STRICT, STYLE_FORMAT, UPDATE_LEDGER)
+      await runSpecStyle(ROOT, STRICT, STYLE_FORMAT)
       break
     case 'e2e-preview':
       spawnInherit(['bun', 'run', 'e2e:preview'], ROOT)

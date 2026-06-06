@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Policy checks aligned with AGENTS.md + assets/docs/specs/codebase-quality-audit/
+# Policy checks aligned with AGENTS.md + assets/guides/DoD.md
 # (R6 tool weakening, R7 Electrobun discipline). Complements mechanical linters.
 set -eu -o pipefail
 
