@@ -1,5 +1,5 @@
 {
-  "workflow": "kb-full",
+  "workflow": "speckit",
   "specName": "003-sync-frecency-preserve",
   "branch": "003-sync-frecency-preserve",
   "selectedAt": "2026-06-03T20:34:03.822Z",

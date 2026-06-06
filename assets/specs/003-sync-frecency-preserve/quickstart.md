@@ -42,19 +42,18 @@
 
 ## Spec Kit next steps
 
-```bash
-# Refresh handoff after task changes
-/speckit-kb-handoff
-
-# Optional quality passes
+```text
+/speckit-implement
 /speckit-checklist
 /speckit-analyze
 ```
 
+Update `handoff.md` manually when tasks or acceptance criteria change.
+
 ## Gates before merge
 
 ```bash
-mise run spec lint --strict
-mise run spec trace --feature 003-sync-frecency-preserve
-bash .agents/skills/app-quality-gate/scripts/gate.sh
+mise run spec lint assets/specs/003-sync-frecency-preserve --strict
+mise run spec trace assets/specs/003-sync-frecency-preserve --strict
+mise run spec gate assets/specs/003-sync-frecency-preserve
 ```

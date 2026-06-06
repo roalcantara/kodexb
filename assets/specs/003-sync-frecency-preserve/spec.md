@@ -156,11 +156,11 @@ sources, so I can trust that catalog content matches disk after sync.
 
 ## E2e declaration
 
-| Requirement | E2e tag               | Scenario (name only)                                |
-| ----------- | --------------------- | --------------------------------------------------- |
+| Requirement | E2e tag | Scenario (name only)                                |
+| ----------- | ------- | --------------------------------------------------- |
 | SF-1        | `@sync` | Frequently opened items keep their place after sync |
-| SF-2        | —                     | No e2e this increment (integration gate)            |
-| SF-3        | —                     | No e2e this increment (integration gate)            |
+| SF-2        | —       | No e2e this increment (integration gate)            |
+| SF-3        | —       | No e2e this increment (integration gate)            |
 
 Gherkin text lives in **`assets/features/e2e/sync_frecency.feature`**. E2e is
 **stretch** for this increment; integration tests are the release gate.
