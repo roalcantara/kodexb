@@ -25,7 +25,10 @@ export const RESERVED_RUN_TAGS = new Set([
   'skip',
   'only',
   'bdd',
-  'gherkin'
+  'gherkin',
+  'unit',
+  'todo',
+  'native'
 ])
 
 export function extractCatalogRunTagsFromLine(line: string): string[] {

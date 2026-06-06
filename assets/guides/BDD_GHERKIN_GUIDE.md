@@ -82,6 +82,7 @@ a scenario genuinely needs more than one actor.
 | `@p0`, `@p1`, `@p2` | Priority tier.                                             |
 | `@spec:<slug>`      | Source SDD spec slug.                                      |
 | `@todo`             | Planned but not automated; excluded from gates.            |
+| `@unit`             | Fast in-process (Cucumber · Bun) scenario, no browser.    |
 | `@native`           | Requires packaged Electrobun/native behavior later.        |
 | `@visual`           | Contains stable screenshot assertion.                      |
 | `@fixture-mutation` | Harness-only; documented in step catalog (not a gate tag). |

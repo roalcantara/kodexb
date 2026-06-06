@@ -3,6 +3,7 @@ import type { TagResolution } from './tag.script.ts'
 import {
   acTagFromSliceId,
   e2eTagExpression,
+  extractCatalogRunTagsFromLine,
   layerFilter,
   lineHasAcTag,
   lineHasCatalogTag,
@@ -108,5 +109,9 @@ describe('tag.lib', () => {
     const pattern = new RegExp(playwrightGrepAndPattern(['@sync_frecency_preserve', '@ac:SF-1_AC1']))
     expect(pattern.test('@sync_frecency_preserve @ac:SF-1_AC1 @unit')).toBe(true)
     expect(pattern.test('@sync_frecency_preserve @unit')).toBe(false)
+  })
+
+  it('extractCatalogRunTagsFromLine filters reserved tags and @native-handoff keeps only sync', () => {
+    expect(extractCatalogRunTagsFromLine('@sync @unit @todo @native-handoff')).toEqual(['sync'])
   })
 })
