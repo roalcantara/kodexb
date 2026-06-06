@@ -49,8 +49,16 @@ describe('tag.lib', () => {
     })
   })
 
-  it('playwrightGrepPattern escapes regex metacharacters', () => {
-    expect(playwrightGrepPattern(['@command_palette', '@sync'])).toBe('@command_palette|@sync')
+  it('playwrightGrepPattern escapes regex metacharacters and adds boundaries', () => {
+    expect(playwrightGrepPattern(['@command_palette', '@sync'])).toBe(
+      '@command_palette(?![a-z0-9_])|@sync(?![a-z0-9_])'
+    )
+  })
+
+  it('playwrightGrepPattern does not match longer snake_case tags', () => {
+    const pattern = new RegExp(playwrightGrepPattern(['@sync']))
+    expect(pattern.test('@sync_ui')).toBe(false)
+    expect(pattern.test('@sync')).toBe(true)
   })
 
   it('lineHasCatalogTag matches by token not substring', () => {
@@ -67,5 +75,12 @@ describe('tag.lib', () => {
   it('lineHasCatalogTag with @ prefix or bare key both work', () => {
     expect(lineHasCatalogTag('Feature: @command_palette', 'command_palette')).toBe(true)
     expect(lineHasCatalogTag('Feature: @command_palette', '@command_palette')).toBe(true)
+  })
+
+  it('lineHasCatalogTag does not match tags below line 1', () => {
+    const multiLine = 'Feature: @sync_ui\nScenario: @sync tag'
+    const firstLine = multiLine.split('\n')[0] ?? ''
+    expect(lineHasCatalogTag(firstLine, '@sync')).toBe(false)
+    expect(lineHasCatalogTag(firstLine, '@sync_ui')).toBe(true)
   })
 })

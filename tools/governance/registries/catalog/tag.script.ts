@@ -88,8 +88,11 @@ async function collectPathsMatchingTag(
   for (let i = 0; i < candidates.length; i++) {
     const candidate = candidates[i]
     const text = texts[i]
-    if (candidate && text && lineHasCatalogTag(text, want)) {
-      matches.push(path.relative(root, candidate).replace(/\\/g, '/'))
+    if (candidate && text) {
+      const firstLine = text.split('\n')[0] ?? ''
+      if (lineHasCatalogTag(firstLine, want)) {
+        matches.push(path.relative(root, candidate).replace(/\\/g, '/'))
+      }
     }
   }
   return matches
@@ -178,7 +181,7 @@ export function unionResolutions(resolutions: TagResolution[]): {
 }
 
 export function playwrightGrepPattern(tags: string[]): string {
-  return tags.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')
+  return tags.map(t => `${t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![a-z0-9_])`).join('|')
 }
 
 export type TagListJson = {
