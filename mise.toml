@@ -1414,6 +1414,20 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       flag "--dry-run" help="Print plan only; do not write manifest"
       flag "--verify" help="Bidirectional check: YAML entries ↔ on-disk folders; fail if mismatch"
     }
+    cmd "workflow" {
+      arg "<name>" help="Workflow id (e.g. orchestrated-handoff)"
+      flag "--feature <dir>" help="Existing feature dir, e.g. assets/specs/004-orchestrated-handoff"
+      flag "--manifest" help="Print subtask manifest XML for the feature"
+      flag "--next" help="Print the next canonical command (default if no action flag set)"
+      flag "--lint" help="Delegate to spec lint --strict on the feature dir (OHW-6 AC1)"
+    }
+    cmd "handoff-generate" {
+      flag "--feature <dir>" help="Feature dir holding handoff.md (required)"
+      flag "--focus <kind>" default="gherkin" help="gherkin|catalog|e2e-fix"
+      flag "--worker <name>" default="opencode" help="v1: opencode only"
+      flag "--dispatch" help="Pipe prompt to opencode run (also enabled by ORCHESTRATED_HANDOFF_DISPATCH=1)"
+      flag "--dry-run" help="Print prompt to stdout; do not write file"
+    }
   ''', run = "bun tools/bin/spec.script.ts" }
 "catalog" = { description = "Shipped-feature registry (catalog.yaml metadata)", usage = '''
     cmd "list" {

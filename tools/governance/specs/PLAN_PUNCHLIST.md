@@ -34,12 +34,15 @@ will likely be ignored.
 This matches only `001-…`, structurally excluding `_templates/` and `archive/`.
 (Alternative: move them out of the scanned parent entirely.)
 
-### 3. Pilot kb-full on 001, not kb-slice
-**Problem:** todo `p1-pilot-001` says "Run kb-slice on 001," but slice skips
-clarify + analyze-plan — the steps carrying the new EARS enforcement. The pilot
-would never exercise what's most likely to break.
+### 3. Pilot orchestrated-handoff on 001, not orchestrated-sliced
+**Problem:** todo `p1-pilot-001` says "Run orchestrated-sliced on 001," but the
+sliced workflow skips clarify + analyze-plan — the steps carrying the new EARS
+enforcement. The pilot would never exercise what's most likely to break.
 
-**Edit:** pilot **kb-full** on 001 end-to-end; switch to kb-slice for 002/003.
+**Edit:** pilot **orchestrated-handoff** on 001 end-to-end; switch to
+orchestrated-sliced for 002/003 once it ships. (Workflow names were renamed
+from `kb-full` / `kb-slice` in the orchestrated-handoff PR; see
+[`assets/specs/004-orchestrated-handoff/spec.md`](../../assets/specs/004-orchestrated-handoff/spec.md).)
 
 ## Medium
 

@@ -48,13 +48,18 @@
 
 ```text
 specs/[###-feature]/
-├── plan.md              # This file (/speckit-plan command output)
-├── research.md          # Phase 0 output (/speckit-plan command)
-├── data-model.md        # Phase 1 output (/speckit-plan command)
-├── quickstart.md        # Phase 1 output (/speckit-plan command)
-├── contracts/           # Phase 1 output (/speckit-plan command)
-└── tasks.md             # Phase 2 output (/speckit-tasks command - NOT created by /speckit-plan)
+├── plan.md              # Required (this file; /speckit-plan output)
+├── research.md          # OPTIONAL — Phase 0; create only when Technical Context has unresolved NEEDS CLARIFICATION
+├── data-model.md        # OPTIONAL — Phase 1; create only when feature introduces non-trivial data shape
+├── quickstart.md        # OPTIONAL — Phase 1; create only for operator-smoke / UI features needing a manual run-through
+├── contracts/           # OPTIONAL — Phase 1; create only when cross-module contracts need a dedicated directory
+└── tasks.md             # Required (Phase 2 output; /speckit-tasks command)
 ```
+
+> **kb normative quartet:** `spec.md`, `plan.md`, `tasks.md`, `handoff.md`.
+> Satellites above are feature-scoped and SHOULD NOT be created when plan
+> complexity does not demand them. See
+> [`assets/guides/SDD_WORKFLOW_GUIDE.md` § Normative quartet](../../assets/guides/SDD_WORKFLOW_GUIDE.md#normative-quartet).
 
 ### Source Code (repository root)
 <!--
