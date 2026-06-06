@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.11.0](https://github.com/roalcantara/kodexb/compare/v0.10.0...v0.11.0) (2026-06-06)
+
+### Features
+
+* **catalog:** Register all shipped user features ([1b1602c](https://github.com/roalcantara/kodexb/commit/1b1602c6e9126ddc3cd0cd31aed94622a8250346))
+* **governance:** Add rogue-refs audit scanner ([649ad4e](https://github.com/roalcantara/kodexb/commit/649ad4eab5aaa5468304fef06a68fff4edaa58bc))
+* **skills:** Add registry CLI and catalog move ([3118f1c](https://github.com/roalcantara/kodexb/commit/3118f1c0bc0893abc1e39ba247881f2b0332bf57))
+* **tools:** Add manifest, validator, import law ([28dc9fe](https://github.com/roalcantara/kodexb/commit/28dc9fe7584a646271db2a47c34bae0f94a609ce))
+
+### Bug Fixes
+
+* **catalog:** Line-1 discovery and grep boundaries ([d17accd](https://github.com/roalcantara/kodexb/commit/d17accd47b9ff2452d617ea42061b5a49f73bd97))
+* **catalog:** Match tags by token not substring ([0e2b1be](https://github.com/roalcantara/kodexb/commit/0e2b1bea493bf2467c16881499fefcb67829b617))
+* **catalog:** Scan numbered dirs in library index ([fdce2ba](https://github.com/roalcantara/kodexb/commit/fdce2ba7fbde3e7ebab08bd9e97fff745ca334dd))
+* **ci:** Centralize release squash-merge check ([#13](https://github.com/roalcantara/kodexb/issues/13)) ([91c4cab](https://github.com/roalcantara/kodexb/commit/91c4cabda8ef6b2330f7a185d08f0b93763470f2))
+* **ci:** Fix styles path and skill validate CI ([3256e52](https://github.com/roalcantara/kodexb/commit/3256e52f303597760fbfff7e6e3b7e1d59e04bdf))
+* **ci:** Pin skills CLI in mise, ship logging ([e1cd1e4](https://github.com/roalcantara/kodexb/commit/e1cd1e434bb1238d3d6a3b0115f34eba41eb2a01))
+* **docs:** Close archive migration gaps ([28d7826](https://github.com/roalcantara/kodexb/commit/28d78262245309fb9b0a37d378f577b78c4b97cf))
+* **docs:** Finish archive migration ledger ([00f5231](https://github.com/roalcantara/kodexb/commit/00f523114da4c90670dbb06379a0ac308e9bc583))
+* **library-manifest:** Block yaml, --follow, guard ([908d909](https://github.com/roalcantara/kodexb/commit/908d90939f4f4503c99375d41892781e65e08b96))
+
 ## [0.10.0](https://github.com/roalcantara/kodexb/compare/v0.9.0...v0.10.0) (2026-06-04)
 
 ### Features
