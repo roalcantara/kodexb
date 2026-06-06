@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @list_navigation. Normative behaviour: Gherkin + unit specs. -->
 # Renderer — List / Split / Detail Keyboard Navigation — Requirements
 
 ## INTRODUCTION

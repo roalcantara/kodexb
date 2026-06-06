@@ -1,4 +1,4 @@
-@e2e @smoke @p0 @spec:command-palette-filter-ux @spec:compact-filter-redesign
+@e2e @smoke @p0 @spec:command-palette-filter-ux @spec:compact-filter-redesign @compact_filter
 Feature: Search and filter
   As a daily kb user
   I want search and filters to narrow the list predictably

@@ -1,3 +1,4 @@
+// @compact_filter
 import { describe, expect, it, mock } from 'bun:test'
 import type { ListStats } from '@shared/rpc'
 import { renderHook } from '@testing-library/react'

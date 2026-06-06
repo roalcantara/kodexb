@@ -1,3 +1,4 @@
+// @shortcuts
 import { describe, expect, it } from 'bun:test'
 import { bindingRefsForApps } from '@testing'
 import { renderHook } from '@testing-library/react'

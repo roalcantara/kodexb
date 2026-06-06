@@ -1,3 +1,4 @@
+// @list_navigation
 import { describe, expect, it, mock } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { expectViewState, fireArrowKey, fireTwoRightsExpectSplitThenDetail, rpcBookmarkRow } from '@testing'

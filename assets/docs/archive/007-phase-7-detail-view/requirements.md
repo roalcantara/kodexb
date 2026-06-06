@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @detail_view. Normative behaviour: Gherkin + unit specs. -->
 # Phase 7 — Detail View: Populate `doc` column — Requirements
 
 ## INTRODUCTION

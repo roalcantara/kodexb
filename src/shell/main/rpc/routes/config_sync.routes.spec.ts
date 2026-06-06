@@ -1,3 +1,4 @@
+// @sync
 import { describe, expect, it } from 'bun:test'
 import { setupRpcRouteSpecSuite } from '@testing'
 import { runRoute } from '@testing/helpers/run_route.util'

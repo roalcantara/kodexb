@@ -13,7 +13,7 @@ Migration metadata for the legacy spec library and document authority work.
 - [x] **P1-crg** — CRG.md self-contained for graph tooling policy
 - [x] **P1-ci** — CI_GUIDE self-contained for packaging pipeline policy
 - [x] **P2-archive-rename** — `git mv assets/docs/specs/` → `assets/docs/archive/`; internal path sweep done; rogue-refs green
-- [ ] **P2-built-layer** — shipped feature records promoted per doc-promotion policy
+- [x] **P2-built-layer** — shipped feature records promoted per doc-promotion policy
 - [ ] **P2-spec-kit-active** — in-flight work only under `assets/specs/NNN-slug/`; legacy tree task-scoped
 
 ## Rogue CSV (pending)

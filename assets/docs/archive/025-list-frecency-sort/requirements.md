@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @list_frecency_sort. Normative behaviour: Gherkin + unit specs. -->
 
 # List frecency sort — requirements
 

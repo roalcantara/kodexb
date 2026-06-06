@@ -1,3 +1,4 @@
+// @entry_action_handoff
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test'
 import {
   installBunDollarMock,

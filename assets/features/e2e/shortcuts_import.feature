@@ -1,4 +1,4 @@
-@e2e @regression @p1 @spec:shortcuts
+@e2e @regression @p1 @spec:shortcuts @shortcuts
 Feature: Shortcuts import and sync collisions
   As a kb maintainer
   I want sync to surface hard global binding collisions

@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @entry_action_panel. Normative behaviour: Gherkin + unit specs. -->
 
 # Entry Action Panel — requirements
 

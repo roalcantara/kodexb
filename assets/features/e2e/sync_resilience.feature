@@ -1,4 +1,4 @@
-@e2e @regression @p1 @spec:sync
+@e2e @regression @p1 @spec:sync @sync
 Feature: Sync resilience
   As a maintainer of my local knowledge base
   I want sync to finish even when some source files or entries are invalid

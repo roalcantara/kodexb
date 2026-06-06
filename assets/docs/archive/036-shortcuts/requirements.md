@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @shortcuts. Normative behaviour: Gherkin + unit specs. -->
 
 # Shortcuts — Requirements
 

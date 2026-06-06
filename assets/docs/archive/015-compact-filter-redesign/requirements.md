@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @compact_filter. Normative behaviour: Gherkin + unit specs. -->
 
 # Compact filter overlay — requirements (rebuild)
 

@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @task_management. Normative behaviour: Gherkin + unit specs. -->
 # Phase 9 — Task Management — Requirements
 
 ## INTRODUCTION

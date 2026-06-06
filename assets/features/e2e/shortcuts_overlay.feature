@@ -1,4 +1,4 @@
-@e2e @regression @p1 @spec:shortcuts
+@e2e @regression @p1 @spec:shortcuts @shortcuts
 Feature: Shortcuts quick-lookup overlay
   As a keyboard-first kb user
   I want a global overlay to find keymap bindings by action or chord

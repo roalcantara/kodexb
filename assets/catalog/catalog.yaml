@@ -3,9 +3,93 @@
 # Discovery: mise run test tag <key> --list (grep — no path lists here).
 # See assets/guides/DOC_AUTHORITY.md
 
+actions_system:
+  title: Actions system
+  status: shipped
+  specs:
+    - 009-actions-system
+  superseded_by: null
+
 command_palette:
   title: Command palette and filter UX
   status: shipped
   specs:
     - 014-command-palette-filter-ux
+  superseded_by: null
+
+compact_filter:
+  title: Compact filter redesign
+  status: shipped
+  specs:
+    - 015-compact-filter-redesign
+  superseded_by: null
+
+detail_view:
+  title: Entry detail view
+  status: shipped
+  specs:
+    - 007-phase-7-detail-view
+  superseded_by: null
+
+entry_action_handoff:
+  title: Entry action handoff
+  status: shipped
+  specs:
+    - 020-entry-action-handoff
+  superseded_by: null
+
+entry_action_panel:
+  title: Entry action panel
+  status: shipped
+  specs:
+    - 021-entry-action-panel
+  superseded_by: null
+
+list_frecency_sort:
+  title: List frecency sort
+  status: shipped
+  specs:
+    - 025-list-frecency-sort
+  superseded_by: null
+
+list_navigation:
+  title: List navigation
+  status: shipped
+  specs:
+    - 033-renderer-nav-flow
+  superseded_by: null
+
+shell_chrome:
+  title: Shell chrome
+  status: shipped
+  specs:
+    - 034-shell-chrome
+  superseded_by: null
+
+shortcuts:
+  title: Keyboard shortcuts
+  status: shipped
+  specs:
+    - 036-shortcuts
+  superseded_by: null
+
+sync:
+  title: Sync resilience
+  status: shipped
+  specs:
+    - 040-sync
+  superseded_by: null
+
+sync_ui:
+  title: Sync UI
+  status: shipped
+  specs:
+    - 010-sync-ui
+  superseded_by: null
+
+task_management:
+  title: Task management
+  status: shipped
+  specs:
+    - 008-task-management
   superseded_by: null

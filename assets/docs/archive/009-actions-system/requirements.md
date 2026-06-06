@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @actions_system. Normative behaviour: Gherkin + unit specs. -->
 # Phase 10 — Actions System (⌘K) — Requirements
 
 ## INTRODUCTION

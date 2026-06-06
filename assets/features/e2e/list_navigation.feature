@@ -1,4 +1,4 @@
-@e2e @smoke @p0 @spec:renderer-nav-flow @spec:foundation
+@e2e @smoke @p0 @spec:renderer-nav-flow @spec:foundation @list_navigation
 Feature: List navigation
   As a daily kb user
   I want the knowledge list to open with predictable content and keyboard flow

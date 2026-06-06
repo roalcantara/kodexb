@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @sync_ui. Normative behaviour: Gherkin + unit specs. -->
 # Phase 11 — Sync UI — Requirements
 
 ## INTRODUCTION

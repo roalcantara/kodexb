@@ -1,4 +1,4 @@
-@e2e @smoke @regression @p1 @spec:shortcuts
+@e2e @smoke @regression @p1 @spec:shortcuts @shortcuts
 Feature: Shortcuts list and detail integration
   As a kb user
   I want shortcut keymaps in the list page like other entry types

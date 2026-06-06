@@ -1,3 +1,4 @@
+// @sync
 import { describe, expect, it } from 'bun:test'
 import fs from 'node:fs'
 import { factoryFor, syncFixtureDir } from '@testing'

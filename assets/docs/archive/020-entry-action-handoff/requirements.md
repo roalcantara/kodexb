@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @entry_action_handoff. Normative behaviour: Gherkin + unit specs. -->
 
 # Entry action handoff — requirements
 

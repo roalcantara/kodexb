@@ -1,3 +1,4 @@
+// @entry_action_handoff
 import { describe, expect, it } from 'bun:test'
 import { mountRouteModule, rpcSpecPostJson, setupRpcRouteSpecSuite } from '@testing'
 import { runRoute } from '@testing/helpers/run_route.util'

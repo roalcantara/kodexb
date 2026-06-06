@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @shell_chrome. Normative behaviour: Gherkin + unit specs. -->
 # Shell chrome unification — Requirements
 
 **Spec slug:** `shell-chrome`

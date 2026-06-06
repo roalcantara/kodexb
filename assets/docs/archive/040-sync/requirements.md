@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @sync. Normative behaviour: Gherkin + unit specs. -->
 
 # Source sync resilience — Requirements
 

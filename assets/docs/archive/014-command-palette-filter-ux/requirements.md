@@ -1,4 +1,5 @@
 <!-- markdownlint-disable-file -->
+<!-- Shipped: catalog key @command_palette. Normative behaviour: Gherkin + unit specs. -->
 
 # Command palette and filter UX — requirements
 
