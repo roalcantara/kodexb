@@ -185,7 +185,7 @@ Add structured log lines: `frecency_snapshot_export` (counts),
 
 | Requirement | Feature file                                | Scenario                                            | Notes                                                     |
 | ----------- | ------------------------------------------- | --------------------------------------------------- | --------------------------------------------------------- |
-| SF-1        | `assets/features/e2e/sync_frecency.feature` | Frequently opened items keep their place after sync | `@spec:sync-frecency`; stretch — integration spec is gate |
+| SF-1        | `assets/features/e2e/sync_frecency.feature` | Frequently opened items keep their place after sync | `@sync`; stretch — integration spec is gate |
 | SF-2        | —                                           | —                                                   | Integration gate only this increment                      |
 | SF-3        | —                                           | —                                                   | Integration gate only this increment                      |
 

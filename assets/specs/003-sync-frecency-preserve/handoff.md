@@ -54,5 +54,5 @@ Record result in this table (date / operator / pass-fail) before merge.
 ## E2e (stretch)
 
 Integration spec is the release gate. Gherkin pilot:
-`assets/features/e2e/sync_frecency.feature` (`@spec:sync-frecency`). Step-catalog and
+`assets/features/e2e/sync_frecency.feature` (`@sync`). Step-catalog and
 fixture-manifest updates deferred until e2e steps are implemented.

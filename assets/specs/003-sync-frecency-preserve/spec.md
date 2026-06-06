@@ -158,7 +158,7 @@ sources, so I can trust that catalog content matches disk after sync.
 
 | Requirement | E2e tag               | Scenario (name only)                                |
 | ----------- | --------------------- | --------------------------------------------------- |
-| SF-1        | `@spec:sync-frecency` | Frequently opened items keep their place after sync |
+| SF-1        | `@sync` | Frequently opened items keep their place after sync |
 | SF-2        | —                     | No e2e this increment (integration gate)            |
 | SF-3        | —                     | No e2e this increment (integration gate)            |
 
