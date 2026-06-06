@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'bun:test'
 import type { TagResolution } from './tag.script.ts'
-import { layerFilter, playwrightGrepPattern, splitTaggedPaths, unionResolutions } from './tag.script.ts'
+import {
+  layerFilter,
+  lineHasCatalogTag,
+  playwrightGrepPattern,
+  splitTaggedPaths,
+  unionResolutions
+} from './tag.script.ts'
 
 describe('tag.lib', () => {
   it('splitTaggedPaths separates features and unit specs', () => {
@@ -45,5 +51,21 @@ describe('tag.lib', () => {
 
   it('playwrightGrepPattern escapes regex metacharacters', () => {
     expect(playwrightGrepPattern(['@command_palette', '@sync'])).toBe('@command_palette|@sync')
+  })
+
+  it('lineHasCatalogTag matches by token not substring', () => {
+    expect(lineHasCatalogTag('Feature: @sync_ui', '@sync')).toBe(false)
+    expect(lineHasCatalogTag('Feature: @sync', '@sync')).toBe(true)
+    expect(lineHasCatalogTag('// @sync_ui', '@sync')).toBe(false)
+    expect(lineHasCatalogTag('Feature: @sync @sync_ui', '@sync')).toBe(true)
+  })
+
+  it('lineHasCatalogTag does not match @spec: prefixed tags', () => {
+    expect(lineHasCatalogTag('Feature: @spec:sync', '@sync')).toBe(false)
+  })
+
+  it('lineHasCatalogTag with @ prefix or bare key both work', () => {
+    expect(lineHasCatalogTag('Feature: @command_palette', 'command_palette')).toBe(true)
+    expect(lineHasCatalogTag('Feature: @command_palette', '@command_palette')).toBe(true)
   })
 })

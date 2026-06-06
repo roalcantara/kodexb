@@ -12,6 +12,40 @@ import {
   loadCatalog
 } from './catalog.script.ts'
 
+export const CATALOG_TAG_TOKEN = /@([a-z][a-z0-9_]*)\b/g
+export const RESERVED_RUN_TAGS = new Set([
+  'smoke',
+  'regression',
+  'e2e',
+  'p0',
+  'p1',
+  'p2',
+  'wip',
+  'skip',
+  'only',
+  'bdd',
+  'gherkin'
+])
+
+export function extractCatalogRunTagsFromLine(line: string): string[] {
+  const tags: string[] = []
+  for (const match of line.matchAll(CATALOG_TAG_TOKEN)) {
+    const token = match[1]
+    const idx = match.index ?? 0
+    const after = line[idx + match[0].length]
+    if (after === ':') continue
+    if (!token || RESERVED_RUN_TAGS.has(token)) continue
+    tags.push(token)
+  }
+  return tags
+}
+
+export function lineHasCatalogTag(line: string, tag: string): boolean {
+  const key = tag.startsWith('@') ? tag.slice(1) : tag
+  const tokens = extractCatalogRunTagsFromLine(line)
+  return tokens.includes(key)
+}
+
 export type TagLayerFilter = {
   e2e: boolean
   unit: boolean
@@ -53,7 +87,8 @@ async function collectPathsMatchingTag(
   const texts = await Promise.all(candidates.map(full => Bun.file(full).text()))
   for (let i = 0; i < candidates.length; i++) {
     const candidate = candidates[i]
-    if (candidate && texts[i]?.includes(want)) {
+    const text = texts[i]
+    if (candidate && text && lineHasCatalogTag(text, want)) {
       matches.push(path.relative(root, candidate).replace(/\\/g, '/'))
     }
   }

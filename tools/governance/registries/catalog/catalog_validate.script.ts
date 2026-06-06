@@ -4,39 +4,19 @@ import { Glob } from 'bun'
 import { repoRoot } from '../../../support/lib/shared/repo_root.script.ts'
 import { type CatalogEntry, catalogPath, catalogRunTag, listCatalogKeys, loadCatalog } from './catalog.script.ts'
 import type { CatalogFinding, CatalogFindingCategory, CatalogValidatePayload } from './catalog_validate.types.ts'
-import { grepPathsWithTag, resolveTagKey, TAG_SCAN_PATHS } from './tag.script.ts'
+import {
+  extractCatalogRunTagsFromLine,
+  grepPathsWithTag,
+  lineHasCatalogTag,
+  resolveTagKey,
+  TAG_SCAN_PATHS
+} from './tag.script.ts'
+
+export { RESERVED_RUN_TAGS } from './tag.script.ts'
 
 export const ALLOWED_ENTRY_FIELDS = new Set(['title', 'status', 'specs', 'superseded_by'])
 export const FORBIDDEN_ENTRY_FIELDS = ['features', 'units', 'record'] as const
 export const CATALOG_KEY_PATTERN = /^[a-z][a-z0-9_]*$/
-export const RESERVED_RUN_TAGS = new Set([
-  'smoke',
-  'regression',
-  'e2e',
-  'p0',
-  'p1',
-  'p2',
-  'wip',
-  'skip',
-  'only',
-  'bdd',
-  'gherkin'
-])
-
-const CATALOG_TAG_TOKEN = /@([a-z][a-z0-9_]*)\b/g
-
-function extractCatalogRunTagsFromLine(line: string): string[] {
-  const tags: string[] = []
-  for (const match of line.matchAll(CATALOG_TAG_TOKEN)) {
-    const token = match[1]
-    const idx = match.index ?? 0
-    const after = line[idx + match[0].length]
-    if (after === ':') continue
-    if (!token || RESERVED_RUN_TAGS.has(token)) continue
-    tags.push(token)
-  }
-  return tags
-}
 
 function bumpSummary(summary: Record<string, number>, category: CatalogFindingCategory): void {
   summary[category] = (summary[category] ?? 0) + 1
@@ -112,7 +92,7 @@ async function validateTagPlacement(
   const first = await readFirstLine(full)
 
   if (relPath.endsWith('.feature')) {
-    if (!first.includes(tag)) {
+    if (!lineHasCatalogTag(first, tag)) {
       addFinding(
         findings,
         summary,
@@ -127,7 +107,7 @@ async function validateTagPlacement(
 
   if (relPath.includes('.spec.')) {
     const trimmed = first.trim()
-    if (!trimmed.startsWith('//') || !trimmed.includes(tag)) {
+    if (!trimmed.startsWith('//') || !lineHasCatalogTag(trimmed, tag)) {
       addFinding(
         findings,
         summary,
