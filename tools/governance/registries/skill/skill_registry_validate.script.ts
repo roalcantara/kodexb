@@ -206,7 +206,10 @@ export async function runValidate(root = gitRoot()): Promise<ValidatePayload> {
 
   const actualSkills = loadActualProjectSkills(root)
   if (actualSkills === null) {
-    addFinding(findings, summary, 'schema', 'skills CLI unavailable — cannot validate actual project installs')
+    // CI runners do not install the Skills CLI or project skill trees; YAML/lock checks still apply.
+    if (process.env.CI !== 'true') {
+      addFinding(findings, summary, 'schema', 'skills CLI unavailable — cannot validate actual project installs')
+    }
   } else {
     const expectedSkills = new Set<string>()
     for (const [name, skill] of Object.entries(skills)) {

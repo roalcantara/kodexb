@@ -63,7 +63,8 @@ export function writeSkillLock(root: string, lock: { version: number; skills: Re
 }
 
 export function loadActualProjectSkills(root: string): Set<string> | null {
-  const child = Bun.spawnSync(['skills', 'list', '--json'], { cwd: root })
+  if (Bun.which('skills') === null) return null
+  const child = Bun.spawnSync(['skills', 'list', '--json'], { cwd: root, stdout: 'pipe', stderr: 'pipe' })
   if (child.exitCode !== 0) return null
   try {
     const list = JSON.parse(new TextDecoder().decode(child.stdout)) as Array<{
