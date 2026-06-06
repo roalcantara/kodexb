@@ -28,29 +28,7 @@ jobs:
         env:
           BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.event.after }}
-        run: |
-          set -euo pipefail
-          if [[ "$BEFORE" == "0000000000000000000000000000000000000000000" ]]; then
-            echo "Initial push — skipping squash check."
-            exit 0
-          fi
-          subject="$(git log -1 --pretty=%s "$AFTER")"
-          if [[ "$subject" =~ \[skip\ ci\] ]]; then
-            echo "Skipping release — commit message contains [skip ci]"
-            exit 0
-          fi
-          if [[ "$subject" =~ ^Merge\ (pull\ request|branch) ]]; then
-            echo "::error::Merge commit detected on main: '$subject'."
-            echo "::error::Repository must require Squash and Merge only."
-            exit 1
-          fi
-          count="$(git log --oneline "$BEFORE..$AFTER" | wc -l | tr -d ' ')"
-          if [[ "$count" -gt 1 ]]; then
-            echo "::error::Push contains $count commits — likely Rebase and Merge."
-            echo "::error::Repository must require Squash and Merge only."
-            exit 1
-          fi
-          echo "OK: single squash commit on main."
+        run: bash tools/orchestration/scripts/check_squash_merge.sh "$BEFORE" "$AFTER"
 
       - uses: ./.github/actions/setup-bun-project
         with:
