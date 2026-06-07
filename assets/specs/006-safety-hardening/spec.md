@@ -60,6 +60,7 @@ for committed credentials so that a leak never reaches `main`.
 ### Acceptance criteria
 
 1. WHEN `mise run spec security --strict` is invoked and any tracked file contains a string matching the in-tree secrets regex set or a substring of length ≥ 20 whose Shannon entropy is ≥ 3.5 bits, THEN the script SHALL emit one `Finding` of severity `critical` per match and exit 1.
+   - **Exemption:** The Shannon entropy heuristic pass is SKIPPED for files with the `.md` extension to prevent false positives on documentation hashes; deterministic regex rules still apply to all tracked files.
    - **Measure:** Each fixture under `tools/governance/security/fixtures/secrets/*.bad.txt` produces ≥ 1 `Finding`; aggregate exit code is 1. Entropy threshold (3.5) and substring length (20) are declared as named constants in `tools/governance/security/checks/secrets.rules.ts`.
    - **Evidence:** `bun test --config /dev/null tools/governance/security/checks/secrets.check.spec.ts`.
 

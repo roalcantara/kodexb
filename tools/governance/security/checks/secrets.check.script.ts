@@ -66,15 +66,17 @@ export function runSecretsCheck(files: string[]): SecurityFinding[] {
       }
     }
 
-    for (const candidate of findEntropyCandidates(content)) {
-      findings.push({
-        id: `secret:entropy:${file}:${candidate.index}`,
-        severity: 'critical',
-        file,
-        line: lineFromOffset(content, candidate.index),
-        rule: 'high-entropy-string',
-        message: `High entropy token detected (len>=${ENTROPY_MIN_LENGTH})`
-      })
+    if (!repoPath.endsWith('.md')) {
+      for (const candidate of findEntropyCandidates(content)) {
+        findings.push({
+          id: `secret:entropy:${file}:${candidate.index}`,
+          severity: 'critical',
+          file,
+          line: lineFromOffset(content, candidate.index),
+          rule: 'high-entropy-string',
+          message: `High entropy token detected (len>=${ENTROPY_MIN_LENGTH})`
+        })
+      }
     }
   }
 
