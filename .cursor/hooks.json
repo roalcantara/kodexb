@@ -3,7 +3,21 @@
   "hooks": {
     "sessionStart": [
       {
+        "command": "bun .cursor/hooks/governance_audit.session_start.ts"
+      },
+      {
         "command": "bun .cursor/hooks/electrobun_session_start.ts"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "bun .cursor/hooks/governance_audit.session_end.ts"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "bun .cursor/hooks/governance_audit.prompt.ts",
+        "timeout": 10
       }
     ]
   }

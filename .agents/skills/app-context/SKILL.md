@@ -13,7 +13,7 @@ wrong validation, and naming drift.
 
 ## Skill locations
 
-- **Project-owned skills** (this file, `app-rpc`, `app-testing`, `app-quality-gate`):
+- **Project-owned skills** (this file, `app-rpc`, `app-testing`, `app-quality-gate`, `app-review-handoff`):
   read from **`<repo>/.agents/skills/<skill-id>/SKILL.md`** (this repository).
 - **Project skill ledger**:
   [`assets/guides/SKILLS.md`](../../../assets/guides/SKILLS.md) records which
@@ -140,15 +140,15 @@ Full tokens and patterns:
 
 ## Deep dives (open as needed)
 
-| Topic              | Guide                                                                                               |
-| ------------------ | --------------------------------------------------------------------------------------------------- |
+| Topic              | Guide                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
 | Architecture + RPC | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md) + [`ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md) |
-| FCIS layer rules   | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md)                               |
-| Naming + SOLID     | [`assets/guides/CODESTYLE_GUIDE.md`](../../../assets/guides/CODESTYLE_GUIDE.md)                     |
-| Electrobun wiring  | [`assets/guides/ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md)                               |
-| Testing            | [`assets/guides/TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md) + **app-testing** skill |
-| Factories          | [`assets/guides/FISHERY_GUIDE.md`](../../../assets/guides/FISHERY_GUIDE.md)                         |
-| DoD / gate         | [`assets/guides/DoD.md`](../../../assets/guides/DoD.md) + **app-quality-gate** skill                |
+| FCIS layer rules   | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md)                                                           |
+| Naming + SOLID     | [`assets/guides/CODESTYLE_GUIDE.md`](../../../assets/guides/CODESTYLE_GUIDE.md)                                                 |
+| Electrobun wiring  | [`assets/guides/ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md)                                                           |
+| Testing            | [`assets/guides/TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md) + **app-testing** skill                             |
+| Factories          | [`assets/guides/FISHERY_GUIDE.md`](../../../assets/guides/FISHERY_GUIDE.md)                                                     |
+| DoD / gate         | [`assets/guides/DoD.md`](../../../assets/guides/DoD.md) + **app-quality-gate** skill                                            |
 
 ## Gotchas
 
@@ -168,33 +168,36 @@ Full tokens and patterns:
 
 ## Companion skills
 
-| Skill                | When                                                                                       |
-| -------------------- | ------------------------------------------------------------------------------------------ |
-| **app-rpc**          | Touching `rpc/server.ts`, `rpc/schemas.ts`, Eden client, or preview server routes.         |
-| **app-testing**      | Writing or changing any spec.                                                              |
-| **app-quality-gate** | Before declaring work done or committing.                                                  |
-| **electrobun-***     | Per [`.cursor/electrobun-skill-routing.md`](../../../.cursor/electrobun-skill-routing.md). |
+| Skill                  | When                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------ |
+| **app-rpc**            | Touching `rpc/server.ts`, `rpc/schemas.ts`, Eden client, or preview server routes.         |
+| **app-testing**        | Writing or changing any spec.                                                              |
+| **app-quality-gate**   | Before declaring work done or committing.                                                  |
+| **app-review-handoff** | After a worker completes a handoff prompt — AC Evidence review (terse).                    |
+| **electrobun-***       | Per [`.cursor/electrobun-skill-routing.md`](../../../.cursor/electrobun-skill-routing.md). |
 
 Optional companions stay subordinate to project-owned skills and guides:
 
 <!-- skills:optional-companions:start -->
-| Skill                              | When                                                                                   |
-| ---------------------------------- | -------------------------------------------------------------------------------------- |
-| **systematic-debugging**           | Investigating failing tests, gate failures, regressions, or unexpected behavior.       |
-| **elysia**                         | Checking Elysia route mechanics after loading app-rpc.                                 |
-| **receiving-code-review**          | Applying review feedback, especially when feedback is ambiguous or broad.              |
-| **requesting-code-review**         | Preparing a review handoff, PR, or larger completed change for scrutiny.               |
-| **mise-tasks**                     | Editing mise.toml, task dependencies, or multi-step project workflows.                 |
-| **mise-expert**                    | Editing mise tool versions or environment setup.                                       |
-| **ast-grep**                       | Authoring or debugging structural search and rewrite rules.                            |
-| **knip**                           | Resolving unused exports, files, dependencies, or knip configuration findings.         |
-| **jscpd**                          | Investigating duplication reports and planning small shared abstractions.              |
-| **dry-principle**                  | Deciding whether duplication warrants extraction.                                      |
-| **solid-principles**               | Reviewing class or module design.                                                      |
-| **react:components**               | Translating design artifacts into renderer components, adapted to project conventions. |
-| **stitch-design**                  | Design intake or prototypes, only under the prototype gate.                            |
-| **using-git-worktrees**            | Isolated parallel work, only when requested or approved.                               |
-| **verification-before-completion** | Final reminder only; app-quality-gate is the executable authority.                     |
+| Skill | When |
+| --- | --- |
+| **systematic-debugging** | Investigating failing tests, gate failures, regressions, or unexpected behavior. |
+| **elysia** | Checking Elysia route mechanics after loading app-rpc. |
+| **receiving-code-review** | Applying review feedback, especially when feedback is ambiguous or broad. |
+| **requesting-code-review** | Preparing a review handoff, PR, or larger completed change for scrutiny. |
+| **mise-tasks** | Editing mise.toml, task dependencies, or multi-step project workflows. |
+| **mise-expert** | Editing mise tool versions or environment setup. |
+| **ast-grep** | Authoring or debugging structural search and rewrite rules. |
+| **knip** | Resolving unused exports, files, dependencies, or knip configuration findings. |
+| **jscpd** | Investigating duplication reports and planning small shared abstractions. |
+| **dry-principle** | Deciding whether duplication warrants extraction. |
+| **solid-principles** | Reviewing class or module design. |
+| **react:components** | Translating design artifacts into renderer components, adapted to project conventions. |
+| **stitch-design** | Design intake or prototypes, only under the prototype gate. |
+| **using-git-worktrees** | Isolated parallel work, only when requested or approved. |
+| **verification-before-completion** | Final reminder only; app-quality-gate is the executable authority. |
+| **agent-governance** | Agent governance patterns for tool policy and audit design — subordinate to project specs and gates. |
+| **agentic-eval** | Evaluator-optimizer and rubric patterns for agent output quality — gates remain authoritative. |
 <!-- skills:optional-companions:end -->
 
 ---

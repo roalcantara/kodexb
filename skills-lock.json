@@ -1,6 +1,24 @@
 {
   "version": 1,
   "skills": {
+    "agent-governance": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/agent-governance/SKILL.md",
+      "computedHash": "a91eb8ef638422fa4ec457d81e270f79fe5040b41d7f137dba35016bc20529f5"
+    },
+    "agentic-eval": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/agentic-eval/SKILL.md",
+      "computedHash": "40771d7d389c1542e6cb995d75e516893466f01c3b66bc040b158ceb793d4bed"
+    },
+    "ai-team-orchestration": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/ai-team-orchestration/SKILL.md",
+      "computedHash": "8e2bc361f72d0616417883dd7fb9846824c93c3ce7c068e17dd5dbb4fb1584ad"
+    },
     "build-graph": {
       "source": "tirth8205/code-review-graph",
       "sourceType": "github",

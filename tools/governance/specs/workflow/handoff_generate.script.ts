@@ -10,6 +10,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { sliceIdFromAcTag } from '../../registries/catalog/tag.script.ts'
 import { UsageError, withUsage } from './usage.script.ts'
+import { generateRunId, WorkflowRunWriter } from './workflow_run.script.ts'
 
 const FOCUS_VALUES = ['gherkin', 'catalog', 'e2e-fix'] as const
 const WORKER_VALUES = ['opencode'] as const
@@ -41,6 +42,7 @@ export type DispatchResult = {
   writtenPath: string
   dispatched: boolean
   exitCode: number
+  bodyBytes: number
 }
 
 const ARGV_SAFE_THRESHOLD = 64 * 1024
@@ -362,8 +364,11 @@ export function dispatchToOpencode(
     which?: (bin: string) => string | null
     spawn?: (cmd: string[], opts?: { stdin?: string }) => { exitCode: number | null }
     log?: (msg: string) => void
+    writer?: WorkflowRunWriter
+    featureDir?: string
   } = {}
 ): DispatchResult {
+  const t0 = performance.now()
   const which = options.which ?? ((binName: string) => Bun.which(binName))
   const spawn =
     options.spawn ??
@@ -378,21 +383,40 @@ export function dispatchToOpencode(
   const log = options.log ?? ((m: string) => console.error(m))
 
   const bin = which('opencode')
+  const bodyBytes = Buffer.byteLength(promptBody, 'utf-8')
+  let result: DispatchResult
   if (!bin) {
     log(`[handoff-generate] opencode not on PATH; wrote ${filePath} (file-only mode)`)
-    return { writtenPath: filePath, dispatched: false, exitCode: 0 }
-  }
-
-  if (promptBody.length <= ARGV_SAFE_THRESHOLD) {
+    result = { writtenPath: filePath, dispatched: false, exitCode: 0, bodyBytes }
+  } else if (promptBody.length <= ARGV_SAFE_THRESHOLD) {
     const r = spawn(['opencode', 'run', promptBody])
-    return { writtenPath: filePath, dispatched: true, exitCode: r.exitCode ?? 1 }
+    result = { writtenPath: filePath, dispatched: true, exitCode: r.exitCode ?? 1, bodyBytes }
+  } else {
+    // Body too large for argv: stream via stdin.
+    const r = spawn(['opencode', 'run'], { stdin: promptBody })
+    result = { writtenPath: filePath, dispatched: true, exitCode: r.exitCode ?? 1, bodyBytes }
   }
-  // Body too large for argv: stream via stdin.
-  const r = spawn(['opencode', 'run'], { stdin: promptBody })
-  return { writtenPath: filePath, dispatched: true, exitCode: r.exitCode ?? 1 }
+  if (options.writer) {
+    options.writer.emit({
+      type: 'dispatch_invoked',
+      run_id: options.writer.runId,
+      ts: new Date().toISOString(),
+      feature_dir: options.featureDir ?? '',
+      duration_ms: performance.now() - t0,
+      opencode_found: !!bin,
+      body_bytes: result.bodyBytes,
+      exit_code: result.exitCode,
+      session_id: null
+    })
+  }
+  return result
 }
 
-export function run(argv: string[]): number {
+export function run(
+  argv: string[],
+  options?: { writer?: WorkflowRunWriter; which?: (bin: string) => string | null }
+): number {
+  const t0 = performance.now()
   const parsed = withUsage(() => parseArgs(argv), 'handoff-generate', usageString())
   if ('exitCode' in parsed) return parsed.exitCode
   const args = parsed.value
@@ -400,6 +424,9 @@ export function run(argv: string[]): number {
   const loaded = withUsage(() => loadFeatureContext(args.featureDir), 'handoff-generate', usageString())
   if ('exitCode' in loaded) return loaded.exitCode
   const ctx = loaded.value
+
+  const writer =
+    options?.writer ?? new WorkflowRunWriter(generateRunId(slugFromFeatureDir(args.featureDir)), args.featureDir)
 
   const { handoff, plan, slug, catalogKey } = ctx
   const acRows = parseHandoffAcTable(handoff)
@@ -433,9 +460,21 @@ export function run(argv: string[]): number {
   writeFileSync(outPath, body, 'utf-8')
   console.log(outPath)
 
+  writer.emit({
+    type: 'handoff_written',
+    run_id: writer.runId,
+    ts: new Date().toISOString(),
+    feature_dir: args.featureDir,
+    duration_ms: performance.now() - t0,
+    path: outPath,
+    focus: args.focus,
+    ac_row_count: acRows.length,
+    has_e2e_block: acRows.some(r => r.isOperatorSmoke)
+  })
+
   const wantDispatch = args.dispatch || process.env.ORCHESTRATED_HANDOFF_DISPATCH === '1'
   if (wantDispatch) {
-    const result = dispatchToOpencode(body, outPath)
+    const result = dispatchToOpencode(body, outPath, { writer, featureDir: args.featureDir, which: options?.which })
     return result.exitCode
   }
   return 0

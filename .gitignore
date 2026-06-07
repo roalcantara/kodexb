@@ -189,6 +189,8 @@ report/
 !.agents/skills/app-testing/**
 !.agents/skills/app-logging/
 !.agents/skills/app-logging/**
+!.agents/skills/app-review-handoff/
+!.agents/skills/app-review-handoff/**
 .claude/skills/*
 
 # code coverage
@@ -242,3 +244,4 @@ tools/benchmarks/results/latest.json
 # Local git worktrees (created by using-git-worktrees skill for isolated demos / spikes)
 .worktrees/
 graphify-out/
+.vscode/settings.json

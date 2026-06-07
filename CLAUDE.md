@@ -81,6 +81,7 @@ Load these at the start of any project task:
 - `app-rpc` — when touching Elysia routes or the Eden Treaty client
 - `app-testing` — when writing or modifying tests
 - `app-quality-gate` — before marking anything done
+- `app-review-handoff` — after a worker completes a handoff prompt (AC + Evidence review)
 
 Optional companion skills for narrower situations:
 
@@ -100,6 +101,8 @@ Optional companion skills for narrower situations:
 - `stitch-design` - for design intake or prototypes, under the prototype gate
 - `using-git-worktrees` - only when isolated parallel work is requested or approved
 - `verification-before-completion` - as a reminder; app-quality-gate remains the executable authority
+- `agent-governance` - when designing agent tool policy, trust boundaries, or audit trails for orchestrated-handoff and workflow tooling
+- `agentic-eval` - when designing rubrics, reflection loops, or evaluator-optimizer pipelines for agent outputs
 <!-- skills:optional-companions:end -->
 
 Skill adoption and routing rationale lives in

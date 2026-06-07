@@ -110,17 +110,18 @@ Catalog membership: [`assets/catalog/catalog.yaml`](../catalog/catalog.yaml) + `
 
 ## Spec Kit command map
 
-| Phase        | Cursor skill             | Primary artifact                  |
-| ------------ | ------------------------ | --------------------------------- |
-| Constitution | `/speckit-constitution`  | `.specify/memory/constitution.md` |
-| Specify      | `/speckit-specify`       | `spec.md`                         |
-| Clarify      | `/speckit-clarify`       | `spec.md` updates                 |
-| Plan         | `/speckit-plan`          | `plan.md`                         |
-| Tasks        | `/speckit-tasks`         | `tasks.md`                        |
-| Implement    | `/speckit-implement`     | `src/` + tests                    |
-| Checklist    | `/speckit-checklist`     | `checklists/`                     |
-| Analyze      | `/speckit-analyze`       | consistency report                |
-| Issues       | `/speckit-taskstoissues` | GitHub issues (optional)          |
+| Phase          | Cursor skill             | Primary artifact                   |
+| -------------- | ------------------------ | ---------------------------------- |
+| Constitution   | `/speckit-constitution`  | `.specify/memory/constitution.md`  |
+| Specify        | `/speckit-specify`       | `spec.md`                          |
+| Clarify        | `/speckit-clarify`       | `spec.md` updates                  |
+| Plan           | `/speckit-plan`          | `plan.md`                          |
+| Tasks          | `/speckit-tasks`         | `tasks.md`                         |
+| Implement      | `/speckit-implement`     | `src/` + tests                     |
+| Review handoff | `app-review-handoff`     | chat report + `tmp/reviews/` audit |
+| Checklist      | `/speckit-checklist`     | `checklists/`                      |
+| Analyze        | `/speckit-analyze`       | consistency report                 |
+| Issues         | `/speckit-taskstoissues` | GitHub issues (optional)           |
 
 Resume an interrupted workflow: `mise run spec resume` (wraps `specify workflow resume`).
 
@@ -141,7 +142,8 @@ specify → clarify → checklist → plan
   → analyze (tasks pass)    ← advisory; catches task/handoff/Evidence drift
   → handoff-generate        ← Bun script (orchestrator, NOT in workflow YAML)
   → implement
-  → review                  ← mise run spec gate
+  → review-handoff          ← app-review-handoff skill (AC + Evidence; advisory)
+  → review                  ← mise run spec gate (deterministic EARS)
 ```
 
 Both analyze passes use the same `speckit.analyze` command. The
@@ -153,8 +155,8 @@ orchestrator's `--next` works when the operator mixes `mise` and manual
 
 - `checklists/analyze-plan.md` — written after plan-pass analyze
 - `checklists/analyze-tasks.md` — written after tasks-pass analyze
-- `checklists/implement-done.md` — written after `speckit.implement` and unit
-  checks pass; signals `--next` to advance to `mise run spec gate`
+- `checklists/implement-done.md` — written after `speckit.implement`, review-handoff
+  APPROVE, and unit checks pass; signals `--next` to advance to `mise run spec gate`
 
 ### Commands
 
@@ -210,6 +212,96 @@ The file is always written to `tmp/handoffs/` first. If opencode is not on
 `$PATH`, the script warns on stderr and exits 0 (file-only mode). If
 `opencode run` fails, its exit code propagates.
 
+### Runs CLI — event inspection
+
+Workflow events are written as newline-delimited JSONL under
+`tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.ndjson`. The `runs` subcommand
+inspects and manages them:
+
+```bash
+# Show the 20 most recent runs with slug/phase/duration/result
+mise run spec runs list
+
+# Stream all events for a specific run (byte-identical to disk)
+mise run spec runs show <run_id>
+
+# Stream the most recent run for today (blocking on EOF)
+mise run spec runs tail
+
+# Remove all runs older than 30 days
+mise run spec runs prune
+```
+
+Retention: `prune` removes date directories older than 30 days. `list` also
+triggers a best-effort lazy prune as a side effect (silent — does not fail
+if the directory is locked or missing).
+
+Implementation: [`tools/governance/specs/workflow/runs_cli.script.ts`](../../tools/governance/specs/workflow/runs_cli.script.ts).
+
+### Review handoff — post-implement verification
+
+After **implement** (primary agent or opencode worker), verify the deliverable
+against the handoff contract before `mise run spec gate` and commit.
+
+**Skill:** [`.agents/skills/app-review-handoff/SKILL.md`](../../.agents/skills/app-review-handoff/SKILL.md)
+
+| Step | Action                                                                                        |
+| ---- | --------------------------------------------------------------------------------------------- |
+| 1    | Load `app-context` + `app-review-handoff`                                                     |
+| 2    | `mise run spec review-handoff prepare --feature … --json` (optional deterministic prep)       |
+| 3    | Open feature `handoff.md` AC tracker (or `tmp/handoffs/opencode-*` / `review-*`)              |
+| 4    | Run each row's **Evidence** command; record pass/fail                                         |
+| 5    | Map `git diff BASE..HEAD` to AC rows and `plan.md` touch list                                 |
+| 6    | Emit **chat** report (failures-first; no tables) + patch `tmp/reviews/review-{slug}-{sha}.md` |
+| 7    | On REQUEST_CHANGES: `tmp/handoffs/review-{slug}-{focus}-{sha}.md` fix handoff                 |
+| 8    | Operator runs `bash .agents/skills/app-quality-gate/scripts/gate.sh` before commit            |
+
+**CLI (deterministic extractors — do not replace the skill verdict):**
+
+```bash
+mise run spec review-handoff classify [--base SHA] [--head SHA] [--json]
+mise run spec review-handoff extract-evidence --feature assets/specs/NNN-slug [--json]
+mise run spec review-handoff prepare --feature assets/specs/NNN-slug [--base SHA] [--head SHA] [--json]
+mise run spec review-handoff scaffold-audit --feature assets/specs/NNN-slug [--base SHA] [--head HEAD] [--json]
+```
+
+Implementation: `tools/governance/specs/workflow/review_handoff.script.ts`.
+
+**Inline (operator):** same Cursor session — ask to review the handoff on the
+current branch.
+
+**Dispatch (reviewer subagent):** fresh session with handoff prompt + SHAs only;
+read-only, no code edits.
+
+**Not a substitute for:**
+
+- `/speckit-analyze` (pre-implement spec/plan/tasks consistency)
+- `mise run spec lint/trace/gate` (normative spec documents)
+- `app-quality-gate` (lint + src tests + DoD)
+
+**Review skill routing** (same cap rule as plan routing — max 4 skills including
+`app-context`):
+
+| Review touches…           | Load                                       |
+| ------------------------- | ------------------------------------------ |
+| `src/shell/app`, RPC      | `app-rpc`                                  |
+| `src/shell/renderer`, CSS | `STYLING_GUIDE.md`                         |
+| Specs / BDD / `bdd/`      | `app-testing` + BDD/TESTING guides         |
+| `tools/governance/`       | `mise-tasks`                               |
+| Electrobun main / config  | `electrobun-best-practices` + routed skill |
+| Blast radius              | CRG MCP (see [`CRG.md`](CRG.md))           |
+
+Governance handoffs often require
+`bun test --config /dev/null tools/governance/specs/workflow/` — `gate.sh` does
+not run those tests by default.
+
+After review-handoff **APPROVE** and a green quality gate:
+
+```bash
+touch assets/specs/NNN-slug/checklists/implement-done.md
+mise run spec workflow orchestrated-handoff --feature assets/specs/NNN-slug --next
+```
+
 ### Review-spec gate — deterministic EARS check
 
 LLM advisory skills (`speckit.clarify`, `speckit.checklist`, `speckit.analyze`)
@@ -233,12 +325,12 @@ Loading every skill in `SKILLS.yaml` floods plan context with irrelevant
 material. The planner SHOULD load **at most 4 skills** (the operator may
 explicitly expand scope), chosen from the table below.
 
-| Plan touches…                       | Load skills (read each `SKILL.md`)                   |
-| ----------------------------------- | ---------------------------------------------------- |
-| `src/shell/app`, RPC                | `app-context`, `app-rpc`                             |
-| `src/shell/renderer`, CSS           | `app-context`, plus `STYLING_GUIDE.md` reference     |
-| Gherkin / BDD (`assets/features/`)  | `app-context`, `app-testing`, `BDD_GUIDE.md`         |
-| `tools/governance/` only            | `app-context`, `mise-tasks`                          |
+| Plan touches…                       | Load skills (read each `SKILL.md`)                    |
+| ----------------------------------- | ----------------------------------------------------- |
+| `src/shell/app`, RPC                | `app-context`, `app-rpc`                              |
+| `src/shell/renderer`, CSS           | `app-context`, plus `STYLING_GUIDE.md` reference      |
+| Gherkin / BDD (`assets/features/`)  | `app-context`, `app-testing`, `BDD_GUIDE.md`          |
+| `tools/governance/` only            | `app-context`, `mise-tasks`                           |
 | Electrobun / main process / windows | `electrobun-best-practices` + routed Electrobun skill |
 
 **Cap rule:** Maximum 4 skills unless operator explicitly expands scope. Never
@@ -247,6 +339,14 @@ explicitly expand scope), chosen from the table below.
 Out of scope: automatic skill CLI install and LLM-based skill classification
 (both v2). The upstream `speckit-plan` skill is **not** forked in this repo;
 this section is the kb-side compatibility note (per OHW-7 AC2).
+
+### Review skill routing
+
+Same **cap rule** as plan routing: load **at most 4 skills** including
+`app-context`. Full table and terse output rules:
+[`.agents/skills/app-review-handoff/SKILL.md`](../../.agents/skills/app-review-handoff/SKILL.md).
+
+Never load every skill in `SKILLS.yaml` for a review pass.
 
 ### Normative quartet
 

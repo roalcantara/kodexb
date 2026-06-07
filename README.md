@@ -261,7 +261,7 @@ route in `rpc/server.ts` must be mirrored there ([`CLAUDE.md`](CLAUDE.md)).
 | **ImportService**           | `src/shell/app/db/import.service.ts` | Walks sources dir, validates YAML, upserts SQLite, rebuilds FTS — transactional bulk path.                                                                                                                                      |
 | **Repository**              | `src/shell/app/db/*.repository.ts`   | Typed SQL accessors; routes must not import repositories directly (go through **App**).                                                                                                                                         |
 | **Electrobun IPC**          | `rpc/host.ts`                        | Bridges Elysia handlers to the webview RPC channel (`app-app`).                                                                                                                                                                 |
-| **Preview server**          | `tools/preview/server.script.ts`            | HTTP mirror of production RPC for Playwright / local UI smoke tests.                                                                                                                                                            |
+| **Preview server**          | `tools/preview/server.script.ts`     | HTTP mirror of production RPC for Playwright / local UI smoke tests.                                                                                                                                                            |
 
 ### Project definitions and agent routing
 
@@ -281,6 +281,29 @@ Skill routing follows one rule of thumb: project-specific guidance wins. Load
 `app-testing`, `app-quality-gate`, or the routed Electrobun skill when the work
 calls for them.
 
+After a **worker completes a handoff prompt** (`handoff.md` or
+`tmp/handoffs/*.md`), load **`app-review-handoff`** to verify AC Evidence and
+emit terse findings before merge. It complements — does not replace —
+`app-quality-gate` and `mise run spec gate`.
+
+| Skill                                                              | When                                          |
+| ------------------------------------------------------------------ | --------------------------------------------- |
+| [`app-context`](.agents/skills/app-context/SKILL.md)               | Any project task                              |
+| [`app-rpc`](.agents/skills/app-rpc/SKILL.md)                       | Elysia routes, Eden Treaty, TypeBox transport |
+| [`app-testing`](.agents/skills/app-testing/SKILL.md)               | Specs, fixtures, BDD harnesses                |
+| [`app-quality-gate`](.agents/skills/app-quality-gate/SKILL.md)     | Before commit or declaring done               |
+| [`app-review-handoff`](.agents/skills/app-review-handoff/SKILL.md) | After worker handoff — AC + Evidence review   |
+| [SDD workflow](assets/guides/SDD_WORKFLOW_GUIDE.md)                | Spec Kit phases, orchestrated-handoff, gates  |
+
+Review-handoff CLI (deterministic prep before the LLM review pass):
+
+```bash
+mise run spec review-handoff classify --json
+mise run spec review-handoff extract-evidence --feature assets/specs/NNN-slug
+mise run spec review-handoff prepare --feature assets/specs/NNN-slug --json
+mise run spec review-handoff scaffold-audit --feature assets/specs/NNN-slug
+```
+
 `mise run skill install` restores Skills CLI-managed project skills from
 [skills-lock.json][27] into `.agents/skills/`. Optional global companions stay
 under `$HOME/.agents/skills/` unless the skill registry marks them as project
@@ -290,18 +313,18 @@ skills.
 
 Product rules for the list shell (normative for implementation). Visual reference (non-normative): [raycast.list_filter_opened.png](assets/wireframe/references/raycast.list_filter_opened.png).
 
-| Shortcut                                                     | Action                                                                                                                                                                                                                                                 |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **⌘P** / **Ctrl+P**                                          | Toggle **command palette**. Opening the palette **closes** the filter overlay if it is open.                                                                                                                                                           |
-| **⌘K** / **Ctrl+K**                                          | Toggle **filter** overlay. Opening the filter **closes** the palette if it is open.                                                                                                                                                                    |
-| **⌘P** / **⌘K** while **settings** or **task sheet** is open | **No-op** (same suppression family as list nav).                                                                                                                                                                                                       |
-| **Filter** — live apply                                      | Changes apply immediately (`onChange`). **Esc**, **click-outside**, and **⌘K** only **close** the overlay — **no** staged undo of filter state.                                                                                                        |
-| **Filter** — **↑/↓**                                         | Move highlight in a **flat** filter list only; **do not** change main list **`selectedId`**.                                                                                                                                                           |
-| **Filter** — **Enter** (commit path)                         | Compare current `{ types, tags, taskView }` to a **snapshot taken when the overlay opened** (tags sorted for equality). **Unchanged** → neutral toast, close, restore focus. **Changed** → optional success toast, close, restore focus.               |
-| **Full detail** + filter **Enter** + **changed**             | Same as commit path, and **also** leave full detail for **list view** (e.g. `closeToList`). **Esc** / toggle / click-outside without that Enter path → close overlay only, **no** forced list view.                                                    |
-| **Palette** — **↑/↓**                                        | Palette internal navigation only (unchanged); **not** main list selection.                                                                                                                                                                             |
-| **Palette** — actions                                        | **Entry-first** sections: This entry → Clipboard → Source → Library → App. With **`selectedId === null`**: Library (Sync, New Task) then App (Quit). Headers are non-selectable. |
-| **Implementation**                                           | Prefer **`keydown` capture** on `window` (or one coordinator). Rename legacy **`cmdk_palette`** / **`app-cmdk-*`** to **`command_palette`** / **`app-command-palette-*`**.                                                                             |
+| Shortcut                                                     | Action                                                                                                                                                                                                                                   |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **⌘P** / **Ctrl+P**                                          | Toggle **command palette**. Opening the palette **closes** the filter overlay if it is open.                                                                                                                                             |
+| **⌘K** / **Ctrl+K**                                          | Toggle **filter** overlay. Opening the filter **closes** the palette if it is open.                                                                                                                                                      |
+| **⌘P** / **⌘K** while **settings** or **task sheet** is open | **No-op** (same suppression family as list nav).                                                                                                                                                                                         |
+| **Filter** — live apply                                      | Changes apply immediately (`onChange`). **Esc**, **click-outside**, and **⌘K** only **close** the overlay — **no** staged undo of filter state.                                                                                          |
+| **Filter** — **↑/↓**                                         | Move highlight in a **flat** filter list only; **do not** change main list **`selectedId`**.                                                                                                                                             |
+| **Filter** — **Enter** (commit path)                         | Compare current `{ types, tags, taskView }` to a **snapshot taken when the overlay opened** (tags sorted for equality). **Unchanged** → neutral toast, close, restore focus. **Changed** → optional success toast, close, restore focus. |
+| **Full detail** + filter **Enter** + **changed**             | Same as commit path, and **also** leave full detail for **list view** (e.g. `closeToList`). **Esc** / toggle / click-outside without that Enter path → close overlay only, **no** forced list view.                                      |
+| **Palette** — **↑/↓**                                        | Palette internal navigation only (unchanged); **not** main list selection.                                                                                                                                                               |
+| **Palette** — actions                                        | **Entry-first** sections: This entry → Clipboard → Source → Library → App. With **`selectedId === null`**: Library (Sync, New Task) then App (Quit). Headers are non-selectable.                                                         |
+| **Implementation**                                           | Prefer **`keydown` capture** on `window` (or one coordinator). Rename legacy **`cmdk_palette`** / **`app-cmdk-*`** to **`command_palette`** / **`app-command-palette-*`**.                                                               |
 
 ### Keyboard — shortcuts quick-lookup (⌘/)
 

@@ -7,6 +7,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { parseHandoffAcTable } from './handoff_generate.script.ts'
 import { UsageError, withUsage } from './usage.script.ts'
+import { filesetFingerprint, generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow_run.script.ts'
 
 export type FileSet = {
   spec: boolean
@@ -272,15 +273,19 @@ export function runLint(
   return r.exitCode ?? 1
 }
 
-export function run(argv: string[]): number {
-  const parsed = withUsage(() => parseArgs(argv), 'spec workflow', usageString())
-  if ('exitCode' in parsed) return parsed.exitCode
-  const args = parsed.value
+export function run(argv: string[], options?: { writer?: WorkflowRunWriter }): number {
+  const t0 = performance.now()
+  const ar = withUsage(() => parseArgs(argv), 'spec workflow', usageString())
+  if ('exitCode' in ar) return ar.exitCode
+  const args = ar.value
 
   if (!existsSync(args.featureDir)) {
     console.error(`spec workflow: feature dir not found: ${args.featureDir}`)
     return 2
   }
+
+  const writer =
+    options?.writer ?? new WorkflowRunWriter(generateRunId(slugFromFeatureDir(args.featureDir)), args.featureDir)
 
   if (args.lint) return runLint(args.featureDir)
 
@@ -293,9 +298,18 @@ export function run(argv: string[]): number {
     }
     const handoffMd = readFileSync(handoffPath, 'utf-8')
     const planMd = existsSync(planPath) ? readFileSync(planPath, 'utf-8') : null
-    const slug = path.basename(args.featureDir).replace(/^\d+-/, '')
+    const slug = slugFromFeatureDir(args.featureDir)
     const subtasks = buildSubtaskManifest({ featureDir: args.featureDir, slug, handoffMd, planMd })
     process.stdout.write(renderManifestXml(subtasks))
+    writer.emit({
+      type: 'manifest_emitted',
+      run_id: writer.runId,
+      ts: new Date().toISOString(),
+      feature_dir: args.featureDir,
+      duration_ms: performance.now() - t0,
+      subtask_types: subtasks.map(s => s.type),
+      subtask_count: subtasks.length
+    })
     return 0
   }
 
@@ -306,12 +320,24 @@ export function run(argv: string[]): number {
     const planPath = path.join(args.featureDir, 'plan.md')
     const handoffMd = readFileSync(handoffPath, 'utf-8')
     const planMd = existsSync(planPath) ? readFileSync(planPath, 'utf-8') : null
-    const slug = path.basename(args.featureDir).replace(/^\d+-/, '')
+    const slug = slugFromFeatureDir(args.featureDir)
     return buildSubtaskManifest({ featureDir: args.featureDir, slug, handoffMd, planMd }).some(
       s => s.type === 'gherkin-bdd-handoff'
     )
   }
   const next = detectPhase(files, args.featureDir, probe)
+  writer.emit({
+    type: 'phase_decided',
+    run_id: writer.runId,
+    ts: new Date().toISOString(),
+    feature_dir: args.featureDir,
+    duration_ms: performance.now() - t0,
+    fileset_fingerprint: filesetFingerprint(files),
+    manifest_needs_handoff: probe(),
+    phase: next.phase,
+    command: next.command,
+    focus_hint: next.focusHint ?? null
+  })
   if (next.focusHint) {
     console.log(`${next.command}    # ${next.focusHint}`)
   } else {

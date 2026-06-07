@@ -108,6 +108,20 @@ jobs:
           fail_on_failure: true
           require_tests: true
 
+  perf:
+    if: ${{ !github.event.pull_request.draft }}
+    name: Perf - Workflow observability baseline check
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-bun-project
+        with:
+          setup_mode: mise
+      - name: Check baseline or create initial baseline
+        run: mise run perf workflow-observability
+
   e2e-smoke:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
     name: E2E Smoke - Runs the Playwright BDD smoke suite
@@ -233,7 +247,7 @@ jobs:
     # is skipped when any needed job is skipped (GitHub default success() gate).
     name: Build - Smoke build (unsigned)
     runs-on: ubuntu-24.04
-    needs: [hk, test, cst]
+    needs: [hk, test, cst, perf]
     if: >-
       always() &&
       !github.event.pull_request.draft &&

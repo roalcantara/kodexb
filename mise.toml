@@ -19,6 +19,8 @@ shellcheck = "latest"
 [env]
 HK_MISE = "1"
 HK_PKL_BACKEND = "pklr"
+GOVERNANCE_LEVEL="standard"
+BLOCK_ON_THREAT="true"
 
 [tasks]
 "project" = { description = "Manage setup, dependencies, cleanup, icons, repository, and local maintenance", usage = '''
@@ -324,14 +326,26 @@ HK_PKL_BACKEND = "pklr"
       arg "[slice]" help="Optional AC slice id (e.g. sf1ac1 maps to @ac:SF-1_AC1)"
     }
   ''', run = "bun tools/bin/test.script.ts" }
-"perf" = { description = "Run preview-server performance benchmark workflows", usage = '''
+"perf" = { description = "Run performance benchmark workflows (preview-server, workflow-observability)", usage = '''
     cmd "run" {
       flag "--port <port>" default="3457" help="Preview server port for run action"
     }
     cmd "baseline" {}
     cmd "compare" {}
     cmd "open" {}
+    cmd "workflow-observability" {
+      flag "--regression-pct <n>" default="20" help="Baseline p95 %% floor for regression delta"
+      flag "--regression-min-delta-ms <n>" default="0.25" help="Min absolute p95 delta (ms) before regression"
+      flag "--warmup <n>" default="10" help="Warmup iterations"
+      flag "--iterations <n>" default="100" help="Sample count"
+      flag "--absolute-p95-ms <label=ms>" help="Override WOBS absolute p95 cap (repeatable)"
+      flag "--no-regression" help="Skip baseline comparison; still writes baseline JSON"
+      flag "--no-absolute-limits" help="Skip WOBS absolute p95 caps"
+    }
   ''', run = "bun tools/metrics/harnesses/perf/perf.script.ts" }
+"hooks" = { description = "Run tests for Cursor agent hooks (.cursor/hooks/)", usage = '''
+    cmd "governance-audit" help="Governance audit threat-pattern unit tests"
+  ''', run = "bun tools/bin/hooks.script.ts" }
 "_icons" = { description = "Check and optionally fix SVG icon contrast", hide = true, usage = '''
     cmd "check" {}
     flag "--scope <scope>" help="Check scope" default="all" { choices "all" "brand" }
@@ -1427,6 +1441,20 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       flag "--worker <name>" default="opencode" help="v1: opencode only"
       flag "--dispatch" help="Pipe prompt to opencode run (also enabled by ORCHESTRATED_HANDOFF_DISPATCH=1)"
       flag "--dry-run" help="Print prompt to stdout; do not write file"
+    }
+    cmd "runs" {
+      arg "<action>" help="list|show|tail|prune"
+      flag "--feature <dir>" help="Filter by feature directory"
+      arg "[runId]" help="Run ID for show/tail"
+    }
+    cmd "review-handoff" {
+      arg "<action>" help="classify|extract-evidence|prepare|scaffold-audit"
+      flag "--feature <dir>" help="Feature dir (default handoff: handoff.md)"
+      flag "--handoff <path>" help="Handoff markdown path (overrides --feature default)"
+      flag "--base <sha>" default="HEAD~1" help="Git base for classify/prepare"
+      flag "--head <sha>" default="HEAD" help="Git head for classify/prepare"
+      flag "--focus <kind>" help="implement-src|gherkin-bdd|governance-tools|docs-only|mixed"
+      flag "--json" help="Machine-readable JSON output"
     }
   ''', run = "bun tools/bin/spec.script.ts" }
 "catalog" = { description = "Shipped-feature registry (catalog.yaml metadata)", usage = '''

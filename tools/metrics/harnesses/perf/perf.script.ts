@@ -59,6 +59,25 @@ type BenchmarkResult = {
   summary: 'PASS' | 'FAIL'
 }
 type SpawnSyncOptions = NonNullable<Parameters<typeof Bun.spawnSync>[1]>
+
+function envBool(name: string): boolean {
+  const v = process.env[name]
+  return v === '1' || v === 'true' || v === 'yes'
+}
+
+function workflowObservabilityArgs(): string[] {
+  const args: string[] = []
+  if (process.env.usage_regression_pct) args.push('--regression-pct', process.env.usage_regression_pct)
+  if (process.env.usage_regression_min_delta_ms) {
+    args.push('--regression-min-delta-ms', process.env.usage_regression_min_delta_ms)
+  }
+  if (process.env.usage_warmup) args.push('--warmup', process.env.usage_warmup)
+  if (process.env.usage_iterations) args.push('--iterations', process.env.usage_iterations)
+  if (process.env.usage_absolute_p95_ms) args.push('--absolute-p95-ms', process.env.usage_absolute_p95_ms)
+  if (envBool('usage_no_regression')) args.push('--no-regression')
+  if (envBool('usage_no_absolute_limits')) args.push('--no-absolute-limits')
+  return args
+}
 type LatencySample = { p50: number; p99: number }
 type BenchSamples = {
   p1: number
@@ -349,6 +368,17 @@ async function main(): Promise<void> {
     open: async () => {
       const { timestamp } = await requireJsonAt(latestPath(), 'No latest.json - run `mise run perf run` first')
       const child = Bun.spawnSync(['open', path.join(RUNS_DIR, isoSlug(timestamp))])
+      process.exit(child.exitCode ?? 0)
+    },
+    'workflow-observability': () => {
+      const child = Bun.spawnSync(
+        [
+          'bun',
+          path.join(ROOT, 'tools/metrics/harnesses/perf/workflow_observability.perf.script.ts'),
+          ...workflowObservabilityArgs()
+        ],
+        { cwd: ROOT, stdio: ['ignore', 'inherit', 'inherit'] }
+      )
       process.exit(child.exitCode ?? 0)
     }
   } as const
