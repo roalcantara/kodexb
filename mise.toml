@@ -1447,6 +1447,12 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       flag "--feature <dir>" help="Filter by feature directory"
       arg "[runId]" help="Run ID for show/tail"
     }
+    cmd "audit" {
+      flag "--strict" help="Exit non-zero on error-level findings"
+      flag "--json" help="Machine-readable JSON output"
+      flag "--raw" help="Plain text output (no gum styling)"
+      arg "<feature_dir>" help="Feature dir e.g. assets/specs/005-workflow-observability"
+    }
     cmd "review-handoff" {
       arg "<action>" help="classify|extract-evidence|prepare|scaffold-audit"
       flag "--feature <dir>" help="Feature dir (default handoff: handoff.md)"

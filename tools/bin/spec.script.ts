@@ -120,6 +120,14 @@ function main(): void {
       spawnInherit(['bun', `${WORKFLOW}/runs_cli.script.ts`, ...args], root)
       break
     }
+    case 'audit': {
+      const args: string[] = [process.env.usage_feature_dir ?? '']
+      if (envBool('usage_strict')) args.push('--strict')
+      if (envBool('usage_json')) args.push('--json')
+      if (envBool('usage_raw')) args.push('--raw')
+      spawnInherit(['bun', `${SPECS}/audit.script.ts`, ...args.filter(Boolean)], root)
+      break
+    }
     case 'review-handoff': {
       const args: string[] = [process.env.usage_action ?? '']
       if (process.env.usage_feature) args.push('--feature', process.env.usage_feature)

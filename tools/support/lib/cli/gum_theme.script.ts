@@ -7,6 +7,10 @@
  * `NO_COLOR` when the caller has opted out of color.
  */
 
+import { unlinkSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
 export const GUM = {
   success: '#5ecfbe',
   error: '#ef4444',
@@ -132,22 +136,41 @@ export function gumSectionBanner(title: string, bg: string, fg: string = GUM.lab
 }
 
 export function gumTable(columns: string[], rows: string[][]): string {
-  const flat = rows.flat()
-  if (flat.length === 0) return ''
-  return (
-    runGum([
+  if (rows.length === 0) return ''
+  if (!gumAvailable()) return rows.map(r => `  ${r.join('  ')}`).join('\n')
+
+  const sep = '|'
+  const header = columns.join(sep)
+  const dataLines = rows.map(r => r.join(sep))
+  const csv = [header, ...dataLines].join('\n')
+  const tmp = join(tmpdir(), `gum-table-${process.pid}-${Math.random().toString(36).slice(2, 8)}`)
+  writeFileSync(tmp, csv)
+
+  const child = Bun.spawnSync(
+    [
+      'gum',
       'table',
       '--border',
       'rounded',
-      '--border-foreground',
+      '--border.foreground',
       GUM.accent,
       '--separator',
-      '─',
-      '--columns',
-      ...columns,
-      ...flat
-    ]) ?? rows.map(r => `  ${r.join('  ')}`).join('\n')
+      sep,
+      '--print',
+      '--file',
+      tmp
+    ],
+    { stdout: 'pipe', stderr: 'pipe', env: gumSubprocessEnv() }
   )
+
+  try {
+    unlinkSync(tmp)
+  } catch {
+    /* ignore */
+  }
+
+  if (child.exitCode !== 0) return rows.map(r => `  ${r.join('  ')}`).join('\n')
+  return new TextDecoder().decode(child.stdout).trimEnd()
 }
 
 export function gumJoinHorizontal(cells: string[]): string {
