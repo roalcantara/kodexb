@@ -40,7 +40,7 @@
 ## Phase 3: User Story 1 - Gitleaks Integration (Priority: P1) 🎯 MVP
 
 - [x] T110 [P] [US1] Enable `gitleaks` builtin in `hk.pkl`
-- [x] T111 [P] [US1] Create `.gitleaksignore` with project-standard exclusions
+- [x] T111 [P] [US1] Create `.gitleaks.toml` with project-standard exclusions
 - [x] T112 [US1] Verify Gitleaks blocks commit with `tools/governance/security/fixtures/secrets/sample.bad.txt`
 
 ---
@@ -85,13 +85,13 @@
 - [x] T128 [US6] Implement main scanner entry point in `tools/governance/security/scan.script.ts`
 - [x] T128a [US6] Consolidate verification steps into `mise run spec ready` in `tools/bin/spec.script.ts`
 - [x] T129 [US6] Wire `spec security --strict` into `tools/governance/specs/gate.sh`
-- [ ] T130 [P] [US6] Update `tools/governance/specs/audit.script.spec.ts`
+- [x] T130 [P] [US6] Update `tools/governance/specs/audit.script.spec.ts`
 
 ---
 
 ## Phase 9: User Story 7 - Hook & CI Deployment (Priority: P1)
 
-- [ ] T131 [P] [US7] Add `spec-security-changed` step to `hk.pkl`
+- [x] T131 [P] [US7] Add `spec-security-changed` step to `hk.pkl`
 - [x] T132 [P] [US7] Declare `security` job in `.github/workflows/review.yml`
 - [x] T133 [US7] Update `assets/guides/CI_GUIDE.md`
 
@@ -107,22 +107,22 @@
 
 ## Phase 11: User Story 9 - No Regression (Priority: P1)
 
-- [ ] T137 [US9] Run full `mise run spec gate` on feature 001
-- [ ] T138 [US9] Verify failure semantics in `tools/governance/specs/lint.script.ts`
+- [x] T137 [US9] Run full `mise run spec gate` on feature 001
+- [x] T138 [US9] Verify failure semantics in `tools/governance/specs/lint.script.ts`
 
 ---
 
 ## Phase 12: User Story 10 - Constitution Binding (Priority: P2)
 
-- [ ] T139 [US10] Amend `.specify/memory/constitution.md` to v1.4.0
+- [x] T139 [US10] Amend `.specify/memory/constitution.md` to v1.4.0
 - [x] T140 [US10] Update `assets/guides/SDD_WORKFLOW_GUIDE.md`
-- [ ] T141 [US10] Append amendment log to `assets/docs/specs/spec-kit-constitution-log.md`
+- [x] T141 [US10] Append amendment log to `assets/docs/specs/spec-kit-constitution-log.md`
 
 ---
 
 ## Phase 13: User Story 11 - Performance Regression (Priority: P3)
 
-- [ ] T142 [P] [US11] Implement `tools/governance/security/perf/secrets.perf.script.ts`
+- [x] T142 [P] [US11] Implement `tools/governance/security/perf/secrets.perf.script.ts`
 - [x] T143 [US11] Commit baseline JSON to `tools/metrics/baselines/perf/security.json`
 
 ---
@@ -130,8 +130,8 @@
 ## Phase 14: Polish & Cross-Cutting Concerns
 
 - [x] T144 [P] Update `AGENTS.md` verification list
-- [ ] T145 Final validation of `quickstart.md`
-- [ ] T146 [P] Documentation cleanup
+- [x] T145 Final validation of `quickstart.md`
+- [x] T146 [P] Documentation cleanup
 
 ---
 
