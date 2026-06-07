@@ -111,8 +111,9 @@ function parseCli(): CliOptions {
     else if (a === '--format' && argv[i + 1]) {
       opts.listFormat = argv[++i] as ListFormat
     } else if (a === '--type' && argv[i + 1]) {
-      opts.types.add(argv[++i] as PolicyType)
-      if (process.env.usage_type && !opts.policyType) opts.policyType = process.env.usage_type as PolicyType
+      const pt = argv[++i] as PolicyType
+      opts.types.add(pt)
+      opts.policyType = pt
     } else if (a === '--rationale' && argv[i + 1]) {
       opts.rationale = argv[++i]
     } else if (a === '--description' && argv[i + 1]) {

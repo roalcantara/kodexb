@@ -929,3 +929,71 @@ skills:
       reason: incompatible_workflow
       avoid:
         - any project implementation task
+  agent-governance:
+    location: project
+    rationale: Agent tool policy, trust boundaries, and audit-trail patterns from awesome-copilot. Useful when extending orchestrated-handoff, workflow observability, or agent hook design — not for runtime app code.
+    policy:
+      type: optional
+      usage:
+        summary: Agent governance patterns for tool policy, trust scoring, and audit trails.
+        when:
+          load:
+            - agent tool allowlists or blocklists
+            - multi-agent trust boundaries
+            - agent audit trail design
+            - workflow observability governance extensions
+          avoid:
+            - replacing AGENTS.md process rules or HK hooks
+            - Python or LangChain scaffolding in kb TypeScript work
+            - normal feature implementation with no agent-policy question
+      surfaces:
+        claude_optional: when designing agent tool policy, trust boundaries, or audit trails for orchestrated-handoff and workflow tooling
+        app_context_optional: Agent governance patterns for tool policy and audit design — subordinate to project specs and gates.
+  agentic-eval:
+    location: project
+    rationale: Evaluator-optimizer, rubric, and reflection patterns from awesome-copilot. Complements app-review-handoff when designing agent output quality loops — app-quality-gate remains executable authority.
+    policy:
+      type: optional
+      usage:
+        summary: Evaluator-optimizer and rubric patterns for agent output quality.
+        when:
+          load:
+            - designing agent output rubrics
+            - evaluator-optimizer review loops
+            - LLM-as-judge or reflection workflows for agent deliverables
+            - improving app-review-handoff evaluation criteria
+          avoid:
+            - replacing app-quality-gate or mise run spec gate
+            - Python-only eval scaffolding without kb adaptation
+            - single-shot code changes with no eval design question
+      surfaces:
+        claude_optional: when designing rubrics, reflection loops, or evaluator-optimizer pipelines for agent outputs
+        app_context_optional: Evaluator-optimizer and rubric patterns for agent output quality — gates remain authoritative.
+  ai-team-orchestration:
+    location: project
+    rationale: Multi-agent team bootstrap from awesome-copilot (PROJECT_BRIEF, role prompts, parallel chats). Read for coordination ideas — speckit, orchestrated-handoff, and SDD_WORKFLOW_GUIDE remain canonical.
+    policy:
+      type: reference
+      usage:
+        summary: Multi-agent team bootstrap reference from awesome-copilot.
+        when:
+          load:
+            - parallel agent team planning
+            - distinct agent voice brainstorm prompts
+            - sprint recovery after context overflow
+          avoid:
+            - replacing speckit or orchestrated-handoff workflow
+            - multiple git clones instead of approved worktrees
+            - PROJECT_BRIEF.md instead of assets/specs/ quartet
+            - default feature implementation routing
+  acreadiness-policy:
+    location: global
+    rationale: Microsoft AgentRC policy skill; kb does not use agentrc readiness scoring or agentrc.config.json.
+    policy:
+      type: blocked
+      reason: unrelated_toolchain
+      redirect_to:
+        - assets/guides/DoD.md
+        - .agents/skills/app-quality-gate/SKILL.md
+      avoid:
+        - any project task unless AgentRC is explicitly adopted

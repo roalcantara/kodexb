@@ -19,6 +19,8 @@ shellcheck = "latest"
 [env]
 HK_MISE = "1"
 HK_PKL_BACKEND = "pklr"
+GOVERNANCE_LEVEL="standard"
+BLOCK_ON_THREAT="true"
 
 [tasks]
 "project" = { description = "Manage setup, dependencies, cleanup, icons, repository, and local maintenance", usage = '''
@@ -332,6 +334,9 @@ HK_PKL_BACKEND = "pklr"
     cmd "compare" {}
     cmd "open" {}
   ''', run = "bun tools/metrics/harnesses/perf/perf.script.ts" }
+"hooks" = { description = "Run tests for Cursor agent hooks (.cursor/hooks/)", usage = '''
+    cmd "governance-audit" help="Governance audit threat-pattern unit tests"
+  ''', run = "bun tools/bin/hooks.script.ts" }
 "_icons" = { description = "Check and optionally fix SVG icon contrast", hide = true, usage = '''
     cmd "check" {}
     flag "--scope <scope>" help="Check scope" default="all" { choices "all" "brand" }

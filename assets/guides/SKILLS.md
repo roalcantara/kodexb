@@ -108,6 +108,9 @@ project-specific situation.
 | `electrobun-rpc-patterns`      | `project` | `optional`  | Advanced native IPC patterns after the base RPC boundary is understood.        |
 | `bun-development`              | `project` | `optional`  | Bun implementation details alongside the project Bun guide.                    |
 | `bun-runtime`                  | `project` | `optional`  | Bun runtime, package manager, and test-runner behavior.                        |
+| `agent-governance`             | `project` | `optional`  | Agent tool policy, trust boundaries, and audit-trail design patterns.          |
+| `agentic-eval`                 | `project` | `optional`  | Evaluator-optimizer and rubric patterns for agent output quality.              |
+| `ai-team-orchestration`        | `project` | `reference` | Multi-agent team bootstrap reference; SDD/orchestrated-handoff stay canonical. |
 
 ## Optional Companion Matrix
 
@@ -122,6 +125,8 @@ project-specific situation.
 | `mise.toml`, task wiring, tool versions            | `mise-tasks`, `mise-expert`                                                                |
 | Review preparation or review feedback              | `requesting-code-review`, `receiving-code-review`                                          |
 | Post-implement handoff verification                | `app-review-handoff` (terse AC/Evidence review; not commit gate)                           |
+| Agent tool policy, trust, or audit-trail design    | `agent-governance`, after `app-context`                                                    |
+| Agent output rubrics or evaluator-optimizer loops  | `agentic-eval`, after `app-review-handoff` or `app-quality-gate` context                   |
 | Design or prototype intake                         | `stitch-design`, only under the prototype gate                                             |
 | React component translation from a design artifact | `react:components`, adapted to the project's renderer and guide stack                      |
 | Isolated parallel development                      | `using-git-worktrees`, only when requested or approved                                     |
@@ -142,6 +147,7 @@ calls for them, but they are not project routing defaults:
 - `formatter-development`
 - `playwright-bdd-gherkin-syntax`
 - `quality-assurance`
+- `ai-team-orchestration`
 
 ## Blocked Skills
 
@@ -152,6 +158,7 @@ Blocked skills must not be used directly in this project:
 | `domain-name-brainstormer`         | Product naming and domain brainstorming are unrelated to this repo's workflow.                                   | No replacement.                                                      |
 | `functional-core-imperative-shell` | The project already defines FCIS, and the global skill's mandatory comments do not match source conventions.     | `assets/guides/FCIS.guide.md`, `.agents/skills/app-context/SKILL.md` |
 | `stitch-loop`                      | Its autonomous website iteration loop does not match the project's desktop app and gated implementation process. | `stitch-design` only under the prototype gate.                       |
+| `acreadiness-policy`               | Microsoft AgentRC readiness policies; kb does not use `agentrc` or AgentRC scoring.                              | `app-quality-gate`, `assets/guides/DoD.md`                           |
 
 ## Updating Skills
 
@@ -162,6 +169,14 @@ workflows below.
 | -------------------------- | ------------------------------------------------------------------------- |
 | Browse registry            | `mise run skill list` or `mise run skill report --list-skills`            |
 | Add upstream/project skill | `mise run skill add <url> --type <optional\|reference\|required\|routed>` |
+
+**awesome-copilot** (single skill from a package):
+
+```bash
+mise run skill add github/awesome-copilot --type optional --rationale "…" -- -yp --skill <skill-id>
+```
+
+Example: `mise run skill add github/awesome-copilot --type optional --rationale "…" -- -yp --skill agent-governance`
 | Create owned skill         | `mise run skill create <id> [--type required\|optional]`                  |
 | Fix lock ↔ YAML drift      | `mise run skill reconcile` (dry-run first with `--dry-run`)               |
 | Remove orphan installs     | `mise run skill prune`                                                    |

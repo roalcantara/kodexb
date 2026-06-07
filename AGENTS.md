@@ -143,7 +143,10 @@ project skills live under **`.agents/skills/`**.
 
 At the start of work that might touch the desktop stack, **read the routing file**, then **Read** the relevant `SKILL.md` paths—do not guess Electrobun APIs.
 
-Optional: a **sessionStart** hook in [`.cursor/hooks.json`](.cursor/hooks.json) runs [`.cursor/hooks/electrobun_session_start.ts`](.cursor/hooks/electrobun_session_start.ts) to inject the same routing text when Cursor applies `additional_context` (if it does not appear, rely on the rule above).
+Optional: **sessionStart** hooks in [`.cursor/hooks.json`](.cursor/hooks.json) run
+[`governance_audit.session_start.ts`](.cursor/hooks/governance_audit.session_start.ts)
+(audit logging; see [`.cursor/hooks/README.md`](.cursor/hooks/README.md)) and
+[`electrobun_session_start.ts`](.cursor/hooks/electrobun_session_start.ts) (Electrobun skill routing).
 
 Repo docs: `assets/guides/ELECTROBUN.md`, `assets/guides/FCIS.guide.md`, `assets/guides/DOC_AUTHORITY.md`. Active specs: `assets/specs/README.md` (never `docs/superpowers/` — gitignored).
 

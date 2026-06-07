@@ -101,6 +101,8 @@ Optional companion skills for narrower situations:
 - `stitch-design` - for design intake or prototypes, under the prototype gate
 - `using-git-worktrees` - only when isolated parallel work is requested or approved
 - `verification-before-completion` - as a reminder; app-quality-gate remains the executable authority
+- `agent-governance` - when designing agent tool policy, trust boundaries, or audit trails for orchestrated-handoff and workflow tooling
+- `agentic-eval` - when designing rubrics, reflection loops, or evaluator-optimizer pipelines for agent outputs
 <!-- skills:optional-companions:end -->
 
 Skill adoption and routing rationale lives in

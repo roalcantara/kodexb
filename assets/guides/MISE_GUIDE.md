@@ -132,21 +132,22 @@ Complex top-level tasks use **one Bun entrypoint** under `tools/bin/<task>.scrip
 "catalog" = { description = "…", usage = ''' … ''', run = "bun tools/bin/catalog.script.ts" }
 ```
 
-| Layer           | Location                      | Rule                                                   |
-| --------------- | ----------------------------- | ------------------------------------------------------ |
-| Task definition | `mise.toml`                   | `usage` + one-line `run` (no inline 100+ line scripts) |
-| Entrypoint      | `tools/bin/<task>.script.ts`  | Dispatches subcommands via `usage_cmd` / `usage_*` env |
-| Domain logic    | `tools/governance/*`          | Shared libraries; not user-facing commands             |
+| Layer           | Location                     | Rule                                                   |
+| --------------- | ---------------------------- | ------------------------------------------------------ |
+| Task definition | `mise.toml`                  | `usage` + one-line `run` (no inline 100+ line scripts) |
+| Entrypoint      | `tools/bin/<task>.script.ts` | Dispatches subcommands via `usage_cmd` / `usage_*` env |
+| Domain logic    | `tools/governance/*`         | Shared libraries; not user-facing commands             |
 
 Document **`mise run <task>`** for users and agents — not `bun tools/bin/…` except local debugging.
 Folder taxonomy: [`TOOLS_GUIDE.md`](TOOLS_GUIDE.md).
 
-| Task      | Entrypoint                                                                           | Notes                                                 |
-| --------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------- |
-| `test`    | [`tools/bin/test.script.ts`](../../tools/bin/test.script.ts)                         | unit, ci, e2e, spec-audit/style, **`tag`**            |
-| `catalog` | [`tools/bin/catalog.script.ts`](../../tools/bin/catalog.script.ts)                   | shipped-feature registry (`list`, `validate`, `ship`) |
-| `skill`   | [`tools/bin/skill.script.ts`](../../tools/bin/skill.script.ts)                       | skill registry CLI                                    |
-| `spec`    | [`tools/bin/spec.script.ts`](../../tools/bin/spec.script.ts)                         | Spec Kit lint, trace, gate                            |
+| Task      | Entrypoint                                                         | Notes                                                 |
+| --------- | ------------------------------------------------------------------ | ----------------------------------------------------- |
+| `test`    | [`tools/bin/test.script.ts`](../../tools/bin/test.script.ts)       | unit, ci, e2e, spec-audit/style, **`tag`**            |
+| `hooks`   | [`tools/bin/hooks.script.ts`](../../tools/bin/hooks.script.ts)     | Cursor agent hook tests (`governance-audit`)          |
+| `catalog` | [`tools/bin/catalog.script.ts`](../../tools/bin/catalog.script.ts) | shipped-feature registry (`list`, `validate`, `ship`) |
+| `skill`   | [`tools/bin/skill.script.ts`](../../tools/bin/skill.script.ts)     | skill registry CLI                                    |
+| `spec`    | [`tools/bin/spec.script.ts`](../../tools/bin/spec.script.ts)       | Spec Kit lint, trace, gate                            |
 
 ### Catalog tag tests
 
@@ -165,6 +166,16 @@ mise run test tag key1 key2 --list    # union
 ```
 
 Registry metadata: `catalog list`. Executable membership: `test tag --list`.
+
+### Cursor hook tests
+
+Governance audit threat-pattern specs live under `.cursor/hooks/` (outside `src/`):
+
+```sh
+mise run hooks governance-audit
+```
+
+See [`.cursor/hooks/README.md`](../../.cursor/hooks/README.md) for hook configuration.
 
 ```sh
 mise run catalog validate
