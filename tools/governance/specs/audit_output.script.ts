@@ -61,8 +61,10 @@ export function renderAudit(result: AuditResult, mode: RenderMode): void {
         console.log(`  ${sev}${sep}${f.rule}${sep}${loc}${sep}${f.message}`)
       }
     }
-    if (s.errors === 0) {
+    if (s.errors === 0 && s.warns === 0) {
       console.log('  OK — spec audit clean')
+    } else if (s.errors === 0 && s.warns > 0) {
+      console.log(`  ${s.warns} warning${s.warns === 1 ? '' : 's'} — review findings`)
     }
     return
   }
@@ -108,7 +110,7 @@ export function renderAudit(result: AuditResult, mode: RenderMode): void {
 
   const steps: string[] = []
   if (s.errors > 0) steps.push(`fix ${s.errors} error${s.errors === 1 ? '' : 's'} and re-run`)
-  steps.push(`mise run spec lint ${result.featureDir} --strict`)
+  steps.push(`mise run spec audit ${result.featureDir} --strict`)
   if (result.phase.name && result.phase.name !== 'gate') {
     steps.push(`${result.phase.name.includes('analyze') ? '/speckit-analyze' : '/speckit-tasks'}  (tasks pass)`)
   }

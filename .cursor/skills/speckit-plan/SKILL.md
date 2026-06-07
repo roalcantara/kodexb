@@ -164,4 +164,4 @@ On **success**: `OK — <FEATURE_DIR>/plan.md` (one line). On failure / NEEDS CL
 
 - [ ] Plan workflow executed and design artifacts generated
 - [ ] Extension hooks dispatched or skipped according to the rules in Mandatory Post-Execution Hooks above
-- [ ] Completion reported to user with branch, plan path, and generated artifacts
+- [ ] Completion reported per contract: one-line `OK — <FEATURE_DIR>/plan.md` on success, or full branch/paths/artifacts on failure / `--verbose`

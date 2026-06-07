@@ -53,13 +53,13 @@ reports) but `assets/docs/specs/spec-kit-constitution-log.md` jumps 1.3.0 → 1.
 
 Add a **1.3.1** row between existing rows:
 
-| Date       | Version | Summary                                                                                               | PR                        |
-| ---------- | ------- | ----------------------------------------------------------------------------------------------------- | ------------------------- |
-| 2026-06-07 | 1.3.1   | Fix amendment log [12] canonical path; terse Completion Report for speckit specify/plan/tasks/analyze | `feat/add-workflow-audit` |
+| Date       | Version | Summary                                                                                               | Branch                        |
+| ---------- | ------- | ----------------------------------------------------------------------------------------------------- | ----------------------------- |
+| 2026-06-07 | 1.3.1   | Fix amendment log [12] canonical path; terse Completion Report for speckit specify/plan/tasks/analyze | `feat/add-workflow-audit`    |
 
 Do **not** bump constitution footer version (stays **1.3.2**). Log-only backfill.
 
-Optional: fix 1.3.0 PR column if you can verify from `git log` (e.g. `#16` for
+Optional: fix 1.3.0 Branch column if you can verify from `git log` (e.g. `#16` for
 orchestrated-handoff SDD migration).
 
 ---

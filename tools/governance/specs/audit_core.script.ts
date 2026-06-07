@@ -54,6 +54,14 @@ function checkQuartet(featureDir: string): Finding[] {
       })
     }
   }
+  if (featureDir.includes('assets/specs/') && !/assets\/specs\/\d{3,}-[\w-]+$/.test(featureDir.replace(/\/$/, ''))) {
+    f.push({
+      rule: 'quartet.path',
+      level: 'error',
+      file: featureDir,
+      message: 'Feature dir does not match expected pattern: assets/specs/NNN-<slug>'
+    })
+  }
   return f
 }
 
@@ -106,6 +114,18 @@ function checkHandoffAcTable(featureDir: string): Finding[] {
         level: 'error',
         file: handoffPath,
         message: `Row "${row.id || '(no ID)'}" has empty Evidence`
+      })
+    } else if (
+      !/^`[^`]*`$/.test(row.evidence.trim()) &&
+      !/^(?:bun|npm|yarn|pnpm|mise|git|make|docker|npx|gh|aws|cargo|rustup|pip|python|node|curl)\s+\S/i.test(
+        row.evidence.trim()
+      )
+    ) {
+      f.push({
+        rule: 'handoff.evidence-command',
+        level: 'warn',
+        file: handoffPath,
+        message: `Row "${row.id || '(no ID)'}" has non-command Evidence — expected an executable command`
       })
     }
   }
@@ -202,7 +222,7 @@ function checkPhaseReadiness(featureDir: string): Finding[] {
   if (quartetComplete && next.phase === 'analyze-tasks' && !files.analyzeTasksChecklist) {
     f.push({
       rule: 'phase.analyze-tasks-ready',
-      level: 'info',
+      level: 'error',
       file: featureDir,
       message: `Quartet complete but stuck at "analyze-tasks" — run analyze to generate checklists/analyze-tasks.md`
     })
@@ -250,7 +270,10 @@ function checkCrossRefs(featureDir: string): Finding[] {
   }
 
   const slug = slugFromDir(featureDir)
-  if (slug && !handoffMd.toLowerCase().includes(slug.toLowerCase())) {
+  const specRelPath = featureDir.includes('assets/specs/')
+    ? featureDir.slice(featureDir.indexOf('assets/specs/'))
+    : featureDir
+  if (slug && !handoffMd.toLowerCase().includes(slug.toLowerCase()) && !handoffMd.includes(specRelPath)) {
     f.push({
       rule: 'xref.tasks-handoff',
       level: 'warn',

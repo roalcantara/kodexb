@@ -153,7 +153,7 @@ describe('audit_core', () => {
     }
   })
 
-  it('pre-analyze dir returns info-level analyze-tasks-ready', () => {
+  it('pre-analyze dir reports error-level analyze-tasks-ready', () => {
     const dir = makeFeatureDir()
     writeQuartet(dir)
     rmSync(path.join(dir, 'checklists', 'analyze-tasks.md'))
@@ -161,8 +161,8 @@ describe('audit_core', () => {
       const result = runAudit(dir)
       const ready = result.findings.find(f => f.rule === 'phase.analyze-tasks-ready')
       expect(ready).toBeDefined()
-      expect(ready?.level).toBe('info')
-      expect(result.summary.errors).toBe(0)
+      expect(ready?.level).toBe('error')
+      expect(result.summary.errors).toBe(1)
     } finally {
       cleanup(dir)
     }
