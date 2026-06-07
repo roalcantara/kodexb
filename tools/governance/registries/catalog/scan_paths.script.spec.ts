@@ -1,36 +1,31 @@
 import { afterEach, describe, expect, it } from 'bun:test'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import path from 'node:path'
-import { SCAN_PATHS_REL, clearScanPathsCache, loadScanPaths, scanPathsPath } from './scan_paths.script.ts'
+import { CatalogTestHarness } from '../../../support/lib/shared/catalog_test.script.ts'
+import { clearScanPathsCache, loadScanPaths, SCAN_PATHS_REL, scanPathsPath } from './scan_paths.script.ts'
+
+const NOT_FOUND_RE = /scan paths file not found/
+const SCHEMA_FAIL_RE = /schema validation failed/
 
 describe('scan_paths.script', () => {
-  let tmpRoots: string[] = []
+  const harness = new CatalogTestHarness()
 
   afterEach(() => {
-    for (const r of tmpRoots) {
-      try {
-        rmSync(r, { recursive: true, force: true })
-      } catch {
-        /* ok */
-      }
-    }
-    tmpRoots = []
+    harness.cleanup()
     clearScanPathsCache()
   })
 
-  function writeYaml(content: string): string {
-    const root = mkdtempSync(path.join(tmpdir(), 'scan-paths-'))
-    tmpRoots.push(root)
-    mkdirSync(path.join(root, 'assets/catalog'), { recursive: true })
-    writeFileSync(path.join(root, SCAN_PATHS_REL), content)
-    return root
-  }
-
   describe('when the yaml file is well-formed', () => {
     it('returns the declared (root, glob) pairs in order', async () => {
-      const root = writeYaml(
-        ['scan_paths:', '  - root: src', '    glob: "**/*.spec.ts"', '  - root: tools', '    glob: "**/*.spec.ts"', ''].join('\n')
+      const root = harness.init('scan-paths-ok-')
+      harness.writeFile(
+        SCAN_PATHS_REL,
+        [
+          'scan_paths:',
+          '  - root: src',
+          '    glob: "**/*.spec.ts"',
+          '  - root: tools',
+          '    glob: "**/*.spec.ts"',
+          ''
+        ].join('\n')
       )
       const paths = await loadScanPaths(scanPathsPath(root))
       expect(paths).toEqual([
@@ -40,33 +35,18 @@ describe('scan_paths.script', () => {
     })
   })
 
-  describe('when the yaml file is missing', () => {
-    it('throws an error mentioning the file path', async () => {
-      const root = mkdtempSync(path.join(tmpdir(), 'scan-paths-missing-'))
-      tmpRoots.push(root)
-      const filePath = scanPathsPath(root)
-      expect(loadScanPaths(filePath)).rejects.toThrow(/scan paths file not found/)
-    })
-  })
-
-  describe('without a scan_paths key', () => {
-    it('throws a schema-validation error', async () => {
-      const root = writeYaml('other_key: []\n')
-      expect(loadScanPaths(scanPathsPath(root))).rejects.toThrow(/schema validation failed/)
-    })
-  })
-
-  describe('with an empty scan_paths array', () => {
-    it('throws a schema-validation error', async () => {
-      const root = writeYaml('scan_paths: []\n')
-      expect(loadScanPaths(scanPathsPath(root))).rejects.toThrow(/schema validation failed/)
-    })
-  })
-
-  describe('with a scan path missing root or glob', () => {
-    it('throws a schema-validation error', async () => {
-      const root = writeYaml(['scan_paths:', '  - root: src', ''].join('\n'))
-      expect(loadScanPaths(scanPathsPath(root))).rejects.toThrow(/schema validation failed/)
+  describe.each([
+    ['missing yaml file', null, NOT_FOUND_RE],
+    ['missing scan_paths key', 'other_key: []\n', SCHEMA_FAIL_RE],
+    ['empty scan_paths array', 'scan_paths: []\n', SCHEMA_FAIL_RE],
+    ['scan path missing root or glob', 'scan_paths:\n  - root: src', SCHEMA_FAIL_RE]
+  ])('when there is a %s', (_desc, content, errorRe) => {
+    it('throws the expected error', () => {
+      const root = harness.init('scan-paths-fail-')
+      if (content !== null) {
+        harness.writeFile(SCAN_PATHS_REL, content)
+      }
+      return expect(loadScanPaths(scanPathsPath(root))).rejects.toThrow(errorRe)
     })
   })
 })

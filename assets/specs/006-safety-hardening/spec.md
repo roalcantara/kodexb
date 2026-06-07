@@ -6,6 +6,11 @@
 **Release**: v0.14.0 (target)
 **Status**: Draft
 
+## Clarifications
+
+### Session 2026-06-07
+- Q: How should the initial CVE list criteria be defined? → A: Define by specific package name and version range.
+
 **Input**: Add a deterministic `mise run spec security` subgate (secret scan, dependency audit, Electrobun surface check) and a `spec handoff-scrub` validator wired into `spec handoff-generate`, closing the two highest-leverage safety gaps identified during the Spec Kit setup evaluation: H1 (no automated security checks in `spec gate`) and H2 (worker-handoff prompts dispatched unscrubbed).
 
 ## Introduction
@@ -46,7 +51,7 @@ The constitution is amended from v1.3.2 to **v1.4.0** to register the new gate r
 | **Security run**             | One invocation of `tools/governance/security/scan.script.ts`. Emits one `security_run` event to `tmp/security/`.                              |
 | **Handoff scrub**            | One invocation of `tools/governance/security/handoff_scrub.script.ts` against a prompt body. Throws on hit; no return value for hits.         |
 | **Per-feature allowlist**    | Optional `assets/specs/<NNN-slug>/handoff-allowlist.yml`. TypeBox-validated. Names literal-string exemptions only. Missing file = strict.     |
-| **Electrobun external view** | Any `BrowserView` or auxiliary `BrowserWindow` declared in [electrobun.config.ts](../../../electrobun.config.ts) that is not the main window. |
+| **Electrobun external view** | Any `BrowserView` or auxiliary `BrowserWindow` declared in [electrobun.config.ts](../../../electrobun.config.ts) that is not the main window (identified by id `main` or protocol `views://shell`). |
 | **Changed-files mode**       | `spec security --changed-only [--base SHA]`. Restricts the secrets and Electrobun-surface checks to files changed against `--base`.           |
 | **Lockfile delta**           | The set of added or version-bumped entries in `bun.lock` between `--base` and `HEAD`. The dependency check operates on this delta only.       |
 
@@ -59,10 +64,9 @@ for committed credentials so that a leak never reaches `main`.
 
 ### Acceptance criteria
 
-1. WHEN `mise run spec security --strict` is invoked and any tracked file contains a string matching the in-tree secrets regex set or a substring of length ≥ 20 whose Shannon entropy is ≥ 3.5 bits, THEN the script SHALL emit one `Finding` of severity `critical` per match and exit 1.
-   - **Exemption:** The Shannon entropy heuristic pass is SKIPPED for files with the `.md` extension to prevent false positives on documentation hashes; deterministic regex rules still apply to all tracked files.
-   - **Measure:** Each fixture under `tools/governance/security/fixtures/secrets/*.bad.txt` produces ≥ 1 `Finding`; aggregate exit code is 1. Entropy threshold (3.5) and substring length (20) are declared as named constants in `tools/governance/security/checks/secrets.rules.ts`.
-   - **Evidence:** `bun test --config /dev/null tools/governance/security/checks/secrets.check.spec.ts`.
+1. WHEN `hk` is invoked (pre-commit or `check`), THEN the `gitleaks` builtin SHALL scan the staged/changed files and SHALL block the operation on any detected secret.
+   - **Measure:** Seeded secret in a staged file (e.g. `sample.bad.txt`) causes `hk` to fail with a non-zero exit code.
+   - **Evidence:** `hk check` output on a branch with a test secret.
 
 2. WHEN a match falls inside `tools/governance/security/fixtures/` or any directory listed in the default exemption set (including `.git/`, `node_modules/`, and `.electrobun-cache/`), THEN no `Finding` SHALL be emitted for that match. The authoritative set of excluded paths is defined in `rules_loader.script.ts`.
    - **Measure:** Table-driven test asserts zero findings on `*.allowed.txt` fixtures and on every path under the exemption set.
@@ -87,6 +91,8 @@ known-bad versions cannot land silently.
 ### Acceptance criteria
 
 1. WHEN `mise run spec security --strict` runs and `bun.lock` has changed against `--base`, THEN `checks/dependencies.check.ts` SHALL parse the delta, match each added or bumped entry against the in-tree CVE list at `tools/governance/security/cve.list.yml`, and emit one `Finding` of severity `critical` per match.
+   - **CVE criteria:** The initial set for `cve.list.yml` SHALL include known malicious or highly vulnerable packages identified during the 0.13.x audit (e.g. `event-stream` malicious versions). New entries are added by human maintainers based on advisory alerts.
+   - **Edge case:** IF `bun.lock` is malformed or unparseable, THEN the check SHALL emit one `Finding` of severity `critical` and exit 1.
    - **Measure:** Fixture `bun.lock.cve.snapshot` produces ≥ 1 `Finding`; clean fixture produces zero.
    - **Evidence:** `bun test --config /dev/null tools/governance/security/checks/dependencies.check.spec.ts`.
 
@@ -113,7 +119,7 @@ auxiliary webviews cannot weaken the security posture documented in Principle IX
 
 ### Acceptance criteria
 
-1. WHEN `mise run spec security --strict` runs, THEN `checks/electrobun_surface.check.ts` SHALL AST-parse [electrobun.config.ts](../../../electrobun.config.ts), enumerate every Electrobun external view, and assert that each one declares `sandbox: true`, a non-empty `partition` string, and a non-wildcard `navigation` allowlist.
+1. WHEN `mise run spec security --strict` runs, THEN `checks/electrobun_surface.check.ts` SHALL AST-parse [electrobun.config.ts](../../../electrobun.config.ts), enumerate every Electrobun external view, and assert that each one declares `sandbox: true`, a non-empty `partition` string, and a non-wildcard `navigation` allowlist (MUST NOT contain `*` or match any protocol other than `views://` or `https://`).
    - **Measure:** Compliant fixture (`electrobun/config.compliant.ts`) produces zero findings; each non-compliant fixture (`config.missing_sandbox.ts`, `config.empty_partition.ts`, `config.wildcard_navigation.ts`) produces exactly one `Finding` of severity `high`.
    - **Evidence:** `bun test --config /dev/null tools/governance/security/checks/electrobun_surface.check.spec.ts`.
 
@@ -136,7 +142,9 @@ external process is invoked.
 
 ### Acceptance criteria
 
-1. WHEN `mise run spec handoff-generate` is invoked and the rendered prompt body matches any secrets-regex rule (defined in `checks/secrets.rules.ts` following gitleaks patterns), contains any filesystem path (absolute or relative) whose canonicalised form does not resolve under the repo root or `${HOME}`, or contains an environment-variable literal (`process.env.X`, `Bun.env.X`, `$ENV_VAR`), THEN `scrubPrompt` SHALL throw `HandoffScrubError`, no file SHALL be written under `tmp/handoffs/`, and no dispatch SHALL be invoked.
+1. WHEN `mise run spec handoff-generate` is invoked and the rendered prompt body matches any secrets-regex rule (defined in `checks/secrets.rules.ts` following gitleaks patterns), contains any filesystem path (absolute or relative) whose canonicalised form does not resolve under the repo root or `${HOME}`, or contains an environment-variable literal that appears outside of markdown inline-code or code-block segments (`process.env.X`, `Bun.env.X`, `$ENV_VAR`), THEN `scrubPrompt` SHALL throw `HandoffScrubError`, no file SHALL be written under `tmp/handoffs/`, and no dispatch SHALL be invoked.
+   - **Literals in Code Blocks:** Literals inside backticks are permitted for documentation purposes only if they do not match a known secret.
+   - **Rules Mapping:** Matches against `secrets.rules.ts` with severity ≥ `high` are considered high-severity hits and SHALL block the emit.
    - **Measure:** Four fixtures (`handoff.with_secret.md`, `handoff.with_abs_path.md`, `handoff.with_rel_escape.md`, `handoff.with_env_literal.md`) each cause `scrubPrompt` to throw; post-throw `Bun.file(target).exists()` is `false`; dispatch shim is never called.
    - **Evidence:** `bun test --config /dev/null tools/governance/security/handoff_scrub.script.spec.ts`.
 
@@ -160,6 +168,7 @@ glob-based bypass.
 ### Acceptance criteria
 
 1. WHEN a feature directory contains `assets/specs/<NNN-slug>/handoff-allowlist.yml`, THEN the scrubber SHALL load it, validate it against a TypeBox `HandoffAllowlist` schema, and treat each entry as a literal-string exemption against scrubber rules of severity ≤ `high`.
+   - **Empty allowlist:** If the file exists but contains no entries, it SHALL be treated as an empty set (no exemptions) and SHALL NOT cause a validation error.
    - **Measure:** Fixture allowlist exempts a `with_secret.md` fixture; scrubber returns without throwing; an audit row naming the matched allowlist entry and rule id is appended to the `metadata` field of the `security_run` event (SH-8).
    - **Evidence:** Same `handoff_scrub.script.spec.ts`; allowlist-happy-path case.
 
@@ -221,7 +230,9 @@ scripts.
 
 ### Acceptance criteria
 
-1. WHEN a security run completes (pass or fail), THEN a `security_run` event SHALL be appended to `tmp/security/<YYYY-MM-DD>/<run_id>.ndjson` carrying `ts`, `phase` (`scan|handoff-scrub`), `trigger` (`hk|gate|ci|handoff-emit`), `findings_count`, `severity_max`, `exit_code`, `duration_ms`, and a nullable `feature` slug.
+1. WHEN a security run completes (pass or fail), THEN a `security_run` event SHALL be appended to `tmp/security/<YYYY-MM-DD>/<run_id>.ndjson` carrying `ts`, `phase` (`scan|handoff-scrub`), `trigger` (`hk|gate|ci|handoff-emit`), `findings` (full `Finding[]`), `findings_count`, `severity_max`, `exit_code`, `duration_ms`, and a nullable `feature` slug.
+   - **Concurrency:** Event writes SHALL use atomic file appending (`O_APPEND`) or unique file names per run id to prevent corruption from concurrent runs.
+   - **Local-first:** The security scan SHALL NOT require network access to run (Principle I). `bun audit` failures due to no network SHALL be handled gracefully per SH-2 AC3.
    - **Measure:** Round-trip test renders an event, runs `Value.Check`, writes JSON, re-reads, and asserts `Value.Check` passes a second time.
    - **Evidence:** `bun test --config /dev/null tools/governance/security/scan.script.spec.ts` (event-shape case).
 
@@ -286,6 +297,21 @@ grows, so that CI wall-time stays predictable.
 
 ---
 
+## REQUIREMENT SH-12: `spec ready` consolidates all verification gates
+
+**User story:** As a maintainer, I want a single command to run all quality 
+and security checks so I can verify readiness before reporting a task as done.
+
+### Acceptance criteria
+
+1. WHEN `mise run spec ready <featureDir>` is invoked, IT SHALL chain `spec lint`, 
+   `spec trace`, `spec security --strict`, and `app-quality-gate` in sequence.
+   - **Measure:** Invocation on a clean feature exits 0; failure in any 
+     sub-gate blocks subsequent steps and exits non-zero.
+   - **Evidence:** Integration run on `assets/specs/006-safety-hardening`.
+
+---
+
 ## Verification strategy
 
 This feature is release-gated by deterministic script/test evidence. Every requirement above ships release-blocking evidence as a deterministic `bun test` run plus, for SH-1 AC4, SH-2 AC4, and SH-11, a perf-harness baseline. No new Gherkin flows are required.
@@ -347,10 +373,6 @@ shippable; each leaves the gate strictly stronger than before, never weaker.
 | ---- | ------------------------------------------------------------------------------------------------ | ------ | ------------------------------------------------------------------------------ |
 | OQ-1 | Does Bun ship a `bun audit` subcommand on the target version? If not, fallback is CVE-list only. | Closed | Resolved in Slice 2: fallback behavior retained per SH-2 AC3.                  |
 | OQ-2 | Which AST parser does `tools/` already vendor — `ts-morph` or `@babel/parser`?                   | Closed | Resolved in Slice 3: parser selected and recorded in implementation notes.     |
-| OQ-3 | Should the per-feature allowlist also gate the `spec security` checks (not just scrub)?          | Closed | Resolved in Slice 1 review: allowlist does not apply to spec security scanner. |
-
-[principle-ix]: ../../../.specify/memory/constitution.md#ix-electrobun-security--distribution
-                   | Closed | Resolved in Slice 3: parser selected and recorded in implementation notes.     |
 | OQ-3 | Should the per-feature allowlist also gate the `spec security` checks (not just scrub)?          | Closed | Resolved in Slice 1 review: allowlist does not apply to spec security scanner. |
 
 [principle-ix]: ../../../.specify/memory/constitution.md#ix-electrobun-security--distribution

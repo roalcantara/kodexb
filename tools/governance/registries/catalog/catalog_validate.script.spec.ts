@@ -1,7 +1,5 @@
 import { afterEach, describe, expect, it } from 'bun:test'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import path from 'node:path'
+import { CatalogTestHarness } from '../../../support/lib/shared/catalog_test.script.ts'
 import {
   ALLOWED_ENTRY_FIELDS,
   CATALOG_KEY_PATTERN,
@@ -33,62 +31,59 @@ describe('catalog_validate.script', () => {
   })
 
   describe('validateTagPlacement', () => {
-    let tmpRoots: string[] = []
+    const harness = new CatalogTestHarness()
 
     afterEach(() => {
-      for (const r of tmpRoots) {
-        try {
-          rmSync(r, { recursive: true, force: true })
-        } catch {
-          /* ok */
-        }
-      }
-      tmpRoots = []
+      harness.cleanup()
     })
-
-    function tempFeature(name: string, content: string): { root: string; relPath: string } {
-      const root = mkdtempSync(path.join(tmpdir(), 'catalog-validate-'))
-      tmpRoots.push(root)
-      const relPath = `assets/features/${name}`
-      mkdirSync(path.join(root, 'assets/features'), { recursive: true })
-      writeFileSync(path.join(root, relPath), content)
-      return { root, relPath }
-    }
 
     async function checkPlacement(
       fileName: string,
       content: string,
       tag: string
     ): Promise<{ length: number; firstCategory: string | undefined }> {
-      const { root, relPath } = tempFeature(fileName, content)
+      const root = harness.init('catalog-validate-')
+      const relPath = `assets/features/${fileName}`
+      harness.writeFile(relPath, content)
       const findings: CatalogFinding[] = []
       const summary: Record<string, number> = {}
       await validateTagPlacement(findings, summary, relPath, tag, 'test_key', root)
       return { length: findings.length, firstCategory: findings[0]?.category }
     }
 
-    it('accepts tag on Feature line (line 1) in .feature files', async () => {
-      const result = await checkPlacement('line1.feature', '@sync @my_test_tag\nFeature: Test\n', 'my_test_tag')
-      expect(result.length).toBe(0)
-    })
-
-    it('accepts tag on Scenario tag line (not line 1) in .feature files', async () => {
-      const result = await checkPlacement(
+    describe.each([
+      [
+        'tag on Feature line (line 1)',
+        'line1.feature',
+        '@sync @my_test_tag\nFeature: Test\n',
+        'my_test_tag',
+        0,
+        undefined
+      ],
+      [
+        'tag on Scenario tag line (not line 1)',
         'scenario_line.feature',
         '@sync\nFeature: Test\n\n  @unit @my_test_tag\n  Scenario: Something\n    Given a step\n',
-        'my_test_tag'
-      )
-      expect(result.length).toBe(0)
-    })
-
-    it('rejects when tag is absent from .feature file', async () => {
-      const result = await checkPlacement(
+        'my_test_tag',
+        0,
+        undefined
+      ],
+      [
+        'absent tag',
         'absent.feature',
         '@sync\nFeature: Test\n\n  @other_tag\n  Scenario: Something\n    Given a step\n',
-        'absent_tag'
-      )
-      expect(result.length).toBe(1)
-      expect(result.firstCategory).toBe('placement')
+        'absent_tag',
+        1,
+        'placement'
+      ]
+    ])('when there is a %s', (_desc, fileName, content, tag, expectedLength, expectedCategory) => {
+      it(`should return ${expectedLength} findings`, async () => {
+        const result = await checkPlacement(fileName, content, tag)
+        expect(result.length).toBe(expectedLength)
+        if (expectedCategory) {
+          expect(result.firstCategory).toBe(expectedCategory)
+        }
+      })
     })
   })
 })

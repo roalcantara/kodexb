@@ -1,4 +1,4 @@
 {
-  "speckit.specDirectories": ["assets/specs/[0-9][0-9][0-9]-*"],
+  "speckit.specDirectories": ["assets/specs"],
   "bun.runtime": "${env:HOME}/.local/share/mise/shims/bun"
 }

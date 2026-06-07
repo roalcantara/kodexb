@@ -1,5 +1,8 @@
+// biome-ignore lint/nursery/noExcessiveLinesPerFile: comprehensive spec
 import { describe, expect, it } from 'bun:test'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import {
   type AcRow,
   catalogKeyFromSlug,
@@ -8,12 +11,34 @@ import {
   parseArgs,
   parseHandoffAcTable,
   renderHandoffPrompt,
+  run,
   slugFromFeatureDir
 } from './handoff_generate.script.ts'
 
 type AcRowLike = AcRow
 
 const PILOT_FEATURE_DIR = 'assets/specs/003-sync-frecency-preserve'
+
+describe('handoff scrub integration', () => {
+  it('returns exit 1 when rendered body contains sensitive text', () => {
+    const featureDir = mkdtempSync(path.join(tmpdir(), 'handoff-scrub-int-'))
+    try {
+      writeFileSync(path.join(featureDir, 'plan.md'), '# plan\n')
+      writeFileSync(
+        path.join(featureDir, 'handoff.md'),
+        [
+          '| ID | Done when | Evidence |',
+          '| -- | --------- | -------- |',
+          '| SF-1 AC1 | demo | token=ghp_1234567890ABCDEFGHIJKL12345 |'
+        ].join('\n')
+      )
+      const code = run(['--feature', featureDir, '--dry-run'])
+      expect(code).toBe(1)
+    } finally {
+      rmSync(featureDir, { recursive: true, force: true })
+    }
+  })
+})
 
 describe('catalogKeyFromSlug', () => {
   it('strips numeric prefix and converts dashes to underscores', () => {

@@ -1,13 +1,17 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.2.0 → 1.3.2
+Version change: 1.2.0 → 1.4.0
 Bump rationale: PATCH (1.3.0) + PATCH (1.3.1) + PATCH. SDD path migration to assets/specs/, spec.md/plan.md
   authority, deterministic spec lint/trace gates, Gherkin in assets/features/e2e/,
   git-config auto_commit documented, SDD_WORKFLOW_GUIDE reference. 1.3.1:
   Fix amendment log [12] link to canonical path; terse speckit completion reports.
-  1.3.2: Document mise run spec audit in analyze-dual footnote.
+   1.3.2: Document mise run spec audit in analyze-dual footnote.
+   1.4.0: Add mandatory `mise run spec security` subgate and emit-time
+   `spec handoff-scrub` validator binding for Principle IX.
 -->
+
+<!-- markdownlint-disable MD013 -->
 
 # kb — Project Constitution
 
@@ -151,6 +155,9 @@ Per [`ELECTROBUN.md`][9]:
    `sandbox: true`, partition isolation, navigation allowlists.
 2. Config/main/RPC/build work: read `.cursor/electrobun-skill-routing.md` and
    routed skills — do not invent APIs from memory.
+3. Security enforcement is executable, not review-only: `mise run spec security`
+   (including `electrobun_surface.check`) is REQUIRED in deterministic gate flow,
+   and `spec handoff-scrub` is REQUIRED before handoff emit/write/dispatch.
 
 ---
 
@@ -221,7 +228,7 @@ kb uses **Spec Kit** commands aligned to [spec-driven.md][16] — not a separate
 5. **Chat agents commit WHEN ASKED**; workflow shell MAY commit after approved gate
    via `mise run spec commit`. Git extension `auto_commit.*` remains **false** in
    [`git-config.yml`](../extensions/git/git-config.yml).
-5. **Creative ambiguity** — load `brainstorming` when intent is unclear; record
+6. **Creative ambiguity** — load `brainstorming` when intent is unclear; record
    outcomes in specs, not only chat.
 
 ### Operating values
@@ -274,6 +281,8 @@ Gates for `/speckit-implement` and merge. Detail lives in Principles and
 | --------------------- | ---------------------------------------------- | --------------------------------------------------- |
 | Spec compliance       | **REQUIRED**                                   | All AC Measure/Evidence pass; handoff table updated |
 | Constitution          | **REQUIRED**                                   | `/speckit-analyze` clean or justified violations    |
+| Secrets (Gitleaks)    | **REQUIRED**                                   | `hk check --profile commit` (Gitleaks builtin)      |
+| Security subgate      | **REQUIRED**                                   | `mise run spec security --strict` passes            |
 | Performance           | **REQUIRED** when UX hot path touched          | [Performance budgets](#performance-budgets)         |
 | Security (Electrobun) | **REQUIRED** when webviews/RPC surface changes | Principle IX                                        |
 
@@ -298,12 +307,12 @@ No production `src/` feature work from a prototype until explicit approval
 | Rule           | Detail                                                                                               |
 | -------------- | ---------------------------------------------------------------------------------------------------- |
 | **Precedence** | `assets/guides/*` > `CLAUDE.md` > this constitution > Spec Kit templates                             |
-| **Amendments** | Branch + dated row in [`spec-kit-constitution-log.md`][12]                                               |
+| **Amendments** | Branch + dated row in [`spec-kit-constitution-log.md`][12]                                           |
 | **Versioning** | SemVer: MAJOR = principle removal/redefinition; MINOR = new section/guidance; PATCH = clarifications |
 | **Compliance** | Analyze = CRITICAL on conflict; `gate.sh` = executable enforcement                                   |
 | **Authority**  | Guides own engineering detail; this file owns Spec Kit + SDD workflow                                |
 
-**Version**: 1.3.2 | **Ratified**: 2026-06-02 | **Last Amended**: 2026-06-07
+**Version**: 1.4.0 | **Ratified**: 2026-06-07 | **Last Amended**: 2026-06-07
 
 [0]: ../../assets/guides/ 'Canonical guides'
 [1]: ../../assets/guides/FCIS.guide.md 'FCIS Guide'
@@ -314,7 +323,6 @@ No production `src/` feature work from a prototype until explicit approval
 [7]: ../../DESIGN.md 'Design System'
 [8]: ../../assets/guides/LOGGING_GUIDE.md 'Logging Guide'
 [9]: ../../assets/guides/ELECTROBUN.md 'Electrobun Guide'
-[10]: ../../assets/guides/GIT_COMMITS_GUIDE.md 'Git Commits Guide'
 [11]: ../../assets/guides/CI_GUIDE.md 'CI Guide'
 [12]: ../../assets/docs/specs/spec-kit-constitution-log.md 'Spec Kit constitution log'
 [13]: https://github.com/blackboardsh/electrobun 'Electrobun'

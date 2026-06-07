@@ -1,30 +1,39 @@
-import path from 'node:path'
 import { spawnSync } from 'node:child_process'
+import path from 'node:path'
 
 export type FileSelectionArgs = {
   changedOnly: boolean
   base: string | null
 }
 
-export function selectCandidateFiles(allFiles: string[], args: FileSelectionArgs): string[] {
+export type GitRunner = (args: string[]) => string[]
+
+export const defaultGitRunner: GitRunner = (args: string[]) => {
+  const diff = spawnSync('git', args)
+  if (diff.status !== 0) return []
+  return new TextDecoder()
+    .decode(diff.stdout)
+    .split('\n')
+    .map(file => file.trim())
+    .filter(Boolean)
+}
+
+export function selectCandidateFiles(
+  allFiles: string[],
+  args: FileSelectionArgs,
+  gitRunner: GitRunner = defaultGitRunner
+): string[] {
   if (!args.changedOnly) return [...allFiles]
 
   const base = resolveBaseRef(args.base)
-  const diff = spawnSync('git', ['diff', '--name-only', '--staged', base])
-  const changed = diff.status === 0
-    ? new TextDecoder()
-        .decode(diff.stdout)
-        .split('\n')
-        .map(file => file.trim())
-        .filter(Boolean)
-    : []
+  const changed = gitRunner(['diff', '--name-only', '--staged', base])
 
   if (changed.length === 0) {
     // Fallback if no staged changes or diff failed
     return allFiles.filter(file => file.startsWith('tools/') || file.endsWith('.ts') || file.endsWith('.md'))
   }
 
-  return changed.filter(file => allFiles.includes(file))
+  return allFiles.filter(file => changed.includes(file))
 }
 
 export function resolveBaseRef(base: string | null): string {

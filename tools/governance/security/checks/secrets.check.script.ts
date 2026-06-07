@@ -1,7 +1,7 @@
 import { readFileSync, statSync } from 'node:fs'
+import { normalizeRepoPath } from '../file_selection.script.ts'
 import type { SecurityFinding } from '../security.types.ts'
 import { ENTROPY_MIN_BITS, ENTROPY_MIN_LENGTH, SECRETS_REGEX_RULES, shannonEntropy } from './secrets.rules.script.ts'
-import { normalizeRepoPath } from '../file_selection.script.ts'
 
 function hasNulBytePrefix(content: Buffer): boolean {
   const sample = content.subarray(0, Math.min(content.length, 4096))
@@ -27,13 +27,15 @@ function lineFromOffset(content: string, index: number): number {
 export function runSecretsCheck(files: string[]): SecurityFinding[] {
   // Fail-closed: Check if rule constants are effectively loaded
   if (!SECRETS_REGEX_RULES || typeof ENTROPY_MIN_BITS !== 'number' || typeof ENTROPY_MIN_LENGTH !== 'number') {
-    return [{
-      id: 'secret:fatal:config',
-      severity: 'critical',
-      file: 'tools/governance/security/checks/secrets.rules.script.ts',
-      rule: 'config-error',
-      message: 'Authoritative ruleset source is missing or unparseable.'
-    }]
+    return [
+      {
+        id: 'secret:fatal:config',
+        severity: 'critical',
+        file: 'tools/governance/security/checks/secrets.rules.script.ts',
+        rule: 'config-error',
+        message: 'Authoritative ruleset source is missing or unparseable.'
+      }
+    ]
   }
 
   const findings: SecurityFinding[] = []
@@ -47,7 +49,9 @@ export function runSecretsCheck(files: string[]): SecurityFinding[] {
     'bun.lock',
     'bun.lockb',
     'package-lock.json',
-    'electrobun.config.ts'
+    'electrobun.config.ts',
+    'assets/images/',
+    'assets/icons/'
   ]
 
   for (const file of files) {

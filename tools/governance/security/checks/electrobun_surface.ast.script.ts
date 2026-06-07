@@ -35,13 +35,7 @@ export function parseElectrobunViews(configPath: string): SurfaceViewNode[] {
         navContent.length > 0 &&
         navContent
           .split(',')
-          .some(
-            p =>
-              p.trim() &&
-              !p.includes('views://') &&
-              !p.includes('https://') &&
-              !p.includes('http://localhost')
-          )
+          .some(p => p.trim() && !p.includes('views://') && !p.includes('https://') && !p.includes('http://localhost'))
 
       return {
         source: node,

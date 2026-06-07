@@ -21,13 +21,13 @@ export function scanPathsPath(root = repoRoot()): string {
   return path.join(root, SCAN_PATHS_REL)
 }
 
-let cached: { filePath: string; paths: ReadonlyArray<ScanPath> } | null = null
+let cached: { filePath: string; paths: readonly ScanPath[] } | null = null
 
 export function clearScanPathsCache(): void {
   cached = null
 }
 
-export async function loadScanPaths(filePath = scanPathsPath()): Promise<ReadonlyArray<ScanPath>> {
+export async function loadScanPaths(filePath = scanPathsPath()): Promise<readonly ScanPath[]> {
   if (cached && cached.filePath === filePath) return cached.paths
   const file = Bun.file(filePath)
   if (!(await file.exists())) {

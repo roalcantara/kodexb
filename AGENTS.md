@@ -71,10 +71,7 @@ Policy: [`assets/guides/TESTING_GUIDE.md` § R11](assets/guides/TESTING_GUIDE.md
 - For tests, project rules override generic Superpowers examples: follow
   `assets/guides/TESTING_GUIDE.md`, use `bun:test`, prefer `it(...)`, and
   follow the repo's Better Specs and Fishery guidance.
-- For completion, use the phase-specific `mise run validate ...` command when
-  one is provided; otherwise run
-  `bash .agents/skills/app-quality-gate/scripts/gate.sh`. Generic examples such
-  as `npm test` are not sufficient.
+- For completion, use `mise run spec ready ${featureDir} --key ${catalogKey}` to run tag tests, catalog validation, and the full quality gate. Generic examples such as `npm test` are not sufficient.
 - Subagent prompts must include these project overrides explicitly because
   subagents may not inherit the controller's full context.
 
@@ -149,6 +146,18 @@ Optional: **sessionStart** hooks in [`.cursor/hooks.json`](.cursor/hooks.json) r
 [`electrobun_session_start.ts`](.cursor/hooks/electrobun_session_start.ts) (Electrobun skill routing).
 
 Repo docs: `assets/guides/ELECTROBUN.md`, `assets/guides/FCIS.guide.md`, `assets/guides/DOC_AUTHORITY.md`. Active specs: `assets/specs/README.md` (never `docs/superpowers/` — gitignored).
+
+### Verification
+
+Verify before claiming a feature or task done:
+```bash
+mise run spec ready ${featureDir} --key ${catalogKey}
+```
+This command consolidates tag tests, catalog validation, commit-profile hooks, and the full spec gate (lint + trace + security).
+
+3. **`spec security`** — runs two checks (dependencies, Electrobun surface), aggregates `Finding[]`, returns a single exit code. Wired into the local `hk` pre-commit hook (changed-files mode), `mise run spec gate` (full sweep, `--strict`), and `.github/workflows/review.yml` (full sweep, `--strict`, `--base $GITHUB_BASE_REF`).
+4. **`spec handoff-scrub`** — validates a handoff prompt body before it is written to `tmp/handoffs/`. On any high-severity hit it throws `HandoffScrubError`; no file is written and no dispatch is attempted. Wired into `handoff_generate.script.ts` between the prompt-render step and the write step.
+5. **`spec ready`** — consolidates all verification steps (tag tests, catalog validation, hook check, spec gate) into a single ship-blocking command.
 
 ---
 

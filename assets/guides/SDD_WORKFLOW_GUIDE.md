@@ -91,6 +91,12 @@ mise run spec audit assets/specs/NNN-slug --strict
 
 # lint + trace + full app quality gate
 mise run spec gate assets/specs/NNN-slug
+
+# deterministic security subgate (standalone or as part of spec gate)
+mise run spec security --strict
+
+# deterministic security subgate (changed-files mode for local hook)
+mise run spec security --changed-only --strict --base <sha>
 ```
 
 Implementation: [`tools/governance/specs/`](../../tools/governance/specs/).
@@ -214,6 +220,10 @@ ORCHESTRATED_HANDOFF_DISPATCH=1 mise run spec handoff-generate --feature … --f
 The file is always written to `tmp/handoffs/` first. If opencode is not on
 `$PATH`, the script warns on stderr and exits 0 (file-only mode). If
 `opencode run` fails, its exit code propagates.
+
+`spec handoff-generate` invokes `spec handoff-scrub` on the rendered prompt body
+before file write/dispatch. On scrub failure, generation exits 1 and does not
+write or dispatch.
 
 ### Runs CLI — event inspection
 

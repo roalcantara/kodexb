@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import type { SecurityFinding, SecuritySeverity } from '../security.types.ts'
-import { defaultGitRunner, type GitRunner, parseLockDelta, type LockDelta } from './dependencies.delta.script.ts'
+import { defaultGitRunner, type GitRunner, type LockDelta, parseLockDelta } from './dependencies.delta.script.ts'
 
 type CveRow = {
   packageName: string
@@ -68,13 +68,15 @@ export function runDependenciesCheck(
   try {
     delta = parseLockDelta(lockfilePath, base, gitRunner)
   } catch {
-    return [{
-      id: 'dep:fatal:malformed',
-      severity: 'critical',
-      file: lockfilePath,
-      rule: 'malformed-lockfile',
-      message: 'bun.lock is malformed or unparseable.'
-    }]
+    return [
+      {
+        id: 'dep:fatal:malformed',
+        severity: 'critical',
+        file: lockfilePath,
+        rule: 'malformed-lockfile',
+        message: 'bun.lock is malformed or unparseable.'
+      }
+    ]
   }
   const cves = parseCveList(cveListPath)
 

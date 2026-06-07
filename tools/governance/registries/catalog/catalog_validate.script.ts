@@ -4,13 +4,8 @@ import { Glob } from 'bun'
 import { repoRoot } from '../../../support/lib/shared/repo_root.script.ts'
 import { type CatalogEntry, catalogPath, catalogRunTag, listCatalogKeys, loadCatalog } from './catalog.script.ts'
 import type { CatalogFinding, CatalogFindingCategory, CatalogValidatePayload } from './catalog_validate.types.ts'
-import { SCAN_PATHS_REL, loadScanPaths, scanPathsPath } from './scan_paths.script.ts'
-import {
-  extractCatalogRunTagsFromLine,
-  grepPathsWithTag,
-  lineHasCatalogTag,
-  resolveTagKey
-} from './tag.script.ts'
+import { loadScanPaths, SCAN_PATHS_REL, scanPathsPath } from './scan_paths.script.ts'
+import { extractCatalogRunTagsFromLine, grepPathsWithTag, lineHasCatalogTag, resolveTagKey } from './tag.script.ts'
 
 export { RESERVED_RUN_TAGS } from './tag.script.ts'
 

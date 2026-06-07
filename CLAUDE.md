@@ -130,10 +130,8 @@ For tests, project rules override generic Superpowers examples: follow
 `bun:test`, prefer `it(...)`, and follow the repo's Better Specs and Fishery
 guidance.
 
-For completion, use the phase-specific `mise run validate ...` command when
-one is provided. Otherwise run
-`bash .agents/skills/app-quality-gate/scripts/gate.sh`. Generic examples such
-as `npm test` are not sufficient.
+- For completion, use `mise run spec ready ${featureDir} --key ${catalogKey}` to run tag tests, catalog validation, and the full quality gate. Generic examples such as `npm test` are not sufficient.
+
 
 Subagent prompts must include these project overrides explicitly because subagents
 may not inherit the controller's full context.

@@ -168,6 +168,7 @@ tmp/bdd/
 tmp/e2e/
 tmp/audit/
 tmp/metrics/
+tmp/security/
 tmp/playwright-report/
 
 # Generated linter snapshots (jscpd JSON drifts under Biome lint:fix; CI uses

@@ -1,0 +1,324 @@
+{
+  "workflow": "speckit",
+  "specName": "006-safety-hardening",
+  "branch": "006-safety-hardening",
+  "selectedAt": "2026-06-07T16:20:49.670Z",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T16:27:47.602Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "specify",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T16:27:47.605Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T16:31:53.888Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "plan",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T16:31:53.892Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "tasks",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T16:44:54.784Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T16:46:45.121Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "tasks",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T16:47:11.815Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T16:51:16.352Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": null,
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T16:53:15.947Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "tasks",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T17:01:36.992Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T17:02:22.996Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "analyze",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T17:02:22.998Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "tasks",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T19:26:06.699Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": null,
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T19:30:39.778Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T19:40:36.717Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "tasks",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T19:40:46.313Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T19:42:59.773Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "tasks",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T19:43:06.550Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T19:50:44.174Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "tasks",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T19:55:09.449Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T20:02:48.184Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "analyze",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T20:02:53.533Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "plan",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T20:04:56.028Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T20:13:33.342Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "analyze",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T20:13:33.345Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T20:14:34.180Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "tasks",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T20:19:11.894Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T23:01:34.780Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "analyze",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T23:01:34.784Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T23:01:50.174Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "plan",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T23:01:54.526Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T23:06:55.463Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "analyze",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-07T23:06:55.466Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-07T23:07:23.252Z"
+    }
+  ]
+}

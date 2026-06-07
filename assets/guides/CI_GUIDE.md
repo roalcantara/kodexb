@@ -130,6 +130,10 @@ mise exec -- actionlint   # validates all .github/workflows/*.yml
 
 Jobs:
 
+- **`security`** — `mise run spec security --strict --base "$GITHUB_BASE_REF"`
+  runs deterministic security checks (secrets, dependency, Electrobun surface)
+  and must pass before build.
+
 - **`lint`** — `mise run lint check --<tool> --ci`
   (Biome, Knip, dependency-cruiser, jscpd, ls-lint, ast-grep, mise) plus
   `typecheck`, with aggregated exit code. Reports → `tmp/reports/linters/` →
@@ -178,12 +182,12 @@ Steps (in order):
 
 **Common failures:**
 
-| Symptom                                     | Cause / fix                                                       |
-| ------------------------------------------- | ----------------------------------------------------------------- |
+| Symptom                                     | Cause / fix                                                                                                  |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | `Merge commit detected on main`             | PR merged with merge/rebase; use `gh pr merge <n> --squash` and disable other merge methods in repo settings |
-| `Signed commit missing gpgsig header`       | `RELEASE_SIGNING_SSH_KEY` not registered as signing key on GitHub |
-| `release-it: requireCleanWorkingDir failed` | Earlier step left files dirty; check `before:init` hooks          |
-| `release-it: requireBranch=main`            | Workflow somehow ran on a non-`main` ref (shouldn't happen)       |
+| `Signed commit missing gpgsig header`       | `RELEASE_SIGNING_SSH_KEY` not registered as signing key on GitHub                                            |
+| `release-it: requireCleanWorkingDir failed` | Earlier step left files dirty; check `before:init` hooks                                                     |
+| `release-it: requireBranch=main`            | Workflow somehow ran on a non-`main` ref (shouldn't happen)                                                  |
 
 **Local mirror:**
 

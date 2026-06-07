@@ -16,6 +16,7 @@ In order for a task to be considered completed, it MUST satisfy ALL of the follo
 - [ ] All acceptance criteria from the spec are met
 - [ ] Code follows the design document specifications
 - [ ] Code follows the guides under the [guides](../guides) directory
+- [ ] Security subgate passes (`mise run spec security --strict`); handoff emit path passes `mise run spec handoff-scrub`
 
 ## 1. Code Quality - Zero Issues
 
