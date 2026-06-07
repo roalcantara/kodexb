@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.13.0](https://github.com/roalcantara/kodexb/compare/v0.12.3...v0.13.0) (2026-06-07)
+
+### Features
+
+* **spec:** Add deterministic spec audit command ([40c93d7](https://github.com/roalcantara/kodexb/commit/40c93d71647f88371c71c39d132c60678a3b7586))
+
 ## [0.12.3](https://github.com/roalcantara/kodexb/compare/v0.12.2...v0.12.3) (2026-06-07)
 
 ## [0.12.2](https://github.com/roalcantara/kodexb/compare/v0.12.1...v0.12.2) (2026-06-07)
