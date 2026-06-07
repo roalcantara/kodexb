@@ -2,7 +2,7 @@
 
 # Handoff — Cherry-pick wrap-up (terse speckit + plan template)
 
-**Target:** DeepSeek / any implementer agent  
+**Target:** DeepSeek / any implementer agent
 **Branch:** `feat/add-workflow-audit` (continue; do not rebase unless asked)
 
 ## Agent prompt

@@ -298,7 +298,7 @@ No production `src/` feature work from a prototype until explicit approval
 | Rule           | Detail                                                                                               |
 | -------------- | ---------------------------------------------------------------------------------------------------- |
 | **Precedence** | `assets/guides/*` > `CLAUDE.md` > this constitution > Spec Kit templates                             |
-| **Amendments** | PR + dated row in [`spec-kit-constitution-log.md`][12]                                               |
+| **Amendments** | Branch + dated row in [`spec-kit-constitution-log.md`][12]                                               |
 | **Versioning** | SemVer: MAJOR = principle removal/redefinition; MINOR = new section/guidance; PATCH = clarifications |
 | **Compliance** | Analyze = CRITICAL on conflict; `gate.sh` = executable enforcement                                   |
 | **Authority**  | Guides own engineering detail; this file owns Spec Kit + SDD workflow                                |
