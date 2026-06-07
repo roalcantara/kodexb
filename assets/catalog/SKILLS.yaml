@@ -984,7 +984,7 @@ skills:
           avoid:
             - replacing speckit or orchestrated-handoff workflow
             - multiple git clones instead of approved worktrees
-            - PROJECT_BRIEF.md instead of assets/specs/ quartet
+            - PROJECT_BRIEF.md instead of specs folder quartet
             - default feature implementation routing
   acreadiness-policy:
     location: global
@@ -997,3 +997,243 @@ skills:
         - .agents/skills/app-quality-gate/SKILL.md
       avoid:
         - any project task unless AgentRC is explicitly adopted
+  speckit-agent-context-update:
+    location: owned
+    rationale: Useful for updating agent context with new information, but should not replace project specs or orchestrated-handoff for feature planning.
+    policy:
+      type: optional
+      usage:
+        summary: Updating agent context with new information.
+        when:
+          load:
+            - new information relevant to agent tasks
+            - updating agent context during development
+          avoid:
+            - replacing project specs or orchestrated-handoff for feature planning
+      surfaces:
+        claude_optional: when updating agent context with new information during development
+        app_context_optional: Updating agent context with new information, but project specs and orchestrated-handoff remain the authority for feature planning.
+  speckit-analyze:
+    location: owned
+    rationale: Useful for analyzing agent performance and behavior, but should not replace project tests or quality gates for validation.
+    policy:
+      type: optional
+      usage:
+        summary: Analyzing agent performance and behavior.
+        when:
+          load:
+            - analyzing agent interactions
+            - evaluating agent decision-making
+          avoid:
+            - replacing project tests or quality gates for validation
+    surfaces:
+      claude_optional: when analyzing agent performance and behavior during development
+      app_context_optional: Analyzing agent performance and behavior, but project tests and quality gates remain the authority for validation.
+  speckit-checklist:
+    location: owned
+    rationale: Useful for creating checklists to ensure comprehensive agent task coverage, but should not replace project specs or orchestrated-handoff for feature planning.
+    policy:
+      type: optional
+      usage:
+        summary: Creating checklists for comprehensive agent task coverage.
+        when:
+          load:
+            - creating checklists for agent tasks
+            - ensuring comprehensive coverage of agent responsibilities
+          avoid:
+            - replacing project specs or orchestrated-handoff for feature planning
+    surfaces:
+      claude_optional: when creating checklists for agent tasks during development
+      app_context_optional: Creating checklists to ensure comprehensive agent task coverage, but project specs and orchestrated-handoff remain the authority for feature planning.
+  speckit-clarify:
+    location: owned
+    rationale: Useful for clarifying ambiguous requirements or design decisions for agents, but should not replace project specs or orchestrated-handoff for feature planning.
+    policy:
+      type: optional
+      usage:
+        summary: Clarifying ambiguous requirements or design decisions for agents.
+        when:
+          load:
+            - clarifying ambiguous requirements for agent tasks
+            - resolving design uncertainties for agent behavior
+          avoid:
+            - replacing project specs or orchestrated-handoff for feature planning
+    surfaces:
+      claude_optional: when clarifying ambiguous requirements or design decisions for agents during development
+      app_context_optional: Clarifying ambiguous requirements or design decisions for agents, but project specs and orchestrated-handoff remain the authority for feature planning.
+  speckit-constitution:
+    location: owned
+    rationale: Useful for defining high-level principles or guidelines for agent behavior, but should not replace project specs or orchestrated-handoff for feature planning.
+    policy:
+      type: optional
+      usage:
+        summary: Defining high-level principles or guidelines for agent behavior.
+        when:
+          load:
+            - defining principles for agent behavior
+            - establishing guidelines for agent decision-making
+          avoid:
+            - replacing project specs or orchestrated-handoff for feature planning
+    surfaces:
+      claude_optional: when defining high-level principles or guidelines for agent behavior during development
+      app_context_optional: Defining high-level principles or guidelines for agent behavior, but project specs and orchestrated-handoff remain the authority for feature planning.
+  speckit-git-commit:
+    location: owned
+    rationale: Useful for generating git commit messages based on agent task summaries, but should not replace developer judgment or project commit message conventions.
+    policy:
+      type: optional
+      usage:
+        summary: Generating git commit messages based on agent task summaries.
+        when:
+          load:
+            - generating commit messages from agent task summaries
+            - automating commit message creation during development
+          avoid:
+            - replacing developer judgment or project commit message conventions
+    surfaces:
+      claude_optional: when generating git commit messages from agent task summaries during development
+      app_context_optional: Generating git commit messages based on agent task summaries, but developer judgment and project conventions remain the authority for final commit messages.
+  speckit-git-feature:
+    location: owned
+    rationale: Useful for generating git branch names based on agent task summaries, but should not replace developer judgment or project branch naming conventions.
+    policy:
+      type: optional
+      usage:
+        summary: Generating git branch names based on agent task summaries.
+        when:
+          load:
+            - generating branch names from agent task summaries
+            - automating branch name creation during development
+          avoid:
+            - replacing developer judgment or project branch naming conventions
+    surfaces:
+      claude_optional: when generating git branch names from agent task summaries during development
+      app_context_optional: Generating git branch names based on agent task summaries, but developer judgment and project conventions remain the authority for final branch names.
+  speckit-git-initialize:
+    location: owned
+    rationale: Useful for initializing git repositories for new agent-related projects, but should not replace existing project repositories or workflows.
+    policy:
+      type: optional
+      usage:
+        summary: Initializing git repositories for new agent-related projects.
+        when:
+          load:
+            - initializing git repositories for agent projects
+            - setting up version control for new agent initiatives
+          avoid:
+            - replacing existing project repositories or workflows
+    surfaces:
+      claude_optional: when initializing git repositories for new agent-related projects during development
+      app_context_optional: Initializing git repositories for new agent-related projects, but existing project repositories and workflows remain the authority for version control.
+  speckit-git-remote:
+    location: owned
+    rationale: Useful for managing git remotes for agent-related projects, but should not replace existing project remote management practices.
+    policy:
+      type: optional
+      usage:
+        summary: Managing git remotes for agent-related projects.
+        when:
+          load:
+            - managing git remotes for agent projects
+            - configuring remote repositories for new agent initiatives
+          avoid:
+            - replacing existing project remote management practices
+    surfaces:
+      claude_optional: when managing git remotes for agent-related projects during development
+      app_context_optional: Managing git remotes for new agent-related projects, but existing project remote management practices remain the authority for repository configuration.
+  speckit-git-validate:
+    location: owned
+    rationale: Useful for validating git repository status before agent-related commits, but should not replace existing project validation practices or pre-commit hooks.
+    policy:
+      type: optional
+      usage:
+        summary: Validating git repository status before agent-related commits.
+        when:
+          load:
+            - validating repository status before commits
+            - automating pre-commit checks for agent projects
+          avoid:
+            - replacing existing project validation practices or pre-commit hooks
+    surfaces:
+      claude_optional: when validating git repository status before agent-related commits during development
+      app_context_optional: Validating git repository status before agent-related commits, but existing project validation practices and pre-commit hooks remain the authority for commit readiness.
+  speckit-implement:
+    location: owned
+    rationale: Useful for generating implementation code snippets based on agent task summaries, but should not replace developer judgment or project coding standards.
+    policy:
+      type: optional
+      usage:
+        summary: Generating implementation code snippets based on agent task summaries.
+        when:
+          load:
+            - generating code snippets from agent task summaries
+            - automating implementation suggestions during development
+          avoid:
+            - replacing developer judgment or project coding standards
+    surfaces:
+      claude_optional: when generating implementation code snippets from agent task summaries during development
+      app_context_optional: Generating implementation code snippets based on agent task summaries, but developer judgment and project coding standards remain the authority for final code.
+  speckit-plan:
+    location: owned
+    rationale: Useful for generating development plans based on agent task summaries, but should not replace developer judgment or project planning practices.
+    policy:
+      type: optional
+      usage:
+        summary: Generating development plans based on agent task summaries.
+        when:
+          load:
+            - generating development plans from agent task summaries
+            - automating planning suggestions during development
+          avoid:
+            - replacing developer judgment or project planning practices
+    surfaces:
+      claude_optional: when generating development plans from agent task summaries during development
+      app_context_optional: Generating development plans based on agent task summaries, but developer judgment and project planning practices remain the authority for final plans.
+  speckit-specify:
+    location: owned
+    rationale: Useful for generating specifications based on agent task summaries, but should not replace developer judgment or project specification practices.
+    policy:
+      type: optional
+      usage:
+        summary: Generating specifications based on agent task summaries.
+        when:
+          load:
+            - generating specifications from agent task summaries
+            - automating specification suggestions during development
+          avoid:
+            - replacing developer judgment or project specification practices
+    surfaces:
+      claude_optional: when generating specifications from agent task summaries during development
+      app_context_optional: Generating specifications based on agent task summaries, but developer judgment and project specification practices remain the authority for final specs.
+  speckit-tasks:
+    location: owned
+    rationale: Useful for generating mise task definitions based on agent task summaries, but should not replace developer judgment or project task management practices.
+    policy:
+      type: optional
+      usage:
+        summary: Generating mise task definitions based on agent task summaries.
+        when:
+          load:
+            - generating mise tasks from agent task summaries
+            - automating task definition suggestions during development
+          avoid:
+            - replacing developer judgment or project task management practices
+    surfaces:
+      claude_optional: when generating mise task definitions from agent task summaries during development
+      app_context_optional: Generating mise task definitions based on agent task summaries, but developer judgment and project task management practices remain the authority for final tasks.
+  speckit-taskstoissues:
+    location: owned
+    rationale: Useful for generating issue tracker tickets based on agent task summaries, but should not replace developer judgment or project issue management practices.
+    policy:
+      type: optional
+      usage:
+        summary: Generating issue tracker tickets based on agent task summaries.
+        when:
+          load:
+            - generating issue tickets from agent task summaries
+            - automating issue creation suggestions during development
+          avoid:
+            - replacing developer judgment or project issue management practices
+    surfaces:
+      claude_optional: when generating issue tracker tickets from agent task summaries during development
+      app_context_optional: Generating issue tracker tickets based on agent task summaries, but developer judgment and project issue management practices remain the authority for final issues.
