@@ -212,6 +212,32 @@ The file is always written to `tmp/handoffs/` first. If opencode is not on
 `$PATH`, the script warns on stderr and exits 0 (file-only mode). If
 `opencode run` fails, its exit code propagates.
 
+### Runs CLI — event inspection
+
+Workflow events are written as newline-delimited JSONL under
+`tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.ndjson`. The `runs` subcommand
+inspects and manages them:
+
+```bash
+# Show the 20 most recent runs with slug/phase/duration/result
+mise run spec runs list
+
+# Stream all events for a specific run (byte-identical to disk)
+mise run spec runs show <run_id>
+
+# Stream the most recent run for today (blocking on EOF)
+mise run spec runs tail
+
+# Remove all runs older than 30 days
+mise run spec runs prune
+```
+
+Retention: `prune` removes date directories older than 30 days. `list` also
+triggers a best-effort lazy prune as a side effect (silent — does not fail
+if the directory is locked or missing).
+
+Implementation: [`tools/governance/specs/workflow/runs_cli.script.ts`](../../tools/governance/specs/workflow/runs_cli.script.ts).
+
 ### Review handoff — post-implement verification
 
 After **implement** (primary agent or opencode worker), verify the deliverable

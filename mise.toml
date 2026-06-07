@@ -326,13 +326,22 @@ BLOCK_ON_THREAT="true"
       arg "[slice]" help="Optional AC slice id (e.g. sf1ac1 maps to @ac:SF-1_AC1)"
     }
   ''', run = "bun tools/bin/test.script.ts" }
-"perf" = { description = "Run preview-server performance benchmark workflows", usage = '''
+"perf" = { description = "Run performance benchmark workflows (preview-server, workflow-observability)", usage = '''
     cmd "run" {
       flag "--port <port>" default="3457" help="Preview server port for run action"
     }
     cmd "baseline" {}
     cmd "compare" {}
     cmd "open" {}
+    cmd "workflow-observability" {
+      flag "--regression-pct <n>" default="20" help="Baseline p95 %% floor for regression delta"
+      flag "--regression-min-delta-ms <n>" default="0.25" help="Min absolute p95 delta (ms) before regression"
+      flag "--warmup <n>" default="10" help="Warmup iterations"
+      flag "--iterations <n>" default="100" help="Sample count"
+      flag "--absolute-p95-ms <label=ms>" help="Override WOBS absolute p95 cap (repeatable)"
+      flag "--no-regression" help="Skip baseline comparison; still writes baseline JSON"
+      flag "--no-absolute-limits" help="Skip WOBS absolute p95 caps"
+    }
   ''', run = "bun tools/metrics/harnesses/perf/perf.script.ts" }
 "hooks" = { description = "Run tests for Cursor agent hooks (.cursor/hooks/)", usage = '''
     cmd "governance-audit" help="Governance audit threat-pattern unit tests"

@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-06-07T13:13:30.539Z",
+  "git_sha": "2779224b0976713c3199ae779162e82f35daa3f1",
+  "bun_version": "1.3.14",
+  "warmup": 10,
+  "iterations": 100,
+  "policy": {
+    "regression_pct": 20,
+    "regression_min_delta_ms": 0.25,
+    "compare_regression": true,
+    "check_absolute_limits": true,
+    "absolute_p95_ms": {
+      "handoff-generate": 250,
+      "next-populated": 100,
+      "next-early-exit": 50
+    }
+  },
+  "results": {
+    "handoff-generate": {
+      "p50": 0.23029100000000113,
+      "p95": 0.689582999999999,
+      "p99": 1.5471670000000017
+    },
+    "next-populated": {
+      "p50": 0.10508400000000506,
+      "p95": 0.14187499999999886,
+      "p99": 0.3725000000000023
+    },
+    "next-early-exit": {
+      "p50": 0.10183299999999917,
+      "p95": 0.15483300000001066,
+      "p99": 0.19374999999999432
+    }
+  }
+}
