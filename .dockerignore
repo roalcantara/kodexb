@@ -7,5 +7,6 @@ report
 test-results
 .code-review-graph
 tmp
+tmp/security
 **/.DS_Store
 **/*.log

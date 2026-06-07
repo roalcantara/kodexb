@@ -145,6 +145,27 @@ function main(): void {
       spawnInherit(['bun', `${SPECS}/audit.script.ts`, ...args.filter(Boolean)], root)
       break
     }
+    case 'ready': {
+      const dir = process.env.usage_feature_dir ?? ''
+      const key = process.env.usage_key ?? ''
+
+      const commands: string[][] = []
+      if (key) {
+        commands.push(['mise', 'run', 'test', 'tag', key])
+      }
+      commands.push(['mise', 'run', 'catalog', 'validate', '--raw'])
+      commands.push(['hk', 'check', '--profile', 'commit'])
+      commands.push(['bash', `${SPECS}/gate.sh`, dir])
+
+      for (const cmd of commands) {
+        const r = Bun.spawnSync(cmd, { cwd: root, stdout: 'inherit', stderr: 'inherit', stdin: 'inherit' })
+        if (r.exitCode !== 0) {
+          process.exit(r.exitCode ?? 1)
+        }
+      }
+      console.log('spec ready: OK')
+      break
+    }
     case 'review-handoff': {
       const args: string[] = [process.env.usage_action ?? '']
       if (process.env.usage_feature) args.push('--feature', process.env.usage_feature)

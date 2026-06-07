@@ -107,3 +107,10 @@ task_management:
   specs:
     - 008-task-management
   superseded_by: null
+
+security:
+  title: Safety hardening
+  status: shipped
+  specs:
+    - 006-safety-hardening
+  superseded_by: null

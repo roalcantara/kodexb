@@ -1,0 +1,10 @@
+[allowlist]
+description = "Global allowlist for security fixtures and temporary handoffs"
+paths = [
+    '''tools/governance/security/fixtures/''',
+    '''tmp/handoffs/''',
+    '''tmp/security-findings.json''',
+    '''tools/governance/security/handoff_scrub.script.spec.ts''',
+    '''tools/governance/security/checks/secrets.check.script.spec.ts''',
+    '''tools/governance/specs/workflow/handoff_generate.script.spec.ts'''
+]
