@@ -1,0 +1,16 @@
+# Roots and glob patterns scanned by `mise run catalog` to discover catalog
+# tag membership (`// @<key>` line-1 comments in unit specs, `@<key>` tokens
+# on Feature/Scenario lines in Gherkin files).
+#
+# Add a (root, glob) pair here when a new home for spec files starts hosting
+# catalog-tagged tests. Loader: tools/governance/registries/catalog/scan_paths.script.ts.
+
+scan_paths:
+  - root: assets/features
+    glob: "**/*.feature"
+  - root: src
+    glob: "**/*.spec.ts"
+  - root: src
+    glob: "**/*.spec.tsx"
+  - root: tools
+    glob: "**/*.spec.ts"

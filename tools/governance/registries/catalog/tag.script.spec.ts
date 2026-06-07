@@ -1,9 +1,14 @@
-import { describe, expect, it } from 'bun:test'
+import { afterEach, describe, expect, it } from 'bun:test'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
+import { clearScanPathsCache } from './scan_paths.script.ts'
 import type { TagResolution } from './tag.script.ts'
 import {
   acTagFromSliceId,
   e2eTagExpression,
   extractCatalogRunTagsFromLine,
+  grepPathsWithTag,
   layerFilter,
   lineHasAcTag,
   lineHasCatalogTag,
@@ -113,5 +118,56 @@ describe('tag.lib', () => {
 
   it('extractCatalogRunTagsFromLine filters reserved tags and @native-handoff keeps only sync', () => {
     expect(extractCatalogRunTagsFromLine('@sync @unit @todo @native-handoff')).toEqual(['sync'])
+  })
+
+  describe('grepPathsWithTag', () => {
+    let tmpRoots: string[] = []
+
+    afterEach(() => {
+      for (const r of tmpRoots) {
+        try {
+          rmSync(r, { recursive: true, force: true })
+        } catch {
+          /* ok */
+        }
+      }
+      tmpRoots = []
+      clearScanPathsCache()
+    })
+
+    function writeFile(root: string, relPath: string, content: string): void {
+      mkdirSync(path.join(root, path.dirname(relPath)), { recursive: true })
+      writeFileSync(path.join(root, relPath), content)
+    }
+
+    function writeDefaultScanPaths(root: string): void {
+      writeFile(
+        root,
+        'assets/catalog/scan_paths.yaml',
+        [
+          'scan_paths:',
+          '  - root: assets/features',
+          '    glob: "**/*.feature"',
+          '  - root: src',
+          '    glob: "**/*.spec.ts"',
+          '  - root: tools',
+          '    glob: "**/*.spec.ts"',
+          ''
+        ].join('\n')
+      )
+    }
+
+    it('finds a line-1 // @tag comment in a tools/-rooted spec', async () => {
+      const root = mkdtempSync(path.join(tmpdir(), 'tag-scan-tools-'))
+      tmpRoots.push(root)
+      writeDefaultScanPaths(root)
+      writeFile(
+        root,
+        'tools/governance/security/scan.script.spec.ts',
+        "// @security\nimport { describe, it } from 'bun:test'\ndescribe('scan', () => it('runs', () => {}))\n"
+      )
+      const paths = await grepPathsWithTag('@security', root)
+      expect(paths).toContain('tools/governance/security/scan.script.spec.ts')
+    })
   })
 })

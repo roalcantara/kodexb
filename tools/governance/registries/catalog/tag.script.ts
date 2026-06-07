@@ -10,6 +10,7 @@ import {
   listCatalogKeys,
   loadCatalog
 } from './catalog.script.ts'
+import { loadScanPaths, scanPathsPath } from './scan_paths.script.ts'
 
 export const CATALOG_TAG_TOKEN = /@([a-z][a-z0-9_]*)\b/g
 export const AC_SLICE_ID_RE = /^sf(\d+)ac(\d+)$/i
@@ -133,17 +134,12 @@ async function collectPathsMatchingTag(
   return matches
 }
 
-export const TAG_SCAN_PATHS: Array<{ root: string; glob: string }> = [
-  { root: 'assets/features', glob: '**/*.feature' },
-  { root: 'src', glob: '**/*.spec.ts' },
-  { root: 'src', glob: '**/*.spec.tsx' }
-]
-
 export async function grepPathsWithTag(tag: string, root = repoRoot()): Promise<string[]> {
   const want = tag.startsWith('@') ? tag : `@${tag}`
+  const scanPaths = await loadScanPaths(scanPathsPath(root))
   const found = new Set<string>()
   const batches = await Promise.all(
-    TAG_SCAN_PATHS.map(({ root: rootRel, glob: pattern }) => {
+    scanPaths.map(({ root: rootRel, glob: pattern }) => {
       const scanRoot = path.join(root, rootRel)
       if (!existsSync(scanRoot)) return Promise.resolve([] as string[])
       const scanAllLines = rootRel === 'assets/features'
@@ -305,7 +301,8 @@ export function runTaggedTests(
 
   if (filter.unit && union.units.length > 0 && !sliceRun) {
     console.log('==> unit tests')
-    runCommand(['bun', 'test', ...union.units], root)
+    const unitPathArgs = union.units.map(u => (u.startsWith('./') || path.isAbsolute(u) ? u : `./${u}`))
+    runCommand(['bun', 'test', ...unitPathArgs], root)
   } else if (filter.unit && !sliceRun) {
     console.log('==> unit tests: (none)')
   } else if (sliceRun) {

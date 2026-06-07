@@ -4,12 +4,12 @@ import { Glob } from 'bun'
 import { repoRoot } from '../../../support/lib/shared/repo_root.script.ts'
 import { type CatalogEntry, catalogPath, catalogRunTag, listCatalogKeys, loadCatalog } from './catalog.script.ts'
 import type { CatalogFinding, CatalogFindingCategory, CatalogValidatePayload } from './catalog_validate.types.ts'
+import { SCAN_PATHS_REL, loadScanPaths, scanPathsPath } from './scan_paths.script.ts'
 import {
   extractCatalogRunTagsFromLine,
   grepPathsWithTag,
   lineHasCatalogTag,
-  resolveTagKey,
-  TAG_SCAN_PATHS
+  resolveTagKey
 } from './tag.script.ts'
 
 export { RESERVED_RUN_TAGS } from './tag.script.ts'
@@ -156,7 +156,8 @@ async function scanOrphanTags(
   root: string
 ): Promise<void> {
   const seen = new Set<string>()
-  for (const { root: rootRel, glob: pattern } of TAG_SCAN_PATHS) {
+  const scanPaths = await loadScanPaths(scanPathsPath(root))
+  for (const { root: rootRel, glob: pattern } of scanPaths) {
     const scanRoot = path.join(root, rootRel)
     if (!existsSync(scanRoot)) continue
     const glob = new Glob(pattern)
@@ -222,7 +223,7 @@ export async function runValidate(options: ValidateOptions = {}): Promise<Catalo
         findings,
         summary,
         'shipped_no_tags',
-        `${key} [shipped]: zero grep hits for ${tag} — tag Gherkin + unit specs`,
+        `${key} [shipped]: zero grep hits for ${tag} — tag Gherkin + unit specs (scan roots: ${SCAN_PATHS_REL})`,
         key
       )
     }
