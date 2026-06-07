@@ -82,6 +82,26 @@ skills:
             - structured logging
           avoid:
             - documentation-only edits with no logging code change
+  app-review-handoff:
+    location: owned
+    rationale: Post-implement verification against handoff AC tables and Evidence commands. Terse findings and optional
+      fix handoffs for worker follow-up. Complements app-quality-gate and spec lint without duplicating them.
+    policy:
+      type: required
+      usage:
+        summary: Load after a worker completes a handoff prompt to verify AC Evidence and emit terse review output.
+        when:
+          load:
+            - review handoff
+            - verify worker output
+            - post-implement review
+            - dispatch reviewer subagent
+            - handoff AC tracker verification
+            - tmp/handoffs review
+          avoid:
+            - pre-implement spec consistency (use speckit-analyze)
+            - implementer applying review feedback (use receiving-code-review)
+            - commit readiness without handoff context (use app-quality-gate)
   build-graph:
     location: project
     rationale: Operational MCP workflow for building, refreshing, and verifying the local code-review-graph database.

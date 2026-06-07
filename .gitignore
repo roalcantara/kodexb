@@ -189,6 +189,8 @@ report/
 !.agents/skills/app-testing/**
 !.agents/skills/app-logging/
 !.agents/skills/app-logging/**
+!.agents/skills/app-review-handoff/
+!.agents/skills/app-review-handoff/**
 .claude/skills/*
 
 # code coverage

@@ -13,7 +13,7 @@ wrong validation, and naming drift.
 
 ## Skill locations
 
-- **Project-owned skills** (this file, `app-rpc`, `app-testing`, `app-quality-gate`):
+- **Project-owned skills** (this file, `app-rpc`, `app-testing`, `app-quality-gate`, `app-review-handoff`):
   read from **`<repo>/.agents/skills/<skill-id>/SKILL.md`** (this repository).
 - **Project skill ledger**:
   [`assets/guides/SKILLS.md`](../../../assets/guides/SKILLS.md) records which
@@ -140,15 +140,15 @@ Full tokens and patterns:
 
 ## Deep dives (open as needed)
 
-| Topic              | Guide                                                                                               |
-| ------------------ | --------------------------------------------------------------------------------------------------- |
+| Topic              | Guide                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
 | Architecture + RPC | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md) + [`ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md) |
-| FCIS layer rules   | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md)                               |
-| Naming + SOLID     | [`assets/guides/CODESTYLE_GUIDE.md`](../../../assets/guides/CODESTYLE_GUIDE.md)                     |
-| Electrobun wiring  | [`assets/guides/ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md)                               |
-| Testing            | [`assets/guides/TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md) + **app-testing** skill |
-| Factories          | [`assets/guides/FISHERY_GUIDE.md`](../../../assets/guides/FISHERY_GUIDE.md)                         |
-| DoD / gate         | [`assets/guides/DoD.md`](../../../assets/guides/DoD.md) + **app-quality-gate** skill                |
+| FCIS layer rules   | [`assets/guides/FCIS.guide.md`](../../../assets/guides/FCIS.guide.md)                                                           |
+| Naming + SOLID     | [`assets/guides/CODESTYLE_GUIDE.md`](../../../assets/guides/CODESTYLE_GUIDE.md)                                                 |
+| Electrobun wiring  | [`assets/guides/ELECTROBUN.md`](../../../assets/guides/ELECTROBUN.md)                                                           |
+| Testing            | [`assets/guides/TESTING_GUIDE.md`](../../../assets/guides/TESTING_GUIDE.md) + **app-testing** skill                             |
+| Factories          | [`assets/guides/FISHERY_GUIDE.md`](../../../assets/guides/FISHERY_GUIDE.md)                                                     |
+| DoD / gate         | [`assets/guides/DoD.md`](../../../assets/guides/DoD.md) + **app-quality-gate** skill                                            |
 
 ## Gotchas
 
@@ -168,12 +168,13 @@ Full tokens and patterns:
 
 ## Companion skills
 
-| Skill                | When                                                                                       |
-| -------------------- | ------------------------------------------------------------------------------------------ |
-| **app-rpc**          | Touching `rpc/server.ts`, `rpc/schemas.ts`, Eden client, or preview server routes.         |
-| **app-testing**      | Writing or changing any spec.                                                              |
-| **app-quality-gate** | Before declaring work done or committing.                                                  |
-| **electrobun-***     | Per [`.cursor/electrobun-skill-routing.md`](../../../.cursor/electrobun-skill-routing.md). |
+| Skill                  | When                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------ |
+| **app-rpc**            | Touching `rpc/server.ts`, `rpc/schemas.ts`, Eden client, or preview server routes.         |
+| **app-testing**        | Writing or changing any spec.                                                              |
+| **app-quality-gate**   | Before declaring work done or committing.                                                  |
+| **app-review-handoff** | After a worker completes a handoff prompt — AC Evidence review (terse).                    |
+| **electrobun-***       | Per [`.cursor/electrobun-skill-routing.md`](../../../.cursor/electrobun-skill-routing.md). |
 
 Optional companions stay subordinate to project-owned skills and guides:
 

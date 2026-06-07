@@ -1428,6 +1428,20 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       flag "--dispatch" help="Pipe prompt to opencode run (also enabled by ORCHESTRATED_HANDOFF_DISPATCH=1)"
       flag "--dry-run" help="Print prompt to stdout; do not write file"
     }
+    cmd "runs" {
+      arg "<action>" help="list|show|tail|prune"
+      flag "--feature <dir>" help="Filter by feature directory"
+      arg "[runId]" help="Run ID for show/tail"
+    }
+    cmd "review-handoff" {
+      arg "<action>" help="classify|extract-evidence|prepare|scaffold-audit"
+      flag "--feature <dir>" help="Feature dir (default handoff: handoff.md)"
+      flag "--handoff <path>" help="Handoff markdown path (overrides --feature default)"
+      flag "--base <sha>" default="HEAD~1" help="Git base for classify/prepare"
+      flag "--head <sha>" default="HEAD" help="Git head for classify/prepare"
+      flag "--focus <kind>" help="implement-src|gherkin-bdd|governance-tools|docs-only|mixed"
+      flag "--json" help="Machine-readable JSON output"
+    }
   ''', run = "bun tools/bin/spec.script.ts" }
 "catalog" = { description = "Shipped-feature registry (catalog.yaml metadata)", usage = '''
     cmd "list" {

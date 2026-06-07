@@ -81,6 +81,7 @@ Load these at the start of any project task:
 - `app-rpc` — when touching Elysia routes or the Eden Treaty client
 - `app-testing` — when writing or modifying tests
 - `app-quality-gate` — before marking anything done
+- `app-review-handoff` — after a worker completes a handoff prompt (AC + Evidence review)
 
 Optional companion skills for narrower situations:
 

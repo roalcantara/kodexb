@@ -112,6 +112,25 @@ function main(): void {
       spawnInherit(['bun', `${WORKFLOW}/handoff_generate.script.ts`, ...args], root)
       break
     }
+    case 'runs': {
+      const action = process.env.usage_action ?? ''
+      const args: string[] = [action]
+      if (process.env.usage_feature) args.push('--feature', process.env.usage_feature)
+      if (process.env.usage_runId) args.push(process.env.usage_runId)
+      spawnInherit(['bun', `${WORKFLOW}/runs_cli.script.ts`, ...args], root)
+      break
+    }
+    case 'review-handoff': {
+      const args: string[] = [process.env.usage_action ?? '']
+      if (process.env.usage_feature) args.push('--feature', process.env.usage_feature)
+      if (process.env.usage_handoff) args.push('--handoff', process.env.usage_handoff)
+      if (process.env.usage_base) args.push('--base', process.env.usage_base)
+      if (process.env.usage_head) args.push('--head', process.env.usage_head)
+      if (process.env.usage_focus) args.push('--focus', process.env.usage_focus)
+      if (envBool('usage_json')) args.push('--json')
+      spawnInherit(['bun', `${WORKFLOW}/review_handoff.script.ts`, ...args.filter(Boolean)], root)
+      break
+    }
     default:
       console.error(`spec: unknown action ${cmd}`)
       process.exit(2)

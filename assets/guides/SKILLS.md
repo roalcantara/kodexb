@@ -84,6 +84,7 @@ project-specific situation.
 | `app-testing`                  | `owned`   | `required`  | Canonical testing workflow for co-located Bun specs and harnesses.             |
 | `app-quality-gate`             | `owned`   | `required`  | Executable completion and commit-readiness gate.                               |
 | `app-logging`                  | `owned`   | `required`  | Structured logging with LogTape, `LOG_LEVEL` dial, and DB/RPC instrumentation. |
+| `app-review-handoff`           | `owned`   | `required`  | Post-implement handoff AC/Evidence review; terse findings and fix handoffs.    |
 | `build-graph`                  | `project` | `required`  | Operational CRG MCP workflow for graph initialization and refresh.             |
 | `code-review-graph`            | `project` | `reference` | CRG concepts, subordinate to upstream CLI docs and KB graph policy.            |
 | `electrobun-best-practices`    | `project` | `required`  | Baseline for desktop stack work before narrower Electrobun skills.             |
@@ -120,6 +121,7 @@ project-specific situation.
 | FCIS placement or purity questions                 | `FCIS.guide.md`, `app-context`; do not use raw `functional-core-imperative-shell` comments |
 | `mise.toml`, task wiring, tool versions            | `mise-tasks`, `mise-expert`                                                                |
 | Review preparation or review feedback              | `requesting-code-review`, `receiving-code-review`                                          |
+| Post-implement handoff verification                | `app-review-handoff` (terse AC/Evidence review; not commit gate)                           |
 | Design or prototype intake                         | `stitch-design`, only under the prototype gate                                             |
 | React component translation from a design artifact | `react:components`, adapted to the project's renderer and guide stack                      |
 | Isolated parallel development                      | `using-git-worktrees`, only when requested or approved                                     |
