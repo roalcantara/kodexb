@@ -108,7 +108,7 @@ Check if `.specify/extensions.yml` exists in the project root.
 
 ## Completion Report
 
-Command ends after Phase 2 planning. Report branch, IMPL_PLAN path, and generated artifacts.
+On **success**: `OK — <FEATURE_DIR>/plan.md` (one line). On failure / NEEDS CLARIFICATION blockers: branch, paths, and artifacts list. User `--verbose` forces full report.
 
 ## Phases
 
@@ -164,4 +164,4 @@ Command ends after Phase 2 planning. Report branch, IMPL_PLAN path, and generate
 
 - [ ] Plan workflow executed and design artifacts generated
 - [ ] Extension hooks dispatched or skipped according to the rules in Mandatory Post-Execution Hooks above
-- [ ] Completion reported to user with branch, plan path, and generated artifacts
+- [ ] Completion reported per contract: one-line `OK — <FEATURE_DIR>/plan.md` on success, or full branch/paths/artifacts on failure / `--verbose`

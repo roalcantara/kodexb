@@ -1,10 +1,12 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.2.0 → 1.3.0
-Bump rationale: MINOR. SDD path migration to assets/specs/, spec.md/plan.md
+Version change: 1.2.0 → 1.3.2
+Bump rationale: PATCH (1.3.0) + PATCH (1.3.1) + PATCH. SDD path migration to assets/specs/, spec.md/plan.md
   authority, deterministic spec lint/trace gates, Gherkin in assets/features/e2e/,
-  git-config auto_commit documented, SDD_WORKFLOW_GUIDE reference.
+  git-config auto_commit documented, SDD_WORKFLOW_GUIDE reference. 1.3.1:
+  Fix amendment log [12] link to canonical path; terse speckit completion reports.
+  1.3.2: Document mise run spec audit in analyze-dual footnote.
 -->
 
 # kb — Project Constitution
@@ -201,8 +203,9 @@ kb uses **Spec Kit** commands aligned to [spec-driven.md][16] — not a separate
 [^analyze-dual]: The `orchestrated-handoff` workflow runs `speckit.analyze`
     **twice** — once after `plan.md` (plan-pass; catches plan/traceability
     gaps) and once after `tasks.md` + `handoff.md` (tasks-pass; catches
-    task/handoff/Evidence drift). Both passes remain advisory. Phase order
-    and completion markers (`checklists/analyze-plan.md`,
+    task/handoff/Evidence drift). Both passes remain advisory. `mise run spec audit`
+    enforces quartet/handoff/tasks readiness deterministically between tasks and
+    analyze. Phase order and completion markers (`checklists/analyze-plan.md`,
     `checklists/analyze-tasks.md`) are documented in
     [`assets/guides/SDD_WORKFLOW_GUIDE.md` § orchestrated-handoff workflow](../../assets/guides/SDD_WORKFLOW_GUIDE.md#orchestrated-handoff-workflow).
 
@@ -295,12 +298,12 @@ No production `src/` feature work from a prototype until explicit approval
 | Rule           | Detail                                                                                               |
 | -------------- | ---------------------------------------------------------------------------------------------------- |
 | **Precedence** | `assets/guides/*` > `CLAUDE.md` > this constitution > Spec Kit templates                             |
-| **Amendments** | PR + dated row in [`spec-kit-constitution-log.md`][12]                                               |
+| **Amendments** | Branch + dated row in [`spec-kit-constitution-log.md`][12]                                               |
 | **Versioning** | SemVer: MAJOR = principle removal/redefinition; MINOR = new section/guidance; PATCH = clarifications |
 | **Compliance** | Analyze = CRITICAL on conflict; `gate.sh` = executable enforcement                                   |
 | **Authority**  | Guides own engineering detail; this file owns Spec Kit + SDD workflow                                |
 
-**Version**: 1.3.0 | **Ratified**: 2026-06-02 | **Last Amended**: 2026-06-03
+**Version**: 1.3.2 | **Ratified**: 2026-06-02 | **Last Amended**: 2026-06-07
 
 [0]: ../../assets/guides/ 'Canonical guides'
 [1]: ../../assets/guides/FCIS.guide.md 'FCIS Guide'
@@ -313,7 +316,7 @@ No production `src/` feature work from a prototype until explicit approval
 [9]: ../../assets/guides/ELECTROBUN.md 'Electrobun Guide'
 [10]: ../../assets/guides/GIT_COMMITS_GUIDE.md 'Git Commits Guide'
 [11]: ../../assets/guides/CI_GUIDE.md 'CI Guide'
-[12]: ../../assets/docs/specs/MILESTONE_02/00_scope/spec-kit-constitution-log.md 'Spec Kit constitution log'
+[12]: ../../assets/docs/specs/spec-kit-constitution-log.md 'Spec Kit constitution log'
 [13]: https://github.com/blackboardsh/electrobun 'Electrobun'
 [14]: ../../CLAUDE.md
 [15]: ../../AGENTS.md

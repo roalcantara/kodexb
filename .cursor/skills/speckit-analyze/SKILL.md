@@ -235,6 +235,14 @@ After reporting, check if `.specify/extensions.yml` exists in the project root.
     ```
 - If no hooks are registered or `.specify/extensions.yml` does not exist, skip silently
 
+## Completion Report
+
+When **0 CRITICAL and 0 HIGH** findings: `OK — analyze clean (<FEATURE_DIR>)`.
+
+When issues exist: full findings table (constitution violations first), coverage stats, and remediation order. Never shorten CRITICAL/HIGH sections.
+
+Run `mise run spec audit <dir> --strict` before this skill (optional: `spec lint` + `spec trace` before ship for full verification).
+
 ## Operating Principles
 
 ### Context Efficiency
