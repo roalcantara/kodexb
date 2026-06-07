@@ -86,6 +86,9 @@ mise run spec lint assets/specs/NNN-slug --strict
 # Cross-file traceability (spec ↔ plan ↔ features)
 mise run spec trace assets/specs/NNN-slug --strict
 
+# Quartet + handoff + tasks readiness (post-tasks, pre-analyze)
+mise run spec audit assets/specs/NNN-slug --strict
+
 # lint + trace + full app quality gate
 mise run spec gate assets/specs/NNN-slug
 ```
