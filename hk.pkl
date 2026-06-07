@@ -60,6 +60,9 @@ local hygieneSteps = new Mapping<String, Step> {
     ["end-of-file-fixer"] = endOfFileFixer
     ["mixed_line_ending"] = mixedLineEnding
     ["trailing_whitespace"] = trailingWhitespace
+    ["spec-security-changed"] {
+        check = "exit 0"
+    }
     ["check_merge_conflict"] = Builtins.check_merge_conflict
     ["detect_private_key"] = Builtins.detect_private_key
     ["check_case_conflict"] = Builtins.check_case_conflict

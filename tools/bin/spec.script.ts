@@ -29,7 +29,8 @@ function envBool(name: string): boolean {
 
 function main(): void {
   const root = chdirToRepoRoot()
-  const cmd = process.env.usage_cmd ?? ''
+  const args = process.argv.slice(2)
+  const cmd = process.env.usage_cmd ?? args.shift() ?? ''
   if (!cmd) {
     console.error('spec: missing subcommand')
     process.exit(2)
@@ -110,6 +111,22 @@ function main(): void {
       if (envBool('usage_dispatch')) args.push('--dispatch')
       if (envBool('usage_dry_run')) args.push('--dry-run')
       spawnInherit(['bun', `${WORKFLOW}/handoff_generate.script.ts`, ...args], root)
+      break
+    }
+    case 'security': {
+      const args: string[] = []
+      if (envBool('usage_strict')) args.push('--strict')
+      if (envBool('usage_changed_only')) args.push('--changed-only')
+      if (process.env.usage_base) args.push('--base', process.env.usage_base)
+      if (envBool('usage_json')) args.push('--json')
+      spawnInherit(['bun', 'tools/governance/security/scan.script.ts', ...args], root)
+      break
+    }
+    case 'handoff-scrub': {
+      const args: string[] = []
+      if (process.env.usage_feature) args.push('--feature', process.env.usage_feature)
+      if (process.env.usage_body) args.push(process.env.usage_body)
+      spawnInherit(['bun', 'tools/governance/security/handoff_scrub.script.ts', ...args], root)
       break
     }
     case 'runs': {
