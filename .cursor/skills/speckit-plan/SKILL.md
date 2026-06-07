@@ -108,7 +108,7 @@ Check if `.specify/extensions.yml` exists in the project root.
 
 ## Completion Report
 
-Command ends after Phase 2 planning. Report branch, IMPL_PLAN path, and generated artifacts.
+On **success**: `OK — <FEATURE_DIR>/plan.md` (one line). On failure / NEEDS CLARIFICATION blockers: branch, paths, and artifacts list. User `--verbose` forces full report.
 
 ## Phases
 

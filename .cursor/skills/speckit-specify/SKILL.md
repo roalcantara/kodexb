@@ -266,11 +266,11 @@ Check if `.specify/extensions.yml` exists in the project root.
 
 ## Completion Report
 
-Report completion to the user with:
-- `SPECIFY_FEATURE_DIRECTORY` — the feature directory path
-- `SPEC_FILE` — the spec file path
-- Checklist results summary
-- Readiness for the next phase (`/speckit-clarify` or `/speckit-plan`)
+On **success** (no blocking errors): reply with one line only:
+
+`OK — <SPECIFY_FEATURE_DIRECTORY>/spec.md`
+
+On **failure** or checklist gaps: include paths, checklist summary, and next step (`/speckit-clarify` or `/speckit-plan`). User `--verbose` forces full table.
 
 **NOTE:** Branch creation is handled by the `before_specify` hook (git extension). Spec directory and file creation are always handled by this core command.
 

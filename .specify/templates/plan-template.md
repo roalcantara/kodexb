@@ -10,6 +10,16 @@
 
 [Extract from feature spec: primary requirement + technical approach from research]
 
+## Feature deltas
+
+Only list what **differs** from the baseline for this feature (new RPC routes, tables, e2e paths, performance targets). Use `NEEDS CLARIFICATION` only for unknowns that block design — resolve in Phase 0 research.
+
+| Topic      | Delta                      |
+| ---------- | -------------------------- |
+| [e.g. RPC] | [new routes or none]       |
+| [e.g. DB]  | [schema/migration or none] |
+| [e.g. E2e] | [feature file path]        |
+
 ## Technical Context
 
 <!--
