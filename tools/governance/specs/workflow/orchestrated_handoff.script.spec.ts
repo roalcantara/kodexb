@@ -1,5 +1,7 @@
-import { describe, expect, it } from 'bun:test'
-import { existsSync, readFileSync } from 'node:fs'
+import { afterEach, describe, expect, it } from 'bun:test'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import {
   buildSubtaskManifest,
   detectPhase,
@@ -20,7 +22,7 @@ function makeFiles(overrides: Partial<FileSet> = {}): FileSet {
     handoff: true,
     analyzePlanChecklist: true,
     analyzeTasksChecklist: true,
-    handoffEmitted: true,
+    handoffEmittedGherkin: true,
     implementComplete: true,
     ...overrides
   }
@@ -54,7 +56,7 @@ describe('detectPhase — transition table', () => {
   })
 
   it('A2: tasks.md without handoff.md → speckit.tasks (do not skip ahead)', () => {
-    const r = detectPhase(makeFiles({ handoff: false, analyzeTasksChecklist: false, handoffEmitted: false }))
+    const r = detectPhase(makeFiles({ handoff: false, analyzeTasksChecklist: false, handoffEmittedGherkin: false }))
     expect(r.phase).toBe('tasks')
     expect(r.command).toBe('speckit.tasks')
     expect(r.focusHint).toContain('handoff.md')
@@ -69,7 +71,7 @@ describe('detectPhase — transition table', () => {
 
   it('A1: analyze-tasks done + manifest NEEDS handoff → handoff-generate', () => {
     const r = detectPhase(
-      makeFiles({ handoffEmitted: false, implementComplete: false }),
+      makeFiles({ handoffEmittedGherkin: false, implementComplete: false }),
       'assets/specs/003-sync-frecency-preserve',
       () => true
     )
@@ -81,7 +83,7 @@ describe('detectPhase — transition table', () => {
 
   it('A1: analyze-tasks done + manifest does NOT need handoff → speckit.implement', () => {
     const r = detectPhase(
-      makeFiles({ handoffEmitted: false, implementComplete: false }),
+      makeFiles({ handoffEmittedGherkin: false, implementComplete: false }),
       'assets/specs/006-unit-only-feature',
       () => false
     )
@@ -253,6 +255,65 @@ describe('scanFeatureDir (A3 marker symmetry)', () => {
     const files = scanFeatureDir(featureDir)
     // 003 has no implement-done checklist yet → not complete.
     expect(files.implementComplete).toBe(false)
+  })
+})
+
+describe('T1 regression — catalog handoff file does NOT satisfy gherkin gate', () => {
+  // Background: an earlier bug treated `tmp/handoffs/opencode-{slug}-catalog.md`
+  // (or `…-e2e-fix.md`) as a satisfying "handoff emitted" marker for the
+  // gherkin gate. The fix renamed the FileSet field to `handoffEmittedGherkin`
+  // and narrowed the file lookup to the `-gherkin.md` suffix only. This test
+  // proves the narrowing by writing a catalog-focus file and asserting the
+  // detector still routes to handoff-generate.
+
+  let scratchRoot: string | null = null
+
+  afterEach(() => {
+    if (scratchRoot && existsSync(scratchRoot)) {
+      rmSync(scratchRoot, { recursive: true, force: true })
+    }
+    scratchRoot = null
+  })
+
+  it('scanFeatureDir + detectPhase: catalog-only file → handoffEmittedGherkin=false → handoff-generate', () => {
+    scratchRoot = mkdtempSync(path.join(tmpdir(), 'orchestrated-handoff-t1-'))
+    const featureDir = path.join(scratchRoot, '099-catalog-only-fixture')
+    const handoffsDir = path.join(scratchRoot, 'tmp-handoffs')
+    const checklistsDir = path.join(featureDir, 'checklists')
+    mkdirSync(checklistsDir, { recursive: true })
+    mkdirSync(handoffsDir, { recursive: true })
+
+    // Minimal feature dir: spec/plan/tasks/handoff + both analyze checklists,
+    // implement NOT complete, so the detector reaches the handoff transition.
+    writeFileSync(path.join(featureDir, 'spec.md'), '# spec\n')
+    writeFileSync(path.join(featureDir, 'plan.md'), '# plan\n')
+    writeFileSync(path.join(featureDir, 'tasks.md'), '# tasks\n')
+    writeFileSync(path.join(featureDir, 'handoff.md'), '# handoff\n')
+    writeFileSync(path.join(checklistsDir, 'analyze-plan.md'), 'done\n')
+    writeFileSync(path.join(checklistsDir, 'analyze-tasks.md'), 'done\n')
+
+    // Write only the catalog-focus handoff file — the gherkin file is absent.
+    writeFileSync(path.join(handoffsDir, 'opencode-catalog-only-fixture-catalog.md'), '# catalog handoff body\n')
+
+    const files = scanFeatureDir(featureDir, handoffsDir)
+    expect(files.handoffEmittedGherkin).toBe(false)
+    expect(files.implementComplete).toBe(false)
+
+    const next = detectPhase(files, featureDir, () => true)
+    expect(next.phase).toBe('handoff-generate')
+    expect(next.command).toContain('--focus gherkin')
+  })
+
+  it('scanFeatureDir: only the gherkin-suffix file flips handoffEmittedGherkin', () => {
+    scratchRoot = mkdtempSync(path.join(tmpdir(), 'orchestrated-handoff-t1b-'))
+    const featureDir = path.join(scratchRoot, '099-gherkin-emitted')
+    const handoffsDir = path.join(scratchRoot, 'tmp-handoffs')
+    mkdirSync(featureDir, { recursive: true })
+    mkdirSync(handoffsDir, { recursive: true })
+    writeFileSync(path.join(handoffsDir, 'opencode-gherkin-emitted-gherkin.md'), 'ok\n')
+
+    const files = scanFeatureDir(featureDir, handoffsDir)
+    expect(files.handoffEmittedGherkin).toBe(true)
   })
 })
 

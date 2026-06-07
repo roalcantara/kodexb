@@ -58,6 +58,15 @@ Before done:
 | OHW-8 AC3  | 004 dir has plan/tasks/handoff but NO research/data-model/contracts/quickstart                                                                                            | Directory listing in spec lint + manual review                                        |
 | OHW-8 AC4  | Generator Per-AC slice section prints AC → slice only (no Evidence duplication)                                                                                          | `bun test … handoff_generate.script.spec.ts`                                          |
 
+## Inline review fixes (regression coverage)
+
+| Regression                                                                                       | Covered by test                                                                                                                       |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Catalog/e2e-fix handoff files used to falsely satisfy the gherkin gate, skipping handoff-generate | `T1 regression — catalog handoff file does NOT satisfy gherkin gate` in `tools/governance/specs/workflow/orchestrated_handoff.script.spec.ts` |
+| `spec workflow <unknown>` used to fall through to the orchestrator instead of exiting 2          | `validateWorkflowName` cases in `tools/bin/spec.script.spec.ts`                                                                       |
+| Plan template lacked `assets/specs/<NNN>-<slug>/` path + normative tree listing                  | `T3` plan-template assertions in `tools/governance/specs/workflow/sdd_guide_content.script.spec.ts`                                   |
+| SDD guide phase order fence lacked language tag                                                  | `phase order fence (T3)` in `tools/governance/specs/workflow/sdd_guide_content.script.spec.ts`                                        |
+
 ## Operator markers (per OHW-3 AC5)
 
 Create one of these files after the corresponding phase finishes:

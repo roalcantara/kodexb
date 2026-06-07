@@ -42,7 +42,7 @@ enforcement. The pilot would never exercise what's most likely to break.
 **Edit:** pilot **orchestrated-handoff** on 001 end-to-end; switch to
 orchestrated-sliced for 002/003 once it ships. (Workflow names were renamed
 from `kb-full` / `kb-slice` in the orchestrated-handoff PR; see
-[`assets/specs/004-orchestrated-handoff/spec.md`](../../assets/specs/004-orchestrated-handoff/spec.md).)
+[`assets/specs/004-orchestrated-handoff/spec.md`](../../../assets/specs/004-orchestrated-handoff/spec.md).)
 
 ## Medium
 

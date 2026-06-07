@@ -28,6 +28,8 @@ const RE_YAML_GATE_BLOCKS = /type:\s*gate[\s\S]*?(?=\n {2}-\s|\n$)/g
 const RE_YAML_COMMAND_REF = /command:\s*([a-z.]+)/g
 const RE_OHW_ID = /OHW-\d/
 const RE_EARS_TEXT = /\bWHEN\s.+\bTHEN\s.+\bSHALL\b/
+const RE_PHASE_ORDER_FENCE = /```text\s*\nspecify → clarify/
+const RE_FEATURE_DIR_PATH = /assets\/specs\/<NNN>-<slug>\//
 
 function loadGuide(): string {
   if (!existsSync(GUIDE)) throw new Error(`missing ${GUIDE}`)
@@ -190,6 +192,26 @@ describe('plan-template.md — OHW-8 AC2', () => {
 
   it('points readers at the normative quartet rule', () => {
     expect(template).toContain('normative quartet')
+  })
+
+  it('T3: Documentation block names the feature dir path `assets/specs/<NNN>-<slug>/`', () => {
+    const docBlock = template.split('### Documentation')[1]?.split('### Source Code')[0] ?? ''
+    expect(docBlock).toMatch(RE_FEATURE_DIR_PATH)
+  })
+
+  it('T3: Documentation block lists handoff.md and spec.md in the tree (normative quartet visible)', () => {
+    const docBlock = template.split('### Documentation')[1]?.split('### Source Code')[0] ?? ''
+    expect(docBlock).toContain('spec.md')
+    expect(docBlock).toContain('handoff.md')
+    expect(docBlock).toContain('plan.md')
+    expect(docBlock).toContain('tasks.md')
+  })
+})
+
+describe('SDD_WORKFLOW_GUIDE.md — phase order fence (T3)', () => {
+  const guide = loadGuide()
+  it('uses a `text`-labeled fence for the orchestrated-handoff phase order block', () => {
+    expect(guide).toMatch(RE_PHASE_ORDER_FENCE)
   })
 })
 

@@ -2,7 +2,7 @@
 
 **Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
 
-**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+**Input**: Feature specification from `assets/specs/<NNN>-<slug>/spec.md`
 
 **Note**: This template is filled in by the `/speckit-plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
 
@@ -47,13 +47,15 @@
 ### Documentation (this feature)
 
 ```text
-specs/[###-feature]/
-├── plan.md              # Required (this file; /speckit-plan output)
+assets/specs/<NNN>-<slug>/
+├── spec.md              # Required (/speckit-specify)
+├── plan.md              # Required (this file; /speckit-plan)
+├── tasks.md             # Required (/speckit-tasks)
+├── handoff.md           # Required (acceptance tracker; /speckit-tasks)
 ├── research.md          # OPTIONAL — Phase 0; create only when Technical Context has unresolved NEEDS CLARIFICATION
 ├── data-model.md        # OPTIONAL — Phase 1; create only when feature introduces non-trivial data shape
 ├── quickstart.md        # OPTIONAL — Phase 1; create only for operator-smoke / UI features needing a manual run-through
-├── contracts/           # OPTIONAL — Phase 1; create only when cross-module contracts need a dedicated directory
-└── tasks.md             # Required (Phase 2 output; /speckit-tasks command)
+└── contracts/           # OPTIONAL — Phase 1; create only when cross-module contracts need a dedicated directory
 ```
 
 > **kb normative quartet:** `spec.md`, `plan.md`, `tasks.md`, `handoff.md`.
@@ -115,8 +117,8 @@ directories captured above]
 | [PREFIX]-1  | `assets/features/e2e/<slug>.feature` | [Scenario name] | `@spec:<slug>` tag |
 
 Normative Gherkin text lives in the **feature file** only — not duplicated here.
-Update [`assets/docs/specs/e2e/step-catalog.md`](../../docs/specs/e2e/step-catalog.md)
-and [`fixture-manifest.md`](../../docs/specs/e2e/fixture-manifest.md) when e2e
+Update [`assets/docs/specs/e2e/step-catalog.md`](../../assets/docs/specs/e2e/step-catalog.md)
+and [`fixture-manifest.md`](../../assets/docs/specs/e2e/fixture-manifest.md) when e2e
 is in scope.
 
 ## Complexity Tracking

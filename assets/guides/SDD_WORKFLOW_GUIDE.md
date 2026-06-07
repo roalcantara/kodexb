@@ -134,7 +134,7 @@ traceability.
 
 ### Phase order
 
-```
+```text
 specify → clarify → checklist → plan
   → analyze (plan pass)     ← advisory; catches plan/traceability gaps
   → tasks                   → tasks.md + handoff.md

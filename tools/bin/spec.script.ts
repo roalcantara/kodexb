@@ -8,6 +8,21 @@ import { spawnInherit } from '../support/lib/shared/spawn_inherit.script.ts'
 const SPECS = 'tools/governance/specs'
 const WORKFLOW = `${SPECS}/workflow`
 
+export const ALLOWED_WORKFLOW_NAMES = new Set(['orchestrated-handoff'])
+
+/**
+ * Validate the positional workflow name passed to `mise run spec workflow <name>`.
+ * Returns an error message string when the name is unknown, or `null` when the
+ * name is acceptable. Empty string is accepted because usage clauses always pass
+ * the argument (mise expands `<name>` even when the operator omits it); the
+ * caller decides whether to fall back to a default.
+ */
+export function validateWorkflowName(name: string): string | null {
+  if (name === '') return null
+  if (ALLOWED_WORKFLOW_NAMES.has(name)) return null
+  return `spec workflow: unknown workflow "${name}". Allowed: ${[...ALLOWED_WORKFLOW_NAMES].join(', ')}`
+}
+
 function envBool(name: string): boolean {
   return process.env[name] === 'true'
 }
@@ -73,6 +88,11 @@ function main(): void {
     }
     case 'workflow': {
       const name = process.env.usage_name ?? ''
+      const validationError = validateWorkflowName(name)
+      if (validationError) {
+        console.error(validationError)
+        process.exit(2)
+      }
       const args: string[] = []
       if (name) args.push(name)
       if (process.env.usage_feature) args.push('--feature', process.env.usage_feature)
@@ -98,4 +118,4 @@ function main(): void {
   }
 }
 
-main()
+if (import.meta.main) main()

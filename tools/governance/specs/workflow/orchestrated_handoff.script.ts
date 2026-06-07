@@ -15,7 +15,7 @@ export type FileSet = {
   handoff: boolean
   analyzePlanChecklist: boolean
   analyzeTasksChecklist: boolean
-  handoffEmitted: boolean
+  handoffEmittedGherkin: boolean
   implementComplete: boolean
 }
 
@@ -92,7 +92,7 @@ export function detectPhase(
     }
   }
   // A1: only suggest handoff-generate when the manifest actually needs it.
-  if (!files.handoffEmitted) {
+  if (!files.handoffEmittedGherkin) {
     if (manifestNeedsHandoff()) {
       return {
         phase: 'handoff-generate',
@@ -114,9 +114,7 @@ export function detectPhase(
 export function scanFeatureDir(featureDir: string, handoffsDir = 'tmp/handoffs'): FileSet {
   const slug = path.basename(featureDir).replace(/^\d+-/, '')
   const handoffsPath = path.resolve(handoffsDir)
-  const handoffEmitted = ['gherkin', 'catalog', 'e2e-fix'].some(focus =>
-    existsSync(path.join(handoffsPath, `opencode-${slug}-${focus}.md`))
-  )
+  const handoffEmittedGherkin = existsSync(path.join(handoffsPath, `opencode-${slug}-gherkin.md`))
   return {
     spec: existsSync(path.join(featureDir, 'spec.md')),
     plan: existsSync(path.join(featureDir, 'plan.md')),
@@ -124,7 +122,7 @@ export function scanFeatureDir(featureDir: string, handoffsDir = 'tmp/handoffs')
     handoff: existsSync(path.join(featureDir, 'handoff.md')),
     analyzePlanChecklist: existsSync(path.join(featureDir, 'checklists/analyze-plan.md')),
     analyzeTasksChecklist: existsSync(path.join(featureDir, 'checklists/analyze-tasks.md')),
-    handoffEmitted,
+    handoffEmittedGherkin,
     // A3: switch from `.implement.done` to `checklists/implement-done.md` for
     // symmetry with `analyze-plan.md` / `analyze-tasks.md`. Documented in spec
     // OHW-3 AC5 + Clarifications.
