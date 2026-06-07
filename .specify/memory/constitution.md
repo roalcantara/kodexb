@@ -191,12 +191,20 @@ kb uses **Spec Kit** commands aligned to [spec-driven.md][16] — not a separate
 | 3    | **Checklist** — `/speckit-checklist`                                 | Requirements-quality pass (advisory)                 |
 | 4    | **Plan** — `/speckit-plan` → `plan.md`                               | Design + E2e traceability (Gherkin in `.feature`)    |
 | 5    | **Tasks** — `/speckit-tasks` → `tasks.md`, `handoff.md`              | Ordered work + Done when + Evidence                  |
-| 6    | **Analyze** — `/speckit-analyze`                                     | Constitution + cross-artifact consistency (advisory) |
+| 6    | **Analyze** — `/speckit-analyze`[^analyze-dual]                      | Constitution + cross-artifact consistency (advisory) |
 | 7    | **Implement** — `/speckit-implement` + `handoff.md`                  | Code + tests                                         |
 | 8    | **Review** — `mise run spec gate` + handoff AC table + [`DoD.md`][4] | lint + trace + `gate.sh`                             |
 
 **Feature path:** `.specify/feature.json` → `feature_directory` under
 `assets/specs/<NNN-slug>/` (Companion glob `[0-9][0-9][0-9]-*`).
+
+[^analyze-dual]: The `orchestrated-handoff` workflow runs `speckit.analyze`
+    **twice** — once after `plan.md` (plan-pass; catches plan/traceability
+    gaps) and once after `tasks.md` + `handoff.md` (tasks-pass; catches
+    task/handoff/Evidence drift). Both passes remain advisory. Phase order
+    and completion markers (`checklists/analyze-plan.md`,
+    `checklists/analyze-tasks.md`) are documented in
+    [`assets/guides/SDD_WORKFLOW_GUIDE.md` § orchestrated-handoff workflow](../../assets/guides/SDD_WORKFLOW_GUIDE.md#orchestrated-handoff-workflow).
 
 ### Workflow rules
 

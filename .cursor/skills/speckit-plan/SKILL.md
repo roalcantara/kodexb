@@ -7,6 +7,12 @@ metadata:
   source: "templates/commands/plan.md"
 ---
 
+> **kb compatibility note:** This is the upstream Spec Kit `speckit-plan` skill
+> (not forked in this repo). Before Phase 0 research, load **at most 4 skills**
+> from the routing table in
+> [`assets/guides/SDD_WORKFLOW_GUIDE.md` → Plan skill routing](../../../assets/guides/SDD_WORKFLOW_GUIDE.md#plan-skill-routing).
+> "Load all skills from `SKILLS.yaml`" is the anti-pattern this rule blocks.
+> See the same guide § orchestrated-handoff for the dual-analyze phase order.
 
 ## User Input
 

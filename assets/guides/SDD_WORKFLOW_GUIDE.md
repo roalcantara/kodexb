@@ -43,8 +43,14 @@ Companion scans only numbered feature folders:
 
 (VS Code / Cursor: [`.vscode/settings.json`](../../.vscode/settings.json).)
 
-**Deferred to a follow-up PR:** kb-specific workflows (`kb-full`, `kb-slice`, `kb-hotfix`) and
-the `kb-workflow` extension (preflight, handoff generators). Track in
+**Registered workflows** (`.specify/workflow-catalogs.yml`):
+
+- `speckit` — vanilla upstream cycle.
+- `orchestrated-handoff` — kb extension with dual `analyze` passes and a documented
+  handoff-emit seam between analyze-tasks and implement (see
+  [§ orchestrated-handoff workflow](#orchestrated-handoff-workflow) below).
+
+**Still deferred:** `orchestrated-sliced` and `orchestrated-hotfix`. Track in
 [`tools/governance/specs/PLAN_PUNCHLIST.md`](../../tools/governance/specs/PLAN_PUNCHLIST.md).
 
 ## Starting a feature
@@ -117,6 +123,151 @@ Catalog membership: [`assets/catalog/catalog.yaml`](../catalog/catalog.yaml) + `
 | Issues       | `/speckit-taskstoissues` | GitHub issues (optional)          |
 
 Resume an interrupted workflow: `mise run spec resume` (wraps `specify workflow resume`).
+
+## orchestrated-handoff workflow
+
+`orchestrated-handoff` is the kb extension of the vanilla speckit cycle. It
+adds **dual `analyze` passes** (after `plan`, after `tasks`) and a documented
+handoff-emit seam between `analyze-tasks` and `implement` so Gherkin/BDD work
+can be delegated to a worker (v1: opencode) without losing executable
+traceability.
+
+### Phase order
+
+```text
+specify → clarify → checklist → plan
+  → analyze (plan pass)     ← advisory; catches plan/traceability gaps
+  → tasks                   → tasks.md + handoff.md
+  → analyze (tasks pass)    ← advisory; catches task/handoff/Evidence drift
+  → handoff-generate        ← Bun script (orchestrator, NOT in workflow YAML)
+  → implement
+  → review                  ← mise run spec gate
+```
+
+Both analyze passes use the same `speckit.analyze` command. The
+`.specify/workflows/orchestrated-handoff/workflow.yml` **includes both analyze
+steps** so `specify workflow run orchestrated-handoff` can drive the cycle
+end-to-end. Completion is also tracked via checklist artifacts so the
+orchestrator's `--next` works when the operator mixes `mise` and manual
+`speckit.*` invocations:
+
+- `checklists/analyze-plan.md` — written after plan-pass analyze
+- `checklists/analyze-tasks.md` — written after tasks-pass analyze
+- `checklists/implement-done.md` — written after `speckit.implement` and unit
+  checks pass; signals `--next` to advance to `mise run spec gate`
+
+### Commands
+
+```bash
+# Drive the workflow via Spec Kit (canonical):
+specify workflow run orchestrated-handoff
+
+# Or use the local orchestrator + handoff generator:
+mise run spec workflow orchestrated-handoff --feature assets/specs/NNN-slug --next
+mise run spec workflow orchestrated-handoff --feature assets/specs/NNN-slug --manifest
+mise run spec handoff-generate --feature assets/specs/NNN-slug --focus gherkin
+mise run spec resume     # specify workflow resume
+```
+
+`--next` prints the canonical next command (per the 10-row transition table in
+[`assets/specs/004-orchestrated-handoff/spec.md`](../specs/004-orchestrated-handoff/spec.md)
+OHW-3 AC1). `--manifest` prints a rule-based XML subtask manifest classifying
+remaining work into `implement-src`, `gherkin-bdd-handoff`, or `catalog-touch`.
+
+### When to use opencode worker handoff vs primary implement
+
+- **Primary implement (Cursor / opencode / `speckit.implement`)** — code under
+  `src/` with co-located `.spec.ts(x)`. Use when the next slice is unit work
+  with clear file paths in `plan.md`.
+- **Opencode worker handoff** — emit `tmp/handoffs/opencode-{slug}-{focus}.md`
+  and dispatch it to opencode (v1 only). Use when:
+  - The slice is Gherkin/BDD under `assets/features/**/*.feature` +
+    `bdd/unit/` or `bdd/e2e/`, OR
+  - `plan.md` traceability declares scenarios not yet reflected in
+    `handoff.md` Evidence, OR
+  - The spec has an operator-smoke AC (e.g. UI-driven verification).
+
+### --focus taxonomy
+
+- `gherkin` — generate AC tags, slice ids, bdd/unit + bdd/e2e instructions.
+- `catalog` — emphasise `mise run catalog validate` and `RESERVED_RUN_TAGS`.
+- `e2e-fix` — focus on Playwright @e2e scenarios under `bdd/e2e/` only.
+
+The emitted file lands under `tmp/handoffs/opencode-{slug}-{focus}.md`. v1
+dispatches only to opencode (per [opencode CLI docs](https://opencode.ai/docs/cli/),
+`opencode run [message..]`). v2 multi-provider dispatch (codex / claude /
+deepseek) is deferred — handoff files for other providers are not generated.
+
+### Dispatch
+
+```bash
+mise run spec handoff-generate --feature assets/specs/NNN-slug --focus gherkin --dispatch
+# or
+ORCHESTRATED_HANDOFF_DISPATCH=1 mise run spec handoff-generate --feature … --focus gherkin
+```
+
+The file is always written to `tmp/handoffs/` first. If opencode is not on
+`$PATH`, the script warns on stderr and exits 0 (file-only mode). If
+`opencode run` fails, its exit code propagates.
+
+### Review-spec gate — deterministic EARS check
+
+LLM advisory skills (`speckit.clarify`, `speckit.checklist`, `speckit.analyze`)
+are advisory only. Before approving plan, run `mise run spec lint <featureDir>
+--strict` — **deterministic EARS gate**; checklist and analyze are advisory only.
+
+The orchestrator's `--lint` flag (OHW-6 AC1) delegates to the same script:
+
+```bash
+mise run spec workflow orchestrated-handoff --feature assets/specs/NNN-slug --lint
+```
+
+It returns `lint.script.ts`'s exit code. Do **not** weaken the linter to make a
+spec pass — fix the spec instead. See
+[`tools/governance/specs/PLAN_PUNCHLIST.md`](../../tools/governance/specs/PLAN_PUNCHLIST.md)
+§1 and §5 for the rationale.
+
+### Plan skill routing
+
+Loading every skill in `SKILLS.yaml` floods plan context with irrelevant
+material. The planner SHOULD load **at most 4 skills** (the operator may
+explicitly expand scope), chosen from the table below.
+
+| Plan touches…                       | Load skills (read each `SKILL.md`)                   |
+| ----------------------------------- | ---------------------------------------------------- |
+| `src/shell/app`, RPC                | `app-context`, `app-rpc`                             |
+| `src/shell/renderer`, CSS           | `app-context`, plus `STYLING_GUIDE.md` reference     |
+| Gherkin / BDD (`assets/features/`)  | `app-context`, `app-testing`, `BDD_GUIDE.md`         |
+| `tools/governance/` only            | `app-context`, `mise-tasks`                          |
+| Electrobun / main process / windows | `electrobun-best-practices` + routed Electrobun skill |
+
+**Cap rule:** Maximum 4 skills unless operator explicitly expands scope. Never
+"load all skills from `SKILLS.yaml`" — that's the anti-pattern this rule blocks.
+
+Out of scope: automatic skill CLI install and LLM-based skill classification
+(both v2). The upstream `speckit-plan` skill is **not** forked in this repo;
+this section is the kb-side compatibility note (per OHW-7 AC2).
+
+### Normative quartet
+
+**Normative quartet:** `spec.md`, `plan.md`, `tasks.md`, `handoff.md`. These
+are the only files Spec Kit treats as authoritative for in-flight features.
+
+**Optional satellites** (`research.md`, `data-model.md`, `contracts/`,
+`quickstart.md`) are feature-scoped and SHOULD be created **only** when:
+
+- `plan.md` Technical Context has unresolved `NEEDS CLARIFICATION` markers, or
+- The feature crosses module contracts that need a dedicated `contracts/`
+  directory.
+
+Rules (enforced by review, not lint):
+
+- `plan.md` and `tasks.md` SHALL NOT copy EARS AC text. Reference requirement
+  IDs (`OHW-n`, `SF-n`) instead.
+- `plan.md` SHALL NOT duplicate Gherkin scenario bodies. Use the traceability
+  table and link the `.feature` file.
+- `checklists/` and `speckit.analyze` outputs are **advisory snapshots**, not
+  second specs.
 
 ## Shipping
 
