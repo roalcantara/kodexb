@@ -81,6 +81,9 @@ export function runDependenciesCheck(
       }
     ]
   }
+  // No lockfile delta — skip both CVE scan and bun audit (noop path)
+  if (delta.length === 0) return findings
+
   const cves = parseCveList(cveListPath)
 
   for (const dep of delta) {

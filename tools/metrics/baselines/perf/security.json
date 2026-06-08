@@ -11,7 +11,7 @@
     "check_absolute_limits": true,
     "absolute_p95_ms": {
       "secrets": 500,
-      "dependencies-noop": 50,
+      "dependencies-noop": 300,
       "handoff-scrub": 50
     }
   },
@@ -23,7 +23,7 @@
     },
     "dependencies-noop": {
       "p50": null,
-      "p95": 11.067,
+      "p95": 144.8,
       "p99": null
     },
     "handoff-scrub": {

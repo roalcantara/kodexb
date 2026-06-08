@@ -997,6 +997,12 @@ skills:
         - .agents/skills/app-quality-gate/SKILL.md
       avoid:
         - any project task unless AgentRC is explicitly adopted
+  # ---- speckit-* cohort ----
+  # Common contract: location: owned, policy.type: optional, and a consistent
+  # "Useful for X but should not replace Y" rationale pattern. Each entry shares
+  # parallel claude_optional / app_context_optional surfaces and is designed for
+  # AgentRC scaffolding, not for overriding project specs or
+  # orchestrated-handoff.
   speckit-agent-context-update:
     location: owned
     rationale: Useful for updating agent context with new information, but should not replace project specs or orchestrated-handoff for feature planning.
