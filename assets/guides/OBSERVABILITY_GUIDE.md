@@ -91,9 +91,12 @@ export const WorkflowEventBase = Type.Object({
 ```
 
 Domain events extend the base with their own required fields (use
-`Type.Composite([WorkflowEventBase, …])`). Examples live alongside the
-component that emits them; see the agentic orchestrator's events under
-`assets/specs/009-agentic-workflow-orchestrator/contracts/events.schema.ts`.
+`Type.Composite([WorkflowEventBase, …])`). Each event-producing component
+owns its extension schema as code in its tool module (for example the
+`WorkflowEvent` union in `tools/governance/specs/workflow/workflow_run.script.ts`),
+never in an in-flight spec folder. Consumers import the schema from that stable code
+path; this guide stays the authority for the base envelope and the
+extension contract.
 
 ### Versioning
 
