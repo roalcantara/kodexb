@@ -62,3 +62,121 @@ Inventory: `mise run audit rogue-refs` (diagnostic).
 - [ ] 28. Micro-dirs** (`core/handoff`, `core/validation`, …)  (Navigation noise)
 - [ ] 29. Full `features/` tree migration (High value, not urgent)
 - [ ] 30. Split `App` into 5 services (After P0/P1 correctness)
+
+## Task-source-atomicity flow improvement plan
+
+This section turns the `007-task-source-atomicity` retrospective into a small,
+actionable implementation plan. Each item captures one friction point found
+during delivery, the concrete implementation target, and the acceptance
+criteria required before the item can be marked done.
+
+Recommended execution order:
+
+1. FP2, because it fixes the product behavior gap that the tests currently
+	work around.
+2. FP3, because it is the fastest documentation correction and removes command
+	drift for the next contributor immediately.
+3. FP1, because backend-driven fault injection is more valuable once the
+	renderer's failure contract is explicit.
+4. FP4, because scenario setup should be stabilized after the backend-driven
+	failure path is chosen.
+5. FP5, because the BDD support split is safest after the final test shape is
+	settled.
+
+### FP1. Replace Playwright interception with backend-driven fault injection
+
+This feature currently proves the failure paths by intercepting task mutation
+requests in the BDD step layer. That kept delivery moving, but it does not
+exercise the real renderer -> RPC -> app -> source path for failure cases.
+
+- [ ] Add a preview-safe fault injection mechanism for task mutations
+- Implementation target: expose a test-only control path in the preview or test
+	harness that can force `source_write_failed` and `conflict` outcomes from the
+	backend without replacing the HTTP response inside Playwright.
+- Acceptance criteria:
+	- The `task-source-atomicity` BDD scenarios no longer rely on network
+		interception in `bdd/e2e/steps/task_management.steps.ts` to simulate task
+		mutation failures.
+	- The failure outcome is produced by the real server-side task mutation flow
+		in `src/shell/main/rpc/routes/task.routes.ts`.
+	- The e2e run proves both `source_write_failed` and `conflict` using the same
+		transport path that production uses.
+	- The test-only control is unavailable in production builds and documented in
+		the feature quickstart or the e2e harness guide.
+
+### FP2. Make renderer mutation failures first-class UI outcomes
+
+The renderer currently treats a resolved mutation request as a successful save,
+even when the response body reports `ok: false`. This forced the BDD flow to
+special-case failure behavior in the screenplay layer instead of relying on the
+product UI.
+
+- [ ] Handle `TaskMutationOutcome` failures explicitly in renderer task flows
+- Implementation target: update the task sheet and related mutation entry
+	points to branch on mutation outcome status instead of closing dialogs on any
+	resolved promise.
+- Acceptance criteria:
+	- The renderer checks the structured task mutation result before closing the
+		sheet or confirming success.
+	- A `source_write_failed` result keeps the user in context and presents a
+		visible failure state or message.
+	- A `conflict` result keeps the user in context and presents a visible stale
+		version or retry state or message.
+	- `bdd/e2e/screenplay/task_crud.task.ts` no longer needs to bypass success
+		assertions by reading remembered mutation outcomes.
+	- Happy-path task create and update flows still pass existing tests.
+
+### FP3. Align quickstart commands with the real verification path
+
+The feature quickstart drifted from the commands that actually validate the
+feature. That created avoidable confusion during execution and gate runs.
+
+- [ ] Correct the `007-task-source-atomicity` quickstart command set
+- Implementation target: update the feature quickstart so every documented
+	command is copy-pasteable and matches the repo's actual e2e and ready flows.
+- Acceptance criteria:
+	- `assets/specs/007-task-source-atomicity/quickstart.md` uses the Playwright
+		BDD command path that the repo actually supports for this feature.
+	- The documented `mise run spec ready ... --key ...` command uses the exact
+		feature key that passes in practice.
+	- The quickstart separates focused validation from full readiness validation.
+	- A contributor can execute the quickstart commands in order without needing
+		to infer substitutions or correct stale arguments.
+
+### FP4. Reduce fixture-name coupling in atomicity scenarios
+
+The atomicity scenarios depend on shared release fixture content, including a
+specific task title. That makes the feature more brittle than necessary and
+raises the maintenance cost of unrelated fixture changes.
+
+- [ ] Make atomicity scenarios self-contained at the data setup layer
+- Implementation target: seed or declare the exact task data required by the
+	feature instead of depending on an incidental task title from the release
+	fixture.
+- Acceptance criteria:
+	- The `task-source-atomicity` scenarios do not depend on an unrelated shared
+		release task title such as `Release Todo Task`.
+	- The feature background or setup step declares the minimum data needed to
+		run the scenarios.
+	- Renaming tasks in the shared release fixture does not break the atomicity
+		feature.
+	- The setup approach is documented next to the feature or in the e2e fixture
+		guidance so future scenarios can follow the same pattern.
+
+### FP5. Split atomicity-specific BDD support from generic task steps
+
+The general task step file now carries atomicity-specific setup, fault
+injection, and outcome assertions. That makes the shared step surface harder to
+understand and increases the cost of future task-flow changes.
+
+- [ ] Extract atomicity-specific BDD helpers into feature-scoped support files
+- Implementation target: move atomicity-only step helpers, remembered outcome
+	handling, and scenario assertions out of the generic task management step
+	implementation.
+- Acceptance criteria:
+	- Generic task steps remain in the shared task management step file.
+	- Atomicity-only helpers live in a feature-scoped step or screenplay module.
+	- A reader can identify the shared task behaviors and the atomicity-specific
+		behaviors without scanning one mixed file.
+	- The generated BDD spec and step registration still pass without duplicate
+		step definitions or orphaned imports.

@@ -19,3 +19,12 @@ export type {
   TaskUpdateInput,
   TaskView
 } from './desktop_rpc_schema'
+export type {
+  TaskMutationFailureDetails,
+  TaskMutationFailureOutcome,
+  TaskMutationFailureStatus,
+  TaskMutationOperation,
+  TaskMutationOutcome,
+  TaskMutationStatus,
+  TaskMutationSuccessOutcome
+} from './task_mutation_outcome.types'

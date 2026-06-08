@@ -6,8 +6,12 @@ export class OpenFilterOverlay implements Performable {
   }
 
   async performAs(actor: Actor): Promise<void> {
-    await actor.page.locator('.cmp-filter-chip').click()
-    await actor.page.getByRole('listbox', { name: 'Filter options' }).waitFor({ state: 'visible' })
+    await actor.eventually(async () => {
+      const chip = actor.page.locator('.cmp-filter-chip')
+      await chip.waitFor({ state: 'visible' })
+      await chip.click()
+      await actor.page.getByRole('listbox', { name: 'Filter options' }).waitFor({ state: 'visible' })
+    }, 30_000)
   }
 }
 

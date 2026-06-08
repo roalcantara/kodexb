@@ -114,3 +114,10 @@ security:
   specs:
     - 006-safety-hardening
   superseded_by: null
+
+task_source_atomicity:
+  title: Task source atomicity
+  status: shipped
+  specs:
+    - 007-task-source-atomicity
+  superseded_by: null

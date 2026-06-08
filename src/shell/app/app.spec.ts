@@ -6,6 +6,7 @@ import { factoryFor, testingPaths } from '@testing'
 import { App } from './app'
 import type { LoadedConfig } from './config/config.loader'
 import { ImportService } from './db/import.service'
+import { isTaskSourceWriteError } from './lib/app_task_source.util'
 
 const NOT_IMPLEMENTED_RE = /Not implemented/
 
@@ -239,6 +240,27 @@ describe('App', () => {
         expect(Array.isArray(result)).toBe(true)
         expect(result.length).toBeLessThanOrEqual(8)
       }
+    })
+  })
+
+  describe('task mutation atomicity', () => {
+    it('keeps projection unchanged when create source write fails', async () => {
+      const { app } = await importedAppFixture()
+      const before = await app.listMatchCount({ types: ['task'] })
+      ;(app as unknown as { loaded: { writeTarget: string } }).loaded.writeTarget = '/dev/null/tasks.yml'
+
+      try {
+        await app.createTask({
+          key: 'source-failure-task',
+          desc: 'atomicity source failure probe'
+        })
+        expect.unreachable('Expected source write failure')
+      } catch (error) {
+        expect(isTaskSourceWriteError(error)).toBe(true)
+      }
+
+      const after = await app.listMatchCount({ types: ['task'] })
+      expect(after).toBe(before)
     })
   })
 })

@@ -15,9 +15,7 @@ import type {
   RpcImportResult,
   RpcKnowledge,
   RpcListEntry,
-  RpcSyncProgressPayload,
-  TaskCreateInput,
-  TaskUpdateInput
+  RpcSyncProgressPayload
 } from '@shared/rpc'
 import { Electroview } from 'electrobun/view'
 import { notifyAfterSyncComplete, onAfterSyncComplete } from './client_sync_complete.util'
@@ -139,13 +137,13 @@ function extractHeaders(input: HeadersInit | undefined): Record<string, string> 
   return out
 }
 
-const rpc = treaty<RpcApp>(BRIDGE_ORIGIN, {
+export const rpc = treaty<RpcApp>(BRIDGE_ORIGIN, {
   fetcher: bridgeFetch as typeof fetch
 })
 
 type TreatyResult<T> = { data: T | null; error: { value: unknown; status: number } | null }
 
-function unwrap<T>(result: TreatyResult<T>): T {
+export function unwrap<T>(result: TreatyResult<T>): T {
   if (result.error) {
     const value = result.error.value
     const message = typeof value === 'string' ? value : extractErrorMessage(value)
@@ -256,30 +254,6 @@ export function fetchPreviewImage(url: string): Promise<PreviewImageResult | nul
   return rpc.api.fetchPreviewImage.post({ url }).then(unwrap) as Promise<PreviewImageResult | null>
 }
 
-export function createTask(input: TaskCreateInput): Promise<RpcKnowledge> {
-  return rpc.api.createTask.post(input).then(unwrap) as Promise<RpcKnowledge>
-}
-
-export function updateTask(id: number, patch: TaskUpdateInput): Promise<RpcKnowledge> {
-  return rpc.api.updateTask.post({ id, patch }).then(unwrap) as Promise<RpcKnowledge>
-}
-
-export function deleteTask(id: number): Promise<void> {
-  return rpc.api.deleteTask.post({ id }).then(unwrap) as Promise<void>
-}
-
-export function cycleStatus(id: number, dir: 'forward' | 'backward'): Promise<RpcKnowledge> {
-  return rpc.api.cycleStatus.post({ id, dir }).then(unwrap) as Promise<RpcKnowledge>
-}
-
-export function cyclePriority(id: number, dir: 'forward' | 'backward'): Promise<RpcKnowledge> {
-  return rpc.api.cyclePriority.post({ id, dir }).then(unwrap) as Promise<RpcKnowledge>
-}
-
-export function reorderTask(id: number, dir: 'up' | 'down'): Promise<RpcKnowledge[]> {
-  return rpc.api.reorderTask.post({ id, dir }).then(unwrap) as Promise<RpcKnowledge[]>
-}
-
 export function pasteInTerminal(cmd: string): Promise<void> {
   return rpc.api.pasteInTerminal.post({ cmd }).then(unwrap) as Promise<void>
 }
@@ -311,3 +285,12 @@ export function quitApp(): Promise<void> {
 export function getSyncInfo(): Promise<{ sourcesDir: string; fileCount: number }> {
   return rpc.api.getSyncInfo.post({}).then(unwrap) as Promise<{ sourcesDir: string; fileCount: number }>
 }
+
+export {
+  createTask,
+  cyclePriority,
+  cycleStatus,
+  deleteTask,
+  reorderTask,
+  updateTask
+} from './client_task_mutation.util'

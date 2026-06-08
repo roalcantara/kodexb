@@ -4,13 +4,26 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { factoryFor } from '@testing'
 import type { Knowledge } from '../../../core'
-import { removeTaskFromSource, taskToSourceRecord, writeTaskToSource } from './app_task_source.util'
+import {
+  isTaskSourceWriteError,
+  removeTaskFromSource,
+  taskToSourceRecord,
+  writeTaskToSource
+} from './app_task_source.util'
 
 let tmpDir = ''
 let sourcePath = ''
 
 function stubLog() {
   return { error: () => undefined } as unknown as ReturnType<typeof import('../../../shared/logging').getLogger>
+}
+
+function captureLog(records: Array<{ message: string; fields: Record<string, unknown> }>) {
+  return {
+    error: (message: string, fields: Record<string, unknown>) => {
+      records.push({ message, fields })
+    }
+  } as unknown as ReturnType<typeof import('../../../shared/logging').getLogger>
 }
 
 const sampleTask = (overrides: Record<string, unknown> = {}): Knowledge =>
@@ -94,6 +107,37 @@ describe('writeTaskToSource', () => {
     expect(tasks).toHaveProperty('existing')
     expect(tasks).toHaveProperty('New task')
   })
+
+  it('throws TaskSourceWriteError when source cannot be written', async () => {
+    try {
+      await writeTaskToSource(stubLog(), '/dev/null/tasks.yml', sampleTask())
+      expect.unreachable('Expected source write to fail')
+    } catch (error) {
+      expect(isTaskSourceWriteError(error)).toBe(true)
+    }
+  })
+
+  it('emits one structured failure log on source write error', async () => {
+    const records: Array<{ message: string; fields: Record<string, unknown> }> = []
+    const log = captureLog(records)
+
+    try {
+      await writeTaskToSource(log, '/dev/null/tasks.yml', sampleTask({ key: 'log-probe-task' }), {
+        operation: 'create',
+        correlationId: 'corr-log-probe'
+      })
+      expect.unreachable('Expected source write to fail')
+    } catch {
+      expect(records).toHaveLength(1)
+      const record = records[0] as { message: string; fields: Record<string, unknown> }
+      expect(record.message).toContain('Source write-back failed')
+      expect(record.fields.key).toBe('log-probe-task')
+      expect(record.fields.path).toBe('/dev/null/tasks.yml')
+      expect(record.fields.operation).toBe('create')
+      expect(record.fields.correlationId).toBe('corr-log-probe')
+      expect(typeof record.fields.error).toBe('string')
+    }
+  })
 })
 
 describe('removeTaskFromSource', () => {
@@ -110,5 +154,14 @@ describe('removeTaskFromSource', () => {
     await writeTaskToSource(stubLog(), sourcePath, sampleTask())
     await removeTaskFromSource(stubLog(), 'Build app', sourcePath)
     await expect(fs.access(sourcePath)).rejects.toThrow()
+  })
+
+  it('throws TaskSourceWriteError when source cannot be modified', async () => {
+    try {
+      await removeTaskFromSource(stubLog(), 'ghost-task', '/dev/null/tasks.yml')
+      expect.unreachable('Expected source remove to fail')
+    } catch (error) {
+      expect(isTaskSourceWriteError(error)).toBe(true)
+    }
   })
 })

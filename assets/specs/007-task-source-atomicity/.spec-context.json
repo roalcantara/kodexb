@@ -1,0 +1,28 @@
+{
+  "workflow": "speckit",
+  "specName": "007-task-source-atomicity",
+  "branch": "007-task-source-atomicity",
+  "selectedAt": "2026-06-08T10:34:51.101Z",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
+  "history": [
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "start",
+      "from": {
+        "step": "specify",
+        "substep": null
+      },
+      "by": "extension",
+      "at": "2026-06-08T10:58:26.402Z"
+    },
+    {
+      "step": "analyze",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-06-08T11:03:33.903Z"
+    }
+  ]
+}
