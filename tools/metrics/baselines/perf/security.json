@@ -23,7 +23,7 @@
     },
     "dependencies-noop": {
       "p50": null,
-      "p95": 4.001,
+      "p95": 11.067,
       "p99": null
     },
     "handoff-scrub": {

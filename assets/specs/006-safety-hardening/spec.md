@@ -10,8 +10,9 @@
 
 ### Session 2026-06-07
 - Q: How should the initial CVE list criteria be defined? → A: Define by specific package name and version range.
+- Q: How should secret scanning be enforced after the planning pivot? → A: Use HK gitleaks builtin for secret scanning; keep `spec security` focused on dependency + Electrobun checks.
 
-**Input**: Add a deterministic `mise run spec security` subgate (secret scan, dependency audit, Electrobun surface check) and a `spec handoff-scrub` validator wired into `spec handoff-generate`, closing the two highest-leverage safety gaps identified during the Spec Kit setup evaluation: H1 (no automated security checks in `spec gate`) and H2 (worker-handoff prompts dispatched unscrubbed).
+**Input**: Add a deterministic `mise run spec security` subgate (dependency audit + Electrobun surface check) with secret scanning enforced by the HK gitleaks builtin, and a `spec handoff-scrub` validator wired into `spec handoff-generate`, closing the two highest-leverage safety gaps identified during the Spec Kit setup evaluation: H1 (no automated security checks in `spec gate`) and H2 (worker-handoff prompts dispatched unscrubbed).
 
 ## Introduction
 
@@ -24,7 +25,7 @@ The current `mise run spec gate` chains `lint`, `trace`, and `app-quality-gate` 
 
 This spec adds two deterministic governance scripts under `tools/governance/security/`:
 
-1. **`spec security`** — runs three checks (secrets, dependencies, Electrobun surface), aggregates `Finding[]`, returns a single exit code. Wired into the local `hk` pre-commit hook (changed-files mode), `mise run spec gate` (full sweep, `--strict`), and `.github/workflows/review.yml` (full sweep, `--strict`, `--base $GITHUB_BASE_REF`).
+1. **`spec security`** — runs two checks (dependencies, Electrobun surface), aggregates `Finding[]`, returns a single exit code. Secret scanning is enforced separately via the HK `gitleaks` builtin. Wired into the local `hk` pre-commit hook (changed-files mode), `mise run spec gate` (full sweep, `--strict`), and `.github/workflows/review.yml` (full sweep, `--strict`, `--base $GITHUB_BASE_REF`).
 2. **`spec handoff-scrub`** — validates a handoff prompt body before it is written to `tmp/handoffs/`. On any high-severity hit it throws `HandoffScrubError`; no file is written and no dispatch is attempted. Wired into `handoff_generate.script.ts` between the prompt-render step and the write step.
 
 Both scripts mirror the layout, flag conventions, and observability shape of the existing 005-workflow-observability + spec-lint/trace/audit scripts. No new runtime dependencies are introduced beyond an AST parser (already vendored) and an in-tree secrets regex set bootstrapped from the gitleaks default rules.
@@ -52,7 +53,7 @@ The constitution is amended from v1.3.2 to **v1.4.0** to register the new gate r
 | **Handoff scrub**            | One invocation of `tools/governance/security/handoff_scrub.script.ts` against a prompt body. Throws on hit; no return value for hits.         |
 | **Per-feature allowlist**    | Optional `assets/specs/<NNN-slug>/handoff-allowlist.yml`. TypeBox-validated. Names literal-string exemptions only. Missing file = strict.     |
 | **Electrobun external view** | Any `BrowserView` or auxiliary `BrowserWindow` declared in [electrobun.config.ts](../../../electrobun.config.ts) that is not the main window (identified by id `main` or protocol `views://shell`). |
-| **Changed-files mode**       | `spec security --changed-only [--base SHA]`. Restricts the secrets and Electrobun-surface checks to files changed against `--base`.           |
+| **Changed-files mode**       | `spec security --changed-only [--base SHA]`. Restricts dependency and Electrobun-surface checks to files changed against `--base`; secrets are scanned by HK gitleaks. |
 | **Lockfile delta**           | The set of added or version-bumped entries in `bun.lock` between `--base` and `HEAD`. The dependency check operates on this delta only.       |
 
 ---
@@ -90,21 +91,25 @@ known-bad versions cannot land silently.
 
 ### Acceptance criteria
 
-1. WHEN `mise run spec security --strict` runs and `bun.lock` has changed against `--base`, THEN `checks/dependencies.check.ts` SHALL parse the delta, match each added or bumped entry against the in-tree CVE list at `tools/governance/security/cve.list.yml`, and emit one `Finding` of severity `critical` per match.
+1. WHEN `mise run spec security --strict` runs and `bun.lock` has changed against `--base`, THEN `checks/dependencies.check.script.ts` SHALL parse the delta, match each added or bumped entry against the in-tree CVE list at `tools/governance/security/cve.list.yml`, and emit one `Finding` of severity `critical` per match.
    - **CVE criteria:** The initial set for `cve.list.yml` SHALL include known malicious or highly vulnerable packages identified during the 0.13.x audit (e.g. `event-stream` malicious versions). New entries are added by human maintainers based on advisory alerts.
    - **Edge case:** IF `bun.lock` is malformed or unparseable, THEN the check SHALL emit one `Finding` of severity `critical` and exit 1.
    - **Measure:** Fixture `bun.lock.cve.snapshot` produces ≥ 1 `Finding`; clean fixture produces zero.
-   - **Evidence:** `bun test --config /dev/null tools/governance/security/checks/dependencies.check.spec.ts`.
+   - **Evidence:** `bun test --config /dev/null tools/governance/security/checks/dependencies.check.script.spec.ts`.
 
 2. WHEN the `bun audit` subcommand is available on `$PATH` and exits cleanly, THEN its JSON output SHALL be parsed and each reported advisory of severity `critical`, `high`, or `medium` SHALL produce one `Finding` at matching severity.
    - **Measure:** Fake-bun shim emits a deterministic JSON advisory; assertion covers the round-trip.
    - **Evidence:** Same spec; `bun audit` shim test.
 
-3. WHEN `bun audit` is unavailable or exits non-zero, THEN the check SHALL log the absence to stderr and fall back to the in-tree CVE list only, without changing the exit code that the CVE-list pass would have produced on its own.
+3. WHEN a `bun audit` advisory and an in-tree CVE-list hit refer to the same package/version tuple, THEN the dependency check SHALL emit one deduplicated `Finding` at the higher severity of the two sources.
+   - **Measure:** Fixture with overlapping advisory + CVE-list hit emits exactly one finding with max severity.
+   - **Evidence:** Same spec; overlap-precedence case.
+
+4. WHEN `bun audit` is unavailable or exits non-zero, THEN the check SHALL log the absence to stderr and fall back to the in-tree CVE list only, without changing the exit code that the CVE-list pass would have produced on its own.
    - **Measure:** Missing-shim test asserts the script still exits 0 on a clean lockfile and 1 on a CVE-list match.
    - **Evidence:** Same spec; missing-shim case.
 
-4. WHEN `bun.lock` is unchanged against `--base`, THEN the dependency check SHALL emit zero `Finding`s and complete in under 50 ms at p95.
+5. WHEN `bun.lock` is unchanged against `--base`, THEN the dependency check SHALL emit zero `Finding`s and complete in under 50 ms at p95.
    - **Measure:** Bench harness over no-delta path.
    - **Evidence:** Same perf harness as SH-1 AC4 with a `dependencies-noop` scope.
 
@@ -119,9 +124,9 @@ auxiliary webviews cannot weaken the security posture documented in Principle IX
 
 ### Acceptance criteria
 
-1. WHEN `mise run spec security --strict` runs, THEN `checks/electrobun_surface.check.ts` SHALL AST-parse [electrobun.config.ts](../../../electrobun.config.ts), enumerate every Electrobun external view, and assert that each one declares `sandbox: true`, a non-empty `partition` string, and a non-wildcard `navigation` allowlist (MUST NOT contain `*` or match any protocol other than `views://` or `https://`).
+1. WHEN `mise run spec security --strict` runs, THEN `checks/electrobun_surface.check.script.ts` SHALL AST-parse [electrobun.config.ts](../../../electrobun.config.ts), enumerate every Electrobun external view, and assert that each one declares `sandbox: true`, a non-empty `partition` string, and a non-wildcard `navigation` allowlist (MUST NOT contain `*` or match any protocol other than `views://` or `https://`).
    - **Measure:** Compliant fixture (`electrobun/config.compliant.ts`) produces zero findings; each non-compliant fixture (`config.missing_sandbox.ts`, `config.empty_partition.ts`, `config.wildcard_navigation.ts`) produces exactly one `Finding` of severity `high`.
-   - **Evidence:** `bun test --config /dev/null tools/governance/security/checks/electrobun_surface.check.spec.ts`.
+   - **Evidence:** `bun test --config /dev/null tools/governance/security/checks/electrobun_surface.check.script.spec.ts`.
 
 2. WHEN a `BrowserView` or auxiliary `BrowserWindow` is declared but the AST shape is unrecognised (renamed property, computed key), THEN the check SHALL emit one `Finding` of severity `medium` naming the unrecognised node and SHALL NOT silently pass.
    - **Measure:** Unknown-shape fixture produces exactly one `medium` finding; the message names the source line.
@@ -214,7 +219,8 @@ and in CI on the full diff against the base ref.
 
 2. WHEN `.github/workflows/review.yml` runs on a pull request, THEN a `security` job SHALL invoke `mise run spec security --strict --base "$GITHUB_BASE_REF"` and the job SHALL be a required check on `main`.
    - **Measure:** Workflow YAML declares the job; branch-protection note added under [CI_GUIDE.md](../../guides/CI_GUIDE.md).
-   - **Evidence:** PR diff review of `.github/workflows/review.yml` + green run on this feature's own PR.
+   - **Evidence:** PR diff review of `.github/workflows/review.yml` + green run on this feature's own PR + branch protection settings evidence stored in `tmp/reviews/security/required-checks.md` and/or linked screenshot showing `security` as required.
+   - **Boundary:** Branch protection settings are repository configuration and are enforced outside source code; this feature treats them as required operational evidence.
 
 3. WHEN `hk` is bypassed via `--no-verify`, THEN the CI `security` job SHALL still detect the same findings.
    - **Measure:** Manually-pushed branch with a fixture-secret in history fails the CI `security` job.
@@ -230,7 +236,7 @@ scripts.
 
 ### Acceptance criteria
 
-1. WHEN a security run completes (pass or fail), THEN a `security_run` event SHALL be appended to `tmp/security/<YYYY-MM-DD>/<run_id>.ndjson` carrying `ts`, `phase` (`scan|handoff-scrub`), `trigger` (`hk|gate|ci|handoff-emit`), `findings` (full `Finding[]`), `findings_count`, `severity_max`, `exit_code`, `duration_ms`, and a nullable `feature` slug.
+1. WHEN a security run completes (pass or fail), THEN a `security_run` event SHALL be appended to `tmp/security/<YYYY-MM-DD>/<run_id>.ndjson` carrying `ts`, `phase` (`scan|handoff-scrub`), `trigger` (`hk|gate|ci|handoff-emit`), `findings` (full `Finding[]`), `findings_count`, `severity_max`, `exit_code`, `duration_ms`, nullable `feature` slug, `branch`, `commit_sha`, and nullable `base_ref`.
    - **Concurrency:** Event writes SHALL use atomic file appending (`O_APPEND`) or unique file names per run id to prevent corruption from concurrent runs.
    - **Local-first:** The security scan SHALL NOT require network access to run (Principle I). `bun audit` failures due to no network SHALL be handled gracefully per SH-2 AC3.
    - **Measure:** Round-trip test renders an event, runs `Value.Check`, writes JSON, re-reads, and asserts `Value.Check` passes a second time.
@@ -291,7 +297,8 @@ grows, so that CI wall-time stays predictable.
 
 ### Acceptance criteria
 
-1. WHEN `mise run spec security --strict` is invoked, THEN the wall-time SHALL be benchmarked against a baseline JSON committed under `tools/metrics/baselines/security.full.baseline.json`.
+1. WHEN `mise run spec security --strict` is invoked, THEN the wall-time SHALL be benchmarked against a baseline JSON committed under `tools/metrics/baselines/perf/security.json`.
+   - **Enforcement:** Regression evaluation SHALL read `policy.regression_pct` from `tools/metrics/baselines/perf/security.json` and SHALL be enforced by the perf workflow step in `.github/workflows/review.yml`.
    - **Measure:** A 25% regression against the baseline fails the perf-baseline check, following the same pattern as 005-WOBS-8.
    - **Evidence:** CI logs from `.github/workflows/review.yml` (perf job).
 
@@ -299,15 +306,13 @@ grows, so that CI wall-time stays predictable.
 
 ## REQUIREMENT SH-12: `spec ready` consolidates all verification gates
 
-**User story:** As a maintainer, I want a single command to run all quality 
+**User story:** As a maintainer, I want a single command to run all quality
 and security checks so I can verify readiness before reporting a task as done.
 
 ### Acceptance criteria
 
-1. WHEN `mise run spec ready <featureDir>` is invoked, IT SHALL chain `spec lint`, 
-   `spec trace`, `spec security --strict`, and `app-quality-gate` in sequence.
-   - **Measure:** Invocation on a clean feature exits 0; failure in any 
-     sub-gate blocks subsequent steps and exits non-zero.
+1. WHEN `mise run spec ready <featureDir>` is invoked, IT SHALL invoke `spec gate <featureDir>` (as defined in SH-6) and then run readiness-specific validations (catalog/tag checks).
+   - **Measure:** Invocation on a clean feature exits 0; failure in `spec gate` or any readiness-specific validation blocks subsequent steps and exits non-zero.
    - **Evidence:** Integration run on `assets/specs/006-safety-hardening`.
 
 ---
@@ -316,17 +321,19 @@ and security checks so I can verify readiness before reporting a task as done.
 
 This feature is release-gated by deterministic script/test evidence. Every requirement above ships release-blocking evidence as a deterministic `bun test` run plus, for SH-1 AC4, SH-2 AC4, and SH-11, a perf-harness baseline. No new Gherkin flows are required.
 
+Cross-artifact drift is treated as a release blocker for this feature: before implementation completion, run `/speckit.analyze 006-safety-hardening` and require 0 CRITICAL and 0 HIGH findings.
+
 ## Slice ordering
 
 Tracer-bullet slices for [tasks.md](tasks.md). Each slice is independently
 shippable; each leaves the gate strictly stronger than before, never weaker.
 
-1. **Slice 1 — secrets check end-to-end.** `secrets.check.ts` + `scan.script.ts`
+1. **Slice 1 — secrets check end-to-end.** `secrets.check.script.ts` + `scan.script.ts`
    skeleton + `Finding` schema + JSONL emit + hk pre-commit step + CI step.
    Smallest viable security subgate; proves the wiring.
-2. **Slice 2 — dependency audit.** Adds `dependencies.check.ts` + CVE list +
+2. **Slice 2 — dependency audit.** Adds `dependencies.check.script.ts` + CVE list +
    `bun audit` shim path. Reuses the scan-script harness from slice 1.
-3. **Slice 3 — Electrobun-surface check.** Adds `electrobun_surface.check.ts`
+3. **Slice 3 — Electrobun-surface check.** Adds `electrobun_surface.check.script.ts`
    AST parser + fixtures. No `spec gate` change yet; lands behind a feature flag
    if needed to keep slice 3 reviewable in isolation.
 4. **Slice 4 — handoff scrub.** New `handoff_scrub.script.ts` + per-feature
@@ -342,9 +349,10 @@ shippable; each leaves the gate strictly stronger than before, never weaker.
   iterations on a populated fixture (SH-1 AC4). This is the latency budget for
   the hk pre-commit hook; anything slower defeats the local fast-fail.
 - `spec security --strict` (full sweep) has no hard p95 target but SHALL be
-  benchmarked against a baseline JSON committed under
-  `tools/metrics/baselines/security.full.baseline.json`; a 25% regression in
-  CI fails the perf-baseline check, following the same pattern as 005-WOBS-8.
+   benchmarked against a baseline JSON committed under
+   `tools/metrics/baselines/perf/security.json`; regression evaluation reads
+   `policy.regression_pct` from that baseline and is enforced in
+   `.github/workflows/review.yml` via the perf baseline check path.
 - `scrubPrompt` MUST complete in under 50 ms at p95 over 100 iterations on a
   typical handoff body (≤ 50 KiB). Scrub is on the interactive path; latency
   here is felt by every `spec handoff-generate` invocation.

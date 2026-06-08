@@ -44,3 +44,23 @@
 ## Consistency & Integration
 - [x] CHK019 - Is the insertion of `spec security` into `spec gate` consistent with the "deterministic gate" policy in the Constitution? [Consistency, Spec §SH-6 AC1]
 - [x] CHK020 - Do the `changed-files` mode requirements align with how `hk` determines staged files? [Consistency, Spec §SH-7 AC1]
+
+## Post-Remediation Consistency Sweep (Requirements Quality)
+- [x] CHK029 - Are the documented check-module names consistent across spec, plan, and tasks (including `.script.ts` / `.script.spec.ts` suffixes) for all security checks? [Consistency, Spec §SH-2/SH-3, Gap]
+- [x] CHK030 - Does the plan summary enumerate the same number of `spec security` checks as the normative spec text? [Consistency, Spec §Introduction, Plan §Summary]
+- [x] CHK031 - Is the event persistence contract (`tmp/security/<YYYY-MM-DD>/<run_id>.ndjson`) consistently specified in both spec and plan without alternate path variants? [Consistency, Spec §SH-8 AC1, Plan §Technical Context]
+- [x] CHK032 - Are branch-protection requirements for the `security` CI check captured as explicit requirements evidence, not only implied by workflow YAML changes? [Completeness, Spec §SH-7 AC2]
+- [x] CHK033 - Does the checklist traceability table in plan include all active requirements (including SH-12) rather than a partial range? [Completeness, Plan §E2e traceability]
+- [x] CHK034 - Is `spec ready` behavior specified once as a delegated contract (via `spec gate`) and referenced consistently wherever readiness is described? [Clarity, Spec §SH-12, Plan §Feature deltas]
+- [x] CHK035 - Are performance baseline source-of-truth requirements aligned to a single committed baseline path and policy field (`policy.regression_pct`)? [Clarity, Spec §SH-11 AC1]
+- [x] CHK036 - Are requirements explicit about what remains manual (repository branch protection settings) versus what is machine-enforced in-repo? [Ambiguity, Spec §SH-7 AC2, Tasks §T029A]
+
+## Release-Gate Readiness Requirements (Second Pass)
+- [x] CHK037 - Are normative pass/fail thresholds for each `spec security` severity level explicitly stated in one place without conflicting wording elsewhere? [Consistency, Spec §Glossary, Spec §SH-9 AC2]
+- [x] CHK038 - Does the requirements set clearly distinguish changed-files mode obligations from full-sweep CI obligations so implementers cannot swap scopes accidentally? [Clarity, Spec §Glossary, Spec §SH-7]
+- [x] CHK039 - Are requirements explicit about where branch-protection evidence is stored and what format is acceptable for review (text export, screenshot, or both)? [Measurability, Spec §SH-7 AC2, Tasks §T029A]
+- [x] CHK040 - Is the contract for `spec ready` acceptance complete about ordering and short-circuit behavior when `spec gate` fails before readiness-specific checks? [Completeness, Spec §SH-12 AC1]
+- [x] CHK041 - Are requirements explicit on whether `security_run` event metadata must include branch, commit SHA, and base ref for replayability in CI investigations? [Gap, Spec §SH-8 AC1]
+- [x] CHK042 - Is the dependency-audit requirement clear on precedence when `bun audit` and CVE-list checks disagree in severity for the same package? [Ambiguity, Spec §SH-2 AC2-AC3]
+- [x] CHK043 - Are requirements explicit about whether scrubber allowlist exemptions must be echoed in event metadata for auditability? [Traceability, Spec §SH-5 AC1, Spec §SH-8 AC1]
+- [x] CHK044 - Do the requirements define acceptance criteria for documentation drift detection so plan/spec/task mismatches are prevented systematically, not ad hoc? [Gap, Plan §Feature deltas, Tasks §Phase 9]

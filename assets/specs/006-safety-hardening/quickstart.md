@@ -2,9 +2,9 @@
 
 ## Security Gate for Maintainers
 
-Run a full security sweep on a feature:
+Run a full security sweep:
 ```bash
-mise run spec security assets/specs/006-safety-hardening --strict
+mise run spec security --strict
 ```
 
 Run only on changed files (standard for local development):

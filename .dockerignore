@@ -10,3 +10,5 @@ tmp
 tmp/security
 **/.DS_Store
 **/*.log
+.env*
+coverage/

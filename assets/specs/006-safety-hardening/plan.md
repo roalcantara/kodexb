@@ -8,7 +8,7 @@
 
 ## Summary
 
-This feature adds a deterministic security subgate and an emit-time handoff scrub validator to close two high-leverage safety gaps: no automated security checks in spec gate, and unsanitized worker handoff prompts. The implementation introduces `mise run spec security` with two checks (dependency risk, Electrobun surface posture), integrates the standard `hk` Gitleaks builtin for secret scanning, adds structured run events under `tmp/security/`, and integrates `spec handoff-scrub` into `spec handoff-generate` so unsafe prompt bodies are blocked before write or dispatch. A new `mise run spec ready` command consolidates all verification steps for maintainers.
+This feature adds a deterministic security subgate and an emit-time handoff scrub validator to close two high-leverage safety gaps: no automated security checks in spec gate, and unsanitized worker handoff prompts. The implementation introduces `mise run spec security` with two checks (dependency risk, Electrobun surface posture), keeps secret scanning enforced by the standard `hk` Gitleaks builtin, adds structured run events under `tmp/security/`, and integrates `spec handoff-scrub` into `spec handoff-generate` so unsafe prompt bodies are blocked before write or dispatch. `mise run spec ready` now invokes `spec gate` first and then runs readiness-specific validations (catalog/tag checks).
 
 ## Feature deltas
 
@@ -16,9 +16,9 @@ This feature adds a deterministic security subgate and an emit-time handoff scru
 | --------------- | ----------------------------------------------------------------------------- |
 | Security gate   | New `spec security` command with deterministic fail policy and strict mode    |
 | Handoff         | New `spec handoff-scrub` validation before `tmp/handoffs` write and dispatch  |
-| CI/hook         | hk pre-commit changed-files pass + review workflow full diff pass             |
+| CI/hook         | hk pre-commit changed-files pass + review workflow full diff pass + required `security` branch protection check evidence |
 | Governance docs | Constitution and SDD workflow references updated to bind machine checks       |
-| Verification    | New `spec ready` command consolidates tag tests, catalog validation, and gates |
+| Verification    | `spec ready` invokes `spec gate` then runs readiness-specific validations (catalog/tag checks) |
 
 ## Technical Context
 
@@ -26,7 +26,7 @@ This feature adds a deterministic security subgate and an emit-time handoff scru
 
 **Primary Dependencies**: Bun stdlib (`Bun.file`, fs/process APIs), TypeBox (`Type`, `Value.Check`), `ts-morph` (for AST parsing), Gitleaks (via `hk` builtin)
 
-**Storage**: Filesystem-based inputs/outputs (`bun.lock`, source files, Electrobun config) plus audit/event output in `tmp/security/<YYYY-MM-DD>/scan.ndjson`
+**Storage**: Filesystem-based inputs/outputs (`bun.lock`, source files, Electrobun config) plus audit/event output in `tmp/security/<YYYY-MM-DD>/<run_id>.ndjson`
 
 **Testing**: `bun:test` for deterministic script/check specs and perf-harnesses; no Gherkin flows.
 
@@ -86,8 +86,8 @@ tools/governance/security/
 ├── handoff_scrub.script.ts
 ├── handoff_scrub.script.spec.ts
 ├── checks/
-│   ├── dependencies.check.ts
-│   └── electrobun_surface.check.ts
+│   ├── dependencies.check.script.ts
+│   └── electrobun_surface.check.script.ts
 └── fixtures/
 
 tools/bin/spec.script.ts
@@ -109,7 +109,7 @@ assets/guides/
 
 | Requirement | Feature file | Scenario | Notes                                                                                      |
 | ----------- | ------------ | -------- | ------------------------------------------------------------------------------------------ |
-| SH-1..SH-11 | None         | None     | This feature is release-gated by deterministic script/test evidence, not new Gherkin flows |
+| SH-1..SH-12 | None         | None     | This feature is release-gated by deterministic script/test evidence, not new Gherkin flows |
 
 Normative Gherkin remains optional and is intentionally deferred for this tooling-focused increment.
 
