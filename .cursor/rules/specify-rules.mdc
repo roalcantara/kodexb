@@ -7,5 +7,7 @@ alwaysApply: true
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at assets/specs/006-safety-hardening/plan.md
+for the active feature directory selected in `.specify/feature.json`.
+For path authority and routing rules, follow
+`assets/guides/DOC_AUTHORITY.md` and `assets/guides/SDD_WORKFLOW_GUIDE.md`.
 <!-- SPECKIT END -->

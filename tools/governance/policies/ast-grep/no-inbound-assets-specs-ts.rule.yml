@@ -1,0 +1,20 @@
+# String literals in TS/JS must not reference assets/specs/* outside allowlisted paths.
+id: no-inbound-assets-specs-ts
+language: TypeScript
+severity: error
+ignores:
+  - "**/assets/specs/**"
+  - "**/assets/guides/**"
+  - "**/.specify/**"
+  - "**/tmp/**"
+  - "**/graphify-out/**"
+  - "**/.opencode/**"
+  - "tools/governance/policies/ast-grep/*.rule.yml"
+rule:
+  all:
+    - kind: string
+    - regex: assets/specs/
+message: >
+  Do not embed assets/specs/* paths outside allowlisted temporary/governance areas.
+  Hard-rule policy belongs in assets/guides/.
+note: See assets/guides/DOC_AUTHORITY.md

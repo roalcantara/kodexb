@@ -13,28 +13,78 @@ import {
 } from './workflow_observability_perf_core.script.ts'
 
 const ROOT = chdirToRepoRoot()
-const FEATURE_003 = 'assets/specs/003-sync-frecency-preserve'
+const POPULATED_DATASET_PATH = path.join(ROOT, 'tools/metrics/fixtures/perf/workflow-observability-feature.json')
+const POPULATED_DIR = path.join(ROOT, 'tmp/perf-fixture/workflow-observability-populated')
+const POPULATED_DIR_REL = path.relative(ROOT, POPULATED_DIR)
 const FIXTURE_SLUG = 'wobs'
-const FIXTURE_DIR = path.join(ROOT, `tmp/perf-fixture/005-${FIXTURE_SLUG}`)
+const EARLY_EXIT_DIR = path.join(ROOT, `tmp/perf-fixture/005-${FIXTURE_SLUG}`)
+const EARLY_EXIT_DIR_REL = path.relative(ROOT, EARLY_EXIT_DIR)
 const HANDOFFS_DIR = path.join(ROOT, 'tmp/handoffs')
 const GHERKIN_FILE = path.join(HANDOFFS_DIR, `opencode-${FIXTURE_SLUG}-gherkin.md`)
 const BASELINE_PATH = path.join(ROOT, 'tools/metrics/baselines/perf/workflow-observability.json')
 
+type PerfFeatureDataset = {
+  slug: string
+  files: {
+    spec_md: string
+    plan_md: string
+    tasks_md: string
+    handoff_md: string
+  }
+  checklist_files: string[]
+  handoff_emitted_gherkin: boolean
+}
+
+const ABSOLUTE_PATH_RE = /\/(Users|home|etc|var)\/[A-Za-z0-9_./-]+/g
+
+function sanitizeScrubSensitiveText(content: string): string {
+  return content.replace(ABSOLUTE_PATH_RE, '<abs-path>')
+}
+
+function loadDataset(): PerfFeatureDataset {
+  return JSON.parse(readFileSync(POPULATED_DATASET_PATH, 'utf-8')) as PerfFeatureDataset
+}
+
+function handoffMarkerPath(slug: string): string {
+  return path.join(HANDOFFS_DIR, `opencode-${slug}-gherkin.md`)
+}
+
+function createPopulatedFixture(dataset: PerfFeatureDataset): void {
+  mkdirSync(path.join(POPULATED_DIR, 'checklists'), { recursive: true })
+  writeFileSync(path.join(POPULATED_DIR, 'spec.md'), sanitizeScrubSensitiveText(dataset.files.spec_md))
+  writeFileSync(path.join(POPULATED_DIR, 'plan.md'), sanitizeScrubSensitiveText(dataset.files.plan_md))
+  writeFileSync(path.join(POPULATED_DIR, 'tasks.md'), sanitizeScrubSensitiveText(dataset.files.tasks_md))
+  writeFileSync(path.join(POPULATED_DIR, 'handoff.md'), sanitizeScrubSensitiveText(dataset.files.handoff_md))
+  for (const fileName of dataset.checklist_files) {
+    writeFileSync(path.join(POPULATED_DIR, 'checklists', fileName), '')
+  }
+  mkdirSync(HANDOFFS_DIR, { recursive: true })
+  if (dataset.handoff_emitted_gherkin) {
+    writeFileSync(handoffMarkerPath(dataset.slug), '# gherkin fixture')
+  }
+}
+
+function cleanupPopulatedFixture(dataset: PerfFeatureDataset): void {
+  rmSync(POPULATED_DIR, { recursive: true, force: true })
+  const marker = handoffMarkerPath(dataset.slug)
+  if (existsSync(marker)) rmSync(marker)
+}
+
 function createFixture(): void {
-  mkdirSync(path.join(FIXTURE_DIR, 'checklists'), { recursive: true })
-  writeFileSync(path.join(FIXTURE_DIR, 'spec.md'), '# wobs spec')
-  writeFileSync(path.join(FIXTURE_DIR, 'plan.md'), '# wobs plan')
-  writeFileSync(path.join(FIXTURE_DIR, 'tasks.md'), '# wobs tasks')
-  writeFileSync(path.join(FIXTURE_DIR, 'handoff.md'), '# wobs handoff\n\n## AC Tracker\n')
-  writeFileSync(path.join(FIXTURE_DIR, 'checklists', 'analyze-plan.md'), '')
-  writeFileSync(path.join(FIXTURE_DIR, 'checklists', 'analyze-tasks.md'), '')
-  writeFileSync(path.join(FIXTURE_DIR, 'checklists', 'implement-done.md'), '')
+  mkdirSync(path.join(EARLY_EXIT_DIR, 'checklists'), { recursive: true })
+  writeFileSync(path.join(EARLY_EXIT_DIR, 'spec.md'), '# wobs spec')
+  writeFileSync(path.join(EARLY_EXIT_DIR, 'plan.md'), '# wobs plan')
+  writeFileSync(path.join(EARLY_EXIT_DIR, 'tasks.md'), '# wobs tasks')
+  writeFileSync(path.join(EARLY_EXIT_DIR, 'handoff.md'), '# wobs handoff\n\n## AC Tracker\n')
+  writeFileSync(path.join(EARLY_EXIT_DIR, 'checklists', 'analyze-plan.md'), '')
+  writeFileSync(path.join(EARLY_EXIT_DIR, 'checklists', 'analyze-tasks.md'), '')
+  writeFileSync(path.join(EARLY_EXIT_DIR, 'checklists', 'implement-done.md'), '')
   mkdirSync(HANDOFFS_DIR, { recursive: true })
   writeFileSync(GHERKIN_FILE, '# gherkin fixture')
 }
 
 function cleanupFixture(): void {
-  rmSync(FIXTURE_DIR, { recursive: true, force: true })
+  rmSync(EARLY_EXIT_DIR, { recursive: true, force: true })
   if (existsSync(GHERKIN_FILE)) rmSync(GHERKIN_FILE)
 }
 
@@ -120,36 +170,39 @@ export function evaluateResults(
 async function main(): Promise<void> {
   const policy = resolvePolicy(process.argv.slice(2))
   const existing = loadExistingBaseline()
+  const dataset = loadDataset()
 
   const { run: runGenerate } = await import('../../../governance/specs/workflow/handoff_generate.script.ts')
   const { run: runOrchestrate } = await import('../../../governance/specs/workflow/orchestrated_handoff.script.ts')
 
   const results: Record<string, number[]> = {}
 
-  const hgSamples: number[] = []
-  bench('handoff-generate', () => runGenerate(['--feature', FEATURE_003]), hgSamples, policy)
-  results['handoff-generate'] = hgSamples
-
-  const nextPopSamples: number[] = []
-  bench(
-    '--next (populated)',
-    () => runOrchestrate(['orchestrated-handoff', '--feature', FEATURE_003, '--next']),
-    nextPopSamples,
-    policy
-  )
-  results['next-populated'] = nextPopSamples
-
+  createPopulatedFixture(dataset)
   createFixture()
   try {
+    const hgSamples: number[] = []
+    bench('handoff-generate', () => runGenerate(['--feature', POPULATED_DIR_REL]), hgSamples, policy)
+    results['handoff-generate'] = hgSamples
+
+    const nextPopSamples: number[] = []
+    bench(
+      '--next (populated)',
+      () => runOrchestrate(['orchestrated-handoff', '--feature', POPULATED_DIR_REL, '--next']),
+      nextPopSamples,
+      policy
+    )
+    results['next-populated'] = nextPopSamples
+
     const nextEarlySamples: number[] = []
     bench(
       '--next (early-exit)',
-      () => runOrchestrate(['orchestrated-handoff', '--feature', FIXTURE_DIR, '--next']),
+      () => runOrchestrate(['orchestrated-handoff', '--feature', EARLY_EXIT_DIR_REL, '--next']),
       nextEarlySamples,
       policy
     )
     results['next-early-exit'] = nextEarlySamples
   } finally {
+    cleanupPopulatedFixture(dataset)
     cleanupFixture()
   }
 
@@ -192,7 +245,7 @@ async function main(): Promise<void> {
     },
     results: stats
   }
-  writeFileSync(BASELINE_PATH, JSON.stringify(baselinePayload, null, 2) + '\n', 'utf-8')
+  writeFileSync(BASELINE_PATH, `${JSON.stringify(baselinePayload, null, 2)}\n`, 'utf-8')
   console.log(`\nBaseline written to ${BASELINE_PATH}`)
 
   if (hasFailure) process.exit(1)

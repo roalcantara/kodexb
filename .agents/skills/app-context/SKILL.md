@@ -48,9 +48,9 @@ and `CLAUDE.md` disagree, **CLAUDE.md wins** — open a PR to fix the skill.
 
 ## Feature specs (where to write design docs)
 
-- **In-flight Spec Kit:** [`assets/specs/NNN-<slug>/`](../../../assets/specs/) — `spec.md`, `plan.md`, `tasks.md`. Index: [`assets/specs/README.md`](../../../assets/specs/README.md).
-- **Document authority:** [`assets/guides/DOC_AUTHORITY.md`](../../../assets/guides/DOC_AUTHORITY.md) — guides are normative; legacy SDD is task-scoped archaeology only.
-- **Superpowers adaptation:** map output to `assets/specs/<NNN-slug>/` (Spec Kit shape), not `docs/superpowers/`.
+- **In-flight Spec Kit:** use the active feature directory from `.specify/feature.json` (Spec Kit quartet: `spec.md`, `plan.md`, `tasks.md`, `handoff.md`).
+- **Document authority:** [`assets/guides/DOC_AUTHORITY.md`](../../../assets/guides/DOC_AUTHORITY.md) — guides are normative for path policy and legacy routing.
+- **Superpowers adaptation:** follow guide authority for target feature location; do not use `docs/superpowers/`.
 - **E2e acceptance:** release-facing features MUST satisfy [`TESTING_GUIDE` R11](../../../assets/guides/TESTING_GUIDE.md#cross-feature-e2e-acceptance-r11).
 - **Subagent prompts:** include project path, testing, e2e policy, and validation overrides explicitly.
 

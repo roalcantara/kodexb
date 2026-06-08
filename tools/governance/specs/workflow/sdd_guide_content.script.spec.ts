@@ -26,10 +26,9 @@ const RE_YAML_TASKS_STEP = /id:\s*tasks/
 const RE_YAML_IMPLEMENT_STEP = /id:\s*implement/
 const RE_YAML_GATE_BLOCKS = /type:\s*gate[\s\S]*?(?=\n {2}-\s|\n$)/g
 const RE_YAML_COMMAND_REF = /command:\s*([a-z.]+)/g
-const RE_OHW_ID = /OHW-\d/
 const RE_EARS_TEXT = /\bWHEN\s.+\bTHEN\s.+\bSHALL\b/
 const RE_PHASE_ORDER_FENCE = /```text\s*\nspecify → clarify/
-const RE_FEATURE_DIR_PATH = /assets\/specs\/<NNN>-<slug>\//
+const RE_FEATURE_DIR_PATH = /<feature-dir>\//
 
 function loadGuide(): string {
   if (!existsSync(GUIDE)) throw new Error(`missing ${GUIDE}`)
@@ -194,7 +193,7 @@ describe('plan-template.md — OHW-8 AC2', () => {
     expect(template).toContain('normative quartet')
   })
 
-  it('T3: Documentation block names the feature dir path `assets/specs/<NNN>-<slug>/`', () => {
+  it('T3: Documentation block names the feature dir placeholder `<feature-dir>/`', () => {
     const docBlock = template.split('### Documentation')[1]?.split('### Source Code')[0] ?? ''
     expect(docBlock).toMatch(RE_FEATURE_DIR_PATH)
   })
@@ -215,23 +214,15 @@ describe('SDD_WORKFLOW_GUIDE.md — phase order fence (T3)', () => {
   })
 })
 
-describe('004 directory — OHW-8 AC3', () => {
-  const dir = 'assets/specs/004-orchestrated-handoff'
-  it('contains the normative quartet', () => {
-    expect(existsSync(`${dir}/spec.md`)).toBe(true)
-    expect(existsSync(`${dir}/plan.md`)).toBe(true)
-    expect(existsSync(`${dir}/tasks.md`)).toBe(true)
-    expect(existsSync(`${dir}/handoff.md`)).toBe(true)
+describe('plan-template.md — OHW-8 AC3', () => {
+  const template = readFileSync(PLAN_TEMPLATE, 'utf-8')
+  it('keeps normative quartet entries in the template tree', () => {
+    expect(template).toContain('spec.md')
+    expect(template).toContain('plan.md')
+    expect(template).toContain('tasks.md')
+    expect(template).toContain('handoff.md')
   })
-  it('does NOT contain optional satellites', () => {
-    expect(existsSync(`${dir}/research.md`)).toBe(false)
-    expect(existsSync(`${dir}/data-model.md`)).toBe(false)
-    expect(existsSync(`${dir}/quickstart.md`)).toBe(false)
-    expect(existsSync(`${dir}/contracts`)).toBe(false)
-  })
-  it('plan.md references OHW IDs (no EARS WHEN/SHALL text copied)', () => {
-    const plan = readFileSync(`${dir}/plan.md`, 'utf-8')
-    expect(plan).toMatch(RE_OHW_ID)
-    expect(plan).not.toMatch(RE_EARS_TEXT)
+  it('does not copy EARS WHEN/SHALL text into the template prose', () => {
+    expect(template).not.toMatch(RE_EARS_TEXT)
   })
 })

@@ -305,6 +305,27 @@ Before declaring implementation complete, run the repository quality gate:
 bash .agents/skills/app-quality-gate/scripts/gate.sh
 ```
 
+## Performance dataset task
+
+The workflow-observability perf harness uses a persisted dataset fixture under
+`tools/metrics/fixtures/perf/` and should not depend on live
+`assets/specs/<slug>/` folders at runtime.
+
+Use this Mise task to refresh the dataset from a feature directory snapshot:
+
+```sh
+mise run perf workflow-observability extract-dataset --feature <feature-dir>
+```
+
+Optional output override:
+
+```sh
+mise run perf workflow-observability extract-dataset --feature <feature-dir> --output <dataset-json-path>
+```
+
+Default output:
+`tools/metrics/fixtures/perf/workflow-observability-feature.json`
+
 Future work may replace the direct gate script entrypoint with a canonical Mise
 task. Until then, treat the script as the current executable authority and keep
 new automation discoverable through Mise.

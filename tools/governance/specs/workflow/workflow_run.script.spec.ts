@@ -21,7 +21,7 @@ function makePhaseDecided(): WorkflowEvent {
     type: 'phase_decided',
     run_id: 'test-123-abc',
     ts: '2026-06-07T12:00:00.000Z',
-    feature_dir: 'assets/specs/000-test',
+    feature_dir: 'tools/__tests__/fixtures/000-test',
     duration_ms: 5.2,
     fileset_fingerprint: 'a1b2c3d4e5f6',
     manifest_needs_handoff: true,
@@ -35,7 +35,7 @@ function makeManifestEmitted(): WorkflowEvent {
     type: 'manifest_emitted',
     run_id: 'test-456-def',
     ts: '2026-06-07T12:00:01.000Z',
-    feature_dir: 'assets/specs/000-test',
+    feature_dir: 'tools/__tests__/fixtures/000-test',
     duration_ms: 3.1,
     subtask_types: ['implement-src', 'gherkin-bdd-handoff'],
     subtask_count: 2
@@ -46,7 +46,7 @@ function makeHandoffWritten(): WorkflowEvent {
     type: 'handoff_written',
     run_id: 'test-789-ghi',
     ts: '2026-06-07T12:00:02.000Z',
-    feature_dir: 'assets/specs/003-sync-frecency-preserve',
+    feature_dir: 'tools/__tests__/fixtures/003-sync-frecency-preserve',
     duration_ms: 42.0,
     path: '/tmp/handoffs/opencode-sync-frecency-preserve-gherkin.md',
     focus: 'gherkin',
@@ -59,7 +59,7 @@ function makeDispatchInvoked(): WorkflowEvent {
     type: 'dispatch_invoked',
     run_id: 'test-789-ghi',
     ts: '2026-06-07T12:00:03.000Z',
-    feature_dir: 'assets/specs/003-sync-frecency-preserve',
+    feature_dir: 'tools/__tests__/fixtures/003-sync-frecency-preserve',
     duration_ms: 150.0,
     opencode_found: true,
     body_bytes: 2048,
@@ -137,7 +137,7 @@ describe('generateRunId', () => {
 })
 describe('slugFromFeatureDir', () => {
   it('extracts slug from NNN-slug path', () => {
-    expect(slugFromFeatureDir('assets/specs/003-sync-frecency-preserve')).toBe('sync-frecency-preserve')
+    expect(slugFromFeatureDir('tools/__tests__/fixtures/003-sync-frecency-preserve')).toBe('sync-frecency-preserve')
   })
 })
 describe('filesetFingerprint', () => {
@@ -157,7 +157,7 @@ describe('WorkflowRunWriter (WOBS-1, WOBS-5)', () => {
   })
   it('writes events and re-reads them byte-identical', () => {
     writerRoot = mkdtempSync(path.join(tmpdir(), 'wob-writer-'))
-    const writer = new WorkflowRunWriter('test-writer-rid', 'assets/specs/000-test', writerRoot)
+    const writer = new WorkflowRunWriter('test-writer-rid', 'tools/__tests__/fixtures/000-test', writerRoot)
     writer.emit(makeHandoffWritten())
     const ndjsonPath = writer.currentPath
     expect(ndjsonPath).not.toBeNull()
@@ -174,7 +174,7 @@ describe('WorkflowRunWriter (WOBS-1, WOBS-5)', () => {
   })
   it('appends multiple events to the same file', () => {
     writerRoot = mkdtempSync(path.join(tmpdir(), 'wob-append-'))
-    const writer = new WorkflowRunWriter(generateRunId('test-append'), 'assets/specs/000-test', writerRoot)
+    const writer = new WorkflowRunWriter(generateRunId('test-append'), 'tools/__tests__/fixtures/000-test', writerRoot)
     writer.emit(makePhaseDecided())
     writer.emit(makeManifestEmitted())
     const lines = readFileSync(writer.currentPath as string, 'utf-8')
@@ -184,7 +184,7 @@ describe('WorkflowRunWriter (WOBS-1, WOBS-5)', () => {
   })
   it('validates events before writing (no file written for invalid event)', () => {
     writerRoot = mkdtempSync(path.join(tmpdir(), 'wob-invalid-'))
-    const writer = new WorkflowRunWriter(generateRunId('test-invalid'), 'assets/specs/000-test', writerRoot)
+    const writer = new WorkflowRunWriter(generateRunId('test-invalid'), 'tools/__tests__/fixtures/000-test', writerRoot)
     writer.emit({ ...makePhaseDecided(), type: 'invalid' } as unknown as WorkflowEvent)
     expect(writer.currentPath).toBeNull()
   })
@@ -265,7 +265,7 @@ describe('runs CLI (list, show, tail)', () => {
     mkdirSync(`${TMP_ROOT}/2099-06-07`, { recursive: true })
     writeFileSync(
       `${TMP_ROOT}/2099-06-07/test-run-001.ndjson`,
-      `{"type":"phase_decided","run_id":"test-run-001","ts":"2099-06-07T12:00:00Z","feature_dir":"assets/specs/999-slug","duration_ms":5,"fileset_fingerprint":"ab","manifest_needs_handoff":false,"phase":"plan","command":"speckit.plan","focus_hint":null}\n{"type":"dispatch_invoked","run_id":"test-run-001","ts":"2099-06-07T12:00:01Z","feature_dir":"assets/specs/999-slug","duration_ms":42,"opencode_found":false,"body_bytes":0,"exit_code":0,"session_id":null}\n`
+      `{"type":"phase_decided","run_id":"test-run-001","ts":"2099-06-07T12:00:00Z","feature_dir":"tools/__tests__/fixtures/999-slug","duration_ms":5,"fileset_fingerprint":"ab","manifest_needs_handoff":false,"phase":"plan","command":"speckit.plan","focus_hint":null}\n{"type":"dispatch_invoked","run_id":"test-run-001","ts":"2099-06-07T12:00:01Z","feature_dir":"tools/__tests__/fixtures/999-slug","duration_ms":42,"opencode_found":false,"body_bytes":0,"exit_code":0,"session_id":null}\n`
     )
   })
   afterAll(() => cleanupTmpDir(TMP_ROOT))

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * spec handoff-generate — emit tmp/handoffs/opencode-{slug}-{focus}.md
- * from a feature's handoff.md AC table. See assets/specs/004-orchestrated-handoff/spec.md.
+ * from a feature's handoff.md AC table. See assets/guides/SDD_WORKFLOW_GUIDE.md.
  *
  * Opencode integration per https://opencode.ai/docs/cli/ — non-interactive
  * entry is `opencode run [message..]`.

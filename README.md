@@ -25,6 +25,7 @@ bun run e2e:regression  # Playwright regression (@regression, incl. overlay)
 bun run typecheck # Type-check without emitting
 bun run lint      # Run the full Phase-1 quality chain
 bun run lint:fix  # Auto-fix what can be fixed (Biome / Knip / ast-grep)
+mise run perf workflow-observability extract-dataset --feature tools/__tests__/fixtures/000-feature-demo
 ```
 
 ## CODE REVIEW GRAPH
@@ -299,9 +300,9 @@ Review-handoff CLI (deterministic prep before the LLM review pass):
 
 ```bash
 mise run spec review-handoff classify --json
-mise run spec review-handoff extract-evidence --feature assets/specs/NNN-slug
-mise run spec review-handoff prepare --feature assets/specs/NNN-slug --json
-mise run spec review-handoff scaffold-audit --feature assets/specs/NNN-slug
+mise run spec review-handoff extract-evidence --feature <feature-dir>
+mise run spec review-handoff prepare --feature <feature-dir> --json
+mise run spec review-handoff scaffold-audit --feature <feature-dir>
 ```
 
 `mise run skill install` restores Skills CLI-managed project skills from

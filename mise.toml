@@ -341,6 +341,10 @@ BLOCK_ON_THREAT="true"
       flag "--absolute-p95-ms <label=ms>" help="Override WOBS absolute p95 cap (repeatable)"
       flag "--no-regression" help="Skip baseline comparison; still writes baseline JSON"
       flag "--no-absolute-limits" help="Skip WOBS absolute p95 caps"
+      cmd "extract-dataset" {
+        flag "--feature <dir>" help="Source feature directory to snapshot (required)"
+        flag "--output <path>" default="tools/metrics/fixtures/perf/workflow-observability-feature.json" help="Output dataset JSON path"
+      }
     }
   ''', run = "bun tools/metrics/harnesses/perf/perf.script.ts" }
 "hooks" = { description = "Run tests for Cursor agent hooks (.cursor/hooks/)", usage = '''

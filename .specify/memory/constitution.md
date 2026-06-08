@@ -2,7 +2,7 @@
 SYNC IMPACT REPORT
 ==================
 Version change: 1.2.0 → 1.4.0
-Bump rationale: PATCH (1.3.0) + PATCH (1.3.1) + PATCH. SDD path migration to assets/specs/, spec.md/plan.md
+Bump rationale: PATCH (1.3.0) + PATCH (1.3.1) + PATCH. SDD path migration, spec.md/plan.md
   authority, deterministic spec lint/trace gates, Gherkin in assets/features/e2e/,
   git-config auto_commit documented, SDD_WORKFLOW_GUIDE reference. 1.3.1:
   Fix amendment log [12] link to canonical path; terse speckit completion reports.
@@ -34,7 +34,7 @@ in Bun, Electrobun, and TypeBox. Inspired by [GitHub Spec Kit — spec-driven.md
 
 | Idea                       | kb practice                                                                                                                                                                                                                                  |
 | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Specs as lingua franca** | Normative `spec.md`, `plan.md`, `tasks.md`, `handoff.md` under `assets/specs/<NNN-slug>/`; backlog in [`assets/specs/README.md`](../../assets/specs/README.md). Guide: [`SDD_WORKFLOW_GUIDE.md`](../../assets/guides/SDD_WORKFLOW_GUIDE.md). |
+| **Specs as lingua franca** | Normative `spec.md`, `plan.md`, `tasks.md`, `handoff.md` in the active feature directory from `.specify/feature.json`; backlog/routing policy in [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md) and [`SDD_WORKFLOW_GUIDE.md`](../../assets/guides/SDD_WORKFLOW_GUIDE.md). |
 | **Executable specs**       | EARS in `spec.md` with **Measure** + **Evidence**; Gherkin in `assets/features/e2e/` when declared.                                                                                                                                          |
 | **Continuous refinement**  | `/speckit-clarify`, `/speckit-checklist`, `/speckit-analyze` — not one-shot doc dumps.                                                                                                                                                       |
 | **Intent-driven change**   | Pivots update requirements/design first; implementation and tests follow.                                                                                                                                                                    |
@@ -204,8 +204,8 @@ kb uses **Spec Kit** commands aligned to [spec-driven.md][16] — not a separate
 | 7    | **Implement** — `/speckit-implement` + `handoff.md`                  | Code + tests                                         |
 | 8    | **Review** — `mise run spec gate` + handoff AC table + [`DoD.md`][4] | lint + trace + `gate.sh`                             |
 
-**Feature path:** `.specify/feature.json` → `feature_directory` under
-`assets/specs/<NNN-slug>/` (Companion glob `[0-9][0-9][0-9]-*`).
+**Feature path:** `.specify/feature.json` → `feature_directory` (authoritative
+path rules in [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md)).
 
 [^analyze-dual]: The `orchestrated-handoff` workflow runs `speckit.analyze`
     **twice** — once after `plan.md` (plan-pass; catches plan/traceability
@@ -254,7 +254,7 @@ above):
 | `handoff.md`             | **Normative** — implementer prompt + maintainer AC checklist   |
 | `assets/features/e2e/*`  | **Normative Gherkin** when e2e declared                        |
 | `checklists/`            | Spec quality checks; **not** a substitute for tests            |
-| `assets/specs/README.md` | Program backlog, `RELEASE`, `STATUS`                           |
+| Spec backlog index        | See [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md) and [`SDD_WORKFLOW_GUIDE.md`](../../assets/guides/SDD_WORKFLOW_GUIDE.md) |
 | Legacy `requirements.md` | Reference only under `assets/docs/specs/MILESTONE_*`           |
 
 ---

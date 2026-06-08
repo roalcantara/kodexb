@@ -45,7 +45,7 @@ export function runSecretsCheck(files: string[]): SecurityFinding[] {
     'node_modules/',
     '.git/',
     '.electrobun-cache/',
-    'assets/specs/',
+    'assets/specs',
     'bun.lock',
     'bun.lockb',
     'package-lock.json',

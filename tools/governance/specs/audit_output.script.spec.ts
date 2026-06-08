@@ -17,7 +17,7 @@ function captureLog(fn: () => void): string[] {
 
 function makeResult(overrides: Partial<AuditResult> = {}): AuditResult {
   return {
-    featureDir: 'assets/specs/005-workflow-observability',
+    featureDir: 'tools/__tests__/fixtures/000-feature-demo',
     phase: { name: 'analyze-tasks', command: 'speckit.analyze' },
     findings: [
       { rule: 'quartet.handoff', level: 'error', file: 'handoff.md', message: 'Missing handoff.md' },

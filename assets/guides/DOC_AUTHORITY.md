@@ -11,6 +11,51 @@ Where rules and feature specs live, and what may link to what.
 5. A workspace spec may **link out** to a guide or the catalog (one pointer, no copy). Guides **must not** link into `assets/docs/*`.
 6. **No permanent doc** (`AGENTS.md`, `CLAUDE.md`, `README.md`, `assets/guides/**`, `.agents/skills/**`, `.cursor/rules/**`) may reference `assets/docs/*`. Enforced by ast-grep (`tools/governance/policies/ast-grep/no-inbound-assets-docs-*.rule.yml`).
 
+## Hard-rule location
+
+All hard-rule statements about Spec Kit paths and document authority are
+defined only in `assets/guides/`.
+
+- Files outside `assets/guides/` may reference feature paths for runtime
+  operation, tests, examples, and command usage.
+- Files outside `assets/guides/` must not define new normative path policy.
+- When in doubt, defer to this guide and
+  [`SDD_WORKFLOW_GUIDE.md`](SDD_WORKFLOW_GUIDE.md).
+
+## In-flight specs are ephemeral
+
+`assets/specs/NNN-<slug>/` is an in-flight workspace, not a stable API.
+Treat every folder there as temporary implementation context that may be
+renamed, archived, or removed after ship.
+
+### Required behavior
+
+1. Runtime code, tests, and tooling must not hardcode specific
+  `assets/specs/<slug>/...` paths as durable references.
+2. Use feature-dir inputs, shared path loaders, or fixtures instead:
+  `tools/governance/support/catalog_paths.script.ts` (`specs_root`) and
+  `tools/__tests__/fixtures/` for deterministic tests.
+3. Keep normative path policy in guides only. Any file outside
+  `assets/guides/` may show operational examples, but may not define
+  authority.
+
+### Non-examples (do not do this)
+
+- Embedding `assets/specs/003-sync-frecency-preserve` in a test expectation.
+- Linking a permanent policy file to one specific in-flight slug.
+- Treating `assets/specs/` content as the shipped source of truth.
+
+### Preferred patterns
+
+- Pass `--feature <dir>` at runtime; do not infer one slug in code.
+- Resolve default roots from catalog/config loaders.
+- Use fixture roots under `tools/__tests__/fixtures/` in tests.
+
+### Guardrail
+
+- ast-grep enforces hardcoded-slug prevention in TS/JS via
+  `tools/governance/policies/ast-grep/no-hardcoded-assets-specs-slug-ts.rule.yml`.
+
 ## Document layers
 
 | Layer              | Path                              | Purpose                                                                                                  |

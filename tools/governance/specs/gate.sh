@@ -3,7 +3,7 @@
 set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
-FEATURE_DIR="${1:-assets/specs/001-sync-frecency-persistence}"
+FEATURE_DIR="$1"
 
 echo "── spec gate: ${FEATURE_DIR} ──"
 bun tools/governance/specs/lint.script.ts "$FEATURE_DIR" --strict

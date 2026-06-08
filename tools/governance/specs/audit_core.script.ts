@@ -2,11 +2,12 @@
  * spec audit core — deterministic SDD readiness checks for a feature dir.
  *
  * Groups A–E: quartet presence, handoff AC table, tasks hygiene, phase
- * readiness, cross-artifact hints. See assets/specs/_handoffs/ for the
- * full rule table.
+ * readiness, cross-artifact hints. See assets/guides/SDD_WORKFLOW_GUIDE.md
+ * for the full rule table.
  */
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { catalogPaths } from '../support/catalog_paths.script.ts'
 import { parseHandoffAcTable } from './workflow/handoff_generate.script.ts'
 import { detectPhase, scanFeatureDir } from './workflow/orchestrated_handoff.script.ts'
 
@@ -40,6 +41,10 @@ function quartetPath(featureDir: string, name: string): string {
   return path.join(featureDir, name)
 }
 
+function escapeRegex(raw: string): string {
+  return raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 function checkQuartet(featureDir: string): Finding[] {
   const f: Finding[] = []
   const quartet = ['spec.md', 'plan.md', 'tasks.md', 'handoff.md'] as const
@@ -54,12 +59,16 @@ function checkQuartet(featureDir: string): Finding[] {
       })
     }
   }
-  if (featureDir.includes('assets/specs/') && !/assets\/specs\/\d{3,}-[\w-]+$/.test(featureDir.replace(/\/$/, ''))) {
+  const rootPrefix = `${catalogPaths.specs_root}/`
+  if (
+    featureDir.startsWith(rootPrefix) &&
+    !new RegExp(`^${escapeRegex(catalogPaths.specs_root)}/\\d{3,}-[\\w-]+$`).test(featureDir.replace(/\/$/, ''))
+  ) {
     f.push({
       rule: 'quartet.path',
       level: 'error',
       file: featureDir,
-      message: 'Feature dir does not match expected pattern: assets/specs/NNN-<slug>'
+      message: `Feature dir does not match expected pattern: ${catalogPaths.specs_root}/NNN-<slug>`
     })
   }
   return f
@@ -270,8 +279,8 @@ function checkCrossRefs(featureDir: string): Finding[] {
   }
 
   const slug = slugFromDir(featureDir)
-  const specRelPath = featureDir.includes('assets/specs/')
-    ? featureDir.slice(featureDir.indexOf('assets/specs/'))
+  const specRelPath = featureDir.startsWith(`${catalogPaths.specs_root}/`)
+    ? featureDir.slice(featureDir.indexOf(catalogPaths.specs_root))
     : featureDir
   if (slug && !handoffMd.toLowerCase().includes(slug.toLowerCase()) && !handoffMd.includes(specRelPath)) {
     f.push({

@@ -1,6 +1,6 @@
 // biome-ignore lint/nursery/noExcessiveLinesPerFile: comprehensive spec
 import { describe, expect, it } from 'bun:test'
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import {
@@ -17,7 +17,7 @@ import {
 
 type AcRowLike = AcRow
 
-const PILOT_FEATURE_DIR = 'assets/specs/003-sync-frecency-preserve'
+const PILOT_FEATURE_DIR = 'tools/__tests__/fixtures/003-sync-frecency-preserve'
 
 describe('handoff scrub integration', () => {
   it('returns exit 1 when rendered body contains sensitive text', () => {
@@ -52,7 +52,7 @@ describe('catalogKeyFromSlug', () => {
 
 describe('slugFromFeatureDir', () => {
   it('extracts slug from NNN-slug path', () => {
-    expect(slugFromFeatureDir('assets/specs/003-sync-frecency-preserve')).toBe('sync-frecency-preserve')
+    expect(slugFromFeatureDir('tools/__tests__/fixtures/003-sync-frecency-preserve')).toBe('sync-frecency-preserve')
   })
 })
 
@@ -153,7 +153,7 @@ describe('renderHandoffPrompt', () => {
 
   it('includes catalog key, slug, and AC tags in the prompt', () => {
     const out = renderHandoffPrompt({
-      featureDir: 'assets/specs/003-sync-frecency-preserve',
+      featureDir: 'tools/__tests__/fixtures/003-sync-frecency-preserve',
       slug: 'sync-frecency-preserve',
       catalogKey: 'sync_frecency_preserve',
       focus: 'gherkin',
@@ -235,8 +235,8 @@ describe('renderHandoffPrompt', () => {
 
 describe('parseArgs', () => {
   it('parses the minimal happy path', () => {
-    const args = parseArgs(['--feature', 'assets/specs/003-x'])
-    expect(args.featureDir).toBe('assets/specs/003-x')
+    const args = parseArgs(['--feature', 'tools/__tests__/fixtures/003-x'])
+    expect(args.featureDir).toBe('tools/__tests__/fixtures/003-x')
     expect(args.focus).toBe('gherkin')
     expect(args.worker).toBe('opencode')
     expect(args.dispatch).toBe(false)
@@ -304,22 +304,29 @@ describe('dispatchToOpencode', () => {
   })
 })
 
-describe('pilot 003 (real handoff.md)', () => {
+describe('fixture handoff data', () => {
   it('emits a prompt that references the catalog tag, e2e block, and AC tags', () => {
-    const handoffPath = `${PILOT_FEATURE_DIR}/handoff.md`
-    if (!existsSync(handoffPath)) {
-      throw new Error(`pilot 003 handoff.md missing at ${handoffPath}`)
-    }
-    const rows = parseHandoffAcTable(readFileSync(handoffPath, 'utf-8'))
+    const handoffMd = [
+      '| ID       | Done when                  | Evidence                                  |',
+      '| -------- | -------------------------- | ----------------------------------------- |',
+      '| SF-1 AC1 | List order preserved       | `mise run test tag foo sf1ac1`            |',
+      '| SF-3 AC3 | UI sync no restart         | Operator smoke below — pending human run  |',
+      '| SF-4 AC2 | Another unit check         | `bun test tools/governance/specs/workflow`|',
+      '| SF-5 AC1 | Another unit check         | `bun test tools/governance/specs/workflow`|',
+      '| SF-6 AC1 | Another unit check         | `bun test tools/governance/specs/workflow`|',
+      '| SF-7 AC1 | Another unit check         | `bun test tools/governance/specs/workflow`|',
+      '| SF-8 AC1 | Another unit check         | `bun test tools/governance/specs/workflow`|',
+      '| SF-9 AC1 | Another unit check         | `bun test tools/governance/specs/workflow`|',
+      '| SF-10 AC1 | Another unit check        | `bun test tools/governance/specs/workflow`|'
+    ].join('\n')
+    const rows = parseHandoffAcTable(handoffMd)
     expect(rows.length).toBeGreaterThanOrEqual(9)
     const sf3ac3 = rows.find(r => r.id === 'SF-3 AC3')
     expect(sf3ac3?.isOperatorSmoke).toBe(true)
     const sf1ac1 = rows.find(r => r.id === 'SF-1 AC1')
     expect(sf1ac1?.sliceId).toBe('sf1ac1')
 
-    const planMd = existsSync(`${PILOT_FEATURE_DIR}/plan.md`)
-      ? readFileSync(`${PILOT_FEATURE_DIR}/plan.md`, 'utf-8')
-      : null
+    const planMd = 'File touch list:\n- `assets/features/sync.feature`\n- `bdd/unit/steps/sync.steps.ts`\n'
     const fileTouches = extractFileTouchList(planMd)
     const body = renderHandoffPrompt({
       featureDir: PILOT_FEATURE_DIR,

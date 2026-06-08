@@ -44,7 +44,13 @@ Policy: [`assets/guides/TESTING_GUIDE.md` § R11](assets/guides/TESTING_GUIDE.md
 
 ### Spec orientation
 
-**In-flight Spec Kit:** `assets/specs/NNN-<slug>/`. **Legacy SDD:** task-scoped only — [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md). Shipped registry: `mise run catalog list`.
+For in-flight/legacy spec path policy and document authority, follow
+[`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md).
+Shipped registry: `mise run catalog list`.
+
+Treat `assets/specs/` as ephemeral in-flight workspace state. Do not hardcode
+feature slug paths from `assets/specs/` in tests or tooling defaults; prefer
+feature-dir inputs, shared loaders, and fixtures.
 
 ### Skill routing ledger
 
@@ -64,8 +70,9 @@ Policy: [`assets/guides/TESTING_GUIDE.md` § R11](assets/guides/TESTING_GUIDE.md
 
 - When a Superpowers skill mentions `docs/superpowers/specs` or
   `docs/superpowers/plans`, use the `spec-driven-development` skill shape
-  instead and map the output to **`assets/specs/<NNN-slug>/`** (active) or follow
-  [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md) for legacy archaeology.
+  and follow
+  [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md)
+  for authoritative path and legacy routing.
 - **Do not create `docs/superpowers/`**. That path is an external skill
   default and is gitignored here to prevent drift.
 - For tests, project rules override generic Superpowers examples: follow
@@ -145,7 +152,7 @@ Optional: **sessionStart** hooks in [`.cursor/hooks.json`](.cursor/hooks.json) r
 (audit logging; see [`.cursor/hooks/README.md`](.cursor/hooks/README.md)) and
 [`electrobun_session_start.ts`](.cursor/hooks/electrobun_session_start.ts) (Electrobun skill routing).
 
-Repo docs: `assets/guides/ELECTROBUN.md`, `assets/guides/FCIS.guide.md`, `assets/guides/DOC_AUTHORITY.md`. Active specs: `assets/specs/README.md` (never `docs/superpowers/` — gitignored).
+Repo docs: `assets/guides/ELECTROBUN.md`, `assets/guides/FCIS.guide.md`, `assets/guides/DOC_AUTHORITY.md`, `assets/guides/SDD_WORKFLOW_GUIDE.md` (never `docs/superpowers/` — gitignored).
 
 ### Verification
 

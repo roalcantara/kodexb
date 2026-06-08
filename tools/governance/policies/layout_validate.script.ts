@@ -7,6 +7,8 @@ import { chdirToRepoRoot } from '../../support/lib/shared/repo_root.script.ts'
 
 type ManifestEntry = { path: string; kind: 'folder' | 'file' }
 
+const ALLOWED_UNMANIFESTED_TOPS = new Set(['__tests__'])
+
 function parseManifest(toml: string): ManifestEntry[] {
   const entries: ManifestEntry[] = []
   let kind: 'folder' | 'file' = 'folder'
@@ -59,6 +61,9 @@ export function topLevelFromTracked(files: string[]): Set<string> {
 export function findUnmanifestedTops(manifestPaths: Set<string>, tops: Set<string>): string[] {
   const errors: string[] = []
   for (const top of tops) {
+    if (ALLOWED_UNMANIFESTED_TOPS.has(top)) {
+      continue
+    }
     if (!manifestPaths.has(top)) {
       errors.push(`unmanifested tools/${top}/`)
     }

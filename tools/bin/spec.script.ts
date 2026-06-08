@@ -54,7 +54,11 @@ function main(): void {
       break
     }
     case 'gate': {
-      const dir = process.env.usage_feature_dir ?? 'assets/specs/001-sync-frecency-persistence'
+      const dir = process.env.usage_feature_dir
+      if (!dir) {
+        console.error('spec gate: missing --feature-dir')
+        process.exit(2)
+      }
       spawnInherit(['bash', `${SPECS}/gate.sh`, dir], root)
       break
     }

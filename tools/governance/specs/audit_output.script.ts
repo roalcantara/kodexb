@@ -40,6 +40,10 @@ function slugFromDir(featureDir: string): string {
   return featureDir.replace(/\/$/, '').split('/').pop() ?? featureDir
 }
 
+function normalizePath(p: string): string {
+  return p.replace(/\\/g, '/')
+}
+
 export function renderAudit(result: AuditResult, mode: RenderMode): void {
   if (mode === 'json') {
     console.log(JSON.stringify(result, null, 2))
@@ -57,7 +61,7 @@ export function renderAudit(result: AuditResult, mode: RenderMode): void {
       console.log(`  ${'Severity'.padEnd(7)}${sep}Rule${sep}File${sep}Message`)
       for (const f of result.findings) {
         const sev = severityLabel(f.level).padEnd(7)
-        const loc = pathShort(f.line ? `${f.file}:${f.line}` : f.file)
+        const loc = pathShort(f.line ? `${f.file}:${f.line}` : f.file, result.featureDir)
         console.log(`  ${sev}${sep}${f.rule}${sep}${loc}${sep}${f.message}`)
       }
     }
@@ -100,7 +104,7 @@ export function renderAudit(result: AuditResult, mode: RenderMode): void {
     console.log(gumSection('Findings'))
     const rows = result.findings.map(f => {
       const sev = f.level === 'error' ? gumFail('error') : f.level === 'warn' ? gumWarn('warn') : gumMuted('info')
-      const loc = f.line ? `${pathShort(f.file)}:${f.line}` : pathShort(f.file)
+      const loc = f.line ? `${pathShort(f.file, result.featureDir)}:${f.line}` : pathShort(f.file, result.featureDir)
       return [sev, gumInfo(f.rule), gumMuted(loc), f.message]
     })
     const tbl = gumTable(['Sev', 'Rule', 'File', 'Message'], rows)
@@ -117,11 +121,15 @@ export function renderAudit(result: AuditResult, mode: RenderMode): void {
   gumNextSteps(steps)
 }
 
-function pathShort(fullPath: string): string {
-  const idx = fullPath.indexOf('assets/specs/')
-  if (idx >= 0) return fullPath.slice(idx)
-  const idx2 = fullPath.indexOf('tools/governance/')
-  if (idx2 >= 0) return fullPath.slice(idx2)
+function pathShort(fullPath: string, featureDir: string): string {
+  const full = normalizePath(fullPath)
+  const feature = normalizePath(featureDir).replace(/\/$/, '')
+  const featureIdx = full.indexOf(feature)
+  if (featureIdx >= 0) return full.slice(featureIdx)
+
+  const governanceIdx = full.indexOf('tools/governance/')
+  if (governanceIdx >= 0) return full.slice(governanceIdx)
+
   return fullPath
 }
 

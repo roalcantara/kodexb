@@ -4,6 +4,18 @@ How kb uses **Spec Kit** and **specification-driven development (SDD)** for in-f
 features. Document authority and layer rules live in
 [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md); this guide describes the day-to-day workflow.
 
+## Spec lifecycle reference
+
+Use this quick lifecycle when routing work:
+
+1. In-flight work uses Spec Kit artifacts for the active feature.
+2. Ship-ready behavior is validated through Gherkin and unit/component tests.
+3. Shipped feature status is registered in `assets/catalog/catalog.yaml`.
+
+Path policy remains normative in [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md).
+Other files may describe paths for usage examples but must not define new
+hard rules.
+
 ## Where specs live
 
 | Layer                | Path                                                         | When to open                                     |
@@ -21,6 +33,11 @@ Normative files per in-flight feature:
 - `plan.md` — design contract, file touch list, traceability
 - `tasks.md` — ordered work and verification
 - `handoff.md` — optional operator handoff and acceptance tracker
+
+Path policy reminder: command examples in this guide use the current default
+spec root (`assets/specs/`). In code and tests, do not hardcode specific
+feature slugs under that root. Prefer feature-dir inputs, shared loaders, and
+fixtures as defined in [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md#in-flight-specs-are-ephemeral).
 
 Backlog index: [`assets/specs/README.md`](../specs/README.md).
 
@@ -180,10 +197,10 @@ mise run spec handoff-generate --feature assets/specs/NNN-slug --focus gherkin
 mise run spec resume     # specify workflow resume
 ```
 
-`--next` prints the canonical next command (per the 10-row transition table in
-[`assets/specs/004-orchestrated-handoff/spec.md`](../specs/004-orchestrated-handoff/spec.md)
-OHW-3 AC1). `--manifest` prints a rule-based XML subtask manifest classifying
-remaining work into `implement-src`, `gherkin-bdd-handoff`, or `catalog-touch`.
+`--next` prints the canonical next command for the active workflow transition
+table in this guide. `--manifest` prints a rule-based XML subtask manifest
+classifying remaining work into `implement-src`, `gherkin-bdd-handoff`, or
+`catalog-touch`.
 
 ### When to use opencode worker handoff vs primary implement
 

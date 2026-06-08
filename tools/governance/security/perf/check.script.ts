@@ -58,8 +58,7 @@ async function main(): Promise<number> {
     if (typeof baselineP95 === 'number') {
       const delta = currentP95 - baselineP95
       const pct = baselineP95 === 0 ? 0 : (delta / baselineP95) * 100
-      regressionFail =
-        delta >= baseline.policy.regression_min_delta_ms && pct >= baseline.policy.regression_pct
+      regressionFail = delta >= baseline.policy.regression_min_delta_ms && pct >= baseline.policy.regression_pct
     }
 
     const ok = !absoluteFail && !regressionFail

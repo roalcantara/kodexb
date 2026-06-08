@@ -1,0 +1,20 @@
+# JSON string values must not reference assets/specs/* outside allowlisted paths.
+id: no-inbound-assets-specs-json
+language: Json
+severity: error
+ignores:
+  - "**/assets/specs/**"
+  - "**/assets/guides/**"
+  - "**/.specify/**"
+  - "**/tmp/**"
+  - "**/graphify-out/**"
+  - "**/node_modules/**"
+  - "tools/governance/policies/ast-grep/*.rule.yml"
+rule:
+  all:
+    - kind: string
+    - regex: assets/specs/
+message: >
+  JSON config must not reference assets/specs/* outside allowlisted temporary/governance areas.
+  Hard-rule policy belongs in assets/guides/.
+note: See assets/guides/DOC_AUTHORITY.md
