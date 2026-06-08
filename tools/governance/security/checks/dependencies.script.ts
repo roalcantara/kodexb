@@ -11,23 +11,19 @@ type CveRow = {
 }
 
 function parseCveList(filePath: string): CveRow[] {
-  try {
-    const text = readFileSync(filePath, 'utf8')
-    const rows: CveRow[] = []
-    const chunks = text.split('\n- ').map((chunk, index) => (index === 0 ? chunk.replace(/^-\s*/, '') : chunk))
-    for (const chunk of chunks) {
-      if (!chunk.trim()) continue
-      const packageName = chunk.match(/packageName:\s*["']?([^"'\s]+)["']?/)?.[1]?.trim()
-      const version = chunk.match(/version:\s*["']?([^"'\s]+)["']?/)?.[1]?.trim()
-      const cve = chunk.match(/cve:\s*["']?([^"'\s]+)["']?/)?.[1]?.trim()
-      const severityRaw = chunk.match(/severity:\s*["']?([^"'\s]+)["']?/)?.[1]?.trim() as SecuritySeverity | undefined
-      if (!packageName || !version || !cve || !severityRaw) continue
-      rows.push({ packageName, version, cve, severity: severityRaw })
-    }
-    return rows
-  } catch {
-    return []
+  const text = readFileSync(filePath, 'utf8')
+  const rows: CveRow[] = []
+  const chunks = text.split('\n- ').map((chunk, index) => (index === 0 ? chunk.replace(/^-\s*/, '') : chunk))
+  for (const chunk of chunks) {
+    if (!chunk.trim()) continue
+    const packageName = chunk.match(/packageName:\s*["']?([^"'\s]+)["']?/)?.[1]?.trim()
+    const version = chunk.match(/version:\s*["']?([^"'\s]+)["']?/)?.[1]?.trim()
+    const cve = chunk.match(/cve:\s*["']?([^"'\s]+)["']?/)?.[1]?.trim()
+    const severityRaw = chunk.match(/severity:\s*["']?([^"'\s]+)["']?/)?.[1]?.trim() as SecuritySeverity | undefined
+    if (!packageName || !version || !cve || !severityRaw) continue
+    rows.push({ packageName, version, cve, severity: severityRaw })
   }
+  return rows
 }
 
 function checkBunAudit(lockfilePath: string): SecurityFinding[] {

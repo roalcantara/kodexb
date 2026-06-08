@@ -130,7 +130,6 @@ dist
 
 # Team-shared Spec Kit config (global gitignore hides .vscode/*)
 .vscode/*
-!.vscode/settings.json
 
 # pnpm
 .pnpm-store
@@ -245,4 +244,3 @@ tools/benchmarks/results/latest.json
 # Local git worktrees (created by using-git-worktrees skill for isolated demos / spikes)
 .worktrees/
 graphify-out/
-.vscode/settings.json

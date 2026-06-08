@@ -365,8 +365,11 @@ describe('WOBS-3: event emission', () => {
     const writer = new WorkflowRunWriter(generateRunId('test-w3a'), root, runsDir)
     const savedLog = console.log
     console.log = () => undefined
-    run(['--feature', root], { writer })
-    console.log = savedLog
+    try {
+      run(['--feature', root], { writer })
+    } finally {
+      console.log = savedLog
+    }
     const event = JSON.parse(readFileSync(writer.currentPath as string, 'utf-8').trim())
     expect(event.type).toBe('handoff_written')
     expect(typeof event.path).toBe('string')
@@ -385,9 +388,12 @@ describe('WOBS-3: event emission', () => {
     const writer = new WorkflowRunWriter(generateRunId('test-w3b'), root, runsDir)
     const savedLog = console.log
     console.log = () => undefined
-    const rc = run(['--feature', root, '--dry-run'], { writer })
-    console.log = savedLog
-    expect(rc).toBe(0)
+    try {
+      const rc = run(['--feature', root, '--dry-run'], { writer })
+      expect(rc).toBe(0)
+    } finally {
+      console.log = savedLog
+    }
     expect(writer.currentPath).toBeNull()
     rmSync(root, { recursive: true, force: true })
     rmSync(runsDir, { recursive: true, force: true })
@@ -404,12 +410,16 @@ describe('WOBS-4 AC2: run() with --dispatch emits dispatch_invoked event', () =>
     const runsDir = mkdtempSync(path.join(tmpdir(), 'hg-w4b-r-'))
     fixture(root, '| ID | Done when | Evidence |\n| --- | --------- | -------- |\n| SF-1 AC1 | works | bun test x |')
     const writer = new WorkflowRunWriter(generateRunId('test-w4b'), root, runsDir)
+    const savedDispatch = process.env.ORCHESTRATED_HANDOFF_DISPATCH
     process.env.ORCHESTRATED_HANDOFF_DISPATCH = '1'
     const savedLog = console.log
     console.log = () => undefined
-    run(['--feature', root], { writer, which: () => null })
-    console.log = savedLog
-    process.env.ORCHESTRATED_HANDOFF_DISPATCH = ''
+    try {
+      run(['--feature', root], { writer, which: () => null })
+    } finally {
+      console.log = savedLog
+      process.env.ORCHESTRATED_HANDOFF_DISPATCH = savedDispatch
+    }
     const { handoffFilePath } = assertHandoffFile(root)
     const { lines } = readHandoffEvents(writer)
     const handoffWritten = JSON.parse(lines[0] as string)
@@ -431,8 +441,11 @@ describe('WOBS-4 AC2: run() with --dispatch emits dispatch_invoked event', () =>
     const writer = new WorkflowRunWriter(generateRunId('test-w4c'), root, runsDir)
     const savedLog = console.log
     console.log = () => undefined
-    run(['--feature', root, '--dispatch'], { writer, which: () => null })
-    console.log = savedLog
+    try {
+      run(['--feature', root, '--dispatch'], { writer, which: () => null })
+    } finally {
+      console.log = savedLog
+    }
     const { handoffFilePath } = assertHandoffFile(root)
     const { lines } = readHandoffEvents(writer)
     expect(lines.length).toBe(2)

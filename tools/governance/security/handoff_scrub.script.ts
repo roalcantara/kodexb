@@ -13,9 +13,9 @@ export class HandoffScrubError extends Error {
   constructor(
     readonly rule: string,
     readonly offset: number,
-    readonly excerpt: string
+    readonly _excerpt: string
   ) {
-    super(`handoff scrub failed (${rule}) at byte ${offset}: ${excerpt}`)
+    super(`handoff scrub failed (${rule}) at byte ${offset}: <redacted>`)
     this.name = 'HandoffScrubError'
   }
 }
@@ -28,7 +28,11 @@ function parseArgs(argv: string[]): HandoffScrubArgs {
     const arg = argv[i]
     if (!arg) continue
     if (arg === '--feature') {
-      featureDir = argv[i + 1] ?? null
+      const next = argv[i + 1]
+      if (!next || next.startsWith('-')) {
+        throw new Error('--feature requires a non-flag argument')
+      }
+      featureDir = next
       i += 1
       continue
     }
@@ -81,34 +85,29 @@ function main(): number {
   const args = parseArgs(process.argv.slice(2))
   let exitCode = 0
   let severityMax: 'high' | null = null
+  const emitRunEvent = (findingsCount: number) => {
+    appendSecurityRunEvent(process.cwd(), `scrub-${Date.now()}`, {
+      ts: new Date().toISOString(),
+      phase: 'handoff-scrub',
+      trigger: 'handoff-emit',
+      findingsCount,
+      severityMax,
+      exitCode,
+      durationMs: 0,
+      feature: process.env.SPEC_FEATURE_SLUG ?? args.featureDir
+    })
+  }
+
   try {
     scrubPrompt(args.body, args.featureDir)
   } catch (error) {
     exitCode = 1
     severityMax = 'high'
-    appendSecurityRunEvent(process.cwd(), `scrub-${Date.now()}`, {
-      ts: new Date().toISOString(),
-      phase: 'handoff-scrub',
-      trigger: 'handoff-emit',
-      findingsCount: 1,
-      severityMax,
-      exitCode,
-      durationMs: 0,
-      feature: args.featureDir
-    })
+    emitRunEvent(1)
     throw error
   }
 
-  appendSecurityRunEvent(process.cwd(), `scrub-${Date.now()}`, {
-    ts: new Date().toISOString(),
-    phase: 'handoff-scrub',
-    trigger: 'handoff-emit',
-    findingsCount: 0,
-    severityMax,
-    exitCode,
-    durationMs: 0,
-    feature: args.featureDir
-  })
+  emitRunEvent(0)
   return 0
 }
 

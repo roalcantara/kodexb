@@ -9,17 +9,47 @@ export type SurfaceViewNode = {
   hasNavigationList: boolean
 }
 
+function collectBraceObjects(text: string, startIdx: number): string[] {
+  const braceStart = text.indexOf('{', startIdx)
+  if (braceStart < 0) return []
+  const objects: string[] = []
+  let i = braceStart
+  let depth = 0
+  while (i < text.length) {
+    if (text[i] === '{') {
+      if (depth === 0) {
+        objects.push('')
+      }
+      depth++
+    }
+    if (depth > 0) {
+      const idx = objects.length - 1
+      objects[idx] = (objects[idx] ?? '') + text[i]
+    }
+    if (text[i] === '}') {
+      depth--
+      if (depth === 0) {
+        i++
+        break
+      }
+    }
+    i++
+  }
+  return objects.filter(o => o.trim().length > 0)
+}
+
 export function parseElectrobunViews(configPath: string): SurfaceViewNode[] {
   try {
     const text = readFileSync(configPath, 'utf8')
-    const blocks = text.split(/\bexternalViews\b/)
-    if (blocks.length <= 1) return []
+    const extViewsIdx = text.search(/\bexternalViews\b/)
+    if (extViewsIdx < 0) return []
+    const afterKey = text.slice(extViewsIdx)
+    const arrayStart = afterKey.indexOf('[')
+    if (arrayStart < 0) return []
+    const arrayEnd = afterKey.indexOf(']', arrayStart)
+    if (arrayEnd < 0) return []
 
-    const tail = blocks.slice(1).join('\n')
-    const nodes = tail
-      .split('},')
-      .map(chunk => chunk.trim())
-      .filter(Boolean)
+    const nodes = collectBraceObjects(afterKey, arrayStart)
 
     return nodes.map(node => {
       const idMatch = node.match(/id\s*:\s*['"]([^'"]+)['"]/)
@@ -27,7 +57,7 @@ export function parseElectrobunViews(configPath: string): SurfaceViewNode[] {
       const id = idMatch?.[1] ?? ''
       const url = urlMatch?.[1] ?? ''
 
-      // SH-3 AC1: MUST NOT contain '*' or match any protocol other than 'views://' or 'https://'
+      // SH-3 AC1: MUST NOT contain '*' and only allow 'views://' or 'https://' schemes
       const navMatch = node.match(/navigation\s*:\s*\[([^\]]+)\]/)
       const navContent = navMatch?.[1] ?? ''
       const hasWildcard = navContent.includes('*')
@@ -36,13 +66,7 @@ export function parseElectrobunViews(configPath: string): SurfaceViewNode[] {
         navContent
           .split(',')
           .map(p => p.trim().replace(/^['"]|['"]$/g, ''))
-          .some(
-            p =>
-              p.length > 0 &&
-              !p.startsWith('views://') &&
-              !p.startsWith('https://') &&
-              !p.startsWith('http://localhost')
-          )
+          .some(p => p.length > 0 && !(p.startsWith('views://') || p.startsWith('https://')))
 
       return {
         source: node,

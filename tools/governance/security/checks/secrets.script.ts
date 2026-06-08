@@ -62,7 +62,8 @@ export function runSecretsCheck(files: string[]): SecurityFinding[] {
 
     const st = statSync(file, { throwIfNoEntry: false })
     if (!st?.isFile()) continue
-    if (st.size > 1 * 1024 * 1024) continue // Lower limit to 1MB for v1 safety
+    const MAX_SCAN_SIZE = 5 * 1024 * 1024
+    if (st.size > MAX_SCAN_SIZE) continue // 5 MB limit
 
     const buf = readFileSync(file)
     if (hasNulBytePrefix(buf)) continue
@@ -79,7 +80,7 @@ export function runSecretsCheck(files: string[]): SecurityFinding[] {
           file,
           line: lineFromOffset(content, at),
           rule: rule.id,
-          message: `Potential secret detected: ${value.slice(0, 24)}`
+          message: `Potential secret detected (length: ${value.length})`
         })
       }
     }

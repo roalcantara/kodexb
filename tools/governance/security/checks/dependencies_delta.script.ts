@@ -21,7 +21,7 @@ export function parseLockDelta(
   base: string = 'HEAD',
   gitRunner: GitRunner = defaultGitRunner
 ): LockDelta[] {
-  const diff = gitRunner(['diff', '-U0', '--staged', base, '--', lockfilePath])
+  const diff = gitRunner(['diff', '-U0', base, '--', lockfilePath])
   if (diff.status !== 0) {
     throw new Error(`git diff failed for ${lockfilePath}`)
   }

@@ -14,7 +14,7 @@ The orchestrated-handoff workflow shipped in spec 004 with deterministic phase d
 
 This spec adds a minimum viable audit trail. Every emit site in `orchestrated_handoff.script.ts` and `handoff_generate.script.ts` writes a TypeBox-validated event to a daily JSONL file under `tmp/workflow-runs/`. A new `mise run spec runs {list|show|tail|prune}` subcommand lets operators read those events back. Two performance budgets — one for `handoff-generate`, one for `--next` — keep the instrumentation honest. The MVP intentionally stops short of LogTape adoption in `tools/`, cross-process correlation via a shared `WORKFLOW_RUN_ID`, OpenTelemetry export, and Mermaid status visualisations; those become tracked v0.13.x follow-ups (see [Out of scope](#out-of-scope)).
 
-The reference research brief is `~/.claude/plans/research-brief-sdd-recursive-emerson.md`. The phase model is identical to 004; this spec adds observation, not new phases.
+The reference research brief is `<RESEARCH_BRIEF_PATH>`. The phase model is identical to 004; this spec adds observation, not new phases.
 
 ## Clarifications
 

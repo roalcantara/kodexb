@@ -30,6 +30,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/setup-bun-project
         with:
           setup_mode: mise
@@ -270,6 +272,7 @@ jobs:
       always() &&
       !github.event.pull_request.draft &&
       needs.security.result == 'success' &&
+      needs.hk.result == 'success' &&
       needs.test.result == 'success' &&
       (needs.cst.result == 'success' || needs.cst.result == 'skipped') &&
       (needs.perf.result == 'success' || needs.perf.result == 'skipped')
