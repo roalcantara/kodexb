@@ -5,6 +5,6 @@ paths = [
     '''tmp/handoffs/''',
     '''tmp/security-findings.json''',
     '''tools/governance/security/handoff_scrub.script.spec.ts''',
-    '''tools/governance/security/checks/secrets.check.script.spec.ts''',
+    '''tools/governance/security/checks/secrets.script.spec.ts''',
     '''tools/governance/specs/workflow/handoff_generate.script.spec.ts'''
 ]

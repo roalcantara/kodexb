@@ -79,7 +79,7 @@ for committed credentials so that a leak never reaches `main`.
 
 4. WHEN `--changed-only --base <SHA>` is passed, THEN the scanner SHALL only inspect files in the diff against `<SHA>` and the wall-time SHALL stay under 500 ms at p95 over 100 iterations on a populated fixture.
    - **Measure:** Bench harness following `tools/metrics/harnesses/perf/perf.script.ts`; populated fixture seeded via `mkdtempSync`.
-   - **Evidence:** New perf script under `tools/governance/security/perf/secrets.perf.script.ts` + committed baseline JSON.
+   - **Evidence:** New perf script under `tools/governance/security/perf/secrets_perf.script.ts` + committed baseline JSON.
 
 ---
 
@@ -91,11 +91,11 @@ known-bad versions cannot land silently.
 
 ### Acceptance criteria
 
-1. WHEN `mise run spec security --strict` runs and `bun.lock` has changed against `--base`, THEN `checks/dependencies.check.script.ts` SHALL parse the delta, match each added or bumped entry against the in-tree CVE list at `tools/governance/security/cve.list.yml`, and emit one `Finding` of severity `critical` per match.
+1. WHEN `mise run spec security --strict` runs and `bun.lock` has changed against `--base`, THEN `checks/dependencies.script.ts` SHALL parse the delta, match each added or bumped entry against the in-tree CVE list at `tools/governance/security/cve.list.yml`, and emit one `Finding` of severity `critical` per match.
    - **CVE criteria:** The initial set for `cve.list.yml` SHALL include known malicious or highly vulnerable packages identified during the 0.13.x audit (e.g. `event-stream` malicious versions). New entries are added by human maintainers based on advisory alerts.
    - **Edge case:** IF `bun.lock` is malformed or unparseable, THEN the check SHALL emit one `Finding` of severity `critical` and exit 1.
    - **Measure:** Fixture `bun.lock.cve.snapshot` produces ≥ 1 `Finding`; clean fixture produces zero.
-   - **Evidence:** `bun test --config /dev/null tools/governance/security/checks/dependencies.check.script.spec.ts`.
+   - **Evidence:** `bun test --config /dev/null tools/governance/security/checks/dependencies.script.spec.ts`.
 
 2. WHEN the `bun audit` subcommand is available on `$PATH` and exits cleanly, THEN its JSON output SHALL be parsed and each reported advisory of severity `critical`, `high`, or `medium` SHALL produce one `Finding` at matching severity.
    - **Measure:** Fake-bun shim emits a deterministic JSON advisory; assertion covers the round-trip.
@@ -124,9 +124,9 @@ auxiliary webviews cannot weaken the security posture documented in Principle IX
 
 ### Acceptance criteria
 
-1. WHEN `mise run spec security --strict` runs, THEN `checks/electrobun_surface.check.script.ts` SHALL AST-parse [electrobun.config.ts](../../../electrobun.config.ts), enumerate every Electrobun external view, and assert that each one declares `sandbox: true`, a non-empty `partition` string, and a non-wildcard `navigation` allowlist (MUST NOT contain `*` or match any protocol other than `views://` or `https://`).
+1. WHEN `mise run spec security --strict` runs, THEN `checks/electrobun_surface.script.ts` SHALL AST-parse [electrobun.config.ts](../../../electrobun.config.ts), enumerate every Electrobun external view, and assert that each one declares `sandbox: true`, a non-empty `partition` string, and a non-wildcard `navigation` allowlist (MUST NOT contain `*` or match any protocol other than `views://` or `https://`).
    - **Measure:** Compliant fixture (`electrobun/config.compliant.ts`) produces zero findings; each non-compliant fixture (`config.missing_sandbox.ts`, `config.empty_partition.ts`, `config.wildcard_navigation.ts`) produces exactly one `Finding` of severity `high`.
-   - **Evidence:** `bun test --config /dev/null tools/governance/security/checks/electrobun_surface.check.script.spec.ts`.
+   - **Evidence:** `bun test --config /dev/null tools/governance/security/checks/electrobun_surface.script.spec.ts`.
 
 2. WHEN a `BrowserView` or auxiliary `BrowserWindow` is declared but the AST shape is unrecognised (renamed property, computed key), THEN the check SHALL emit one `Finding` of severity `medium` naming the unrecognised node and SHALL NOT silently pass.
    - **Measure:** Unknown-shape fixture produces exactly one `medium` finding; the message names the source line.
@@ -279,7 +279,7 @@ security subgate so the binding is explicit.
 
 ### Acceptance criteria
 
-1. WHEN slice 5 lands, THEN [constitution.md](../../../.specify/memory/constitution.md) SHALL bump from v1.3.2 to v1.4.0, Principle IX SHALL gain a clause naming `mise run spec security` (`electrobun_surface.check`) as the enforcement mechanism, and the Quality Gates → Review table SHALL gain a `Security subgate` row marked `REQUIRED`.
+1. WHEN slice 5 lands, THEN [constitution.md](../../../.specify/memory/constitution.md) SHALL bump from v1.3.2 to v1.4.0, Principle IX SHALL gain a clause naming `mise run spec security` (`electrobun_surface.script`) as the enforcement mechanism, and the Quality Gates → Review table SHALL gain a `Security subgate` row marked `REQUIRED`.
    - **Measure:** Diff review of the constitution; version line reads `1.4.0`; the new clause and table row are present.
    - **Evidence:** PR diff; amendment log entry appended to [spec-kit-constitution-log.md](../../docs/specs/spec-kit-constitution-log.md).
 
@@ -328,12 +328,12 @@ Cross-artifact drift is treated as a release blocker for this feature: before im
 Tracer-bullet slices for [tasks.md](tasks.md). Each slice is independently
 shippable; each leaves the gate strictly stronger than before, never weaker.
 
-1. **Slice 1 — secrets check end-to-end.** `secrets.check.script.ts` + `scan.script.ts`
+1. **Slice 1 — secrets check end-to-end.** `secrets.script.ts` + `scan.script.ts`
    skeleton + `Finding` schema + JSONL emit + hk pre-commit step + CI step.
    Smallest viable security subgate; proves the wiring.
-2. **Slice 2 — dependency audit.** Adds `dependencies.check.script.ts` + CVE list +
+2. **Slice 2 — dependency audit.** Adds `dependencies.script.ts` + CVE list +
    `bun audit` shim path. Reuses the scan-script harness from slice 1.
-3. **Slice 3 — Electrobun-surface check.** Adds `electrobun_surface.check.script.ts`
+3. **Slice 3 — Electrobun-surface check.** Adds `electrobun_surface.script.ts`
    AST parser + fixtures. No `spec gate` change yet; lands behind a feature flag
    if needed to keep slice 3 reviewable in isolation.
 4. **Slice 4 — handoff scrub.** New `handoff_scrub.script.ts` + per-feature

@@ -156,7 +156,7 @@ Per [`ELECTROBUN.md`][9]:
 2. Config/main/RPC/build work: read `.cursor/electrobun-skill-routing.md` and
    routed skills — do not invent APIs from memory.
 3. Security enforcement is executable, not review-only: `mise run spec security`
-   (including `electrobun_surface.check`) is REQUIRED in deterministic gate flow,
+   (including `electrobun_surface.script`) is REQUIRED in deterministic gate flow,
    and `spec handoff-scrub` is REQUIRED before handoff emit/write/dispatch.
 
 ---
@@ -226,7 +226,7 @@ path rules in [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md)).
    **`mise run spec lint --strict`** enforces EARS shape deterministically.
 4. **Human gates** — prototype approval; operator runs `mise run spec gate` before merge.
 5. **Chat agents commit WHEN ASKED**; workflow shell MAY commit after approved gate
-   via `mise run spec commit`. Git extension `auto_commit.*` remains **false** in
+   via `mise run spec commit`. Git extension `auto_commit.*` hooks remain **false** except `after_implement.enabled: true` in
    [`git-config.yml`](../extensions/git/git-config.yml).
 6. **Creative ambiguity** — load `brainstorming` when intent is unclear; record
    outcomes in specs, not only chat.

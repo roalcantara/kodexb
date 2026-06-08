@@ -271,8 +271,8 @@ jobs:
       !github.event.pull_request.draft &&
       needs.security.result == 'success' &&
       needs.test.result == 'success' &&
-      (needs.hk.result == 'success' || needs.hk.result == 'skipped') &&
-      (needs.cst.result == 'success' || needs.cst.result == 'skipped')
+      (needs.cst.result == 'success' || needs.cst.result == 'skipped') &&
+      (needs.perf.result == 'success' || needs.perf.result == 'skipped')
     permissions:
       contents: read
     steps:

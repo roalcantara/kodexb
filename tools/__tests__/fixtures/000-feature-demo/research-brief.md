@@ -1,8 +1,8 @@
 # Research brief — SDD workflow observability for kb
 
-**Repo:** kb (this monorepo) · **Branch context:** `feat/005-workflow-observability`
+**Repo:** kb (this monorepo) · **Branch context:** `feat/000-feature-demo`
 **Trigger spec:** [`004-orchestrated-handoff/`](../004-orchestrated-handoff/) (orchestrated-handoff workflow)
-**Implementation spec:** `005-workflow-observability/` (this feature)
+**Implementation spec:** `000-feature-demo/` (this feature)
 **Deliverable type:** Decision-ready research report (no implementation in this turn)
 **Conventions:** **Fact** = verifiable from repo or upstream docs · **Inference** = grounded reasoning · **Recommendation** = my opinion. Tagged inline.
 
@@ -28,7 +28,7 @@ The orchestrated-handoff workflow shipped in spec 004 (`spec.md`, `plan.md`, `ta
 10. **Provider correlation** (`OpenCode` invocation id) is **not** observable from Bun's side today. `opencode run` writes its own session id but we don't capture it. Plumbing this requires `--dispatch` capturing stdout for a session marker. **Inference.**
 11. **`spec trace` already gives us cross-file requirement traceability** (`tools/governance/specs/trace.script.ts`). Audit log should reuse the same EARS IDs (OHW-n, SF-n) as correlation keys, not invent new ones.
 12. **TypeBox** is the validation library for event schemas; **no Zod**. Per [`CLAUDE.md`](../../../CLAUDE.md) and 004 spec OHW-2 precedent.
-13. **The MVP can ship in one PR.** Estimated touch list: 1 new module (`workflow_run.script.ts` ~200 LOC), 3-4 emit sites in the orchestrator, 1 new spec dir under `tools/__tests__/fixtures/005-workflow-observability/`, ~10 new tests.
+13. **The MVP can ship in one PR.** Estimated touch list: 1 new module (`workflow_run.script.ts` ~200 LOC), 3-4 emit sites in the orchestrator, 1 new spec dir under `tools/__tests__/fixtures/000-feature-demo/`, ~10 new tests.
 14. **Single-purpose CLI** (`mise run spec runs {list|show|tail}`) gives operators read access without inventing a UI — same shape as existing `spec lint|trace|gate`.
 15. **Final answer:** **Path B (Recommended)** in §6 — kb-native JSONL audit + per-phase timing + `mise run spec runs` viewer + LogTape category bridge — is the right v0.13.x target. Defer OTel and Mermaid dashboards.
 
@@ -244,9 +244,9 @@ Criteria weights (kb-specific): **Fits kb paths 0.20 · Provider-agnostic 0.18 �
 
 ## 10 · Draft spec outline (if approved)
 
-Suggested slug: **`005-workflow-observability`** (alternative: `005-workflow-runs`).
+Suggested slug: **`000-feature-demo`** (alternative: `005-workflow-runs`).
 
-Land at `tools/__tests__/fixtures/005-workflow-observability/`. Normative quartet only per OHW-8: `spec.md`, `plan.md`, `tasks.md`, `handoff.md`. No `research.md` (this brief replaces it; archive at `tools/__tests__/fixtures/005-workflow-observability/research-brief.md` if desired).
+Land at `tools/__tests__/fixtures/000-feature-demo/`. Normative quartet only per OHW-8: `spec.md`, `plan.md`, `tasks.md`, `handoff.md`. No `research.md` (this brief replaces it; archive at `tools/__tests__/fixtures/000-feature-demo/research-brief.md` if desired).
 
 ### Draft EARS requirements (no implementation)
 
@@ -316,10 +316,10 @@ This is a research deliverable. There is **no code change to verify** in this tu
 1. Maintainer reads §1 (executive summary), §6 (three architectures), and §10 (draft spec outline) and answers: "would I greenlight Path B as v0.13.x?"
 2. Maintainer reads §11 (open questions) and either accepts defaults or selects an alternative.
 3. Maintainer confirms §12 critical files are correct (no missing path; no broken link).
-4. If approved → next step is to invoke the planning workflow on `005-workflow-observability` (Spec Kit `speckit.specify` against this brief, or `mise run spec feature-init -- --id 005 --slug workflow-observability`).
+4. If approved → next step is to invoke the planning workflow on `000-feature-demo` (Spec Kit `speckit.specify` against this brief, or `mise run spec feature-init -- --id 005 --slug workflow-observability`).
 5. If rejected → maintainer leaves comments on §6 or §10 and the report is revised inline (single artifact; no spec dir created yet).
 
-**Definition of done for the research:** maintainer says "go with Path B" (or names another), defaults for §11 are confirmed, and `tools/__tests__/fixtures/005-workflow-observability/` does **not** yet exist (we wait for the implementation greenlight to create it).
+**Definition of done for the research:** maintainer says "go with Path B" (or names another), defaults for §11 are confirmed, and `tools/__tests__/fixtures/000-feature-demo/` does **not** yet exist (we wait for the implementation greenlight to create it).
 
 ---
 

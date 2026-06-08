@@ -60,8 +60,8 @@ Before done:
 | WOBS-6 AC3 | `mise run spec runs tail` streams the most recent run for today and exits on EOF                                              | Same spec                                                                             |
 | WOBS-7 AC1 | No diff in `lint.script.ts` / `trace.script.ts` / `gate.sh` exit-code logic; full gate green                                  | Diff review + `bash .agents/skills/app-quality-gate/scripts/gate.sh`                  |
 | WOBS-7 AC2 | Writer failure does not change parent script exit codes; stderr line emitted                                                  | Stub-writer test in `workflow_run.script.spec.ts`                                     |
-| WOBS-8 AC1 | `handoff-generate` p95 wall-time under 250 ms over 100 iterations on pilot 003                                                | `workflow_observability.perf.script.ts` output + baseline JSON                        |
-| WOBS-8 AC2 | Regression >25% over baseline fails CI                                                                                        | Baseline compare in CI via `workflow_observability.perf.script.ts`                    |
+| WOBS-8 AC1 | `handoff-generate` p95 wall-time under 250 ms over 100 iterations on pilot 003                                                | `workflow_observability_perf.script.ts` output + baseline JSON                        |
+| WOBS-8 AC2 | Regression >25% over baseline fails CI                                                                                        | Baseline compare in CI via `workflow_observability_perf.script.ts`                    |
 | WOBS-9 AC1 | `--next` p95 wall-time under 100 ms over 100 iterations on populated fixture                                                  | Perf harness output + baseline JSON                                                   |
 | WOBS-9 AC2 | `--next` early-exit (no handoff.md) p95 wall-time under 50 ms                                                                 | Perf harness output + early-exit baseline JSON                                        |
 

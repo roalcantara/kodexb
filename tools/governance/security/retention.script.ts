@@ -1,4 +1,4 @@
-import { readdirSync, rmSync, statSync } from 'node:fs'
+import { readdirSync, rmSync, type Stats, statSync } from 'node:fs'
 import path from 'node:path'
 
 function isDateDir(name: string): boolean {
@@ -6,6 +6,9 @@ function isDateDir(name: string): boolean {
 }
 
 export function pruneOlderThan(rootDir: string, days: number, now = new Date()): string[] {
+  if (!Number.isFinite(days) || days < 0) {
+    throw new RangeError('days must be a non-negative number')
+  }
   const securityDir = path.join(rootDir, 'tmp', 'security')
   let entries: string[] = []
   try {
@@ -21,13 +24,22 @@ export function pruneOlderThan(rootDir: string, days: number, now = new Date()):
   for (const entry of entries) {
     if (!isDateDir(entry)) continue
     const abs = path.join(securityDir, entry)
-    const st = statSync(abs)
+    let st: Stats
+    try {
+      st = statSync(abs)
+    } catch {
+      continue
+    }
     if (!st.isDirectory()) continue
     const createdAt = new Date(entry)
     if (Number.isNaN(createdAt.getTime())) continue
     if (createdAt < threshold) {
-      rmSync(abs, { recursive: true, force: true })
-      removed.push(abs)
+      try {
+        rmSync(abs, { recursive: true, force: true })
+        removed.push(abs)
+      } catch {
+        // Ignore failures; we can try again on the next run
+      }
     }
   }
 

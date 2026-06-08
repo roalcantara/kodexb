@@ -130,7 +130,7 @@ function pathShort(fullPath: string, featureDir: string): string {
   const governanceIdx = full.indexOf('tools/governance/')
   if (governanceIdx >= 0) return full.slice(governanceIdx)
 
-  return fullPath
+  return full
 }
 
 export function rendererForFlags(opts: { json: boolean; raw: boolean; isTty: boolean }): RenderMode {

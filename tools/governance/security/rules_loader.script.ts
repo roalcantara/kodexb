@@ -18,7 +18,9 @@ export function loadSecretsRules(filePath: string): SecretsRule[] {
         return typeof candidate.id === 'string' && typeof candidate.pattern === 'string'
       })
       .map(item => ({ id: item.id, pattern: item.pattern }))
-  } catch {
-    return []
+  } catch (error) {
+    const e = error as NodeJS.ErrnoException
+    if (e.code === 'ENOENT') return []
+    throw new Error(`failed to load secrets rules from ${filePath}: ${e.message}`, { cause: error })
   }
 }

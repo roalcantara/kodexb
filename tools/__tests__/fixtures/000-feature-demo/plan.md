@@ -1,9 +1,9 @@
 <!-- markdownlint-disable-file -->
 
-# Plan — `005-workflow-observability`
+# Plan — `000-feature-demo`
 
 **Spec:** [`spec.md`](./spec.md) — requirements WOBS-1 … WOBS-9.
-**Companion brief:** `/Users/roalcantara/.claude/plans/research-brief-sdd-recursive-emerson.md` (Path A MVP).
+**Companion brief:** `<RESEARCH_BRIEF_PATH>` (Path A MVP).
 **Phase model reuse:** identical to [`004-orchestrated-handoff/spec.md`](../004-orchestrated-handoff/spec.md) — this PR observes, it does not redefine phases.
 
 This plan is pointer-only per [`SDD_WORKFLOW_GUIDE.md` § Normative quartet](../../guides/SDD_WORKFLOW_GUIDE.md#normative-quartet). EARS text is not copied here; tasks reference requirement IDs.
@@ -19,7 +19,7 @@ The feature ships in three orthogonal pieces, with two Path B layers explicitly 
    Four insertion points: `orchestrated_handoff.script.run()` emits `phase_decided` after `detectPhase`; the `--manifest` branch emits `manifest_emitted`; `handoff_generate.script.run()` emits `handoff_written` after the file write; `dispatchToOpencode` emits `dispatch_invoked` on either branch. Each emission carries a `duration_ms` measured by `performance.now()` or `Bun.nanoseconds()`. No changes to the existing public APIs of those scripts; observation is internal.
 
 3. **Read-side CLI + performance harness** (WOBS-6, WOBS-8, WOBS-9)
-   New mise subcommand `mise run spec runs {list|show|tail|prune}` dispatched via `tools/bin/spec.script.ts` into a new `tools/governance/specs/workflow/runs_cli.script.ts`. A new perf script under `tools/metrics/harnesses/perf/workflow_observability.perf.script.ts` (or extending the existing `perf.script.ts` with a workflow scope) runs the two budgets in CI with committed baselines under `tools/metrics/baselines/workflow-observability/`.
+   New mise subcommand `mise run spec runs {list|show|tail|prune}` dispatched via `tools/bin/spec.script.ts` into a new `tools/governance/specs/workflow/runs_cli.script.ts`. A new perf script under `tools/metrics/harnesses/perf/workflow_observability_perf.script.ts` (or extending the existing `perf.script.ts` with a workflow scope) runs the two budgets in CI with committed baselines under `tools/metrics/baselines/workflow-observability/`.
 
 ### Deferred to v0.13.x follow-up (NOT in this PR)
 
@@ -44,10 +44,10 @@ The feature ships in three orthogonal pieces, with two Path B layers explicitly 
 
 ## File touch list
 
-- `tools/__tests__/fixtures/005-workflow-observability/spec.md` (this spec)
-- `tools/__tests__/fixtures/005-workflow-observability/plan.md` (this file)
-- `tools/__tests__/fixtures/005-workflow-observability/tasks.md`
-- `tools/__tests__/fixtures/005-workflow-observability/handoff.md`
+- `tools/__tests__/fixtures/000-feature-demo/spec.md` (this spec)
+- `tools/__tests__/fixtures/000-feature-demo/plan.md` (this file)
+- `tools/__tests__/fixtures/000-feature-demo/tasks.md`
+- `tools/__tests__/fixtures/000-feature-demo/handoff.md`
 - `tools/governance/specs/workflow/workflow_run.script.ts` (new)
 - `tools/governance/specs/workflow/workflow_run.script.spec.ts` (new)
 - `tools/governance/specs/workflow/runs_cli.script.ts` (new)
@@ -55,7 +55,7 @@ The feature ships in three orthogonal pieces, with two Path B layers explicitly 
 - `tools/governance/specs/workflow/orchestrated_handoff.script.spec.ts` (mkdtemp fixtures)
 - `tools/governance/specs/workflow/handoff_generate.script.ts` (emit site)
 - `tools/governance/specs/workflow/handoff_generate.script.spec.ts` (emit + dispatch fixtures)
-- `tools/metrics/harnesses/perf/workflow_observability.perf.script.ts` (new) OR extend `perf.script.ts`
+- `tools/metrics/harnesses/perf/workflow_observability_perf.script.ts` (new) OR extend `perf.script.ts`
 - `tools/metrics/baselines/workflow-observability/handoff-generate.json` (new)
 - `tools/metrics/baselines/workflow-observability/next.json` (new)
 - `tools/metrics/baselines/workflow-observability/next-early-exit.json` (new)
@@ -76,5 +76,5 @@ strictly Path A.
 See [`spec.md` § Out of scope](./spec.md#out-of-scope). Optional Spec Kit
 satellites (`research.md`, `data-model.md`, `contracts/`, `quickstart.md`)
 are intentionally absent per OHW-8 AC3 — the research brief lives at
-`/Users/roalcantara/.claude/plans/research-brief-sdd-recursive-emerson.md`
+`<RESEARCH_BRIEF_PATH>`
 and is the canonical research artefact.

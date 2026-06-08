@@ -12,6 +12,10 @@ function dateStamp(now: Date): string {
   return now.toISOString().slice(0, 10)
 }
 
+function sanitizeRunId(runId: string): string | null {
+  return /^[a-zA-Z0-9._-]+$/.test(runId) ? runId : null
+}
+
 export function appendSecurityRunEvent(
   rootDir: string,
   runId: string,
@@ -19,7 +23,11 @@ export function appendSecurityRunEvent(
   now = new Date()
 ): WriteRunEventResult {
   const dir = path.join(rootDir, 'tmp', 'security', dateStamp(now))
-  const filePath = path.join(dir, `${runId}.ndjson`)
+  const safeRunId = sanitizeRunId(runId)
+  if (!safeRunId) {
+    return { ok: false, filePath: dir, error: 'Invalid runId' }
+  }
+  const filePath = path.join(dir, `${safeRunId}.ndjson`)
   try {
     mkdirSync(dir, { recursive: true })
     appendFileSync(filePath, `${JSON.stringify(event)}\n`, 'utf8')

@@ -3,10 +3,11 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { performance } from 'node:perf_hooks'
-import { runSecretsCheck } from '../checks/secrets.check.script.ts'
+import { runSecretsCheck } from '../checks/secrets.script.ts'
 
 function main(): number {
-  const iterations = Number(process.env.SECURITY_PERF_ITERATIONS ?? '100')
+  const parsed = Number.parseInt(process.env.SECURITY_PERF_ITERATIONS ?? '100', 10)
+  const iterations = Number.isFinite(parsed) && parsed > 0 ? parsed : 100
   const dir = mkdtempSync(path.join(tmpdir(), 'secrets-perf-'))
   const file = path.join(dir, 'fixture.txt')
 

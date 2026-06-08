@@ -3,9 +3,9 @@ import { describe, expect, it } from 'bun:test'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { runSecretsCheck } from './secrets.check.script.ts'
+import { runSecretsCheck } from './secrets.script.ts'
 
-describe('secrets.check', () => {
+describe('secrets.script', () => {
   it('emits critical findings for obvious secret patterns', () => {
     const dir = mkdtempSync(path.join(tmpdir(), 'secret-check-'))
     const file = path.join(dir, 'sample.txt')

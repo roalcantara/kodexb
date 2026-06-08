@@ -1,9 +1,8 @@
 #!/usr/bin/env bun
 import path from 'node:path'
 import { performance } from 'node:perf_hooks'
-import { runDependenciesCheck } from './checks/dependencies.check.script.ts'
-import { runElectrobunSurfaceCheck } from './checks/electrobun_surface.check.script.ts'
-import { runSecretsCheck } from './checks/secrets.check.script.ts'
+import { runDependenciesCheck } from './checks/dependencies.script.ts'
+import { runElectrobunSurfaceCheck } from './checks/electrobun_surface.script.ts'
 import { exitCodeForFindings } from './exit_policy.script.ts'
 import { normalizeRepoPath, resolveBaseRef, selectCandidateFiles } from './file_selection.script.ts'
 import { pruneOlderThan } from './retention.script.ts'
@@ -15,6 +14,16 @@ type CliArgs = {
   changedOnly: boolean
   base: string | null
   json: boolean
+}
+
+const DEFAULT_SECURITY_SCAN_MAX_DURATION_MS = 1000
+
+function maxDurationMsFromEnv(): number {
+  const raw = process.env.SPEC_SECURITY_MAX_DURATION_MS
+  if (!raw) return DEFAULT_SECURITY_SCAN_MAX_DURATION_MS
+  const parsed = Number(raw)
+  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_SECURITY_SCAN_MAX_DURATION_MS
+  return Math.round(parsed)
 }
 
 function parseArgs(argv: string[]): CliArgs {
@@ -51,21 +60,23 @@ function parseArgs(argv: string[]): CliArgs {
 
 export function runScan(_args: CliArgs): SecurityScanResult {
   const lsFiles = Bun.spawnSync(['git', 'ls-files'])
-  const repoFiles = lsFiles.success
-    ? new TextDecoder()
-        .decode(lsFiles.stdout)
-        .split('\n')
-        .map(file => file.trim())
-        .filter(Boolean)
-    : []
+  if (!lsFiles.success) {
+    throw new Error('spec security: failed to enumerate repository files via git ls-files')
+  }
+  const repoFiles = new TextDecoder()
+    .decode(lsFiles.stdout)
+    .split('\n')
+    .map(file => file.trim())
+    .filter(Boolean)
 
   const selected = selectCandidateFiles(repoFiles, {
     changedOnly: _args.changedOnly,
     base: resolveBaseRef(_args.base)
   })
 
-  const absolute = selected.map(file => path.resolve(file))
-  const findings = runSecretsCheck(absolute)
+  // Secrets enforcement is handled by HK gitleaks; spec security focuses on
+  // dependency and Electrobun-surface checks.
+  const findings: SecurityScanResult['findings'] = []
 
   const repoSelected = selected.map(f => normalizeRepoPath(f))
 
@@ -96,7 +107,8 @@ function main(): number {
     strict: args.strict,
     changedOnly: args.changedOnly,
     base: args.base,
-    durationMs: result.durationMs
+    durationMs: result.durationMs,
+    maxDurationMs: maxDurationMsFromEnv()
   }
 
   const exitCode = exitCodeForFindings(payload.severityMax, args.strict)
@@ -115,8 +127,10 @@ function main(): number {
   if (args.json) {
     console.log(JSON.stringify(payload))
   } else {
+    const durationStatus = payload.durationMs <= payload.maxDurationMs ? 'ok' : 'exceeded'
     console.log(
-      `spec security: findings=${payload.findingsCount} severity=${payload.severityMax ?? 'none'} durationMs=${payload.durationMs}`
+      `spec security: findings=${payload.findingsCount} severity=${payload.severityMax ?? 'none'} ` +
+        `durationMs=${payload.durationMs} maxDurationMs=${payload.maxDurationMs} durationStatus=${durationStatus}`
     )
   }
 

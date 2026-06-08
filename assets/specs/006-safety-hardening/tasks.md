@@ -68,18 +68,18 @@
 
 **Goal**: Catch known-bad lockfile deltas and Electrobun surface drift through deterministic checks.
 
-**Independent Test**: `bun test --config /dev/null tools/governance/security/checks/dependencies.check.script.spec.ts tools/governance/security/checks/electrobun_surface.check.script.spec.ts` passes with both positive and negative fixtures.
+**Independent Test**: `bun test --config /dev/null tools/governance/security/checks/dependencies.script.spec.ts tools/governance/security/checks/electrobun_surface.script.spec.ts` passes with both positive and negative fixtures.
 
 ### Tests for User Story 2
 
-- [X] T013 [P] [US2] Add CVE-list, `bun audit` shim, malformed-lockfile, and no-delta cases in `tools/governance/security/checks/dependencies.check.script.spec.ts`
-- [X] T014 [P] [US2] Add compliant, missing-sandbox, empty-partition, wildcard-navigation, unknown-shape, and parse-failure cases in `tools/governance/security/checks/electrobun_surface.check.script.spec.ts`
+- [X] T013 [P] [US2] Add CVE-list, `bun audit` shim, malformed-lockfile, and no-delta cases in `tools/governance/security/checks/dependencies.script.spec.ts`
+- [X] T014 [P] [US2] Add compliant, missing-sandbox, empty-partition, wildcard-navigation, unknown-shape, and parse-failure cases in `tools/governance/security/checks/electrobun_surface.script.spec.ts`
 
 ### Implementation for User Story 2
 
 - [X] T015 [US2] Define the initial in-tree advisory dataset in `tools/governance/security/cve.list.yml`
-- [X] T016 [US2] Implement lockfile-delta parsing and the dependency check in `tools/governance/security/checks/dependencies.delta.script.ts` and `tools/governance/security/checks/dependencies.check.script.ts`
-- [X] T017 [US2] Implement Electrobun config AST parsing and posture validation in `tools/governance/security/checks/electrobun_surface.ast.script.ts` and `tools/governance/security/checks/electrobun_surface.check.script.ts`
+- [X] T016 [US2] Implement lockfile-delta parsing and the dependency check in `tools/governance/security/checks/dependencies_delta.script.ts` and `tools/governance/security/checks/dependencies.script.ts`
+- [X] T017 [US2] Implement Electrobun config AST parsing and posture validation in `tools/governance/security/checks/electrobun_surface_ast.script.ts` and `tools/governance/security/checks/electrobun_surface.script.ts`
 - [X] T018 [US2] Compose both checks into the main security runner in `tools/governance/security/scan.script.ts`
 
 **Checkpoint**: SH-2 and SH-3 fail closed on malicious lockfile deltas and unsafe Electrobun config drift.
@@ -160,7 +160,7 @@
 
 ### Tests for User Story 6
 
-- [X] T036 [P] [US6] Add secrets changed-only, dependency no-op, scrub latency, and full-sweep perf harnesses in `tools/governance/security/perf/secrets.perf.script.ts` and related perf helpers
+- [X] T036 [P] [US6] Add secrets changed-only, dependency no-op, scrub latency, and full-sweep perf harnesses in `tools/governance/security/perf/secrets_perf.script.ts` and related perf helpers
 
 ### Implementation for User Story 6
 
@@ -227,8 +227,8 @@
 # T014 — Electrobun posture fixtures and parse-failure coverage
 
 bun test --config /dev/null \
-  tools/governance/security/checks/dependencies.check.script.spec.ts \
-  tools/governance/security/checks/electrobun_surface.check.script.spec.ts
+  tools/governance/security/checks/dependencies.script.spec.ts \
+  tools/governance/security/checks/electrobun_surface.script.spec.ts
 ```
 
 ---

@@ -1,5 +1,5 @@
 import type { SecurityFinding } from '../security.types.ts'
-import { parseElectrobunViews } from './electrobun_surface.ast.script.ts'
+import { parseElectrobunViews } from './electrobun_surface_ast.script.ts'
 
 export function runElectrobunSurfaceCheck(configPath: string): SecurityFinding[] {
   const nodes = parseElectrobunViews(configPath)
@@ -9,7 +9,7 @@ export function runElectrobunSurfaceCheck(configPath: string): SecurityFinding[]
   const findings: SecurityFinding[] = []
   for (const [index, node] of nodes.entries()) {
     // Glossary: identified by id `main` or protocol `views://shell`
-    if (node.id === 'main' || node.url === 'views://shell') continue
+    if (node.id === 'main' && node.url === 'views://shell') continue
 
     if (!node.hasSandboxTrue) {
       findings.push({

@@ -3,10 +3,10 @@ import { describe, expect, it } from 'bun:test'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { runDependenciesCheck } from './dependencies.check.script.ts'
-import { parseLockDelta } from './dependencies.delta.script.ts'
+import { runDependenciesCheck } from './dependencies.script.ts'
+import { parseLockDelta } from './dependencies_delta.script.ts'
 
-describe('dependencies.check', () => {
+describe('dependencies.script', () => {
   const mockGit = (stdout: string) => (args: string[]) => {
     if (args.includes('diff')) {
       return { status: 0, stdout: Buffer.from(stdout) }

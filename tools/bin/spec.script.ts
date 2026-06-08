@@ -150,7 +150,11 @@ function main(): void {
       break
     }
     case 'ready': {
-      const dir = process.env.usage_feature_dir ?? ''
+      const dir = process.env.usage_feature_dir
+      if (!dir) {
+        console.error('spec ready: missing --feature-dir')
+        process.exit(2)
+      }
       const key = process.env.usage_key ?? ''
 
       const commands: string[][] = []

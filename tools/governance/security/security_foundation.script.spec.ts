@@ -1,6 +1,6 @@
 // @security
 import { describe, expect, it } from 'bun:test'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { exitCodeForFindings } from './exit_policy.script.ts'
@@ -57,8 +57,10 @@ describe('security foundation', () => {
     const root = mkdtempSync(path.join(tmpdir(), 'sec-retain-'))
     try {
       const securityRoot = path.join(root, 'tmp', 'security')
-      Bun.write(path.join(securityRoot, '2020-01-01', '.keep'), '')
-      Bun.write(path.join(securityRoot, '2099-01-01', '.keep'), '')
+      mkdirSync(path.join(securityRoot, '2020-01-01'), { recursive: true })
+      writeFileSync(path.join(securityRoot, '2020-01-01', '.keep'), '')
+      mkdirSync(path.join(securityRoot, '2099-01-01'), { recursive: true })
+      writeFileSync(path.join(securityRoot, '2099-01-01', '.keep'), '')
       // jscpd:ignore-start
       const removed = pruneOlderThan(root, 30, new Date('2026-06-07T00:00:00.000Z'))
       expect(removed.length).toBe(1)

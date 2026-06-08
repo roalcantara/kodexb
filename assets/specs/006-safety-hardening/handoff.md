@@ -37,8 +37,8 @@ Before done, run:
 | ID | Done when | Evidence |
 | --- | --- | --- |
 | SH-1 AC1 | Gitleaks builtin in `hk` blocks commits containing secrets | `mise run hk check --profile commit` |
-| SH-2 AC1 | Dependency checker parses lockfile delta and matches | `bun test ./tools/governance/security/checks/dependencies.check.script.spec.ts` |
-| SH-3 AC1 | Electrobun surface policy enforced via AST | `bun test ./tools/governance/security/checks/electrobun_surface.check.script.spec.ts` |
+| SH-2 AC1 | Dependency checker parses lockfile delta and matches | `bun test ./tools/governance/security/checks/dependencies.script.spec.ts` |
+| SH-3 AC1 | Electrobun surface policy enforced via AST | `bun test ./tools/governance/security/checks/electrobun_surface.script.spec.ts` |
 | SH-4 AC1 | Handoff scrub blocks unsafe prompt bodies | `bun test ./tools/governance/security/handoff_scrub.script.spec.ts` |
 | SH-5 AC1 | Allowlist schema is TypeBox-validated and literal-only | `bun test ./tools/governance/security/handoff_scrub.script.spec.ts` |
 | SH-6 AC1 | spec gate includes strict security step | `bun test ./tools/governance/specs/audit.script.spec.ts` |
@@ -46,7 +46,7 @@ Before done, run:
 | SH-8 AC1 | security_run events emitted with retention | `bun test ./tools/governance/security/scan.script.spec.ts` |
 | SH-9 AC1 | Existing deterministic gate semantics are not weakened | `mise run spec ready assets/specs/001-sync-frecency-persistence` |
 | SH-10 AC1 | Constitution and workflow guide bind Principle IX | `mise run spec lint assets/specs/006-safety-hardening --strict` |
-| SH-11 AC1 | Performance monitor detects 25% regressions in CI | `bun ./tools/governance/security/perf/secrets.perf.script.ts` |
+| SH-11 AC1 | Performance monitor detects 25% regressions in CI | `bun ./tools/governance/security/perf/secrets_perf.script.ts` |
 
 ## Operator markers
 

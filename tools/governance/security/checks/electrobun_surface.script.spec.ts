@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { runElectrobunSurfaceCheck } from './electrobun_surface.check.script.ts'
+import { runElectrobunSurfaceCheck } from './electrobun_surface.script.ts'
 
 function withConfig(content: string): { file: string; cleanup: () => void } {
   const dir = mkdtempSync(path.join(tmpdir(), 'electrobun-sec-'))
@@ -12,7 +12,7 @@ function withConfig(content: string): { file: string; cleanup: () => void } {
   return { file, cleanup: () => rmSync(dir, { recursive: true, force: true }) }
 }
 
-describe('electrobun_surface.check', () => {
+describe('electrobun_surface.script', () => {
   it('returns no findings for compliant external view policies', () => {
     const ctx = withConfig(
       'const cfg = { externalViews: [{ sandbox: true, partition: "persist:kb", navigation: ["https://example.com"] }] }'

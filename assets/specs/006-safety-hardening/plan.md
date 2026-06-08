@@ -86,8 +86,8 @@ tools/governance/security/
 ├── handoff_scrub.script.ts
 ├── handoff_scrub.script.spec.ts
 ├── checks/
-│   ├── dependencies.check.script.ts
-│   └── electrobun_surface.check.script.ts
+│   ├── dependencies.script.ts
+│   └── electrobun_surface.script.ts
 └── fixtures/
 
 tools/bin/spec.script.ts

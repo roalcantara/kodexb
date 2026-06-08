@@ -1,15 +1,15 @@
 <!-- markdownlint-disable-file -->
 
-# Handoff — `005-workflow-observability`
+# Handoff — `000-feature-demo`
 
-**Spec:** `tools/__tests__/fixtures/005-workflow-observability/`
-**Branch:** `feat/005-workflow-observability`
+**Spec:** `tools/__tests__/fixtures/000-feature-demo/`
+**Branch:** `feat/000-feature-demo`
 **Release:** v0.13.0 (MVP); Path B layer 1 tasks deferred to v0.13.x
 
 ## Agent prompt
 
 ```text
-Implement spec 005-workflow-observability (MVP only — Path A from the
+Implement spec 000-feature-demo (MVP only — Path A from the
 research brief). Read spec.md (requirements WOBS-1 … WOBS-9), plan.md
 (design contract + traceability table), and tasks.md (Phases 1–7).
 
@@ -34,9 +34,9 @@ Out of MVP scope (deferred to v0.13.x — Phase 8 in tasks.md):
 
 Before done:
   bun test --config /dev/null tools/governance/specs/workflow/
-  mise run spec lint tools/__tests__/fixtures/005-workflow-observability --strict
-  mise run spec trace tools/__tests__/fixtures/005-workflow-observability --strict
-  mise run spec workflow orchestrated-handoff --feature tools/__tests__/fixtures/005-workflow-observability --lint
+  mise run spec lint tools/__tests__/fixtures/000-feature-demo --strict
+  mise run spec trace tools/__tests__/fixtures/000-feature-demo --strict
+  mise run spec workflow orchestrated-handoff --feature tools/__tests__/fixtures/000-feature-demo --lint
   mise run perf workflow-observability
   bash .agents/skills/app-quality-gate/scripts/gate.sh
 ```
@@ -60,8 +60,8 @@ Before done:
 | WOBS-6 AC3 | `mise run spec runs tail` streams the most recent run for today and exits on EOF                                              | Same spec                                                                             |
 | WOBS-7 AC1 | No diff in `lint.script.ts` / `trace.script.ts` / `gate.sh` exit-code logic; full gate green                                  | Diff review + `bash .agents/skills/app-quality-gate/scripts/gate.sh`                  |
 | WOBS-7 AC2 | Writer failure does not change parent script exit codes; stderr line emitted                                                  | Stub-writer test in `workflow_run.script.spec.ts`                                     |
-| WOBS-8 AC1 | `handoff-generate` p95 wall-time under 250 ms over 100 iterations on pilot 003                                                | `workflow_observability.perf.script.ts` output + baseline JSON                        |
-| WOBS-8 AC2 | Regression >25% over baseline fails CI                                                                                        | Baseline compare in CI via `workflow_observability.perf.script.ts`                    |
+| WOBS-8 AC1 | `handoff-generate` p95 wall-time under 250 ms over 100 iterations on pilot 003                                                | `workflow_observability_perf.script.ts` output + baseline JSON                        |
+| WOBS-8 AC2 | Regression >25% over baseline fails CI                                                                                        | Baseline compare in CI via `workflow_observability_perf.script.ts`                    |
 | WOBS-9 AC1 | `--next` p95 wall-time under 100 ms over 100 iterations on populated fixture                                                  | Perf harness output + baseline JSON                                                   |
 | WOBS-9 AC2 | `--next` early-exit (no handoff.md) p95 wall-time under 50 ms                                                                 | Perf harness output + early-exit baseline JSON                                        |
 

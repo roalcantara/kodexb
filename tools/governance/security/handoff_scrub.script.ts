@@ -72,7 +72,7 @@ export function scrubPrompt(body: string, featureDir: string | null = null): voi
   if (!violation) return
 
   // Only exempt if the SPECIFIC offending value is allowlisted
-  if (allowlist.some(entry => violation.value.includes(entry) || entry.includes(violation.value))) return
+  if (allowlist.some(entry => entry === violation.value)) return
 
   throw new HandoffScrubError(violation.rule, violation.offset, violation.excerpt)
 }

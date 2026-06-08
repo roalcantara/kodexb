@@ -38,6 +38,9 @@ export async function loadScanPaths(filePath = scanPathsPath()): Promise<readonl
     const errors = [...Value.Errors(ScanPathsFileSchema, parsed)].map(e => `${e.path} ${e.message}`).join(', ')
     throw new Error(`${SCAN_PATHS_REL} schema validation failed: ${errors}`)
   }
-  cached = { filePath, paths: parsed.scan_paths }
-  return parsed.scan_paths
+  const immutablePaths = Object.freeze(
+    parsed.scan_paths.map(scanPath => Object.freeze({ ...scanPath }))
+  ) as readonly ScanPath[]
+  cached = { filePath, paths: immutablePaths }
+  return immutablePaths
 }

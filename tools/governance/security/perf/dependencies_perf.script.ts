@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { performance } from 'node:perf_hooks'
-import { runDependenciesCheck } from '../checks/dependencies.check.script.ts'
+import { runDependenciesCheck } from '../checks/dependencies.script.ts'
 
 function main(): number {
   const iterations = Number(process.env.SECURITY_PERF_ITERATIONS ?? '100')

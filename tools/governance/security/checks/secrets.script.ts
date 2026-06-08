@@ -15,6 +15,7 @@ function findEntropyCandidates(content: string): Array<{ value: string; index: n
     const value = match[0]
     const index = match.index ?? -1
     if (!value || index < 0) continue
+    if (value.length < ENTROPY_MIN_LENGTH) continue
     if (shannonEntropy(value) >= ENTROPY_MIN_BITS) matches.push({ value, index })
   }
   return matches
@@ -41,7 +42,7 @@ export function runSecretsCheck(files: string[]): SecurityFinding[] {
   const findings: SecurityFinding[] = []
 
   const EXEMPT_PATHS = [
-    'tools/governance/security/',
+    'tools/governance/security/fixtures/',
     'node_modules/',
     '.git/',
     '.electrobun-cache/',
@@ -57,7 +58,7 @@ export function runSecretsCheck(files: string[]): SecurityFinding[] {
   for (const file of files) {
     const repoPath = normalizeRepoPath(file)
     if (EXEMPT_PATHS.some(p => repoPath.includes(p) || repoPath === p)) continue
-    if (repoPath.endsWith('.spec.ts') || repoPath.endsWith('.spec.tsx')) continue
+    // Keep test scan coverage; rely on fixture/allowlist scoping for intentional test tokens
 
     const st = statSync(file, { throwIfNoEntry: false })
     if (!st?.isFile()) continue

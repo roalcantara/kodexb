@@ -1,6 +1,8 @@
 #!/usr/bin/env bun
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
+import { type Static, Type } from '@sinclair/typebox'
+import { Value } from '@sinclair/typebox/value'
 import { chdirToRepoRoot } from '../../../support/lib/shared/repo_root.script.ts'
 import {
   formatRegressionMessage,
@@ -23,17 +25,19 @@ const HANDOFFS_DIR = path.join(ROOT, 'tmp/handoffs')
 const GHERKIN_FILE = path.join(HANDOFFS_DIR, `opencode-${FIXTURE_SLUG}-gherkin.md`)
 const BASELINE_PATH = path.join(ROOT, 'tools/metrics/baselines/perf/workflow-observability.json')
 
-type PerfFeatureDataset = {
-  slug: string
-  files: {
-    spec_md: string
-    plan_md: string
-    tasks_md: string
-    handoff_md: string
-  }
-  checklist_files: string[]
-  handoff_emitted_gherkin: boolean
-}
+const PerfFeatureDatasetSchema = Type.Object({
+  slug: Type.String(),
+  files: Type.Object({
+    spec_md: Type.String(),
+    plan_md: Type.String(),
+    tasks_md: Type.String(),
+    handoff_md: Type.String()
+  }),
+  checklist_files: Type.Array(Type.String()),
+  handoff_emitted_gherkin: Type.Boolean()
+})
+
+type PerfFeatureDataset = Static<typeof PerfFeatureDatasetSchema>
 
 const ABSOLUTE_PATH_RE = /\/(Users|home|etc|var)\/[A-Za-z0-9_./-]+/g
 
@@ -42,7 +46,12 @@ function sanitizeScrubSensitiveText(content: string): string {
 }
 
 function loadDataset(): PerfFeatureDataset {
-  return JSON.parse(readFileSync(POPULATED_DATASET_PATH, 'utf-8')) as PerfFeatureDataset
+  const raw: unknown = JSON.parse(readFileSync(POPULATED_DATASET_PATH, 'utf-8'))
+  if (!Value.Check(PerfFeatureDatasetSchema, raw)) {
+    const errors = [...Value.Errors(PerfFeatureDatasetSchema, raw)].map(e => `${e.path} ${e.message}`).join(', ')
+    throw new Error(`workflow-observability-feature.json: schema validation failed: ${errors}`)
+  }
+  return raw
 }
 
 function handoffMarkerPath(slug: string): string {

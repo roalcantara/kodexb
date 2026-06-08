@@ -374,7 +374,7 @@ async function main(): Promise<void> {
       const child = Bun.spawnSync(
         [
           'bun',
-          path.join(ROOT, 'tools/metrics/harnesses/perf/workflow_observability.perf.script.ts'),
+          path.join(ROOT, 'tools/metrics/harnesses/perf/workflow_observability_perf.script.ts'),
           ...workflowObservabilityArgs()
         ],
         { cwd: ROOT, stdio: ['ignore', 'inherit', 'inherit'] }

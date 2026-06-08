@@ -35,7 +35,14 @@ export function parseElectrobunViews(configPath: string): SurfaceViewNode[] {
         navContent.length > 0 &&
         navContent
           .split(',')
-          .some(p => p.trim() && !p.includes('views://') && !p.includes('https://') && !p.includes('http://localhost'))
+          .map(p => p.trim().replace(/^['"]|['"]$/g, ''))
+          .some(
+            p =>
+              p.length > 0 &&
+              !p.startsWith('views://') &&
+              !p.startsWith('https://') &&
+              !p.startsWith('http://localhost')
+          )
 
       return {
         source: node,
@@ -46,7 +53,7 @@ export function parseElectrobunViews(configPath: string): SurfaceViewNode[] {
         hasNavigationList: navMatch !== null && !hasWildcard && !invalidProtocol
       }
     })
-  } catch {
-    return []
+  } catch (err) {
+    throw new Error(`config parse failed in ${configPath}: ${(err as Error).message}`, { cause: err })
   }
 }

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import type { SecurityFinding, SecuritySeverity } from '../security.types.ts'
-import { defaultGitRunner, type GitRunner, type LockDelta, parseLockDelta } from './dependencies.delta.script.ts'
+import { defaultGitRunner, type GitRunner, type LockDelta, parseLockDelta } from './dependencies_delta.script.ts'
 
 type CveRow = {
   packageName: string
@@ -37,7 +37,13 @@ function checkBunAudit(lockfilePath: string): SecurityFinding[] {
     stderr: 'pipe'
   })
 
-  if (!run.success) return []
+  if (!run.success) {
+    const stderr = new TextDecoder().decode(run.stderr).trim()
+    console.error(
+      `[spec security] bun audit unavailable or failed; continuing with in-tree CVE list only (${stderr || 'no stderr'})`
+    )
+    return []
+  }
   try {
     const payload = JSON.parse(new TextDecoder().decode(run.stdout)) as {
       advisories?: Array<{ id?: string; severity?: string; title?: string }>
@@ -53,6 +59,7 @@ function checkBunAudit(lockfilePath: string): SecurityFinding[] {
         message: item.title ?? 'bun audit advisory'
       }))
   } catch {
+    console.error('[spec security] bun audit output was not parseable; continuing with in-tree CVE list only')
     return []
   }
 }

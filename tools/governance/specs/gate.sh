@@ -3,7 +3,11 @@
 set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
-FEATURE_DIR="$1"
+FEATURE_DIR="${1:-}"
+if [[ -z "$FEATURE_DIR" ]]; then
+  echo "Usage: tools/governance/specs/gate.sh <feature-dir>" >&2
+  exit 2
+fi
 
 echo "── spec gate: ${FEATURE_DIR} ──"
 bun tools/governance/specs/lint.script.ts "$FEATURE_DIR" --strict
