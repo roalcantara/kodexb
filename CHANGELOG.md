@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.14.1](https://github.com/roalcantara/kodexb/compare/v0.14.0...v0.14.1) (2026-06-08)
+
 ## [0.14.0](https://github.com/roalcantara/kodexb/compare/v0.13.0...v0.14.0) (2026-06-08)
 
 ### Features
