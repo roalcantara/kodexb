@@ -10,30 +10,30 @@ export type SurfaceViewNode = {
 }
 
 function collectBraceObjects(text: string, startIdx: number): string[] {
-  const braceStart = text.indexOf('{', startIdx)
-  if (braceStart < 0) return []
   const objects: string[] = []
-  let i = braceStart
-  let depth = 0
-  while (i < text.length) {
-    if (text[i] === '{') {
-      if (depth === 0) {
-        objects.push('')
+  let pos = startIdx
+  while (pos < text.length) {
+    const braceStart = text.indexOf('{', pos)
+    if (braceStart < 0) break
+    let i = braceStart
+    let depth = 0
+    objects.push('')
+    while (i < text.length) {
+      if (text[i] === '{') depth++
+      if (depth > 0) {
+        const idx = objects.length - 1
+        objects[idx] = (objects[idx] ?? '') + text[i]
       }
-      depth++
-    }
-    if (depth > 0) {
-      const idx = objects.length - 1
-      objects[idx] = (objects[idx] ?? '') + text[i]
-    }
-    if (text[i] === '}') {
-      depth--
-      if (depth === 0) {
-        i++
-        break
+      if (text[i] === '}') {
+        depth--
+        if (depth === 0) {
+          i++
+          break
+        }
       }
+      i++
     }
-    i++
+    pos = i
   }
   return objects.filter(o => o.trim().length > 0)
 }
@@ -46,8 +46,6 @@ export function parseElectrobunViews(configPath: string): SurfaceViewNode[] {
     const afterKey = text.slice(extViewsIdx)
     const arrayStart = afterKey.indexOf('[')
     if (arrayStart < 0) return []
-    const arrayEnd = afterKey.indexOf(']', arrayStart)
-    if (arrayEnd < 0) return []
 
     const nodes = collectBraceObjects(afterKey, arrayStart)
 

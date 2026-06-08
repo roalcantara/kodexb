@@ -319,7 +319,7 @@ This is a research deliverable. There is **no code change to verify** in this tu
 4. If approved → next step is to invoke the planning workflow on `000-feature-demo` (Spec Kit `speckit.specify` against this brief, or `mise run spec feature-init -- --id 005 --slug workflow-observability`).
 5. If rejected → maintainer leaves comments on §6 or §10 and the report is revised inline (single artifact; no spec dir created yet).
 
-**Definition of done for the research:** maintainer says "go with Path B" (or names another), defaults for §11 are confirmed, and `tools/__tests__/fixtures/000-feature-demo/` does **not** yet exist (we wait for the implementation greenlight to create it).
+**Definition of done for the research:** maintainer says "go with Path B" (or names another), defaults for §11 are confirmed, and `tools/__tests__/fixtures/000-feature-demo/` has been created as part of implementation.
 
 ---
 

@@ -7,6 +7,7 @@
  */
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { repoRoot } from '../../support/lib/shared/repo_root.script.ts'
 import { catalogPaths } from '../support/catalog_paths.script.ts'
 import { parseHandoffAcTable } from './workflow/handoff_generate.script.ts'
 import { detectPhase, scanFeatureDir } from './workflow/orchestrated_handoff.script.ts'
@@ -281,7 +282,9 @@ function checkCrossRefs(featureDir: string): Finding[] {
   const slug = slugFromDir(featureDir)
   const specRelPath = featureDir.startsWith(`${catalogPaths.specs_root}/`)
     ? featureDir.slice(featureDir.indexOf(catalogPaths.specs_root))
-    : featureDir
+    : path.isAbsolute(featureDir)
+      ? path.relative(path.join(repoRoot(), catalogPaths.specs_root), featureDir).replace(/^\.\.\//, '')
+      : featureDir
   if (slug && !handoffMd.toLowerCase().includes(slug.toLowerCase()) && !handoffMd.includes(specRelPath)) {
     f.push({
       rule: 'xref.tasks-handoff',

@@ -162,9 +162,9 @@ mise run spec ready ${featureDir} --key ${catalogKey}
 ```
 This command consolidates tag tests, catalog validation, commit-profile hooks, and the full spec gate (lint + trace + security).
 
-3. **`spec security`** — runs two checks (dependencies, Electrobun surface), aggregates `Finding[]`, returns a single exit code. Wired into the local `hk` pre-commit hook (changed-files mode), `mise run spec gate` (full sweep, `--strict`), and `.github/workflows/review.yml` (full sweep, `--strict`, `--base $GITHUB_BASE_REF`).
-4. **`spec handoff-scrub`** — validates a handoff prompt body before it is written to `tmp/handoffs/`. On any high-severity hit it throws `HandoffScrubError`; no file is written and no dispatch is attempted. Wired into `handoff_generate.script.ts` between the prompt-render step and the write step.
-5. **`spec ready`** — consolidates all verification steps (tag tests, catalog validation, hook check, spec gate) into a single ship-blocking command.
+1. **`spec security`** — runs two checks (dependencies, Electrobun surface), aggregates `Finding[]`, returns a single exit code. Wired into the local `hk` pre-commit hook (changed-files mode), `mise run spec gate` (full sweep, `--strict`), and `.github/workflows/review.yml` (full sweep, `--strict`, `--base $GITHUB_BASE_REF`).
+2. **`spec handoff-scrub`** — validates a handoff prompt body before it is written to `tmp/handoffs/`. On any high-severity hit it throws `HandoffScrubError`; no file is written and no dispatch is attempted. Wired into `handoff_generate.script.ts` between the prompt-render step and the write step.
+3. **`spec ready`** — consolidates all verification steps (tag tests, catalog validation, hook check, spec gate) into a single ship-blocking command.
 
 ---
 

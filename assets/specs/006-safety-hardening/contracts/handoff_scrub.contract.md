@@ -17,7 +17,7 @@
   - `2`: Usage error / allowlist validation error.
 
 ### Error Format
-- **Message**: `HandoffScrubViolation: [rule-id] at offset [n]. Excerpt: [redacted-substring]`
+- **Message**: `handoff scrub failed ([rule-id]) at byte [n]: <redacted>`
 
 ### Observability
 - **Event**: Appends to `tmp/security/<YYYY-MM-DD>/scrub.ndjson`.

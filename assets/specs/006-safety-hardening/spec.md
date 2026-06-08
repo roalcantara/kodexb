@@ -238,7 +238,7 @@ scripts.
 
 1. WHEN a security run completes (pass or fail), THEN a `security_run` event SHALL be appended to `tmp/security/<YYYY-MM-DD>/<run_id>.ndjson` carrying `ts`, `phase` (`scan|handoff-scrub`), `trigger` (`hk|gate|ci|handoff-emit`), `findings` (full `Finding[]`), `findings_count`, `severity_max`, `exit_code`, `duration_ms`, nullable `feature` slug, `branch`, `commit_sha`, and nullable `base_ref`.
    - **Concurrency:** Event writes SHALL use atomic file appending (`O_APPEND`) or unique file names per run id to prevent corruption from concurrent runs.
-   - **Local-first:** The security scan SHALL NOT require network access to run (Principle I). `bun audit` failures due to no network SHALL be handled gracefully per SH-2 AC3.
+   - **Local-first:** The security scan SHALL NOT require network access to run (Principle I). `bun audit` failures due to no network SHALL be handled gracefully per SH-2 AC4.
    - **Measure:** Round-trip test renders an event, runs `Value.Check`, writes JSON, re-reads, and asserts `Value.Check` passes a second time.
    - **Evidence:** `bun test --config /dev/null tools/governance/security/scan.script.spec.ts` (event-shape case).
 
@@ -379,7 +379,7 @@ shippable; each leaves the gate strictly stronger than before, never weaker.
 
 | #    | Question                                                                                         | Status | Notes                                                                          |
 | ---- | ------------------------------------------------------------------------------------------------ | ------ | ------------------------------------------------------------------------------ |
-| OQ-1 | Does Bun ship a `bun audit` subcommand on the target version? If not, fallback is CVE-list only. | Closed | Resolved in Slice 2: fallback behavior retained per SH-2 AC3.                  |
+| OQ-1 | Does Bun ship a `bun audit` subcommand on the target version? If not, fallback is CVE-list only. | Closed | Resolved in Slice 2: fallback behavior retained per SH-2 AC4.                  |
 | OQ-2 | Which AST parser does `tools/` already vendor — `ts-morph` or `@babel/parser`?                   | Closed | Resolved in Slice 3: parser selected and recorded in implementation notes.     |
 | OQ-3 | Should the per-feature allowlist also gate the `spec security` checks (not just scrub)?          | Closed | Resolved in Slice 1 review: allowlist does not apply to spec security scanner. |
 

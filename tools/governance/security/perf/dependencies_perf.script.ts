@@ -26,7 +26,7 @@ function main(): number {
     }
 
     const sorted = samples.toSorted((a, b) => a - b)
-    const p95 = sorted[Math.floor(sorted.length * 0.95)] ?? 0
+    const p95 = sorted.length > 0 ? (sorted[Math.max(0, Math.ceil(sorted.length * 0.95) - 1)] ?? 0) : 0
     console.log(JSON.stringify({ scope: 'dependencies-noop', iterations, p95Ms: Number(p95.toFixed(3)) }))
     return 0
   } finally {
