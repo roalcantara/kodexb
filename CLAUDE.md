@@ -161,6 +161,8 @@ with this `CLAUDE.md`, **the guides win** — open a PR to fix `CLAUDE.md`.
 - [`assets/guides/SKILLS.md`](assets/guides/SKILLS.md) — skill adoption ledger, routing rationale, optional companions
 - [`assets/catalog/SKILLS.yaml`](assets/catalog/SKILLS.yaml) — structured skill registry; use `mise run skill add|create|reconcile|validate|sync|install|list|report` (see [`assets/guides/SKILLS.md`](assets/guides/SKILLS.md))
 - [`assets/guides/CI_GUIDE.md`](assets/guides/CI_GUIDE.md) — review/release/publish workflows
+- [`assets/guides/OBSERVABILITY_GUIDE.md`](assets/guides/OBSERVABILITY_GUIDE.md) — workflow event substrate, NDJSON schema, `runs` CLI, retention, dual-write rule
+- [`assets/guides/SECURITY_GUIDE.md`](assets/guides/SECURITY_GUIDE.md) — gitleaks via hk, dependency CVE checks, Electrobun config AST, `mise run spec ready`
 - [`assets/guides/BUN_RUNTIME.md`](assets/guides/BUN_RUNTIME.md) — Bun YAML/JSON5/SQLite quick reference
 - [`assets/guides/ELECTROBUN.md`](assets/guides/ELECTROBUN.md) — Electrobun official-docs map + RPC shape
 
