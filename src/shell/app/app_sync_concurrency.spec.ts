@@ -9,6 +9,23 @@ function isSyncInFlight(app: App): boolean {
   return (app as unknown as { syncInFlight: boolean }).syncInFlight === true
 }
 
+function makeCleanApp(databasePath: string): App {
+  const loaded = factoryFor('loadedConfig', {
+    overrides: {
+      sources: { path: syncFixtureDir },
+      database: { path: databasePath }
+    }
+  })
+  for (const p of [loaded.database.path, `${loaded.database.path}-wal`, `${loaded.database.path}-shm`]) {
+    try {
+      fs.unlinkSync(p)
+    } catch {
+      /* missing */
+    }
+  }
+  return new App(loaded)
+}
+
 async function waitForSyncInFlight(app: App, timeoutMs: number): Promise<void> {
   const startedAt = Date.now()
   const poll = async (): Promise<void> => {
@@ -24,22 +41,7 @@ async function waitForSyncInFlight(app: App, timeoutMs: number): Promise<void> {
 
 describe('App.sync concurrency', () => {
   it('rejects list and stats while sync owns the database file', async () => {
-    const loaded = factoryFor('loadedConfig', {
-      overrides: {
-        sources: { path: syncFixtureDir },
-        database: { path: '/tmp/kb-sync-busy-test.sqlite' }
-      }
-    })
-    const dbPath = loaded.database.path
-    for (const p of [dbPath, `${dbPath}-wal`, `${dbPath}-shm`]) {
-      try {
-        fs.unlinkSync(p)
-      } catch {
-        /* missing */
-      }
-    }
-
-    const app = new App(loaded)
+    const app = makeCleanApp('/tmp/kb-sync-busy-test.sqlite')
     const syncPromise = app.sync(syncFixtureDir)
     await waitForSyncInFlight(app, 2000)
     expect(() => app.list({ limit: 1 })).toThrow(SyncDatabaseBusyError)
@@ -48,5 +50,21 @@ describe('App.sync concurrency', () => {
     expect(result.filesProcessed).toBeGreaterThan(0)
     const rows = await app.list({ limit: 5 })
     expect(rows.length).toBeGreaterThan(0)
+  })
+
+  it('keeps task projection stable after failed mutation then sync', async () => {
+    const app = makeCleanApp('/tmp/kb-sync-failed-mutation.sqlite')
+    await app.sync(syncFixtureDir)
+    const before = await app.listMatchCount({ types: ['task'] })
+
+    ;(app as unknown as { loaded: { writeTarget: string } }).loaded.writeTarget = '/dev/null/tasks.yml'
+    await expect(app.createTask({ key: 'sync-failure-probe', desc: 'should fail source write' })).rejects.toThrow()
+
+    const afterFailure = await app.listMatchCount({ types: ['task'] })
+    expect(afterFailure).toBe(before)
+
+    await app.sync(syncFixtureDir)
+    const afterSync = await app.listMatchCount({ types: ['task'] })
+    expect(afterSync).toBe(before)
   })
 })

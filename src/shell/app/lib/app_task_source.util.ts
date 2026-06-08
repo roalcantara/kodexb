@@ -1,9 +1,36 @@
 import fs from 'node:fs/promises'
+import type { TaskMutationOperation } from '@shared/rpc'
 import type { Knowledge } from '../../../core'
 
 type AppLog = ReturnType<typeof import('../../../shared/logging').getLogger>
 
-export async function writeTaskToSource(log: AppLog, filePath: string, task: Knowledge): Promise<void> {
+const TASK_SOURCE_WRITE_ERROR_NAME = 'TaskSourceWriteError'
+
+export type TaskMutationLogContext = {
+  operation: TaskMutationOperation
+  correlationId: string
+}
+
+export function isTaskSourceWriteError(error: unknown): boolean {
+  return error instanceof Error && error.name === TASK_SOURCE_WRITE_ERROR_NAME
+}
+
+function taskSourceWriteError(
+  operation: 'create' | 'update' | 'delete' | 'reorder',
+  taskKey: string,
+  cause: unknown
+): Error {
+  const error = new Error(`Source ${operation} failed for task "${taskKey}"`, { cause })
+  error.name = TASK_SOURCE_WRITE_ERROR_NAME
+  return error
+}
+
+export async function writeTaskToSource(
+  log: AppLog,
+  filePath: string,
+  task: Knowledge,
+  context?: TaskMutationLogContext
+): Promise<void> {
   try {
     let doc: Record<string, unknown> = {}
     try {
@@ -22,12 +49,20 @@ export async function writeTaskToSource(log: AppLog, filePath: string, task: Kno
     log.error('Source write-back failed key={key} path={path} error={error}', {
       key: task.key,
       path: filePath,
+      operation: context?.operation,
+      correlationId: context?.correlationId,
       error: String(err)
     })
+    throw taskSourceWriteError('update', task.key, err)
   }
 }
 
-export async function removeTaskFromSource(log: AppLog, key: string, filePath: string): Promise<void> {
+export async function removeTaskFromSource(
+  log: AppLog,
+  key: string,
+  filePath: string,
+  context?: TaskMutationLogContext
+): Promise<void> {
   try {
     const content = await fs.readFile(filePath, 'utf-8')
     const doc = Bun.YAML.parse(content) as Record<string, unknown>
@@ -45,8 +80,11 @@ export async function removeTaskFromSource(log: AppLog, key: string, filePath: s
     log.error('Source remove failed key={key} path={path} error={error}', {
       key,
       path: filePath,
+      operation: context?.operation,
+      correlationId: context?.correlationId,
       error: String(err)
     })
+    throw taskSourceWriteError('delete', key, err)
   }
 }
 

@@ -80,6 +80,8 @@ const priorityUnionSchema = Type.Union([
   Type.Literal('urgent')
 ])
 
+const sourceVersionSchema = Type.Number()
+
 export const taskCreateSchema = Type.Object(
   {
     key: Type.String({ minLength: 1 }),
@@ -95,6 +97,7 @@ export const taskCreateSchema = Type.Object(
 export const taskUpdateSchema = Type.Object(
   {
     id: Type.Integer(),
+    sourceVersion: Type.Optional(sourceVersionSchema),
     patch: Type.Object(
       {
         key: Type.Optional(Type.String({ minLength: 1 })),
@@ -174,6 +177,7 @@ export const getWindowPositionSchema = Type.Object({}, { additionalProperties: f
 export const idWithDirSchema = Type.Object(
   {
     id: Type.Integer(),
+    sourceVersion: Type.Optional(sourceVersionSchema),
     dir: dirSchema
   },
   { additionalProperties: false }
@@ -182,7 +186,16 @@ export const idWithDirSchema = Type.Object(
 export const idWithReorderDirSchema = Type.Object(
   {
     id: Type.Integer(),
+    sourceVersion: Type.Optional(sourceVersionSchema),
     dir: reorderDirSchema
+  },
+  { additionalProperties: false }
+)
+
+export const taskDeleteSchema = Type.Object(
+  {
+    id: Type.Integer(),
+    sourceVersion: Type.Optional(sourceVersionSchema)
   },
   { additionalProperties: false }
 )

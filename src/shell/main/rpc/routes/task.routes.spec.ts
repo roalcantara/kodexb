@@ -1,48 +1,34 @@
 import { describe, expect, it } from 'bun:test'
-import { mountRouteModule, rpcSpecPostJson, setupRpcRouteSpecSuite } from '@testing'
+import type { TaskMutationOutcome } from '@shared/rpc'
 import { runRoute } from '@testing/helpers/run_route.util'
-import { catalogRoutes } from './catalog.routes'
-import { taskRoutes } from './task.routes'
+import { setupTaskRouteTestKit } from './task_routes_test.util'
 
 describe('taskRoutes', () => {
-  const { postViaRoutes, importedApp } = setupRpcRouteSpecSuite()
-
-  async function firstSeededTask(): Promise<{ id: number; priority?: string; status?: string }> {
-    const listRes = await postViaRoutes(catalogRoutes, '/api/list', { types: ['task'] })
-    if (listRes.status !== 200) {
-      throw new Error('Failed to list seeded tasks')
-    }
-    const tasks = (await listRes.json()) as Array<{ id: number; priority?: string; status?: string }>
-    if (tasks.length === 0) {
-      throw new Error('No seeded tasks found')
-    }
-    return tasks?.at(0) ?? { id: 0 }
-  }
-
-  async function firstSeededTaskId(): Promise<number> {
-    return (await firstSeededTask()).id
-  }
-
-  async function postTask<T>(path: string, body: unknown): Promise<{ status: number; data: T }> {
-    return await runRoute<T>(() => postViaRoutes(taskRoutes, path, body))
-  }
-
-  function cycleForward<T extends string>(values: readonly T[], current: string | undefined, fallback: T): T {
-    const idx = values.indexOf((current ?? fallback) as T)
-    const base = idx === -1 ? values.indexOf(fallback) : idx
-    return values[(base + 1) % values.length] as T
-  }
-
+  const {
+    importedApp,
+    mountRouteModule,
+    postTask,
+    firstSeededTask,
+    firstSeededTaskId,
+    cycleForward,
+    rpcSpecPostJson,
+    taskRoutes
+  } = setupTaskRouteTestKit()
   describe('POST /api/createTask', () => {
     describe('when the task creation succeeds', () => {
       const body = { key: 'RPC route task', desc: 'Created in task.routes.spec' }
       it('creates a task', () => {
-        expect(postTask<{ type: string; key: string; status: string }>('/api/createTask', body)).resolves.toMatchObject(
-          {
-            status: 200,
+        expect(
+          postTask<TaskMutationOutcome<{ type: string; key: string; status: string }>>('/api/createTask', body)
+        ).resolves.toMatchObject({
+          status: 200,
+          data: {
+            ok: true,
+            status: 'success',
+            operation: 'create',
             data: { type: 'task', key: body.key, status: 'todo' }
           }
-        )
+        })
       })
     })
 
@@ -58,18 +44,22 @@ describe('taskRoutes', () => {
       })
     })
   })
-
   describe('POST /api/updateTask', () => {
     it('updates an existing task', async () => {
       const taskId = await firstSeededTaskId()
       expect(
-        postTask<{ id: number; desc: string }>('/api/updateTask', {
+        postTask<TaskMutationOutcome<{ id: number; desc: string }>>('/api/updateTask', {
           id: taskId,
           patch: { desc: 'Updated via RPC route spec' }
         })
       ).resolves.toMatchObject({
         status: 200,
-        data: { id: taskId, desc: 'Updated via RPC route spec' }
+        data: {
+          ok: true,
+          status: 'success',
+          operation: 'update',
+          data: { id: taskId, desc: 'Updated via RPC route spec' }
+        }
       })
     })
 
@@ -86,7 +76,6 @@ describe('taskRoutes', () => {
       })
     })
   })
-
   describe('POST /api/deleteTask', () => {
     it('deletes an existing task', async () => {
       const app = await importedApp()
@@ -96,12 +85,21 @@ describe('taskRoutes', () => {
         rpcSpecPostJson('/api/createTask', { key: `Task to delete ${suffix}`, desc: 'ephemeral' })
       )
       expect(createRes.status).toBe(200)
-      const created = (await createRes.json()) as { id: number }
+      const created = (await createRes.json()) as TaskMutationOutcome<{ id: number }>
+      expect(created.ok).toBe(true)
+
+      const createdTaskId = created.ok ? created.data.id : -1
 
       expect(
-        runRoute<{ ok: true }>(() => rpc.handle(rpcSpecPostJson('/api/deleteTask', { id: created.id })))
+        runRoute<TaskMutationOutcome<void>>(() => rpc.handle(rpcSpecPostJson('/api/deleteTask', { id: createdTaskId })))
       ).resolves.toMatchObject({
-        status: 200
+        status: 200,
+        data: {
+          ok: true,
+          status: 'success',
+          operation: 'delete',
+          taskId: createdTaskId
+        }
       })
     })
 
@@ -118,17 +116,24 @@ describe('taskRoutes', () => {
       })
     })
   })
-
   describe('POST /api/cycleStatus', () => {
     it('cycles task status forward', async () => {
       const task = await firstSeededTask()
       const next = cycleForward(['todo', 'doing', 'done'], task.status, 'todo')
 
       expect(
-        postTask<{ id: number; status: string }>('/api/cycleStatus', { id: task.id, dir: 'forward' })
+        postTask<TaskMutationOutcome<{ id: number; status: string }>>('/api/cycleStatus', {
+          id: task.id,
+          dir: 'forward'
+        })
       ).resolves.toMatchObject({
         status: 200,
-        data: { id: task.id, status: next }
+        data: {
+          ok: true,
+          status: 'success',
+          operation: 'cycle_status',
+          data: { id: task.id, status: next }
+        }
       })
     })
 
@@ -145,20 +150,24 @@ describe('taskRoutes', () => {
       })
     })
   })
-
   describe('POST cyclePriority', () => {
     it('cycles task priority forward', async () => {
       const task = await firstSeededTask()
       const next = cycleForward(['low', 'mid', 'high', 'urgent'], task.priority, 'mid')
 
       expect(
-        postTask<{ id: number; priority: string }>('/api/cyclePriority', {
+        postTask<TaskMutationOutcome<{ id: number; priority: string }>>('/api/cyclePriority', {
           id: task.id,
           dir: 'forward'
         })
       ).resolves.toMatchObject({
         status: 200,
-        data: { id: task.id, priority: next }
+        data: {
+          ok: true,
+          status: 'success',
+          operation: 'cycle_priority',
+          data: { id: task.id, priority: next }
+        }
       })
     })
 
@@ -175,7 +184,6 @@ describe('taskRoutes', () => {
       })
     })
   })
-
   describe('POST /api/reorderTask', () => {
     describe('when the reorder succeeds', () => {
       it('returns affected tasks', async () => {
@@ -190,15 +198,26 @@ describe('taskRoutes', () => {
           rpcSpecPostJson('/api/createTask', { key: `Task B ${suffix}`, desc: 'upper order' })
         )
         expect(upperRes.status).toBe(200)
-        const upper = (await upperRes.json()) as { id: number }
+        const upper = (await upperRes.json()) as TaskMutationOutcome<{ id: number }>
+        expect(upper.ok).toBe(true)
+
+        const upperId = upper.ok ? upper.data.id : -1
+        const upperSourceVersion = upper.ok ? upper.sourceVersion : undefined
 
         expect(
-          runRoute<Array<{ id: number }>>(() =>
-            rpc.handle(rpcSpecPostJson('/api/reorderTask', { id: upper.id, dir: 'up' }))
+          runRoute<TaskMutationOutcome<Array<{ id: number }>>>(() =>
+            rpc.handle(
+              rpcSpecPostJson('/api/reorderTask', { id: upperId, dir: 'up', sourceVersion: upperSourceVersion })
+            )
           )
         ).resolves.toMatchObject({
           status: 200,
-          data: expect.arrayContaining([expect.objectContaining({ id: expect.any(Number) })])
+          data: {
+            ok: true,
+            status: 'success',
+            operation: 'reorder',
+            data: expect.arrayContaining([expect.objectContaining({ id: expect.any(Number) })])
+          }
         })
       })
     })
@@ -218,9 +237,16 @@ describe('taskRoutes', () => {
     describe('when the task cannot move', () => {
       it('returns 200 with an empty array', async () => {
         const taskId = await firstSeededTaskId()
-        expect(postTask<unknown[]>('/api/reorderTask', { id: taskId, dir: 'up' })).resolves.toMatchObject({
+        expect(
+          postTask<TaskMutationOutcome<unknown[]>>('/api/reorderTask', { id: taskId, dir: 'up' })
+        ).resolves.toMatchObject({
           status: 200,
-          data: []
+          data: {
+            ok: true,
+            status: 'success',
+            operation: 'reorder',
+            data: []
+          }
         })
       })
     })

@@ -1,6 +1,5 @@
 import fs from 'node:fs/promises'
-import type { Entry, Knowledge, TaskEntry } from '@core'
-import { toKnowledge } from '@core'
+import type { Knowledge } from '@core'
 import { rankSuggestedTags } from '@core/domain/models/knowledges/tags/rank_suggested_tags.util'
 import { getLogger, type LogVerbosity } from '@shared/logging'
 import type {
@@ -22,9 +21,8 @@ import { saveConfig } from './config/config.loader'
 import { type BindingRef, listAllBindings, listBindingsByChord } from './db/binding.repository'
 import { recordBindingVisit as persistBindingVisit } from './db/binding_frecency.repository'
 import { openDatabase } from './db/client'
-import { deleteById, findAll, findById, getDbStats, upsert } from './db/entry.repository'
+import { findAll, findById, getDbStats } from './db/entry.repository'
 import { recordEntryVisit as persistEntryVisit } from './db/frecency.repository'
-import { maxTaskOrder, updateTaskOrder } from './db/task.repository'
 import { countKnowledgeForOpts, listKnowledgeForOpts } from './lib/app_list_query.util'
 import { buildListStats } from './lib/app_list_stats.util'
 import { buildListStatsForFilters } from './lib/app_list_stats_for_filters.util'
@@ -33,7 +31,15 @@ import type { AppShellHooks } from './lib/app_shell_hooks.types'
 import { createAppShellDelegates } from './lib/app_shell_surface.util'
 import { type RunSourceImportSyncTestHooks, runSourceImportSync } from './lib/app_sync.util'
 import { getSyncInfoForSourcesDir } from './lib/app_sync_info.util'
-import { removeTaskFromSource, resolveCreateTaskTags, writeTaskToSource } from './lib/app_task_source.util'
+import {
+  createTask as createTaskMutation,
+  cyclePriority as cyclePriorityMutation,
+  cycleStatus as cycleStatusMutation,
+  deleteTask as deleteTaskMutation,
+  reorderTask as reorderTaskMutation,
+  updateTask as updateTaskMutation
+} from './lib/app_task_mutation.util'
+import type { TaskMutationLogContext } from './lib/app_task_source.util'
 import { SyncDatabaseBusyError } from './lib/sync_database_busy.error'
 
 export type SyncEmitter = {
@@ -65,7 +71,29 @@ export class App {
     this.log = getLogger(['kb', 'app'])
   }
 
+  getLog(): ReturnType<typeof getLogger> {
+    return this.log
+  }
+
+  getLoadedConfig(): LoadedConfig {
+    return this.loaded
+  }
+
   private getDb() {
+    return this.getDbForTaskMutation()
+  }
+
+  taskProjectionWriteError(
+    operation: 'create' | 'update' | 'delete' | 'reorder',
+    taskKey: string,
+    cause: unknown
+  ): Error {
+    const error = new Error(`Projection ${operation} failed for task "${taskKey}"`, { cause })
+    error.name = 'TaskProjectionWriteError'
+    return error
+  }
+
+  getDbForTaskMutation() {
     if (this.syncInFlight) {
       throw new SyncDatabaseBusyError()
     }
@@ -84,7 +112,7 @@ export class App {
 
   /** Test-only: exposes the raw SQLite handle for direct queries. */
   getRawDbForTesting(): import('bun:sqlite').Database {
-    return this.getDb().raw
+    return this.getDbForTaskMutation().raw
   }
 
   invalidateListCache() {
@@ -94,11 +122,11 @@ export class App {
   }
 
   list(opts: ListOpts = {}): Promise<RpcListEntry[]> {
-    const { raw } = this.getDb()
+    const { raw } = this.getDbForTaskMutation()
     return Promise.resolve(listKnowledgeForOpts(raw, this.loaded, opts, this.listCache))
   }
   listMatchCount(opts: ListOpts = {}): Promise<number> {
-    const { raw } = this.getDb()
+    const { raw } = this.getDbForTaskMutation()
     return Promise.resolve(countKnowledgeForOpts(raw, this.loaded, opts))
   }
   getEntry(id: number): Promise<Knowledge | null> {
@@ -218,88 +246,28 @@ export class App {
     return this.getConfig()
   }
 
-  async createTask(input: TaskCreateInput): Promise<Knowledge> {
-    const { raw } = this.getDb()
-    const order = maxTaskOrder(raw)
-    const now = Date.now()
-    const entry: Entry = {
-      type: 'task',
-      key: input.key,
-      source: this.loaded.writeTarget,
-      desc: input.desc ?? '',
-      tags: resolveCreateTaskTags(input.tags),
-      priority: input.priority ?? 'mid',
-      status: 'todo',
-      dueDate: input.dueDate,
-      taskOrder: order,
-      dependsOn: input.dependsOn
-    } as Entry
-    const knowledge = toKnowledge(entry, now)
-    upsert(raw, knowledge)
-    await writeTaskToSource(this.log, this.loaded.writeTarget, knowledge)
-    this.invalidateListCache()
-    return knowledge
+  async createTask(input: TaskCreateInput, context?: TaskMutationLogContext): Promise<Knowledge> {
+    return await createTaskMutation(this, input, context)
   }
 
-  async updateTask(id: number, patch: TaskUpdateInput): Promise<Knowledge> {
-    const existing = await this.getEntry(id)
-    if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
-    const merged = { ...existing, ...patch, updatedAt: Date.now() }
-    const { raw } = this.getDb()
-    upsert(raw, merged)
-    await writeTaskToSource(this.log, merged.source, merged)
-    this.invalidateListCache()
-    return merged
+  async updateTask(id: number, patch: TaskUpdateInput, context?: TaskMutationLogContext): Promise<Knowledge> {
+    return await updateTaskMutation(this, id, patch, context)
   }
 
-  async deleteTask(id: number): Promise<void> {
-    const existing = await this.getEntry(id)
-    if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
-    const { raw } = this.getDb()
-    deleteById(raw, id)
-    await removeTaskFromSource(this.log, existing.key, existing.source)
-    this.invalidateListCache()
+  async deleteTask(id: number, context?: TaskMutationLogContext): Promise<void> {
+    return await deleteTaskMutation(this, id, context)
   }
 
-  async cycleStatus(id: number, dir: 'forward' | 'backward'): Promise<Knowledge> {
-    const values: TaskEntry['status'][] = ['todo', 'doing', 'done']
-    const existing = await this.getEntry(id)
-    if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
-    const idx = values.indexOf(existing.status)
-    const delta = dir === 'forward' ? 1 : -1
-    const next = values[(idx + delta + values.length) % values.length]
-    if (!next) throw new Error(`Invalid status cycle: ${values.join(',')} at index ${idx}`)
-    return this.updateTask(id, { status: next })
+  async cycleStatus(id: number, dir: 'forward' | 'backward', context?: TaskMutationLogContext): Promise<Knowledge> {
+    return await cycleStatusMutation(this, id, dir, context)
   }
 
-  async cyclePriority(id: number, dir: 'forward' | 'backward'): Promise<Knowledge> {
-    const values: NonNullable<TaskEntry['priority']>[] = ['low', 'mid', 'high', 'urgent']
-    const existing = await this.getEntry(id)
-    if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
-    const current = existing.priority ?? 'mid'
-    const idx = values.indexOf(current)
-    const delta = dir === 'forward' ? 1 : -1
-    const next = values[(idx + delta + values.length) % values.length]
-    if (!next) throw new Error(`Invalid priority cycle: ${values.join(',')} at index ${idx}`)
-    return this.updateTask(id, { priority: next })
+  async cyclePriority(id: number, dir: 'forward' | 'backward', context?: TaskMutationLogContext): Promise<Knowledge> {
+    return await cyclePriorityMutation(this, id, dir, context)
   }
 
-  async reorderTask(id: number, dir: 'up' | 'down'): Promise<Knowledge[]> {
-    const { raw } = this.getDb()
-    const affected = updateTaskOrder(raw, id, dir)
-    if (affected.length === 0) return []
-    const writes = affected.map(async ({ id: affectedId }) => {
-      const entry = findById(raw, affectedId)
-      if (entry) {
-        await writeTaskToSource(this.log, entry.source, entry)
-        return entry
-      }
-      return null
-    })
-    const settled = await Promise.all(writes)
-    const results: Knowledge[] = settled.filter((e): e is Knowledge => e !== null)
-    this.invalidateListCache()
-    return results
+  async reorderTask(id: number, dir: 'up' | 'down', context?: TaskMutationLogContext): Promise<Knowledge[]> {
+    return await reorderTaskMutation(this, id, dir, context)
   }
 
   openExternal(url: string): Promise<void> {

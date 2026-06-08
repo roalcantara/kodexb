@@ -5,6 +5,8 @@ import { ChooseTypeFilter, OpenFilterOverlay } from './filter_overlay.task'
 import { OpenDetailPreview } from './navigate_views.task'
 import { SelectEntryByTitle } from './select_entry.task'
 
+const LAST_TASK_MUTATION_OUTCOME = 'lastTaskMutationOutcome'
+
 export class CreateTask implements Performable {
   private constructor(private readonly name: string) {}
 
@@ -43,6 +45,10 @@ export class EditTaskDescription implements Performable {
     await dialog.locator('#ts-desc').fill(this.text)
     await dialog.getByRole('button', { name: 'Save' }).click()
     await dialog.waitFor({ state: 'hidden' })
+    const outcome = actor.recall<{ ok?: boolean } | undefined>(LAST_TASK_MUTATION_OUTCOME)
+    if (outcome?.ok === false) {
+      return
+    }
     await actor.attemptsTo(OpenDetailPreview.forSelectedEntry())
     const detail = actor.page.locator('article.cmp-detail-page')
     await expect(detail.locator('.cmp-detail-page-desc')).toHaveText(this.text, { timeout: 15_000 })
