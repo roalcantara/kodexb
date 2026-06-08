@@ -9,6 +9,7 @@ import {
   removeTaskFromSource,
   resolveCreateTaskTags,
   type TaskMutationLogContext,
+  writeTasksToSource,
   writeTaskToSource
 } from './app_task_source.util'
 
@@ -56,6 +57,14 @@ export async function createTask(
   return knowledge
 }
 
+function assertNoTaskVersionConflict(existing: Knowledge, sourceVersion: number | undefined, id: number): void {
+  if (sourceVersion !== undefined && existing.updatedAt !== sourceVersion) {
+    const error = new Error(`Task ${id} version conflict`)
+    error.name = 'TaskConflictError'
+    throw error
+  }
+}
+
 export async function updateTask(
   app: AppLike,
   id: number,
@@ -64,6 +73,7 @@ export async function updateTask(
 ): Promise<Knowledge> {
   const existing = await app.getEntry(id)
   if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
+  assertNoTaskVersionConflict(existing, context?.sourceVersion, id)
   const merged = { ...existing, ...patch, updatedAt: Date.now() }
   const { raw } = app.getDbForTaskMutation()
   await writeTaskToSource(app.getLog(), merged.source, merged, context)
@@ -79,6 +89,7 @@ export async function updateTask(
 export async function deleteTask(app: AppLike, id: number, context?: TaskMutationLogContext): Promise<void> {
   const existing = await app.getEntry(id)
   if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
+  assertNoTaskVersionConflict(existing, context?.sourceVersion, id)
   const { raw } = app.getDbForTaskMutation()
   await removeTaskFromSource(app.getLog(), existing.key, existing.source, context)
   try {
@@ -99,9 +110,9 @@ export async function cycleStatus(
   const existing = await app.getEntry(id)
   if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
   const idx = values.indexOf(existing.status)
+  if (idx === -1) throw new Error(`Invalid current status: ${existing.status}`)
   const delta = dir === 'forward' ? 1 : -1
   const next = values[(idx + delta + values.length) % values.length]
-  if (!next) throw new Error(`Invalid status cycle: ${values.join(',')} at index ${idx}`)
   return updateTask(app, id, { status: next }, context)
 }
 
@@ -116,10 +127,55 @@ export async function cyclePriority(
   if (existing?.type !== 'task') throw new Error(`Task ${id} not found`)
   const current = existing.priority ?? 'mid'
   const idx = values.indexOf(current)
+  if (idx === -1) throw new Error(`Invalid current priority: ${current}`)
   const delta = dir === 'forward' ? 1 : -1
   const next = values[(idx + delta + values.length) % values.length]
-  if (!next) throw new Error(`Invalid priority cycle: ${values.join(',')} at index ${idx}`)
   return updateTask(app, id, { priority: next }, context)
+}
+
+function loadAffectedEntries(
+  raw: import('bun:sqlite').Database,
+  affected: Array<{ id: number; taskOrder: number }>,
+  id: number,
+  sourceVersion: number | undefined
+): Knowledge[] {
+  const entries: Knowledge[] = []
+  for (const { id: affectedId } of affected) {
+    const entry = findById(raw, affectedId)
+    if (!entry) throw new Error(`Task ${affectedId} not found during reorder`)
+    entries.push(entry)
+  }
+  const targetEntry = entries.find(e => e.id === id)
+  if (!targetEntry) throw new Error(`Target task ${id} not found in affected entries`)
+  assertNoTaskVersionConflict(targetEntry, sourceVersion, id)
+  return entries
+}
+
+function groupBySource(entries: Knowledge[]): Map<string, Knowledge[]> {
+  const bySource = new Map<string, Knowledge[]>()
+  for (const entry of entries) {
+    const group = bySource.get(entry.source) ?? []
+    group.push(entry)
+    bySource.set(entry.source, group)
+  }
+  return bySource
+}
+
+function rollbackReorderProjection(
+  raw: import('bun:sqlite').Database,
+  affected: Array<{ id: number; taskOrder: number }>
+): void {
+  if (affected.length === 2) {
+    const [first, second] = affected
+    if (first && second) {
+      raw
+        .query('UPDATE knowledges SET task_order = ? WHERE id = ? AND type = ?')
+        .run(second.taskOrder, first.id, 'task')
+      raw
+        .query('UPDATE knowledges SET task_order = ? WHERE id = ? AND type = ?')
+        .run(first.taskOrder, second.id, 'task')
+    }
+  }
 }
 
 export async function reorderTask(
@@ -131,36 +187,16 @@ export async function reorderTask(
   const { raw } = app.getDbForTaskMutation()
   const affected = updateTaskOrder(raw, id, dir)
   if (affected.length === 0) return []
+  const entries = loadAffectedEntries(raw, affected, id, context?.sourceVersion)
+  const bySource = groupBySource(entries)
+
   try {
-    const settled = await affected.reduce<Promise<Array<Knowledge | null>>>(async (accPromise, { id: affectedId }) => {
-      const acc = await accPromise
-      const entry = findById(raw, affectedId)
-      if (!entry) {
-        acc.push(null)
-        return acc
-      }
-      await writeTaskToSource(app.getLog(), entry.source, entry, context)
-      acc.push(entry)
-      return acc
-    }, Promise.resolve([]))
-    const results: Knowledge[] = settled.filter((e): e is Knowledge => e !== null)
+    await Promise.all([...bySource].map(([filePath, group]) => writeTasksToSource(filePath, group, context)))
     app.invalidateListCache()
-    return results
+    return entries
   } catch (err) {
-    if (affected.length === 2) {
-      const [first, second] = affected
-      if (first && second) {
-        raw
-          .query('UPDATE knowledges SET task_order = ? WHERE id = ? AND type = ?')
-          .run(second.taskOrder, first.id, 'task')
-        raw
-          .query('UPDATE knowledges SET task_order = ? WHERE id = ? AND type = ?')
-          .run(first.taskOrder, second.id, 'task')
-      }
-    }
-    if (isTaskSourceWriteError(err)) {
-      throw err
-    }
+    rollbackReorderProjection(raw, affected)
+    if (isTaskSourceWriteError(err)) throw err
     const existing = findById(raw, id)
     const taskKey = existing?.key ?? String(id)
     throw app.taskProjectionWriteError('reorder', taskKey, err)

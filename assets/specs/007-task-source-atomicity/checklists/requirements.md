@@ -34,7 +34,7 @@
 - Validation pass completed in one iteration.
 - Optional open question retained for product preference and does not block planning.
 
-## Requirement Completeness
+## Detailed Requirement Checks
 
 - [x] CHK001 Are explicit requirements documented for all four mutation types (create, update, delete, reorder) in both success and failure paths? [Completeness, Spec §REQUIREMENT TSA-1, Spec §REQUIREMENT TSA-2]
 - [x] CHK002 Are source-write failure requirements defined for response status, reason payload, and prohibition of success acknowledgement without leaving inferred behavior? [Completeness, Spec §REQUIREMENT TSA-1 AC2-AC3]

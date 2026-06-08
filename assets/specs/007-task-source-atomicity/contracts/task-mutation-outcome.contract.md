@@ -6,11 +6,11 @@ Defines the behavior contract for task mutation RPC responses so clients can rel
 
 ## Request contract
 
-- RPC operation: task mutation endpoint(s) handling create, update, delete, reorder.
-- Required fields:
-  - operation
-  - taskId (except create if server-assigned, if applicable)
-  - sourceVersion for optimistic concurrency
+- RPC operation: task mutation endpoint(s) handling create, update, delete, reorder, cycle_status, cycle_priority.
+- Fields:
+  - operation (required)
+  - taskId (optional; number; absent for create when server-assigned, required for update/delete/reorder)
+  - sourceVersion (optional; number; required for operations that use optimistic concurrency such as update/delete)
   - payload
 
 ## Response contract

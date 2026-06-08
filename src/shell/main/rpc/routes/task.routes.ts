@@ -1,9 +1,9 @@
-import { getLogger } from '@shared/logging'
+import { getLogger, withContext } from '@shared/logging'
 import type { TaskMutationOperation, TaskMutationOutcome } from '@shared/rpc'
 import { Elysia } from 'elysia'
 
 import type { App } from '../../../app/app'
-import { isTaskSourceWriteError } from '../../../app/lib/app_task_source.util'
+import { isTaskConflictError, isTaskSourceWriteError } from '../../../app/lib/app_task_source.util'
 import { buildTaskMutationFailureMessage } from '../../../app/lib/task_mutation_failure_message.util'
 import {
   idWithDirSchema,
@@ -88,10 +88,36 @@ function failureOutcome(
   }
 }
 
+async function conflictFailureOutcome(
+  app: App,
+  operation: TaskMutationOperation,
+  options: { taskId?: number; sourceVersion?: number },
+  correlationId: string
+): Promise<TaskMutationOutcome<never>> {
+  const currentSourceVersion =
+    options.taskId === undefined ? undefined : (await app.getEntry(options.taskId))?.updatedAt
+  withContext({ operation, correlationId }, () => {
+    mutationLog.error('Task mutation conflict status={status}', { status: 'conflict' })
+  })
+  return {
+    ok: false,
+    status: 'conflict',
+    operation,
+    taskId: options.taskId,
+    sourceVersion: currentSourceVersion,
+    message: buildTaskMutationFailureMessage({ operation, status: 'conflict', taskId: options.taskId }),
+    details: {
+      correlationId,
+      requestSourceVersion: options.sourceVersion,
+      currentSourceVersion
+    }
+  }
+}
+
 async function runTaskMutation<Titem>(
   app: App,
   operation: TaskMutationOperation,
-  run: (context: { operation: TaskMutationOperation; correlationId: string }) => Promise<Titem>,
+  run: (context: import('../../../app/lib/app_task_source.util').TaskMutationLogContext) => Promise<Titem>,
   options: { taskId?: number; sourceVersion?: number }
 ): Promise<TaskMutationOutcome<Titem>> {
   const correlationId = globalThis.crypto.randomUUID()
@@ -100,7 +126,7 @@ async function runTaskMutation<Titem>(
       ? null
       : await conflictOutcome(app, operation, options.taskId, options.sourceVersion, correlationId)
   if (conflict) return conflict
-  const mutationContext = { operation, correlationId }
+  const mutationContext = { operation, correlationId, sourceVersion: options.sourceVersion }
 
   try {
     const data = await run(mutationContext)
@@ -112,20 +138,19 @@ async function runTaskMutation<Titem>(
     return successOutcome(operation, resolvedTaskId, resolvedSourceVersion, data)
   } catch (error) {
     if (isTaskSourceWriteError(error)) {
-      mutationLog.error('Task mutation failure op={operation} status={status} correlation={correlationId}', {
-        operation,
-        status: 'source_write_failed',
-        correlationId
+      withContext({ operation, correlationId }, () => {
+        mutationLog.error('Task mutation failure status={status}', { status: 'source_write_failed' })
       })
       return failureOutcome(operation, 'source_write_failed', options.taskId, options.sourceVersion, correlationId)
     }
     if (isTaskProjectionWriteError(error)) {
-      mutationLog.error('Task mutation failure op={operation} status={status} correlation={correlationId}', {
-        operation,
-        status: 'projection_failed',
-        correlationId
+      withContext({ operation, correlationId }, () => {
+        mutationLog.error('Task mutation failure status={status}', { status: 'projection_failed' })
       })
       return failureOutcome(operation, 'projection_failed', options.taskId, options.sourceVersion, correlationId)
+    }
+    if (isTaskConflictError(error)) {
+      return await conflictFailureOutcome(app, operation, options, correlationId)
     }
     throw error
   }

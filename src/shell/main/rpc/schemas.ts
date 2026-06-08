@@ -80,7 +80,7 @@ const priorityUnionSchema = Type.Union([
   Type.Literal('urgent')
 ])
 
-const sourceVersionSchema = Type.Number()
+const sourceVersionSchema = Type.Integer({ minimum: 0 })
 
 export const taskCreateSchema = Type.Object(
   {

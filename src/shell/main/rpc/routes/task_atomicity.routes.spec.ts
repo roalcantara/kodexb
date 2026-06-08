@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test'
+import os from 'node:os'
 import type { TaskMutationOutcome } from '@shared/rpc'
 import { runRoute } from '@testing/helpers/run_route.util'
 import { setupTaskRouteTestKit } from './task_routes_test.util'
@@ -9,7 +10,7 @@ describe('taskRoutes atomicity', () => {
 
   it('returns source_write_failed when source persistence fails', async () => {
     const app = await importedApp()
-    ;(app as unknown as { loaded: { writeTarget: string } }).loaded.writeTarget = '/dev/null/tasks.yml'
+    ;(app as unknown as { loaded: { writeTarget: string } }).loaded.writeTarget = os.tmpdir()
 
     expect(
       runRoute<TaskMutationOutcome<never>>(() => {
@@ -94,7 +95,7 @@ describe('taskRoutes atomicity', () => {
 
   it('returns unique correlation ids for repeated source failures', async () => {
     const app = await importedApp()
-    ;(app as unknown as { loaded: { writeTarget: string } }).loaded.writeTarget = '/dev/null/tasks.yml'
+    ;(app as unknown as { loaded: { writeTarget: string } }).loaded.writeTarget = os.tmpdir()
     const rpc = mountRouteModule(app, taskRoutes)
 
     const first = await runRoute<TaskMutationOutcome<never>>(() =>

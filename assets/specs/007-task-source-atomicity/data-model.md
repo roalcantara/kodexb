@@ -5,9 +5,9 @@
 ### TaskMutationRequest
 
 - Fields:
-  - operation: create | update | delete | reorder
-  - taskId: string
-  - sourceVersion: string | number (required for conflict detection)
+  - operation: create | update | delete | reorder | cycle_status | cycle_priority
+  - taskId: number (optional; absent for create when server-assigned)
+  - sourceVersion: number (optional; required for conflict detection on update/delete)
   - payload: operation-specific task fields
 - Validation: TypeBox schema at RPC boundary.
 
@@ -16,9 +16,9 @@
 - Fields:
   - ok: boolean
   - status: success | source_write_failed | conflict | projection_failed
-  - operation: create | update | delete | reorder
-  - taskId: string
-  - sourceVersion: string | number (new authoritative version when success)
+  - operation: create | update | delete | reorder | cycle_status | cycle_priority
+  - taskId: number (optional; present when operation targets a known task)
+  - sourceVersion: number (optional; new authoritative version when success)
   - message: string
   - details: optional structured diagnostics (non-sensitive)
 - Invariant:
