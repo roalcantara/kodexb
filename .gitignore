@@ -130,7 +130,6 @@ dist
 
 # Team-shared Spec Kit config (global gitignore hides .vscode/*)
 .vscode/*
-!.vscode/settings.json
 
 # pnpm
 .pnpm-store
@@ -168,6 +167,7 @@ tmp/bdd/
 tmp/e2e/
 tmp/audit/
 tmp/metrics/
+tmp/security/
 tmp/playwright-report/
 
 # Generated linter snapshots (jscpd JSON drifts under Biome lint:fix; CI uses
@@ -244,4 +244,3 @@ tools/benchmarks/results/latest.json
 # Local git worktrees (created by using-git-worktrees skill for isolated demos / spikes)
 .worktrees/
 graphify-out/
-.vscode/settings.json

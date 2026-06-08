@@ -2,8 +2,12 @@
 alwaysApply: true
 ---
 
+# Specify Rules
+
 <!-- SPECKIT START -->
-Active SDD specs: `assets/specs/<NNN>-<slug>/` (`spec.md`, `plan.md`, `tasks.md`).
-Workflow: [`assets/guides/SDD_WORKFLOW_GUIDE.md`](../../assets/guides/SDD_WORKFLOW_GUIDE.md).
-Gates: `mise run spec lint|trace|gate`. Legacy specs remain under `assets/docs/archive/`.
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+for the active feature directory selected in `.specify/feature.json`.
+For path authority and routing rules, follow
+`assets/guides/DOC_AUTHORITY.md` and `assets/guides/SDD_WORKFLOW_GUIDE.md`.
 <!-- SPECKIT END -->

@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-import { existsSync, readFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import {
   type AcRow,
   catalogKeyFromSlug,
@@ -8,12 +10,36 @@ import {
   parseArgs,
   parseHandoffAcTable,
   renderHandoffPrompt,
+  run,
   slugFromFeatureDir
 } from './handoff_generate.script.ts'
+import { generateRunId, WorkflowRunWriter } from './workflow_run.script.ts'
+import { assertHandoffFile, readHandoffEvents } from './workflow_test_helpers.script.ts'
 
 type AcRowLike = AcRow
 
-const PILOT_FEATURE_DIR = 'assets/specs/003-sync-frecency-preserve'
+const PILOT_FEATURE_DIR = 'tools/__tests__/fixtures/003-sync-frecency-preserve'
+
+describe('handoff scrub integration', () => {
+  it('returns exit 1 when rendered body contains sensitive text', () => {
+    const featureDir = mkdtempSync(path.join(tmpdir(), 'handoff-scrub-int-'))
+    try {
+      writeFileSync(path.join(featureDir, 'plan.md'), '# plan\n')
+      writeFileSync(
+        path.join(featureDir, 'handoff.md'),
+        [
+          '| ID | Done when | Evidence |',
+          '| -- | --------- | -------- |',
+          '| SF-1 AC1 | demo | token=ghp_1234567890ABCDEFGHIJKL12345 |'
+        ].join('\n')
+      )
+      const code = run(['--feature', featureDir, '--dry-run'])
+      expect(code).toBe(1)
+    } finally {
+      rmSync(featureDir, { recursive: true, force: true })
+    }
+  })
+})
 
 describe('catalogKeyFromSlug', () => {
   it('strips numeric prefix and converts dashes to underscores', () => {
@@ -27,7 +53,7 @@ describe('catalogKeyFromSlug', () => {
 
 describe('slugFromFeatureDir', () => {
   it('extracts slug from NNN-slug path', () => {
-    expect(slugFromFeatureDir('assets/specs/003-sync-frecency-preserve')).toBe('sync-frecency-preserve')
+    expect(slugFromFeatureDir('tools/__tests__/fixtures/003-sync-frecency-preserve')).toBe('sync-frecency-preserve')
   })
 })
 
@@ -128,7 +154,7 @@ describe('renderHandoffPrompt', () => {
 
   it('includes catalog key, slug, and AC tags in the prompt', () => {
     const out = renderHandoffPrompt({
-      featureDir: 'assets/specs/003-sync-frecency-preserve',
+      featureDir: 'tools/__tests__/fixtures/003-sync-frecency-preserve',
       slug: 'sync-frecency-preserve',
       catalogKey: 'sync_frecency_preserve',
       focus: 'gherkin',
@@ -210,8 +236,8 @@ describe('renderHandoffPrompt', () => {
 
 describe('parseArgs', () => {
   it('parses the minimal happy path', () => {
-    const args = parseArgs(['--feature', 'assets/specs/003-x'])
-    expect(args.featureDir).toBe('assets/specs/003-x')
+    const args = parseArgs(['--feature', 'tools/__tests__/fixtures/003-x'])
+    expect(args.featureDir).toBe('tools/__tests__/fixtures/003-x')
     expect(args.focus).toBe('gherkin')
     expect(args.worker).toBe('opencode')
     expect(args.dispatch).toBe(false)
@@ -279,22 +305,29 @@ describe('dispatchToOpencode', () => {
   })
 })
 
-describe('pilot 003 (real handoff.md)', () => {
+describe('fixture handoff data', () => {
   it('emits a prompt that references the catalog tag, e2e block, and AC tags', () => {
-    const handoffPath = `${PILOT_FEATURE_DIR}/handoff.md`
-    if (!existsSync(handoffPath)) {
-      throw new Error(`pilot 003 handoff.md missing at ${handoffPath}`)
-    }
-    const rows = parseHandoffAcTable(readFileSync(handoffPath, 'utf-8'))
+    const handoffMd = [
+      '| ID       | Done when                  | Evidence                                  |',
+      '| -------- | -------------------------- | ----------------------------------------- |',
+      '| SF-1 AC1 | List order preserved       | `mise run test tag foo sf1ac1`            |',
+      '| SF-3 AC3 | UI sync no restart         | Operator smoke below — pending human run  |',
+      '| SF-4 AC2 | Another unit check         | `bun test tools/governance/specs/workflow`|',
+      '| SF-5 AC1 | Another unit check         | `bun test tools/governance/specs/workflow`|',
+      '| SF-6 AC1 | Another unit check         | `bun test tools/governance/specs/workflow`|',
+      '| SF-7 AC1 | Another unit check         | `bun test tools/governance/specs/workflow`|',
+      '| SF-8 AC1 | Another unit check         | `bun test tools/governance/specs/workflow`|',
+      '| SF-9 AC1 | Another unit check         | `bun test tools/governance/specs/workflow`|',
+      '| SF-10 AC1 | Another unit check        | `bun test tools/governance/specs/workflow`|'
+    ].join('\n')
+    const rows = parseHandoffAcTable(handoffMd)
     expect(rows.length).toBeGreaterThanOrEqual(9)
     const sf3ac3 = rows.find(r => r.id === 'SF-3 AC3')
     expect(sf3ac3?.isOperatorSmoke).toBe(true)
     const sf1ac1 = rows.find(r => r.id === 'SF-1 AC1')
     expect(sf1ac1?.sliceId).toBe('sf1ac1')
 
-    const planMd = existsSync(`${PILOT_FEATURE_DIR}/plan.md`)
-      ? readFileSync(`${PILOT_FEATURE_DIR}/plan.md`, 'utf-8')
-      : null
+    const planMd = 'File touch list:\n- `assets/features/sync.feature`\n- `bdd/unit/steps/sync.steps.ts`\n'
     const fileTouches = extractFileTouchList(planMd)
     const body = renderHandoffPrompt({
       featureDir: PILOT_FEATURE_DIR,
@@ -314,5 +347,133 @@ describe('pilot 003 (real handoff.md)', () => {
     // The unit slice commands section must not mention Playwright.
     const sliceSection = body.split('## Per-AC slice commands')[1]?.split('## ')[0] ?? ''
     expect(sliceSection).not.toContain('Playwright')
+  })
+})
+
+describe('WOBS-3: event emission', () => {
+  function fixture(root: string, table: string) {
+    writeFileSync(path.join(root, 'handoff.md'), table)
+  }
+
+  it('AC1: run() emits handoff_written with path, focus, ac_row_count, has_e2e_block, duration_ms', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'hg-w3a-'))
+    const runsDir = mkdtempSync(path.join(tmpdir(), 'hg-w3a-r-'))
+    fixture(
+      root,
+      '| ID | Done when | Evidence |\n| --- | --------- | -------- |\n| SF-1 AC1 | works | bun test x |\n| SF-2 AC1 | smoke | Operator smoke below |'
+    )
+    const writer = new WorkflowRunWriter(generateRunId('test-w3a'), root, runsDir)
+    const savedLog = console.log
+    console.log = () => undefined
+    try {
+      run(['--feature', root], { writer })
+    } finally {
+      console.log = savedLog
+    }
+    const event = JSON.parse(readFileSync(writer.currentPath as string, 'utf-8').trim())
+    expect(event.type).toBe('handoff_written')
+    expect(typeof event.path).toBe('string')
+    expect(event.focus).toBe('gherkin')
+    expect(event.ac_row_count).toBe(2)
+    expect(event.has_e2e_block).toBe(true)
+    expect(typeof event.duration_ms).toBe('number')
+    rmSync(root, { recursive: true, force: true })
+    rmSync(runsDir, { recursive: true, force: true })
+  })
+
+  it('AC2: --dry-run returns 0 and does NOT emit handoff_written', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'hg-w3b-'))
+    const runsDir = mkdtempSync(path.join(tmpdir(), 'hg-w3b-r-'))
+    fixture(root, '| ID | Done when | Evidence |\n| --- | --------- | -------- |\n| SF-1 AC1 | works | bun test x |')
+    const writer = new WorkflowRunWriter(generateRunId('test-w3b'), root, runsDir)
+    const savedLog = console.log
+    console.log = () => undefined
+    try {
+      const rc = run(['--feature', root, '--dry-run'], { writer })
+      expect(rc).toBe(0)
+    } finally {
+      console.log = savedLog
+    }
+    expect(writer.currentPath).toBeNull()
+    rmSync(root, { recursive: true, force: true })
+    rmSync(runsDir, { recursive: true, force: true })
+  })
+})
+
+describe('WOBS-4 AC2: run() with --dispatch emits dispatch_invoked event', () => {
+  function fixture(root: string, table: string) {
+    writeFileSync(path.join(root, 'handoff.md'), table)
+  }
+
+  it('run() with --dispatch emits dispatch_invoked with opencode_found=false when opencode not on PATH', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'hg-w4b-'))
+    const runsDir = mkdtempSync(path.join(tmpdir(), 'hg-w4b-r-'))
+    fixture(root, '| ID | Done when | Evidence |\n| --- | --------- | -------- |\n| SF-1 AC1 | works | bun test x |')
+    const writer = new WorkflowRunWriter(generateRunId('test-w4b'), root, runsDir)
+    const savedDispatch = process.env.ORCHESTRATED_HANDOFF_DISPATCH
+    process.env.ORCHESTRATED_HANDOFF_DISPATCH = '1'
+    const savedLog = console.log
+    console.log = () => undefined
+    try {
+      run(['--feature', root], { writer, which: () => null })
+    } finally {
+      console.log = savedLog
+      process.env.ORCHESTRATED_HANDOFF_DISPATCH = savedDispatch
+    }
+    const { handoffFilePath } = assertHandoffFile(root)
+    const { lines } = readHandoffEvents(writer)
+    const handoffWritten = JSON.parse(lines[0] as string)
+    const dispatchInvoked = JSON.parse(lines[1] as string)
+    expect(handoffWritten.type).toBe('handoff_written')
+    expect(dispatchInvoked.type).toBe('dispatch_invoked')
+    expect(dispatchInvoked.opencode_found).toBe(false)
+    expect(typeof dispatchInvoked.exit_code).toBe('number')
+    expect(typeof dispatchInvoked.body_bytes).toBe('number')
+    rmSync(handoffFilePath, { force: true })
+    rmSync(root, { recursive: true, force: true })
+    rmSync(runsDir, { recursive: true, force: true })
+  })
+
+  it('--dispatch flag without ORCHESTRATED_HANDOFF_DISPATCH also triggers dispatch', () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'hg-w4c-'))
+    const runsDir = mkdtempSync(path.join(tmpdir(), 'hg-w4c-r-'))
+    fixture(root, '| ID | Done when | Evidence |\n| --- | --------- | -------- |\n| SF-1 AC1 | works | bun test x |')
+    const writer = new WorkflowRunWriter(generateRunId('test-w4c'), root, runsDir)
+    const savedLog = console.log
+    console.log = () => undefined
+    try {
+      run(['--feature', root, '--dispatch'], { writer, which: () => null })
+    } finally {
+      console.log = savedLog
+    }
+    const { handoffFilePath } = assertHandoffFile(root)
+    const { lines } = readHandoffEvents(writer)
+    expect(lines.length).toBe(2)
+    expect(JSON.parse(lines[1] as string).type).toBe('dispatch_invoked')
+    expect(JSON.parse(lines[1] as string).opencode_found).toBe(false)
+    rmSync(handoffFilePath, { force: true })
+    rmSync(root, { recursive: true, force: true })
+    rmSync(runsDir, { recursive: true, force: true })
+  })
+})
+
+describe('WOBS-4 AC2: dispatchToOpencode with which=null writes dispatch_invoked event', () => {
+  it('emits dispatch_invoked with opencode_found=false, dispatched=false, exitCode 0', () => {
+    const runsDir = mkdtempSync(path.join(tmpdir(), 'hg-w4a-'))
+    const writer = new WorkflowRunWriter(generateRunId('test-w4a'), '/tmp/x', runsDir)
+    const r = dispatchToOpencode('body', '/tmp/x.md', {
+      which: () => null,
+      writer,
+      featureDir: '/tmp/x',
+      log: () => undefined
+    })
+    expect(r.dispatched).toBe(false)
+    expect(r.exitCode).toBe(0)
+    const event = JSON.parse(readFileSync(writer.currentPath as string, 'utf-8').trim())
+    expect(event.type).toBe('dispatch_invoked')
+    expect(event.opencode_found).toBe(false)
+    expect(event.exit_code).toBe(0)
+    expect(typeof event.body_bytes).toBe('number')
+    rmSync(runsDir, { recursive: true, force: true })
   })
 })

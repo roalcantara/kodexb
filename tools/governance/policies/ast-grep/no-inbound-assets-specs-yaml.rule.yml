@@ -1,0 +1,19 @@
+# YAML scalars must not reference assets/specs/* outside allowlisted paths.
+id: no-inbound-assets-specs-yaml
+language: Yaml
+severity: error
+ignores:
+  - "**/assets/specs/**"
+  - "**/assets/guides/**"
+  - "**/.specify/**"
+  - "**/tmp/**"
+  - "**/graphify-out/**"
+  - "tools/governance/policies/ast-grep/*.rule.yml"
+rule:
+  all:
+    - kind: plain_scalar
+    - regex: assets/specs/
+message: >
+  YAML config must not reference assets/specs/* outside allowlisted temporary/governance areas.
+  Hard-rule policy belongs in assets/guides/.
+note: See assets/guides/DOC_AUTHORITY.md

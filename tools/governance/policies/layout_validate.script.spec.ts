@@ -18,4 +18,10 @@ describe('layout_validate.script', () => {
     const tops = new Set(['governance', 'orphan'])
     expect(findUnmanifestedTops(manifest, tops)).toEqual(['unmanifested tools/orphan/'])
   })
+
+  it('findUnmanifestedTops allows tools/__tests__', () => {
+    const manifest = new Set(['bin', 'governance'])
+    const tops = new Set(['governance', '__tests__'])
+    expect(findUnmanifestedTops(manifest, tops)).toEqual([])
+  })
 })

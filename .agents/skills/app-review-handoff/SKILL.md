@@ -32,7 +32,7 @@ consistency), `requesting-code-review` (generic diff without handoff contract),
 
 | Source            | Path                                                |
 | ----------------- | --------------------------------------------------- |
-| Normative quartet | `assets/specs/NNN-slug/handoff.md`                  |
+| Normative quartet | `<feature-dir>/handoff.md`                          |
 | Generated worker  | `tmp/handoffs/opencode-{slug}-{focus}.md`           |
 | Review fix pass   | `tmp/handoffs/review-{slug}-{focus}-{sha}.md`       |
 | Ad-hoc operator   | `tmp/handoffs/*.md` with AC table or Evidence block |
@@ -50,7 +50,7 @@ Same checklist; two triggers:
 
 ```text
 Load .agents/skills/app-review-handoff/SKILL.md first.
-Feature: assets/specs/NNN-slug
+Feature: <feature-dir>
 Handoff: handoff.md | tmp/handoffs/opencode-… | tmp/handoffs/review-…
 BASE_SHA: …
 HEAD_SHA: …
@@ -88,18 +88,18 @@ and bundle context for dispatch:
 mise run spec review-handoff classify --json
 
 # AC Evidence + Before done commands from handoff.md
-mise run spec review-handoff extract-evidence --feature assets/specs/NNN-slug --json
+mise run spec review-handoff extract-evidence --feature <feature-dir> --json
 
 # Combined bundle for reviewer subagent
 mise run spec review-handoff prepare \
-  --feature assets/specs/NNN-slug \
+  --feature <feature-dir> \
   --base "$(git merge-base main HEAD)" \
   --head HEAD \
   --json
 
 # Full audit file scaffold (dual-artifact path C)
 mise run spec review-handoff scaffold-audit \
-  --feature assets/specs/NNN-slug \
+  --feature <feature-dir> \
   --base "$(git merge-base main HEAD)" \
   --head HEAD
 ```
@@ -183,7 +183,7 @@ WOBS-3 AC1 FAIL | no handoff_written in production path
 
 ### Commands
 PASS bun test --config /dev/null tools/governance/specs/workflow/
-FAIL mise run spec lint assets/specs/005 --strict
+FAIL mise run spec lint <feature-dir> --strict
 SKIP gate.sh (WIP tree)
 
 ### Follow-up
@@ -206,7 +206,7 @@ blockers, fix handoff block, diff paths.
 
 ```bash
 mise run spec review-handoff scaffold-audit \
-  --feature assets/specs/NNN-slug \
+  --feature <feature-dir> \
   --base "$(git merge-base main HEAD)" \
   --head HEAD
 ```

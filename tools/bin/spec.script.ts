@@ -29,7 +29,8 @@ function envBool(name: string): boolean {
 
 function main(): void {
   const root = chdirToRepoRoot()
-  const cmd = process.env.usage_cmd ?? ''
+  const args = process.argv.slice(2)
+  const cmd = process.env.usage_cmd ?? args.shift() ?? ''
   if (!cmd) {
     console.error('spec: missing subcommand')
     process.exit(2)
@@ -37,23 +38,27 @@ function main(): void {
 
   switch (cmd) {
     case 'lint': {
-      const args: string[] = []
-      if (envBool('usage_all')) args.push('--all')
-      if (process.env.usage_root) args.push('--root', process.env.usage_root)
-      if (envBool('usage_strict')) args.push('--strict')
-      if (process.env.usage_target) args.push(process.env.usage_target)
-      spawnInherit(['bun', `${SPECS}/lint.script.ts`, ...args], root)
+      const cmdArgs: string[] = []
+      if (envBool('usage_all')) cmdArgs.push('--all')
+      if (process.env.usage_root) cmdArgs.push('--root', process.env.usage_root)
+      if (envBool('usage_strict')) cmdArgs.push('--strict')
+      if (process.env.usage_target) cmdArgs.push(process.env.usage_target)
+      spawnInherit(['bun', `${SPECS}/lint.script.ts`, ...cmdArgs], root)
       break
     }
     case 'trace': {
-      const args = [process.env.usage_feature_dir ?? '']
-      if (process.env.usage_features) args.push('--features', process.env.usage_features)
-      if (envBool('usage_strict')) args.push('--strict')
-      spawnInherit(['bun', `${SPECS}/trace.script.ts`, ...args.filter(Boolean)], root)
+      const cmdArgs = [process.env.usage_feature_dir ?? '']
+      if (process.env.usage_features) cmdArgs.push('--features', process.env.usage_features)
+      if (envBool('usage_strict')) cmdArgs.push('--strict')
+      spawnInherit(['bun', `${SPECS}/trace.script.ts`, ...cmdArgs.filter(Boolean)], root)
       break
     }
     case 'gate': {
-      const dir = process.env.usage_feature_dir ?? 'assets/specs/001-sync-frecency-persistence'
+      const dir = process.env.usage_feature_dir
+      if (!dir) {
+        console.error('spec gate: missing --feature-dir')
+        process.exit(2)
+      }
       spawnInherit(['bash', `${SPECS}/gate.sh`, dir], root)
       break
     }
@@ -80,10 +85,10 @@ function main(): void {
       spawnInherit(['bash', `${SPECS}/opencode_check.sh`], root)
       break
     case 'library-manifest': {
-      const args: string[] = []
-      if (envBool('usage_dry_run')) args.push('--dry-run')
-      if (envBool('usage_verify')) args.push('--verify')
-      spawnInherit(['bun', `${SPECS}/library_manifest.script.ts`, ...args], root)
+      const cmdArgs: string[] = []
+      if (envBool('usage_dry_run')) cmdArgs.push('--dry-run')
+      if (envBool('usage_verify')) cmdArgs.push('--verify')
+      spawnInherit(['bun', `${SPECS}/library_manifest.script.ts`, ...cmdArgs], root)
       break
     }
     case 'workflow': {
@@ -93,50 +98,91 @@ function main(): void {
         console.error(validationError)
         process.exit(2)
       }
-      const args: string[] = []
-      if (name) args.push(name)
-      if (process.env.usage_feature) args.push('--feature', process.env.usage_feature)
-      if (envBool('usage_manifest')) args.push('--manifest')
-      if (envBool('usage_next')) args.push('--next')
-      if (envBool('usage_lint')) args.push('--lint')
-      spawnInherit(['bun', `${WORKFLOW}/orchestrated_handoff.script.ts`, ...args], root)
+      const cmdArgs: string[] = []
+      if (name) cmdArgs.push(name)
+      if (process.env.usage_feature) cmdArgs.push('--feature', process.env.usage_feature)
+      if (envBool('usage_manifest')) cmdArgs.push('--manifest')
+      if (envBool('usage_next')) cmdArgs.push('--next')
+      if (envBool('usage_lint')) cmdArgs.push('--lint')
+      spawnInherit(['bun', `${WORKFLOW}/orchestrated_handoff.script.ts`, ...cmdArgs], root)
       break
     }
     case 'handoff-generate': {
-      const args: string[] = []
-      if (process.env.usage_feature) args.push('--feature', process.env.usage_feature)
-      if (process.env.usage_focus) args.push('--focus', process.env.usage_focus)
-      if (process.env.usage_worker) args.push('--worker', process.env.usage_worker)
-      if (envBool('usage_dispatch')) args.push('--dispatch')
-      if (envBool('usage_dry_run')) args.push('--dry-run')
-      spawnInherit(['bun', `${WORKFLOW}/handoff_generate.script.ts`, ...args], root)
+      const cmdArgs: string[] = []
+      if (process.env.usage_feature) cmdArgs.push('--feature', process.env.usage_feature)
+      if (process.env.usage_focus) cmdArgs.push('--focus', process.env.usage_focus)
+      if (process.env.usage_worker) cmdArgs.push('--worker', process.env.usage_worker)
+      if (envBool('usage_dispatch')) cmdArgs.push('--dispatch')
+      if (envBool('usage_dry_run')) cmdArgs.push('--dry-run')
+      spawnInherit(['bun', `${WORKFLOW}/handoff_generate.script.ts`, ...cmdArgs], root)
+      break
+    }
+    case 'security': {
+      const cmdArgs: string[] = []
+      if (envBool('usage_strict')) cmdArgs.push('--strict')
+      if (envBool('usage_changed_only')) cmdArgs.push('--changed-only')
+      if (process.env.usage_base) cmdArgs.push('--base', process.env.usage_base)
+      if (envBool('usage_json')) cmdArgs.push('--json')
+      spawnInherit(['bun', 'tools/governance/security/scan.script.ts', ...cmdArgs], root)
+      break
+    }
+    case 'handoff-scrub': {
+      const cmdArgs: string[] = []
+      if (process.env.usage_feature) cmdArgs.push('--feature', process.env.usage_feature)
+      if (process.env.usage_body) cmdArgs.push(process.env.usage_body)
+      spawnInherit(['bun', 'tools/governance/security/handoff_scrub.script.ts', ...cmdArgs], root)
       break
     }
     case 'runs': {
       const action = process.env.usage_action ?? ''
-      const args: string[] = [action]
-      if (process.env.usage_feature) args.push('--feature', process.env.usage_feature)
-      if (process.env.usage_runId) args.push(process.env.usage_runId)
-      spawnInherit(['bun', `${WORKFLOW}/runs_cli.script.ts`, ...args], root)
+      const cmdArgs: string[] = [action]
+      if (process.env.usage_feature) cmdArgs.push('--feature', process.env.usage_feature)
+      if (process.env.usage_runId) cmdArgs.push(process.env.usage_runId)
+      spawnInherit(['bun', `${WORKFLOW}/runs_cli.script.ts`, ...cmdArgs], root)
       break
     }
     case 'audit': {
-      const args: string[] = [process.env.usage_feature_dir ?? '']
-      if (envBool('usage_strict')) args.push('--strict')
-      if (envBool('usage_json')) args.push('--json')
-      if (envBool('usage_raw')) args.push('--raw')
-      spawnInherit(['bun', `${SPECS}/audit.script.ts`, ...args.filter(Boolean)], root)
+      const cmdArgs: string[] = [process.env.usage_feature_dir ?? '']
+      if (envBool('usage_strict')) cmdArgs.push('--strict')
+      if (envBool('usage_json')) cmdArgs.push('--json')
+      if (envBool('usage_raw')) cmdArgs.push('--raw')
+      spawnInherit(['bun', `${SPECS}/audit.script.ts`, ...cmdArgs.filter(Boolean)], root)
+      break
+    }
+    case 'ready': {
+      const dir = process.env.usage_feature_dir
+      if (!dir) {
+        console.error('spec ready: missing --feature-dir')
+        process.exit(2)
+      }
+      const key = process.env.usage_key ?? ''
+
+      const commands: string[][] = []
+      if (key) {
+        commands.push(['mise', 'run', 'test', 'tag', key])
+      }
+      commands.push(['mise', 'run', 'catalog', 'validate', '--raw'])
+      commands.push(['hk', 'check', '--profile', 'commit'])
+      commands.push(['bash', `${SPECS}/gate.sh`, dir])
+
+      for (const stepCmd of commands) {
+        const r = Bun.spawnSync(stepCmd, { cwd: root, stdout: 'inherit', stderr: 'inherit', stdin: 'inherit' })
+        if (r.exitCode !== 0) {
+          process.exit(r.exitCode ?? 1)
+        }
+      }
+      console.log('spec ready: OK')
       break
     }
     case 'review-handoff': {
-      const args: string[] = [process.env.usage_action ?? '']
-      if (process.env.usage_feature) args.push('--feature', process.env.usage_feature)
-      if (process.env.usage_handoff) args.push('--handoff', process.env.usage_handoff)
-      if (process.env.usage_base) args.push('--base', process.env.usage_base)
-      if (process.env.usage_head) args.push('--head', process.env.usage_head)
-      if (process.env.usage_focus) args.push('--focus', process.env.usage_focus)
-      if (envBool('usage_json')) args.push('--json')
-      spawnInherit(['bun', `${WORKFLOW}/review_handoff.script.ts`, ...args.filter(Boolean)], root)
+      const cmdArgs: string[] = [process.env.usage_action ?? '']
+      if (process.env.usage_feature) cmdArgs.push('--feature', process.env.usage_feature)
+      if (process.env.usage_handoff) cmdArgs.push('--handoff', process.env.usage_handoff)
+      if (process.env.usage_base) cmdArgs.push('--base', process.env.usage_base)
+      if (process.env.usage_head) cmdArgs.push('--head', process.env.usage_head)
+      if (process.env.usage_focus) cmdArgs.push('--focus', process.env.usage_focus)
+      if (envBool('usage_json')) cmdArgs.push('--json')
+      spawnInherit(['bun', `${WORKFLOW}/review_handoff.script.ts`, ...cmdArgs.filter(Boolean)], root)
       break
     }
     default:

@@ -1,0 +1,23 @@
+# TS/JS code must not hardcode specific in-flight slug paths under assets/specs.
+id: no-hardcoded-assets-specs-slug-ts
+language: TypeScript
+severity: error
+ignores:
+  - "**/assets/specs/**"
+  - "**/assets/guides/**"
+  - "**/.specify/**"
+  - "**/tmp/**"
+  - "**/graphify-out/**"
+  - "tools/governance/policies/ast-grep/**"
+  - "tools/**/migrations/**"
+  - "tools/**/migration/**"
+  - "tools/**/*migrate*.script.ts"
+rule:
+  all:
+    - kind: string
+    - regex: assets/specs/\d{3,}-[\w-]+(?:/|$)
+message: >
+  Do not hardcode assets/specs/<NNN>-<slug> paths in code.
+  Treat assets/specs as ephemeral in-flight state; use feature-dir inputs,
+  catalog path loaders, or test fixtures instead.
+note: See assets/guides/DOC_AUTHORITY.md#in-flight-specs-are-ephemeral

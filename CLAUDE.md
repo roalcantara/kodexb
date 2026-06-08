@@ -115,25 +115,24 @@ and Skills CLI-managed project skills live at `.agents/skills/`;
 ## Superpowers adaptation
 
 When a Superpowers skill mentions `docs/superpowers/specs` or
-`docs/superpowers/plans`, use the `spec-driven-development` skill shape
-instead and map the output to **`assets/specs/<NNN-slug>/`** (Spec Kit) per
-[`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md). Use
-`spec.md`, `plan.md`, `tasks.md`, and optional handoff artifacts.
+`docs/superpowers/plans`, use the `spec-driven-development` skill shape and
+follow [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md)
+for authoritative path routing. Use `spec.md`, `plan.md`, `tasks.md`, and
+optional handoff artifacts.
 
 Do not create `docs/superpowers/`. That path is a common external skill
 default and is gitignored in this repo to prevent drift.
 
-In-flight Spec Kit: **`assets/specs/NNN-<slug>/`**. Legacy archaeology: task-scoped only — see [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md).
+For in-flight and legacy spec location policy, see
+[`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md).
 
 For tests, project rules override generic Superpowers examples: follow
 [`assets/guides/TESTING_GUIDE.md`](assets/guides/TESTING_GUIDE.md), use
 `bun:test`, prefer `it(...)`, and follow the repo's Better Specs and Fishery
 guidance.
 
-For completion, use the phase-specific `mise run validate ...` command when
-one is provided. Otherwise run
-`bash .agents/skills/app-quality-gate/scripts/gate.sh`. Generic examples such
-as `npm test` are not sufficient.
+- For completion, use `mise run spec ready ${featureDir} --key ${catalogKey}` to run tag tests, catalog validation, and the full quality gate. Generic examples such as `npm test` are not sufficient.
+
 
 Subagent prompts must include these project overrides explicitly because subagents
 may not inherit the controller's full context.
@@ -165,4 +164,4 @@ with this `CLAUDE.md`, **the guides win** — open a PR to fix `CLAUDE.md`.
 - [`assets/guides/BUN_RUNTIME.md`](assets/guides/BUN_RUNTIME.md) — Bun YAML/JSON5/SQLite quick reference
 - [`assets/guides/ELECTROBUN.md`](assets/guides/ELECTROBUN.md) — Electrobun official-docs map + RPC shape
 
-Active feature specs: [`assets/specs/README.md`](assets/specs/README.md) + [`assets/guides/SDD_WORKFLOW_GUIDE.md`](assets/guides/SDD_WORKFLOW_GUIDE.md). Document authority: [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md). **Do not add `docs/superpowers/`** — that path is a common external skill default and is **gitignored** in this repo to prevent drift.
+Spec workflow and authority: [`assets/guides/SDD_WORKFLOW_GUIDE.md`](assets/guides/SDD_WORKFLOW_GUIDE.md) + [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md). **Do not add `docs/superpowers/`** — that path is a common external skill default and is **gitignored** in this repo to prevent drift.

@@ -27,6 +27,21 @@ function useFeatureDir(): { dir: string; cleanup: () => void } {
 }
 
 describe('audit.script', () => {
+  it('documents gate chain as lint -> trace -> security -> quality gate', () => {
+    const gatePath = path.resolve(import.meta.dirname, 'gate.sh')
+    const gateBody = Bun.file(gatePath).text()
+    return gateBody.then(content => {
+      const lint = content.indexOf('lint.script.ts')
+      const trace = content.indexOf('trace.script.ts')
+      const security = content.indexOf('security/scan.script.ts')
+      const quality = content.indexOf('app-quality-gate/scripts/gate.sh')
+      expect(lint).toBeGreaterThan(-1)
+      expect(trace).toBeGreaterThan(lint)
+      expect(security).toBeGreaterThan(trace)
+      expect(quality).toBeGreaterThan(security)
+    })
+  })
+
   it('exits 0 for a clean feature dir (non-strict)', () => {
     const { dir, cleanup } = useFeatureDir()
     try {

@@ -19,7 +19,7 @@ The feature ships in three orthogonal pieces, with two Path B layers explicitly 
    Four insertion points: `orchestrated_handoff.script.run()` emits `phase_decided` after `detectPhase`; the `--manifest` branch emits `manifest_emitted`; `handoff_generate.script.run()` emits `handoff_written` after the file write; `dispatchToOpencode` emits `dispatch_invoked` on either branch. Each emission carries a `duration_ms` measured by `performance.now()` or `Bun.nanoseconds()`. No changes to the existing public APIs of those scripts; observation is internal.
 
 3. **Read-side CLI + performance harness** (WOBS-6, WOBS-8, WOBS-9)
-   New mise subcommand `mise run spec runs {list|show|tail|prune}` dispatched via `tools/bin/spec.script.ts` into a new `tools/governance/specs/workflow/runs_cli.script.ts`. A new perf script under `tools/metrics/harnesses/perf/workflow_observability.perf.script.ts` (or extending the existing `perf.script.ts` with a workflow scope) runs the two budgets in CI with committed baselines under `tools/metrics/baselines/workflow-observability/`.
+   New mise subcommand `mise run spec runs {list|show|tail|prune}` dispatched via `tools/bin/spec.script.ts` into a new `tools/governance/specs/workflow/runs_cli.script.ts`. A new perf script under `tools/metrics/harnesses/perf/workflow_observability_perf.script.ts` (or extending the existing `perf.script.ts` with a workflow scope) runs the two budgets in CI with committed baselines under `tools/metrics/baselines/workflow-observability/`.
 
 ### Deferred to v0.13.x follow-up (NOT in this PR)
 
@@ -55,7 +55,7 @@ The feature ships in three orthogonal pieces, with two Path B layers explicitly 
 - `tools/governance/specs/workflow/orchestrated_handoff.script.spec.ts` (mkdtemp fixtures)
 - `tools/governance/specs/workflow/handoff_generate.script.ts` (emit site)
 - `tools/governance/specs/workflow/handoff_generate.script.spec.ts` (emit + dispatch fixtures)
-- `tools/metrics/harnesses/perf/workflow_observability.perf.script.ts` (new) OR extend `perf.script.ts`
+- `tools/metrics/harnesses/perf/workflow_observability_perf.script.ts` (new) OR extend `perf.script.ts`
 - `tools/metrics/baselines/workflow-observability/handoff-generate.json` (new)
 - `tools/metrics/baselines/workflow-observability/next.json` (new)
 - `tools/metrics/baselines/workflow-observability/next-early-exit.json` (new)

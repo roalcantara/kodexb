@@ -1,10 +1,11 @@
 #!/usr/bin/env bun
 /**
  * spec workflow orchestrated-handoff — phase detection + subtask manifest.
- * See assets/specs/004-orchestrated-handoff/spec.md (OHW-3).
+ * See assets/guides/SDD_WORKFLOW_GUIDE.md.
  */
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { catalogPaths } from '../../support/catalog_paths.script.ts'
 import { parseHandoffAcTable } from './handoff_generate.script.ts'
 import { UsageError, withUsage } from './usage.script.ts'
 import { filesetFingerprint, generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow_run.script.ts'
@@ -50,7 +51,7 @@ export type ManifestProbe = () => boolean
 /** Pure phase detector. Order-sensitive: first matching transition wins. */
 export function detectPhase(
   files: FileSet,
-  featureDir = 'assets/specs/NNN-slug',
+  featureDir = `${catalogPaths.specs_root}/NNN-slug`,
   manifestNeedsHandoff: ManifestProbe = () => true
 ): NextSuggestion {
   if (!files.spec) {

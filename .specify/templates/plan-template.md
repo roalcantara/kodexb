@@ -2,7 +2,7 @@
 
 **Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
 
-**Input**: Feature specification from `assets/specs/<NNN>-<slug>/spec.md`
+**Input**: Feature specification from `<feature-dir>/spec.md`
 
 **Note**: This template is filled in by the `/speckit-plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
 
@@ -57,7 +57,7 @@ Only list what **differs** from the baseline for this feature (new RPC routes, t
 ### Documentation (this feature)
 
 ```text
-assets/specs/<NNN>-<slug>/
+<feature-dir>/
 ├── spec.md              # Required (/speckit-specify)
 ├── plan.md              # Required (this file; /speckit-plan)
 ├── tasks.md             # Required (/speckit-tasks)

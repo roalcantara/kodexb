@@ -1,0 +1,15 @@
+# In-tree malicious/vulnerable package list
+# Format:
+# - packageName: <name>
+#   version: <exact-version-or-range>
+#   severity: critical | high | medium
+#   cve: <id>
+
+- packageName: "event-stream"
+  version: "3.3.6"
+  severity: "critical"
+  cve: "MAL-2018-123"
+- packageName: "flatmap-stream"
+  version: "0.1.1"
+  severity: "critical"
+  cve: "MAL-2018-456"

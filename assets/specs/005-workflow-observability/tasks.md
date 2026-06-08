@@ -45,7 +45,7 @@ text copied here per [`SDD_WORKFLOW_GUIDE.md` § Normative quartet](../../guides
 
 | #   | Task                                                                                                     | Done when                                                                                                | Refs           |
 | --- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------- |
-| 17  | Author `tools/metrics/harnesses/perf/workflow_observability.perf.script.ts` (or extend `perf.script.ts`) | p95 over 100 iterations measured for `handoff-generate` and two `--next` scopes (populated + early-exit) | WOBS-8, WOBS-9 |
+| 17  | Author `tools/metrics/harnesses/perf/workflow_observability_perf.script.ts` (or extend `perf.script.ts`) | p95 over 100 iterations measured for `handoff-generate` and two `--next` scopes (populated + early-exit) | WOBS-8, WOBS-9 |
 | 18  | Commit baselines under `tools/metrics/baselines/workflow-observability/`                                 | `handoff-generate.json`, `next.json`, `next-early-exit.json` all present with realistic values           | WOBS-8, WOBS-9 |
 | 19  | Wire `mise run test perf workflow-observability` (or named scope) into the existing perf task            | Local + CI run shows green; regression threshold 25%                                                     | WOBS-8 AC2     |
 

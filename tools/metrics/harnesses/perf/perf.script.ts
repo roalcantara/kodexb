@@ -374,8 +374,22 @@ async function main(): Promise<void> {
       const child = Bun.spawnSync(
         [
           'bun',
-          path.join(ROOT, 'tools/metrics/harnesses/perf/workflow_observability.perf.script.ts'),
+          path.join(ROOT, 'tools/metrics/harnesses/perf/workflow_observability_perf.script.ts'),
           ...workflowObservabilityArgs()
+        ],
+        { cwd: ROOT, stdio: ['ignore', 'inherit', 'inherit'] }
+      )
+      process.exit(child.exitCode ?? 0)
+    },
+    'workflow-observability extract-dataset': () => {
+      const args: string[] = []
+      if (process.env.usage_feature) args.push('--feature', process.env.usage_feature)
+      if (process.env.usage_output) args.push('--output', process.env.usage_output)
+      const child = Bun.spawnSync(
+        [
+          'bun',
+          path.join(ROOT, 'tools/metrics/harnesses/perf/workflow_observability_extract_dataset.script.ts'),
+          ...args
         ],
         { cwd: ROOT, stdio: ['ignore', 'inherit', 'inherit'] }
       )
@@ -385,7 +399,9 @@ async function main(): Promise<void> {
 
   const fn = actions[action as keyof typeof actions]
   if (!fn) {
-    console.error('Usage: mise run perf <run|baseline|compare|open>')
+    console.error(
+      'Usage: mise run perf <run|baseline|compare|open|workflow-observability|workflow-observability extract-dataset>'
+    )
     process.exit(1)
   }
   await fn()

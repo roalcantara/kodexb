@@ -60,8 +60,12 @@ local hygieneSteps = new Mapping<String, Step> {
     ["end-of-file-fixer"] = endOfFileFixer
     ["mixed_line_ending"] = mixedLineEnding
     ["trailing_whitespace"] = trailingWhitespace
+    ["spec-security-changed"] {
+        check = "mise run spec security --changed-only --strict"
+    }
     ["check_merge_conflict"] = Builtins.check_merge_conflict
     ["detect_private_key"] = Builtins.detect_private_key
+    ["gitleaks"] = Builtins.gitleaks
     ["check_case_conflict"] = Builtins.check_case_conflict
     ["check_added_large_files"] = largeFilesCheck
 }

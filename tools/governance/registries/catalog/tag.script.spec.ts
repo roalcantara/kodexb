@@ -1,9 +1,12 @@
-import { describe, expect, it } from 'bun:test'
+import { afterEach, describe, expect, it } from 'bun:test'
+import { CatalogTestHarness } from '../../../support/lib/shared/catalog_test.script.ts'
+import { clearScanPathsCache } from './scan_paths.script.ts'
 import type { TagResolution } from './tag.script.ts'
 import {
   acTagFromSliceId,
   e2eTagExpression,
   extractCatalogRunTagsFromLine,
+  grepPathsWithTag,
   layerFilter,
   lineHasAcTag,
   lineHasCatalogTag,
@@ -56,45 +59,52 @@ describe('tag.lib', () => {
     })
   })
 
-  it('playwrightGrepPattern escapes regex metacharacters and adds boundaries', () => {
-    expect(playwrightGrepPattern(['@command_palette', '@sync'])).toBe(
-      '@command_palette(?![a-z0-9_])|@sync(?![a-z0-9_])'
-    )
+  describe('playwrightGrepPattern', () => {
+    describe.each([
+      [['@command_palette', '@sync'], '@command_palette(?![a-z0-9_])|@sync(?![a-z0-9_])'],
+      [['@sync'], '@sync(?![a-z0-9_])']
+    ])('when given tags %s', (tags, expected) => {
+      it(`returns pattern "${expected}"`, () => {
+        expect(playwrightGrepPattern(tags)).toBe(expected)
+      })
+    })
+
+    it('does not match longer snake_case tags', () => {
+      const pattern = new RegExp(playwrightGrepPattern(['@sync']))
+      expect(pattern.test('@sync_ui')).toBe(false)
+      expect(pattern.test('@sync')).toBe(true)
+    })
   })
 
-  it('playwrightGrepPattern does not match longer snake_case tags', () => {
-    const pattern = new RegExp(playwrightGrepPattern(['@sync']))
-    expect(pattern.test('@sync_ui')).toBe(false)
-    expect(pattern.test('@sync')).toBe(true)
+  describe('lineHasCatalogTag', () => {
+    describe.each([
+      ['Feature: @sync_ui', '@sync', false],
+      ['Feature: @sync', '@sync', true],
+      ['// @sync_ui', '@sync', false],
+      ['Feature: @sync @sync_ui', '@sync', true],
+      ['Feature: @spec:sync', '@sync', false],
+      ['Feature: @command_palette', 'command_palette', true],
+      ['Feature: @command_palette', '@command_palette', true]
+    ])('line "%s" with tag "%s"', (line, tag, expected) => {
+      it(`should return ${expected}`, () => {
+        expect(lineHasCatalogTag(line, tag)).toBe(expected)
+      })
+    })
+
+    it('does not match tags below line 1 in unit specs', () => {
+      const multiLine = 'Feature: @sync_ui\nScenario: @sync tag'
+      const firstLine = multiLine.split('\n')[0] ?? ''
+      expect(lineHasCatalogTag(firstLine, '@sync')).toBe(false)
+      expect(lineHasCatalogTag(firstLine, '@sync_ui')).toBe(true)
+    })
   })
 
-  it('lineHasCatalogTag matches by token not substring', () => {
-    expect(lineHasCatalogTag('Feature: @sync_ui', '@sync')).toBe(false)
-    expect(lineHasCatalogTag('Feature: @sync', '@sync')).toBe(true)
-    expect(lineHasCatalogTag('// @sync_ui', '@sync')).toBe(false)
-    expect(lineHasCatalogTag('Feature: @sync @sync_ui', '@sync')).toBe(true)
-  })
-
-  it('lineHasCatalogTag does not match @spec: prefixed tags', () => {
-    expect(lineHasCatalogTag('Feature: @spec:sync', '@sync')).toBe(false)
-  })
-
-  it('lineHasCatalogTag with @ prefix or bare key both work', () => {
-    expect(lineHasCatalogTag('Feature: @command_palette', 'command_palette')).toBe(true)
-    expect(lineHasCatalogTag('Feature: @command_palette', '@command_palette')).toBe(true)
-  })
-
-  it('lineHasCatalogTag does not match tags below line 1 in unit specs', () => {
-    const multiLine = 'Feature: @sync_ui\nScenario: @sync tag'
-    const firstLine = multiLine.split('\n')[0] ?? ''
-    expect(lineHasCatalogTag(firstLine, '@sync')).toBe(false)
-    expect(lineHasCatalogTag(firstLine, '@sync_ui')).toBe(true)
-  })
-
-  it('parseAcSliceId maps sf1ac1 to @ac:SF-1_AC1', () => {
-    expect(parseAcSliceId('sf1ac1')).toBe('@ac:SF-1_AC1')
-    expect(acTagFromSliceId('SF2AC3')).toBe('@ac:SF-2_AC3')
-    expect(sliceIdFromAcTag('@ac:SF-1_AC1')).toBe('sf1ac1')
+  describe('parseAcSliceId', () => {
+    it('maps sf1ac1 to @ac:SF-1_AC1', () => {
+      expect(parseAcSliceId('sf1ac1')).toBe('@ac:SF-1_AC1')
+      expect(acTagFromSliceId('SF2AC3')).toBe('@ac:SF-2_AC3')
+      expect(sliceIdFromAcTag('@ac:SF-1_AC1')).toBe('sf1ac1')
+    })
   })
 
   it('lineHasAcTag finds colon tags on scenario lines', () => {
@@ -113,5 +123,41 @@ describe('tag.lib', () => {
 
   it('extractCatalogRunTagsFromLine filters reserved tags and @native-handoff keeps only sync', () => {
     expect(extractCatalogRunTagsFromLine('@sync @unit @todo @native-handoff')).toEqual(['sync'])
+  })
+
+  describe('grepPathsWithTag', () => {
+    const harness = new CatalogTestHarness()
+
+    afterEach(() => {
+      harness.cleanup()
+      clearScanPathsCache()
+    })
+
+    function writeDefaultScanPaths(): void {
+      harness.writeFile(
+        'assets/catalog/scan_paths.yaml',
+        [
+          'scan_paths:',
+          '  - root: assets/features',
+          '    glob: "**/*.feature"',
+          '  - root: src',
+          '    glob: "**/*.spec.ts"',
+          '  - root: tools',
+          '    glob: "**/*.spec.ts"',
+          ''
+        ].join('\n')
+      )
+    }
+
+    it('finds a line-1 // @tag comment in a tools/-rooted spec', async () => {
+      const root = harness.init('tag-scan-tools-')
+      writeDefaultScanPaths()
+      harness.writeFile(
+        'tools/governance/security/scan.script.spec.ts',
+        "// @security\nimport { describe, it } from 'bun:test'\ndescribe('scan', () => it('runs', () => {}))\n"
+      )
+      const paths = await grepPathsWithTag('@security', root)
+      expect(paths).toContain('tools/governance/security/scan.script.spec.ts')
+    })
   })
 })

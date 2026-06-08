@@ -81,21 +81,21 @@ describe('extractBeforeDoneCommands', () => {
       '',
       'Before done:',
       '  bun test --config /dev/null tools/governance/specs/workflow/',
-      '  mise run spec lint assets/specs/005 --strict',
+      '  mise run spec lint tools/__tests__/fixtures/005 --strict',
       '',
       'Do not commit unless asked.',
       '```'
     ].join('\n')
     expect(extractBeforeDoneCommands(md)).toEqual([
       'bun test --config /dev/null tools/governance/specs/workflow/',
-      'mise run spec lint assets/specs/005 --strict'
+      'mise run spec lint tools/__tests__/fixtures/005 --strict'
     ])
   })
 })
 
 describe('slugFromFeatureDir', () => {
   it('uses feature dir basename', () => {
-    expect(slugFromFeatureDir('assets/specs/005-workflow-observability', 'handoff.md')).toBe(
+    expect(slugFromFeatureDir('tools/__tests__/fixtures/005-workflow-observability', 'handoff.md')).toBe(
       '005-workflow-observability'
     )
   })
@@ -115,8 +115,8 @@ describe('buildAuditScaffoldMarkdown', () => {
       '| WOBS-1 AC1 | passes    | `bun test workflow_run.script.spec.ts` |'
     ].join('\n')
     const input = {
-      featureDir: 'assets/specs/005-workflow-observability',
-      handoffPath: 'assets/specs/005-workflow-observability/handoff.md',
+      featureDir: 'tools/__tests__/fixtures/005-workflow-observability',
+      handoffPath: 'tools/__tests__/fixtures/005-workflow-observability/handoff.md',
       slice: 'governance-tools' as const,
       base: 'abc123',
       head: 'def456',
@@ -124,7 +124,7 @@ describe('buildAuditScaffoldMarkdown', () => {
       route: routeReviewSkills(['tools/governance/specs/workflow/foo.script.ts'], 'governance-tools'),
       acRows: parseHandoffAcTable(md),
       evidence: extractEvidenceCommands(md),
-      beforeDone: ['mise run spec lint assets/specs/005 --strict']
+      beforeDone: ['mise run spec lint tools/__tests__/fixtures/005 --strict']
     }
     const content = buildAuditScaffoldMarkdown(input, {
       slug: '005-workflow-observability',
@@ -143,7 +143,7 @@ describe('buildAuditScaffoldMarkdown', () => {
 describe('scaffoldAuditReport', () => {
   it('writes tmp/reviews/review-{slug}-{sha}.md', () => {
     const root = mkdtempSync(join(tmpdir(), 'review-scaffold-'))
-    const featureDir = join(root, 'assets/specs/005-workflow-observability')
+    const featureDir = join(root, 'tools/__tests__/fixtures/005-workflow-observability')
     const handoffPath = join(featureDir, 'handoff.md')
     mkdirSync(featureDir, { recursive: true })
     writeFileSync(

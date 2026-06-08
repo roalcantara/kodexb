@@ -341,6 +341,10 @@ BLOCK_ON_THREAT="true"
       flag "--absolute-p95-ms <label=ms>" help="Override WOBS absolute p95 cap (repeatable)"
       flag "--no-regression" help="Skip baseline comparison; still writes baseline JSON"
       flag "--no-absolute-limits" help="Skip WOBS absolute p95 caps"
+      cmd "extract-dataset" {
+        flag "--feature <dir>" help="Source feature directory to snapshot (required)"
+        flag "--output <path>" default="tools/metrics/fixtures/perf/workflow-observability-feature.json" help="Output dataset JSON path"
+      }
     }
   ''', run = "bun tools/metrics/harnesses/perf/perf.script.ts" }
 "hooks" = { description = "Run tests for Cursor agent hooks (.cursor/hooks/)", usage = '''
@@ -1442,6 +1446,16 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       flag "--dispatch" help="Pipe prompt to opencode run (also enabled by ORCHESTRATED_HANDOFF_DISPATCH=1)"
       flag "--dry-run" help="Print prompt to stdout; do not write file"
     }
+    cmd "security" {
+      flag "--strict" help="Fail on medium/high/critical per policy"
+      flag "--changed-only" help="Restrict scan to changed-file scope"
+      flag "--base <sha>" help="Diff base ref for changed-only mode"
+      flag "--json" help="Machine-readable output"
+    }
+    cmd "handoff-scrub" {
+      flag "--feature <dir>" help="Feature dir used for optional allowlist"
+      flag "--body <text>" help="Prompt body to scrub"
+    }
     cmd "runs" {
       arg "<action>" help="list|show|tail|prune"
       flag "--feature <dir>" help="Filter by feature directory"
@@ -1452,6 +1466,10 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       flag "--json" help="Machine-readable JSON output"
       flag "--raw" help="Plain text output (no gum styling)"
       arg "<feature_dir>" help="Feature dir e.g. assets/specs/005-workflow-observability"
+    }
+    cmd "ready" {
+      arg "<feature_dir>" help="Feature dir to verify"
+      flag "--key <key>" help="Catalog key for tag tests"
     }
     cmd "review-handoff" {
       arg "<action>" help="classify|extract-evidence|prepare|scaffold-audit"

@@ -1,0 +1,15 @@
+# Gitleaks ignore file
+# Use this to suppress false positives in the raw secret scan.
+# Format: [RuleID]:[File] or just [File]
+
+# Ignore security test fixtures
+tools/governance/security/fixtures/
+
+# Ignore test files that intentionally contain dummy tokens
+tools/governance/security/handoff_scrub.script.spec.ts
+tools/governance/security/checks/secrets.script.spec.ts
+tools/governance/specs/workflow/handoff_generate.script.spec.ts
+
+# Ignore temporary handoff artifacts and results
+tmp/handoffs/
+tmp/security-findings.json

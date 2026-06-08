@@ -1,0 +1,21 @@
+# Markdown / MDC prose must not reference assets/specs/* outside allowlisted paths.
+# .md / .mdc are parsed as Html by ast-grep in this policy set.
+id: no-inbound-assets-specs-html
+language: Html
+severity: error
+ignores:
+  - "**/assets/specs/**"
+  - "**/assets/guides/**"
+  - "**/.specify/**"
+  - "**/tmp/**"
+  - "**/graphify-out/**"
+  - "**/.opencode/**"
+  - "tools/governance/policies/ast-grep/*.rule.yml"
+rule:
+  all:
+    - kind: text
+    - regex: assets/specs/
+message: >
+  Docs must not reference assets/specs/* outside allowlisted temporary/governance areas.
+  Hard-rule policy belongs in assets/guides/.
+note: See assets/guides/DOC_AUTHORITY.md

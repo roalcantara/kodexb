@@ -22,6 +22,24 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  security:
+    if: ${{ !github.event.pull_request.draft }}
+    name: Security - Spec security strict diff scan
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun-project
+        with:
+          setup_mode: mise
+      - name: Run spec security strict base-diff scan
+        run: |
+          BASE_REF="${{ github.base_ref }}"
+          mise run spec security --strict --base "$BASE_REF"
+
   hk:
     if: ${{ !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
     name: HK - Enforces the local git-hook policy in CI so the policy doesn't depend on the honor system
@@ -121,6 +139,8 @@ jobs:
           setup_mode: mise
       - name: Check baseline or create initial baseline
         run: mise run perf workflow-observability
+      - name: Check security perf baseline
+        run: bun tools/governance/security/perf/check.script.ts
 
   e2e-smoke:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
@@ -247,13 +267,15 @@ jobs:
     # is skipped when any needed job is skipped (GitHub default success() gate).
     name: Build - Smoke build (unsigned)
     runs-on: ubuntu-24.04
-    needs: [hk, test, cst, perf]
+    needs: [security, hk, test, cst, perf]
     if: >-
       always() &&
       !github.event.pull_request.draft &&
+      needs.security.result == 'success' &&
+      needs.hk.result == 'success' &&
       needs.test.result == 'success' &&
-      (needs.hk.result == 'success' || needs.hk.result == 'skipped') &&
-      (needs.cst.result == 'success' || needs.cst.result == 'skipped')
+      (needs.cst.result == 'success' || needs.cst.result == 'skipped') &&
+      (needs.perf.result == 'success' || needs.perf.result == 'skipped')
     permissions:
       contents: read
     steps:

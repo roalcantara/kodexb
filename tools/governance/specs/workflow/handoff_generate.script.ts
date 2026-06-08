@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * spec handoff-generate — emit tmp/handoffs/opencode-{slug}-{focus}.md
- * from a feature's handoff.md AC table. See assets/specs/004-orchestrated-handoff/spec.md.
+ * from a feature's handoff.md AC table. See assets/guides/SDD_WORKFLOW_GUIDE.md.
  *
  * Opencode integration per https://opencode.ai/docs/cli/ — non-interactive
  * entry is `opencode run [message..]`.
@@ -9,6 +9,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { sliceIdFromAcTag } from '../../registries/catalog/tag.script.ts'
+import { scrubPrompt } from '../../security/handoff_scrub.script.ts'
 import { UsageError, withUsage } from './usage.script.ts'
 import { generateRunId, WorkflowRunWriter } from './workflow_run.script.ts'
 
@@ -214,11 +215,7 @@ Architecture (do not violate):
 - Gherkin lives in assets/features/**/*.feature; tag line MUST include catalog key + slice tag.
 
 Verify before claiming done:
-  mise run test tag ${catalogKey}
-  mise run catalog validate --raw
-  mise run spec lint ${featureDir} --strict
-  mise run spec trace ${featureDir} --strict
-  bash .agents/skills/app-quality-gate/scripts/gate.sh
+  mise run spec ready ${featureDir} --key ${catalogKey}
 \`\`\`
 
 ## Acceptance criteria
@@ -448,6 +445,14 @@ export function run(
     fileTouchList,
     planMd: plan
   })
+
+  try {
+    scrubPrompt(body, args.featureDir)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(message)
+    return 1
+  }
 
   if (args.dryRun) {
     process.stdout.write(body)
