@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.14.0](https://github.com/roalcantara/kodexb/compare/v0.13.0...v0.14.0) (2026-06-08)
+
+### Features
+
+* **security:** Add hybrid Gitleaks subgate ([b90cd8f](https://github.com/roalcantara/kodexb/commit/b90cd8f6a029ee27d03e4f7cb9a68f2250dd77ec))
+
 ## [0.13.0](https://github.com/roalcantara/kodexb/compare/v0.12.3...v0.13.0) (2026-06-07)
 
 ### Features
