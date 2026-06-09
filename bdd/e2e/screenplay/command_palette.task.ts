@@ -44,22 +44,26 @@ export class ClearListSelection implements Performable {
   }
 
   async performAs(actor: Actor): Promise<void> {
-    const searchbox = actor.page.getByRole('searchbox', { name: 'Search' })
     const listbox = actor.page.getByRole('listbox', { name: 'Entries' })
+    const search = actor.page.locator('input[aria-label="Search"]')
 
-    await searchbox.focus()
+    // If already clear, skip ArrowUp loop — still guard against pointer re-select below.
+    const selected = actor.page.locator('button.cmp-list-row--selected')
 
-    const selectionAttr = await listbox.getAttribute('data-list-selection')
-    if (selectionAttr === 'true') {
+    if ((await selected.count()) > 0) {
       await listbox.focus()
-      await actor.page.keyboard.press('a')
-
-      await expect(listbox).toHaveAttribute('data-list-selection', 'false', { timeout: 2_000 })
-
-      await searchbox.focus()
-      await searchbox.fill('')
+      let safety = 0
+      while ((await selected.count()) > 0 && safety < 80) {
+        await listbox.press('ArrowUp')
+        safety++
+      }
     }
 
-    await actor.page.waitForTimeout(200)
+    // Wait on authoritative app-owned attribute (not just CSS class count)
+    await expect(listbox).toHaveAttribute('data-list-selection', 'false', { timeout: 10_000 })
+
+    // Prevent useListPointerSelection from re-selecting under the cursor before Meta+p
+    await actor.page.mouse.move(0, 0)
+    await search.focus()
   }
 }

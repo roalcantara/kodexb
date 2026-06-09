@@ -46,6 +46,17 @@ export class CommandPaletteAllActionsMatch implements Answerable {
   }
 }
 
+export class ListHasNoSelection implements Answerable {
+  static now(): ListHasNoSelection {
+    return new ListHasNoSelection()
+  }
+
+  async answeredBy(actor: Actor): Promise<void> {
+    const listbox = actor.page.getByRole('listbox', { name: 'Entries' })
+    await expect(listbox).toHaveAttribute('data-list-selection', 'false', { timeout: 5_000 })
+  }
+}
+
 export class CommandPaletteIsClosed implements Answerable {
   static now(): CommandPaletteIsClosed {
     return new CommandPaletteIsClosed()

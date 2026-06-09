@@ -3,7 +3,8 @@ import {
   CommandPaletteHidesSection,
   CommandPaletteIsClosed,
   CommandPaletteShowsSection,
-  EntryListIsReadyForKeyboard
+  EntryListIsReadyForKeyboard,
+  ListHasNoSelection
 } from '../screenplay/command_palette.question'
 import {
   ClearListSelection,
@@ -15,6 +16,7 @@ import { Given, Then, When } from '../support/fixtures.support'
 
 Given('no list row is selected', async ({ actor }) => {
   await actor.attemptsTo(ClearListSelection.now())
+  await actor.asksWhether(ListHasNoSelection.now())
 })
 
 When('I open the command palette', async ({ actor }) => {
