@@ -21,6 +21,23 @@ function handleCreateKey(e: globalThis.KeyboardEvent, deps: TaskKeyboardDeps): b
   return false
 }
 
+function fireMutation(
+  promise: Promise<{ ok: boolean; message: string }>,
+  onMutationError: ((message: string) => void) | undefined,
+  onRefresh: () => void
+): void {
+  fireAndForget(
+    promise
+      .then(result => {
+        if (!result.ok && onMutationError) {
+          onMutationError(result.message)
+        }
+        onRefresh()
+      })
+      .catch(() => undefined)
+  )
+}
+
 function handleCycleKey(
   e: globalThis.KeyboardEvent,
   entry: RpcKnowledge,
@@ -29,26 +46,12 @@ function handleCycleKey(
 ): boolean {
   if (e.key === 's' && !e.metaKey && !e.ctrlKey && !e.altKey) {
     e.preventDefault()
-    fireAndForget(
-      cycleStatus(entry.id, 'forward').then(result => {
-        if (!result.ok && onMutationError) {
-          onMutationError(result.message)
-        }
-        onRefresh()
-      })
-    )
+    fireMutation(cycleStatus(entry.id, 'forward'), onMutationError, onRefresh)
     return true
   }
   if (e.key === 'p' && !e.metaKey && !e.ctrlKey && !e.altKey) {
     e.preventDefault()
-    fireAndForget(
-      cyclePriority(entry.id, 'forward').then(result => {
-        if (!result.ok && onMutationError) {
-          onMutationError(result.message)
-        }
-        onRefresh()
-      })
-    )
+    fireMutation(cyclePriority(entry.id, 'forward'), onMutationError, onRefresh)
     return true
   }
   return false
@@ -62,26 +65,12 @@ function handleReorderKey(
 ): boolean {
   if ((e.metaKey || e.ctrlKey) && e.key === 'ArrowUp') {
     e.preventDefault()
-    fireAndForget(
-      reorderTask(entry.id, 'up').then(result => {
-        if (!result.ok && onMutationError) {
-          onMutationError(result.message)
-        }
-        onRefresh()
-      })
-    )
+    fireMutation(reorderTask(entry.id, 'up'), onMutationError, onRefresh)
     return true
   }
   if ((e.metaKey || e.ctrlKey) && e.key === 'ArrowDown') {
     e.preventDefault()
-    fireAndForget(
-      reorderTask(entry.id, 'down').then(result => {
-        if (!result.ok && onMutationError) {
-          onMutationError(result.message)
-        }
-        onRefresh()
-      })
-    )
+    fireMutation(reorderTask(entry.id, 'down'), onMutationError, onRefresh)
     return true
   }
   return false

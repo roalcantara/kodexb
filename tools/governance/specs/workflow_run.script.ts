@@ -6,6 +6,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { resolveActiveFeatureDir } from './resolve_active_feature_dir.script.ts'
+import { parseHandoffAcTable } from './workflow/handoff_generate.script.ts'
 import { detectPhase, scanFeatureDir } from './workflow/orchestrated_handoff.script.ts'
 import {
   emitPhaseDecided,
@@ -98,6 +99,11 @@ function run(): void {
     console.error('spec workflow: --next is deprecated; use --dry-run instead')
   }
 
+  if (args.feature !== undefined && (args.feature === '' || String(args.feature).startsWith('-'))) {
+    console.error(`spec workflow: --feature requires a value, got "${String(args.feature)}"`)
+    process.exit(2)
+  }
+
   const name = (args.name as string) || 'orchestrated-handoff'
 
   if (name !== 'orchestrated-handoff') {
@@ -181,7 +187,7 @@ function run(): void {
   process.exit(0)
 }
 
-function buildSubtaskManifest(_input: {
+function buildSubtaskManifest(input: {
   featureDir: string
   slug: string
   handoffMd: string
@@ -193,6 +199,24 @@ function buildSubtaskManifest(_input: {
       description: 'Primary agent runs speckit.implement under src/ with co-located *.spec.ts files.'
     }
   ]
+
+  const acRows = parseHandoffAcTable(input.handoffMd)
+  const hasOperatorSmoke = acRows.some(r => r.isOperatorSmoke)
+  const planMentionsFeatures = (input.planMd ?? '').includes('assets/features/')
+  if (hasOperatorSmoke || planMentionsFeatures) {
+    subtasks.push({
+      type: 'gherkin-bdd-handoff',
+      description: `Worker consumes tmp/handoffs/opencode-${input.slug}-gherkin.md for Gherkin/BDD work.`
+    })
+  }
+
+  if ((input.planMd ?? '').includes('assets/catalog/catalog.yaml')) {
+    subtasks.push({
+      type: 'catalog-touch',
+      description: 'Plan adds or modifies a catalog key; validate + ship checklist required.'
+    })
+  }
+
   return subtasks
 }
 

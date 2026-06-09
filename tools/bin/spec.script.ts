@@ -171,11 +171,9 @@ function main(): void {
       let key = process.env.usage_key ?? ''
       if (!key) {
         const keyResult = resolveCatalogKey(dir)
-        if (keyResult.ok) {
-          key = keyResult.key
-        } else if (keyResult.warning) {
+        key = keyResult.key
+        if (!keyResult.ok && keyResult.warning) {
           console.error(keyResult.warning)
-          key = keyResult.key
         }
       }
 

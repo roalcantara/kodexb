@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'bun:test'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { resolveActiveFeatureDir } from './resolve_active_feature_dir.script'
 
@@ -20,6 +22,19 @@ describe('resolveActiveFeatureDir', () => {
       if (!result.ok) {
         expect(result.exitCode).toBe(2)
         expect(result.message).toContain('does not contain spec.md')
+      }
+    })
+  })
+
+  describe('when featureDir is outside SPECS_ROOT', () => {
+    it('rejects a valid-looking dir outside SPECS_ROOT', () => {
+      const tmpDir = mkdtempSync(path.join(tmpdir(), 'resolve-feature-test-'))
+      writeFileSync(path.join(tmpDir, 'spec.md'), '# test')
+      const result = resolveActiveFeatureDir(tmpDir)
+      rmSync(tmpDir, { recursive: true, force: true })
+      expect(result.ok).toBe(false)
+      if (!result.ok) {
+        expect(result.message).toContain('not under')
       }
     })
   })

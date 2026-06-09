@@ -65,22 +65,30 @@ export function useTaskSheet(entry: RpcKnowledge | null | undefined, onClose: ()
   const handleCycleStatus = useCallback(async () => {
     if (!entry) return
     set('saving', true)
-    const result = await cycleStatus(entry.id, 'forward')
-    if (result.ok) {
-      setForm(prev => withCycledField(prev, 'status', nextInCycle(STATUS_CYCLE, prev.status)))
-    } else {
-      setForm(prev => ({ ...prev, error: result.message, saving: false }))
+    try {
+      const result = await cycleStatus(entry.id, 'forward')
+      if (result.ok) {
+        setForm(prev => withCycledField(prev, 'status', nextInCycle(STATUS_CYCLE, prev.status)))
+      } else {
+        setForm(prev => ({ ...prev, error: result.message, saving: false }))
+      }
+    } catch {
+      setForm(prev => ({ ...prev, error: 'Failed to cycle status', saving: false }))
     }
   }, [entry, set])
 
   const handleCyclePriority = useCallback(async () => {
     if (!entry) return
     set('saving', true)
-    const result = await cyclePriority(entry.id, 'forward')
-    if (result.ok) {
-      setForm(prev => withCycledField(prev, 'priority', nextInCycle(PRIORITY_CYCLE, prev.priority)))
-    } else {
-      setForm(prev => ({ ...prev, error: result.message, saving: false }))
+    try {
+      const result = await cyclePriority(entry.id, 'forward')
+      if (result.ok) {
+        setForm(prev => withCycledField(prev, 'priority', nextInCycle(PRIORITY_CYCLE, prev.priority)))
+      } else {
+        setForm(prev => ({ ...prev, error: result.message, saving: false }))
+      }
+    } catch {
+      setForm(prev => ({ ...prev, error: 'Failed to cycle priority', saving: false }))
     }
   }, [entry, set])
 
@@ -90,45 +98,49 @@ export function useTaskSheet(entry: RpcKnowledge | null | undefined, onClose: ()
       return
     }
     set('saving', true)
-    const dueMs = form.dueDateStr ? new Date(form.dueDateStr).getTime() : undefined
-    const dependsOnArr = form.dependsOn
-      ? form.dependsOn
-          .split(',')
-          .map(s => Number.parseInt(s.trim(), 10))
-          .filter(n => Number.isFinite(n))
-      : undefined
-    const tagsArr = form.tags
-      ? form.tags
-          .split(',')
-          .map(s => s.trim())
-          .filter(Boolean)
-      : undefined
-    const result = entry
-      ? await updateTask(
-          entry.id,
-          {
+    try {
+      const dueMs = form.dueDateStr ? new Date(form.dueDateStr).getTime() : undefined
+      const dependsOnArr = form.dependsOn
+        ? form.dependsOn
+            .split(',')
+            .map(s => Number.parseInt(s.trim(), 10))
+            .filter(n => Number.isFinite(n))
+        : undefined
+      const tagsArr = form.tags
+        ? form.tags
+            .split(',')
+            .map(s => s.trim())
+            .filter(Boolean)
+        : undefined
+      const result = entry
+        ? await updateTask(
+            entry.id,
+            {
+              key: form.key,
+              desc: form.desc,
+              priority: form.priority,
+              status: form.status,
+              dueDate: dueMs,
+              dependsOn: dependsOnArr,
+              tags: tagsArr
+            },
+            entry.updatedAt
+          )
+        : await createTask({
             key: form.key,
             desc: form.desc,
             priority: form.priority,
-            status: form.status,
             dueDate: dueMs,
             dependsOn: dependsOnArr,
             tags: tagsArr
-          },
-          entry.updatedAt
-        )
-      : await createTask({
-          key: form.key,
-          desc: form.desc,
-          priority: form.priority,
-          dueDate: dueMs,
-          dependsOn: dependsOnArr,
-          tags: tagsArr
-        })
-    if (result.ok) {
-      onClose()
-    } else {
-      setForm(prev => ({ ...prev, error: result.message, saving: false }))
+          })
+      if (result.ok) {
+        onClose()
+      } else {
+        setForm(prev => ({ ...prev, error: result.message, saving: false }))
+      }
+    } catch {
+      setForm(prev => ({ ...prev, error: 'Failed to save', saving: false }))
     }
   }, [form, entry, set, onClose])
 

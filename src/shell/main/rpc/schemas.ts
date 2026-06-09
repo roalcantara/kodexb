@@ -201,6 +201,9 @@ export const taskDeleteSchema = Type.Object(
 )
 
 /** POST body for `showOpenDialog` accepts `{}` or `{ opts?: {...} }`. */
+const e2eFaultModes = Type.Union([Type.Literal('off'), Type.Literal('source_write_failed'), Type.Literal('unset')])
+export const e2eFaultModeSchema = Type.Object({ mode: e2eFaultModes }, { additionalProperties: false })
+
 export const showOpenDialogSchema = Type.Object(
   {
     opts: Type.Optional(

@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'bun:test'
-import { catalogKeyFromSlug, slugFromFeatureDir } from './resolve_catalog_key.script'
+import { catalogKeyFromSlug, resolveCatalogKey, slugFromFeatureDir } from './resolve_catalog_key.script'
 
 const FAKE_REPO = '/repo'
 const SPECS_DIR = 'assets/specs'
+const KEY_PATTERN = /^[a-z]/
 
 describe('resolve_catalog_key', () => {
   describe('catalogKeyFromSlug', () => {
@@ -32,6 +33,31 @@ describe('resolve_catalog_key', () => {
 
     it('handles slug without leading digits', () => {
       expect(slugFromFeatureDir(`${FAKE_REPO}/${SPECS_DIR}/my-feature`)).toBe('my-feature')
+    })
+  })
+
+  describe('resolveCatalogKey', () => {
+    it('uses the real catalog file and returns a result', () => {
+      const result = resolveCatalogKey(`${SPECS_DIR}/007-task-source-atomicity`)
+      expect(result).toHaveProperty('ok')
+      expect(result).toHaveProperty('key')
+      expect(result.key).toMatch(KEY_PATTERN)
+    })
+
+    it('returns derived key with warning for unknown slug', () => {
+      const result = resolveCatalogKey(`${SPECS_DIR}/999-unknown-feature`)
+      expect(result.ok).toBe(false)
+      if (!result.ok) {
+        expect(result.warning).toBeTruthy()
+      }
+    })
+
+    it('returns derived key with warning for nonexistent path', () => {
+      const result = resolveCatalogKey('/nonexistent/path')
+      expect(result.ok).toBe(false)
+      if (!result.ok) {
+        expect(result.warning).toBeTruthy()
+      }
     })
   })
 })

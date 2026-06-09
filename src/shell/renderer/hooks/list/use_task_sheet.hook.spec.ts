@@ -114,6 +114,53 @@ describe('useTaskSheet', () => {
     })
   })
 
+  describe('when rpc call rejects', () => {
+    it('handleSave sets form.error when createTask rejects', async () => {
+      const onClose = mock(() => undefined)
+      mockCreateTask.mockRejectedValueOnce(new Error('Network error'))
+      const rendered = renderHook(() => useTaskSheet(null, onClose))
+
+      act(() => rendered.result.current.set('key', 'new-task'))
+      await act(() => rendered.result.current.handleSave())
+
+      expect(rendered.result.current.form.saving).toBe(false)
+      expect(rendered.result.current.form.error).toBe('Failed to save')
+      expect(onClose).not.toHaveBeenCalled()
+    })
+
+    it('handleCycleStatus sets form.error when cycleStatus rejects', async () => {
+      mockCycleStatus.mockRejectedValueOnce(new Error('Network error'))
+
+      const { result } = renderHook(() =>
+        useTaskSheet(
+          makeEntry(),
+          mock(() => undefined)
+        )
+      )
+
+      await act(() => result.current.handleCycleStatus())
+
+      expect(result.current.form.error).toBe('Failed to cycle status')
+      expect(result.current.form.saving).toBe(false)
+    })
+
+    it('handleCyclePriority sets form.error when cyclePriority rejects', async () => {
+      mockCyclePriority.mockRejectedValueOnce(new Error('Network error'))
+
+      const { result } = renderHook(() =>
+        useTaskSheet(
+          makeEntry(),
+          mock(() => undefined)
+        )
+      )
+
+      await act(() => result.current.handleCyclePriority())
+
+      expect(result.current.form.error).toBe('Failed to cycle priority')
+      expect(result.current.form.saving).toBe(false)
+    })
+  })
+
   describe('when save succeeds', () => {
     it('calls onClose and clears saving', async () => {
       const onClose = mock(() => undefined)

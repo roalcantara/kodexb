@@ -104,6 +104,7 @@ function TaskSheetError({ error }: { error: string | null }) {
   return (
     <div
       data-testid="task-sheet-error"
+      role="alert"
       style={{ color: 'var(--cmp-danger)', marginBottom: '0.75rem', fontSize: '0.85rem' }}
     >
       {error}

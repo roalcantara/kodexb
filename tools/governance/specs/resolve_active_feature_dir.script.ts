@@ -55,17 +55,51 @@ export function resolveActiveFeatureDir(argDir?: string): ResolveResult {
         message: `spec: feature dir "${argDir}" does not contain spec.md — use ${SPECS_ROOT}/NNN-slug/`
       }
     }
+    if (!resolved.startsWith(path.resolve(SPECS_ROOT))) {
+      return {
+        ok: false,
+        exitCode: 2,
+        message: `spec: feature dir "${argDir}" is not under ${SPECS_ROOT}`
+      }
+    }
     return { ok: true, featureDir: resolved }
   }
 
   const fromJson = tryResolveFromFeatureJson()
-  if (fromJson) return { ok: true, featureDir: fromJson }
+  if (fromJson) {
+    if (!fromJson.startsWith(path.resolve(SPECS_ROOT))) {
+      return {
+        ok: false,
+        exitCode: 2,
+        message: `spec: feature.json points outside ${SPECS_ROOT}: ${fromJson}`
+      }
+    }
+    return { ok: true, featureDir: fromJson }
+  }
 
   const fromBranch = tryResolveFromGitBranch()
-  if (fromBranch) return { ok: true, featureDir: fromBranch }
+  if (fromBranch) {
+    if (!fromBranch.startsWith(path.resolve(SPECS_ROOT))) {
+      return {
+        ok: false,
+        exitCode: 2,
+        message: `spec: git branch resolves outside ${SPECS_ROOT}: ${fromBranch}`
+      }
+    }
+    return { ok: true, featureDir: fromBranch }
+  }
 
   const fromCwd = tryResolveFromCwd()
-  if (fromCwd) return { ok: true, featureDir: fromCwd }
+  if (fromCwd) {
+    if (!fromCwd.startsWith(path.resolve(SPECS_ROOT))) {
+      return {
+        ok: false,
+        exitCode: 2,
+        message: `spec: cwd resolves outside ${SPECS_ROOT}: ${fromCwd}`
+      }
+    }
+    return { ok: true, featureDir: fromCwd }
+  }
 
   return {
     ok: false,

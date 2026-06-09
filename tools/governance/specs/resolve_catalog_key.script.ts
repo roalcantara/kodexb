@@ -1,11 +1,11 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { parse as parseYaml } from 'yaml'
 import { chdirToRepoRoot } from '../../support/lib/shared/repo_root.script.ts'
 
 const CATALOG_PATH = 'assets/catalog/catalog.yaml'
 const LEADING_DIGITS_RE = /^\d+-/
 const HYPHEN_RE = /-/g
-const CATALOG_ENTRY_RE = /^([a-z][a-z_0-9]+):/gm
 
 export function catalogKeyFromSlug(slug: string): string {
   return slug.replace(LEADING_DIGITS_RE, '').replace(HYPHEN_RE, '_')
@@ -17,17 +17,17 @@ export function slugFromFeatureDir(featureDir: string): string {
 
 export type KeyResolveResult = { ok: true; key: string } | { ok: false; key: string; warning: string }
 
-function extractCatalogKey(catalogText: string): string[] {
-  const keys: string[] = []
-  for (const match of catalogText.matchAll(CATALOG_ENTRY_RE)) {
-    const key = match[1]
-    if (key) keys.push(key)
-  }
-  return keys
-}
-
-function firstEntry(entries: readonly string[]): string | undefined {
-  return entries[0]
+function collectKeys(catalogText: string): { key: string; specs: string[] }[] {
+  const doc = parseYaml(catalogText)
+  if (!doc || typeof doc !== 'object') return []
+  return Object.entries(doc as Record<string, unknown>)
+    .filter(([, v]) => v && typeof v === 'object' && !Array.isArray(v))
+    .map(([key, v]) => ({
+      key,
+      specs: Array.isArray((v as Record<string, unknown>).specs)
+        ? ((v as Record<string, unknown>).specs as string[])
+        : []
+    }))
 }
 
 export function resolveCatalogKey(featureDir: string): KeyResolveResult {
@@ -42,29 +42,24 @@ export function resolveCatalogKey(featureDir: string): KeyResolveResult {
   }
 
   const catalogText = readFileSync(CATALOG_PATH, 'utf-8')
-  const entries = extractCatalogKey(catalogText)
+  const entries = collectKeys(catalogText)
 
   const dirBasename = path.basename(featureDir)
-  const matching = entries.filter(e => catalogText.includes(`${e}:`) && catalogText.includes(dirBasename))
+  const matching = entries.filter(e => e.specs.includes(dirBasename))
 
-  if (matching.length === 1) {
-    const key = firstEntry(matching)
-    if (key) return { ok: true, key }
-    const fallback = catalogKeyFromSlug(path.basename(featureDir))
-    return {
-      ok: false,
-      key: fallback,
-      warning: `spec warning: matched entry is empty — derived key "${fallback}"`
-    }
+  if (matching.length === 1 && matching[0]) {
+    return { ok: true, key: matching[0].key }
   }
 
   if (matching.length > 1) {
     const fallback = catalogKeyFromSlug(path.basename(featureDir))
-    console.error(`spec warning: multiple catalog entries reference "${dirBasename}" — using derived key "${fallback}"`)
-    return { ok: false, key: fallback, warning: '' }
+    const msg = `spec warning: multiple catalog entries reference "${dirBasename}" — using derived key "${fallback}"`
+    console.error(msg)
+    return { ok: false, key: fallback, warning: msg }
   }
 
   const fallback = catalogKeyFromSlug(path.basename(featureDir))
-  console.error(`spec warning: no catalog entry references "${dirBasename}" — using derived key "${fallback}"`)
-  return { ok: false, key: fallback, warning: '' }
+  const msg = `spec warning: no catalog entry references "${dirBasename}" — using derived key "${fallback}"`
+  console.error(msg)
+  return { ok: false, key: fallback, warning: msg }
 }

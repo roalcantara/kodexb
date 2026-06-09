@@ -12,10 +12,22 @@ function usage(): never {
 function main(): void {
   const root = chdirToRepoRoot()
   const args = process.argv.slice(2)
-  const phaseIdx = args.indexOf('--phase')
-  const phaseNo = phaseIdx >= 0 ? (args[phaseIdx + 1] ?? '') : ''
+  let phaseNo = ''
+  let featureDir = ''
 
-  const featureDir = args.find((a): a is string => !a.startsWith('--') && a !== phaseNo)
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i]
+    if (arg === undefined) continue
+    if (arg === '--phase') {
+      const nv = args[++i]
+      if (nv !== undefined) phaseNo = nv
+    } else if (!arg.startsWith('--') && !featureDir) {
+      featureDir = arg
+    } else {
+      console.error(`spec phase: unexpected argument "${arg}"`)
+      process.exit(2)
+    }
+  }
 
   if (!featureDir) usage()
 

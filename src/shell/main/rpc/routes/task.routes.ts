@@ -6,6 +6,7 @@ import type { App } from '../../../app/app'
 import { isTaskConflictError, isTaskSourceWriteError } from '../../../app/lib/app_task_source.util'
 import { buildTaskMutationFailureMessage } from '../../../app/lib/task_mutation_failure_message.util'
 import {
+  e2eFaultModeSchema,
   idWithDirSchema,
   idWithReorderDirSchema,
   taskCreateSchema,
@@ -237,15 +238,18 @@ export function taskRoutes(app: App) {
     )
 
   if (process.env.NODE_ENV === 'test' || process.env.KB_E2E_FAULT_INJECTION === '1') {
-    routes.post('/e2e/fault-mode', ({ body }) => {
-      const bd = body as Record<string, unknown> | undefined
-      const mode = String(bd?.mode ?? '')
-      if (!['off', 'source_write_failed', 'unset'].includes(mode)) {
-        throw new Error(`Invalid e2e fault mode: ${mode}`)
-      }
-      e2eFaultMode = mode as E2eFaultMode
-      return { ok: true }
-    })
+    routes.post(
+      '/e2e/fault-mode',
+      ({ body }) => {
+        const mode = String(body.mode ?? '')
+        if (!['off', 'source_write_failed', 'unset'].includes(mode)) {
+          throw new Error(`Invalid e2e fault mode: ${mode}`)
+        }
+        e2eFaultMode = mode as E2eFaultMode
+        return { ok: true }
+      },
+      { body: e2eFaultModeSchema }
+    )
   }
 
   return routes

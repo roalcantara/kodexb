@@ -70,6 +70,7 @@ Given('task mutation source version is stale', async ({ actor, page }) => {
   })
   const ageBody = await ageResp.json()
   if (!ageBody.ok) throw new Error(`Failed to age task ${taskId}: ${ageBody.message}`)
+  actor.remember(LAST_TASK_MUTATION_OUTCOME, ageBody)
 })
 
 Then('the task sheet shows the error {string}', async ({ page }, expectedError: string) => {

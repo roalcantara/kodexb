@@ -282,17 +282,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
         </div>
 
         {p.mutationError ? (
-          <div
-            style={{
-              padding: '0.5rem 1rem',
-              color: 'var(--cmp-danger)',
-              fontSize: '0.85rem',
-              background: 'var(--surface-raised)',
-              borderTop: '1px solid var(--cmp-border)',
-              textAlign: 'center'
-            }}
-            role="alert"
-          >
+          <div className="cmp-list-mutation-error" role="alert">
             {p.mutationError}
           </div>
         ) : null}
