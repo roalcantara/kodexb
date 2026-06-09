@@ -9,17 +9,10 @@ export type TaskKeyboardDeps = {
   onRefresh: () => void
   onNewTask: () => void
   onRequestDelete?: (entry: RpcKnowledge) => void
+  onMutationError?: (message: string) => void
 }
 
-type DepsSnapshot = {
-  selectedId: number | null
-  rows: RpcKnowledge[]
-  onRefresh: () => void
-  onNewTask: () => void
-  onRequestDelete?: (entry: RpcKnowledge) => void
-}
-
-function handleCreateKey(e: globalThis.KeyboardEvent, deps: DepsSnapshot): boolean {
+function handleCreateKey(e: globalThis.KeyboardEvent, deps: TaskKeyboardDeps): boolean {
   if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
     e.preventDefault()
     deps.onNewTask()
@@ -28,29 +21,67 @@ function handleCreateKey(e: globalThis.KeyboardEvent, deps: DepsSnapshot): boole
   return false
 }
 
-function handleCycleKey(e: globalThis.KeyboardEvent, entry: RpcKnowledge, onRefresh: () => void): boolean {
+function handleCycleKey(
+  e: globalThis.KeyboardEvent,
+  entry: RpcKnowledge,
+  onRefresh: () => void,
+  onMutationError?: (message: string) => void
+): boolean {
   if (e.key === 's' && !e.metaKey && !e.ctrlKey && !e.altKey) {
     e.preventDefault()
-    fireAndForget(cycleStatus(entry.id, 'forward').then(() => onRefresh()))
+    fireAndForget(
+      cycleStatus(entry.id, 'forward').then(result => {
+        if (!result.ok && onMutationError) {
+          onMutationError(result.message)
+        }
+        onRefresh()
+      })
+    )
     return true
   }
   if (e.key === 'p' && !e.metaKey && !e.ctrlKey && !e.altKey) {
     e.preventDefault()
-    fireAndForget(cyclePriority(entry.id, 'forward').then(() => onRefresh()))
+    fireAndForget(
+      cyclePriority(entry.id, 'forward').then(result => {
+        if (!result.ok && onMutationError) {
+          onMutationError(result.message)
+        }
+        onRefresh()
+      })
+    )
     return true
   }
   return false
 }
 
-function handleReorderKey(e: globalThis.KeyboardEvent, entry: RpcKnowledge, onRefresh: () => void): boolean {
+function handleReorderKey(
+  e: globalThis.KeyboardEvent,
+  entry: RpcKnowledge,
+  onRefresh: () => void,
+  onMutationError?: (message: string) => void
+): boolean {
   if ((e.metaKey || e.ctrlKey) && e.key === 'ArrowUp') {
     e.preventDefault()
-    fireAndForget(reorderTask(entry.id, 'up').then(() => onRefresh()))
+    fireAndForget(
+      reorderTask(entry.id, 'up').then(result => {
+        if (!result.ok && onMutationError) {
+          onMutationError(result.message)
+        }
+        onRefresh()
+      })
+    )
     return true
   }
   if ((e.metaKey || e.ctrlKey) && e.key === 'ArrowDown') {
     e.preventDefault()
-    fireAndForget(reorderTask(entry.id, 'down').then(() => onRefresh()))
+    fireAndForget(
+      reorderTask(entry.id, 'down').then(result => {
+        if (!result.ok && onMutationError) {
+          onMutationError(result.message)
+        }
+        onRefresh()
+      })
+    )
     return true
   }
   return false
@@ -90,8 +121,8 @@ export function useTaskKeyboard(deps: TaskKeyboardDeps) {
       const entry = findTaskEntry(snapshot.rows, snapshot.selectedId)
       if (!entry) return
 
-      if (handleReorderKey(e, entry, snapshot.onRefresh)) return
-      if (handleCycleKey(e, entry, snapshot.onRefresh)) return
+      if (handleReorderKey(e, entry, snapshot.onRefresh, snapshot.onMutationError)) return
+      if (handleCycleKey(e, entry, snapshot.onRefresh, snapshot.onMutationError)) return
       handleDeleteKey(e, entry, snapshot.onRequestDelete)
     }
 

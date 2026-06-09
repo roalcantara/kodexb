@@ -244,6 +244,29 @@ local fullProfileSteps = new Mapping<String, Step> {
     }
 }
 
+// Fix profile — auto-fix formatting/lint for `spec ready --phase` (TMF-7).
+local fixProfileSteps = new Mapping<String, Step> {
+    ["end-of-file-fixer"] = (Builtins.newlines) {
+        profiles = List("fix")
+        exclude = textWriterExclude
+    }
+    ["mixed_line_ending"] = (Builtins.mixed_line_ending) {
+        profiles = List("fix")
+        exclude = textWriterExclude
+        depends = List("end-of-file-fixer")
+    }
+    ["trailing_whitespace"] = (Builtins.trailing_whitespace) {
+        profiles = List("fix")
+        exclude = textWriterExclude
+        depends = List("mixed_line_ending")
+    }
+    ["biome-fix"] {
+        profiles = List("fix")
+        depends = List("trailing_whitespace")
+        check = "bun run lint:fix"
+    }
+}
+
 // Slow profile — optional checks; enable with `hk check --slow` or --profile slow.
 local slowProfileSteps = new Mapping<String, Step> {
     ["gitleaks-full"] {
@@ -297,6 +320,7 @@ local checkSteps = (hygieneSteps) {
     ...ciProfileSteps
     ...fullProfileSteps
     ...slowProfileSteps
+    ...fixProfileSteps
 }
 
 local commitMsgSteps = new Mapping<String, Step> {

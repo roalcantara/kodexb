@@ -1,19 +1,20 @@
-import { describe, expect, it } from 'bun:test'
+import { afterAll, beforeAll, describe, expect, it } from 'bun:test'
 import type { TaskMutationOutcome } from '@shared/rpc'
 import { runRoute } from '@testing/helpers/run_route.util'
 import { setupTaskRouteTestKit } from './task_routes_test.util'
 
+const {
+  importedApp,
+  mountRouteModule,
+  postTask,
+  firstSeededTask,
+  firstSeededTaskId,
+  cycleForward,
+  rpcSpecPostJson,
+  taskRoutes
+} = setupTaskRouteTestKit()
+
 describe('taskRoutes', () => {
-  const {
-    importedApp,
-    mountRouteModule,
-    postTask,
-    firstSeededTask,
-    firstSeededTaskId,
-    cycleForward,
-    rpcSpecPostJson,
-    taskRoutes
-  } = setupTaskRouteTestKit()
   describe('POST /api/createTask', () => {
     describe('when the task creation succeeds', () => {
       const body = { key: 'RPC route task', desc: 'Created in task.routes.spec' }
@@ -184,70 +185,141 @@ describe('taskRoutes', () => {
       })
     })
   })
-  describe('POST /api/reorderTask', () => {
-    describe('when the reorder succeeds', () => {
-      it('returns affected tasks', async () => {
-        const app = await importedApp()
-        const rpc = mountRouteModule(app, taskRoutes)
-        const suffix = Date.now()
-        const lowerRes = await rpc.handle(
-          rpcSpecPostJson('/api/createTask', { key: `Task A ${suffix}`, desc: 'lower order' })
-        )
-        expect(lowerRes.status).toBe(200)
-        const upperRes = await rpc.handle(
-          rpcSpecPostJson('/api/createTask', { key: `Task B ${suffix}`, desc: 'upper order' })
-        )
-        expect(upperRes.status).toBe(200)
-        const upper = (await upperRes.json()) as TaskMutationOutcome<{ id: number }>
-        expect(upper.ok).toBe(true)
+})
 
-        const upperId = upper.ok ? upper.data.id : -1
-        const upperSourceVersion = upper.ok ? upper.sourceVersion : undefined
+describe('taskRoutes — KB_E2E_FAULT_INJECTION env gate', () => {
+  const OLD = process.env.KB_E2E_FAULT_INJECTION
 
-        expect(
-          runRoute<TaskMutationOutcome<Array<{ id: number }>>>(() =>
-            rpc.handle(
-              rpcSpecPostJson('/api/reorderTask', { id: upperId, dir: 'up', sourceVersion: upperSourceVersion })
-            )
-          )
-        ).resolves.toMatchObject({
-          status: 200,
-          data: {
-            ok: true,
-            status: 'success',
-            operation: 'reorder',
-            data: expect.arrayContaining([expect.objectContaining({ id: expect.any(Number) })])
-          }
-        })
+  afterAll(() => {
+    process.env.KB_E2E_FAULT_INJECTION = OLD
+  })
+
+  describe('when unset', () => {
+    beforeAll(() => {
+      delete process.env.KB_E2E_FAULT_INJECTION
+    })
+
+    it('routes process requests normally', async () => {
+      const taskId = await firstSeededTaskId()
+      const res = await postTask<TaskMutationOutcome<{ id: number; status: string }>>('/api/cycleStatus', {
+        id: taskId,
+        dir: 'forward'
+      })
+      expect(res.status).toBe(200)
+      expect(res.data.ok).toBe(true)
+    })
+  })
+
+  describe('when set to 1', () => {
+    beforeAll(() => {
+      process.env.KB_E2E_FAULT_INJECTION = '1'
+    })
+
+    it('createTask returns source_write_failed', async () => {
+      const res = await postTask<TaskMutationOutcome<unknown>>('/api/createTask', {
+        key: 'injected-fault',
+        desc: 'should fail'
+      })
+      expect(res.status).toBe(200)
+      expect(res.data).toMatchObject({
+        ok: false,
+        status: 'source_write_failed',
+        operation: 'create'
       })
     })
 
-    describe.each([
-      ['dir is invalid', { id: 1, dir: 'forward' }],
-      ['id is missing', { dir: 'up' }]
-    ])('when %s', (_desc, body) => {
-      it('returns 500', () => {
-        expect(postTask<{ error: string }>('/api/reorderTask', body)).resolves.toMatchObject({
-          status: 500,
-          data: { error: expect.any(String) }
-        })
+    it('updateTask returns source_write_failed', async () => {
+      const taskId = await firstSeededTaskId()
+      const res = await postTask<TaskMutationOutcome<unknown>>('/api/updateTask', {
+        id: taskId,
+        patch: { desc: 'injected conflict' }
+      })
+      expect(res.status).toBe(200)
+      expect(res.data).toMatchObject({
+        ok: false,
+        status: 'source_write_failed',
+        operation: 'update'
       })
     })
 
-    describe('when the task cannot move', () => {
-      it('returns 200 with an empty array', async () => {
-        const taskId = await firstSeededTaskId()
-        expect(
-          postTask<TaskMutationOutcome<unknown[]>>('/api/reorderTask', { id: taskId, dir: 'up' })
-        ).resolves.toMatchObject({
-          status: 200,
-          data: {
-            ok: true,
-            status: 'success',
-            operation: 'reorder',
-            data: []
-          }
-        })
+    it('all mutation routes return source_write_failed', async () => {
+      const taskId = await firstSeededTaskId()
+      const cycleRes = await postTask<TaskMutationOutcome<unknown>>('/api/cycleStatus', {
+        id: taskId,
+        dir: 'forward'
+      })
+      expect(cycleRes.data).toMatchObject({ ok: false, status: 'source_write_failed' })
+
+      const priorityRes = await postTask<TaskMutationOutcome<unknown>>('/api/cyclePriority', {
+        id: taskId,
+        dir: 'forward'
+      })
+      expect(priorityRes.data).toMatchObject({ ok: false, status: 'source_write_failed' })
+    })
+  })
+})
+
+describe('POST /api/reorderTask', () => {
+  describe('when the reorder succeeds', () => {
+    it('returns affected tasks', async () => {
+      const app = await importedApp()
+      const rpc = mountRouteModule(app, taskRoutes)
+      const suffix = Date.now()
+      const lowerRes = await rpc.handle(
+        rpcSpecPostJson('/api/createTask', { key: `Task A ${suffix}`, desc: 'lower order' })
+      )
+      expect(lowerRes.status).toBe(200)
+      const upperRes = await rpc.handle(
+        rpcSpecPostJson('/api/createTask', { key: `Task B ${suffix}`, desc: 'upper order' })
+      )
+      expect(upperRes.status).toBe(200)
+      const upper = (await upperRes.json()) as TaskMutationOutcome<{ id: number }>
+      expect(upper.ok).toBe(true)
+
+      const upperId = upper.ok ? upper.data.id : -1
+      const upperSourceVersion = upper.ok ? upper.sourceVersion : undefined
+
+      expect(
+        runRoute<TaskMutationOutcome<Array<{ id: number }>>>(() =>
+          rpc.handle(rpcSpecPostJson('/api/reorderTask', { id: upperId, dir: 'up', sourceVersion: upperSourceVersion }))
+        )
+      ).resolves.toMatchObject({
+        status: 200,
+        data: {
+          ok: true,
+          status: 'success',
+          operation: 'reorder',
+          data: expect.arrayContaining([expect.objectContaining({ id: expect.any(Number) })])
+        }
+      })
+    })
+  })
+
+  describe.each([
+    ['dir is invalid', { id: 1, dir: 'forward' }],
+    ['id is missing', { dir: 'up' }]
+  ])('when %s', (_desc, body) => {
+    it('returns 500', () => {
+      expect(postTask<{ error: string }>('/api/reorderTask', body)).resolves.toMatchObject({
+        status: 500,
+        data: { error: expect.any(String) }
+      })
+    })
+  })
+
+  describe('when the task cannot move', () => {
+    it('returns 200 with an empty array', async () => {
+      const taskId = await firstSeededTaskId()
+      expect(
+        postTask<TaskMutationOutcome<unknown[]>>('/api/reorderTask', { id: taskId, dir: 'up' })
+      ).resolves.toMatchObject({
+        status: 200,
+        data: {
+          ok: true,
+          status: 'success',
+          operation: 'reorder',
+          data: []
+        }
       })
     })
   })

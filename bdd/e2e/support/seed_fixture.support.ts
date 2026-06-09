@@ -160,9 +160,26 @@ async function writeReleaseFixtureSources(sourcesPath: string): Promise<void> {
     writeFile(path.join(sourcesPath, 'commands', 'release.yml'), COMMANDS_YAML),
     writeFile(path.join(sourcesPath, 'cheats', 'release.yml'), CHEATS_YAML),
     writeFile(path.join(sourcesPath, 'tasks', 'release.yml'), TASKS_YAML),
+    writeFile(path.join(sourcesPath, 'tasks', 'spec-008-atomicity.yml'), ATOMICITY_TASKS_YAML),
     writeFile(path.join(sourcesPath, 'shortcuts', 'release.yml'), SHORTCUTS_YAML)
   ])
 }
+
+const ATOMICITY_TASKS_YAML = `tasks:
+  Atomicity conflict probe:
+    desc: Feature-local task for atomicity update-conflict scenarios
+    tags: [spec-008]
+    status: todo
+    priority: low
+    task_order: 10
+
+  Atomicity diagnostic probe:
+    desc: Feature-local task for atomicity diagnostic scenarios
+    tags: [spec-008]
+    status: todo
+    priority: low
+    task_order: 11
+`
 
 /** E2e scenarios may add these under the shared preview sources tree. */
 const RESTORE_REMOVE_PATHS = [

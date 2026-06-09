@@ -17,6 +17,7 @@ import { useListSelection } from './use_list_selection.hook'
 import { useListSentinelPagination } from './use_list_sentinel_pagination.hook'
 import { useListSurfaceKeyDown } from './use_list_surface_keydown.hook'
 import { useListSurfaceWheelScroll } from './use_list_surface_wheel_scroll.hook'
+import { useMutationError } from './use_mutation_error.hook'
 import { useTaskDragDrop } from './use_task_drag_drop.hook'
 import { useTaskKeyboard } from './use_task_keyboard.hook'
 
@@ -45,6 +46,7 @@ export function useListPageShell({
   const [taskSheetEntry, setTaskSheetEntry] = useState<RpcKnowledge | null>(null)
   const [taskSheetOpen, setTaskSheetOpen] = useState(false)
   const taskSheetVisible = taskSheetOpen
+  const { mutationError, setMutationError, clearMutationError } = useMutationError()
 
   const handleNewTask = useCallback(() => {
     setTaskSheetEntry(null)
@@ -174,7 +176,8 @@ export function useListPageShell({
     rows: data.rows,
     onRefresh: () => fireAndForget(data.refreshList(false)),
     onNewTask: handleNewTask,
-    onRequestDelete: handleRequestDelete
+    onRequestDelete: handleRequestDelete,
+    onMutationError: setMutationError
   })
 
   const dragDrop = useTaskDragDrop(data.rows, id => {
@@ -206,7 +209,9 @@ export function useListPageShell({
     entryPanelDeps,
     actionToasts,
     dismissActionToast,
-    pushToast
+    pushToast,
+    mutationError,
+    clearMutationError
   }
 }
 

@@ -65,22 +65,22 @@ export function useTaskSheet(entry: RpcKnowledge | null | undefined, onClose: ()
   const handleCycleStatus = useCallback(async () => {
     if (!entry) return
     set('saving', true)
-    try {
-      await cycleStatus(entry.id, 'forward')
+    const result = await cycleStatus(entry.id, 'forward')
+    if (result.ok) {
       setForm(prev => withCycledField(prev, 'status', nextInCycle(STATUS_CYCLE, prev.status)))
-    } catch (err) {
-      setForm(prev => ({ ...prev, error: String(err), saving: false }))
+    } else {
+      setForm(prev => ({ ...prev, error: result.message, saving: false }))
     }
   }, [entry, set])
 
   const handleCyclePriority = useCallback(async () => {
     if (!entry) return
     set('saving', true)
-    try {
-      await cyclePriority(entry.id, 'forward')
+    const result = await cyclePriority(entry.id, 'forward')
+    if (result.ok) {
       setForm(prev => withCycledField(prev, 'priority', nextInCycle(PRIORITY_CYCLE, prev.priority)))
-    } catch (err) {
-      setForm(prev => ({ ...prev, error: String(err), saving: false }))
+    } else {
+      setForm(prev => ({ ...prev, error: result.message, saving: false }))
     }
   }, [entry, set])
 
@@ -90,43 +90,45 @@ export function useTaskSheet(entry: RpcKnowledge | null | undefined, onClose: ()
       return
     }
     set('saving', true)
-    try {
-      const dueMs = form.dueDateStr ? new Date(form.dueDateStr).getTime() : undefined
-      const dependsOnArr = form.dependsOn
-        ? form.dependsOn
-            .split(',')
-            .map(s => Number.parseInt(s.trim(), 10))
-            .filter(n => Number.isFinite(n))
-        : undefined
-      const tagsArr = form.tags
-        ? form.tags
-            .split(',')
-            .map(s => s.trim())
-            .filter(Boolean)
-        : undefined
-      if (entry) {
-        await updateTask(entry.id, {
+    const dueMs = form.dueDateStr ? new Date(form.dueDateStr).getTime() : undefined
+    const dependsOnArr = form.dependsOn
+      ? form.dependsOn
+          .split(',')
+          .map(s => Number.parseInt(s.trim(), 10))
+          .filter(n => Number.isFinite(n))
+      : undefined
+    const tagsArr = form.tags
+      ? form.tags
+          .split(',')
+          .map(s => s.trim())
+          .filter(Boolean)
+      : undefined
+    const result = entry
+      ? await updateTask(
+          entry.id,
+          {
+            key: form.key,
+            desc: form.desc,
+            priority: form.priority,
+            status: form.status,
+            dueDate: dueMs,
+            dependsOn: dependsOnArr,
+            tags: tagsArr
+          },
+          entry.updatedAt
+        )
+      : await createTask({
           key: form.key,
           desc: form.desc,
           priority: form.priority,
-          status: form.status,
           dueDate: dueMs,
           dependsOn: dependsOnArr,
           tags: tagsArr
         })
-      } else {
-        await createTask({
-          key: form.key,
-          desc: form.desc,
-          priority: form.priority,
-          dueDate: dueMs,
-          dependsOn: dependsOnArr,
-          tags: tagsArr
-        })
-      }
+    if (result.ok) {
       onClose()
-    } catch (err) {
-      setForm(prev => ({ ...prev, error: String(err), saving: false }))
+    } else {
+      setForm(prev => ({ ...prev, error: result.message, saving: false }))
     }
   }, [form, entry, set, onClose])
 

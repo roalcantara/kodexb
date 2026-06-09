@@ -152,6 +152,28 @@ export class WorkflowRunWriter {
   }
 }
 
+export function emitPhaseDecided(
+  writer: WorkflowRunWriter,
+  featureDir: string,
+  t0: number,
+  files: FileSetLike,
+  probe: () => boolean,
+  next: { phase: string; command: string; focusHint?: string }
+): void {
+  writer.emit({
+    type: 'phase_decided',
+    run_id: writer.runId,
+    ts: new Date().toISOString(),
+    feature_dir: featureDir,
+    duration_ms: performance.now() - t0,
+    fileset_fingerprint: filesetFingerprint(files),
+    manifest_needs_handoff: probe(),
+    phase: next.phase,
+    command: next.command,
+    focus_hint: next.focusHint ?? null
+  })
+}
+
 export function pruneOlderThan(days: number, root = 'tmp/workflow-runs'): number {
   const cutoff = Date.now() - days * 24 * 60 * 60 * 1000
   let removed = 0

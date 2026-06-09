@@ -42,9 +42,9 @@ for later workflow orchestration work ([`009-agentic-workflow-orchestrator`](../
 | Failure message template                            | `src/shell/app/lib/task_mutation_failure_message.util.ts`                                                                                                                                         |
 | E2e harness conventions                             | [`assets/guides/TESTING_GUIDE.md`](../../guides/TESTING_GUIDE.md), [`assets/docs/specs/e2e/fixture-manifest.md`](../../docs/specs/e2e/fixture-manifest.md)                                        |
 | Catalog key (unchanged)                             | `task_source_atomicity` in [`assets/catalog/catalog.yaml`](../../catalog/catalog.yaml)                                                                                                            |
-| Spec CLI conventions                                | [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md), [`TOOLS_GUIDE.md`](../../guides/TOOLS_GUIDE.md), `tools/bin/spec.script.ts`                                                      |
+| Spec CLI conventions                                | [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md), [`TOOLS_GUIDE.md`](../../guides/TOOLS_GUIDE.md), `tools/bin/spec.script.ts`                                                        |
 | Feature context file                                | `.specify/feature.json` → `feature_directory`                                                                                                                                                     |
-| Catalog key derivation                            | `catalogKeyFromSlug()` in `tools/governance/specs/workflow/handoff_generate.script.ts`                                                                                                            |
+| Catalog key derivation                              | `catalogKeyFromSlug()` in `tools/governance/specs/workflow/handoff_generate.script.ts`                                                                                                            |
 
 ## Out of scope
 
@@ -63,19 +63,19 @@ for later workflow orchestration work ([`009-agentic-workflow-orchestrator`](../
 | Preview harness    | Playwright BDD stack: preview server on `PREVIEW_PORT`, `bdd/e2e` steps, `assets/features/e2e/*.feature`     |
 | Fault injection    | Test-only backend control that forces `source_write_failed` or `conflict` without Playwright `route.fulfill` |
 | Atomicity feature  | Gherkin feature `assets/features/e2e/task-source-atomicity.feature` tagged `@spec:task-source-atomicity`     |
-| Feature inference  | Resolution of active `assets/specs/NNN-slug/` from CLI args, `.specify/feature.json`, branch name, or cwd     |
-| Slice check        | Fast validation (`spec slice` / `spec ready --light`) before full `spec ready`                                |
-| Runnable command   | A `detectPhase()` suggestion whose prefix is in the shell allowlist (`mise run`, `hk check`, `bash tools/`)   |
+| Feature inference  | Resolution of active `assets/specs/NNN-slug/` from CLI args, `.specify/feature.json`, branch name, or cwd    |
+| Slice check        | Fast validation (`mise run spec ready --phase`) before full `spec ready`                                      |
+| Runnable command   | A `detectPhase()` suggestion whose prefix is in the shell allowlist (`mise run`, `hk check`, `bash tools/`)  |
 
 ## Delivery slices
 
 Two tracks in one spec; **harness first** so later tasks use the improved CLI.
 
-| Slice | Requirements | Rationale |
-| ----- | ------------ | --------- |
+| Slice            | Requirements        | Rationale                                                          |
+| ---------------- | ------------------- | ------------------------------------------------------------------ |
 | **H0 — Harness** | TMF-6, TMF-7, TMF-8 | Inference + slice check + workflow run; unblocks 008/009 SDD loops |
-| **P1 — Product** | TMF-1, TMF-3 | Renderer failures + docs; fast user-visible win |
-| **P2 — E2e** | TMF-2, TMF-4, TMF-5 | Real transport, fixture isolation, BDD split |
+| **P1 — Product** | TMF-1, TMF-3        | Renderer failures + docs; fast user-visible win                    |
+| **P2 — E2e**     | TMF-2, TMF-4, TMF-5 | Real transport, fixture isolation, BDD split                       |
 
 Recommended order: **TMF-6 → TMF-7 → TMF-8 → TMF-1 → TMF-3 → TMF-2 → TMF-4 → TMF-5**.
 
@@ -89,6 +89,7 @@ Recommended order: **TMF-6 → TMF-7 → TMF-8 → TMF-1 → TMF-3 → TMF-2 →
 - Q: Should spec harness CLI improvements live in 008 or 009? → A: **008** ships the lightweight prelude (inference, slice, workflow run); **009** owns orchestration kernel and profiles.
 - Q: Default `spec workflow` behavior — print or run? → A: **Run** when the next command is allowlisted; **`--dry-run`** preserves today's print-only behavior.
 - Q: Where does feature inference read from? → A: Explicit arg → `.specify/feature.json` → git branch `NNN-slug` → cwd under `assets/specs/`; fail with actionable error if ambiguous.
+- Q: Slice command name — `spec slice` or `ready --phase`? → A: Replace `--light` with `--phase [phase_no]`. Canonical: `mise run spec ready [feature_dir] --phase [phase_no]`. Without arg, `--phase` infers current slice via `detectPhase()`. Validation scope is feature-dir-wide (same as `--light`), skipping catalog/e2e/gate. The standalone `spec slice` command is eliminated. Run `ready --phase` before claiming a phase is done.
 
 ---
 
@@ -117,27 +118,28 @@ default to the active feature so I do not re-type paths and catalog keys.
 
 ---
 
-## REQUIREMENT TMF-7: Light slice validation between tasks
+## REQUIREMENT TMF-7: Phase-gated slice validation (`ready --phase`)
 
 **User story:** As an implementer finishing one task row, I want a fast gate that
-applies lint fixes and validates spec structure without running full e2e and hk.
+applies lint fixes and validates spec structure without running full e2e and hk,
+and I want to run it per-phase before claiming a phase is done.
 
 ### Acceptance criteria
 
-1. WHEN `mise run spec slice` is invoked (alias: `mise run spec ready --light`), THEN the CLI SHALL infer the feature dir using TMF-6 rules and run, in order: (a) repo auto-fix for formatting/lint (`hk check --profile fix` or documented equivalent that applies safe fixes), (b) `mise run spec lint <feature_dir> --strict`.
-   - **Measure:** Slice completes in under full `spec ready` duration on the same tree; exits non-zero when spec lint fails after fixes.
-   - **Evidence:** `tools/bin/spec.script.spec.ts` or dedicated `slice.script.spec.ts`; documented in 008 quickstart.
+1. WHEN `mise run spec ready [feature_dir] --phase [phase_no]` is invoked, THEN the CLI SHALL infer the feature dir (using TMF-6 rules if omitted) and run, in order: (a) repo auto-fix for formatting/lint (`hk check --profile fix` or documented equivalent that applies safe fixes), (b) `mise run spec lint <feature_dir> --strict`.
+   - **Measure:** `--phase` completes in under full `spec ready` duration on the same tree; exits non-zero when spec lint fails after fixes.
+   - **Evidence:** `tools/bin/spec.script.spec.ts` or dedicated `phase.script.spec.ts`; documented in 008 quickstart.
 
-2. WHEN the active SDD phase is `implement` or later (per `detectPhase()` on the inferred feature dir), THEN `spec slice` MAY additionally run `mise run spec trace <feature_dir> --strict` before lint.
+2. WHEN `--phase` is invoked without a phase number, THEN the CLI SHALL infer the current phase from `detectPhase()` on the inferred feature dir. WHEN the active phase is `implement` or later, THEN `--phase` MAY additionally run `mise run spec trace <feature_dir> --strict` before lint.
    - **Measure:** Phase-gated trace runs only when `tasks.md` exists; skipped during specify/plan-only filesets.
    - **Evidence:** Unit test with mocked `scanFeatureDir` / phase fixture.
 
-3. WHEN `spec slice` succeeds, THEN it SHALL NOT run catalog validate, tag e2e, or `gate.sh` (those remain full `spec ready` only).
-   - **Measure:** Spawn log for slice contains exactly the light steps; full ready still runs four-step pipeline.
+3. WHEN `--phase` succeeds, THEN it SHALL NOT run catalog validate, tag e2e, or `gate.sh` (those remain full `spec ready` only).
+   - **Measure:** Spawn log for `--phase` contains exactly the light steps; full `spec ready` still runs the four-step pipeline.
    - **Evidence:** Integration test comparing command lists.
 
-4. WHEN a contributor completes a tasks.md row, THEN the 008 quickstart SHALL recommend `mise run spec slice` before commit and `mise run spec ready` before PR.
-   - **Measure:** Quickstart contains both commands with one-sentence scope difference.
+4. WHEN a contributor completes a tasks.md row, THEN the 008 quickstart SHALL recommend `mise run spec ready --phase` before commit and `mise run spec ready` before PR. The implementer SHALL run `ready --phase` before claiming a phase is done.
+   - **Measure:** Quickstart contains both commands with one-sentence scope difference and a mandate to run `--phase` before phase sign-off.
    - **Evidence:** `assets/specs/008-task-mutation-failure-ux/quickstart.md`.
 
 ---
@@ -263,7 +265,7 @@ this feature without inferring stale flags or wrong catalog keys.
    - **Evidence:** Quickstart file; optional cross-link fix in `007` quickstart.
 
 3. WHEN a contributor runs readiness validation, THEN the quickstart SHALL document bare `mise run spec ready` (inferred) and fully qualified `mise run spec ready assets/specs/008-task-mutation-failure-ux --key task_mutation_failure_ux` with separate **Slice**, **Focused**, and **Ready** sections.
-   - **Measure:** Ready section lists tag, catalog validate, hk, and gate steps explicitly; Slice section documents `mise run spec slice`.
+   - **Measure:** Ready section lists tag, catalog validate, hk, and gate steps explicitly; Slice section documents `mise run spec ready --phase`.
    - **Evidence:** Quickstart headings and command blocks.
 
 4. WHEN fault injection is documented, THEN the quickstart SHALL name the enable env var or Gherkin step and state preview-only scope.
@@ -343,16 +345,16 @@ are verified by unit/integration tests on `tools/governance/specs/` and `tools/b
   008 for the corrective e2e work.
 - Mutation latency target: list-level error surfacing stays perceptibly instant; no new blocking I/O on keyboard mutation path (constitution Principle I).
 - `hk` exposes a `--profile fix` (or documented auto-fix profile) suitable for slice mode; if missing, plan picks the closest existing profile and documents it.
-- Shared feature-resolution logic lives in one module imported by `spec ready`, `spec slice`, and `spec workflow` to prevent drift.
+- Shared feature-resolution logic lives in one module imported by `spec ready`, `spec ready --phase`, and `spec workflow` to prevent drift.
 
 ## Open Questions
 
-| #    | Question                                                                               | Status   | Notes                                                                                       |
-| ---- | -------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
-| OQ-1 | Single list-level error surface vs per-dialog errors for keyboard mutations?           | Resolved | List-level for keyboard/list; dialog-local `form.error` for sheets.                         |
-| OQ-2 | Fault injection via env only vs optional `X-KB-E2e-Fault` request header?              | Resolved | Env-only injection.                                                                         |
-| OQ-3 | Add catalog spec pointer `008-task-mutation-failure-ux` under `task_source_atomicity`? | Resolved | Yes for e2e corrective link; plan also adds dedicated `task_mutation_failure_ux` key.       |
-| OQ-4 | Should spec harness CLI improvements live in 008 or 009?                               | Resolved | 008 prelude; 009 orchestrator.                                                              |
-| OQ-5 | Default `spec workflow` — print or run?                                                | Resolved | Run allowlisted commands; `--dry-run` for print-only.                                       |
-| OQ-6 | Subcommand name for light validation — `spec slice` vs `ready --light`?                  | Open     | Spec allows both; plan picks one canonical mise surface and documents alias.                |
-| OQ-7 | Does `hk check --profile fix` exist today or need a new hk profile?                      | Open     | Resolve in plan.md before TMF-7 implementation.                                             |
+| #    | Question                                                                               | Status   | Notes                                                                                 |
+| ---- | -------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------- |
+| OQ-1 | Single list-level error surface vs per-dialog errors for keyboard mutations?           | Resolved | List-level for keyboard/list; dialog-local `form.error` for sheets.                   |
+| OQ-2 | Fault injection via env only vs optional `X-KB-E2e-Fault` request header?              | Resolved | Env-only injection.                                                                   |
+| OQ-3 | Add catalog spec pointer `008-task-mutation-failure-ux` under `task_source_atomicity`? | Resolved | Yes for e2e corrective link; plan also adds dedicated `task_mutation_failure_ux` key. |
+| OQ-4 | Should spec harness CLI improvements live in 008 or 009?                               | Resolved | 008 prelude; 009 orchestrator.                                                        |
+| OQ-5 | Default `spec workflow` — print or run?                                                | Resolved | Run allowlisted commands; `--dry-run` for print-only.                                 |
+| OQ-6 | Subcommand name for light validation — `spec slice` vs `ready --light`?                | Resolved | Replaced by `ready --phase [phase_no]`. Eliminates `spec slice` and `--light` alias.   |
+| OQ-7 | Does `hk check --profile fix` exist today or need a new hk profile?                    | Resolved | No `--profile fix` existed; added `fix` profile to hk.pkl running `bun run lint:fix`.  |

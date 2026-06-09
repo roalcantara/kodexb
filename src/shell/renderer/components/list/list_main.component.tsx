@@ -57,9 +57,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   const handleCyclePriority = (id: number) => {
     fireAndForget(cyclePriority(id, 'forward').then(() => p.data.refreshList(false)))
   }
-
-  const detailEntry = p.sel.detailEntry
-  const viewState = p.sel.viewState
+  const { detailEntry, viewState } = p.sel
 
   const handleEntryReturn = useListMainEntryKeys({
     disabled: showSettings || p.taskSheetVisible || p.palette.open,
@@ -149,6 +147,13 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   const filterSummary = listFilterSummary(p.data.types, p.data.tags, p.data.taskView)
   const filterActive = p.data.taskView !== undefined || p.data.types.length > 0 || p.data.tags.length > 0
   const filterChipCls = `cmp-filter-chip${filterActive ? ' cmp-filter-chip--active' : ''}`
+
+  const MUTATION_ERROR_DURATION_MS = 5000
+  useEffect(() => {
+    if (!p.mutationError) return
+    const timer = setTimeout(p.clearMutationError, MUTATION_ERROR_DURATION_MS)
+    return () => clearTimeout(timer)
+  }, [p.mutationError, p.clearMutationError])
 
   const toggleFilter = () => {
     if (p.filter.filterOpen) {
@@ -276,6 +281,21 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           ) : null}
         </div>
 
+        {p.mutationError ? (
+          <div
+            style={{
+              padding: '0.5rem 1rem',
+              color: 'var(--cmp-danger)',
+              fontSize: '0.85rem',
+              background: 'var(--surface-raised)',
+              borderTop: '1px solid var(--cmp-border)',
+              textAlign: 'center'
+            }}
+            role="alert"
+          >
+            {p.mutationError}
+          </div>
+        ) : null}
         <ListFooter
           footerStatus={footerStatus}
           isFullDetail={isFullDetail}

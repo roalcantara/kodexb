@@ -8,7 +8,7 @@ import path from 'node:path'
 import { catalogPaths } from '../../support/catalog_paths.script.ts'
 import { parseHandoffAcTable } from './handoff_generate.script.ts'
 import { UsageError, withUsage } from './usage.script.ts'
-import { filesetFingerprint, generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow_run.script.ts'
+import { emitPhaseDecided, generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow_run.script.ts'
 
 export type FileSet = {
   spec: boolean
@@ -327,18 +327,7 @@ export function run(argv: string[], options?: { writer?: WorkflowRunWriter }): n
     )
   }
   const next = detectPhase(files, args.featureDir, probe)
-  writer.emit({
-    type: 'phase_decided',
-    run_id: writer.runId,
-    ts: new Date().toISOString(),
-    feature_dir: args.featureDir,
-    duration_ms: performance.now() - t0,
-    fileset_fingerprint: filesetFingerprint(files),
-    manifest_needs_handoff: probe(),
-    phase: next.phase,
-    command: next.command,
-    focus_hint: next.focusHint ?? null
-  })
+  emitPhaseDecided(writer, args.featureDir, t0, files, probe, next)
   if (next.focusHint) {
     console.log(`${next.command}    # ${next.focusHint}`)
   } else {

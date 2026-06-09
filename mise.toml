@@ -1468,8 +1468,9 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       arg "<feature_dir>" help="Feature dir e.g. assets/specs/005-workflow-observability"
     }
     cmd "ready" {
-      arg "<feature_dir>" help="Feature dir to verify"
+      arg "[feature_dir]" help="Feature dir to verify (default: auto-detect from .specify/feature.json)"
       flag "--key <key>" help="Catalog key for tag tests"
+      flag "--phase <no>" help="Phase number for focused validation"
     }
     cmd "review-handoff" {
       arg "<action>" help="classify|extract-evidence|prepare|scaffold-audit"
