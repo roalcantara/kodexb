@@ -31,8 +31,7 @@ export function __testResetE2eFaultMode(): void {
 }
 
 function faultInjectionEnabled(): boolean {
-  if (e2eFaultMode !== 'unset') return e2eFaultMode === 'source_write_failed'
-  return process.env.KB_E2E_FAULT_INJECTION === '1'
+  return e2eFaultMode === 'source_write_failed'
 }
 
 async function conflictOutcome(
@@ -237,7 +236,7 @@ export function taskRoutes(app: App) {
       }
     )
 
-  if (process.env.KB_E2E_FAULT_INJECTION === '1') {
+  if (process.env.NODE_ENV === 'test' || process.env.KB_E2E_FAULT_INJECTION === '1') {
     routes.post('/e2e/fault-mode', ({ body }) => {
       const bd = body as Record<string, unknown> | undefined
       const mode = String(bd?.mode ?? '')

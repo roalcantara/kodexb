@@ -1,3 +1,4 @@
+import { expect } from '@playwright/test'
 import type { Actor, Performable } from './actor.ability'
 
 export class OpenCommandPalette implements Performable {
@@ -43,14 +44,22 @@ export class ClearListSelection implements Performable {
   }
 
   async performAs(actor: Actor): Promise<void> {
+    const searchbox = actor.page.getByRole('searchbox', { name: 'Search' })
     const listbox = actor.page.getByRole('listbox', { name: 'Entries' })
-    await listbox.focus()
 
-    let safety = 0
-    while ((await actor.page.locator('button.cmp-list-row--selected').count()) > 0 && safety < 80) {
-      await actor.page.keyboard.press('ArrowUp')
-      await actor.page.waitForTimeout(40)
-      safety++
+    await searchbox.focus()
+
+    const selectionAttr = await listbox.getAttribute('data-list-selection')
+    if (selectionAttr === 'true') {
+      await listbox.focus()
+      await actor.page.keyboard.press('a')
+
+      await expect(listbox).toHaveAttribute('data-list-selection', 'false', { timeout: 2_000 })
+
+      await searchbox.focus()
+      await searchbox.fill('')
     }
+
+    await actor.page.waitForTimeout(200)
   }
 }

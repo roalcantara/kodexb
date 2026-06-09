@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'bun:test'
 import type { TaskMutationOutcome } from '@shared/rpc'
 import { runRoute } from '@testing/helpers/run_route.util'
+import { __testResetE2eFaultMode, __testSetE2eFaultMode } from './task.routes'
 import { setupTaskRouteTestKit } from './task_routes_test.util'
 
 const {
@@ -187,16 +188,14 @@ describe('taskRoutes', () => {
   })
 })
 
-describe('taskRoutes — KB_E2E_FAULT_INJECTION env gate', () => {
-  const OLD = process.env.KB_E2E_FAULT_INJECTION
-
+describe('taskRoutes — e2e fault mode injection', () => {
   afterAll(() => {
-    process.env.KB_E2E_FAULT_INJECTION = OLD
+    __testResetE2eFaultMode()
   })
 
-  describe('when unset', () => {
+  describe('when e2e fault mode is unset', () => {
     beforeAll(() => {
-      delete process.env.KB_E2E_FAULT_INJECTION
+      __testSetE2eFaultMode('unset')
     })
 
     it('routes process requests normally', async () => {
@@ -210,9 +209,9 @@ describe('taskRoutes — KB_E2E_FAULT_INJECTION env gate', () => {
     })
   })
 
-  describe('when set to 1', () => {
+  describe('when e2e fault mode is source_write_failed', () => {
     beforeAll(() => {
-      process.env.KB_E2E_FAULT_INJECTION = '1'
+      __testSetE2eFaultMode('source_write_failed')
     })
 
     it('createTask returns source_write_failed', async () => {
