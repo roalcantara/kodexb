@@ -1,0 +1,9 @@
+{
+  "workflow": "speckit",
+  "specName": "008-task-mutation-failure-ux",
+  "branch": "008-task-mutation-failure-ux",
+  "selectedAt": "2026-06-03T12:00:00.000Z",
+  "currentStep": "specify",
+  "status": "draft",
+  "history": []
+}
