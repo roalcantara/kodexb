@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import type { TaskMutationOperation } from '@shared/rpc'
 import type { Knowledge } from '../../../core'
-import { getLogger, withContext } from '../../../shared/logging'
+import { withContext } from '../../../shared/logging'
 
 type AppLog = ReturnType<typeof import('../../../shared/logging').getLogger>
 
@@ -22,7 +22,7 @@ export function isTaskConflictError(error: unknown): boolean {
   return error instanceof Error && error.name === TASK_CONFLICT_ERROR_NAME
 }
 
-async function readSourceDoc(filePath: string): Promise<Record<string, unknown>> {
+export async function readSourceDoc(filePath: string): Promise<Record<string, unknown>> {
   try {
     const content = await fs.readFile(filePath, 'utf-8')
     return Bun.YAML.parse(content) as Record<string, unknown>
@@ -32,7 +32,7 @@ async function readSourceDoc(filePath: string): Promise<Record<string, unknown>>
   }
 }
 
-async function writeSourceDoc(filePath: string, doc: Record<string, unknown>): Promise<void> {
+export async function writeSourceDoc(filePath: string, doc: Record<string, unknown>): Promise<void> {
   const tmpPath = `${filePath}.tmp`
   await fs.writeFile(tmpPath, Bun.YAML.stringify(doc), 'utf-8')
   await fs.rename(tmpPath, filePath)
@@ -109,6 +109,7 @@ export async function removeTaskFromSource(
 }
 
 export async function writeTasksToSource(
+  log: AppLog,
   filePath: string,
   tasks: Knowledge[],
   context?: TaskMutationLogContext
@@ -124,7 +125,7 @@ export async function writeTasksToSource(
     await writeSourceDoc(filePath, doc)
   } catch (err) {
     withContext({ operation: context?.operation, correlationId: context?.correlationId }, () => {
-      getLogger(['kb', 'source']).error('Source write-batch failed path={path} count={count} error={error}', {
+      log.error('Source write-batch failed path={path} count={count} error={error}', {
         path: filePath,
         count: tasks.length,
         operation: context?.operation,

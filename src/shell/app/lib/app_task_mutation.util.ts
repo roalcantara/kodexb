@@ -6,9 +6,11 @@ import { deleteById, findById, upsert } from '../db/entry.repository'
 import { maxTaskOrder, updateTaskOrder } from '../db/task.repository'
 import {
   isTaskSourceWriteError,
+  readSourceDoc,
   removeTaskFromSource,
   resolveCreateTaskTags,
   type TaskMutationLogContext,
+  writeSourceDoc,
   writeTasksToSource,
   writeTaskToSource
 } from './app_task_source.util'
@@ -189,12 +191,32 @@ export async function reorderTask(
   if (affected.length === 0) return []
   const entries = loadAffectedEntries(raw, affected, id, context?.sourceVersion)
   const bySource = groupBySource(entries)
+  const log = app.getLog()
+
+  const entriesByFile = [...bySource]
+  const snapshots = new Map<string, Record<string, unknown>>(
+    await Promise.all(
+      entriesByFile.map(
+        ([filePath]): Promise<[string, Record<string, unknown>]> => readSourceDoc(filePath).then(doc => [filePath, doc])
+      )
+    )
+  )
 
   try {
-    await Promise.all([...bySource].map(([filePath, group]) => writeTasksToSource(filePath, group, context)))
+    for (const [filePath, group] of entriesByFile) {
+      // biome-ignore lint/performance/noAwaitInLoops: serial writes prevent cross-file partial update
+      await writeTasksToSource(log, filePath, group, context)
+    }
     app.invalidateListCache()
     return entries
   } catch (err) {
+    await Promise.all(
+      [...snapshots].map(([filePath, original]) =>
+        writeSourceDoc(filePath, original).catch(() => {
+          /* best-effort restore */
+        })
+      )
+    )
     rollbackReorderProjection(raw, affected)
     if (isTaskSourceWriteError(err)) throw err
     const existing = findById(raw, id)

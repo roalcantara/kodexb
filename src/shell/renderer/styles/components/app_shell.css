@@ -414,3 +414,12 @@
   cursor: pointer;
   flex-shrink: 0;
 }
+
+.cmp-list-mutation-error {
+  padding: 0.5rem 1rem;
+  color: var(--cmp-danger);
+  font-size: 0.85rem;
+  background: var(--surface-raised);
+  border-top: 1px solid var(--cmp-border);
+  text-align: center;
+}

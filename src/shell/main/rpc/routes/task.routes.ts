@@ -6,6 +6,7 @@ import type { App } from '../../../app/app'
 import { isTaskConflictError, isTaskSourceWriteError } from '../../../app/lib/app_task_source.util'
 import { buildTaskMutationFailureMessage } from '../../../app/lib/task_mutation_failure_message.util'
 import {
+  e2eFaultModeSchema,
   idWithDirSchema,
   idWithReorderDirSchema,
   taskCreateSchema,
@@ -18,6 +19,21 @@ function isTaskProjectionWriteError(error: unknown): boolean {
 }
 
 const mutationLog = getLogger(['kb', 'rpc', 'task-mutation'])
+
+type E2eFaultMode = 'unset' | 'off' | 'source_write_failed'
+let e2eFaultMode: E2eFaultMode = 'unset'
+
+export function __testSetE2eFaultMode(mode: E2eFaultMode): void {
+  e2eFaultMode = mode
+}
+
+export function __testResetE2eFaultMode(): void {
+  e2eFaultMode = 'unset'
+}
+
+function faultInjectionEnabled(): boolean {
+  return e2eFaultMode === 'source_write_failed'
+}
 
 async function conflictOutcome(
   app: App,
@@ -121,6 +137,18 @@ async function runTaskMutation<Titem>(
   options: { taskId?: number; sourceVersion?: number }
 ): Promise<TaskMutationOutcome<Titem>> {
   const correlationId = globalThis.crypto.randomUUID()
+
+  if (faultInjectionEnabled()) {
+    return {
+      ok: false,
+      status: 'source_write_failed',
+      operation,
+      taskId: options.taskId,
+      message: buildTaskMutationFailureMessage({ operation, status: 'source_write_failed', taskId: options.taskId }),
+      details: { correlationId }
+    }
+  }
+
   const conflict =
     options.taskId === undefined
       ? null
@@ -157,7 +185,7 @@ async function runTaskMutation<Titem>(
 }
 
 export function taskRoutes(app: App) {
-  return new Elysia({ name: 'task.routes' })
+  const routes = new Elysia({ name: 'task.routes' })
     .post('/createTask', ({ body }) => runTaskMutation(app, 'create', context => app.createTask(body, context), {}), {
       body: taskCreateSchema
     })
@@ -208,4 +236,21 @@ export function taskRoutes(app: App) {
         body: idWithReorderDirSchema
       }
     )
+
+  if (process.env.NODE_ENV === 'test' || process.env.KB_E2E_FAULT_INJECTION === '1') {
+    routes.post(
+      '/e2e/fault-mode',
+      ({ body }) => {
+        const mode = String(body.mode ?? '')
+        if (!['off', 'source_write_failed', 'unset'].includes(mode)) {
+          throw new Error(`Invalid e2e fault mode: ${mode}`)
+        }
+        e2eFaultMode = mode as E2eFaultMode
+        return { ok: true }
+      },
+      { body: e2eFaultModeSchema }
+    )
+  }
+
+  return routes
 }

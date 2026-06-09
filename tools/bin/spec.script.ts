@@ -1,4 +1,6 @@
 #!/usr/bin/env bun
+import { resolveActiveFeatureDir } from '../governance/specs/resolve_active_feature_dir.script.ts'
+import { resolveCatalogKey } from '../governance/specs/resolve_catalog_key.script.ts'
 /**
  * mise run spec — Spec Kit lint, trace, gate, legacy import (thin dispatch stub).
  */
@@ -93,18 +95,14 @@ function main(): void {
     }
     case 'workflow': {
       const name = process.env.usage_name ?? ''
-      const validationError = validateWorkflowName(name)
-      if (validationError) {
-        console.error(validationError)
-        process.exit(2)
-      }
       const cmdArgs: string[] = []
       if (name) cmdArgs.push(name)
       if (process.env.usage_feature) cmdArgs.push('--feature', process.env.usage_feature)
       if (envBool('usage_manifest')) cmdArgs.push('--manifest')
       if (envBool('usage_next')) cmdArgs.push('--next')
       if (envBool('usage_lint')) cmdArgs.push('--lint')
-      spawnInherit(['bun', `${WORKFLOW}/orchestrated_handoff.script.ts`, ...cmdArgs], root)
+      if (envBool('usage_dry_run')) cmdArgs.push('--dry-run')
+      spawnInherit(['bun', `${SPECS}/workflow_run.script.ts`, ...cmdArgs], root)
       break
     }
     case 'handoff-generate': {
@@ -150,12 +148,34 @@ function main(): void {
       break
     }
     case 'ready': {
-      const dir = process.env.usage_feature_dir
+      const isPhase = envBool('usage_phase')
+      const phaseNo = process.env.usage_phase_no ?? ''
+
+      let dir = process.env.usage_feature_dir
       if (!dir) {
-        console.error('spec ready: missing --feature-dir')
-        process.exit(2)
+        const resolved = resolveActiveFeatureDir()
+        if (!resolved.ok) {
+          console.error(resolved.message)
+          process.exit(resolved.exitCode)
+        }
+        dir = resolved.featureDir
       }
-      const key = process.env.usage_key ?? ''
+
+      if (isPhase) {
+        const cmdArgs = [dir]
+        if (phaseNo) cmdArgs.push('--phase', phaseNo)
+        spawnInherit(['bun', `${SPECS}/phase.script.ts`, ...cmdArgs], root)
+        break
+      }
+
+      let key = process.env.usage_key ?? ''
+      if (!key) {
+        const keyResult = resolveCatalogKey(dir)
+        key = keyResult.key
+        if (!keyResult.ok && keyResult.warning) {
+          console.error(keyResult.warning)
+        }
+      }
 
       const commands: string[][] = []
       if (key) {

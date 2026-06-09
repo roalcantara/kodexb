@@ -1,0 +1,13 @@
+{
+  "workflow": "speckit",
+  "specName": "008-task-mutation-failure-ux",
+  "branch": "008-task-mutation-failure-ux",
+  "selectedAt": "2026-06-03T12:00:00.000Z",
+  "currentStep": "implement",
+  "status": "implementing",
+  "history": [
+    { "step": "specify", "completedAt": "2026-06-03T14:00:00.000Z" },
+    { "step": "plan", "completedAt": "2026-06-03T16:00:00.000Z" },
+    { "step": "implement", "startedAt": "2026-06-08T09:00:00.000Z" }
+  ]
+}

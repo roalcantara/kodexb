@@ -14,20 +14,20 @@ Feature: Task source atomicity
     Given I am viewing task entries
     And task source persistence is unavailable
     When I create a task named "Atomicity failure probe"
-    Then the latest task mutation outcome status is "source_write_failed"
+    Then the task sheet shows the error "source write did not persist"
 
   @spec:task-source-atomicity @e2e @regression @ac:TSA-2
   Scenario: Failed mutation does not create sync reversal
     Given I am viewing task entries
-    And I select the "Release Todo Task" task
+    And I select the "Atomicity conflict probe" task
     And task mutation source version is stale
     When I change the task description to "Stale conflict probe"
-    Then the latest task mutation outcome status is "conflict"
+    Then the task sheet shows the error "stale source version"
 
   @spec:task-source-atomicity @e2e @regression @ac:TSA-3
   Scenario: Mutation failure emits correlated structured diagnostics
     Given I am viewing task entries
     And task source persistence is unavailable
-    When I create a task named "Diagnostic probe"
+    When I create a task named "Atomicity diagnostic probe"
     Then mutation diagnostics include operation "create"
     And mutation diagnostics include a unique correlation id

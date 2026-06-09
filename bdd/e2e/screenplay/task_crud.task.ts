@@ -5,13 +5,18 @@ import { ChooseTypeFilter, OpenFilterOverlay } from './filter_overlay.task'
 import { OpenDetailPreview } from './navigate_views.task'
 import { SelectEntryByTitle } from './select_entry.task'
 
-const LAST_TASK_MUTATION_OUTCOME = 'lastTaskMutationOutcome'
-
 export class CreateTask implements Performable {
-  private constructor(private readonly name: string) {}
+  private constructor(
+    private readonly name: string,
+    private readonly expectFailure = false
+  ) {}
 
   static named(name: string): CreateTask {
-    return new CreateTask(name)
+    return new CreateTask(name, false)
+  }
+
+  static namedExpectingFailure(name: string): CreateTask {
+    return new CreateTask(name, true)
   }
 
   async performAs(actor: Actor): Promise<void> {
@@ -23,15 +28,26 @@ export class CreateTask implements Performable {
     await dialog.locator('#ts-desc').fill(`Description for ${this.name}`)
     await dialog.locator('#ts-tags').fill('e2e')
     await dialog.getByRole('button', { name: 'Save' }).click()
-    await dialog.waitFor({ state: 'hidden' })
+    if (this.expectFailure) {
+      await expect(dialog.locator('[data-testid="task-sheet-error"]')).toBeVisible({ timeout: 10_000 })
+    } else {
+      await dialog.waitFor({ state: 'hidden' })
+    }
   }
 }
 
 export class EditTaskDescription implements Performable {
-  private constructor(private readonly text: string) {}
+  private constructor(
+    private readonly text: string,
+    private readonly expectFailure = false
+  ) {}
 
   static to(text: string): EditTaskDescription {
-    return new EditTaskDescription(text)
+    return new EditTaskDescription(text, false)
+  }
+
+  static toExpectingFailure(text: string): EditTaskDescription {
+    return new EditTaskDescription(text, true)
   }
 
   async performAs(actor: Actor): Promise<void> {
@@ -44,14 +60,14 @@ export class EditTaskDescription implements Performable {
     await dialog.waitFor({ state: 'visible' })
     await dialog.locator('#ts-desc').fill(this.text)
     await dialog.getByRole('button', { name: 'Save' }).click()
-    await dialog.waitFor({ state: 'hidden' })
-    const outcome = actor.recall<{ ok?: boolean } | undefined>(LAST_TASK_MUTATION_OUTCOME)
-    if (outcome?.ok === false) {
-      return
+    if (this.expectFailure) {
+      await expect(dialog.locator('[data-testid="task-sheet-error"]')).toBeVisible({ timeout: 10_000 })
+    } else {
+      await dialog.waitFor({ state: 'hidden' })
+      await actor.attemptsTo(OpenDetailPreview.forSelectedEntry())
+      const detail = actor.page.locator('article.cmp-detail-page')
+      await expect(detail.locator('.cmp-detail-page-desc')).toHaveText(this.text, { timeout: 15_000 })
     }
-    await actor.attemptsTo(OpenDetailPreview.forSelectedEntry())
-    const detail = actor.page.locator('article.cmp-detail-page')
-    await expect(detail.locator('.cmp-detail-page-desc')).toHaveText(this.text, { timeout: 15_000 })
   }
 }
 

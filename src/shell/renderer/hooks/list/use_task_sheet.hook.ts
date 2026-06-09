@@ -66,10 +66,14 @@ export function useTaskSheet(entry: RpcKnowledge | null | undefined, onClose: ()
     if (!entry) return
     set('saving', true)
     try {
-      await cycleStatus(entry.id, 'forward')
-      setForm(prev => withCycledField(prev, 'status', nextInCycle(STATUS_CYCLE, prev.status)))
-    } catch (err) {
-      setForm(prev => ({ ...prev, error: String(err), saving: false }))
+      const result = await cycleStatus(entry.id, 'forward')
+      if (result.ok) {
+        setForm(prev => withCycledField(prev, 'status', nextInCycle(STATUS_CYCLE, prev.status)))
+      } else {
+        setForm(prev => ({ ...prev, error: result.message, saving: false }))
+      }
+    } catch {
+      setForm(prev => ({ ...prev, error: 'Failed to cycle status', saving: false }))
     }
   }, [entry, set])
 
@@ -77,10 +81,14 @@ export function useTaskSheet(entry: RpcKnowledge | null | undefined, onClose: ()
     if (!entry) return
     set('saving', true)
     try {
-      await cyclePriority(entry.id, 'forward')
-      setForm(prev => withCycledField(prev, 'priority', nextInCycle(PRIORITY_CYCLE, prev.priority)))
-    } catch (err) {
-      setForm(prev => ({ ...prev, error: String(err), saving: false }))
+      const result = await cyclePriority(entry.id, 'forward')
+      if (result.ok) {
+        setForm(prev => withCycledField(prev, 'priority', nextInCycle(PRIORITY_CYCLE, prev.priority)))
+      } else {
+        setForm(prev => ({ ...prev, error: result.message, saving: false }))
+      }
+    } catch {
+      setForm(prev => ({ ...prev, error: 'Failed to cycle priority', saving: false }))
     }
   }, [entry, set])
 
@@ -104,29 +112,35 @@ export function useTaskSheet(entry: RpcKnowledge | null | undefined, onClose: ()
             .map(s => s.trim())
             .filter(Boolean)
         : undefined
-      if (entry) {
-        await updateTask(entry.id, {
-          key: form.key,
-          desc: form.desc,
-          priority: form.priority,
-          status: form.status,
-          dueDate: dueMs,
-          dependsOn: dependsOnArr,
-          tags: tagsArr
-        })
+      const result = entry
+        ? await updateTask(
+            entry.id,
+            {
+              key: form.key,
+              desc: form.desc,
+              priority: form.priority,
+              status: form.status,
+              dueDate: dueMs,
+              dependsOn: dependsOnArr,
+              tags: tagsArr
+            },
+            entry.updatedAt
+          )
+        : await createTask({
+            key: form.key,
+            desc: form.desc,
+            priority: form.priority,
+            dueDate: dueMs,
+            dependsOn: dependsOnArr,
+            tags: tagsArr
+          })
+      if (result.ok) {
+        onClose()
       } else {
-        await createTask({
-          key: form.key,
-          desc: form.desc,
-          priority: form.priority,
-          dueDate: dueMs,
-          dependsOn: dependsOnArr,
-          tags: tagsArr
-        })
+        setForm(prev => ({ ...prev, error: result.message, saving: false }))
       }
-      onClose()
-    } catch (err) {
-      setForm(prev => ({ ...prev, error: String(err), saving: false }))
+    } catch {
+      setForm(prev => ({ ...prev, error: 'Failed to save', saving: false }))
     }
   }, [form, entry, set, onClose])
 

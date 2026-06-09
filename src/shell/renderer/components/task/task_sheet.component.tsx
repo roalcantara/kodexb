@@ -99,7 +99,20 @@ function DependsOnPicker({ value, onChange }: { value: string; onChange: (value:
   )
 }
 
-function TaskSheetInner({
+function TaskSheetError({ error }: { error: string | null }) {
+  if (!error) return null
+  return (
+    <div
+      data-testid="task-sheet-error"
+      role="alert"
+      style={{ color: 'var(--cmp-danger)', marginBottom: '0.75rem', fontSize: '0.85rem' }}
+    >
+      {error}
+    </div>
+  )
+}
+
+export function TaskSheetInner({
   entry,
   form,
   dirty: _dirty,
@@ -117,11 +130,7 @@ function TaskSheetInner({
     >
       <div className="cmp-overlay-shell cmp-task-sheet">
         <h2 style={{ margin: '0 0 1rem', fontSize: '1.1rem' }}>{entry ? 'Edit task' : 'New task'}</h2>
-
-        {form.error ? (
-          <div style={{ color: 'var(--cmp-danger)', marginBottom: '0.75rem', fontSize: '0.85rem' }}>{form.error}</div>
-        ) : null}
-
+        <TaskSheetError error={form.error} />
         <div className="cmp-task-sheet--field">
           <label htmlFor="ts-key">Key</label>
           <input
@@ -134,7 +143,6 @@ function TaskSheetInner({
             required
           />
         </div>
-
         <div className="cmp-task-sheet--field">
           <label htmlFor="ts-desc">Description</label>
           <textarea
@@ -146,7 +154,6 @@ function TaskSheetInner({
             rows={3}
           />
         </div>
-
         <StatusPriorityRow
           status={form.status}
           priority={form.priority}
@@ -154,7 +161,6 @@ function TaskSheetInner({
           onCyclePriority={onCyclePriority}
           disabled={!entry}
         />
-
         <div className="cmp-task-sheet--field">
           <label htmlFor="ts-due">Due date</label>
           <input
@@ -165,7 +171,6 @@ function TaskSheetInner({
             onChange={e => onSet('dueDateStr', e.target.value)}
           />
         </div>
-
         <div className="cmp-task-sheet--field">
           <label htmlFor="ts-tags">Tags</label>
           <input
@@ -177,9 +182,7 @@ function TaskSheetInner({
             placeholder="comma, separated, tags"
           />
         </div>
-
         <DependsOnPicker value={form.dependsOn} onChange={v => onSet('dependsOn', v)} />
-
         <div className="cmp-task-sheet--actions">
           <button
             type="button"
