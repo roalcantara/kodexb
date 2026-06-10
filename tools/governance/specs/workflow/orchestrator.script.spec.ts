@@ -3,6 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'no
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { createActor } from 'xstate'
+import { autoFillValues, canAutoFill, dedupQuestions } from './intervention.script.ts'
 import { workflowMachine } from './machine.script.ts'
 import { Orchestrator, type OrchestratorConfig } from './orchestrator.script.ts'
 import { loadProfile } from './profile_loader.script.ts'
@@ -170,6 +171,58 @@ describe('orchestrator integration', () => {
       expect(hydrated.actor.getSnapshot().context.shared_memory).toEqual({ testKey: 'testVal' })
       hydrated.actor.stop()
     }
+    actor.stop()
+  })
+
+  it('AWO-3 AC3: auto-fill from shared memory emits decision.defaulted flow', () => {
+    const actor = createActor(workflowMachine, {
+      input: {
+        current_stage: 'specify',
+        stage_index: 0,
+        stage_order: ['specify'],
+        terminal_stages: ['gate'],
+        shared_memory: { framework: 'vue' }
+      }
+    })
+    actor.start()
+    actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+    actor.send({
+      type: 'STAGE.COMPLETE',
+      envelope: {
+        schema_version: '009.1.0' as const,
+        stage: 'specify',
+        status: 'NEED_INPUT',
+        artifacts_created: [],
+        evidence: [],
+        diagnostics: [],
+        retry_count: 0,
+        elapsed_ms: 10,
+        questions: [
+          { id: 'q1', prompt: 'what framework?', options: ['vue', 'react'], default: 'react' },
+          { id: 'framework', prompt: 'framework choice' }
+        ]
+      }
+    })
+    expect(actor.getSnapshot().matches('need_input')).toBe(true)
+
+    // Simulate orchestrator intervention: dedup + auto-fill
+    const shared: Record<string, string> = { framework: 'vue' }
+    const questions = actor.getSnapshot().context.envelope?.questions ?? []
+    const pending = dedupQuestions(questions, shared)
+    // framework is already in shared memory -> should be filtered
+    expect(pending.find(q => q.id === 'framework')).toBeUndefined()
+    // q1 is not in shared memory but has a default -> should remain (can auto-fill)
+    expect(pending.find(q => q.id === 'q1')).toBeDefined()
+
+    // Both pending questions can be auto-filled (q1 has default, framework already answered)
+    expect(canAutoFill(pending, shared)).toBe(true)
+    const values = autoFillValues(pending, shared)
+    expect(values.q1).toBe('react')
+    // framework is already answered in shared memory, not in pending
+
+    // Send INPUT.ANSWERED (simulating orchestrator after auto-fill + writer.emit)
+    actor.send({ type: 'INPUT.ANSWERED', question_id: 'q1', value: 'react' })
+    expect(actor.getSnapshot().matches('running')).toBe(true)
     actor.stop()
   })
 })

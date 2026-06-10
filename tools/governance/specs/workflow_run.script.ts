@@ -7,9 +7,11 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { resolveActiveFeatureDir } from './resolve_active_feature_dir.script.ts'
 import { parseHandoffAcTable } from './workflow/handoff_generate.script.ts'
+import { createAnsweredDecision } from './workflow/intervention.script.ts'
 import { workflowMachine } from './workflow/machine.script.ts'
+import { readSharedMemory, writeSharedMemory } from './workflow/memory.script.ts'
 import { detectPhase, scanFeatureDir } from './workflow/orchestrated_handoff.script.ts'
-import { hydrateMachineActor } from './workflow/snapshot.script.ts'
+import { hydrateMachineActor, persistMachineSnapshot } from './workflow/snapshot.script.ts'
 import {
   emitPhaseDecided,
   filesetFingerprint,
@@ -19,6 +21,57 @@ import {
 } from './workflow/workflow_run.script.ts'
 
 export { emitPhaseDecided, filesetFingerprint }
+
+export function applyResumeAnswer(
+  hydrated: NonNullable<ReturnType<typeof hydrateMachineActor>>,
+  answerStr: string,
+  runDir: string,
+  dateStr: string,
+  runId: string
+): void {
+  const eqIdx = answerStr.indexOf('=')
+  if (eqIdx === -1) {
+    console.error(`spec workflow resume: --answer expects <qid>=<value>, got "${answerStr}"`)
+    process.exit(2)
+  }
+  const questionId = answerStr.slice(0, eqIdx)
+  if (!questionId) {
+    console.error(`spec workflow resume: --answer has empty question id, got "${answerStr}"`)
+    process.exit(2)
+  }
+  const value = answerStr.slice(eqIdx + 1)
+
+  const ts = new Date().toISOString()
+  const writer = new WorkflowRunWriter(runId, hydrated.state.profile_name, runDir)
+  const shared = readSharedMemory(runDir, dateStr, runId)
+  shared[questionId] = value
+  writeSharedMemory(runDir, dateStr, runId, shared)
+
+  const event = createAnsweredDecision(questionId, value, ts)
+  writer.emit({
+    type: 'decision.answered',
+    run_id: runId,
+    ts,
+    feature_dir: hydrated.state.profile_name,
+    duration_ms: 0,
+    question_id: event.question_id,
+    source: 'operator',
+    rationale: event.rationale
+  })
+
+  hydrated.actor.send({ type: 'INPUT.ANSWERED', question_id: questionId, value })
+  persistMachineSnapshot(
+    hydrated.actor,
+    { rootDir: runDir, metricsDir: path.join(runDir, 'metrics') },
+    runId,
+    dateStr,
+    hydrated.state.profile_name,
+    hydrated.state.profile_schema_version,
+    hydrated.state.started_at,
+    { ...hydrated.actor.getSnapshot().context.shared_memory, ...shared }
+  )
+  console.log(`spec workflow resume: answered ${questionId}=${value}`)
+}
 
 const ALLOWLIST_PREFIXES = ['mise run', 'hk check', 'bash tools/governance/specs/gate.sh']
 
@@ -190,7 +243,9 @@ function run(): void {
       console.log(`spec workflow resume: approved stage ${snap.context.current_stage}`)
     }
 
-    // TODO M2: --answer processing with memory
+    if (snap.matches('need_input') && args.answer) {
+      applyResumeAnswer(hydrated, args.answer as string, runDir, dateStr, runId)
+    }
 
     console.log(`spec workflow resume: run ${runId} hydrated (state: ${snap.value})`)
     hydrated.actor.stop()

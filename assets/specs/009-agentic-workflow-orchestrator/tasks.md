@@ -113,10 +113,11 @@
 
 **Requirements**: AWO-3, AWO-7.
 
-- [ ] M2-ENGINE-01 [M2] Implement the intervention minimizer + question dedup (against run-shared memory) and the `decision.defaulted` path. Co-located spec for dedup + default logging. (AWO-3.1, AWO-3.2, AWO-3.3)
-- [ ] M2-PROFILE-01 [M2] Implement `memory.script.ts` — stage-scoped (`<run_id>.memory.<stage>.json`) + run-shared (`<run_id>.shared.json`) read/write, conflict policy enum (`prefer_latest | prompt_user | block`), retention knobs. Co-located spec per conflict mode + retention. (AWO-7.1–7.4)
-- [ ] M2-GUIDE-01 [P] [M2] Add the memory model + retention section to `WORKFLOW_GUIDE.md`. (AWO-7)
-- [ ] M2-CLOSEOUT-01 [M2] `bun test … tools/governance/specs/workflow/` + spec lint + `mise run spec gate`.
+- [X] M2-ENGINE-01 [M2] Implement the intervention minimizer + question dedup (against run-shared memory) and the `decision.defaulted` path. Co-located spec for dedup + default logging. (AWO-3.1, AWO-3.2, AWO-3.3)
+- [X] M2-PROFILE-01 [M2] Implement `memory.script.ts` — stage-scoped (`<run_id>.memory.<stage>.json`) + run-shared (`<run_id>.shared.json`) read/write, conflict policy enum (`prefer_latest | prompt_user | block`), retention knobs. Co-located spec per conflict mode + retention. (AWO-7.1–7.4)
+- [X] M2-RESUME-01 [M2] Complete `--answer` handler in `workflow_run.script.ts`: read/write shared memory, emit `decision.answered`, send `INPUT.ANSWERED`, update snapshot. (AWO-3.4)
+- [X] M2-GUIDE-01 [P] [M2] Add the memory model + retention section to `WORKFLOW_GUIDE.md`. (AWO-7)
+- [X] M2-CLOSEOUT-01 [M2] `bun test … tools/governance/specs/workflow/` + spec lint + `mise run spec gate`.
 
 ---
 
