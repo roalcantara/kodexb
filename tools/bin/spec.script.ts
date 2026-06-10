@@ -94,6 +94,14 @@ function main(): void {
       process.exit(report.ok ? 0 : 1)
       break
     }
+    case 'test': {
+      const scope = process.env.usage_scope ?? ''
+      const cmdArgs: string[] = [scope]
+      const featDir = process.env.usage_feat ?? process.env.usage_feature_dir ?? ''
+      if (featDir) cmdArgs.push('--feat', featDir)
+      spawnInherit(['bun', `${SPECS}/spec_test.script.ts`, ...cmdArgs.filter(Boolean)], root)
+      break
+    }
     case 'init':
       spawnInherit(
         [

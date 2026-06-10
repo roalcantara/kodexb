@@ -44,12 +44,12 @@
 
 ## Phase 3: `spec test` facade (MSC-3)
 
-- [ ] MSC-TEST-01 Implement `tools/governance/specs/spec_test.script.ts`.
-- [ ] MSC-TEST-02 Scope as a positional `[scope]` `choices` enum (`unit|e2e|smoke|regression`) in the `spec test` usage block + `--feat <dir>` flag. mise validates the enum (invalid value rejected pre-dispatch); **no script-side mutual-exclusion** — omitted `[scope]` runs the default composite.
-- [ ] MSC-TEST-03 Default: active feature unit + e2e + governance specs for slug.
-- [ ] MSC-TEST-04 Co-located `spec_test.script.spec.ts`.
-- [ ] MSC-TEST-05 Update `.github/workflows/smoke.yml` if not fully orchestrator-driven from 010.
-- [ ] MSC-TEST-06 Narrow `mise run test` usage to `ci` (+ document in `MISE_GUIDE.md`).
+- [X] MSC-TEST-01 Implement `tools/governance/specs/spec_test.script.ts`.
+- [X] MSC-TEST-02 Scope as a positional `[scope]` `choices` enum (`unit|e2e|smoke|regression`) in the `spec test` usage block + `--feat <dir>` flag. mise validates the enum (invalid value rejected pre-dispatch); **no script-side mutual-exclusion** — omitted `[scope]` runs the default composite.
+- [X] MSC-TEST-03 Default: active feature unit + e2e + governance specs for slug.
+- [X] MSC-TEST-04 Co-located `spec_test.script.spec.ts`.
+- [X] MSC-TEST-05 Update `.github/workflows/smoke.yml` if not fully orchestrator-driven from 010.
+- [X] MSC-TEST-06 Narrow `mise run test` usage to `ci` (+ document in `MISE_GUIDE.md`).
 
 **Checkpoint**: `mise run spec test unit --feat assets/specs/011-mise-sdd-cli` exit 0.
 
