@@ -367,13 +367,9 @@ No engine code changes are needed — the provider commands are profile data onl
 
 ## Workflow smoke
 
-A nightly smoke workflow (`.github/workflows/smoke.yml`) drives the
-orchestrator through a spec gate against fixture data. Run manually with:
-
-```sh
-mise run spec workflow smoke
-```
+A nightly smoke workflow (`.github/workflows/smoke.yml`) validates the
+orchestrator spec gate against fixture data. Run manually via the
+GitHub Actions UI or `gh workflow run smoke.yml`.
 
 The smoke runs on a schedule (`0 3 * * *`) and does not gate PR merges.
-It is the canonical dogfood integration for the workflow orchestrator
-(AWO-12.3, SMOKE-01).
+Full orchestrator dogfood (driving a real feature dir) is deferred to 010.

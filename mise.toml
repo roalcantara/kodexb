@@ -1461,12 +1461,6 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       flag "--feature <dir>" help="Filter by feature directory"
       arg "[runId]" help="Run ID for show/tail"
     }
-    cmd "perf" {
-      flag "--output <path>" default="tools/metrics/results/workflow/latest.json" help="Results output path"
-    }
-    cmd "smoke" {
-      arg "[feature_dir]" help="Feature dir to smoke-test (default: 009-agentic-workflow-orchestrator)"
-    }
     cmd "audit" {
       flag "--strict" help="Exit non-zero on error-level findings"
       flag "--json" help="Machine-readable JSON output"

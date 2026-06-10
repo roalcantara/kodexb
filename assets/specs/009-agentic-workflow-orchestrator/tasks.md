@@ -152,8 +152,8 @@
 
 ## Optional (non-blocking — never gate an MVP/engine merge)
 
-- [X] PROFILE-SDD-01 [P] Fill `assets/catalog/workflows/default.yaml` with the real kb `command:` bindings (replace stubs) for each SDD stage (`mise run spec …`, `hk check --profile …`).
-- [X] SMOKE-01 [P] Dogfood integration: drive a real feature dir through `mise run spec gate` via the orchestrator. **Nightly/CI only**; uses real `mise`+`hk`; MUST NOT live in engine unit tests or block MVP. (review 002 §04)
+- [ ] PROFILE-SDD-01 [P] Fill `assets/catalog/workflows/default.yaml` with the real kb `command:` bindings (replace stubs) for each SDD stage (`mise run spec …`, `hk check --profile …`).
+- [ ] SMOKE-01 [P] Dogfood integration: drive a real feature dir through `mise run spec gate` via the orchestrator. **Nightly/CI only**; uses real `mise`+`hk`; MUST NOT live in engine unit tests or block MVP. (review 002 §04)
 
 ---
 
@@ -195,19 +195,24 @@ Checkbox audit against `tools/governance/specs/workflow/` after M4 merge prep. P
 | M1-ADAPTER-01  | `orchestrator.script.ts` wires machine + invoker + writer; no `speckit.*` in orchestrator |
 | M1-CLOSEOUT-01 | Workflow suite + spec lint/gate green through M4 closeout                                 |
 
-### Still open — genuine gaps
+### Still open — deferred to 010
 
-| Task               | What exists                                                                             | What’s missing                                                                                                |
-| ------------------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| **M1-ENGINE-02**   | `TEARDOWN.QUEUED` / `teardown_remaining` tracking in machine + specs                    | Fire-and-forget teardown **spawn** actors, `task.*` emission, timeout-injection spec                          |
-| **M1-ADAPTER-02**  | `Orchestrator.shutdown()` + machine `SHUTDOWN.REQUESTED` specs                          | OS `SIGINT`/`SIGTERM` trap, bounded grace from profile `shutdown.grace_ms`, `idempotency_key` dedup on resume |
-| **M1-CLI-01**      | `ALLOWED_WORKFLOW_NAMES`; `spec resume` → `spec workflow resume` redirect               | Resume naming documented in `WORKFLOW_GUIDE.md`; reconcile stale `mise run spec resume` refs                  |
-| **M1-CLI-02**      | `workflow_run.script.ts` resume + `--answer`/`--approve`; `workflow_run.script.spec.ts` | Auto-default when exactly one active run; ambiguous-run candidate list (today requires explicit `--run-id`)   |
-| **POLISH-01**      | —                                                                                       | `profile_guide_crossref.script.ts` lint (AWO-12.3)                                                            |
-| **POLISH-02**      | `tools/metrics/baselines/workflow.json` seeded `{}`; preview perf harness unrelated     | Populate NFR budgets (50/100/5/250 ms) + workflow-specific perf harness                                       |
-| **PROFILE-SDD-01** | `default.yaml` has stage graph + partial bindings                                       | Replace stub `command:` values per SDD stage (`mise run spec …`, etc.)                                        |
-| **SMOKE-01**       | —                                                                                       | Nightly dogfood: real feature dir through orchestrator + `mise run spec gate`                                 |
+| Task               | Status  | Note |
+| ------------------ | ------- | ---- |
+| **M1-ENGINE-02**   | Done    | Teardown fire-and-forget + timeout-injection wired in `orchestrator.script.ts` |
+| **M1-ADAPTER-02**  | Done    | SIGINT/SIGTERM trap + bounded grace wired in `orchestrator.script.ts` |
+| **M1-CLI-01**      | Done    | Resume naming documented in `WORKFLOW_GUIDE.md` |
+| **M1-CLI-02**      | Done    | `findActiveRun`/`listActiveRuns` wired in `spec.script.ts` resume path |
+| **POLISH-01**      | Done    | `profile_guide_crossref.script.ts` + spec |
+| **POLISH-02**      | Done    | NFR budgets in `workflow.json`; harness in `tools/metrics/harnesses/workflow/` |
+| **PROFILE-SDD-01** | Partial | Specify evidence + handoff-generate post-trigger done; full per-stage bindings deferred |
+| **SMOKE-01**       | Partial | `.github/workflows/smoke.yml` runs spec gate; full orchestrator dogfood deferred |
 
-### Deferral (2026-06-03)
+### Deferral (2026-06-03, revised)
 
-Open tasks marked **`[→010]`** move to [`010-workflow-engine-completion`](../010-workflow-engine-completion/) — **one PR**, not multiple slices. Spec 009 closes on M4 merge; see [`handoff.md`](./handoff.md).
+| Scope                                                  | Owner                                                                      | Notes                                                            |
+| ------------------------------------------------------ | -------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| M1 remainder, polish, SDD bindings, smoke              | **009 closing PR** (`feature/009-m4-retro-sandbox`)                        | Implementer agent in progress — see [`handoff.md`](./handoff.md) |
+| `packages/workflow-core` / `packages/workflow-runtime` | **[`010-workflow-engine-completion`](../010-workflow-engine-completion/)** | **One PR** after 009 merges; assumes closeout baseline on `main` |
+
+If the table above still shows gaps after the 009 PR lands, fix on 009 (hotfix), not by expanding 010.

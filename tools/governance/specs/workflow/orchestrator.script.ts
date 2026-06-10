@@ -51,6 +51,7 @@ export class Orchestrator {
   readonly startedAt: string
   readonly catalogPath: string
   readonly catalogInsights: ReturnType<typeof loadInsights>
+  private dispatchedKeys = new Set<string>()
 
   actor: ReturnType<typeof createActor<typeof workflowMachine>> | null = null
   private shutdownRequested = false
@@ -88,6 +89,11 @@ export class Orchestrator {
   dispatchStageCommand(stage: string): Envelope | null {
     const command = this.config.stageCommands[stage]
     if (!command) return null
+
+    const idempotencyKey = `${this.runId}:${stage}:${command}`
+    if (this.dispatchedKeys.has(idempotencyKey)) return null
+
+    this.dispatchedKeys.add(idempotencyKey)
 
     const stageDef = this.profile.stages.find(s => s.id === stage)
     const sandbox = stageDef?.sandbox
@@ -340,7 +346,7 @@ export class Orchestrator {
 
       if (stageDef.teardown && stageDef.teardown.length > 0) {
         this.actor.send({ type: 'TEARDOWN.QUEUED', tasks: stageDef.teardown })
-        const timeout = stageDef.teardown_timeout_ms ?? this.profile.shutdown.grace_ms
+        const timeout = stageDef.teardown_timeout_ms ?? 30000
         for (const tdCmd of stageDef.teardown) {
           invokeWithTelemetry(
             { command: tdCmd, cwd: process.cwd(), timeout_ms: timeout },
@@ -423,7 +429,8 @@ export class Orchestrator {
       run_id: this.runId,
       ts: new Date().toISOString(),
       feature_dir: this.config.featureDir,
-      duration_ms: 0
+      duration_ms: 0,
+      grace_ms: this.profile.shutdown.grace_ms
     })
   }
 }

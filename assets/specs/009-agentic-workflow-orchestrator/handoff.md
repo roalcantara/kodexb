@@ -25,12 +25,14 @@
 - **M3**: PR/CI completion (AWO-6)
 - **M4**: retrospective + sandbox (AWO-8, 11)
 - **Polish**: crossref lint + NFR baselines + harness (AWO-12)
-- **Optional**: real SDD bindings + nightly smoke
+- **Optional (partial)**: SDD bindings started, smoke CI validates spec gate; full bindings + dogfood → 010
 
 ## Out of scope
 
-- `packages/workflow-core` / `packages/workflow-runtime` extraction
+- `packages/workflow-core` / `packages/workflow-runtime` extraction (010)
 - Process isolation (AWO-11 v2, OQ-8)
+- Full per-stage SDD command bindings (010)
+- Full orchestrator dogfood smoke (010)
 
 ---
 

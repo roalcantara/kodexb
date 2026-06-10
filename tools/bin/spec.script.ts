@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import { existsSync, readdirSync } from 'node:fs'
 import { resolveActiveFeatureDir } from '../governance/specs/resolve_active_feature_dir.script.ts'
 import { resolveCatalogKey } from '../governance/specs/resolve_catalog_key.script.ts'
 /**
@@ -11,6 +12,24 @@ const SPECS = 'tools/governance/specs'
 const WORKFLOW = `${SPECS}/workflow`
 
 export const ALLOWED_WORKFLOW_NAMES = new Set(['orchestrated-handoff', 'resume'])
+
+function resolveResumeRunId(): string | null {
+  const root = 'tmp/workflow-runs'
+  if (!existsSync(root)) return null
+  const runs: string[] = []
+  for (const dateEntry of readdirSync(root)) {
+    const dateDir = `${root}/${dateEntry}`
+    if (!existsSync(dateDir)) continue
+    for (const file of readdirSync(dateDir)) {
+      if (file.endsWith('.state.json')) runs.push(file.replace('.state.json', ''))
+    }
+  }
+  if (runs.length === 0) return null
+  if (runs.length === 1) return runs[0] ?? null
+  console.error('spec workflow resume: multiple active runs — pass --run-id')
+  for (const r of runs.sort()) console.error(`  ${r}`)
+  process.exit(2)
+}
 
 /**
  * Validate the positional workflow name passed to `mise run spec workflow <name>`.
@@ -106,6 +125,10 @@ function main(): void {
       if (process.env.usage_answer) cmdArgs.push('--answer', process.env.usage_answer)
       if (process.env.usage_approve) cmdArgs.push('--approve', process.env.usage_approve)
       if (process.env.usage_runId) cmdArgs.push('--run-id', process.env.usage_runId)
+      else if (name === 'resume') {
+        const autoRunId = resolveResumeRunId()
+        if (autoRunId) cmdArgs.push('--run-id', autoRunId)
+      }
       spawnInherit(['bun', `${SPECS}/workflow_run.script.ts`, ...cmdArgs], root)
       break
     }
