@@ -264,7 +264,7 @@ narrower than new gherkin slices.
 | Pre-implement drift          | `/speckit-analyze`                                   |
 | Implementer applies feedback | `receiving-code-review`                              |
 | Generic diff review          | `requesting-code-review`                             |
-| Orchestrator next phase      | `mise run spec workflow orchestrated-handoff --next` |
+| Orchestrator next phase      | `mise run spec workflow run [feature] [--dry-run]`   |
 
 ## Related
 
