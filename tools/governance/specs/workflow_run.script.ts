@@ -3,11 +3,13 @@
  * spec workflow — default run mode (TMF-8). Routes to orchestrated-handoff
  * with feature inference, allowlisted spawn, and NDJSON event recording.
  */
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { resolveActiveFeatureDir } from './resolve_active_feature_dir.script.ts'
 import { parseHandoffAcTable } from './workflow/handoff_generate.script.ts'
+import { workflowMachine } from './workflow/machine.ts'
 import { detectPhase, scanFeatureDir } from './workflow/orchestrated_handoff.script.ts'
+import { hydrateMachineActor } from './workflow/snapshot.script.ts'
 import {
   emitPhaseDecided,
   filesetFingerprint,
@@ -45,6 +47,15 @@ export function parseWorkflowArgs(argv: string[]) {
         break
       case '--lint':
         args.lint = true
+        break
+      case '--answer':
+        args.answer = argv[++i] ?? ''
+        break
+      case '--approve':
+        args.approve = argv[++i] ?? ''
+        break
+      case '--run-id':
+        args.runId = argv[++i] ?? ''
         break
       case '--help':
       case '-h':
@@ -106,8 +117,64 @@ function run(): void {
 
   const name = (args.name as string) || 'orchestrated-handoff'
 
+  if (name === 'resume') {
+    const runDir = path.resolve('tmp/workflow-runs')
+    const dateStr = new Date().toISOString().slice(0, 10)
+    const runId = (args.runId as string) || ''
+
+    if (!runId) {
+      // Find latest state file
+      const dateDir = path.join(runDir, dateStr)
+      if (!existsSync(dateDir)) {
+        console.error('spec workflow resume: no run directory found')
+        process.exit(2)
+      }
+      const stateFiles = readdirSync(dateDir)
+        .filter(f => f.endsWith('.state.json'))
+        .sort()
+        .reverse()
+      if (stateFiles.length === 0) {
+        console.error('spec workflow resume: no state files found')
+        process.exit(2)
+      }
+      const lastRun = stateFiles.at(0)
+      if (!lastRun) {
+        console.error('spec workflow resume: no state files found')
+        process.exit(2)
+      }
+      const lastRunId = lastRun.replace('.state.json', '')
+      console.error(`spec workflow resume: --run-id required. Latest: ${lastRunId}`)
+      process.exit(2)
+    }
+
+    const hydrated = hydrateMachineActor(
+      workflowMachine,
+      { rootDir: runDir, metricsDir: path.join(runDir, 'metrics') },
+      runId,
+      dateStr
+    )
+    if (!hydrated) {
+      console.error(`spec workflow resume: cannot hydrate run ${runId}`)
+      process.exit(2)
+    }
+
+    hydrated.actor.start()
+
+    const snap = hydrated.actor.getSnapshot()
+    if (snap.matches('need_input') && args.approve) {
+      hydrated.actor.send({ type: 'STAGE.APPROVED' })
+      console.error(`spec workflow resume: approved stage ${snap.context.current_stage}`)
+    }
+
+    // TODO M2: --answer processing with memory
+
+    console.error(`spec workflow resume: run ${runId} hydrated (state: ${snap.value})`)
+    hydrated.actor.stop()
+    process.exit(0)
+  }
+
   if (name !== 'orchestrated-handoff') {
-    console.error(`spec workflow: unknown workflow "${name}". Allowed: orchestrated-handoff`)
+    console.error(`spec workflow: unknown workflow "${name}". Allowed: orchestrated-handoff, resume`)
     process.exit(2)
   }
 

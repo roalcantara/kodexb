@@ -1,91 +1,168 @@
 <!-- markdownlint-disable-file -->
 
-# Handoff — Agentic workflow orchestrator (`009`)
+# Handoff — Agentic workflow orchestrator (`009`) — M1 slice
 
-**Spec:** [`spec.md`](./spec.md) (AWO-1…AWO-13) · **Plan:** [`plan.md`](./plan.md) · **Tasks:** [`tasks.md`](./tasks.md)
+**Spec:** [`spec.md`](./spec.md) (AWO-1, AWO-5, AWO-13; AWO-4.2; AWO-2 AC3–4 via machine) · **Plan:** [`plan.md`](./plan.md) · **Tasks:** [`tasks.md`](./tasks.md) Phase 4
 **Architecture:** [`review/002/tool-agnostic-engine-review.md`](./review/002/tool-agnostic-engine-review.md) (4-layer engine)
-**Immediate target:** the **MVP slice** (PR 1). M1–M4 are subsequent PRs in the same spec.
+**Program:** full multi-PR sequence in [`tasks.md`](./tasks.md) · **This handoff:** **M1 only** (PR 2). **Stop** after M1 closeout — do not start M2 until the operator merges the M1 PR.
+
+**Prerequisite:** MVP slice (PR 1) merged on `main` — schemas, Executor adapter, profile loader, persistence, Layer-B conformance.
+
+## Branch (do this first)
+
+```sh
+git fetch origin
+git checkout main
+git pull origin main
+git checkout -b feature/009-m1-orchestration
+```
 
 ## Mission
 
-Extend the existing workflow tree at `tools/governance/specs/workflow/` with a
-**tool-agnostic** orchestration engine. Ship the MVP substrate first —
-schemas, the `Executor` adapter (profile-owned prefix policy), the profile
-loader, persistence (reusing `WorkflowRunWriter`), and a Layer-B conformance
-test — **without** a state machine (that is M1).
+On the merged MVP substrate, ship **first orchestration**:
+
+- **`machine.ts`** — pure xstate definition + named guards (policy → human → evidence → auto-advance)
+- **`orchestrator.script.ts`** — actor wiring machine + Executor + `WorkflowRunWriter`
+- **Snapshot persist/hydrate** (AWO-4.2) and **graceful shutdown + resume** (AWO-13)
+- **CLI** — canonical `mise run spec workflow resume` (M1-CLI-01/02)
+
+Exercise **AWO-2 AC3–4** (`evidence_pending`, no false-positive transitions) through the running machine, not isolated unit tests alone.
 
 ## Project overrides (read before coding)
 
+- **Load skills:** `app-context`, `app-testing`, `mise-tasks`
 - **Bun runtime**; `bun test`, `bun run`. No Node/Jest/Vitest.
 - **TypeBox only** for validation (`Type.*` + `Value.Check`). **No Zod.**
-- **No `bun:sqlite`** for this feature — run state is NDJSON + JSON snapshot files per [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md).
-- **Co-located specs** for every new file; **no mocking** — real file I/O with `mkdtemp` scratch dirs and fixture profiles.
-- **Naming**: `snake_case.script.ts` / `*.schema.ts`; ls-lint + Biome enforce.
+- **No `bun:sqlite`** — run state is NDJSON + JSON snapshot files per [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md).
+- **Co-located specs** for every new file; **no mocking** — real file I/O with `mkdtemp` scratch dirs and fixture profiles under `tools/__tests__/fixtures/workflow/`.
+- **Naming**: `snake_case.script.ts` / `*.schema.ts` / `machine.ts` (L1 pure); ls-lint + Biome enforce.
 - **Logging**: `getLogger(['kb','tools','spec','workflow', …])`; never `console.*`.
 - Work lives in `tools/`, **not** `src/`. The renderer MUST NOT import the runtime.
 
 ## Non-negotiable architecture (review 002)
 
 1. **Four layers.** L1 Engine (pure) → L2 Runtime adapter (I/O) → L3 Profile/catalog → L4 CLI. **L1 MUST NOT** contain `mise`/`hk`/`bun`/`gh`/`speckit` identifiers in constants, defaults, or type names.
-2. **Executor port.** All execution goes through one L2 adapter (`command_invoker.script.ts`); `Bun.spawn` lives only there (ast-grep enforced).
-3. **No engine command inventory / no `DEFAULT_COMMAND_ALLOWLIST`.** Prefixes are profile data (`execution_policy.allowed_prefixes`); kb values live only in `default.yaml` + fixtures. The validation *algorithm* may be pure; *values* never are.
-4. **Reuse, don't fork.** Extend the existing `WorkflowEvent` union + `WorkflowRunWriter`; compose `detectPhase()` — don't write a second writer or detector.
-5. **Layer B asserts stage graph order** vs `detectPhase()`/SDD, **not** that every `command:` string exists or passes in CI.
-6. **Engine tests use fixture profiles + stub commands** (`bun run fixtures/…`, `echo`) — never the kb toolchain.
+2. **Executor port.** Stage commands go through L2 (`command_invoker.script.ts`, `workflow_invoker.script.ts`); subprocess spawn only in declared L2 adapters (ast-grep enforced).
+3. **No engine command inventory.** Prefixes are profile data (`execution_policy.allowed_prefixes`); kb values live only in `default.yaml` + fixtures.
+4. **Reuse, don't fork.** Extend `WorkflowEvent` + `WorkflowRunWriter`; compose `detectPhase()` — no second writer or phase detector.
+5. **Dispatch via profile `command:` only** — no inline `speckit.*` in `orchestrator.script.ts`.
+6. **Envelope from file** — read `tmp/workflow-runs/<date>/<run_id>.envelope.<stage>.json`; never parse stdout.
+7. **Engine tests** use fixture profiles + stub commands (`echo`, `bun run fixtures/…`) — never the kb toolchain in L1 specs.
 
-## Maintainer AC checklist (MVP slice)
+## Implementation tasks (Phase 4 — mark `[X]` in tasks.md when done)
+
+### ENGINE (L1)
+
+- [ ] **M1-ENGINE-01** `machine.ts` — xstate machine + guards; guard matrix spec in co-located `machine.spec.ts` (AWO-1.1, AWO-2.3)
+- [ ] **M1-ENGINE-02** teardown actors — fire-and-forget, `teardown_timeout_ms` (default 30s), `task.*` telemetry, never gate transition (AWO-5.5)
+- [ ] **M1-ENGINE-03** snapshot persist/hydrate over `PersistedRunState`; mid-`evidence_pending` and mid-`retrying` rehydrate (AWO-4.2)
+
+### ADAPTER (L2)
+
+- [ ] **M1-ADAPTER-01** `orchestrator.script.ts` — wire machine + Executor + writer; seams via profile `command:` only; static check: no inline `speckit.*` (AWO-5.1)
+- [ ] **M1-ADAPTER-02** SIGINT/SIGTERM trap → `blocked` + `SHUTDOWN_REQUESTED`; atomic snapshot; `idempotency_key` on resume (AWO-13.1–13.4)
+
+### CLI (L4)
+
+- [ ] **M1-CLI-01** Canonical **`mise run spec workflow resume`**; document in [`WORKFLOW_GUIDE.md`](../../guides/WORKFLOW_GUIDE.md); reconcile spec/plan refs; add `resume` to `ALLOWED_WORKFLOW_NAMES` in `tools/bin/spec.script.ts`
+- [ ] **M1-CLI-02** `resume [<run_id>] --answer <qid>=<value>` / `--approve <stage>` — default run_id, ambiguous-run error list; minimal shared-memory apply for answers/approvals (AWO-3.4, AWO-5.4)
+
+### Closeout
+
+- [ ] **M1-CLOSEOUT-01** all Verify commands green; Phase 4 tasks `[X]` in [`tasks.md`](./tasks.md)
+
+## Maintainer AC checklist (M1 slice)
 
 Each row is verified by the named Evidence; check only when the test is green.
 
-| ID         | Done when                                                                                               | Evidence                                                                                                              |
-| ---------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| AWO-2 AC1  | Envelope schema validates and `EvidenceEntry.kind` is toolchain-neutral (`command`/`artifact`/`marker`) | `bun test --config /dev/null tools/governance/specs/workflow/schemas/envelope.schema.spec.ts`                         |
-| AWO-2 AC2  | Malformed/missing envelope yields `BLOCKED` + diagnostics (no crash)                                    | `bun test --config /dev/null tools/governance/specs/workflow/envelope_capture.script.spec.ts`                         |
-| AWO-2 AC3  | `DONE` claim transitions only when evidence verifies; else `evidence_pending`                           | `bun test --config /dev/null tools/governance/specs/workflow/evidence.script.spec.ts`                                 |
-| AWO-9 AC1  | Single Executor adapter; no inline spawn in engine modules                                              | `bun run lint:ast-grep && bun test --config /dev/null tools/governance/specs/workflow/command_invoker.script.spec.ts` |
-| AWO-9 AC2  | Prefix check uses the profile's `execution_policy.allowed_prefixes`; no engine defaults                 | `bun test --config /dev/null tools/governance/specs/workflow/execution_policy.script.spec.ts`                         |
-| AWO-9 AC3  | Missing command target yields `BLOCKED` + `COMMAND_TARGET_MISSING`                                      | `bun test --config /dev/null tools/governance/specs/workflow/envelope_capture.script.spec.ts`                         |
-| AWO-9 AC4  | `task.invoked`/`task.completed` telemetry flows through the existing writer                             | `bun test --config /dev/null tools/governance/specs/workflow/workflow_invoker.script.spec.ts`                         |
-| AWO-10 AC1 | Profile load validates `execution_policy` and fail-fasts on missing/empty                               | `bun test --config /dev/null tools/governance/specs/workflow/profile_loader.script.spec.ts`                           |
-| AWO-4 AC1  | Snapshot atomic write + terminal dual-write to `tools/metrics/`                                         | `bun test --config /dev/null tools/governance/specs/workflow/persistence.script.spec.ts`                              |
-| AWO-12 AC1 | `default.yaml` stage order matches `detectPhase()`                                                      | `bun test --config /dev/null tools/governance/specs/workflow/conformance.script.spec.ts`                              |
-| AWO-12 AC2 | 009 events are additive members of the existing `WorkflowEvent` union                                   | `bun test --config /dev/null tools/governance/specs/workflow/workflow_run.script.spec.ts`                             |
-| AWO-11 AC1 | `sandbox` is optional; a profile omitting it loads                                                      | `bun test --config /dev/null tools/governance/specs/workflow/schemas/profile.schema.spec.ts`                          |
+| ID         | Done when                                                                               | Evidence                                                                                  |
+| ---------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| AWO-1 AC1  | `DONE` + verified evidence auto-advances on fixture profile                             | `bun test --config /dev/null tools/governance/specs/workflow/machine.spec.ts`             |
+| AWO-1 AC3  | `BLOCKED` stops progression; blocker summary with diagnostics                           | `bun test --config /dev/null tools/governance/specs/workflow/machine.spec.ts`             |
+| AWO-2 AC3  | `DONE` claim without passing evidence stays `evidence_pending`                          | `bun test --config /dev/null tools/governance/specs/workflow/orchestrator.script.spec.ts` |
+| AWO-2 AC4  | unverifiable evidence does not auto-advance                                             | `bun test --config /dev/null tools/governance/specs/workflow/orchestrator.script.spec.ts` |
+| AWO-4 AC2  | cold resume rehydrates snapshot; no double-dispatch                                     | `bun test --config /dev/null tools/governance/specs/workflow/orchestrator.script.spec.ts` |
+| AWO-5 AC1  | dispatch via profile `command:`; envelope from file; missing file → `BLOCKED` not crash | `bun test --config /dev/null tools/governance/specs/workflow/orchestrator.script.spec.ts` |
+| AWO-5 AC4  | `human_gated` stage pauses until `--approve`                                            | `bun test --config /dev/null tools/governance/specs/workflow/orchestrator.script.spec.ts` |
+| AWO-5 AC5  | teardown actors non-blocking; transition latency unaffected                             | `bun test --config /dev/null tools/governance/specs/workflow/machine.spec.ts`             |
+| AWO-13 AC1 | SIGINT/SIGTERM → graceful `blocked` + `SHUTDOWN_REQUESTED`                              | `bun test --config /dev/null tools/governance/specs/workflow/orchestrator.script.spec.ts` |
+| AWO-13 AC2 | atomic snapshot on shutdown; no orphaned `.tmp`                                         | `bun test --config /dev/null tools/governance/specs/workflow/orchestrator.script.spec.ts` |
+| AWO-13 AC3 | resume honors `idempotency_key`; no double-dispatch                                     | `bun test --config /dev/null tools/governance/specs/workflow/orchestrator.script.spec.ts` |
+| M1-CLI AC1 | `spec workflow resume` routed; documented; unknown workflow rejected                    | `bun test --config /dev/null tools/bin/spec.script.spec.ts`                               |
 
-> AWO-4.2 (resume), AWO-1/5/13 (machine, dispatch, shutdown), AWO-3/7 (intervention, memory), AWO-6/8/11 (PR-CI, retrospective, sandbox enforcement) are **M1–M4** — see [`tasks.md`](./tasks.md) phases 4–7.
+> Full AWO-3 (intervention minimizer) and AWO-7 (memory model) are **M2** — M1-CLI-02 only needs minimal shared-memory read/write for `--answer` / `--approve`, not `memory.script.ts`.
 
-## Pitfalls (already solved — don't reintroduce)
+## Pitfalls (MVP solved — don't reintroduce)
 
-- **Toolchain leak into L1.** Putting `'mise run'` / `'hk check'` constants or `mise_task`/`hk_profile` type literals in engine modules. Keep them in `default.yaml` + fixtures only. (The `EvidenceEntry.kind` neutralization in MVP-ENGINE-01 exists for exactly this.)
-- **Second NDJSON writer / second phase detector.** Extend `WorkflowRunWriter` and compose `detectPhase()`; the `runs` CLI and retention already depend on them.
-- **stdout envelope parsing.** Capture the worker envelope from `<run_id>.envelope.<stage>.json`, never stdout.
-- **`spec resume` vs `spec workflow resume`** naming drift — resolve in **M1-CLI-01** before wiring routing; reconcile all spec/plan references.
-- **`default.yaml` stage ids out of order.** They must match `detectPhase()`: `specify → plan → analyze-plan → tasks → analyze-tasks → handoff-generate → implement → review`.
+- **Toolchain leak into L1** — no `mise`/`hk` constants in `machine.ts` or guards.
+- **Second NDJSON writer** — extend `WorkflowRunWriter` only.
+- **stdout envelope parsing** — file path only.
+- **`spec resume` vs `spec workflow resume`** — resolve in M1-CLI-01 **before** wiring resume routing.
+- **Implementing M2+ in this branch** — out of scope; open a new branch after M1 merges.
 
-## Verify (each slice ends with)
+## Verify (claim done only when all exit 0)
 
 ```sh
 bun test --config /dev/null tools/governance/specs/workflow/
+bun test --config /dev/null tools/bin/spec.script.spec.ts
+bun run lint:ast-grep
 mise run spec lint assets/specs/009-agentic-workflow-orchestrator
-mise run spec gate
+mise run spec gate assets/specs/009-agentic-workflow-orchestrator
 ```
+
+Operator before merge: `/app-review-handoff` on this file.
 
 ## Out of scope (this handoff)
 
-- `machine.ts` / orchestrator actor (M1, not MVP).
-- Creating `packages/workflow-*` directories.
-- Editing `hk.pkl` / `mise.toml` beyond doc references.
-- Production `src/` changes.
-- `PROFILE-SDD-*` real bindings and `SMOKE-*` dogfood (optional, non-blocking).
-- Committing — only when the operator asks.
+- M2 (AWO-3/7 full memory), M3 (AWO-6 PR/CI), M4 (AWO-8/11 retrospective/sandbox enforcement)
+- `PROFILE-SDD-*`, `SMOKE-*`
+- `packages/workflow-*`, `src/` changes, `hk.pkl` / `mise.toml` beyond doc refs
+- Committing or opening a PR — only when the operator asks
 
-## Next (after implement — review findings addressed)
+## Suggested commit (operator, after review)
 
-P0 items from [`review-009-agentic-workflow-orchestrator-630a15c1.md`](review/review-009-agentic-workflow-orchestrator-630a15c1.md):
-- Added 8 worker fixture functions + switch cases in `workflow_run.script.spec.ts` (AWO-12 AC2)
-- Fixed handoff AC table evidence paths to `*.script.spec.ts`; re-routed AC2 → `envelope_capture`, AC4 → `workflow_invoker`
+```sh
+git add tools/governance/specs/workflow/ tools/bin/spec.script.ts assets/guides/WORKFLOW_GUIDE.md assets/specs/009-agentic-workflow-orchestrator/
 
-P1 items deferred to next handoff:
-- `envelope_capture` needs `BLOCKED` + `COMMAND_TARGET_MISSING` diagnostic
-- `no-spawn-outside-adapter` rule needs narrower ignore
-- `handoff_generate.script.spec.ts` 4 dispatch tests fail (missing `tmp/handoffs`)
+git commit -m "$(cat <<'EOF'
+feat(workflow): add M1 orchestrator slice
+
+Wire xstate machine, orchestrator actor, graceful shutdown, and
+spec workflow resume on the 009 MVP substrate (AWO-1, 5, 13).
+
+EOF
+)"
+```
+
+## Post-commit (operator)
+
+```sh
+git push -u origin HEAD
+
+gh pr create \
+  --title "feat(workflow): 009 M1 orchestrator slice" \
+  --body "$(cat <<'EOF'
+## Summary
+- Add xstate `machine.ts` with guard precedence and teardown actors
+- Add `orchestrator.script.ts` for stage dispatch, evidence gates, and shutdown
+- Add `mise run spec workflow resume` CLI (M1-CLI-01/02)
+
+## Test plan
+- [x] `bun test --config /dev/null tools/governance/specs/workflow/`
+- [x] `bun test --config /dev/null tools/bin/spec.script.spec.ts`
+- [x] `mise run spec gate assets/specs/009-agentic-workflow-orchestrator`
+- [x] `/app-review-handoff` on handoff.md
+
+EOF
+)"
+```
+
+## Roadmap (not in scope — promote to handoff.md after M1 merges)
+
+| Slice  | Phase | Requirements                                               | PR  |
+| ------ | ----- | ---------------------------------------------------------- | --- |
+| **M2** | 5     | AWO-3, AWO-7 — intervention minimizer + `memory.script.ts` | 3   |
+| **M3** | 6     | AWO-6 — PR/CI completion (Post-MVP)                        | 4   |
+| **M4** | 7     | AWO-8, AWO-11 — retrospective + sandbox enforcement        | 5+  |
+
+Optional carry-forward from MVP review (non-blocking for M1): envelope `BLOCKED` semantics in `envelope_capture`, tighter `no-spawn-outside-adapter` ignore list.

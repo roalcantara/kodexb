@@ -173,6 +173,10 @@ ls:
   tools/governance/specs:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
+  # L1 pure machine module (machine.ts) is an exception to .script.ts suffix
+  tools/governance/specs/workflow:
+    .ts: regex:^(machine|[a-z][a-z0-9_]*\.script)(\.spec)?$
+
   tools/governance/policies:
     .ts: regex:^layout_validate\.script(\.spec)?$
 
