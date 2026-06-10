@@ -28,25 +28,22 @@ export function checkToolAllowlist(
 }
 
 export function checkFsScope(sandbox: Static<typeof SandboxDescriptor>, attemptedPath: string): ViolationDescriptor {
-  const deny = (sandbox.fs_scope.deny ?? []).map(d => d.replace(/\$\{[^}]+\}/g, ''))
-
+  const denyRoots = (sandbox.fs_scope.deny ?? []).map(d => d.replace(/\$\{[^}]+\}/g, ''))
+  const allowRoots = sandbox.fs_scope.allow_roots.map(r => r.replace(/\$\{[^}]+\}/g, ''))
   const normalizedPath = attemptedPath.replace(/\/$/, '')
 
-  for (const denyPattern of deny) {
-    const clean = denyPattern.replace(/\$\{[^}]+\}/g, '')
-    if (normalizedPath.startsWith(clean) || normalizedPath === clean) {
+  for (const denyPattern of denyRoots) {
+    if (normalizedPath.startsWith(denyPattern) || normalizedPath === denyPattern) {
       return {
         dimension: 'fs_scope',
         attempted: attemptedPath,
-        detail: `path matches deny pattern: ${clean}`
+        detail: `path matches deny pattern: ${denyPattern}`
       }
     }
   }
 
-  const allowRoots = sandbox.fs_scope.allow_roots.map(r => r.replace(/\$\{[^}]+\}/g, ''))
   for (const allow of allowRoots) {
-    const clean = allow.replace(/\$\{[^}]+\}/g, '')
-    if (normalizedPath.startsWith(clean)) return null
+    if (normalizedPath.startsWith(allow)) return null
   }
 
   if (allowRoots.length > 0) {

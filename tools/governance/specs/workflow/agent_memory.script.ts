@@ -24,8 +24,8 @@ export function defaultCatalog(): AgentMemoryCatalog {
 export function loadCatalog(filePath: string): AgentMemoryCatalog {
   if (!existsSync(filePath)) return defaultCatalog()
   try {
-    const raw = Bun.YAML.parse(readFileSync(filePath, 'utf-8')) as Record<string, unknown>
-    if (!raw || !Array.isArray(raw.entries)) {
+    const raw = JSON.parse(readFileSync(filePath, 'utf-8')) as Record<string, unknown>
+    if (!Array.isArray(raw.entries)) {
       return defaultCatalog()
     }
     return raw as AgentMemoryCatalog
@@ -63,6 +63,11 @@ export function loadInsights(filePath: string): AgentMemoryEntry[] {
   return catalog.entries
 }
 
+/**
+ * Projects agent memory insights into stage-scoped memory.
+ * Included fields: insight_id, description, severity, tags.
+ * Intentionally omitted: run_id, timestamp, eventIds (keep stage memory minimal).
+ */
 export function mergeInsightsIntoStageMemory(
   insights: AgentMemoryEntry[],
   stageMemory: Record<string, unknown>

@@ -32,7 +32,7 @@ function makeValidProfile(): unknown {
 }
 
 describe('ProfileSchema', () => {
-  it('validates a valid profile', () => {
+  it('AWO-11 AC1: validates a valid profile (sandbox optional)', () => {
     expect(Value.Check(ProfileSchema, makeValidProfile())).toBe(true)
   })
 
@@ -65,9 +65,5 @@ describe('ProfileSchema', () => {
       ]
     }
     expect(Value.Check(ProfileSchema, withSandbox)).toBe(true)
-  })
-
-  it('AWO-11 AC1: validates profile when sandbox is omitted', () => {
-    expect(Value.Check(ProfileSchema, makeValidProfile())).toBe(true)
   })
 })

@@ -16,8 +16,11 @@ export function orchestratedRunProviders(
   const prov = profile.providers ?? {}
   if (!prov.pr_open && !prov.ci_status) return true
 
+  let prOpenOk = true
+
   if (prov.pr_open) {
     const prResult = runProvider(prov.pr_open, allowedPrefixes, writer, 'provider', 'pr-open', featureDir)
+    prOpenOk = prResult.ok
     if (prResult.ok && prResult.stdout) {
       const ref = capturePrRef(prResult.stdout)
       if (ref) persistPrRef(persistenceRootDir, dateStr, runId, ref)
@@ -68,5 +71,5 @@ export function orchestratedRunProviders(
       }
     }
   }
-  return !prov.ci_status
+  return prOpenOk
 }
