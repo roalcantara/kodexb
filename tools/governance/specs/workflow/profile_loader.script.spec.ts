@@ -92,4 +92,32 @@ describe('loadProfile', () => {
     const fp = writeProfile(':: invalid yaml ::')
     expect(() => loadProfile(fp)).toThrow(ProfileLoadError)
   })
+
+  it('AWO-11 AC3: passthrough without acknowledged_unsafe fails profile load', () => {
+    const yaml = validProfileYaml().replace(
+      '  - id: plan\n    worker: primary',
+      `  - id: plan\n    worker: primary\n    sandbox:\n      tool_allowlist: ["echo"]\n      fs_scope:\n        allow_roots: ["/workspace"]\n      secret_handling: "passthrough"\n      network: "offline"`
+    )
+    const fp = writeProfile(yaml)
+    expect(() => loadProfile(fp)).toThrow(ProfileLoadError)
+    try {
+      loadProfile(fp)
+    } catch (err) {
+      expect(err).toBeInstanceOf(ProfileLoadError)
+      const loadErr = err as ProfileLoadError
+      expect(loadErr.message).toContain('passthrough')
+      expect(loadErr.message).toContain('acknowledged_unsafe')
+    }
+  })
+
+  it('AWO-11 AC1: passthrough with acknowledged_unsafe loads successfully', () => {
+    const yaml = validProfileYaml().replace(
+      '  - id: plan\n    worker: primary',
+      `  - id: plan\n    worker: primary\n    sandbox:\n      tool_allowlist: ["echo"]\n      fs_scope:\n        allow_roots: ["/workspace"]\n      secret_handling: "passthrough"\n      network: "offline"\n      acknowledged_unsafe: true`
+    )
+    const fp = writeProfile(yaml)
+    const profile = loadProfile(fp)
+    expect(profile.stages[1]?.sandbox?.secret_handling).toBe('passthrough')
+    expect(profile.stages[1]?.sandbox?.acknowledged_unsafe).toBe(true)
+  })
 })

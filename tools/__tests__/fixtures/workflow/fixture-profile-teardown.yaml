@@ -1,0 +1,18 @@
+schema_version: 009.1.0
+name: fixture-teardown
+execution_policy:
+  allowed_prefixes: ["echo", "sleep", "bun run", "mkdir"]
+stages:
+  - id: teardown-slow
+    worker: primary
+    teardown: ["sleep 1"]
+    teardown_timeout_ms: 30000
+transitions:
+  - from: teardown-slow
+    to: gate
+    on: DONE
+terminal: [gate]
+default_retry: { max_attempts: 3, backoff: exponential, base_ms: 500, cap_ms: 30000, jitter: full, reset_on_new_cause: true, escalation_event: stage.escalated }
+memory: { conflict: prompt_user, retention: { tmp_days: 30, durable_days: 365 } }
+providers: {}
+shutdown: { grace_ms: 10000, signals: [SIGINT, SIGTERM] }

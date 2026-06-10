@@ -152,3 +152,29 @@ memory:
 
 The `sandbox` block is optional on a stage. MVP profiles may omit it; enforcement
 lands in M4. See [`SECURITY_GUIDE.md`](SECURITY_GUIDE.md) for sandbox semantics.
+
+## Resume
+
+The canonical resume command is `mise run spec workflow resume`. The bare
+`mise run spec resume` is deprecated and redirects to `spec workflow resume`.
+
+### Auto-default
+
+When `--run-id` is omitted and exactly one active `.state.json` exists under
+`tmp/workflow-runs/<date>/`, the orchestrator defaults to that run. When
+multiple active runs exist, the command exits 2 and prints candidates.
+
+### Answers and approvals
+
+```
+mise run spec workflow resume --answer q1=value --approve review
+```
+
+Answers are written to run-shared memory (`<run_id>.shared.json`) before the
+orchestrator resumes. Approved stages skip the `human_gated` guard.
+
+### Idempotency
+
+Envelopes that carry an `idempotency_key` are checked against the run NDJSON
+tail. If the key already appears in a completed task, the stage is skipped
+rather than re-dispatched.

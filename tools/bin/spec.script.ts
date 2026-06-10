@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
-import { resolveActiveFeatureDir } from '../governance/specs/resolve_active_feature_dir.script.ts'
+import { type ResolveResult, resolveActiveFeatureDir } from '../governance/specs/resolve_active_feature_dir.script.ts'
 import { resolveCatalogKey } from '../governance/specs/resolve_catalog_key.script.ts'
+import { findActiveRun, listActiveRuns } from '../governance/specs/workflow/workflow_run.script.ts'
 /**
  * mise run spec — Spec Kit lint, trace, gate, legacy import (thin dispatch stub).
  */
@@ -23,6 +24,11 @@ export function validateWorkflowName(name: string): string | null {
   if (name === '') return null
   if (ALLOWED_WORKFLOW_NAMES.has(name)) return null
   return `spec workflow: unknown workflow "${name}". Allowed: ${[...ALLOWED_WORKFLOW_NAMES].join(', ')}`
+}
+
+/** Resolve feature dir for `mise run spec gate` (explicit arg or active-feature inference). */
+export function resolveSpecGateFeatureDir(explicitDir?: string): ResolveResult {
+  return resolveActiveFeatureDir(explicitDir || undefined)
 }
 
 function envBool(name: string): boolean {
@@ -56,12 +62,12 @@ function main(): void {
       break
     }
     case 'gate': {
-      const dir = process.env.usage_feature_dir
-      if (!dir) {
-        console.error('spec gate: missing --feature-dir')
-        process.exit(2)
+      const resolved = resolveSpecGateFeatureDir(process.env.usage_feature_dir)
+      if (!resolved.ok) {
+        console.error(resolved.message)
+        process.exit(resolved.exitCode)
       }
-      spawnInherit(['bash', `${SPECS}/gate.sh`, dir], root)
+      spawnInherit(['bash', `${SPECS}/gate.sh`, resolved.featureDir], root)
       break
     }
     case 'feature-init':
@@ -106,6 +112,21 @@ function main(): void {
       if (process.env.usage_answer) cmdArgs.push('--answer', process.env.usage_answer)
       if (process.env.usage_approve) cmdArgs.push('--approve', process.env.usage_approve)
       if (process.env.usage_runId) cmdArgs.push('--run-id', process.env.usage_runId)
+      else if (name === 'resume') {
+        const active = findActiveRun()
+        if (active) {
+          cmdArgs.push('--run-id', active)
+        } else {
+          const candidates = listActiveRuns()
+          if (candidates.length === 0) {
+            console.error('spec workflow resume: no active runs')
+            process.exit(2)
+          }
+          console.error('spec workflow resume: multiple active runs — pass --run-id')
+          for (const r of candidates) console.error(`  ${r}`)
+          process.exit(2)
+        }
+      }
       spawnInherit(['bun', `${SPECS}/workflow_run.script.ts`, ...cmdArgs], root)
       break
     }

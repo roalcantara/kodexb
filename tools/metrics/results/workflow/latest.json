@@ -1,0 +1,25 @@
+{
+  "schema_version": "009.1.0",
+  "results": {
+    "profile_load": {
+      "measured_ms": 3.87,
+      "budget_ms": 100,
+      "pass": true
+    },
+    "event_append": {
+      "measured_ms": 0.45,
+      "budget_ms": 5,
+      "pass": true
+    },
+    "transition": {
+      "measured_ms": 0.09,
+      "budget_ms": 50,
+      "pass": true
+    },
+    "cold_resume": {
+      "measured_ms": 0.29,
+      "budget_ms": 250,
+      "pass": true
+    }
+  }
+}

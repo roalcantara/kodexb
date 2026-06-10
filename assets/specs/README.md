@@ -4,11 +4,12 @@ Active feature SDD lives here while implementation is in progress. See
 [`assets/guides/DOC_AUTHORITY.md`](../guides/DOC_AUTHORITY.md) for layer rules and
 catalog governance.
 
-| Folder                                                       | Status                                                                                          |
-| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| [`003-sync-frecency-preserve/`](003-sync-frecency-preserve/) | In progress — preserve entry/binding frecency across sync rebuild                               |
-| [`004-orchestrated-handoff/`](004-orchestrated-handoff/)     | In progress — dual-analyze workflow + handoff-emit seam for worker dispatch                     |
-| [`005-workflow-observability/`](005-workflow-observability/) | In progress — TypeBox-validated JSONL audit + runs CLI for orchestrated-handoff                 |
-| [`006-safety-hardening/`](006-safety-hardening/)             | Draft — `spec security` subgate (secrets / deps / Electrobun surface) + handoff scrub validator |
+| Folder                                                                     | Status                                                                                          |
+| -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [`003-sync-frecency-preserve/`](003-sync-frecency-preserve/)               | In progress — preserve entry/binding frecency across sync rebuild                               |
+| [`004-orchestrated-handoff/`](004-orchestrated-handoff/)                   | In progress — dual-analyze workflow + handoff-emit seam for worker dispatch                     |
+| [`005-workflow-observability/`](005-workflow-observability/)               | In progress — TypeBox-validated JSONL audit + runs CLI for orchestrated-handoff                 |
+| [`006-safety-hardening/`](006-safety-hardening/)                           | Draft — `spec security` subgate (secrets / deps / Electrobun surface) + handoff scrub validator |
+| [`009-agentic-workflow-orchestrator/`](009-agentic-workflow-orchestrator/) | Closing — full program on `feature/009-m4-retro-sandbox` (implementer in progress)              |
 
 Shipped registry (YAML only): [`assets/catalog/catalog.yaml`](../catalog/catalog.yaml).

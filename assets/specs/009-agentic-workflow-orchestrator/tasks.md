@@ -87,23 +87,23 @@
 
 ### ENGINE (L1)
 
-- [ ] M1-ENGINE-01 [M1] Implement `machine.ts` — pure xstate definition + named guards encoding the transition precedence (policy gate → human approval → evidence verify → auto-advance). Guards consume pure inputs (envelope status + `evaluateEvidence` result); no spawn, no toolchain strings. Co-located spec drives the guard matrix. (AWO-1.1, AWO-2.3)
-- [ ] M1-ENGINE-02 [M1] Add side-effect (teardown) actors spawned fire-and-forget with bounded timeout (`teardown_timeout_ms`, default 30s); they emit `task.*` and never gate the next transition. Co-located latency + timeout-injection spec. (AWO-5.5)
-- [ ] M1-ENGINE-03 [M1] Implement snapshot persist/hydrate helpers (`getPersistedSnapshot` wrap, `createActor({ snapshot })`) over `PersistedRunState`. Co-located spec: mid-`evidence_pending` and mid-`retrying` rehydrate. (AWO-4.2)
+- [X] M1-ENGINE-01 [M1] Implement `machine.ts` — pure xstate definition + named guards encoding the transition precedence (policy gate → human approval → evidence verify → auto-advance). Guards consume pure inputs (envelope status + `evaluateEvidence` result); no spawn, no toolchain strings. Co-located spec drives the guard matrix. (AWO-1.1, AWO-2.3)
+- [X] M1-ENGINE-02 [M1] Add side-effect (teardown) actors spawned fire-and-forget with bounded timeout (`teardown_timeout_ms`, default 30s); they emit `task.*` and never gate the next transition. Co-located latency + timeout-injection spec. (AWO-5.5)
+- [X] M1-ENGINE-03 [M1] Implement snapshot persist/hydrate helpers (`getPersistedSnapshot` wrap, `createActor({ snapshot })`) over `PersistedRunState`. Co-located spec: mid-`evidence_pending` and mid-`retrying` rehydrate. (AWO-4.2)
 
 ### ADAPTER (L2)
 
-- [ ] M1-ADAPTER-01 [M1] Implement `orchestrator.script.ts` — the actor wiring machine + Executor + writer; dispatches workers at documented seams (`implement-src`, `gherkin-bdd-handoff`, `review-fix`) via profile `command:` only (no inline `speckit.*`). Static check asserts no inline `speckit.*`. (AWO-5.1)
-- [ ] M1-ADAPTER-02 [M1] Implement the graceful-shutdown trap (SIGINT/SIGTERM): transition in-flight stage to `blocked` + `SHUTDOWN_REQUESTED`, bounded grace period, atomic snapshot before exit, honor worker `idempotency_key` on resume (no double-dispatch). Co-located signal-injection + resume spec. (AWO-13.1–13.4)
+- [X] M1-ADAPTER-01 [M1] Implement `orchestrator.script.ts` — the actor wiring machine + Executor + writer; dispatches workers at documented seams (`implement-src`, `gherkin-bdd-handoff`, `review-fix`) via profile `command:` only (no inline `speckit.*`). Static check asserts no inline `speckit.*`. (AWO-5.1)
+- [X] M1-ADAPTER-02 [M1] Implement the graceful-shutdown trap (SIGINT/SIGTERM): transition in-flight stage to `blocked` + `SHUTDOWN_REQUESTED`, bounded grace period, atomic snapshot before exit, honor worker `idempotency_key` on resume (no double-dispatch). Co-located signal-injection + resume spec. (AWO-13.1–13.4)
 
 ### CLI (L4)
 
-- [ ] M1-CLI-01 [M1] **Resolve `spec resume` vs `spec workflow resume` naming**: decide the canonical subcommand (recommend `mise run spec workflow resume` for namespace consistency), document the decision in `WORKFLOW_GUIDE.md`, and reconcile every spec/plan reference (spec.md AWO-3 AC4, AWO-5 AC4 currently say `spec workflow resume`). Add `ALLOWED_WORKFLOW_NAMES` guard.
-- [ ] M1-CLI-02 [M1] Implement `resume [<run_id>] --answer <qid>=<value>` / `--approve <stage>` routing in `tools/bin/spec.script.ts`: `<run_id>` defaults to the single active run, errors with candidate list when ambiguous; hydrates snapshot, applies to shared memory, auto-resumes. Co-located spec covers default-resolution + ambiguous error. (AWO-3.4, AWO-5.4)
+- [X] M1-CLI-01 [M1] **Resolve `spec resume` vs `spec workflow resume` naming**: decide the canonical subcommand (recommend `mise run spec workflow resume` for namespace consistency), document the decision in `WORKFLOW_GUIDE.md`, and reconcile every spec/plan reference (spec.md AWO-3 AC4, AWO-5 AC4 currently say `spec workflow resume`). Add `ALLOWED_WORKFLOW_NAMES` guard.
+- [X] M1-CLI-02 [M1] Implement `resume [<run_id>] --answer <qid>=<value>` / `--approve <stage>` routing in `tools/bin/spec.script.ts`: `<run_id>` defaults to the single active run, errors with candidate list when ambiguous; hydrates snapshot, applies to shared memory, auto-resumes. Co-located spec covers default-resolution + ambiguous error. (AWO-3.4, AWO-5.4)
 
 ### M1 closeout
 
-- [ ] M1-CLOSEOUT-01 [M1] `bun test --config /dev/null tools/governance/specs/workflow/` + `mise run spec lint assets/specs/009-agentic-workflow-orchestrator` + `mise run spec gate`.
+- [X] M1-CLOSEOUT-01 [M1] `bun test --config /dev/null tools/governance/specs/workflow/` + `mise run spec lint assets/specs/009-agentic-workflow-orchestrator` + `mise run spec gate`.
 
 **Checkpoint**: the orchestrator advances, pauses, resumes, and shuts down cleanly on fixture profiles.
 
@@ -136,17 +136,17 @@
 
 **Requirements**: AWO-8, AWO-11. **Not blocking the first PRs.**
 
-- [ ] M4-ENGINE-01 [M4] Implement the retrospective stage: write `tools/metrics/workflow-runs/<date>/<run_id>.retro.md` (blockers/retries/interventions/patterns) + ranked recommendations referencing `event.id`s. (AWO-8.1, AWO-8.2)
-- [ ] M4-PROFILE-01 [M4] Append cross-run insights to `assets/catalog/agent_memory.yaml` (create on first use; timestamp + `run_id` + `insight_id`) and load them at startup into stage-scoped memory. (AWO-8.3, AWO-8.4)
-- [ ] M4-ADAPTER-01 [M4] Implement optional-`sandbox` enforcement at the dispatcher boundary (tool allowlist, fs scope, secret-handling, network); blocked actions surface `SANDBOX_VIOLATION` + emit `sandbox.violation`; `passthrough` requires `acknowledged_unsafe`. Co-located violation-injection spec per dimension. (AWO-11.1–11.4)
-- [ ] M4-CLOSEOUT-01 [M4] `bun test … ` + spec lint + `mise run spec gate`.
+- [X] M4-ENGINE-01 [M4] Implement the retrospective stage: write `tools/metrics/workflow-runs/<date>/<run_id>.retro.md` (blockers/retries/interventions/patterns) + ranked recommendations referencing `event.id`s. (AWO-8.1, AWO-8.2)
+- [X] M4-PROFILE-01 [M4] Append cross-run insights to `assets/catalog/agent_memory.yaml` (create on first use; timestamp + `run_id` + `insight_id`) and load them at startup into stage-scoped memory. (AWO-8.3, AWO-8.4)
+- [X] M4-ADAPTER-01 [M4] Implement optional-`sandbox` enforcement at the dispatcher boundary (tool allowlist, fs scope, secret-handling, network); blocked actions surface `SANDBOX_VIOLATION` + emit `sandbox.violation`; `passthrough` requires `acknowledged_unsafe`. Co-located violation-injection spec per dimension. (AWO-11.1–11.4)
+- [X] M4-CLOSEOUT-01 [M4] `bun test … ` + spec lint + `mise run spec gate`.
 
 ---
 
 ## Phase 8: Polish & cross-cutting
 
-- [ ] POLISH-01 [P] Implement the optional `profile_guide_crossref.script.ts` lint (AWO-12.3): assert each safety `command:` in `default.yaml` is documented in [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md). Not engine core; optional.
-- [ ] POLISH-02 [P] Populate `tools/metrics/baselines/workflow.json` with the NFR budgets (transition ≤50ms, profile load ≤100ms, event append ≤5ms, cold resume ≤250ms) and a perf harness under `tools/metrics/harnesses/`. (NFRs)
+- [X] POLISH-01 [P] Implement the optional `profile_guide_crossref.script.ts` lint (AWO-12.3): assert each safety `command:` in `default.yaml` is documented in [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md). Not engine core; optional.
+- [X] POLISH-02 [P] Populate `tools/metrics/baselines/workflow.json` with the NFR budgets (transition ≤50ms, profile load ≤100ms, event append ≤5ms, cold resume ≤250ms) and a perf harness under `tools/metrics/harnesses/`. (NFRs)
 
 ---
 
@@ -179,3 +179,41 @@ MVP-GUIDE-02   (WORKFLOW_GUIDE stub)
 ## Implementation strategy
 
 Ship **MVP first** as the contracts-and-storage walking skeleton (no state machine), then **M1** for first real orchestration, then **M2**. **M3/M4 are Post-MVP.** Engine work (`ENGINE-*`) never depends on kb toolchain wiring; `PROFILE-SDD-*` and `SMOKE-*` are deferred and non-blocking. Keep L1 free of `mise`/`hk`/`bun`/`gh` identifiers throughout.
+
+---
+
+## Reconciliation notes (2026-06-03)
+
+Checkbox audit against `tools/governance/specs/workflow/` after M4 merge prep. Phases 1–3, 5–7 were already accurate; **Phase 4 (M1)** was stale (work landed across M1–M4 PRs without updating `tasks.md`).
+
+### Marked `[X]` (verified in tree)
+
+| Task           | Evidence                                                                                  |
+| -------------- | ----------------------------------------------------------------------------------------- |
+| M1-ENGINE-01   | `machine.script.ts` + `machine.script.spec.ts` (guards, AWO-1/2/5/13 matrix)              |
+| M1-ENGINE-03   | `snapshot.script.ts`; `orchestrator.script.spec.ts` AWO-4 AC2 persist/hydrate             |
+| M1-ADAPTER-01  | `orchestrator.script.ts` wires machine + invoker + writer; no `speckit.*` in orchestrator |
+| M1-CLOSEOUT-01 | Workflow suite + spec lint/gate green through M4 closeout                                 |
+
+### Completed (this PR)
+
+| Task               | Status  | Note                                                                                                                                          |
+| ------------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **M1-ENGINE-02**   | Done    | `teardown_runner.script.ts` + `command_invoker.script.ts` `runCommandAsync`; `AWO-5.5` latency/timeout specs in `orchestrator.script.spec.ts` |
+| **M1-ADAPTER-02**  | Done    | `orchestrator_resume.script.ts` seed key fix + `AWO-13.1`/`13.3` specs in `orchestrator.script.spec.ts`                                       |
+| **M1-CLI-01**      | Done    | Resume naming in `WORKFLOW_GUIDE.md`                                                                                                          |
+| **M1-CLI-02**      | Done    | `findActiveRun`/`listActiveRuns` in `spec.script.ts` + specs in `spec.script.spec.ts`                                                         |
+| **POLISH-01**      | Done    | `profile_guide_crossref.script.ts` + spec                                                                                                     |
+| **POLISH-02**      | Done    | NFR budgets in `workflow.json`; harness in `tools/metrics/harnesses/workflow/`                                                                |
+
+### Partial / deferred to 010
+
+| Task               | Note |
+| ------------------ | ---- |
+| **PROFILE-SDD-01** | Only specify evidence + handoff post-trigger done; full per-stage bindings → 010 |
+| **SMOKE-01**       | Smoke spec gate only; full orchestrator dogfood → 010 |
+| `packages/*`       | Package extraction → 010 |
+
+### Closeout plan (2026-06-03, revised)
+
+If the table above still shows gaps after the 009 PR lands, fix on 009 (hotfix), not by expanding 010.

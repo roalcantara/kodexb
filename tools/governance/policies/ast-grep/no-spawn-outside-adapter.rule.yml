@@ -13,6 +13,8 @@ ignores:
   - "**/review_handoff_core.script.ts"
   # L2 orchestrator
   - "**/orchestrated_handoff.script.ts"
+  # L2 teardown async adapter
+  - "**/teardown_runner.script.ts"
   - "**/*.spec.ts"
   - "**/*.schema.ts"
   - "**/*.types.ts"

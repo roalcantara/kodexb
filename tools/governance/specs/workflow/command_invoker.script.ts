@@ -18,7 +18,11 @@ function safeEnv(overrides?: Record<string, string | undefined>): Record<string,
   return result
 }
 
-export type DiagnosticCode = 'COMMAND_PREFIX_REJECTED' | 'COMMAND_TARGET_MISSING' | 'COMMAND_EXECUTION_ERROR'
+export type DiagnosticCode =
+  | 'COMMAND_PREFIX_REJECTED'
+  | 'COMMAND_TARGET_MISSING'
+  | 'COMMAND_EXECUTION_ERROR'
+  | 'SANDBOX_VIOLATION'
 
 export type CommandResult = {
   exitCode: number
@@ -30,9 +34,8 @@ export type CommandResult = {
   diagnostic?: { code: DiagnosticCode }
 }
 
-export function runCommand(descriptor: CommandDescriptor, allowedPrefixes: string[]): CommandResult {
-  const prefixCheck = validateCommandPrefix(descriptor.command, allowedPrefixes)
-
+function validatePrefix(command: string, allowedPrefixes: string[]): CommandResult | null {
+  const prefixCheck = validateCommandPrefix(command, allowedPrefixes)
   if (!prefixCheck.matched) {
     return {
       exitCode: -1,
@@ -44,6 +47,12 @@ export function runCommand(descriptor: CommandDescriptor, allowedPrefixes: strin
       diagnostic: { code: 'COMMAND_PREFIX_REJECTED' }
     }
   }
+  return null
+}
+
+export function runCommand(descriptor: CommandDescriptor, allowedPrefixes: string[]): CommandResult {
+  const rejected = validatePrefix(descriptor.command, allowedPrefixes)
+  if (rejected) return rejected
 
   const t0 = performance.now()
 
@@ -76,4 +85,62 @@ export function runCommand(descriptor: CommandDescriptor, allowedPrefixes: strin
       diagnostic: { code: nodeErr.code === 'ENOENT' ? 'COMMAND_TARGET_MISSING' : 'COMMAND_EXECUTION_ERROR' }
     }
   }
+}
+
+export type AsyncCommandHandle = {
+  promise: Promise<CommandResult>
+  kill: () => void
+}
+
+export function runCommandAsync(descriptor: CommandDescriptor, allowedPrefixes: string[]): AsyncCommandHandle {
+  const rejected = validatePrefix(descriptor.command, allowedPrefixes)
+  if (rejected) return { promise: Promise.resolve(rejected), kill: () => {} }
+
+  const t0 = performance.now()
+  const cmd = descriptor.command
+  const proc = Bun.spawn({
+    cmd: ['sh', '-c', cmd],
+    cwd: descriptor.cwd ?? process.cwd(),
+    env: safeEnv({ cwd: descriptor.cwd }),
+    stdout: 'pipe',
+    stderr: 'pipe'
+  })
+
+  let settled = false
+  let killer: ReturnType<typeof setTimeout> | undefined
+
+  const doKill = () => {
+    if (settled) return
+    settled = true
+    clearTimeout(killer)
+    proc.kill()
+  }
+
+  if (descriptor.timeout_ms) {
+    killer = setTimeout(doKill, descriptor.timeout_ms)
+  }
+
+  const promise = (async (): Promise<CommandResult> => {
+    const exitCode = await proc.exited
+    clearTimeout(killer)
+
+    if (settled) {
+      return {
+        exitCode: -1,
+        stdout: '',
+        stderr: descriptor.timeout_ms ? `killed after ${descriptor.timeout_ms}ms` : 'killed by caller',
+        durationMs: performance.now() - t0,
+        rejected: true
+      }
+    }
+    settled = true
+
+    const stdout = await new Response(proc.stdout).text()
+    const stderr = await new Response(proc.stderr).text()
+    const durationMs = performance.now() - t0
+
+    return { exitCode, stdout, stderr, durationMs }
+  })()
+
+  return { promise, kill: doKill }
 }

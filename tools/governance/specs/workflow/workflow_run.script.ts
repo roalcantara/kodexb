@@ -351,3 +351,36 @@ export function bestEffortPrune(root = 'tmp/workflow-runs'): void {
     pruneOlderThan(30, root)
   } catch {}
 }
+
+export function findActiveRun(root = 'tmp/workflow-runs'): string | null {
+  if (!existsSync(root)) return null
+  const runs = listActiveRuns(root)
+  if (runs.length === 1) return runs[0] ?? null
+  return null
+}
+
+export function listActiveRuns(root = 'tmp/workflow-runs'): string[] {
+  if (!existsSync(root)) return []
+  const runs: string[] = []
+  let dateEntries: string[] = []
+  try {
+    dateEntries = readdirSync(root)
+  } catch {
+    return []
+  }
+  for (const dateEntry of dateEntries) {
+    const dateDir = path.join(root, dateEntry)
+    if (!existsSync(dateDir)) continue
+    let files: string[] = []
+    try {
+      files = readdirSync(dateDir)
+    } catch {
+      continue
+    }
+    for (const file of files) {
+      if (!file.endsWith('.state.json')) continue
+      runs.push(file.replace('.state.json', ''))
+    }
+  }
+  return runs.sort()
+}

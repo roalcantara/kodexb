@@ -1,22 +1,31 @@
-#!/usr/bin/env bun
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import { Value } from '@sinclair/typebox/value'
 import { createActor } from 'xstate'
-import { checkCiGate } from './ci_gate.script.ts'
+import { loadInsights, mergeInsightsIntoStageMemory } from './agent_memory.script.ts'
 import { evaluateEvidence } from './evidence.script.ts'
 import { autoFillValues, canAutoFill, dedupQuestions } from './intervention.script.ts'
 import { workflowMachine } from './machine.script.ts'
-import { readSharedMemory, writeSharedMemory } from './memory.script.ts'
+import { readSharedMemory, writeSharedMemory, writeStageMemory } from './memory.script.ts'
+import { orchestratedRunProviders } from './orchestrator_providers.script.ts'
+import { readEnvelopeFile, seedDispatchedKeys } from './orchestrator_resume.script.ts'
+import { writeRunRetrospective } from './orchestrator_retro.script.ts'
 import { ensureRunDir, type PersistenceConfig } from './persistence.script.ts'
-import { capturePrRef, persistPrRef, runProvider } from './providers_runner.script.ts'
-import { ENVELOPE_SCHEMA_VERSION, type Envelope, EnvelopeSchema } from './schemas/envelope.schema.ts'
+import { ENVELOPE_SCHEMA_VERSION, type Envelope } from './schemas/envelope.schema.ts'
 import type { Profile } from './schemas/profile.schema.ts'
 import { persistMachineSnapshot } from './snapshot.script.ts'
+import { spawnTeardownFireAndForget, type TeardownHandle } from './teardown_runner.script.ts'
 import { invokeWithTelemetry } from './workflow_invoker.script.ts'
 import { generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow_run.script.ts'
 
 const ALL_QUESTIONS_ID = '__all__'
+
+function loadInsightsSafe(catalogPath: string): ReturnType<typeof loadInsights> {
+  try {
+    return loadInsights(catalogPath)
+  } catch {
+    return []
+  }
+}
 
 export type StageCommandMap = Record<string, string>
 
@@ -28,6 +37,7 @@ export type OrchestratorConfig = {
   runId?: string
   dateStr?: string
   continueOnBlocked?: boolean
+  catalogPath?: string
 }
 
 export class Orchestrator {
@@ -39,6 +49,10 @@ export class Orchestrator {
   readonly runDir: string
   readonly allowedPrefixes: string[]
   readonly startedAt: string
+  readonly catalogPath: string
+  readonly catalogInsights: ReturnType<typeof loadInsights>
+  private dispatchedKeys = new Set<string>()
+  private teardownHandles: TeardownHandle[] = []
 
   actor: ReturnType<typeof createActor<typeof workflowMachine>> | null = null
   private shutdownRequested = false
@@ -52,6 +66,13 @@ export class Orchestrator {
     this.startedAt = new Date().toISOString()
     this.writer = new WorkflowRunWriter(this.runId, config.featureDir, config.persistenceConfig.rootDir)
     this.runDir = ensureRunDir(config.persistenceConfig, this.dateStr)
+    this.catalogPath =
+      config.catalogPath ??
+      (config.persistenceConfig.metricsDir
+        ? path.join(config.persistenceConfig.metricsDir, '..', '..', 'assets', 'catalog', 'agent_memory.yaml')
+        : path.resolve('assets/catalog/agent_memory.yaml'))
+
+    this.catalogInsights = loadInsightsSafe(this.catalogPath)
   }
 
   stageOrder(): string[] {
@@ -66,14 +87,43 @@ export class Orchestrator {
     return path.join(this.runDir, `${this.runId}.envelope.${stage}.json`)
   }
 
+  private seedDispatchedKeysFromDisk(): void {
+    seedDispatchedKeys(this.runDir, this.runId, this.config.stageCommands, key => this.dispatchedKeys.add(key))
+  }
+
   dispatchStageCommand(stage: string): Envelope | null {
     const command = this.config.stageCommands[stage]
     if (!command) return null
 
-    const result = invokeWithTelemetry({ command, cwd: process.cwd() }, this.allowedPrefixes, 'trigger.pre', stage, {
-      writer: this.writer,
-      featureDir: this.config.featureDir
-    })
+    const envPath = this.envelopePath(stage)
+    const existingEnvelope = readEnvelopeFile(envPath)
+    const idempotencyKey = existingEnvelope?.idempotency_key ?? `${this.runId}:${stage}:${command}`
+
+    if (this.dispatchedKeys.has(idempotencyKey)) {
+      return existingEnvelope
+    }
+
+    if (existingEnvelope) {
+      this.dispatchedKeys.add(idempotencyKey)
+      return existingEnvelope
+    }
+
+    this.dispatchedKeys.add(idempotencyKey)
+
+    const stageDef = this.profile.stages.find(s => s.id === stage)
+    const sandbox = stageDef?.sandbox
+
+    const result = invokeWithTelemetry(
+      { command, cwd: process.cwd() },
+      this.allowedPrefixes,
+      'trigger.pre',
+      stage,
+      {
+        writer: this.writer,
+        featureDir: this.config.featureDir
+      },
+      sandbox
+    )
 
     if (result.exitCode !== 0) {
       this.writer.emit({
@@ -90,16 +140,9 @@ export class Orchestrator {
       })
     }
 
-    const envPath = this.envelopePath(stage)
     if (!existsSync(envPath)) return null
 
-    try {
-      const raw = JSON.parse(readFileSync(envPath, 'utf-8'))
-      if (!Value.Check(EnvelopeSchema, raw)) return null
-      return raw as Envelope
-    } catch {
-      return null
-    }
+    return readEnvelopeFile(envPath)
   }
 
   evidenceContext() {
@@ -139,84 +182,49 @@ export class Orchestrator {
   }
 
   runProviders(t0: number): boolean {
-    const prov = this.profile.providers ?? {}
-    if (!prov.pr_open && !prov.ci_status) return true
-
-    if (prov.pr_open) {
-      const prResult = runProvider(
-        prov.pr_open,
-        this.allowedPrefixes,
-        this.writer,
-        'provider',
-        'pr-open',
-        this.config.featureDir
-      )
-      if (prResult.ok && prResult.stdout) {
-        const ref = capturePrRef(prResult.stdout)
-        if (ref) persistPrRef(this.config.persistenceConfig.rootDir, this.dateStr, this.runId, ref)
-      }
-      this.writer.emit({
-        type: 'task.completed',
-        run_id: this.runId,
-        ts: new Date().toISOString(),
-        feature_dir: this.config.featureDir,
-        command: prov.pr_open,
-        role: 'provider',
-        stage: 'pr-open',
-        exit_code: prResult.exitCode ?? undefined,
-        status: prResult.ok ? 'ok' : 'fail',
-        duration_ms: prResult.durationMs
-      })
-    }
-
-    if (prov.ci_status) {
-      const maxRetries = this.profile.default_retry.max_attempts
-      for (let attempt = 0; attempt < maxRetries; attempt++) {
-        const ciResult = runProvider(
-          prov.ci_status,
-          this.allowedPrefixes,
-          this.writer,
-          'provider',
-          'ci-check',
-          this.config.featureDir
-        )
-        const gate = checkCiGate(ciResult.exitCode, attempt, maxRetries)
-        this.writer.emit({
-          type: 'task.completed',
-          run_id: this.runId,
-          ts: new Date().toISOString(),
-          feature_dir: this.config.featureDir,
-          command: prov.ci_status,
-          role: 'provider',
-          stage: 'ci-check',
-          exit_code: ciResult.exitCode ?? undefined,
-          status: gate === 'pass' ? 'ok' : 'fail',
-          duration_ms: ciResult.durationMs
-        })
-        if (gate === 'pass') return true
-        if (gate === 'escalate') {
-          this.writer.emit({
-            type: 'stage.escalated',
-            run_id: this.runId,
-            ts: new Date().toISOString(),
-            feature_dir: this.config.featureDir,
-            duration_ms: performance.now() - t0,
-            stage: 'ci-check',
-            details: { cause: 'ci_retries_exhausted', attempts: attempt + 1 }
-          })
-          return false
-        }
-      }
-    }
-    return !prov.ci_status
+    return orchestratedRunProviders(
+      this.profile,
+      this.allowedPrefixes,
+      this.writer,
+      this.config.featureDir,
+      this.runId,
+      t0,
+      this.config.persistenceConfig.rootDir,
+      this.dateStr
+    )
   }
 
   run(): void {
     this.actor = createActor(workflowMachine, { input: {} })
     this.actor.start()
 
+    this.seedDispatchedKeysFromDisk()
+
     const t0 = performance.now()
     const stageOrder = this.stageOrder()
+
+    const sigHandler = (signal: string) => {
+      this.shutdown(signal).catch(() => {
+        /* fire-and-forget */
+      })
+      this.shutdownRequested = true
+    }
+    const onSigInt = () => sigHandler('SIGINT')
+    const onSigTerm = () => sigHandler('SIGTERM')
+    process.on('SIGINT', onSigInt)
+    process.on('SIGTERM', onSigTerm)
+
+    if (this.catalogInsights.length > 0) {
+      for (const stageId of stageOrder) {
+        writeStageMemory(
+          this.config.persistenceConfig.rootDir,
+          this.dateStr,
+          this.runId,
+          stageId,
+          mergeInsightsIntoStageMemory(this.catalogInsights, {})
+        )
+      }
+    }
 
     for (const [i, stageId] of stageOrder.entries()) {
       if (this.shutdownRequested) break
@@ -331,7 +339,8 @@ export class Orchestrator {
           this.allowedPrefixes,
           'trigger.post',
           stageId,
-          { writer: this.writer, featureDir: this.config.featureDir }
+          { writer: this.writer, featureDir: this.config.featureDir },
+          stageDef.sandbox
         )
         this.writer.emit({
           type: 'task.completed',
@@ -345,6 +354,24 @@ export class Orchestrator {
           status: postResult.exitCode === 0 ? 'ok' : 'fail',
           duration_ms: postResult.durationMs
         })
+      }
+
+      if (stageDef.teardown && stageDef.teardown.length > 0) {
+        this.actor.send({ type: 'TEARDOWN.QUEUED', tasks: stageDef.teardown })
+        const timeout = stageDef.teardown_timeout_ms ?? 30000
+        for (const tdCmd of stageDef.teardown) {
+          const handle = spawnTeardownFireAndForget(
+            { command: tdCmd, cwd: process.cwd(), timeout_ms: timeout },
+            this.allowedPrefixes,
+            { writer: this.writer, featureDir: this.config.featureDir },
+            stageId,
+            timeout,
+            () => {
+              this.actor?.send({ type: 'TEARDOWN.COMPLETED', task_id: tdCmd })
+            }
+          )
+          this.teardownHandles.push(handle)
+        }
       }
 
       this.writer.emit({
@@ -382,10 +409,26 @@ export class Orchestrator {
       })
     }
 
+    const terminated =
+      finalSnapshot.matches('terminal_success') ||
+      finalSnapshot.matches('terminal_failure') ||
+      finalSnapshot.matches('blocked')
+    if (terminated || !ciPassed)
+      writeRunRetrospective(
+        this.writer.currentPath,
+        this.runId,
+        this.dateStr,
+        this.config.persistenceConfig,
+        this.catalogPath
+      )
+
     this.persistSnapshot()
+
+    process.off('SIGINT', onSigInt)
+    process.off('SIGTERM', onSigTerm)
   }
 
-  shutdown(signal: string): void {
+  async shutdown(signal: string): Promise<void> {
     this.shutdownRequested = true
     this.writer.emit({
       type: 'shutdown.requested',
@@ -395,18 +438,19 @@ export class Orchestrator {
       duration_ms: 0,
       signal
     })
-
     if (this.actor) {
       this.actor.send({ type: 'SHUTDOWN.REQUESTED', signal })
       this.persistSnapshot()
     }
-
+    for (const handle of this.teardownHandles) handle.abort()
+    await Bun.sleep(this.profile.shutdown.grace_ms)
     this.writer.emit({
       type: 'shutdown.completed',
       run_id: this.runId,
       ts: new Date().toISOString(),
       feature_dir: this.config.featureDir,
-      duration_ms: 0
+      duration_ms: 0,
+      grace_ms: this.profile.shutdown.grace_ms
     })
   }
 }
