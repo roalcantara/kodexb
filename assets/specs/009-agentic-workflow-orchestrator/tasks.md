@@ -125,9 +125,10 @@
 
 **Requirements**: AWO-6. **Not blocking the first PRs.**
 
-- [ ] M3-PROFILE-01 [M3] Add `providers.{pr_open,pr_update,ci_status}` `command:` bindings to `default.yaml` (kb: `gh pr create` / `gh pr edit` / `gh pr checks`) + PR-prep stage. (AWO-6.1, AWO-6.2)
-- [ ] M3-ADAPTER-01 [M3] Implement the CI-status gate (terminal success requires the bound `ci_status` exit 0) and the R2R remediation loop using the profile retry policy. Co-located spec with stubbed status providers (green/pending/failing) + failing-then-passing. (AWO-6.3, AWO-6.4)
-- [ ] M3-CLOSEOUT-01 [M3] `bun test … ` + spec lint + `mise run spec gate`.
+- [X] M3-PROFILE-01 [M3] Add `providers.{pr_open,pr_update,ci_status}` `command:` bindings to `default.yaml` (kb: `gh pr create` / `gh pr edit` / `gh pr checks`) + PR-prep stage. (AWO-6.1, AWO-6.2)
+- [X] M3-ADAPTER-01 [M3] Implement the CI-status gate (terminal success requires the bound `ci_status` exit 0) and the R2R remediation loop using the profile retry policy. Co-located spec with stubbed status providers (green/pending/failing) + failing-then-passing. (AWO-6.3, AWO-6.4)
+- [X] M3-GUIDE-01 [P] [M3] Add **Orchestrator PR/CI bindings** to [`CI_GUIDE.md`](../../guides/CI_GUIDE.md) (provider fields, pr-prep stage, CI gate, swapping providers via profile only).
+- [X] M3-CLOSEOUT-01 [M3] `bun test … ` + spec lint + `mise run spec gate`.
 
 ---
 

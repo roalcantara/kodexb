@@ -3,11 +3,13 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { Value } from '@sinclair/typebox/value'
 import { createActor } from 'xstate'
+import { checkCiGate } from './ci_gate.script.ts'
 import { evaluateEvidence } from './evidence.script.ts'
 import { autoFillValues, canAutoFill, dedupQuestions } from './intervention.script.ts'
 import { workflowMachine } from './machine.script.ts'
 import { readSharedMemory, writeSharedMemory } from './memory.script.ts'
 import { ensureRunDir, type PersistenceConfig } from './persistence.script.ts'
+import { capturePrRef, persistPrRef, runProvider } from './providers_runner.script.ts'
 import { ENVELOPE_SCHEMA_VERSION, type Envelope, EnvelopeSchema } from './schemas/envelope.schema.ts'
 import type { Profile } from './schemas/profile.schema.ts'
 import { persistMachineSnapshot } from './snapshot.script.ts'
@@ -136,6 +138,79 @@ export class Orchestrator {
     )
   }
 
+  runProviders(t0: number): boolean {
+    const prov = this.profile.providers ?? {}
+    if (!prov.pr_open && !prov.ci_status) return true
+
+    if (prov.pr_open) {
+      const prResult = runProvider(
+        prov.pr_open,
+        this.allowedPrefixes,
+        this.writer,
+        'provider',
+        'pr-open',
+        this.config.featureDir
+      )
+      if (prResult.ok && prResult.stdout) {
+        const ref = capturePrRef(prResult.stdout)
+        if (ref) persistPrRef(this.config.persistenceConfig.rootDir, this.dateStr, this.runId, ref)
+      }
+      this.writer.emit({
+        type: 'task.completed',
+        run_id: this.runId,
+        ts: new Date().toISOString(),
+        feature_dir: this.config.featureDir,
+        command: prov.pr_open,
+        role: 'provider',
+        stage: 'pr-open',
+        exit_code: prResult.exitCode ?? undefined,
+        status: prResult.ok ? 'ok' : 'fail',
+        duration_ms: prResult.durationMs
+      })
+    }
+
+    if (prov.ci_status) {
+      const maxRetries = this.profile.default_retry.max_attempts
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        const ciResult = runProvider(
+          prov.ci_status,
+          this.allowedPrefixes,
+          this.writer,
+          'provider',
+          'ci-check',
+          this.config.featureDir
+        )
+        const gate = checkCiGate(ciResult.exitCode, attempt, maxRetries)
+        this.writer.emit({
+          type: 'task.completed',
+          run_id: this.runId,
+          ts: new Date().toISOString(),
+          feature_dir: this.config.featureDir,
+          command: prov.ci_status,
+          role: 'provider',
+          stage: 'ci-check',
+          exit_code: ciResult.exitCode ?? undefined,
+          status: gate === 'pass' ? 'ok' : 'fail',
+          duration_ms: ciResult.durationMs
+        })
+        if (gate === 'pass') return true
+        if (gate === 'escalate') {
+          this.writer.emit({
+            type: 'stage.escalated',
+            run_id: this.runId,
+            ts: new Date().toISOString(),
+            feature_dir: this.config.featureDir,
+            duration_ms: performance.now() - t0,
+            stage: 'ci-check',
+            details: { cause: 'ci_retries_exhausted', attempts: attempt + 1 }
+          })
+          return false
+        }
+      }
+    }
+    return !prov.ci_status
+  }
+
   run(): void {
     this.actor = createActor(workflowMachine, { input: {} })
     this.actor.start()
@@ -250,6 +325,28 @@ export class Orchestrator {
 
       this.persistSnapshot()
 
+      if (stageDef.triggers?.post) {
+        const postResult = invokeWithTelemetry(
+          { command: stageDef.triggers.post, cwd: process.cwd() },
+          this.allowedPrefixes,
+          'trigger.post',
+          stageId,
+          { writer: this.writer, featureDir: this.config.featureDir }
+        )
+        this.writer.emit({
+          type: 'task.completed',
+          run_id: this.runId,
+          ts: new Date().toISOString(),
+          feature_dir: this.config.featureDir,
+          command: stageDef.triggers.post,
+          role: 'trigger.post',
+          stage: stageId,
+          exit_code: postResult.exitCode ?? undefined,
+          status: postResult.exitCode === 0 ? 'ok' : 'fail',
+          duration_ms: postResult.durationMs
+        })
+      }
+
       this.writer.emit({
         type: 'stage.exited',
         run_id: this.runId,
@@ -260,11 +357,17 @@ export class Orchestrator {
       })
     }
 
+    const ciPassed = this.runProviders(t0)
+
+    // Terminal outcome: if the state machine is terminal, emit the summary.
+    // When CI fails (ciPassed === false), force terminal_failure regardless of
+    // machine state — CI gate failure overrides non-terminal snapshots.
     const finalSnapshot = this.actor.getSnapshot()
-    if (finalSnapshot.matches('terminal_success') || finalSnapshot.matches('terminal_failure')) {
-      const outcome = finalSnapshot.matches('terminal_success')
-        ? ('terminal_success' as const)
-        : ('terminal_failure' as const)
+    if (finalSnapshot.matches('terminal_success') || finalSnapshot.matches('terminal_failure') || !ciPassed) {
+      const outcome =
+        ciPassed && finalSnapshot.matches('terminal_success')
+          ? ('terminal_success' as const)
+          : ('terminal_failure' as const)
       this.writer.emit({
         type: 'run.summary',
         run_id: this.runId,
