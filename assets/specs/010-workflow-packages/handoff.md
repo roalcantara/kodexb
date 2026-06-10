@@ -32,7 +32,7 @@
 | WEP-7 AC1  | Smoke workflow drives a committed fixture feature dir through orchestrator; nightly CI green                     | `mise run spec workflow orchestrated-handoff --feature tools/__tests__/fixtures/workflow/smoke-feature` |
 | WEP-8 AC1  | `profile_guide_crossref.script.ts` stays in governance — not imported by packages                                | `bun run lint:depcruise`                                                                                 |
 | WEP-9 AC1  | One PR delivers packages + profile bindings + smoke wiring + guide updates                                       | `mise run spec gate assets/specs/010-workflow-packages`                                                  |
-| WEP-10 AC1 | Shared deps use root `catalog:` in workspace packages; CI frozen install | `bun install` |
+| WEP-10 AC1 | Shared deps use root `catalog:` in workspace packages; CI frozen install                                         | `bun install`                                                                                            |
 
 ---
 

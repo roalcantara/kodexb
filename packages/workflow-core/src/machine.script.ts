@@ -2,6 +2,11 @@ import { assign, setup } from 'xstate'
 import type { EvidenceResult } from './evidence.script.ts'
 import type { Envelope } from './schemas/envelope.schema.ts'
 
+const TEARDOWN_EVENTS = {
+  'TEARDOWN.QUEUED': { actions: 'queueTeardown' },
+  'TEARDOWN.COMPLETED': { actions: 'completeTeardown' }
+} as const
+
 export type OrchestratorContext = {
   current_stage: string
   stage_order: string[]
@@ -217,8 +222,7 @@ export const workflowMachine = setup({
           { target: 'evidence_pending', actions: 'assignEnvelope' }
         ],
         'SHUTDOWN.REQUESTED': { target: 'blocked', actions: 'requestShutdown' },
-        'TEARDOWN.QUEUED': { actions: 'queueTeardown' },
-        'TEARDOWN.COMPLETED': { actions: 'completeTeardown' }
+        ...TEARDOWN_EVENTS
       }
     },
     evidence_pending: {
@@ -234,8 +238,7 @@ export const workflowMachine = setup({
           { target: 'blocked', guard: 'evidenceFailed', actions: ['assignEvidenceResults', 'setError'] }
         ],
         'SHUTDOWN.REQUESTED': { target: 'blocked', actions: 'requestShutdown' },
-        'TEARDOWN.QUEUED': { actions: 'queueTeardown' },
-        'TEARDOWN.COMPLETED': { actions: 'completeTeardown' }
+        ...TEARDOWN_EVENTS
       }
     },
     need_input: {
@@ -251,8 +254,7 @@ export const workflowMachine = setup({
           { target: 'running', guard: 'hasNextStage', actions: ['approveStage', 'advanceToNextStage'] }
         ],
         'SHUTDOWN.REQUESTED': { target: 'blocked', actions: 'requestShutdown' },
-        'TEARDOWN.QUEUED': { actions: 'queueTeardown' },
-        'TEARDOWN.COMPLETED': { actions: 'completeTeardown' }
+        ...TEARDOWN_EVENTS
       }
     },
     blocked: {
@@ -265,8 +267,7 @@ export const workflowMachine = setup({
           target: 'blocked',
           actions: 'requestShutdown'
         },
-        'TEARDOWN.QUEUED': { actions: 'queueTeardown' },
-        'TEARDOWN.COMPLETED': { actions: 'completeTeardown' }
+        ...TEARDOWN_EVENTS
       }
     },
     retrying: {
@@ -279,8 +280,7 @@ export const workflowMachine = setup({
           target: 'blocked',
           actions: 'requestShutdown'
         },
-        'TEARDOWN.QUEUED': { actions: 'queueTeardown' },
-        'TEARDOWN.COMPLETED': { actions: 'completeTeardown' }
+        ...TEARDOWN_EVENTS
       }
     },
     escalated: {
@@ -293,8 +293,7 @@ export const workflowMachine = setup({
           target: 'blocked',
           actions: 'requestShutdown'
         },
-        'TEARDOWN.QUEUED': { actions: 'queueTeardown' },
-        'TEARDOWN.COMPLETED': { actions: 'completeTeardown' }
+        ...TEARDOWN_EVENTS
       }
     },
     terminal_success: { type: 'final' },

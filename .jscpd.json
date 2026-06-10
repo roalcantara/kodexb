@@ -25,7 +25,6 @@
     "**/.superpowers/**",
     ".agents/skills/**",
     "src/shell/app/db/import.service.spec.ts",
-    "packages/workflow-core/src/machine.script.ts",
     "packages/workflow-core/src/machine.script.spec.ts",
     "packages/workflow-core/src/evidence.script.spec.ts",
     "packages/workflow-runtime/src/memory.script.spec.ts",
