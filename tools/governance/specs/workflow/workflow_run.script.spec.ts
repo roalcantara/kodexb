@@ -88,6 +88,202 @@ const FULL_FP_INPUT = {
   handoffEmittedGherkin: true,
   implementComplete: true
 }
+function makeStageEntered(): WorkflowEvent {
+  return {
+    type: 'stage.entered',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    stage: 'specify'
+  }
+}
+function makeStageExited(): WorkflowEvent {
+  return {
+    type: 'stage.exited',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    stage: 'specify',
+    elapsed_ms: 5000
+  }
+}
+function makeTaskInvoked(): WorkflowEvent {
+  return {
+    type: 'task.invoked',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    command: 'bun run test',
+    role: 'evidence'
+  }
+}
+function makeTaskCompleted(): WorkflowEvent {
+  return {
+    type: 'task.completed',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:01.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    command: 'bun run test',
+    role: 'evidence',
+    exit_code: 0,
+    status: 'ok'
+  }
+}
+function makeTransitionAuto(): WorkflowEvent {
+  return {
+    type: 'transition.auto',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    from: 'specify',
+    to: 'plan',
+    cause: 'DONE'
+  }
+}
+function makeContinuityViolation(): WorkflowEvent {
+  return {
+    type: 'continuity.violation',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    offending_field: 'schema_version',
+    expected_schema_version: '009.1.0',
+    observed_schema_version: '009.2.0'
+  }
+}
+function makeSchemaViolation(): WorkflowEvent {
+  return {
+    type: 'schema.violation',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    payload_type: 'EnvelopeSchema',
+    errors: ['stage: required']
+  }
+}
+function makeShutdownRequested(): WorkflowEvent {
+  return {
+    type: 'shutdown.requested',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    signal: 'SIGINT'
+  }
+}
+function makeStageRetried(): WorkflowEvent {
+  return {
+    type: 'stage.retried',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    stage: 'specify',
+    attempt: 2,
+    elapsed_ms: 10000
+  }
+}
+function makeStageEscalated(): WorkflowEvent {
+  return {
+    type: 'stage.escalated',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:05.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    stage: 'plan',
+    details: { cause: 'max_retries_exceeded' }
+  }
+}
+function makeTransitionGated(): WorkflowEvent {
+  return {
+    type: 'transition.gated',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    from: 'plan',
+    to: 'tasks',
+    cause: 'human_approved'
+  }
+}
+function makeDecisionRequested(): WorkflowEvent {
+  return {
+    type: 'decision.requested',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    question_id: 'q-001',
+    source: 'adapter'
+  }
+}
+function makeDecisionDefaulted(): WorkflowEvent {
+  return {
+    type: 'decision.defaulted',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:01:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    question_id: 'q-001',
+    rationale: 'timeout'
+  }
+}
+function makeDecisionAnswered(): WorkflowEvent {
+  return {
+    type: 'decision.answered',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:30.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    question_id: 'q-001',
+    rationale: 'approved_by_user'
+  }
+}
+function makeSandboxViolation(): WorkflowEvent {
+  return {
+    type: 'sandbox.violation',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    stage: 'implement',
+    descriptor_field: 'tool_allowlist',
+    attempted: 'bun run curl'
+  }
+}
+function makeShutdownCompleted(): WorkflowEvent {
+  return {
+    type: 'shutdown.completed',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:00:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    signal: 'SIGTERM',
+    grace_ms: 500
+  }
+}
+function makeRunSummary(): WorkflowEvent {
+  return {
+    type: 'run.summary',
+    run_id: 'test-run-001',
+    ts: '2026-06-09T12:05:00.000Z',
+    feature_dir: '/tmp/test',
+    duration_ms: 1.0,
+    outcome: 'terminal_success',
+    lead_time_ms: 300000,
+    stage_durations_ms: { specify: 5000, plan: 12000 },
+    interventions: 0,
+    retries: 0
+  }
+}
+
 describe('WorkflowEvent schema (WOBS-1)', () => {
   it('validates phase_decided', () => {
     expect(Value.Check(WorkflowEvent, makePhaseDecided())).toBe(true)
@@ -108,6 +304,25 @@ describe('WorkflowEvent schema (WOBS-1)', () => {
     const { run_id: _, ...rest } = makePhaseDecided()
     expect(Value.Check(WorkflowEvent, rest)).toBe(false)
   })
+  it('009 events are additive members of WorkflowEvent union', () => {
+    expect(Value.Check(WorkflowEvent, makeStageEntered())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeStageExited())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeTaskInvoked())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeTaskCompleted())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeTransitionAuto())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeContinuityViolation())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeSchemaViolation())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeShutdownRequested())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeShutdownCompleted())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeStageRetried())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeStageEscalated())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeTransitionGated())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeDecisionRequested())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeDecisionDefaulted())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeDecisionAnswered())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeSandboxViolation())).toBe(true)
+    expect(Value.Check(WorkflowEvent, makeRunSummary())).toBe(true)
+  })
   it('every variant label has a fixture', () => {
     for (const label of WORKFLOW_EVENT_TYPES) {
       let event: WorkflowEvent | undefined
@@ -123,6 +338,57 @@ describe('WorkflowEvent schema (WOBS-1)', () => {
           break
         case 'dispatch_invoked':
           event = makeDispatchInvoked()
+          break
+        case 'stage.entered':
+          event = makeStageEntered()
+          break
+        case 'stage.exited':
+          event = makeStageExited()
+          break
+        case 'task.invoked':
+          event = makeTaskInvoked()
+          break
+        case 'task.completed':
+          event = makeTaskCompleted()
+          break
+        case 'transition.auto':
+          event = makeTransitionAuto()
+          break
+        case 'continuity.violation':
+          event = makeContinuityViolation()
+          break
+        case 'schema.violation':
+          event = makeSchemaViolation()
+          break
+        case 'shutdown.requested':
+          event = makeShutdownRequested()
+          break
+        case 'shutdown.completed':
+          event = makeShutdownCompleted()
+          break
+        case 'stage.retried':
+          event = makeStageRetried()
+          break
+        case 'stage.escalated':
+          event = makeStageEscalated()
+          break
+        case 'transition.gated':
+          event = makeTransitionGated()
+          break
+        case 'decision.requested':
+          event = makeDecisionRequested()
+          break
+        case 'decision.defaulted':
+          event = makeDecisionDefaulted()
+          break
+        case 'decision.answered':
+          event = makeDecisionAnswered()
+          break
+        case 'sandbox.violation':
+          event = makeSandboxViolation()
+          break
+        case 'run.summary':
+          event = makeRunSummary()
           break
       }
       expect(event).toBeDefined()

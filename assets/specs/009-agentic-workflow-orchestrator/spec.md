@@ -57,16 +57,21 @@ unified command invoker, worker dispatcher with runtime sandbox, evidence
 verifier, retrospective stage, graceful-shutdown trap, and the event-schema
 extension.
 
-### Convention: mise = verbs, hk = events, orchestrator = decisions
+### Kb profile authoring convention (L3 — not engine API)
 
-The profile schema does not distinguish between `mise` tasks and `hk`
-profiles at the keyword level — both are expressed as `command:` strings
-([AWO-9](#requirement-awo-9-declared-command-invocation-contract)). The
-convention is operational, documented in [`MISE_GUIDE.md`](../../guides/MISE_GUIDE.md),
-and enforced mechanically through a command-prefix allowlist (default
-`["mise run", "hk check", "bun run"]`, profile-overridable). The
-orchestrator never inlines shell and never calls provider APIs (`gh`, CI
-vendor SDKs) directly.
+`mise = verbs / hk = events / orchestrator = decisions` is a **kb profile
+authoring convention**, documented in [`MISE_GUIDE.md`](../../guides/MISE_GUIDE.md)
+and the `WORKFLOW_GUIDE.md` stub — **not** an engine API or a set of
+`DEFAULT_*` constants. The engine (L1) is tool-agnostic: the profile schema
+expresses every action as a unified `command:` string and never distinguishes
+`mise`/`hk`/`bun` at the keyword level. Which prefixes are permitted is
+**profile data** (`execution_policy.allowed_prefixes`,
+[AWO-9](#requirement-awo-9-declared-command-invocation-contract)); kb supplies
+`mise run` / `hk check` / `bun run` **only** in
+`assets/catalog/workflows/default.yaml`. A future app (e.g. an Angular web
+build) would supply its own prefixes (`pnpm run`, `nx`) without touching the
+engine. The orchestrator never inlines shell and never calls provider APIs
+(`gh`, CI vendor SDKs) directly.
 
 ## Authority & guide promotion
 
@@ -118,10 +123,14 @@ and AWO-11 are explicitly **Post-MVP**; they are the outward-facing,
 integration-heavy requirements and are not blocking the first PRs.
 
 **Default profile:** `assets/catalog/workflows/default.yaml` is an **MVP plan
-deliverable**, not part of this spec. Its stage ids MUST replay the
-[`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md) phase order
-(read from the guide, not transcribed from any prior spec's prose), and its
-registration in the `catalog.yaml` `workflows:` section ships in the same PR.
+deliverable**, not part of this spec. Its stage ids MUST match the
+**executable `detectPhase()` order** — the runtime encoding of the
+[`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md) phase order —
+namely `specify → plan → analyze-plan → tasks → analyze-tasks →
+handoff-generate → implement → review`. `detectPhase()` (not the guide prose)
+is the Layer-B anchor because it is the deterministic source of truth; the
+guide remains the narrative authority. Registration in the `catalog.yaml`
+`workflows:` section ships in the same PR.
 
 ## Implementation home & package boundary
 
@@ -150,6 +159,26 @@ the Electrobun bundle (keep it CLI-only in `tools/`); or the team splits
 “platform workflow” from “kb app”. Until then, extraction is **deferred** —
 do not create `packages/workflow-*` speculatively.
 
+### Tool-agnostic engine boundary
+
+Extractability is a **prerequisite**, not a follow-up: the engine is layered
+so it can be driven by different catalogs (kb desktop, a future web app)
+without change. Four layers:
+
+| Layer | Role | May reference toolchain? |
+| ----- | ---- | ------------------------ |
+| **L1 — Engine** | Stage graph, xstate machine, guards, envelope validation, evidence/artifact-gate evaluation; calls `Executor.run(spec)` with an opaque command descriptor | **No** — MUST NOT import or default to `mise`, `hk`, `bun`, `gh`, or `speckit`; no toolchain identifiers in constants, defaults, or type names |
+| **L2 — Runtime adapter** | Subprocess (`Bun.spawn` lives here only), cwd/env/timeout, applies the profile's `execution_policy`, emits telemetry | kb-specific impl, but driven by profile data |
+| **L3 — Profile / catalog (ARE)** | `assets/catalog/workflows/*.yaml`: `command:` strings + `execution_policy.allowed_prefixes` | **Yes** — kb `default.yaml` carries `mise run` / `hk check` / `bun run`; other apps carry their own |
+| **L4 — CLI / operator entry** | `mise run spec workflow …`, `spec.script.ts` routing | kb-specific; not part of `workflow-core` |
+
+Invariants:
+
+- L1 pure-engine modules MUST NOT contain toolchain identifiers (`mise`, `hk`, `bun`, `gh`, `speckit`) in constants, defaults, or type names.
+- Runnable profiles MUST declare `execution_policy.allowed_prefixes` (≥ 1 entry).
+- Kb ships those prefix values **only** in `assets/catalog/workflows/default.yaml` (and test fixtures) — never as engine `DEFAULT_*` constants.
+- `detectPhase()` and the SDD phase order remain **kb-specific** composition (kb workflow helpers + Layer-B test), not a reusable engine export.
+
 ## Out of scope
 
 - Replacing Speckit command semantics or file formats
@@ -158,13 +187,14 @@ do not create `packages/workflow-*` speculatively.
 - Building a cloud service; this scope is local workflow orchestration
 - Replacing the canonical event substrate, schema, or `runs` CLI defined in [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md); the orchestrator extends, never forks
 - Replacing the repository safety primitives defined in [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md); the orchestrator consumes them through declared commands
-- Replacing `hk` or `mise` with a custom runner; their roles are load-bearing per [AWO-9](#requirement-awo-9-declared-command-invocation-contract)
+- Replacing `hk` or `mise` with a custom runner **in kb's default profile**; their roles are load-bearing for kb (L3), though the engine itself is runner-agnostic
+- **Engine embedding kb toolchain defaults or command catalogs** — the L1 engine carries no `mise`/`hk`/`bun`/`gh` defaults, no `DEFAULT_*` prefix constants, and no command inventory; all such values are profile (L3) data
 - Multi-repo orchestration; v1 is single-repo
 - Parallel stage execution; reserved for v2 (profile validation rejects `parallel: true` in v1). Note: this restricts **stage progression** only — async side-effect actors per [AWO-5](#requirement-awo-5-safe-delegation-to-stage-specific-subagents) are allowed
 - LangGraph / LangChain / LangSmith adoption (deferred unconditionally)
 - OpenTelemetry / distributed tracing (deferred unconditionally; revisit when distributed tracing is actually needed)
 - Replacing the default CI provider implementation at the orchestrator code level; the provider is a profile binding ([AWO-6](#requirement-awo-6-pr-and-ci-green-completion-contract-provider-agnostic) invariant)
-- A general-purpose `command:` escape hatch beyond `mise run / hk check / bun run`; v1 holds the allowlist tight, revisit if pain emerges
+- Loosening a profile's `execution_policy.allowed_prefixes` at runtime; the allowlist is fixed at profile load, and kb's default profile holds it tight (revisit per-profile if pain emerges)
 
 ## Glossary
 
@@ -175,11 +205,14 @@ do not create `packages/workflow-*` speculatively.
 | Stage outcome            | Normalized completion envelope returned by a stage worker (see [`contracts/envelope.schema.ts`](contracts/envelope.schema.ts))                                        |
 | Auto-advance             | Transition to the next stage without user action                                                                                                                      |
 | Input gate               | Explicit pause that requests human input                                                                                                                              |
-| Evidence                 | Verifiable output proving stage completion; verified via a declared mise task or hk profile                                                                           |
+| Evidence                 | Verifiable output proving stage completion; an `EvidenceEntry` of kind `command` (run via the Executor adapter), `artifact`, or `marker` — toolchain-neutral                |
 | Workflow profile         | TypeBox-validated YAML in `assets/catalog/workflows/<name>.yaml` defining stage graph, policies, command bindings, retry, memory, providers                           |
 | Stage graph              | Directed graph of stages embedded in the workflow profile; superset of the canonical SDD phase order in [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md) |
-| Command binding          | Per-action `command:` string declared in the profile; resolves through the command-prefix allowlist to `mise run`, `hk check`, or `bun run`                           |
-| Command-prefix allowlist | Profile-overridable list of accepted command prefixes; default `["mise run", "hk check", "bun run"]`                                                                  |
+| Command binding          | Per-action `command:` string declared on a stage / trigger / evidence entry in the profile; opaque to the engine                                                      |
+| Executor                 | Port invoked by the engine: `run(opaque command descriptor)` → exit code + streams. Implemented by the L2 runtime adapter; the engine knows only the interface         |
+| execution_policy         | Profile field carrying `allowed_prefixes: string[]` (≥ 1) and optional future knobs; the **only** place permitted command prefixes are defined — never an engine default |
+| Engine (L1)              | Reusable, mostly-pure layer: stage graph, xstate machine, guards, envelope validation, evidence evaluation; no `spawn`, no toolchain identifiers                       |
+| Runtime adapter (L2)     | kb-specific shell implementing `Executor`: subprocess, policy enforcement, telemetry emit; the only place `Bun.spawn` is allowed                                       |
 | Side-effect actor        | xstate-spawned fire-and-forget actor for teardown work (logging promotion, tracking, memory pinning) that does not gate stage progression                             |
 | Terminal stage           | A stage whose `DONE` outcome ends the workflow (default: post-CI-green review); profile-configurable                                                                  |
 | Profile precedence       | Resolution order: `--profile <name>` flag → `.specify/profile.yaml` → `assets/catalog/workflows/default.yaml` → built-in                                              |
@@ -196,8 +229,8 @@ do not create `packages/workflow-*` speculatively.
 - Q: Which status model should subagents return? → A: A strict normalized outcome envelope with `DONE`, `NEED_INPUT`, `BLOCKED`, or `RETRYABLE_FAILURE`.
 - Q: Should completion stop at implementation, or include pull request and CI outcomes? → A: Include PR open and green CI as first-class terminal conditions.
 - Q: Should workflow customization use JSON or YAML profiles? → A: YAML profiles for readability and simpler repository maintenance.
-- Q: Should gate and runner commands be invoked directly by code? → A: No; every executable invocation goes through a `command:` string declared in the workflow profile, resolved against the command-prefix allowlist.
-- Q: Should the spec keep separate keywords for verbs (mise) and events (hk)? → A: No; one `command:` keyword for both. The mise/hk distinction is operational convention, enforced by the allowlist and documented in [`MISE_GUIDE.md`](../../guides/MISE_GUIDE.md).
+- Q: Should gate and runner commands be invoked directly by code? → A: No; every executable invocation goes through a `command:` string declared in the workflow profile, routed through a single `Executor` adapter and validated against the profile's `execution_policy.allowed_prefixes` (see Session 2026-06-09 tool-agnostic clarification).
+- Q: Should the spec keep separate keywords for verbs (mise) and events (hk)? → A: No; one `command:` keyword for both. The mise/hk distinction is **kb profile-authoring** convention documented in [`MISE_GUIDE.md`](../../guides/MISE_GUIDE.md) — not an engine API or default.
 - Q: Should the orchestrator build its own state machine or adopt an existing one? → A: Adopt **xstate**; the orchestrator owns transition policy + guards + persistence + side-effect-actor lifetimes, not transition mechanics.
 - Q: Where do workflow profiles live? → A: `assets/catalog/workflows/<name>.yaml`, indexed in `assets/catalog/catalog.yaml`; profiles are project characteristics (ARE).
 - Q: Where do run records live? → A: Dual-write per [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md#durable-archive). Live tail at `tmp/workflow-runs/<date>/<run_id>.ndjson`; durable archive at `tools/metrics/workflow-runs/<date>/<run_id>.ndjson` (DONE/DID).
@@ -206,6 +239,12 @@ do not create `packages/workflow-*` speculatively.
 ### Session 2026-06-09
 
 - Q: Should stage workers have an explicit execution timeout, and what should the dispatch acknowledgment contract be? → A: Profile-overridable timeout per stage (`worker.timeout_ms`, default 300s) plus a `dispatch_ack_ms` (default 10s) for worker start confirmation. Timeout exhaustion counts toward the profile's retry policy as a `RETRYABLE_FAILURE`; escalation to operator occurs only after retry budget is exhausted.
+- Q: When a stage worker reports `DONE`, what is authoritative for allowing the xstate transition? → A: Envelope + evidence. The worker's `DONE` is a claim; AWO-2 evidence verification runs the artifact-gate / checklist-marker check (the shipped `detectPhase()` / marker presence) as the evidence command. A stage advances only when envelope `status == DONE` **and** all declared evidence verifies; this unifies the artifact-gated progression model with the envelope contract and reuses `detectPhase()`.
+- Q: How does the orchestrator capture a dispatched worker's outcome envelope? → A: File convention. The worker writes its envelope to `tmp/workflow-runs/<date>/<run_id>.envelope.<stage>.json`; the dispatcher reads and `Value.Check()`s it (no stdout parsing). Matches the sibling-flat run layout and the existing handoff-file pattern.
+- Q: How does the operator answer `NEED_INPUT` and approve `human_gated` stages? → A: CLI subcommand `mise run spec workflow resume [<run_id>] --answer <qid>=<value>` / `--approve <stage>`. `<run_id>` is optional and defaults to the current active (non-terminal) run; if multiple active runs exist, the command requires an explicit `<run_id>` and lists candidates. The orchestrator hydrates the snapshot, applies the input to shared memory, and auto-resumes.
+- Q: Should the workflow engine be tool-agnostic (no `mise`/`hk`/`bun`/`gh` defaults in core)? → A: Yes. Four layers — L1 engine (pure, no toolchain identifiers) → L2 runtime adapter (subprocess + policy + telemetry) → L3 profile/catalog (ARE; `command:` + `execution_policy`) → L4 kb CLI. Permitted prefixes are profile data (`execution_policy.allowed_prefixes`), supplied by kb only in `assets/catalog/workflows/default.yaml`. The prefix-validation algorithm may be pure; prefix values are never hardcoded in engine modules. `detectPhase()` / SDD order stay kb-specific.
+- Q: How should the profile `sandbox` field be scoped for MVP? → A: Optional. `sandbox` is an optional `StageDefinition` field (minimal/absent when dispatch is disabled); the descriptor **shape** lives in the schema, **enforcement** lands in M4 (AWO-11). No MVP coupling.
+- Q: Where should kb command-prefix values live after removing the engine default? → A: Remove `DEFAULT_COMMAND_ALLOWLIST` from the schema spike entirely. `allowed_prefixes` is required profile data; kb's actual values live only in `assets/catalog/workflows/default.yaml` and test fixtures under `tools/__tests__/fixtures/workflow/`. Pure modules carry zero toolchain strings.
 
 ---
 
@@ -329,9 +368,9 @@ Schemas, event-type extensions, and the profile shape live in
    - **Measure:** 100% of malformed outcomes are rejected before transition; zero malformed payloads produce a successful auto-advance.
    - **Evidence:** Negative-path tests for schema validation and rejection behavior, covering every required field.
 
-3. WHEN a stage reports `DONE`, THEN the orchestrator SHALL verify each declared evidence entry by invoking the bound mise task or hk profile and observing exit status before allowing transition.
-   - **Measure:** Zero transitions from `DONE` proceed without all evidence verifications passing.
-   - **Evidence:** Integration tests asserting evidence-gate enforcement; tests with intentionally failing evidence verifications.
+3. WHEN a stage reports `DONE`, THEN the orchestrator SHALL treat the status as a **claim** and verify each declared evidence entry before allowing transition. An evidence entry is one of the toolchain-neutral kinds (`command` | `artifact` | `marker`): a `command` entry is run through the L2 `Executor` adapter and checked by exit status (the engine never spawns); `artifact`/`marker` entries are path checks the engine evaluates directly — e.g. the shipped `detectPhase()` / checklist-marker presence (`analyze-tasks.md`, `implement-done.md`). The transition fires only when `status == DONE` **and** every evidence entry passes.
+   - **Measure:** Zero transitions from `DONE` proceed without all evidence verifications passing; a `DONE` envelope with a missing required marker stays in `evidence_pending`.
+   - **Evidence:** Integration tests asserting evidence-gate enforcement, including a `DONE` claim with an absent checklist marker (must not transition) and a passing marker+command case (must transition).
 
 4. WHEN evidence cannot be verified, THEN the actor SHALL hold in `evidence_pending` and SHALL NOT auto-advance.
    - **Measure:** Zero false-positive transitions on unverifiable evidence; the run-state snapshot reflects `evidence_pending` until resolution.
@@ -359,9 +398,9 @@ Schemas, event-type extensions, and the profile shape live in
    - **Measure:** 100% of defaulted decisions are present in persisted decision log and replayed in the retrospective.
    - **Evidence:** State persistence tests, event-log assertions, and retrospective fixture replay.
 
-4. WHEN a user answers a previously requested question, THEN the xstate actor SHALL transition out of `need_input` automatically without requiring an explicit next-stage command.
-   - **Measure:** 100% of resolved input gates resume workflow automatically; resume latency stays within the NFR budget.
-   - **Evidence:** End-to-end pause/resume tests with snapshot reload between pause and answer.
+4. WHEN a user answers a previously requested question via `mise run spec workflow resume [<run_id>] --answer <qid>=<value>`, THEN the orchestrator SHALL hydrate the snapshot, record the answer in shared memory, and transition the actor out of `need_input` automatically without an explicit next-stage command. When `<run_id>` is omitted it defaults to the current active (non-terminal) run; if more than one active run exists, the command SHALL require an explicit `<run_id>` and list the candidates.
+   - **Measure:** 100% of resolved input gates resume workflow automatically; resume latency stays within the NFR budget; omitted-`run_id` resolves to the single active run or errors with candidate list when ambiguous.
+   - **Evidence:** End-to-end pause/resume tests with snapshot reload between pause and answer; tests for default-`run_id` resolution (single active) and the ambiguous-multiple-active error path.
 
 ---
 
@@ -399,9 +438,9 @@ Schemas, event-type extensions, and the profile shape live in
 
 ### Acceptance criteria
 
-1. WHEN executing a stage, THEN the orchestrator SHALL dispatch the mapped stage worker **at a documented seam** (e.g. `implement-src`, `gherkin-bdd-handoff`, `review-fix`) via the profile's `command:` binding — not by invoking `speckit.*` directly — passing explicit input context and the expected output schema. Where AWO-11 (Post-MVP) is adopted, dispatch is additionally subject to the runtime sandbox.
-   - **Measure:** 100% of stage executions resolve through the declared stage-to-seam mapping and a profile `command:` binding; zero dispatches construct `speckit.*` calls inline.
-   - **Evidence:** Dispatcher tests and mapping contract checks; static check asserting no inline `speckit.*` invocation in the dispatcher.
+1. WHEN executing a stage, THEN the orchestrator SHALL dispatch the mapped stage worker **at a documented seam** (e.g. `implement-src`, `gherkin-bdd-handoff`, `review-fix`) via the profile's `command:` binding — not by invoking `speckit.*` directly — passing explicit input context and the expected output schema. The worker returns its outcome by writing the envelope to `tmp/workflow-runs/<date>/<run_id>.envelope.<stage>.json`; the dispatcher reads and validates that file (it does not parse stdout). Where AWO-11 (Post-MVP) is adopted, dispatch is additionally subject to the runtime sandbox.
+   - **Measure:** 100% of stage executions resolve through the declared stage-to-seam mapping and a profile `command:` binding; zero dispatches construct `speckit.*` calls inline; the envelope is read from the declared file path.
+   - **Evidence:** Dispatcher tests and mapping contract checks; static check asserting no inline `speckit.*` invocation in the dispatcher; test that a missing envelope file surfaces a `BLOCKED` outcome rather than a crash.
 
 2. WHEN a stage worker returns `DONE`, THEN the orchestrator SHALL treat the result as authoritative only after the schema and evidence checks defined in [AWO-2](#requirement-awo-2-strict-stage-outcome-contract-and-evidence-validation) pass.
    - **Measure:** Zero unchecked authoritative transitions.
@@ -411,7 +450,7 @@ Schemas, event-type extensions, and the profile shape live in
    - **Measure:** No infinite retry loops; escalation always occurs at retry threshold per the active profile's `retry.max_attempts`.
    - **Evidence:** Retry-threshold tests over the default profile and a profile with custom retry knobs.
 
-4. WHEN a stage is marked `human_gated: true` by profile policy, THEN the orchestrator SHALL pause even if worker status is `DONE` until approval is provided.
+4. WHEN a stage is marked `human_gated: true` by profile policy, THEN the orchestrator SHALL pause even if worker status is `DONE` until approval is provided via `mise run spec workflow resume [<run_id>] --approve <stage>` (same `run_id` default-resolution as AWO-3 AC4).
    - **Measure:** 100% enforcement of human-gated stage policy; xstate guard asserts no transition fires from human-gated `DONE` without approval.
    - **Evidence:** Policy-gate tests for approval-required transitions.
 
@@ -509,7 +548,7 @@ Schemas, event-type extensions, and the profile shape live in
 
 **User story:** As a maintainer, I want every executable invocation declared as a `command:` string in the workflow profile so that the surface is uniform, configurable in one place, and impossible to bypass with inline shell.
 
-**Scope:** AWO-9 governs **all executable invocations** — pre-stage gates, post-stage gates, evidence checks, provider calls, retrospective tasks, R2R steps. The convention `mise = verbs / hk = events / orchestrator = decisions` is operational (documented in [`MISE_GUIDE.md`](../../guides/MISE_GUIDE.md)); the schema-level rule is the unified `command:` keyword plus a command-prefix allowlist.
+**Scope:** AWO-9 governs **all executable invocations** — pre-stage gates, post-stage gates, evidence checks, provider calls, retrospective tasks, R2R steps. The schema-level rule is the unified `command:` keyword routed through a single `Executor` adapter; **which** prefixes are permitted is profile data (`execution_policy.allowed_prefixes`), never an engine default. The `mise = verbs / hk = events` split is kb profile-authoring guidance (see [Kb profile authoring convention](#kb-profile-authoring-convention-l3--not-engine-api)), not part of the engine API. **Scope note:** the prefix-validation *algorithm* may be pure engine code; the prefix *values* MUST NOT be hardcoded in engine modules.
 
 ### Acceptance criteria
 
@@ -517,13 +556,13 @@ Schemas, event-type extensions, and the profile shape live in
    - **Measure:** 100% of orchestrator-initiated invocations come from profile-declared `command:` strings; zero raw shell strings in the workflow implementation modules (`tools/governance/specs/workflow/`) outside the single command-invoker adapter.
    - **Evidence:** Static analysis (ast-grep rule banning `Bun.$\`…\``, `child_process.spawn`, `Bun.spawn` outside the adapter) + integration tests validating the invocation path.
 
-2. WHEN a `command:` string is loaded from a profile, THEN its first significant token SHALL match the profile's command-prefix allowlist (default `["mise run", "hk check", "bun run"]`); commands failing the allowlist check SHALL be rejected at profile load with actionable diagnostics.
-   - **Measure:** 100% of accepted commands match the allowlist; 100% of disallowed commands are rejected before any worker dispatch.
-   - **Evidence:** Allowlist enforcement tests covering matched, mismatched, and tricky-whitespace cases.
+2. WHEN a `command:` string is loaded from a profile, THEN, after collapsing leading/internal whitespace, the command SHALL begin with one of the **active profile's** `execution_policy.allowed_prefixes` entries (a prefix may be multi-word, e.g. `mise run`; matching is whole-prefix `startsWith` on the normalized string at a word boundary, not a single-token compare). `allowed_prefixes` is profile-supplied (≥ 1 entry — the engine embeds **no** default prefixes); commands failing the check SHALL be rejected at profile load with actionable diagnostics. Kb's default profile supplies kb prefixes (`mise run` / `hk check` / `bun run`) in `assets/catalog/workflows/default.yaml`.
+   - **Measure:** 100% of accepted commands match the loaded profile's `allowed_prefixes`; 100% of disallowed commands are rejected before any worker dispatch; zero toolchain prefix literals appear in engine (L1) modules.
+   - **Evidence:** Policy-enforcement tests using fixture profiles (e.g. `bun run` / `echo` prefixes) covering matched, mismatched, and whitespace cases; static check that engine modules contain no `mise`/`hk`/`gh` prefix constants.
 
-3. WHEN a referenced `mise` task or `hk` profile is missing or invalid (resolved by exec-time invocation rather than profile load), THEN the orchestrator SHALL fail the affected stage with status `BLOCKED` and a diagnostic identifying the missing target.
+3. WHEN a referenced command target is missing or invalid (resolved by exec-time invocation rather than profile load), THEN the adapter SHALL report a non-zero outcome and the engine SHALL fail the affected stage with status `BLOCKED` and a diagnostic identifying the missing target.
    - **Measure:** 100% of missing-target failures surface as `BLOCKED` with a `diagnostic.code: COMMAND_TARGET_MISSING`.
-   - **Evidence:** Negative-path tests with intentionally missing mise tasks and hk profiles.
+   - **Evidence:** Negative-path tests with intentionally missing command targets (tool-agnostic fixtures, e.g. a nonexistent `bun run` script).
 
 4. WHEN any `command:` invocation runs, THEN the orchestrator SHALL capture command string, start/end timestamps, exit code, and duration, and emit `task.invoked` / `task.completed` events validated against [`contracts/events.schema.ts`](contracts/events.schema.ts).
    - **Measure:** 100% of invocations emit normalized telemetry; event payloads carry the full command string for audit.
@@ -539,9 +578,9 @@ Schemas, event-type extensions, and the profile shape live in
 
 ### Acceptance criteria
 
-1. WHEN a workflow starts, THEN the orchestrator SHALL load a YAML workflow profile defining stages, transitions, retry policy, memory policy, and task mappings.
-   - **Measure:** 100% of runs bind to a validated profile before stage execution.
-   - **Evidence:** Profile-load and schema-validation tests.
+1. WHEN a workflow starts, THEN the orchestrator SHALL load a YAML workflow profile defining stages, transitions, retry policy, memory policy, command bindings, and `execution_policy` (with ≥ 1 `allowed_prefixes`); profile load SHALL validate `execution_policy` and fail fast if it is missing or empty for a runnable profile.
+   - **Measure:** 100% of runs bind to a schema-validated profile (including non-empty `execution_policy.allowed_prefixes`) before stage execution.
+   - **Evidence:** Profile-load and schema-validation tests, including a profile with missing/empty `execution_policy` (must be rejected).
 
 2. WHEN profile schema validation fails, THEN the orchestrator SHALL block execution and report profile diagnostics.
    - **Measure:** Zero runs proceed with invalid profiles.
@@ -567,9 +606,9 @@ Schemas, event-type extensions, and the profile shape live in
 
 ### Acceptance criteria
 
-1. WHEN the orchestrator dispatches a stage worker, THEN it SHALL bind a sandbox descriptor from the active profile declaring (a) the worker's tool allowlist, (b) the filesystem scope (allowed roots, deny list), (c) the secret-handling mode (`none | passthrough | redacted`), and (d) the network policy (`offline | localhost | declared_hosts`).
-   - **Measure:** 100% of worker dispatches carry a non-null sandbox descriptor; profile validation rejects worker definitions missing any of the four fields.
-   - **Evidence:** Profile-validation tests; dispatcher-binding tests.
+1. WHEN a stage defines an **optional** `sandbox` descriptor in the profile, THEN dispatch SHALL honor it, declaring (a) the worker's tool allowlist, (b) the filesystem scope (allowed roots, deny list), (c) the secret-handling mode (`none | passthrough | redacted`), and (d) the network policy (`offline | localhost | declared_hosts`). The field is **optional** — MVP/pre-M4 profiles may omit it (or supply a minimal stub when dispatch is disabled); enforcement semantics land in M4. The descriptor **shape** lives in the profile schema; **enforcement** is an adapter/M4 concern.
+   - **Measure:** When present, 100% of worker dispatches honor the descriptor; profile validation accepts profiles that omit `sandbox`; a present descriptor missing a declared sub-field is rejected.
+   - **Evidence:** Profile-validation tests (present, absent, partial); dispatcher-binding tests (M4).
 
 2. WHEN a worker attempts an action outside its sandbox descriptor (unlisted tool, out-of-scope path, denied network), THEN the dispatcher SHALL block the action and surface a `BLOCKED` outcome with `diagnostic.code: SANDBOX_VIOLATION`.
    - **Measure:** Zero out-of-scope actions reach execution; 100% of violations are logged with the offending descriptor field.
@@ -593,17 +632,17 @@ Schemas, event-type extensions, and the profile shape live in
 
 ### Acceptance criteria
 
-1. WHEN the default workflow profile is loaded, THEN its stage graph SHALL be expressible as a superset of the canonical SDD phase order documented in [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md), with the orchestrator's additional gates layered on top.
-   - **Measure:** A profile-replay test loads the default profile and reproduces a canonical phase-order run without modification to existing workflow scripts.
-   - **Evidence:** Integration test replaying a fixture run through the orchestrator and asserting phase markers match the guide's order.
+1. WHEN the default workflow profile is loaded, THEN its stage-id sequence SHALL be a **superset of the executable `detectPhase()` order** (`specify → plan → analyze-plan → tasks → analyze-tasks → handoff-generate → implement → review`) — the runtime encoding of the [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md) phase order. **Superset** means: every `detectPhase()` phase id appears, in the same relative order; the profile MAY interleave additional orchestrator-only stages between them but MUST NOT reorder or omit a `detectPhase()` phase.
+   - **Measure:** the Layer-B test extracts the profile's stage ids, filters to the `detectPhase()` set, and asserts that filtered sequence equals `detectPhase()`'s order exactly.
+   - **Evidence:** `conformance.script.spec.ts` loads `default.yaml`, composes `detectPhase()` (does not re-derive the order), and asserts the filtered-subsequence equality.
 
 2. WHEN run events are persisted, THEN they SHALL conform to the canonical event base in [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md#event-schema), extended (not forked) with the orchestrator event types in [`contracts/events.schema.ts`](contracts/events.schema.ts). The `mise run spec runs {list|show|tail|prune}` CLI SHALL operate over orchestrator-extended event streams without modification.
    - **Measure:** Every orchestrator event validates against the union of (canonical base) and (extension); `mise run spec runs show <run_id>` succeeds on an orchestrator-produced run.
    - **Evidence:** Schema-compat tests; CLI integration test against a fixture run.
 
-3. WHEN any orchestrator-initiated command runs, THEN it SHALL flow through the declared `command:` binding per [AWO-9](#requirement-awo-9-declared-command-invocation-contract); repository safety primitives from [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md) (gitleaks, dependency CVE checks, Electrobun config AST) SHALL be reusable as `command:` bindings without modification.
-   - **Measure:** 100% of safety primitives referenced by a default profile resolve to existing commands from `SECURITY_GUIDE.md`; zero orchestrator code reimplements primitives the guide already covers.
-   - **Evidence:** Cross-reference tests verifying each safety command in the default profile is documented in the guide.
+3. WHEN the kb default profile references repository safety primitives from [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md) (gitleaks, dependency CVE checks, Electrobun config AST), THEN those SHALL be expressible as ordinary `command:` bindings, and an **optional profile lint** (`profile_guide_crossref.script.ts`) MAY assert each such command is documented in the guide. Maintaining a command inventory is **not** an engine responsibility.
+   - **Measure:** When the optional lint runs, 100% of safety commands in `default.yaml` resolve to documented `SECURITY_GUIDE.md` entries; the engine/runtime carries no command catalog.
+   - **Evidence:** `profile_guide_crossref` test (kb-only) **or** a manual checklist — not `orchestrator.script.ts` logic.
 
 4. WHEN the canonical event base in [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md) bumps without a corresponding extension bump, OR the live tail and durable archive write different schema versions, THEN the orchestrator SHALL hold archive writes and emit a `continuity.violation` event identifying the offending field. Terminal success SHALL be blocked until resolved.
    - **Measure:** Zero terminal-success outcomes with a `continuity.violation` event in the run log.
@@ -713,7 +752,7 @@ orchestrator meta-tests.
 - Existing quality gates remain unchanged and are invoked as evidence checks through declared `command:` bindings.
 - PR and CI integrations are available through profile-bound commands; the default profile binds `gh` for PR ops and `gh pr checks` for CI status, but the orchestrator does not depend on either by name.
 - `xstate` is an acceptable runtime dependency; the machine definition lives in the pure workflow modules under `tools/governance/specs/workflow/` and is testable without an actor.
-- `hk.pkl` profile names (`commit / pr / ci / full / slow`) are stable enough to be referenced from workflow profiles per [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md#hk-profile-policy).
+- `hk.pkl` profile names (`commit / pr / ci / full / slow`) are stable enough to be referenced from **kb** workflow profiles per [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md#hk-profile-policy). This is a kb-profile (L3) assumption only — the engine is toolchain-agnostic and references no hk/mise names.
 - LogTape adoption ([OQ-6](#open-questions-optional)) is conditional: if a thin wrapper over NDJSON emission lands cheaply, it is adopted; otherwise the orchestrator stays on direct NDJSON.
 
 ## Open questions (optional)
@@ -728,3 +767,4 @@ orchestrator meta-tests.
 | OQ-6 | Adopt LogTape in `tools/`, or stay on direct NDJSON emission?                                                                                                                                           | Resolved (conditional) | Adopt LogTape **only if** it lands as a thin wrapper over `O_APPEND` NDJSON emission and preserves the [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md) contract verbatim. Otherwise defer. Decision belongs in the implementation plan after a small spike.                                                           |
 | OQ-7 | Should `hk.pkl` declare a new `workflow` profile dedicated to orchestrator-driven gate bundles, or only reuse `commit / pr / ci / full / slow`?                                                         | Resolved               | Reuse the existing profiles. Adding a new profile bloats the hk surface for no operational gain.                                                                                                                                                                                                                                      |
 | OQ-8 | Should AWO-11 introduce a `process-isolation` mode (subprocess sandbox via `bun spawn` with deny-by-default capabilities) in v1, or stay declarative (descriptor + enforcement at dispatcher boundary)? | Open                   | Declarative in v1 keeps the surface small; process isolation is a clear v2 follow-up if descriptor-based enforcement proves insufficient.                                                                                                                                                                                             |
+| OQ-9 | Should command-prefix allowlist defaults live in the engine or the catalog? | Resolved | Catalog + adapter only. The L1 engine carries **no** toolchain defaults; `execution_policy.allowed_prefixes` is required profile data, supplied by kb only in `assets/catalog/workflows/default.yaml`. |

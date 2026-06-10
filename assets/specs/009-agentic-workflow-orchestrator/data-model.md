@@ -25,6 +25,7 @@ All artifacts for a run share the `<run_id>` stem inside a daily folder.
 | Command-invoker adapter | governance/spec (shell) | `tools/governance/specs/workflow/command_invoker.script.ts` | versioned in git | AWO-9.1 |
 | Live snapshot | scratch | `tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.state.json` | atomic rewrite on each transition; pruned after retention | AWO-4.1 |
 | Live event tail | scratch | `tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.ndjson` | O_APPEND; pruned after retention | AWO-4.1, AWO-9.4 |
+| Worker outcome envelope | scratch | `tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.envelope.<stage>.json` | written by the worker at a seam; read + `Value.Check()`'d by the dispatcher | AWO-5.1, AWO-2.1 |
 | Run-shared decisions | scratch | `tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.shared.json` | append within run; survives resume | AWO-7.2, AWO-3.3 |
 | Per-stage memory | scratch | `tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.memory.<stage>.json` | created on stage start; pruned with run | AWO-7.1 |
 | Event archive (durable) | metrics (DONE/DID) | `tools/metrics/workflow-runs/<YYYY-MM-DD>/<run_id>.ndjson` | dual-written at terminal stage; long retention | AWO-4.4 |
@@ -93,9 +94,21 @@ Profile knobs override defaults:
 | `PersistedRunState` | this spec | Same; xstate snapshot opacity preserved |
 | `WorkflowEventBase` | [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md) | If bumped without an extension catch-up, AWO-12.4 emits `continuity.violation` and blocks terminal success |
 
-## Sandbox descriptor (AWO-11)
+## Engine vs catalog separation (review 002)
 
-Every stage declares a `sandbox:` block per [`profile.schema.ts`](contracts/profile.schema.ts):
+Run state (this file's `tmp/` + `tools/metrics/` paths) is **engine/runtime**
+concern; it carries no toolchain identifiers. Command prefixes and toolchain
+bindings live exclusively in **catalog** profile data
+(`assets/catalog/workflows/*.yaml` → `execution_policy.allowed_prefixes`,
+`command:` strings). There is no new coupling between the two: the engine
+reads opaque command descriptors and writes opaque run records; only the L2
+adapter and L3 catalog know kb's `mise`/`hk`/`bun` vocabulary.
+
+## Sandbox descriptor (AWO-11) — optional field
+
+A stage MAY declare an **optional** `sandbox:` block per
+[`profile.schema.ts`](contracts/profile.schema.ts) (MVP profiles may omit it;
+enforcement lands in M4):
 
 ```yaml
 sandbox:

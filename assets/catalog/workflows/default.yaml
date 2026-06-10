@@ -1,0 +1,87 @@
+# Default kb workflow profile.
+# Stage order matches detectPhase() in orchestrated_handoff.script.ts:
+#   specify → plan → analyze-plan → tasks → analyze-tasks → handoff-generate → implement → review
+# command: values are stubs until PROFILE-SDD-* fills real bindings.
+schema_version: 009.1.0
+name: default
+description: "Default SDD workflow profile for kb"
+
+execution_policy:
+  allowed_prefixes:
+    - "mise run"
+    - "hk check"
+    - "bun run"
+
+stages:
+  - id: specify
+    worker: primary
+    evidence:
+      - "mise run spec lint"
+  - id: plan
+    worker: primary
+  - id: analyze-plan
+    worker: primary
+  - id: tasks
+    worker: primary
+  - id: analyze-tasks
+    worker: primary
+  - id: handoff-generate
+    worker: primary
+    human_gated: true
+  - id: implement
+    worker: primary
+  - id: review
+    worker: primary
+    human_gated: true
+
+transitions:
+  - from: specify
+    to: plan
+    on: DONE
+  - from: plan
+    to: analyze-plan
+    on: DONE
+  - from: analyze-plan
+    to: tasks
+    on: DONE
+  - from: tasks
+    to: analyze-tasks
+    on: DONE
+  - from: analyze-tasks
+    to: handoff-generate
+    on: DONE
+  - from: handoff-generate
+    to: implement
+    on: DONE
+  - from: implement
+    to: review
+    on: DONE
+  - from: review
+    to: gate
+    on: DONE
+
+terminal:
+  - gate
+
+default_retry:
+  max_attempts: 3
+  backoff: exponential
+  base_ms: 500
+  cap_ms: 30000
+  jitter: full
+  reset_on_new_cause: true
+  escalation_event: stage.escalated
+
+memory:
+  conflict: prompt_user
+  retention:
+    tmp_days: 30
+    durable_days: 365
+
+providers: {}
+
+shutdown:
+  grace_ms: 10000
+  signals:
+    - SIGINT
+    - SIGTERM

@@ -8,6 +8,8 @@ ignores:
   - 'tools/**/*.script.ts'
   - 'tools/**/*.script.spec.ts'
   - 'tools/**/*.types.ts'
+  - 'tools/**/*.schema.ts'
+  - 'tools/**/*.schema.spec.ts'
 severity: error
 rule:
   kind: program

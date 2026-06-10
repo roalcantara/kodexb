@@ -21,12 +21,12 @@
 The stubs below describe the intended shape so the spec, the eventual
 runtime, and the tests share one reference while building.
 
-| File | Purpose | Bound to |
-| ---- | ------- | -------- |
-| [`envelope.schema.ts`](envelope.schema.ts) | Stage-worker outcome envelope | AWO-2 |
-| [`profile.schema.ts`](profile.schema.ts) | Workflow profile (unified `command:` keyword, sandbox, retry, memory, providers, shutdown) | AWO-9, AWO-10, AWO-11, AWO-7, AWO-13 |
-| [`events.schema.ts`](events.schema.ts) | Orchestrator event-type extension over the canonical event base | AWO-4, AWO-9.4, AWO-11.4, AWO-12.2, AWO-13 |
-| [`state.schema.ts`](state.schema.ts) | Persisted xstate snapshot envelope (run-state file) | AWO-1, AWO-4, AWO-13 |
+| File | Purpose | Bound to | Promoted to |
+| ---- | ------- | -------- | ----------- |
+| [`envelope.schema.ts`](envelope.schema.ts) | Stage-worker outcome envelope | AWO-2 | — |
+| [`profile.schema.ts`](profile.schema.ts) | Workflow profile (unified `command:`, `execution_policy`, optional sandbox, retry, memory, providers, shutdown) | AWO-9, AWO-10, AWO-11, AWO-7, AWO-13 | — |
+| [`events.schema.ts`](events.schema.ts) | Orchestrator event-type extension over the canonical event base | AWO-4, AWO-9.4, AWO-11.4, AWO-12.2, AWO-13 | — |
+| [`state.schema.ts`](state.schema.ts) | Persisted xstate snapshot envelope (run-state file) | AWO-1, AWO-4, AWO-13 | [`tools/governance/specs/workflow/schemas/state.schema.ts`](../../../tools/governance/specs/workflow/schemas/state.schema.ts) ✓ |
 
 ## Storage layout
 
@@ -45,3 +45,14 @@ The canonical event base owned by [`OBSERVABILITY_GUIDE.md`](../../../guides/OBS
 is the parent schema for `events.schema.ts`. Bumping the base without
 bumping the orchestrator extension triggers the `continuity.violation`
 event defined in AWO-12.4.
+
+## Tool-agnostic engine (review 002)
+
+`execution_policy.allowed_prefixes` is **profile-owned data**. The schema
+module carries **no** `DEFAULT_COMMAND_ALLOWLIST` and no `mise`/`hk`/`bun`/`gh`
+prefix constants — the L1 engine is toolchain-agnostic. Kb's actual prefix
+values live only in the `assets/catalog/workflows/default.yaml` example
+(documented in the `WORKFLOW_GUIDE.md` stub) and in test fixtures under
+`tools/__tests__/fixtures/workflow/`. The `sandbox` descriptor shape stays in
+the schema but is an **optional** stage field; enforcement is an
+adapter/M4 concern.

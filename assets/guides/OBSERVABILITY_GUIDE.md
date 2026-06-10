@@ -165,6 +165,40 @@ Project-wide budgets for emission overhead:
 
 Baselines live at `tools/metrics/baselines/workflow.json`.
 
+## Agentic orchestrator event extension (009)
+
+The agentic workflow orchestrator (spec `009`) extends the `WorkflowEvent` union
+in `tools/governance/specs/workflow/workflow_run.script.ts` with additive members.
+These events follow the same NDJSON substrate, retention, and validation
+discipline as all other workflow events.
+
+The extension schema is defined as code at:
+
+```
+tools/governance/specs/workflow/workflow_run.script.ts  (Awo009Event union members)
+```
+
+The canonical event base (`WorkflowEventBase`) remains the authority for the
+shared fields. Extension event types include:
+
+| Event type | Purpose |
+| ---------- | ------- |
+| `stage.entered` / `stage.exited` | Stage lifecycle |
+| `stage.retried` / `stage.escalated` | Retry and escalation |
+| `transition.auto` / `transition.gated` | State machine transitions |
+| `task.invoked` / `task.completed` | Command execution (telemetry) |
+| `decision.requested` / `decision.defaulted` / `decision.answered` | Operator decisions |
+| `sandbox.violation` | Sandbox enforcement (M4) |
+| `continuity.violation` | Schema drift detection |
+| `schema.violation` | Payload validation failure |
+| `shutdown.requested` / `shutdown.completed` | Graceful shutdown |
+| `run.summary` | Terminal outcome summary |
+
+Each type extends `WorkflowEventBase` with stage-scoped or run-scoped fields
+per its schema in the implementation home. Consumers import the `WorkflowEvent`
+union from the stable code path; this section is notice of the extension
+contract.
+
 ## What this guide deliberately does not cover
 
 - In-process structured logging (`getLogger`, `withContext`,

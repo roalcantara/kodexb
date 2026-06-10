@@ -15,6 +15,10 @@ per [`DOC_AUTHORITY.md`](../../../guides/DOC_AUTHORITY.md). Files here are
 **Related:** [`../spec.md`](../spec.md), [`../data-model.md`](../data-model.md),
 [`../contracts/`](../contracts/)
 
+**Next pass:** [`../002/README.md`](../002/README.md) — tool-agnostic engine
+boundary (Executor port, profile-owned `execution_policy`, ENGINE/PROFILE/CLI
+task split).
+
 ## Changelog — rework 001 (applied 2026-06-09)
 
 Guides-first rework applied per [`guides-first-review.md`](./guides-first-review.md)

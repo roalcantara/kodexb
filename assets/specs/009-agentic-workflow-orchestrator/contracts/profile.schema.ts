@@ -7,7 +7,21 @@ import { Type, type Static } from '@sinclair/typebox'
 
 export const PROFILE_SCHEMA_VERSION = '009.1.0' as const
 
-export const DEFAULT_COMMAND_ALLOWLIST = ['mise run', 'hk check', 'bun run'] as const
+// NOTE (tool-agnostic engine, review 002): this module is L1/L3 schema and MUST
+// NOT embed toolchain prefix defaults. Permitted prefixes are PROFILE DATA via
+// `ExecutionPolicy.allowed_prefixes`. Kb's actual values (`mise run`, `hk check`,
+// `bun run`) live ONLY in assets/catalog/workflows/default.yaml and in test
+// fixtures under tools/__tests__/fixtures/workflow/ — never as a constant here.
+
+// AWO-9 — execution policy is profile-supplied; the engine validates the
+// algorithm but carries no prefix values.
+export const ExecutionPolicy = Type.Object({
+  allowed_prefixes: Type.Array(Type.String(), {
+    minItems: 1,
+    description: 'accepted command prefixes; profile data, no engine default'
+  })
+  // optional future knobs: max_command_length, deny_substrings (profile-defined)
+})
 
 export const RetryPolicy = Type.Object({
   max_attempts: Type.Integer({ minimum: 1, default: 3 }),
@@ -25,16 +39,17 @@ export const RetryPolicy = Type.Object({
   escalation_event: Type.String({ default: 'stage.escalated' })
 })
 
-// All executable invocations are command strings.
-// They must match the profile's command-prefix allowlist (AWO-9 AC2).
-export const CommandString = Type.String({ minLength: 1, description: 'command line; first token matches allowlist' })
+// All executable invocations are opaque command strings to the engine.
+// First token is validated against the profile's execution_policy.allowed_prefixes (AWO-9 AC2).
+export const CommandString = Type.String({ minLength: 1, description: 'command line; opaque to engine; prefix checked against execution_policy' })
 
 export const TriggerMap = Type.Object({
   pre: Type.Optional(CommandString),
   post: Type.Optional(CommandString)
 })
 
-// AWO-11 — runtime sandbox descriptor.
+// AWO-11 — runtime sandbox descriptor SHAPE (enforcement is M4 / adapter).
+// The field is OPTIONAL on a stage (review 002 §07): MVP profiles may omit it.
 export const SandboxDescriptor = Type.Object({
   tool_allowlist: Type.Array(Type.String(), { description: 'tool ids the worker may invoke' }),
   fs_scope: Type.Object({
@@ -56,7 +71,7 @@ export const SandboxDescriptor = Type.Object({
 export const StageDefinition = Type.Object({
   id: Type.String(),
   worker: Type.String({ description: 'stage-worker dispatcher id' }),
-  sandbox: SandboxDescriptor,
+  sandbox: Type.Optional(SandboxDescriptor),
   optional: Type.Optional(Type.Boolean({ default: false })),
   human_gated: Type.Optional(Type.Boolean({ default: false })),
   triggers: Type.Optional(TriggerMap),
@@ -103,7 +118,7 @@ export const ProfileSchema = Type.Object({
   schema_version: Type.Literal(PROFILE_SCHEMA_VERSION),
   name: Type.String(),
   description: Type.Optional(Type.String()),
-  command_allowlist: Type.Array(Type.String(), { default: DEFAULT_COMMAND_ALLOWLIST }),
+  execution_policy: ExecutionPolicy,
   stages: Type.Array(StageDefinition),
   transitions: Type.Array(StageTransition),
   terminal: Type.Array(Type.String({ description: 'stage ids whose DONE ends the workflow' })),
