@@ -130,3 +130,10 @@ workflows:
     - 009-agentic-workflow-orchestrator
     - 010-workflow-packages
   superseded_by: null
+
+mise_sdd_cli:
+  title: Mise SDD CLI hub
+  status: in-progress
+  specs:
+    - 011-mise-sdd-cli
+  superseded_by: null

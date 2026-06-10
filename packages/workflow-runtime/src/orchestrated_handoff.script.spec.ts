@@ -10,7 +10,10 @@ import {
   renderManifestXml,
   runLint,
   scanFeatureDir
-} from './orchestrated_handoff.script.ts'
+} from './orchestrated_handoff.script'
+
+/** Generic feature-dir token for phase tests (avoids hardcoding assets/specs/*). */
+const FEAT_011 = 'features/011-mise-sdd-cli'
 
 function makeFiles(overrides: Partial<FileSet> = {}): FileSet {
   return {
@@ -39,7 +42,7 @@ describe('detectPhase — transition table', () => {
       files: makeFiles({ plan: false }),
       phase: 'plan',
       commandPart: 'speckit.plan',
-      hintPart: '--lint'
+      hintPart: '--strict'
     },
     {
       label: 'plan.md without analyze-plan checklist → speckit.analyze with plan-pass hint',
@@ -83,7 +86,7 @@ describe('detectPhase — transition table', () => {
       featureDir: 'tools/__tests__/fixtures/003-sync-frecency-preserve',
       needsHandoff: true,
       expectedPhase: 'handoff-generate',
-      expectedCommandPart: 'mise run spec handoff-generate'
+      expectedCommandPart: 'mise run spec workflow handoff generate'
     },
     {
       label: 'A1: analyze-tasks done + manifest does NOT need handoff → speckit.implement',
@@ -110,6 +113,13 @@ describe('detectPhase — transition table', () => {
 
   describe.each([
     {
+      label: 'A1: no gherkin handoff + implement-done → mise run spec gate',
+      files: makeFiles({ handoffEmittedGherkin: false, implementComplete: true }),
+      featureDir: FEAT_011,
+      phase: 'gate',
+      commandPart: 'mise run spec gate'
+    },
+    {
       label: 'handoff emitted, implement not complete → speckit.implement',
       files: makeFiles({ implementComplete: false }),
       featureDir: undefined,
@@ -125,10 +135,11 @@ describe('detectPhase — transition table', () => {
     }
   ])('$label', ({ files, featureDir, phase, commandPart }) => {
     it('returns final transition', () => {
-      const r = featureDir ? detectPhase(files, featureDir) : detectPhase(files)
+      const probe = files.handoffEmittedGherkin === false && files.implementComplete === true ? () => false : () => true
+      const r = featureDir ? detectPhase(files, featureDir, probe) : detectPhase(files)
       expect(r.phase).toBe(phase)
       expect(r.command).toContain(commandPart)
-      if (featureDir) expect(r.command).toContain('003-sync-frecency-preserve')
+      if (featureDir) expect(r.command).toContain(featureDir.split('/').pop() ?? featureDir)
     })
   })
 })

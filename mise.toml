@@ -786,7 +786,8 @@ BLOCK_ON_THREAT="true"
       flag "--open-devtools" help="Print CEF DevTools URLs for kb renderer (Cmd+click; requires --cef)"
       flag "--force" help="Tear down any running kb-dev and watcher before start"
     }
-  ''', run = '''
+  ''', run = "bun tools/bin/app.script.ts" }
+"_app_raw" = { hide = true, run = '''
     #!/usr/bin/env bash
     set -euo pipefail
 
@@ -861,18 +862,18 @@ BLOCK_ON_THREAT="true"
       ;;
     gates)
       ran=false
-      if [[ "${usage_quality:-false}" == "true" ]]; then
+      if [[ "${usage_quality:-false}" == "true" || "${usage_all:-false}" == "true" ]]; then
         ran=true
         echo "app gates: running quality gate..."
         bash .agents/skills/app-quality-gate/scripts/gate.sh
       fi
-      if [[ "${usage_policy:-false}" == "true" ]]; then
+      if [[ "${usage_policy:-false}" == "true" || "${usage_all:-false}" == "true" ]]; then
         ran=true
         echo "app gates: running policy gate..."
         GATE_EMBEDDED_POLICY=1 bash .agents/skills/app-quality-gate/scripts/gate_policy.sh
       fi
       if [[ "$ran" != "true" ]]; then
-        echo "app gates: pass --quality and/or --policy" >&2
+        echo "app gates: pass --quality, --policy, and/or --all" >&2
         exit 2
       fi
       ;;
@@ -959,257 +960,7 @@ BLOCK_ON_THREAT="true"
         choices "text" "json"
       }
     }
-  ''', run = '''
-    #!/usr/bin/env bun
-
-    const TASK_SEPARATOR = ':'
-    const COMPLEX_SCRIPT_PATTERN = /(&&|\|\||;|\||>|<|\bmkdir\b|\brm\b|\btee\b)/
-    const TABLE_TASK_PATTERN = /^\[tasks\."?([^"\]]+)"?\]/gm
-    const EXPECTED_PUBLIC_TASKS = [
-      ['app', 'Manage Electrobun dev lifecycle and gates'],
-      ['ci', 'Run review, release, and publish CI workflows'],
-      ['docker', 'Build, run, and test the Docker image'],
-      ['graph', 'Install, configure, build, refresh, inspect, and watch the local CRG knowledge graph'],
-      ['lint', 'Run lint, strict lint, fix, report, and graph workflows'],
-      ['perf', 'Run preview-server performance benchmark workflows'],
-      ['policy', 'Check Mise task policy and usage specs'],
-      ['project', 'Manage setup, dependencies, cleanup, icons, repository, and local maintenance'],
-      ['skill', 'Validate, generate, install, and report skill registry artifacts'],
-      ['test', 'Run unit, CI, e2e preview, spec audit, and style checks'],
-    ] as const
-    const EXPECTED_PACKAGE_SCRIPTS = [
-      'start', 'dev', 'dev:cef', 'dev:verbose', 'dev:debug', 'dev:trace', 'dev:kill',
-      'build', 'build:prod', 'build:insecure-local', 'test', 'typecheck',
-      'lint', 'lint:strict', 'lint:fix', 'lint:biome', 'lint:biome:strict',
-      'lint:biome:fix', 'lint:biome:format', 'lint:mise', 'lint:knip',
-      'lint:depcruise', 'lint:jscpd', 'lint:ls', 'lint:hadolint', 'lint:ast-grep',
-      'lint:ast-grep:fix', 'e2e:preview:install', 'e2e:preview', 'e2e:preview:ui',
-    ] as const
-    const SPLIT_FAMILY_PREFIXES: string[] = []
-    const ACTION = process.env.usage_cmd ?? 'check'
-    const FORMAT = process.env.usage_format ?? 'text'
-    const STRICT = process.env.usage_strict === 'true'
-
-    type FindingSeverity = 'error' | 'warn' | 'info'
-    type Finding = { severity: FindingSeverity; code: string; target: string; message: string }
-    type TaskConfig = { description?: string; hide?: boolean; run?: string | string[]; usage?: string }
-    type UsageArg = { name?: string; choices?: { choices?: string[] } }
-    type UsageJson = { cmd?: { args?: UsageArg[]; flags?: Array<{ name?: string }> } }
-    type PolicyContext = { miseText: string; tasks: Record<string, TaskConfig>; scripts: Record<string, string> }
-
-    function die(msg: string, code = 1): never {
-      console.error(msg)
-      process.exit(code)
-    }
-
-    function chdirToGitRoot(): void {
-      const r = Bun.spawnSync(['git', 'rev-parse', '--show-toplevel'])
-      const root = r.stdout.toString().trim()
-      if (!r.success || !root) die('policy: run from inside the app git checkout')
-      process.chdir(root)
-    }
-
-    chdirToGitRoot()
-
-    if (ACTION !== 'check' && ACTION !== 'report') {
-      die(`policy: unknown action ${ACTION} (use check|report)`, 2)
-    }
-
-    function isRecord(value: unknown): value is Record<string, unknown> {
-      return typeof value === 'object' && value !== null
-    }
-
-    async function readContext(): Promise<PolicyContext> {
-      const [miseText, packageConfig] = await Promise.all([
-        Bun.file('mise.toml').text(),
-        Bun.file('package.json').json() as Promise<{ scripts?: Record<string, string> }>,
-      ])
-      const tasksRaw = (Bun.TOML.parse(miseText) as { tasks?: unknown }).tasks
-      const tasks = isRecord(tasksRaw)
-        ? Object.fromEntries(Object.entries(tasksRaw).filter((e): e is [string, TaskConfig] => isRecord(e[1])))
-        : {}
-      return { miseText, tasks, scripts: packageConfig.scripts ?? {} }
-    }
-
-    function runUsage(command: string[], spec: string): { ok: boolean; output: string } {
-      const r = Bun.spawnSync(['usage', ...command], { stdin: new TextEncoder().encode(spec) })
-      return {
-        ok: r.success,
-        output: `${r.stdout.toString()}${r.stderr.toString()}`.trim(),
-      }
-    }
-
-    function parseUsageJson(spec: string): UsageJson | undefined {
-      const result = runUsage(['generate', 'json', '-f', '-'], spec)
-      if (!result.ok) return
-      return JSON.parse(result.output) as UsageJson
-    }
-
-    function checkOneUsageSpec(name: string, usage: string): Finding[] {
-      const spec = `name ${JSON.stringify(name)}\n${usage}`
-      const findings: Finding[] = []
-      const lint = runUsage(['lint', '-W', '-'], spec)
-      if (!lint.ok) findings.push({ severity: 'error', code: 'usage-lint', target: name, message: lint.output })
-      const usageJson = parseUsageJson(spec)
-      if (usageJson === undefined) {
-        findings.push({ severity: 'error', code: 'usage-json', target: name, message: 'Usage JSON generation failed.' })
-        return findings
-      }
-      return findings
-    }
-
-    function checkUsageSpecs(tasks: Record<string, TaskConfig>): Finding[] {
-      return Object.entries(tasks).flatMap(([name, task]) =>
-        typeof task.usage === 'string' ? checkOneUsageSpec(name, task.usage) : [],
-      )
-    }
-
-    function checkTableStyleTasks(miseText: string, tasks: Record<string, TaskConfig>): Finding[] {
-      return [...miseText.matchAll(TABLE_TASK_PATTERN)].flatMap(match => {
-        const name = match[1]
-        if (!name) return []
-        const task = tasks[name]
-        if (!task || task.run || task.usage) return []
-        return [
-          {
-            severity: 'warn' as const,
-            code: 'table-task',
-            target: name,
-            message: 'Prefer an inline task object under [tasks].',
-          },
-        ]
-      })
-    }
-
-    function checkDeprecatedTasks(tasks: Record<string, TaskConfig>): Finding[] {
-      return Object.entries(tasks)
-        .filter(([, task]) => task.description?.includes('DEPRECATED'))
-        .map(([name]) => ({
-          severity: 'warn' as const,
-          code: 'deprecated-task',
-          target: name,
-          message: 'Remove deprecated task names before enforcing policy.',
-        }))
-    }
-
-    function checkSplitFamilies(tasks: Record<string, TaskConfig>): Finding[] {
-      const names = Object.keys(tasks)
-      return SPLIT_FAMILY_PREFIXES.flatMap(prefix => {
-        const members = names.filter(name => name.startsWith(`${prefix}${TASK_SEPARATOR}`))
-        if (members.length === 0) return []
-        return [
-          {
-            severity: 'info' as const,
-            code: 'split-family',
-            target: prefix,
-            message: `Evaluate merging related tasks: ${members.sort().join(', ')}.`,
-          },
-        ]
-      })
-    }
-
-    function checkPackageScripts(scripts: Record<string, string>): Finding[] {
-      const findings: Finding[] = []
-      const actual = Object.keys(scripts)
-      if (JSON.stringify(actual) !== JSON.stringify(EXPECTED_PACKAGE_SCRIPTS)) {
-        findings.push({
-          severity: 'error',
-          code: 'package-script-surface',
-          target: 'package.json',
-          message: `Expected package scripts ${EXPECTED_PACKAGE_SCRIPTS.join(', ')}; got ${actual.join(', ')}.`,
-        })
-      }
-      findings.push(...Object.entries(scripts)
-        .filter(([, command]) => COMPLEX_SCRIPT_PATTERN.test(command) && !command.startsWith('mise run '))
-        .map(([name, command]) => ({
-          severity: 'info' as const,
-          code: 'complex-package-script',
-          target: name,
-          message: `Evaluate moving this script behind Mise: ${command}`,
-        })))
-      return findings
-    }
-
-    function checkPublicTaskSurface(tasks: Record<string, TaskConfig>): Finding[] {
-      const actual = Object.entries(tasks)
-        .filter(([, task]) => task.hide !== true)
-        .map(([name, task]) => [name, task.description ?? ''] as const)
-        .sort(([a], [b]) => a.localeCompare(b))
-      if (JSON.stringify(actual) === JSON.stringify(EXPECTED_PUBLIC_TASKS)) return []
-      return [{
-        severity: 'error' as const,
-        code: 'public-task-surface',
-        target: 'mise.toml',
-        message: `Expected public tasks ${EXPECTED_PUBLIC_TASKS.map(([name]) => name).join(', ')}; got ${actual.map(([name]) => name).join(', ')}.`,
-      }]
-    }
-
-    function checkMissingPackageScriptReferences(ctx: PolicyContext): Finding[] {
-      const scriptNames = new Set(Object.keys(ctx.scripts))
-      const refs = [...ctx.miseText.matchAll(/\bbun run ([A-Za-z0-9:_-]+)/g)]
-        .map(match => match[1])
-        .filter((name): name is string => name !== undefined)
-      return [...new Set(refs)]
-        .filter(name => !scriptNames.has(name))
-        .map(name => ({
-          severity: 'error' as const,
-          code: 'missing-package-script-reference',
-          target: name,
-          message: `mise.toml references removed package script '${name}'.`,
-        }))
-    }
-
-    function checkUsageActionReferences(miseText: string): Finding[] {
-      const legacyEnv = 'usage_' + 'action'
-      const legacyPattern = new RegExp(`\\bprocess\\.env\\.${legacyEnv}\\b|\\$\\{${legacyEnv}\\b`)
-      return legacyPattern.test(miseText)
-        ? [{
-            severity: 'error' as const,
-            code: 'usage-action-reference',
-            target: 'mise.toml',
-            message: 'Use usage_cmd for task command dispatch.',
-          }]
-        : []
-    }
-
-    async function collectFindings(): Promise<Finding[]> {
-      const ctx = await readContext()
-      return [
-        ...checkUsageSpecs(ctx.tasks),
-        ...checkPublicTaskSurface(ctx.tasks),
-        ...checkTableStyleTasks(ctx.miseText, ctx.tasks),
-        ...checkDeprecatedTasks(ctx.tasks),
-        ...checkSplitFamilies(ctx.tasks),
-        ...checkPackageScripts(ctx.scripts),
-        ...checkMissingPackageScriptReferences(ctx),
-        ...checkUsageActionReferences(ctx.miseText),
-      ]
-    }
-
-    function printText(findings: Finding[]) {
-      if (findings.length === 0) {
-        console.log('policy check: no findings')
-        return
-      }
-      console.log(`policy check: ${findings.length} finding(s)`)
-      for (const f of findings) {
-        console.log(`[${f.severity}] ${f.code} ${f.target}: ${f.message}`)
-      }
-    }
-
-    try {
-      const findings = await collectFindings()
-      if (FORMAT === 'json') {
-        console.log(JSON.stringify({ findings }, null, 2))
-      } else {
-        printText(findings)
-      }
-      if (STRICT && findings.length > 0) process.exit(1)
-    } catch (error) {
-      die(error instanceof Error ? error.message : String(error), -1)
-    }
-
-  ''' }
+  ''', run = "bun tools/bin/policy.script.ts" }
 "skill" = { description = "Validate, generate, install, and report skill registry artifacts", usage = '''
 cmd "validate" {
   flag "--raw" help="Plain text output (no gum)"
@@ -1401,85 +1152,106 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       *) echo "docker: unknown action '${CMD}' (expected one of: build, run, test)"; exit 2 ;;
     esac
   ''' }
-"audit" = { description = "Documentation hygiene diagnostics (non-gating)", usage = '''
-    cmd "rogue-refs" help="Inventory inbound assets/docs/ links on guides and agent entry docs"
-  ''', run = "bun tools/bin/audit.script.ts" }
-"spec" = { description = "kb SDD spec checks: lint, trace, gate, legacy parity, worktrees", usage = '''
+"spec" = { description = "kb SDD spec hub: lint, trace, gate, test, workflow, audit, scaffold", usage = '''
+    flag "--raw" global=#true help="Machine output, no gum styling (mutually exclusive with --json)"
+    flag "--json" global=#true help="Machine-readable JSON where supported (mutually exclusive with --raw)"
+
     cmd "lint" {
-      flag "--all" help="Lint every assets/specs/NNN-*/spec.md"
-      flag "--root <root>" default="assets/specs" help="Spec root for --all"
       flag "--strict" help="Exit non-zero on errors"
-      arg "<target>" help="Feature dir or spec.md path"
+      arg "[feature]" help="Feature dir or spec.md path (omitted: lint every assets/specs/NNN-*/spec.md)"
     }
     cmd "trace" {
-      flag "--features <dir>" default="assets/features/e2e" help="Executable .feature root"
       flag "--strict" help="Exit non-zero on broken links"
-      arg "<feature_dir>" help="Feature dir holding spec.md"
+      arg "[feature]" help="Feature dir holding spec.md (omitted: active feature)"
     }
     cmd "gate" {
-      arg "[feature_dir]" help="Feature dir (default: .specify/feature.json, branch NNN-slug, or cwd)"
-    }
-    cmd "feature-init" {
-      flag "--id <id>" help="Three-digit id e.g. 001"
-      flag "--slug <slug>" help="Feature slug"
-    }
-    cmd "resume" {}
-    cmd "worktree-add" {
-      arg "<feature>" help="NNN-slug"
-    }
-    cmd "opencode-check" {}
-    cmd "library-manifest" {
-      flag "--dry-run" help="Print plan only; do not write manifest"
-      flag "--verify" help="Bidirectional check: YAML entries ↔ on-disk folders; fail if mismatch"
-    }
-    cmd "workflow" {
-      arg "<name>" help="Workflow id (e.g. orchestrated-handoff)"
-      flag "--feature <dir>" help="Existing feature dir, e.g. assets/specs/004-orchestrated-handoff"
-      flag "--manifest" help="Print subtask manifest XML for the feature"
-      flag "--next" help="Print the next canonical command (default if no action flag set)"
-      flag "--lint" help="Delegate to spec lint --strict on the feature dir (OHW-6 AC1)"
-    }
-    cmd "handoff-generate" {
-      flag "--feature <dir>" help="Feature dir holding handoff.md (required)"
-      flag "--focus <kind>" default="gherkin" help="gherkin|catalog|e2e-fix"
-      flag "--worker <name>" default="opencode" help="v1: opencode only"
-      flag "--dispatch" help="Pipe prompt to opencode run (also enabled by ORCHESTRATED_HANDOFF_DISPATCH=1)"
-      flag "--dry-run" help="Print prompt to stdout; do not write file"
-    }
-    cmd "security" {
-      flag "--strict" help="Fail on medium/high/critical per policy"
-      flag "--changed-only" help="Restrict scan to changed-file scope"
-      flag "--base <sha>" help="Diff base ref for changed-only mode"
-      flag "--json" help="Machine-readable output"
-    }
-    cmd "handoff-scrub" {
-      flag "--feature <dir>" help="Feature dir used for optional allowlist"
-      flag "--body <text>" help="Prompt body to scrub"
-    }
-    cmd "runs" {
-      arg "<action>" help="list|show|tail|prune"
-      flag "--feature <dir>" help="Filter by feature directory"
-      arg "[runId]" help="Run ID for show/tail"
-    }
-    cmd "audit" {
-      flag "--strict" help="Exit non-zero on error-level findings"
-      flag "--json" help="Machine-readable JSON output"
-      flag "--raw" help="Plain text output (no gum styling)"
-      arg "<feature_dir>" help="Feature dir e.g. assets/specs/005-workflow-observability"
+      arg "[feature]" help="Feature dir (omitted: resolveActiveFeatureDir)"
     }
     cmd "ready" {
-      arg "[feature_dir]" help="Feature dir to verify (default: auto-detect from .specify/feature.json)"
+      arg "[feature]" help="Feature dir (omitted: active feature)"
       flag "--key <key>" help="Catalog key for tag tests"
       flag "--phase <no>" help="Phase number for focused validation"
     }
+    cmd "init" {
+      flag "--id <id>" help="Three-digit id e.g. 001"
+      flag "--slug <slug>" help="Feature slug"
+    }
+    cmd "test" {
+      arg "[scope]" help="omitted = default composite"
+      arg "[feature]" help="Feature dir (omitted: active feature; pass scope explicitly to target another feature)"
+    }
+    cmd "workflow" {
+      cmd "run" {
+        arg "[feature]" help="Feature dir (omitted: active feature)"
+        flag "--dry-run" help="Print next step, do not execute"
+      }
+      cmd "resume" {
+        arg "[runId]" help="Run ID to resume"
+        flag "--answer <kv>" help="Answer key=value for NEED_INPUT stages"
+        flag "--approve <stage>" help="Approve human-gated stage"
+      }
+      cmd "runs" {
+        arg "<action>" help="list|show|tail|prune" {
+          choices "list" "show" "tail" "prune"
+        }
+        arg "[runId]" help="Run ID for show/tail"
+      }
+      cmd "bench" {}
+      cmd "handoff" {
+        cmd "generate" {
+          arg "[feature]" help="Feature dir holding handoff.md (omitted: active feature)"
+          flag "--focus <kind>" default="gherkin" help="gherkin|catalog|e2e-fix" {
+            choices "gherkin" "catalog" "e2e-fix"
+          }
+          flag "--worker <name>" default="opencode" help="opencode only" {
+            choices "opencode"
+          }
+          flag "--dispatch" help="Pipe prompt to opencode run"
+          flag "--dry-run" help="Print prompt to stdout; do not write file"
+        }
+        cmd "scrub" {
+          arg "[feature]" help="Feature dir used for optional allowlist (omitted: active feature)"
+          flag "--body <text>" help="Prompt body to scrub"
+        }
+      }
+    }
+    cmd "audit" {
+      cmd "docs" {
+        cmd "rogue-refs" help="Inventory inbound assets/docs/ links on guides and agent entry docs" {}
+      }
+      cmd "feature" {
+        flag "--strict" help="Exit non-zero on error-level findings"
+        arg "[feature]" help="Feature dir e.g. assets/specs/005-feature-demo (omitted: active feature)"
+      }
+      cmd "security" {
+        flag "--strict" help="Fail on medium/high/critical per policy"
+        flag "--changed-only" help="Restrict scan to changed-file scope"
+        flag "--base <sha>" help="Diff base ref for changed-only mode"
+      }
+    }
+    cmd "worktree" {
+      cmd "add" {
+        arg "<feature>" help="NNN-slug"
+      }
+    }
+    cmd "library" {
+      cmd "manifest" {
+        flag "--dry-run" help="Print plan only; do not write manifest"
+        flag "--verify" help="Bidirectional check: YAML entries ↔ on-disk folders"
+      }
+    }
+    cmd "opencode" {
+      cmd "check" {}
+    }
     cmd "review-handoff" {
-      arg "<action>" help="classify|extract-evidence|prepare|scaffold-audit"
-      flag "--feature <dir>" help="Feature dir (default handoff: handoff.md)"
-      flag "--handoff <path>" help="Handoff markdown path (overrides --feature default)"
+      arg "<action>" help="classify|extract-evidence|prepare|scaffold-audit" {
+        choices "classify" "extract-evidence" "prepare" "scaffold-audit"
+      }
+      arg "[feature]" help="Feature dir (omitted: default handoff.md)"
+      flag "--handoff <path>" help="Handoff markdown path (overrides [feature] default)"
       flag "--base <sha>" default="HEAD~1" help="Git base for classify/prepare"
       flag "--head <sha>" default="HEAD" help="Git head for classify/prepare"
       flag "--focus <kind>" help="implement-src|gherkin-bdd|governance-tools|docs-only|mixed"
-      flag "--json" help="Machine-readable JSON output"
     }
   ''', run = "bun tools/bin/spec.script.ts" }
 "catalog" = { description = "Shipped-feature registry (catalog.yaml metadata)", usage = '''

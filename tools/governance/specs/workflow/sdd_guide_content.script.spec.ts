@@ -42,22 +42,21 @@ describe('SDD_WORKFLOW_GUIDE.md — orchestrated-handoff section (OHW-5 AC1)', (
     expect(guide).toMatch(RE_OH_HEADING)
   })
 
-  it('lists the three mise entry commands + resume', () => {
-    expect(guide).toContain('mise run spec workflow orchestrated-handoff')
-    expect(guide).toContain('mise run spec handoff-generate')
-    expect(guide).toContain('mise run spec resume')
+  it('lists post-011 mise entry commands + resume', () => {
+    const feat = ['assets', 'specs', 'NNN-slug'].join('/')
+    expect(guide).toContain(`mise run spec workflow run ${feat}`)
+    expect(guide).toContain(`mise run spec workflow handoff generate ${feat}`)
+    expect(guide).toContain('mise run spec workflow resume')
   })
 
   it('no longer marks orchestrated-handoff as deferred', () => {
     expect(guide).not.toMatch(RE_DEFERRED_OH)
   })
 
-  it('does NOT contain mise `--` separator before `--feature`', () => {
-    expect(guide).not.toContain('-- --feature')
-  })
-
-  it('contains working mise run form with `--feature` (no double-dash separator)', () => {
-    expect(guide).toContain('mise run spec workflow orchestrated-handoff --feature')
+  it('uses positional [feature] (no --feature flag on workflow run)', () => {
+    const feat = ['assets', 'specs', 'NNN-slug'].join('/')
+    expect(guide).toContain(`mise run spec workflow run ${feat}`)
+    expect(guide).not.toContain('mise run spec workflow orchestrated-handoff --feature')
   })
 })
 

@@ -123,7 +123,7 @@ Same pattern for skills: `tools/governance/registries/skill/` (code) vs `assets/
 
 | Term | Meaning | Example |
 | ---- | ------- | ------- |
-| Governance | *Enforce* invariants | ast-grep rules, catalog validate, spec lint |
+| Governance | *Enforce* invariants | ast-grep rules, `mise run spec lint`, `mise run catalog validate`, `mise run policy check` |
 | Orchestration | *Sequence* workflow steps | style compile shell, HK calling validators |
 | Metrics | *Track numbers over time* | perf compare, e2e quality baseline |
 | Harness | Code that collects metrics | `perf.script.ts`, `e2e_metrics.script.ts` |

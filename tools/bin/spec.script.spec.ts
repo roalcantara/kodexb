@@ -3,12 +3,181 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { findActiveRun, listActiveRuns } from '@kb/workflow-runtime'
-import { ALLOWED_WORKFLOW_NAMES, resolveSpecGateFeatureDir, validateWorkflowName } from './spec.script.ts'
+import { catalogPaths } from '../governance/support/catalog_paths.script.ts'
+import {
+  ALLOWED_WORKFLOW_NAMES,
+  planSpec,
+  rawJsonConflict,
+  resolveSpecGateFeatureDir,
+  type SpecPlan,
+  validateWorkflowName
+} from './spec.script.ts'
+
+// A real feature dir (built from the specs-root constant, not a literal — the
+// `no-inbound-assets-specs-ts` ast-grep rule bans hardcoded assets/specs/* in TS)
+// so resolveSpecFeatureDir resolves deterministically.
+const FEAT = `${catalogPaths.specs_root}/011-mise-sdd-cli`
+const spawnArgv = (p: SpecPlan): string[] => (p.kind === 'spawn' ? p.argv : [])
+
+/** Invoke a branch with explicit env (no reliance on process env or a TTY). */
+function plan(cmd: string, rest: string[], env: Record<string, string | undefined> = {}): SpecPlan {
+  return planSpec(cmd, rest, env, { activeRun: () => 'ACTIVE' })
+}
+
+describe('planSpec — every subcommand routes', () => {
+  it('lint with positional feature passes the dir (no --all)', () => {
+    const argv = spawnArgv(plan('lint', [], { usage_feature: 'feature/x' }))
+    expect(argv).toContain('feature/x')
+    expect(argv).not.toContain('--all')
+  })
+  it('lint with no feature falls back to --all', () => {
+    expect(spawnArgv(plan('lint', []))).toContain('--all')
+  })
+  it('trace routes to trace.script with the feature', () => {
+    const argv = spawnArgv(plan('trace', [], { usage_feature: FEAT, usage_strict: 'true' }))
+    expect(argv[1]).toContain('trace.script.ts')
+    expect(argv).toContain('--strict')
+  })
+  it('gate resolves a runner plan for the feature', () => {
+    const p = plan('gate', [], { usage_feature: FEAT })
+    expect(p.kind).toBe('runner')
+    if (p.kind === 'runner') expect(p.featureDir.endsWith('011-mise-sdd-cli')).toBe(true)
+  })
+  it('test routes scope + feature positionally (no --feat)', () => {
+    const argv = spawnArgv(plan('test', [], { usage_scope: 'unit', usage_feature: FEAT }))
+    expect(argv).toEqual(['bun', expect.stringContaining('spec_test.script.ts'), 'unit', FEAT])
+    expect(argv).not.toContain('--feat')
+  })
+  it('init passes --id/--slug', () => {
+    const argv = spawnArgv(plan('init', [], { usage_id: '012', usage_slug: 'demo' }))
+    expect(argv).toContain('012')
+    expect(argv).toContain('demo')
+  })
+  it('worktree add routes to worktree-add.sh with the feature', () => {
+    const argv = spawnArgv(plan('worktree', ['add'], { usage_feature: '012-demo' }))
+    expect(argv.join(' ')).toContain('worktree-add.sh')
+    expect(argv).toContain('012-demo')
+  })
+  it('worktree unknown action errors', () => {
+    expect(plan('worktree', ['nope']).kind).toBe('error')
+  })
+  it('opencode check routes to opencode_check.sh', () => {
+    expect(spawnArgv(plan('opencode', ['check'])).join(' ')).toContain('opencode_check.sh')
+  })
+  it('library manifest passes --dry-run/--verify', () => {
+    const argv = spawnArgv(plan('library', ['manifest'], { usage_dry_run: 'true', usage_verify: 'true' }))
+    expect(argv).toContain('--dry-run')
+    expect(argv).toContain('--verify')
+  })
+  it('workflow run (default) targets orchestrated-handoff with feature', () => {
+    const argv = spawnArgv(plan('workflow', ['run'], { usage_feature: FEAT, usage_dry_run: 'true' }))
+    expect(argv).toContain('orchestrated-handoff')
+    expect(argv).toContain('--feature')
+    expect(argv).toContain('--dry-run')
+  })
+  it('workflow resume uses provided runId', () => {
+    const testEnv: Record<string, string> = {}
+    testEnv['usage_runId'] = 'R1'
+    testEnv['usage_answer'] = 'q=1'
+    const argv = spawnArgv(plan('workflow', ['resume'], testEnv))
+    expect(argv).toContain('R1')
+    expect(argv).toContain('--answer')
+  })
+  it('workflow resume falls back to active run', () => {
+    const argv = spawnArgv(plan('workflow', ['resume'], {}))
+    expect(argv).toContain('ACTIVE')
+  })
+  it('workflow runs routes the action', () => {
+    const argv = spawnArgv(plan('workflow', ['runs'], { usage_action: 'list' }))
+    expect(argv.join(' ')).toContain('runs_cli.script.ts')
+    expect(argv).toContain('list')
+  })
+  it('workflow handoff generate routes with feature + focus', () => {
+    const argv = spawnArgv(plan('workflow', ['handoff', 'generate'], { usage_feature: FEAT, usage_focus: 'gherkin' }))
+    expect(argv.join(' ')).toContain('handoff_generate.script.ts')
+    expect(argv).toContain('--focus')
+  })
+  it('workflow handoff scrub routes to handoff_scrub', () => {
+    expect(spawnArgv(plan('workflow', ['handoff', 'scrub'])).join(' ')).toContain('handoff_scrub.script.ts')
+  })
+  it('audit docs rogue-refs routes', () => {
+    expect(spawnArgv(plan('audit', ['docs', 'rogue-refs'])).join(' ')).toContain('rogue-refs')
+  })
+  it('audit feature resolves the dir', () => {
+    const argv = spawnArgv(plan('audit', ['feature'], { usage_feature: FEAT, usage_strict: 'true' }))
+    expect(argv.join(' ')).toContain('audit.script.ts')
+    expect(argv).toContain('--strict')
+  })
+  it('audit security routes to scan.script', () => {
+    const argv = spawnArgv(plan('audit', ['security'], { usage_changed_only: 'true' }))
+    expect(argv.join(' ')).toContain('scan.script.ts')
+    expect(argv).toContain('--changed-only')
+  })
+  it('ready resolves a runner plan', () => {
+    expect(plan('ready', [], { usage_feature: FEAT }).kind).toBe('runner')
+  })
+  it('ready --phase routes to phase.script', () => {
+    const argv = spawnArgv(plan('ready', [], { usage_feature: FEAT, usage_phase: '3' }))
+    expect(argv.join(' ')).toContain('phase.script.ts')
+    expect(argv).toContain('3')
+  })
+  it('review-handoff routes the action', () => {
+    const argv = spawnArgv(plan('review-handoff', [], { usage_action: 'classify' }))
+    expect(argv.join(' ')).toContain('review_handoff.script.ts')
+    expect(argv).toContain('classify')
+  })
+  it('unknown subcommand errors', () => {
+    const p = plan('frobnicate', [])
+    expect(p.kind).toBe('error')
+    if (p.kind === 'error') expect(p.message).toContain('unknown action')
+  })
+})
+
+describe('planSpec — global flags', () => {
+  it('--raw + --json conflict aborts before dispatch', () => {
+    const p = plan('lint', [], { usage_raw: 'true', usage_json: 'true' })
+    expect(p.kind).toBe('error')
+    if (p.kind === 'error') expect(p.message).toContain('mutually exclusive')
+  })
+  it('global --json propagates to audit feature argv', () => {
+    expect(spawnArgv(plan('audit', ['feature'], { usage_feature: FEAT, usage_json: 'true' }))).toContain('--json')
+  })
+  it('global --raw propagates to audit feature argv', () => {
+    expect(spawnArgv(plan('audit', ['feature'], { usage_feature: FEAT, usage_raw: 'true' }))).toContain('--raw')
+  })
+  it('global --json carries into the gate runner plan', () => {
+    const p = plan('gate', [], { usage_feature: FEAT, usage_json: 'true' })
+    expect(p.kind === 'runner' && p.json).toBe(true)
+  })
+  it('global --raw carries into the ready runner plan', () => {
+    const p = plan('ready', [], { usage_feature: FEAT, usage_raw: 'true' })
+    expect(p.kind === 'runner' && p.raw).toBe(true)
+  })
+})
 
 describe('spec.script', () => {
   it('exports a dispatch entrypoint module', async () => {
     const mod = await import('./spec.script.ts')
     expect(typeof mod).toBe('object')
+  })
+})
+
+describe('rawJsonConflict', () => {
+  it('reports a conflict when both --raw and --json are set', () => {
+    expect(rawJsonConflict(true, true)).toContain('mutually exclusive')
+  })
+
+  describe('when at most one is set', () => {
+    const cases = [
+      { name: 'neither', raw: false, json: false },
+      { name: 'raw only', raw: true, json: false },
+      { name: 'json only', raw: false, json: true }
+    ]
+    for (const { name, raw, json } of cases) {
+      it(`returns null for ${name}`, () => {
+        expect(rawJsonConflict(raw, json)).toBeNull()
+      })
+    }
   })
 })
 

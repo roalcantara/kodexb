@@ -60,14 +60,14 @@ export function detectPhase(
   if (!files.spec) {
     return {
       phase: 'specify',
-      command: 'speckit.specify (or `mise run spec feature-init` first for greenfield)'
+      command: 'speckit.specify (or `mise run spec init --id <NNN> --slug <slug>` first for greenfield)'
     }
   }
   if (!files.plan) {
     return {
       phase: 'plan',
       command: 'speckit.plan',
-      focusHint: `Run: mise run spec workflow orchestrated-handoff --feature ${featureDir} --lint`
+      focusHint: `Run: mise run spec lint ${featureDir} --strict`
     }
   }
   if (!files.analyzePlanChecklist) {
@@ -97,14 +97,11 @@ export function detectPhase(
     }
   }
   // A1: only suggest handoff-generate when the manifest actually needs it.
-  if (!files.handoffEmittedGherkin) {
-    if (manifestNeedsHandoff()) {
-      return {
-        phase: 'handoff-generate',
-        command: `mise run spec handoff-generate --feature ${featureDir} --focus gherkin`
-      }
+  if (!files.handoffEmittedGherkin && manifestNeedsHandoff()) {
+    return {
+      phase: 'handoff-generate',
+      command: `mise run spec workflow handoff generate ${featureDir} --focus gherkin`
     }
-    return { phase: 'implement', command: 'speckit.implement' }
   }
   if (!files.implementComplete) {
     return { phase: 'implement', command: 'speckit.implement' }

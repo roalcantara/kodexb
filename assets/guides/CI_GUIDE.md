@@ -131,7 +131,7 @@ mise exec -- actionlint   # validates all .github/workflows/*.yml
 
 Jobs:
 
-- **`security`** — `mise run spec security --strict --base "$GITHUB_BASE_REF"`
+- **`security`** — `mise run spec audit security --strict --base "$GITHUB_BASE_REF"`
   runs deterministic security checks (secrets, dependency, Electrobun surface)
   and must pass before build.
 
@@ -374,12 +374,12 @@ A nightly smoke workflow (`.github/workflows/smoke.yml`) runs on a schedule
 2. `mise run spec gate` — active SDD feature inferred from `.specify/feature.json`
    (same resolution as `mise run spec ready`).
 3. `mise run catalog validate` — validates catalog entries, schema, tags.
-4. `mise run spec workflow orchestrated-handoff --feature tools/__tests__/fixtures/workflow/smoke-feature` —
-   orchestrator phase-detect / next-step smoke against a committed fixture dir.
+4. `mise run spec workflow run tools/__tests__/fixtures/workflow/smoke-feature --dry-run` —
+   orchestrator phase-detect smoke against a committed fixture dir.
    Exit 0 and prints the next canonical step (e.g. `speckit.implement`); this is
    NOT full profile execution — the fixture has no real implementation.
 
-The orchestrator step is smoke-only — it confirms the orchestrated-handoff
+The orchestrator step is smoke-only — it confirms the workflow runner
 pipeline resolves and suggests the correct next phase. Full profile execution
 is deferred to orchestrator dogfooding after `011-mise-sdd-cli`.
 
