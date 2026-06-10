@@ -51,8 +51,10 @@ function isShutdownBlock(e: WorkflowEvent): boolean {
 
 type AnyEvent = Record<string, unknown>
 
+const RANDOM_BYTES_LENGTH = 4
+
 function generateInsightId(): string {
-  return `ri-${randomBytes(4).toString('hex')}`
+  return `ri-${randomBytes(RANDOM_BYTES_LENGTH).toString('hex')}`
 }
 
 export function buildRetro(events: WorkflowEvent[], runId: string): RetroOutput {

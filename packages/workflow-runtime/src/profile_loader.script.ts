@@ -2,6 +2,8 @@ import { existsSync, readFileSync } from 'node:fs'
 import { type Profile, ProfileSchema } from '@kb/workflow-core'
 import { Value } from '@sinclair/typebox/value'
 
+const RE_SHELL_METACHAR = /[;&|`$()\n]/
+
 export class ProfileLoadError extends Error {
   diagnostics: string[]
 
@@ -12,6 +14,7 @@ export class ProfileLoadError extends Error {
   }
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing complexity, refactor deferred
 export function loadProfile(path: string): Profile {
   if (!existsSync(path)) {
     throw new ProfileLoadError(`profile not found: ${path}`)
@@ -48,7 +51,7 @@ export function loadProfile(path: string): Profile {
     if (typeof prefix !== 'string' || prefix.trim().length === 0) {
       throw new ProfileLoadError('execution_policy.allowed_prefixes entries must be non-empty strings')
     }
-    if (/[;&|`$()\n]/.test(prefix)) {
+    if (RE_SHELL_METACHAR.test(prefix)) {
       throw new ProfileLoadError(`execution_policy.allowed_prefixes entry contains shell metacharacters: "${prefix}"`)
     }
   }

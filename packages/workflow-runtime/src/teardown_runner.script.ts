@@ -47,7 +47,9 @@ export function spawnTeardownFireAndForget(
       })
       onSettled(result)
     })
-    .catch(() => {})
+    .catch(() => {
+      /* intentional noop — fire-and-forget */
+    })
 
   return {
     command: descriptor.command,

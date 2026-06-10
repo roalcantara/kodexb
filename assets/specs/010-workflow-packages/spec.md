@@ -205,12 +205,12 @@ The workflow engine lives at `tools/governance/specs/workflow/` today. 009 deliv
 
 ## Delivery map
 
-| Track             | Requirements |
-| ----------------- | ------------ |
-| Package promotion | WEP-1…WEP-5  |
-| 009 follow-ups    | WEP-6…WEP-8  |
-| Bun PM conventions| WEP-10       |
-| Program closeout  | WEP-9        |
+| Track              | Requirements |
+| ------------------ | ------------ |
+| Package promotion  | WEP-1…WEP-5  |
+| 009 follow-ups     | WEP-6…WEP-8  |
+| Bun PM conventions | WEP-10       |
+| Program closeout   | WEP-9        |
 
 Successor: [`011-mise-sdd-cli`](../011-mise-sdd-cli/) (mise hub, `spec test`, `task_runner`).
 

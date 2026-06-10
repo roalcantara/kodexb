@@ -46,11 +46,25 @@ export type DispatchResult = {
   bodyBytes: number
 }
 
-const ARGV_SAFE_THRESHOLD = 64 * 1024
+const BYTES_PER_KILOBYTE = 1024
+const ARGV_THRESHOLD_KILOBYTES = 64
+const ARGV_SAFE_THRESHOLD = ARGV_THRESHOLD_KILOBYTES * BYTES_PER_KILOBYTE
 const OPERATOR_SMOKE_PATTERNS = [/operator/i, /manual/i, /smoke/i, /browser/i, /quickstart/i]
 const EVIDENCE_TEST_PATTERNS = [/`?bun test\b/i, /mise run test tag\b/i]
 
+const RE_AC_TABLE_HEADER = /^\|\s*ID\s*\|\s*Done when\s*\|\s*Evidence\s*\|/i
+const RE_TABLE_SEPARATOR = /^\|\s*[-: ]+\s*\|/
+const RE_AC_TAG = /^([A-Z]+)-(\d+)\s+AC(\d+)$/i
+const RE_FILE_TOUCH_HEADING = /^#{2,4}\s+File touch list\b/i
+const RE_BULLET_FILENAME = /^\s*[-*]\s+`?([^`\s]+)`?/
+const RE_TABLE_FILENAME = /^\|\s*`?([^`|]+\.\w+)`?\s*\|/
+const RE_LEADING_DIGITS = /^\d+-/
+const RE_FEATURE_NUMBER = /^(\d+)-/
+const RE_PRESERVE_SUFFIX = /-preserve$|-persistence$/
+const AC_TABLE_MIN_COLUMNS = 3
+
 /** Parse the markdown "ID | Done when | Evidence" table from handoff.md. */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing complexity, refactor deferred
 export function parseHandoffAcTable(md: string): AcRow[] {
   const rows: AcRow[] = []
   const lines = md.split('\n')
@@ -58,7 +72,7 @@ export function parseHandoffAcTable(md: string): AcRow[] {
   for (const raw of lines) {
     const line = raw.trim()
     if (!inTable) {
-      if (/^\|\s*ID\s*\|\s*Done when\s*\|\s*Evidence\s*\|/i.test(line)) {
+      if (RE_AC_TABLE_HEADER.test(line)) {
         inTable = true
       }
       continue
@@ -67,12 +81,12 @@ export function parseHandoffAcTable(md: string): AcRow[] {
       inTable = false
       continue
     }
-    if (/^\|\s*[-: ]+\s*\|/.test(line)) continue
+    if (RE_TABLE_SEPARATOR.test(line)) continue
     const cells = line
       .split('|')
       .slice(1, -1)
       .map(c => c.trim())
-    if (cells.length < 3) continue
+    if (cells.length < AC_TABLE_MIN_COLUMNS) continue
     const [id, doneWhen, evidence] = [cells[0] ?? '', cells[1] ?? '', cells[2] ?? '']
     const acTag = toAcTag(id)
     const sliceId = acTag ? sliceIdFromAcTag(acTag) : null
@@ -89,7 +103,7 @@ export function parseHandoffAcTable(md: string): AcRow[] {
 }
 
 function toAcTag(id: string): string | null {
-  const m = id.trim().match(/^([A-Z]+)-(\d+)\s+AC(\d+)$/i)
+  const m = id.trim().match(RE_AC_TAG)
   if (!m?.[1] || !m[2] || !m[3]) return null
   return `@ac:${m[1].toUpperCase()}-${m[2]}_AC${m[3]}`
 }
@@ -100,21 +114,22 @@ function classifyOperatorSmoke(evidence: string): boolean {
 }
 
 /** Extract a file touch list from plan.md (heading, fallback to path heuristics). */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing complexity, refactor deferred
 export function extractFileTouchList(planMd: string | null): string[] {
   if (!planMd) return []
   const lines = planMd.split('\n')
   const explicit: string[] = []
   let captureUntilBlank = false
   for (const raw of lines) {
-    if (/^#{2,4}\s+File touch list\b/i.test(raw)) {
+    if (RE_FILE_TOUCH_HEADING.test(raw)) {
       captureUntilBlank = true
       continue
     }
     if (captureUntilBlank) {
       if (raw.trim() === '' && explicit.length > 0) break
-      const bulletMatch = raw.match(/^\s*[-*]\s+`?([^`\s]+)`?/)
+      const bulletMatch = raw.match(RE_BULLET_FILENAME)
       if (bulletMatch?.[1]) explicit.push(bulletMatch[1])
-      const tableMatch = raw.match(/^\|\s*`?([^`|]+\.\w+)`?\s*\|/)
+      const tableMatch = raw.match(RE_TABLE_FILENAME)
       if (tableMatch?.[1]) explicit.push(tableMatch[1].trim())
     }
   }
@@ -137,15 +152,15 @@ function dedupe(items: string[]): string[] {
 
 /** Derive catalog key from feature slug (`003-sync-frecency-preserve` → `sync_frecency_preserve`). */
 export function catalogKeyFromSlug(slug: string): string {
-  return slug.replace(/^\d+-/, '').replace(/-/g, '_')
+  return slug.replace(RE_LEADING_DIGITS, '').replace(/-/g, '_')
 }
 
 export function slugFromFeatureDir(featureDir: string): string {
-  return path.basename(featureDir).replace(/^\d+-/, '')
+  return path.basename(featureDir).replace(RE_LEADING_DIGITS, '')
 }
 
 export function featureNumberFromDir(featureDir: string): string {
-  const m = path.basename(featureDir).match(/^(\d+)-/)
+  const m = path.basename(featureDir).match(RE_FEATURE_NUMBER)
   return m?.[1] ?? '000'
 }
 
@@ -205,7 +220,7 @@ Required reading:
 1. ${featureDir}/spec.md, plan.md, tasks.md, handoff.md
 2. assets/guides/BDD_GUIDE.md, assets/guides/TESTING_GUIDE.md
 3. assets/guides/SDD_WORKFLOW_GUIDE.md § Plan skill routing — load at most 4 skills (cap rule); never "load all skills" (OHW-7)
-4. assets/features/${slug.replace(/-preserve$|-persistence$/, '')}.feature (if it exists)
+4. assets/features/${slug.replace(RE_PRESERVE_SUFFIX, '')}.feature (if it exists)
 5. tools/governance/registries/catalog/tag.script.ts — \`sliceIdFromAcTag\`, \`e2eTagExpression\`
 
 Architecture (do not violate):
@@ -409,6 +424,7 @@ export function dispatchToOpencode(
   return result
 }
 
+// biome-ignore lint/complexity/noExcessiveLinesPerFunction: pre-existing large function, refactor deferred
 export function run(
   argv: string[],
   options?: { writer?: WorkflowRunWriter; which?: (bin: string) => string | null; skipScrub?: boolean }

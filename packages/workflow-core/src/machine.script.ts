@@ -206,7 +206,9 @@ export const workflowMachine = setup({
     running: {
       on: {
         'STAGE.COMPLETE': [
+          // biome-ignore lint/security/noSecrets: false positive from XState guard names
           { target: 'need_input', guard: 'isDoneAndHumanGated', actions: 'assignEnvelope' },
+          // biome-ignore lint/security/noSecrets: false positive from XState guard names
           { target: 'evidence_pending', guard: 'isDoneAndAutoAdvance', actions: 'assignEnvelope' },
           { target: 'need_input', guard: 'isNeedInput', actions: 'assignEnvelope' },
           { target: 'blocked', guard: 'isBlocked', actions: ['assignEnvelope', 'setError'] },

@@ -5,6 +5,9 @@ import { bestEffortPrune } from './workflow_run.script.ts'
 
 const RUNS_ROOT = 'tmp/workflow-runs'
 
+const RE_LEADING_DIGITS = /^\d+-/
+const DURATION_ROUND_FACTOR = 100
+
 type Action = 'list' | 'show' | 'tail' | 'prune'
 
 function isValidAction(s: string): s is Action {
@@ -36,6 +39,7 @@ type RunSummary = {
   result: string
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing complexity, refactor deferred
 function collectRuns(root: string): RunSummary[] {
   if (!existsSync(root)) return []
   const runs: RunSummary[] = []
@@ -53,7 +57,7 @@ function collectRuns(root: string): RunSummary[] {
             .map(l => JSON.parse(l))
         : []
       const first = events[0] as Record<string, unknown> | undefined
-      const slug = first?.feature_dir ? path.basename(String(first.feature_dir)).replace(/^\d+-/, '') : '?'
+      const slug = first?.feature_dir ? path.basename(String(first.feature_dir)).replace(RE_LEADING_DIGITS, '') : '?'
       const last = events[events.length - 1] as Record<string, unknown> | undefined
       const lastPhase = (last?.type as string) ?? '?'
       const totalDurationMs = events.reduce(
@@ -64,7 +68,7 @@ function collectRuns(root: string): RunSummary[] {
         runId: file.replace('.ndjson', ''),
         slug,
         lastPhase,
-        totalDurationMs: Math.round(totalDurationMs * 100) / 100,
+        totalDurationMs: Math.round(totalDurationMs * DURATION_ROUND_FACTOR) / DURATION_ROUND_FACTOR,
         result: last?.type === 'gate' ? 'pass' : 'incomplete'
       })
     }

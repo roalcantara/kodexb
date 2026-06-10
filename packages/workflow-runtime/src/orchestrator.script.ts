@@ -25,6 +25,9 @@ import { generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow
 
 const ALL_QUESTIONS_ID = '__all__'
 
+const HEX_RADIX = 16
+const DEFAULT_TEARDOWN_TIMEOUT_MS = 30000
+
 function loadInsightsSafe(catalogPath: string): ReturnType<typeof loadInsights> {
   try {
     return loadInsights(catalogPath)
@@ -161,7 +164,7 @@ export class Orchestrator {
           return null
         }
       },
-      contentHash: (c: string) => Bun.hash(c).toString(16)
+      contentHash: (c: string) => Bun.hash(c).toString(HEX_RADIX)
     }
   }
 
@@ -205,6 +208,8 @@ export class Orchestrator {
     )
   }
 
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing complexity, refactor deferred
+  // biome-ignore lint/complexity/noExcessiveLinesPerFunction: pre-existing large function, refactor deferred
   run(): void {
     this.actor = createActor(workflowMachine, { input: {} })
     this.actor.start()
@@ -369,7 +374,7 @@ export class Orchestrator {
 
       if (stageDef.teardown && stageDef.teardown.length > 0) {
         this.actor.send({ type: 'TEARDOWN.QUEUED', tasks: stageDef.teardown })
-        const timeout = stageDef.teardown_timeout_ms ?? 30000
+        const timeout = stageDef.teardown_timeout_ms ?? DEFAULT_TEARDOWN_TIMEOUT_MS
         for (const tdCmd of stageDef.teardown) {
           const handle = spawnTeardownFireAndForget(
             { command: tdCmd, cwd: process.cwd(), timeout_ms: timeout },

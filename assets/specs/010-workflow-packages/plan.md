@@ -89,15 +89,15 @@ Keep smoke **non-blocking** for PR merges; engine unit tests stay synthetic.
 
 Normative for workspace promotion — [Bun workspaces](https://bun.com/docs/pm/workspaces), [catalogs](https://bun.com/docs/pm/catalogs), [install](https://bun.com/docs/pm/cli/install).
 
-| Practice | kb application |
-| -------- | -------------- |
-| **Catalog** | Root `catalog` (or `workspaces.catalog`) owns `xstate`, `@sinclair/typebox`, `yaml`; packages use `"catalog:"` |
-| **Workspace protocol** | `@kb/workflow-core`: `"workspace:*"` in runtime |
-| **Private packages** | `"private": true` on both workflow packages (no publish) |
-| **Per-package tests** | `packages/*/bunfig.toml` with `[test] root = "."`; run via `cd packages/<pkg> && bun test` |
-| **CI install** | Prefer `bun ci` / `--frozen-lockfile` in GitHub Actions |
-| **Isolated linker** | Default for workspace monorepos — do not regress to hoisted without ADR |
-| **Filter installs** | Optional: `bun install --filter './packages/workflow-core'` for focused dev |
+| Practice               | kb application                                                                                                 |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Catalog**            | Root `catalog` (or `workspaces.catalog`) owns `xstate`, `@sinclair/typebox`, `yaml`; packages use `"catalog:"` |
+| **Workspace protocol** | `@kb/workflow-core`: `"workspace:*"` in runtime                                                                |
+| **Private packages**   | `"private": true` on both workflow packages (no publish)                                                       |
+| **Per-package tests**  | `packages/*/bunfig.toml` with `[test] root = "."`; run via `cd packages/<pkg> && bun test`                     |
+| **CI install**         | Prefer `bun ci` / `--frozen-lockfile` in GitHub Actions                                                        |
+| **Isolated linker**    | Default for workspace monorepos — do not regress to hoisted without ADR                                        |
+| **Filter installs**    | Optional: `bun install --filter './packages/workflow-core'` for focused dev                                    |
 
 Example root fragment:
 

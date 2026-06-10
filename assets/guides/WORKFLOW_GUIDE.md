@@ -21,6 +21,16 @@ The workflow engine is split into two Bun workspace packages:
 Governance CLI seams (conformance, crossref, review_handoff, policy plumbing) stay at
 `tools/governance/specs/workflow/` and import from the packages.
 
+### Shared dependency catalog
+
+Shared dependencies (`xstate`, `@sinclair/typebox`, `yaml`) use a Bun
+[`workspaces.catalog`](https://bun.com/docs/pm/catalogs) defined in the root
+`package.json`. Package manifests reference them as `"catalog:"` to keep version
+pins centralized.
+
+Each package ships its own `bunfig.toml` (`root="."`) so `bun test` runs are
+self-contained — independent of the repo-root `bunfig.toml` (`root="src"`).
+
 ```typescript
 // Import core types and pure functions
 import { ProfileSchema, workflowMachine, validateCommandPrefix } from '@kb/workflow-core'

@@ -83,8 +83,11 @@ export function resolveMemoryConflict(
   return { ok: true, data: { ...existing, ...incoming } }
 }
 
+// biome-ignore lint/style/noMagicNumbers: named constant composition
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+
 export function applyRetention(rootDir: string, tmpDays: number): { pruned: number } {
-  const tmpCutoff = Date.now() - tmpDays * 24 * 60 * 60 * 1000
+  const tmpCutoff = Date.now() - tmpDays * MS_PER_DAY
   let pruned = 0
   if (!existsSync(rootDir)) return { pruned: 0 }
 
@@ -96,11 +99,15 @@ export function applyRetention(rootDir: string, tmpDays: number): { pruned: numb
       try {
         rmSync(path.join(entryPath, file), { force: true })
         pruned++
-      } catch {}
+      } catch {
+        /* intentional noop — skip individual file */
+      }
     }
     try {
       rmSync(entryPath, { recursive: true, force: true })
-    } catch {}
+    } catch {
+      /* intentional noop — skip directory */
+    }
   }
   return { pruned }
 }

@@ -31,8 +31,10 @@ export function runProvider(
   }
 }
 
+const RE_GITHUB_PR = /https:\/\/github\.com\/[^/\s]+\/[^/\s]+\/pull\/\d+/
+
 export function capturePrRef(stdout: string): string {
-  const match = stdout.match(/https:\/\/github\.com\/[^/\s]+\/[^/\s]+\/pull\/\d+/)
+  const match = stdout.match(RE_GITHUB_PR)
   return match?.[0] ?? ''
 }
 

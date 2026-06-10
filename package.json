@@ -4,7 +4,14 @@
   "description": "Native desktop knowledge management app built on Electrobun",
   "type": "module",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": {
+    "packages": ["packages/*"],
+    "catalog": {
+      "xstate": "^5.32.0",
+      "@sinclair/typebox": "^0.34.49",
+      "yaml": "^2.9.0"
+    }
+  },
   "scripts": {
     "start": "electrobun dev",
     "predev": "mise run -q app styles",

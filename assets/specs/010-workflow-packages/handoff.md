@@ -21,18 +21,18 @@
 
 ## Acceptance criteria tracker
 
-| ID | Done when | Evidence |
-| --- | --- | --- |
-| WEP-1 AC1 | `bun install` resolves `@kb/workflow-core` and `@kb/workflow-runtime` as workspace packages with `private: true` | `cd packages/workflow-core && bun test && cd ../workflow-runtime && bun test` |
-| WEP-2 AC1 | ast-grep finds no spawn/child_process/toolchain strings in core package | `bun run lint:ast-grep` |
-| WEP-3 AC1 | dependency-cruiser finds no `src/shell/**` or renderer imports in runtime package | `bun run lint:depcruise` |
-| WEP-4 AC1 | Governance workflow specs pass without duplicating L1/L2 source under tools/governance | `bun test --config /dev/null tools/governance/specs/workflow/` |
-| WEP-5 AC1 | WORKFLOW_GUIDE.md documents `@kb/workflow-core` / `@kb/workflow-runtime` and governance CLI seams | `mise run spec lint assets/specs/010-workflow-packages` |
-| WEP-6 AC1 | Each SDD stage in default.yaml has real kb bindings; profile validates and conformance passes | `mise run catalog validate` |
-| WEP-7 AC1 | Smoke workflow drives a committed fixture feature dir through orchestrator; nightly CI green | `mise run spec workflow run --feature tools/__tests__/fixtures/workflow/smoke-feature --profile default` |
-| WEP-8 AC1 | `profile_guide_crossref.script.ts` stays in governance — not imported by packages | `bun run lint:depcruise` |
-| WEP-9 AC1 | One PR delivers packages + profile bindings + smoke wiring + guide updates | `mise run spec gate assets/specs/010-workflow-packages` |
-| WEP-10 AC1 | Shared deps use root `catalog:` in workspace packages; CI frozen install | see [`review/review-010-bun-pm-handoff.md`](./review/review-010-bun-pm-handoff.md) |
+| ID         | Done when                                                                                                        | Evidence                                                                                                 |
+| ---------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| WEP-1 AC1  | `bun install` resolves `@kb/workflow-core` and `@kb/workflow-runtime` as workspace packages with `private: true` | `cd packages/workflow-core && bun test && cd ../workflow-runtime && bun test`                            |
+| WEP-2 AC1  | ast-grep finds no spawn/child_process/toolchain strings in core package                                          | `bun run lint:ast-grep`                                                                                  |
+| WEP-3 AC1  | dependency-cruiser finds no `src/shell/**` or renderer imports in runtime package                                | `bun run lint:depcruise`                                                                                 |
+| WEP-4 AC1  | Governance workflow specs pass without duplicating L1/L2 source under tools/governance                           | `bun test --config /dev/null tools/governance/specs/workflow/`                                           |
+| WEP-5 AC1  | WORKFLOW_GUIDE.md documents `@kb/workflow-core` / `@kb/workflow-runtime` and governance CLI seams                | `mise run spec lint assets/specs/010-workflow-packages`                                                  |
+| WEP-6 AC1  | Each SDD stage in default.yaml has real kb bindings; profile validates and conformance passes                    | `mise run catalog validate`                                                                              |
+| WEP-7 AC1  | Smoke workflow drives a committed fixture feature dir through orchestrator; nightly CI green                     | `mise run spec workflow run --feature tools/__tests__/fixtures/workflow/smoke-feature --profile default` |
+| WEP-8 AC1  | `profile_guide_crossref.script.ts` stays in governance — not imported by packages                                | `bun run lint:depcruise`                                                                                 |
+| WEP-9 AC1  | One PR delivers packages + profile bindings + smoke wiring + guide updates                                       | `mise run spec gate assets/specs/010-workflow-packages`                                                  |
+| WEP-10 AC1 | Shared deps use root `catalog:` in workspace packages; CI frozen install | `bun install` |
 
 ---
 

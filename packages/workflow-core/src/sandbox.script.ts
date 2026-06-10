@@ -9,6 +9,9 @@ export type ViolationDescriptor = {
   detail?: string
 } | null
 
+const RE_TRAILING_SLASH = /\/$/
+const RE_TEMPLATE_VAR = /\$\{[^}]+\}/g
+
 export function checkToolAllowlist(
   sandbox: Static<typeof SandboxDescriptor>,
   attemptedCommand: string
@@ -28,9 +31,9 @@ export function checkToolAllowlist(
 }
 
 export function checkFsScope(sandbox: Static<typeof SandboxDescriptor>, attemptedPath: string): ViolationDescriptor {
-  const denyRoots = (sandbox.fs_scope.deny ?? []).map(d => d.replace(/\$\{[^}]+\}/g, ''))
-  const allowRoots = sandbox.fs_scope.allow_roots.map(r => r.replace(/\$\{[^}]+\}/g, ''))
-  const normalizedPath = attemptedPath.replace(/\/$/, '')
+  const denyRoots = (sandbox.fs_scope.deny ?? []).map(d => d.replace(RE_TEMPLATE_VAR, ''))
+  const allowRoots = sandbox.fs_scope.allow_roots.map(r => r.replace(RE_TEMPLATE_VAR, ''))
+  const normalizedPath = attemptedPath.replace(RE_TRAILING_SLASH, '')
 
   for (const denyPattern of denyRoots) {
     if (normalizedPath.startsWith(denyPattern) || normalizedPath === denyPattern) {

@@ -40,6 +40,9 @@ export type NextSuggestion = {
 const ANALYZE_PLAN_HINT = 'Focus: plan.md traceability'
 const ANALYZE_TASKS_HINT = 'Focus: tasks.md + handoff.md Evidence'
 
+const RE_LEADING_DIGITS = /^\d+-/
+const RE_SCENARIO_TAGS = /Scenario:|@unit|@e2e/
+
 /**
  * Optional manifest hint: when the detector reaches the handoff-emit transition,
  * it asks this function whether the manifest currently includes
@@ -114,7 +117,7 @@ export function detectPhase(
 
 /** Read the feature dir into a FileSet for the detector. */
 export function scanFeatureDir(featureDir: string, handoffsDir = 'tmp/handoffs'): FileSet {
-  const slug = path.basename(featureDir).replace(/^\d+-/, '')
+  const slug = path.basename(featureDir).replace(RE_LEADING_DIGITS, '')
   const handoffsPath = path.resolve(handoffsDir)
   const handoffEmittedGherkin = existsSync(path.join(handoffsPath, `opencode-${slug}-gherkin.md`))
   return {
@@ -189,7 +192,7 @@ function detectPlanGherkinUncovered(
   if (!planMd) return false
   const sliceIds = acRows.map(r => r.sliceId).filter((s): s is string => Boolean(s))
   const evidenceContainsSlice = acRows.some(r => sliceIds.some(s => r.evidence.toLowerCase().includes(s.toLowerCase())))
-  const planNamesScenario = /Scenario:|@unit|@e2e/.test(planMd)
+  const planNamesScenario = RE_SCENARIO_TAGS.test(planMd)
   return planNamesScenario && !evidenceContainsSlice
 }
 
@@ -215,6 +218,7 @@ export type Args = {
   lint: boolean
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing complexity, refactor deferred
 export function parseArgs(argv: string[]): Args {
   const args: Partial<Args> = { manifest: false, next: false, lint: false }
   for (let i = 0; i < argv.length; i += 1) {

@@ -94,7 +94,13 @@ export type AsyncCommandHandle = {
 
 export function runCommandAsync(descriptor: CommandDescriptor, allowedPrefixes: string[]): AsyncCommandHandle {
   const rejected = validatePrefix(descriptor.command, allowedPrefixes)
-  if (rejected) return { promise: Promise.resolve(rejected), kill: () => {} }
+  if (rejected)
+    return {
+      promise: Promise.resolve(rejected),
+      kill: () => {
+        /* intentional noop */
+      }
+    }
 
   const t0 = performance.now()
   const cmd = descriptor.command

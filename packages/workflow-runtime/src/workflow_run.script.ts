@@ -222,6 +222,13 @@ export const WORKFLOW_EVENT_TYPES = [
   'run.summary'
 ] as const
 
+const RE_LEADING_DIGITS = /^\d+-/
+const HEX_RADIX = 16
+const FINGERPRINT_PAD_LENGTH = 12
+// biome-ignore lint/style/noMagicNumbers: named constant composition
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+const DEFAULT_PRUNE_DAYS = 30
+
 export function generateRunId(slug: string): string {
   const epoch = Date.now()
   const rand = randomBytes(2).toString('hex')
@@ -229,7 +236,7 @@ export function generateRunId(slug: string): string {
 }
 
 export function slugFromFeatureDir(featureDir: string): string {
-  return path.basename(featureDir).replace(/^\d+-/, '')
+  return path.basename(featureDir).replace(RE_LEADING_DIGITS, '')
 }
 
 export type FileSetLike = {
@@ -256,8 +263,8 @@ export function filesetFingerprint(files: FileSetLike): string {
   ]
     .map(b => (b ? '1' : '0'))
     .join('')
-  const hash = Bun.hash(s).toString(16)
-  return hash.padStart(12, '0').slice(0, 12)
+  const hash = Bun.hash(s).toString(HEX_RADIX)
+  return hash.padStart(FINGERPRINT_PAD_LENGTH, '0').slice(0, FINGERPRINT_PAD_LENGTH)
 }
 
 export class WorkflowRunWriter {
@@ -326,7 +333,7 @@ export function emitPhaseDecided(
 }
 
 export function pruneOlderThan(days: number, root = 'tmp/workflow-runs'): number {
-  const cutoff = Date.now() - days * 24 * 60 * 60 * 1000
+  const cutoff = Date.now() - days * MS_PER_DAY
   let removed = 0
   if (!existsSync(root)) return 0
   for (const entry of readdirSync(root)) {
@@ -337,19 +344,25 @@ export function pruneOlderThan(days: number, root = 'tmp/workflow-runs'): number
       try {
         unlinkSync(path.join(entryPath, file))
         removed++
-      } catch {}
+      } catch {
+        /* intentional noop — skip individual file */
+      }
     }
     try {
       rmSync(entryPath, { recursive: true, force: true })
-    } catch {}
+    } catch {
+      /* intentional noop — skip directory */
+    }
   }
   return removed
 }
 
 export function bestEffortPrune(root = 'tmp/workflow-runs'): void {
   try {
-    pruneOlderThan(30, root)
-  } catch {}
+    pruneOlderThan(DEFAULT_PRUNE_DAYS, root)
+  } catch {
+    /* intentional noop — best-effort */
+  }
 }
 
 export function findActiveRun(root = 'tmp/workflow-runs'): string | null {
