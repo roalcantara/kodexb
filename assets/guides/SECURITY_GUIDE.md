@@ -101,7 +101,7 @@ This consolidates:
 
 - Tag tests for the catalog key.
 - Catalog validation.
-- The deterministic security subgate (`mise run spec security`).
+- The deterministic security subgate (`mise run spec audit security`).
 - The full app quality gate (`.agents/skills/app-quality-gate/scripts/gate.sh`).
 
 Generic substitutes (`npm test`, `bun test` alone, ad-hoc lint runs) are
@@ -109,14 +109,14 @@ Generic substitutes (`npm test`, `bun test` alone, ad-hoc lint runs) are
 
 ## `hk` profile policy
 
-| Profile | Purpose | When it runs |
-| ------- | ------- | ------------ |
-| (no profile) | Fast hygiene + Gitleaks | every `hk check`, `pre-commit` |
-| `commit` | Cheap extras (shebangs, symlinks) | `hk check --profile commit`, `pre-commit` |
-| `pr` | Same as `commit` + actionlint, hadolint, tombi, Gitleaks baseline | `hk check --profile pr`, PR workflow |
-| `ci` | Mirrors `mise run lint check --ci` | `hk check --profile ci`, CI workflow |
-| `full` | Mirrors `gate.sh` stages | `hk check --profile full` |
-| `slow` | Optional deep checks (Gitleaks full repo) | `hk check --profile slow` |
+| Profile      | Purpose                                                           | When it runs                              |
+| ------------ | ----------------------------------------------------------------- | ----------------------------------------- |
+| (no profile) | Fast hygiene + Gitleaks                                           | every `hk check`, `pre-commit`            |
+| `commit`     | Cheap extras (shebangs, symlinks)                                 | `hk check --profile commit`, `pre-commit` |
+| `pr`         | Same as `commit` + actionlint, hadolint, tombi, Gitleaks baseline | `hk check --profile pr`, PR workflow      |
+| `ci`         | Mirrors `mise run lint check --ci`                                | `hk check --profile ci`, CI workflow      |
+| `full`       | Mirrors `gate.sh` stages                                          | `hk check --profile full`                 |
+| `slow`       | Optional deep checks (Gitleaks full repo)                         | `hk check --profile slow`                 |
 
 Adding a new check means adding a step to `hk.pkl` under the appropriate
 profile, **not** inlining the command anywhere else.
@@ -174,12 +174,12 @@ const violation = checkSandbox(stage.sandbox, { command, path, host })
 
 **Dimensions enforced** (AWO-11.1, AWO-11.2):
 
-| Dimension | Code entry point | Blocked by | Profile field |
-| --------- | ---------------- | ---------- | ------------- |
-| tool allowlist | `checkToolAllowlist` | command not starting with a listed tool | `stage.sandbox.tool_allowlist` |
-| fs scope | `checkFsScope` | path matches deny pattern or falls outside allow_root | `stage.sandbox.fs_scope` |
-| secret handling | `validateSecretHandling` | `passthrough` without `acknowledged_unsafe` | `stage.sandbox.secret_handling` |
-| network | `checkNetwork` | host not permitted under declared policy | `stage.sandbox.network` |
+| Dimension       | Code entry point         | Blocked by                                            | Profile field                   |
+| --------------- | ------------------------ | ----------------------------------------------------- | ------------------------------- |
+| tool allowlist  | `checkToolAllowlist`     | command not starting with a listed tool               | `stage.sandbox.tool_allowlist`  |
+| fs scope        | `checkFsScope`           | path matches deny pattern or falls outside allow_root | `stage.sandbox.fs_scope`        |
+| secret handling | `validateSecretHandling` | `passthrough` without `acknowledged_unsafe`           | `stage.sandbox.secret_handling` |
+| network         | `checkNetwork`           | host not permitted under declared policy              | `stage.sandbox.network`         |
 
 Noncompliant writes emit a `sandbox.violation` NDJSON event and mark the stage `BLOCKED`.
 Profile `sandbox` is optional — stages that omit it skip enforcement entirely (AWO-11 AC1).

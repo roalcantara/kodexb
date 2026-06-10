@@ -75,7 +75,7 @@ Companion scans only numbered feature folders:
 1. **Scaffold** (optional — copies templates):
 
    ```bash
-   mise run spec feature-init -- --id 004 --slug my-feature
+   mise run spec init --id <NNN> --slug <slug>
    ```
 
 2. **Branch** — use conventional feature branch naming (`feat/004-my-feature`).
@@ -104,21 +104,21 @@ mise run spec lint assets/specs/NNN-slug --strict
 mise run spec trace assets/specs/NNN-slug --strict
 
 # Quartet + handoff + tasks readiness (post-tasks, pre-analyze)
-mise run spec audit assets/specs/NNN-slug --strict
+mise run spec audit feature assets/specs/NNN-slug --strict
 
 # lint + trace + full app quality gate
 mise run spec gate assets/specs/NNN-slug
 
 # deterministic security subgate (standalone or as part of spec gate)
-mise run spec security --strict
+mise run spec audit security --strict
 
 # deterministic security subgate (changed-files mode for local hook)
-mise run spec security --changed-only --strict --base <sha>
+mise run spec audit security --changed-only --strict --base <sha>
 ```
 
 Implementation: [`tools/governance/specs/`](../../tools/governance/specs/).
 
-Run `mise run spec lint -- --all --strict` before a release that touches multiple specs.
+Run `mise run spec lint --strict` (omit `[feature]` to lint every numbered spec) before a release that touches multiple specs.
 
 ## Executable traceability
 
@@ -149,7 +149,7 @@ Catalog membership: [`assets/catalog/catalog.yaml`](../catalog/catalog.yaml) + `
 | Analyze        | `/speckit-analyze`       | consistency report                 |
 | Issues         | `/speckit-taskstoissues` | GitHub issues (optional)           |
 
-Resume an interrupted workflow: `mise run spec resume` (wraps `specify workflow resume`).
+Resume an interrupted workflow: `mise run spec workflow resume <runId>`.
 
 ## orchestrated-handoff workflow
 
@@ -184,23 +184,25 @@ orchestrator's `--next` works when the operator mixes `mise` and manual
 - `checklists/implement-done.md` — written after `speckit.implement`, review-handoff
   APPROVE, and unit checks pass; signals `--next` to advance to `mise run spec gate`
 
-### Commands
+### Commands (post-011)
 
 ```bash
 # Drive the workflow via Spec Kit (canonical):
 specify workflow run orchestrated-handoff
 
-# Or use the local orchestrator + handoff generator:
-mise run spec workflow orchestrated-handoff --feature assets/specs/NNN-slug --next
-mise run spec workflow orchestrated-handoff --feature assets/specs/NNN-slug --manifest
-mise run spec handoff-generate --feature assets/specs/NNN-slug --focus gherkin
-mise run spec resume     # specify workflow resume
+# Or use the local orchestrator (positional [feature], --dry-run for next step):
+mise run spec workflow run assets/specs/NNN-slug
+mise run spec workflow run assets/specs/NNN-slug --dry-run
+mise run spec workflow handoff generate assets/specs/NNN-slug --focus gherkin
+mise run spec workflow resume <runId>
 ```
 
-`--next` prints the canonical next command for the active workflow transition
-table in this guide. `--manifest` prints a rule-based XML subtask manifest
-classifying remaining work into `implement-src`, `gherkin-bdd-handoff`, or
-`catalog-touch`.
+`--dry-run` prints the canonical next command for the active workflow transition
+table in this guide. For XML subtask manifests, use workflow bench or legacy
+`--manifest` on the workflow runner script (see package docs).
+
+Legacy names removed in 011: `spec workflow orchestrated-handoff`, `--next`,
+`--feat`, top-level `mise run audit`, `spec feature-init`, `app gates --all`.
 
 ### When to use opencode worker handoff vs primary implement
 
@@ -229,16 +231,16 @@ deepseek) is deferred — handoff files for other providers are not generated.
 ### Dispatch
 
 ```bash
-mise run spec handoff-generate --feature assets/specs/NNN-slug --focus gherkin --dispatch
+mise run spec workflow handoff generate assets/specs/NNN-slug --focus gherkin --dispatch
 # or
-ORCHESTRATED_HANDOFF_DISPATCH=1 mise run spec handoff-generate --feature … --focus gherkin
+ORCHESTRATED_HANDOFF_DISPATCH=1 mise run spec workflow handoff generate assets/specs/NNN-slug --focus gherkin
 ```
 
 The file is always written to `tmp/handoffs/` first. If opencode is not on
 `$PATH`, the script warns on stderr and exits 0 (file-only mode). If
 `opencode run` fails, its exit code propagates.
 
-`spec handoff-generate` invokes `spec handoff-scrub` on the rendered prompt body
+`spec workflow handoff generate` invokes `spec workflow handoff scrub` on the rendered prompt body
 before file write/dispatch. On scrub failure, generation exits 1 and does not
 write or dispatch.
 
@@ -250,16 +252,16 @@ inspects and manages them:
 
 ```bash
 # Show the 20 most recent runs with slug/phase/duration/result
-mise run spec runs list
+mise run spec workflow runs list
 
 # Stream all events for a specific run (byte-identical to disk)
-mise run spec runs show <run_id>
+mise run spec workflow runs show <run_id>
 
 # Stream the most recent run for today (blocking on EOF)
-mise run spec runs tail
+mise run spec workflow runs tail
 
 # Remove all runs older than 30 days
-mise run spec runs prune
+mise run spec workflow runs prune
 ```
 
 Retention: `prune` removes date directories older than 30 days. `list` also
@@ -275,24 +277,24 @@ against the handoff contract before `mise run spec gate` and commit.
 
 **Skill:** [`.agents/skills/app-review-handoff/SKILL.md`](../../.agents/skills/app-review-handoff/SKILL.md)
 
-| Step | Action                                                                                        |
-| ---- | --------------------------------------------------------------------------------------------- |
-| 1    | Load `app-context` + `app-review-handoff`                                                     |
-| 2    | `mise run spec review-handoff prepare --feature … --json` (optional deterministic prep)       |
-| 3    | Open feature `handoff.md` AC tracker (or `tmp/handoffs/opencode-*` / `review-*`)              |
-| 4    | Run each row's **Evidence** command; record pass/fail                                         |
-| 5    | Map `git diff BASE..HEAD` to AC rows and `plan.md` touch list                                 |
-| 6    | Emit **chat** report (failures-first; no tables) + patch `tmp/reviews/review-{slug}-{sha}.md` |
-| 7    | On REQUEST_CHANGES: `tmp/handoffs/review-{slug}-{focus}-{sha}.md` fix handoff                 |
-| 8    | Operator runs `bash .agents/skills/app-quality-gate/scripts/gate.sh` before commit            |
+| Step | Action                                                                                            |
+| ---- | ------------------------------------------------------------------------------------------------- |
+| 1    | Load `app-context` + `app-review-handoff`                                                         |
+| 2    | `mise run spec review-handoff prepare assets/specs/NNN-slug --json` (optional deterministic prep) |
+| 3    | Open feature `handoff.md` AC tracker (or `tmp/handoffs/opencode-*` / `review-*`)                  |
+| 4    | Run each row's **Evidence** command; record pass/fail                                             |
+| 5    | Map `git diff BASE..HEAD` to AC rows and `plan.md` touch list                                     |
+| 6    | Emit **chat** report (failures-first; no tables) + patch `tmp/reviews/review-{slug}-{sha}.md`     |
+| 7    | On REQUEST_CHANGES: `tmp/handoffs/review-{slug}-{focus}-{sha}.md` fix handoff                     |
+| 8    | Operator runs `bash .agents/skills/app-quality-gate/scripts/gate.sh` before commit                |
 
 **CLI (deterministic extractors — do not replace the skill verdict):**
 
 ```bash
 mise run spec review-handoff classify [--base SHA] [--head SHA] [--json]
-mise run spec review-handoff extract-evidence --feature assets/specs/NNN-slug [--json]
-mise run spec review-handoff prepare --feature assets/specs/NNN-slug [--base SHA] [--head SHA] [--json]
-mise run spec review-handoff scaffold-audit --feature assets/specs/NNN-slug [--base SHA] [--head HEAD] [--json]
+mise run spec review-handoff extract-evidence assets/specs/NNN-slug [--json]
+mise run spec review-handoff prepare assets/specs/NNN-slug [--base SHA] [--head SHA] [--json]
+mise run spec review-handoff scaffold-audit assets/specs/NNN-slug [--base SHA] [--head HEAD] [--json]
 ```
 
 Implementation: `tools/governance/specs/workflow/review_handoff.script.ts`.
@@ -329,7 +331,7 @@ After review-handoff **APPROVE** and a green quality gate:
 
 ```bash
 touch assets/specs/NNN-slug/checklists/implement-done.md
-mise run spec workflow orchestrated-handoff --feature assets/specs/NNN-slug --next
+mise run spec workflow run assets/specs/NNN-slug --dry-run
 ```
 
 ### Review-spec gate — deterministic EARS check
@@ -338,10 +340,10 @@ LLM advisory skills (`speckit.clarify`, `speckit.checklist`, `speckit.analyze`)
 are advisory only. Before approving plan, run `mise run spec lint <featureDir>
 --strict` — **deterministic EARS gate**; checklist and analyze are advisory only.
 
-The orchestrator's `--lint` flag (OHW-6 AC1) delegates to the same script:
+The orchestrator lint path (OHW-6 AC1) delegates to the same script:
 
 ```bash
-mise run spec workflow orchestrated-handoff --feature assets/specs/NNN-slug --lint
+mise run spec lint assets/specs/NNN-slug --strict
 ```
 
 It returns `lint.script.ts`'s exit code. Do **not** weaken the linter to make a
