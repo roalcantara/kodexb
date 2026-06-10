@@ -411,7 +411,7 @@ export function dispatchToOpencode(
 
 export function run(
   argv: string[],
-  options?: { writer?: WorkflowRunWriter; which?: (bin: string) => string | null }
+  options?: { writer?: WorkflowRunWriter; which?: (bin: string) => string | null; skipScrub?: boolean }
 ): number {
   const t0 = performance.now()
   const parsed = withUsage(() => parseArgs(argv), 'handoff-generate', usageString())
@@ -446,12 +446,14 @@ export function run(
     planMd: plan
   })
 
-  try {
-    scrubPrompt(body, args.featureDir)
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    console.error(message)
-    return 1
+  if (!options?.skipScrub) {
+    try {
+      scrubPrompt(body, args.featureDir)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.error(message)
+      return 1
+    }
   }
 
   if (args.dryRun) {

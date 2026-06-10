@@ -122,3 +122,10 @@ task_source_atomicity:
     - 007-task-source-atomicity
     - 008-task-mutation-failure-ux
   superseded_by: null
+
+workflows:
+  title: Agentic workflow profiles
+  status: in-progress
+  specs:
+    - 009-agentic-workflow-orchestrator
+  superseded_by: null

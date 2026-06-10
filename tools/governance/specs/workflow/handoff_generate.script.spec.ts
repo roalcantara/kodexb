@@ -366,7 +366,7 @@ describe('WOBS-3: event emission', () => {
     const savedLog = console.log
     console.log = () => undefined
     try {
-      run(['--feature', root], { writer })
+      run(['--feature', root], { writer, skipScrub: true })
     } finally {
       console.log = savedLog
     }
@@ -389,7 +389,7 @@ describe('WOBS-3: event emission', () => {
     const savedLog = console.log
     console.log = () => undefined
     try {
-      const rc = run(['--feature', root, '--dry-run'], { writer })
+      const rc = run(['--feature', root, '--dry-run'], { writer, skipScrub: true })
       expect(rc).toBe(0)
     } finally {
       console.log = savedLog
@@ -415,7 +415,7 @@ describe('WOBS-4 AC2: run() with --dispatch emits dispatch_invoked event', () =>
     const savedLog = console.log
     console.log = () => undefined
     try {
-      run(['--feature', root], { writer, which: () => null })
+      run(['--feature', root], { writer, which: () => null, skipScrub: true })
     } finally {
       console.log = savedLog
       process.env.ORCHESTRATED_HANDOFF_DISPATCH = savedDispatch
@@ -442,7 +442,7 @@ describe('WOBS-4 AC2: run() with --dispatch emits dispatch_invoked event', () =>
     const savedLog = console.log
     console.log = () => undefined
     try {
-      run(['--feature', root, '--dispatch'], { writer, which: () => null })
+      run(['--feature', root, '--dispatch'], { writer, which: () => null, skipScrub: true })
     } finally {
       console.log = savedLog
     }

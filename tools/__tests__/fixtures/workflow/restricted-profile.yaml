@@ -1,0 +1,9 @@
+name: fixture-restricted
+execution_policy:
+  allowed_prefixes:
+    - "echo"
+stages:
+  - id: specify
+    worker: primary
+transitions: []
+providers: {}

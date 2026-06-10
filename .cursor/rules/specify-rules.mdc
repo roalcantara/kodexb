@@ -8,7 +8,7 @@ alwaysApply: true
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
 for the active feature directory selected in `.specify/feature.json`.
-Current implementation plan: `assets/specs/008-task-mutation-failure-ux/plan.md`.
+Current implementation plan: `assets/specs/009-agentic-workflow-orchestrator/plan.md`.
 For path authority and routing rules, follow
 `assets/guides/DOC_AUTHORITY.md` and `assets/guides/SDD_WORKFLOW_GUIDE.md`.
 <!-- SPECKIT END -->

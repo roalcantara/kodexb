@@ -5,16 +5,16 @@ import path from 'node:path'
 import { type Static, Type } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 
-const BASE = {
+export const EventBase = Type.Object({
   run_id: Type.String(),
   ts: Type.String(),
   feature_dir: Type.String(),
-  duration_ms: Type.Number()
-}
+  duration_ms: Type.Number({ minimum: 0 })
+})
 
 export const PhaseDecidedEvent = Type.Object({
   type: Type.Literal('phase_decided'),
-  ...BASE,
+  ...EventBase.properties,
   fileset_fingerprint: Type.String(),
   manifest_needs_handoff: Type.Boolean(),
   phase: Type.String(),
@@ -26,7 +26,7 @@ export type PhaseDecidedEvent = Static<typeof PhaseDecidedEvent>
 
 export const ManifestEmittedEvent = Type.Object({
   type: Type.Literal('manifest_emitted'),
-  ...BASE,
+  ...EventBase.properties,
   subtask_types: Type.Array(Type.String()),
   subtask_count: Type.Number()
 })
@@ -35,7 +35,7 @@ export type ManifestEmittedEvent = Static<typeof ManifestEmittedEvent>
 
 export const HandoffWrittenEvent = Type.Object({
   type: Type.Literal('handoff_written'),
-  ...BASE,
+  ...EventBase.properties,
   path: Type.String(),
   focus: Type.String(),
   ac_row_count: Type.Number(),
@@ -46,7 +46,7 @@ export type HandoffWrittenEvent = Static<typeof HandoffWrittenEvent>
 
 export const DispatchInvokedEvent = Type.Object({
   type: Type.Literal('dispatch_invoked'),
-  ...BASE,
+  ...EventBase.properties,
   opencode_found: Type.Boolean(),
   body_bytes: Type.Number(),
   exit_code: Type.Number(),
@@ -55,11 +55,145 @@ export const DispatchInvokedEvent = Type.Object({
 
 export type DispatchInvokedEvent = Static<typeof DispatchInvokedEvent>
 
+// AWO-12.2 — 009 orchestrator event extension types (additive members of WorkflowEvent).
+const stageEvent = (typeLiteral: string) =>
+  Type.Composite([
+    EventBase,
+    Type.Object({
+      type: Type.Literal(typeLiteral),
+      stage: Type.String(),
+      attempt: Type.Optional(Type.Integer({ minimum: 0 })),
+      elapsed_ms: Type.Optional(Type.Integer({ minimum: 0 })),
+      details: Type.Optional(Type.Record(Type.String(), Type.Unknown()))
+    })
+  ])
+
+export const StageEnteredEvent = stageEvent('stage.entered')
+export const StageExitedEvent = stageEvent('stage.exited')
+export const StageRetriedEvent = stageEvent('stage.retried')
+export const StageEscalatedEvent = stageEvent('stage.escalated')
+
+export const TransitionEvent = Type.Composite([
+  EventBase,
+  Type.Object({
+    type: Type.Union([Type.Literal('transition.auto'), Type.Literal('transition.gated')]),
+    from: Type.String(),
+    to: Type.String(),
+    cause: Type.String()
+  })
+])
+
+export const TaskInvocationEvent = Type.Composite([
+  EventBase,
+  Type.Object({
+    type: Type.Union([Type.Literal('task.invoked'), Type.Literal('task.completed')]),
+    command: Type.String(),
+    role: Type.Union([
+      Type.Literal('trigger.pre'),
+      Type.Literal('trigger.post'),
+      Type.Literal('evidence'),
+      Type.Literal('provider'),
+      Type.Literal('teardown'),
+      Type.Literal('retrospective')
+    ]),
+    stage: Type.Optional(Type.String()),
+    exit_code: Type.Optional(Type.Number()),
+    duration_ms: Type.Optional(Type.Number({ minimum: 0 })),
+    status: Type.Optional(Type.Union([Type.Literal('ok'), Type.Literal('fail'), Type.Literal('cancelled')])),
+    cancellation_reason: Type.Optional(Type.String())
+  })
+])
+
+export const DecisionEvent = Type.Composite([
+  EventBase,
+  Type.Object({
+    type: Type.Union([
+      Type.Literal('decision.requested'),
+      Type.Literal('decision.defaulted'),
+      Type.Literal('decision.answered')
+    ]),
+    question_id: Type.String(),
+    source: Type.Optional(Type.String()),
+    rationale: Type.Optional(Type.String())
+  })
+])
+
+export const SandboxViolationEvent = Type.Composite([
+  EventBase,
+  Type.Object({
+    type: Type.Literal('sandbox.violation'),
+    stage: Type.String(),
+    descriptor_field: Type.Union([
+      Type.Literal('tool_allowlist'),
+      Type.Literal('fs_scope'),
+      Type.Literal('secret_handling'),
+      Type.Literal('network')
+    ]),
+    attempted: Type.String()
+  })
+])
+
+export const ContinuityViolationEvent = Type.Composite([
+  EventBase,
+  Type.Object({
+    type: Type.Literal('continuity.violation'),
+    offending_field: Type.String(),
+    expected_schema_version: Type.String(),
+    observed_schema_version: Type.String()
+  })
+])
+
+export const SchemaViolationEvent = Type.Composite([
+  EventBase,
+  Type.Object({
+    type: Type.Literal('schema.violation'),
+    payload_type: Type.String(),
+    errors: Type.Array(Type.String())
+  })
+])
+
+export const ShutdownEvent = Type.Composite([
+  EventBase,
+  Type.Object({
+    type: Type.Union([Type.Literal('shutdown.requested'), Type.Literal('shutdown.completed')]),
+    signal: Type.Optional(Type.String()),
+    grace_ms: Type.Optional(Type.Number({ minimum: 0 }))
+  })
+])
+
+export const RunSummaryEvent = Type.Composite([
+  EventBase,
+  Type.Object({
+    type: Type.Literal('run.summary'),
+    outcome: Type.Union([
+      Type.Literal('terminal_success'),
+      Type.Literal('terminal_failure'),
+      Type.Literal('cancelled')
+    ]),
+    lead_time_ms: Type.Integer({ minimum: 0 }),
+    stage_durations_ms: Type.Record(Type.String(), Type.Integer({ minimum: 0 })),
+    interventions: Type.Integer({ minimum: 0 }),
+    retries: Type.Integer({ minimum: 0 })
+  })
+])
+
 export const WorkflowEvent = Type.Union([
   PhaseDecidedEvent,
   ManifestEmittedEvent,
   HandoffWrittenEvent,
-  DispatchInvokedEvent
+  DispatchInvokedEvent,
+  StageEnteredEvent,
+  StageExitedEvent,
+  StageRetriedEvent,
+  StageEscalatedEvent,
+  TransitionEvent,
+  TaskInvocationEvent,
+  DecisionEvent,
+  SandboxViolationEvent,
+  ContinuityViolationEvent,
+  SchemaViolationEvent,
+  ShutdownEvent,
+  RunSummaryEvent
 ])
 
 export type WorkflowEvent = Static<typeof WorkflowEvent>
@@ -68,7 +202,24 @@ export const WORKFLOW_EVENT_TYPES = [
   'phase_decided',
   'manifest_emitted',
   'handoff_written',
-  'dispatch_invoked'
+  'dispatch_invoked',
+  'stage.entered',
+  'stage.exited',
+  'stage.retried',
+  'stage.escalated',
+  'transition.auto',
+  'transition.gated',
+  'task.invoked',
+  'task.completed',
+  'decision.requested',
+  'decision.defaulted',
+  'decision.answered',
+  'sandbox.violation',
+  'continuity.violation',
+  'schema.violation',
+  'shutdown.requested',
+  'shutdown.completed',
+  'run.summary'
 ] as const
 
 export function generateRunId(slug: string): string {

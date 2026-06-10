@@ -1,0 +1,33 @@
+# Bun.spawn / Bun.$ / child_process are only allowed in the L2 adapter
+# (command_invoker.script.ts). All engine modules must be spawn-free.
+id: no-spawn-outside-adapter
+language: TypeScript
+files:
+  - "tools/governance/specs/workflow/**/*.ts"
+ignores:
+  # L2 adapters (architecturally allowed to spawn)
+  - "**/command_invoker.script.ts"
+  # L2 dispatch adapter
+  - "**/handoff_generate.script.ts"
+  # L2 git adapter
+  - "**/review_handoff_core.script.ts"
+  # L2 orchestrator
+  - "**/orchestrated_handoff.script.ts"
+  - "**/*.spec.ts"
+  - "**/*.schema.ts"
+  - "**/*.types.ts"
+  - "**/*.test.ts"
+severity: error
+rule:
+  any:
+    - pattern: Bun.spawn($$$ARGS)
+    - pattern: Bun.spawnSync($$$ARGS)
+    - pattern: Bun.$(TTEMP)
+    - pattern: import $$$NAMES from 'child_process'
+    - pattern: import $$$NAMES from "child_process"
+message: >
+  Bun.spawn / child_process is only allowed inside L2 adapters
+  (command_invoker.script.ts, handoff_generate.script.ts,
+  review_handoff_core.script.ts, orchestrated_handoff.script.ts).
+  Engine modules (L1) must be spawn-free. Move execution logic to an L2 adapter.
+note: See AWO-9.1 — only L2 adapters may spawn subprocesses.

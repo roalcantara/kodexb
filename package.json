@@ -100,7 +100,8 @@
     "react-dom": "^19.2.6",
     "react-markdown": "^10.1.0",
     "rehype-highlight": "^7.0.2",
-    "type-fest": "^5.6.0"
+    "type-fest": "^5.6.0",
+    "xstate": "^5.32.0"
   },
   "overrides": {
     "ansi-regex": "^5.0.1"

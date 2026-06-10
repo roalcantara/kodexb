@@ -1,0 +1,18 @@
+schema_version: 009.1.0
+name: fixture-test
+execution_policy:
+  allowed_prefixes:
+    - "bun run"
+    - "echo"
+    - "mkdir"
+stages:
+  - id: specify
+    worker: primary
+  - id: plan
+    worker: primary
+transitions:
+  - from: specify
+    to: plan
+    on: DONE
+terminal:
+  - gate
