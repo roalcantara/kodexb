@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 
+## [0.15.0](https://github.com/roalcantara/kodexb/compare/v0.14.3...v0.15.0) (2026-06-10)
+
+### Features
+
+* **workflow:** Add orchestrator slice ([d42a5dd](https://github.com/roalcantara/kodexb/commit/d42a5dd4aff174f5bb05ab847e27e1d936c06a36))
+
 ## [0.14.3](https://github.com/roalcantara/kodexb/compare/v0.14.2...v0.14.3) (2026-06-10)
 
 ## [0.14.2](https://github.com/roalcantara/kodexb/compare/v0.14.1...v0.14.2) (2026-06-09)
