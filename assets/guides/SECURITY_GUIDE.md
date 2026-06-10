@@ -153,8 +153,46 @@ tools/governance/security/
 
 ## What this guide deliberately does not cover
 
-- Runtime worker / agent sandboxing. Defined per workflow spec.
+- Runtime worker / agent sandboxing. This is the orchestrator's concern,
+  defined per workflow spec. See [Runtime worker sandbox](#runtime-worker-sandbox) below.
 - App-level auth / permissions.
 - Network or transport security.
 - Supply-chain attestations beyond CVE matching. Revisit when the project
   ships signed releases.
+
+## Runtime worker sandbox
+
+The working implement is the `tools/governance/specs/workflow/sandbox.script.ts` Adapter (L1 pure checker),
+wired through `workflow_invoker.script.ts`, which runs optional per-stage `sandbox` descriptor
+checks before dispatching commands:
+
+```ts
+import { checkSandbox } from './tools/governance/specs/workflow/sandbox.script.ts'
+
+const violation = checkSandbox(stage.sandbox, { command, path, host })
+```
+
+**Dimensions enforced** (AWO-11.1, AWO-11.2):
+
+| Dimension | Code entry point | Blocked by | Profile field |
+| --------- | ---------------- | ---------- | ------------- |
+| tool allowlist | `checkToolAllowlist` | command not starting with a listed tool | `stage.sandbox.tool_allowlist` |
+| fs scope | `checkFsScope` | path matches deny pattern or falls outside allow_root | `stage.sandbox.fs_scope` |
+| secret handling | `validateSecretHandling` | `passthrough` without `acknowledged_unsafe` | `stage.sandbox.secret_handling` |
+| network | `checkNetwork` | host not permitted under declared policy | `stage.sandbox.network` |
+
+Noncompliant writes emit a `sandbox.violation` NDJSON event and mark the stage `BLOCKED`.
+Profile `sandbox` is optional — stages that omit it skip enforcement entirely (AWO-11 AC1).
+
+### Secret handling
+
+`secret_handling: passthrough` is blocked at profile load **unless** the stage also
+declares `acknowledged_unsafe: true` (AWO-11 AC3). This is a profile-authoring gate,
+not a runtime toggle: a profile that does not carry the acknowledgement will fail
+`loadProfile()`.
+
+### Invariant
+
+sandbox checks are L1 pure — no spawn, no I/O, no toolchain identifiers. The engine
+(L1) is tool-agnostic: it checks `command:` prefixes and paths against the declared
+descriptor fields, whatever values kb (L3) supplies.

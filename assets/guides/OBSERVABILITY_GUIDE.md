@@ -62,6 +62,21 @@ This is the **DONE/DID** layer (per the `assets/guides` /
 `assets/catalog` / `tools/metrics` ontology): durable, long retention,
 queryable as a project metric.
 
+### Retrospective artifact
+
+On terminal stage completion, the orchestrator's retrospective stage (AWO-8)
+writes a human-readable markdown summary at:
+
+```
+tools/metrics/workflow-runs/<YYYY-MM-DD>/<run_id>.retro.md
+```
+
+Sections: Blockers, Retries, Interventions, Successful patterns, and
+ranked Recommendations (each linking to source NDJSON event indices).
+Cross-run insights from the retro are appended to
+`assets/catalog/agent_memory.yaml` for startup surfacing on subsequent runs.
+See [`retrospective.script.ts`](../../tools/governance/specs/workflow/retrospective.script.ts).
+
 ### Append-only invariant
 
 - Writes use `O_APPEND` to guarantee atomic per-line appends under

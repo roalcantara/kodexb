@@ -59,5 +59,22 @@ export function loadProfile(path: string): Profile {
     throw new ProfileLoadError(`profile schema validation failed:\n  ${messages.join('\n  ')}`, messages)
   }
 
-  return raw as Profile
+  const profile = raw as Profile
+  const diagnostics: string[] = []
+
+  for (const stage of profile.stages) {
+    if (
+      stage.sandbox &&
+      stage.sandbox.secret_handling === 'passthrough' &&
+      stage.sandbox.acknowledged_unsafe !== true
+    ) {
+      diagnostics.push(`stage "${stage.id}" declares secret_handling: passthrough but acknowledged_unsafe is not true`)
+    }
+  }
+
+  if (diagnostics.length > 0) {
+    throw new ProfileLoadError(`profile sandbox validation failed:\n  ${diagnostics.join('\n  ')}`, diagnostics)
+  }
+
+  return profile
 }

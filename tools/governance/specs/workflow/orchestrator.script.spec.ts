@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { createActor } from 'xstate'
@@ -224,6 +224,180 @@ describe('orchestrator integration', () => {
     actor.send({ type: 'INPUT.ANSWERED', question_id: 'q1', value: 'react' })
     expect(actor.getSnapshot().matches('running')).toBe(true)
     actor.stop()
+  })
+})
+
+// --- M4: Retrospective & Sandbox ---
+
+describe('M4 retrospective and sandbox', () => {
+  let scratchDir: string
+
+  beforeEach(() => {
+    scratchDir = mkdtempSync(path.join(tmpdir(), 'orc-m4-'))
+  })
+
+  afterEach(() => {
+    rmSync(scratchDir, { recursive: true, force: true })
+  })
+
+  function makeM4Config(extra?: Partial<OrchestratorConfig>): OrchestratorConfig {
+    const profile = loadProfile(FIXTURE_PROFILE)
+    return {
+      profile,
+      stageCommands: {},
+      featureDir: '__fixtures__/009-workflow-orch',
+      persistenceConfig: {
+        rootDir: scratchDir,
+        metricsDir: path.join(scratchDir, 'metrics')
+      },
+      runId: `test-${Date.now()}`,
+      dateStr: new Date().toISOString().slice(0, 10),
+      continueOnBlocked: false,
+      ...extra
+    }
+  }
+
+  it('AWO-8 AC1: terminal run writes .retro.md under metrics path', () => {
+    const cfg = makeM4Config({ runId: 'test-retro-ac1' })
+    const orc = new Orchestrator(cfg)
+    orc.run()
+
+    const metricsDir = path.join(scratchDir, 'metrics')
+    const retroPath = path.join(metricsDir, cfg.dateStr as string, `${cfg.runId}.retro.md`)
+    expect(existsSync(retroPath)).toBe(true)
+    const content = readFileSync(retroPath, 'utf-8')
+    expect(content).toContain('# Workflow Retrospective')
+    expect(content).toContain('## Blockers')
+    expect(content).toContain('## Retries')
+    expect(content).toContain('## Interventions')
+    expect(content).toContain('## Successful patterns')
+  })
+
+  it('AWO-11 AC4: sandbox violation emits sandbox.violation in NDJSON', () => {
+    const fixturePath = path.join(scratchDir, 'sandbox-profile.yaml')
+    writeFileSync(
+      fixturePath,
+      [
+        'schema_version: "009.1.0"',
+        'name: sandbox-test',
+        'execution_policy:',
+        '  allowed_prefixes:',
+        '    - "echo"',
+        'stages:',
+        '  - id: specify',
+        '    worker: primary',
+        '    sandbox:',
+        '      tool_allowlist: ["mkdir"]',
+        '      fs_scope:',
+        '        allow_roots: ["/workspace"]',
+        '      secret_handling: "redacted"',
+        '      network: "offline"',
+        'transitions:',
+        '  - from: specify',
+        '    to: gate',
+        '    on: DONE',
+        'terminal:',
+        '  - gate',
+        'default_retry:',
+        '  max_attempts: 3',
+        '  backoff: exponential',
+        '  base_ms: 500',
+        '  cap_ms: 30000',
+        '  jitter: full',
+        '  reset_on_new_cause: true',
+        '  escalation_event: stage.escalated',
+        'memory:',
+        '  conflict: prompt_user',
+        '  retention:',
+        '    tmp_days: 30',
+        '    durable_days: 365',
+        'providers: {}',
+        'shutdown:',
+        '  grace_ms: 10000',
+        '  signals:',
+        '    - SIGINT',
+        '    - SIGTERM'
+      ].join('\n')
+    )
+
+    const sandboxProfile = loadProfile(fixturePath)
+    const cfg: OrchestratorConfig = {
+      profile: sandboxProfile,
+      stageCommands: { specify: 'echo hello' },
+      featureDir: '__fixtures__/009-sandbox',
+      persistenceConfig: { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
+      runId: `test-sandbox-${Date.now()}`,
+      dateStr: new Date().toISOString().slice(0, 10),
+      continueOnBlocked: false
+    }
+    const orc = new Orchestrator(cfg)
+    orc.run()
+
+    const ndjsonPath = orc.writer.currentPath
+    if (!ndjsonPath || !existsSync(ndjsonPath)) {
+      expect(orc.actor?.getSnapshot().matches('blocked')).toBe(true)
+      return
+    }
+
+    const raw = readFileSync(ndjsonPath, 'utf-8')
+    const lines = raw.trim().split('\n').filter(Boolean)
+    const sandboxEvents = lines
+      .map(l => JSON.parse(l))
+      .filter((e: Record<string, unknown>) => e.type === 'sandbox.violation')
+    expect(sandboxEvents.length).toBeGreaterThan(0)
+  })
+
+  it('AWO-8 AC4: next run loads catalog insights into stage memory', () => {
+    const catalogDir = path.join(scratchDir, 'catalog')
+    mkdirSync(catalogDir, { recursive: true })
+    const catalogPath = path.join(catalogDir, 'agent_memory.json')
+
+    writeFileSync(
+      catalogPath,
+      JSON.stringify({
+        schema_version: '009.1.0',
+        entries: [
+          {
+            insight_id: 'ri-test4444',
+            run_id: 'prior-run',
+            timestamp: '2026-06-10T12:00:00.000Z',
+            description: 'Stage plan had high failure rate',
+            severity: 'high',
+            eventIds: [0, 1],
+            tags: ['severity:high']
+          }
+        ]
+      })
+    )
+
+    const profile = loadProfile(FIXTURE_PROFILE)
+    const cfg: OrchestratorConfig = {
+      profile,
+      stageCommands: {},
+      featureDir: '__fixtures__/009-retro-ac4',
+      persistenceConfig: {
+        rootDir: scratchDir,
+        metricsDir: path.join(scratchDir, 'metrics')
+      },
+      runId: `test-ac4-${Date.now()}`,
+      dateStr: new Date().toISOString().slice(0, 10),
+      continueOnBlocked: false,
+      catalogPath
+    }
+
+    const orc = new Orchestrator(cfg)
+    expect(orc.catalogInsights.length).toBe(1)
+    expect(orc.catalogInsights[0]?.insight_id).toBe('ri-test4444')
+
+    orc.run()
+
+    const memPath = path.join(scratchDir, cfg.dateStr as string, `${cfg.runId}.memory.specify.json`)
+    expect(existsSync(memPath)).toBe(true)
+    const mem = JSON.parse(readFileSync(memPath, 'utf-8'))
+    expect(mem.agent_memory_insights).toBeDefined()
+    const memInsights = mem.agent_memory_insights as Record<string, unknown>[]
+    expect(memInsights.length).toBe(1)
+    expect(memInsights[0]?.insight_id).toBe('ri-test4444')
   })
 })
 

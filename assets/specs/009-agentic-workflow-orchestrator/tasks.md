@@ -136,10 +136,10 @@
 
 **Requirements**: AWO-8, AWO-11. **Not blocking the first PRs.**
 
-- [ ] M4-ENGINE-01 [M4] Implement the retrospective stage: write `tools/metrics/workflow-runs/<date>/<run_id>.retro.md` (blockers/retries/interventions/patterns) + ranked recommendations referencing `event.id`s. (AWO-8.1, AWO-8.2)
-- [ ] M4-PROFILE-01 [M4] Append cross-run insights to `assets/catalog/agent_memory.yaml` (create on first use; timestamp + `run_id` + `insight_id`) and load them at startup into stage-scoped memory. (AWO-8.3, AWO-8.4)
-- [ ] M4-ADAPTER-01 [M4] Implement optional-`sandbox` enforcement at the dispatcher boundary (tool allowlist, fs scope, secret-handling, network); blocked actions surface `SANDBOX_VIOLATION` + emit `sandbox.violation`; `passthrough` requires `acknowledged_unsafe`. Co-located violation-injection spec per dimension. (AWO-11.1–11.4)
-- [ ] M4-CLOSEOUT-01 [M4] `bun test … ` + spec lint + `mise run spec gate`.
+- [X] M4-ENGINE-01 [M4] Implement the retrospective stage: write `tools/metrics/workflow-runs/<date>/<run_id>.retro.md` (blockers/retries/interventions/patterns) + ranked recommendations referencing `event.id`s. (AWO-8.1, AWO-8.2)
+- [X] M4-PROFILE-01 [M4] Append cross-run insights to `assets/catalog/agent_memory.yaml` (create on first use; timestamp + `run_id` + `insight_id`) and load them at startup into stage-scoped memory. (AWO-8.3, AWO-8.4)
+- [X] M4-ADAPTER-01 [M4] Implement optional-`sandbox` enforcement at the dispatcher boundary (tool allowlist, fs scope, secret-handling, network); blocked actions surface `SANDBOX_VIOLATION` + emit `sandbox.violation`; `passthrough` requires `acknowledged_unsafe`. Co-located violation-injection spec per dimension. (AWO-11.1–11.4)
+- [X] M4-CLOSEOUT-01 [M4] `bun test … ` + spec lint + `mise run spec gate`.
 
 ---
 

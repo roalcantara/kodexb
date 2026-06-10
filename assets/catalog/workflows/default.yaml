@@ -31,6 +31,14 @@ stages:
     human_gated: true
   - id: implement
     worker: primary
+    sandbox:
+      tool_allowlist: ["mise run", "hk check", "bun run", "gh"]
+      fs_scope:
+        allow_roots: ["${WORKSPACE_ROOT}", "${TMP}/workflow-runs"]
+        deny: ["${WORKSPACE_ROOT}/.env", "${WORKSPACE_ROOT}/.git/objects"]
+      secret_handling: "redacted"
+      network: "offline"
+      acknowledged_unsafe: false
   - id: pr-prep
     worker: primary
     triggers:

@@ -18,7 +18,11 @@ function safeEnv(overrides?: Record<string, string | undefined>): Record<string,
   return result
 }
 
-export type DiagnosticCode = 'COMMAND_PREFIX_REJECTED' | 'COMMAND_TARGET_MISSING' | 'COMMAND_EXECUTION_ERROR'
+export type DiagnosticCode =
+  | 'COMMAND_PREFIX_REJECTED'
+  | 'COMMAND_TARGET_MISSING'
+  | 'COMMAND_EXECUTION_ERROR'
+  | 'SANDBOX_VIOLATION'
 
 export type CommandResult = {
   exitCode: number

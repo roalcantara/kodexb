@@ -47,7 +47,7 @@ describe('ProfileSchema', () => {
     expect(Value.Check(ProfileSchema, rest)).toBe(false)
   })
 
-  it('accepts optional sandbox on a stage', () => {
+  it('AWO-11 AC1: accepts optional sandbox on a stage', () => {
     const base = makeValidProfile() as Record<string, unknown>
     const withSandbox = {
       ...base,
@@ -67,7 +67,7 @@ describe('ProfileSchema', () => {
     expect(Value.Check(ProfileSchema, withSandbox)).toBe(true)
   })
 
-  it('validates profile when sandbox is omitted', () => {
+  it('AWO-11 AC1: validates profile when sandbox is omitted', () => {
     expect(Value.Check(ProfileSchema, makeValidProfile())).toBe(true)
   })
 })

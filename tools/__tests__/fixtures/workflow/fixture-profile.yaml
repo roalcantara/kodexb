@@ -10,6 +10,14 @@ stages:
     worker: primary
   - id: plan
     worker: primary
+    sandbox:
+      tool_allowlist: ["bun run", "echo", "mkdir"]
+      fs_scope:
+        allow_roots: ["/tmp", "${WORKSPACE_ROOT}"]
+        deny: ["${WORKSPACE_ROOT}/.env", "${WORKSPACE_ROOT}/.git"]
+      secret_handling: "redacted"
+      network: "offline"
+      acknowledged_unsafe: false
   - id: pr-prep
     worker: primary
     triggers:
