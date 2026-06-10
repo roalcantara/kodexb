@@ -44,6 +44,15 @@ Operators and agents scatter SDD commands across `spec`, `audit`, `test tag`, an
 | **Orchestrator dogfood** | Full `spec workflow run` over the 011 feature dir with xstate stage progression        |
 | **Active feature**       | Resolved via `resolveActiveFeatureDir()` (`.specify/feature.json`, branch, cwd)        |
 
+## Clarifications
+
+### Session 2026-06-10
+
+- Q: How does `spec test --feat <dir>` discover a feature's test files, especially infra features with no catalog key? → A: **Active dir from `.specify/feature.json`** (via `resolveActiveFeatureDir()`, `--feat` overrides). **Feature-scoped tests run against committed fixture feature-dirs** under `tools/__tests__/fixtures/<feature>/` (e.g. `000-feature-demo`) using Fishery `factoryFor` from `@testing` — **never** live `assets/specs/NNN-*` (consistent with the 009/010 determinism rule). e2e is selected via `tag.script.ts` when the feature has a catalog tag; keyless infra features run their governance/workflow specs (which consume those fixtures) + no e2e. Full scope matrix in [`plan.md`](./plan.md) § `spec test`.
+- Q: What raw-mode line format should `task_runner` emit (non-TTY / `--raw`)? → A: **Prefixed text lines** (not JSON): one `STEP <id> <ok\|fail\|skip> exit=<n> ms=<n> <title>` line per step, then a final `TASK <task> <ok\|fail> ms=<n> steps=<n> failed=<n>` summary line. Exact grammar in [`plan.md`](./plan.md) § Output contract.
+- Q: How is the `mise run spec` multi-level command tree modeled in the `usage` spec? → A: **Native nested `cmd` blocks** to the required depth (confirmed supported by the [usage spec](https://usage.jdx.dev/spec/) — `cmd` may nest arbitrarily and carry its own args/flags), e.g. `cmd "audit" { cmd "docs" { cmd "rogue-refs" {…} } }`. Cross-cutting flags (`--raw`, `--feat`, `--json`) are declared **once** as `global` flags at the `spec` level (not redeclared per subcommand). mise validates subcommand routing and emits per-level `--help`; the thin `bun tools/bin/spec.script.ts` routes on the **positional subcommand chain from `process.argv`** (the script's existing `usage_cmd ?? args.shift()` fallback, version-robust for nested cmds) and reads flags — including the `global` ones — from `usage_*` env vars. Skeleton in [`plan.md`](./plan.md) § Usage spec structure.
+- Q: Which advanced `usage` features should the `spec` tree adopt? → A: **`choices` enums** (mise validates + lists in `--help`, removing script-side checks): `spec test [scope]` = `choices "unit" "e2e" "smoke" "regression"` (replaces the 4 mutually-exclusive boolean flags; omitted = default composite); `workflow runs <action>` = `list|show|tail|prune`; `review-handoff <action>` = `classify|extract-evidence|prepare|scaffold-audit`; `workflow handoff generate --focus` = `gherkin|catalog|e2e-fix` (default `gherkin`); `--worker` = `opencode` (default). **Defaults** retained on `--root`/`--focus`/`--base`/`--worker`. Optional polish deferred (not this PR): `count` flag for `task_runner` verbosity (`-v`/`-vv`), `var=#true` variadic targets for `lint`/`audit feature`, required `init` `--id`/`--slug`.
+
 ## REQUIREMENT MSC-1: Unified step runner output
 
 **Slice:** MVP
@@ -80,9 +89,9 @@ Operators and agents scatter SDD commands across `spec`, `audit`, `test tag`, an
 
 ### Acceptance criteria
 
-1. WHEN the operator runs `mise run spec test` with optional `--feat <dir>` and at most one scope flag among `--unit`, `--e2e`, `--smoke`, `--regression`, THEN behavior SHALL match the matrix in [`plan.md`](./plan.md) § `spec test` (default: unit + e2e + governance specs for active feature).
-   - **Measure:** Each flag combination exits 0 on 011 feature dir.
-   - **Evidence:** `spec_test.script.spec.ts`; smoke workflow updated if applicable.
+1. WHEN the operator runs `mise run spec test` with optional `--feat <dir>` and an optional positional `[scope]` (a `choices` enum: `unit`, `e2e`, `smoke`, `regression`), THEN behavior SHALL match the matrix in [`plan.md`](./plan.md) § `spec test`. mise validates the enum and rejects an unknown/duplicate scope natively — the dispatch script does **not** hand-enforce exclusivity. The active feature resolves via `resolveActiveFeatureDir()` (`.specify/feature.json`, `--feat` overrides); feature-scoped unit/governance specs run against committed fixtures under `tools/__tests__/fixtures/<feature>/` (Fishery factories), never live `assets/specs/NNN-*`; e2e runs via `tag.script.ts` only when the feature has a catalog tag. Omitted `[scope]` = default composite (unit + governance specs + e2e-if-tagged).
+   - **Measure:** Each `[scope]` value exits 0 on the 011 feature dir; an invalid scope is rejected by mise (non-zero) without reaching the script; no run touches live `assets/specs/NNN-*`.
+   - **Evidence:** `spec_test.script.spec.ts` (fixture-backed); smoke workflow updated if applicable.
 
 ---
 

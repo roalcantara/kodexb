@@ -1401,15 +1401,16 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       *) echo "docker: unknown action '${CMD}' (expected one of: build, run, test)"; exit 2 ;;
     esac
   ''' }
-"audit" = { description = "Documentation hygiene diagnostics (non-gating)", usage = '''
-    cmd "rogue-refs" help="Inventory inbound assets/docs/ links on guides and agent entry docs"
-  ''', run = "bun tools/bin/audit.script.ts" }
-"spec" = { description = "kb SDD spec checks: lint, trace, gate, legacy parity, worktrees", usage = '''
+"spec" = { description = "kb SDD spec hub: lint, trace, gate, test, workflow, audit, scaffold", usage = '''
+    flag "--raw" global #true help="Machine output (no gum styling)"
+    flag "--feat <dir>" global #true help="Feature dir (default: resolveActiveFeatureDir())"
+    flag "--json" global #true help="Machine-readable JSON where supported"
+
     cmd "lint" {
       flag "--all" help="Lint every assets/specs/NNN-*/spec.md"
       flag "--root <root>" default="assets/specs" help="Spec root for --all"
       flag "--strict" help="Exit non-zero on errors"
-      arg "<target>" help="Feature dir or spec.md path"
+      arg "[target]" help="Feature dir or spec.md path"
     }
     cmd "trace" {
       flag "--features <dir>" default="assets/features/e2e" help="Executable .feature root"
@@ -1417,63 +1418,85 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       arg "<feature_dir>" help="Feature dir holding spec.md"
     }
     cmd "gate" {
-      arg "[feature_dir]" help="Feature dir (default: .specify/feature.json, branch NNN-slug, or cwd)"
-    }
-    cmd "feature-init" {
-      flag "--id <id>" help="Three-digit id e.g. 001"
-      flag "--slug <slug>" help="Feature slug"
-    }
-    cmd "resume" {}
-    cmd "worktree-add" {
-      arg "<feature>" help="NNN-slug"
-    }
-    cmd "opencode-check" {}
-    cmd "library-manifest" {
-      flag "--dry-run" help="Print plan only; do not write manifest"
-      flag "--verify" help="Bidirectional check: YAML entries ↔ on-disk folders; fail if mismatch"
-    }
-    cmd "workflow" {
-      arg "<name>" help="Workflow id (e.g. orchestrated-handoff)"
-      flag "--feature <dir>" help="Existing feature dir, e.g. assets/specs/004-orchestrated-handoff"
-      flag "--manifest" help="Print subtask manifest XML for the feature"
-      flag "--next" help="Print the next canonical command (default if no action flag set)"
-      flag "--lint" help="Delegate to spec lint --strict on the feature dir (OHW-6 AC1)"
-    }
-    cmd "handoff-generate" {
-      flag "--feature <dir>" help="Feature dir holding handoff.md (required)"
-      flag "--focus <kind>" default="gherkin" help="gherkin|catalog|e2e-fix"
-      flag "--worker <name>" default="opencode" help="v1: opencode only"
-      flag "--dispatch" help="Pipe prompt to opencode run (also enabled by ORCHESTRATED_HANDOFF_DISPATCH=1)"
-      flag "--dry-run" help="Print prompt to stdout; do not write file"
-    }
-    cmd "security" {
-      flag "--strict" help="Fail on medium/high/critical per policy"
-      flag "--changed-only" help="Restrict scan to changed-file scope"
-      flag "--base <sha>" help="Diff base ref for changed-only mode"
-      flag "--json" help="Machine-readable output"
-    }
-    cmd "handoff-scrub" {
-      flag "--feature <dir>" help="Feature dir used for optional allowlist"
-      flag "--body <text>" help="Prompt body to scrub"
-    }
-    cmd "runs" {
-      arg "<action>" help="list|show|tail|prune"
-      flag "--feature <dir>" help="Filter by feature directory"
-      arg "[runId]" help="Run ID for show/tail"
-    }
-    cmd "audit" {
-      flag "--strict" help="Exit non-zero on error-level findings"
-      flag "--json" help="Machine-readable JSON output"
-      flag "--raw" help="Plain text output (no gum styling)"
-      arg "<feature_dir>" help="Feature dir e.g. assets/specs/005-workflow-observability"
+      arg "[feature_dir]" help="Feature dir (default: auto-detect)"
     }
     cmd "ready" {
-      arg "[feature_dir]" help="Feature dir to verify (default: auto-detect from .specify/feature.json)"
+      arg "[feature_dir]" help="Feature dir (default: auto-detect)"
       flag "--key <key>" help="Catalog key for tag tests"
       flag "--phase <no>" help="Phase number for focused validation"
     }
+    cmd "init" {
+      flag "--id <id>" help="Three-digit id e.g. 001"
+      flag "--slug <slug>" help="Feature slug"
+    }
+    cmd "test" {
+      arg "[scope]" help="omitted = default composite" {
+        choices "unit" "e2e" "smoke" "regression"
+      }
+    }
+    cmd "workflow" {
+      cmd "run" {}
+      cmd "resume" {
+        arg "[runId]" help="Run ID to resume"
+        flag "--answer <kv>" help="Answer key=value for NEED_INPUT stages"
+        flag "--approve <stage>" help="Approve human-gated stage"
+      }
+      cmd "runs" {
+        arg "<action>" help="list|show|tail|prune" {
+          choices "list" "show" "tail" "prune"
+        }
+        arg "[runId]" help="Run ID for show/tail"
+      }
+      cmd "bench" {}
+      cmd "handoff" {
+        cmd "generate" {
+          flag "--feature <dir>" help="Feature dir holding handoff.md (required)"
+          flag "--focus <kind>" default="gherkin" help="gherkin|catalog|e2e-fix" {
+            choices "gherkin" "catalog" "e2e-fix"
+          }
+          flag "--worker <name>" default="opencode" help="opencode only" {
+            choices "opencode"
+          }
+          flag "--dispatch" help="Pipe prompt to opencode run"
+          flag "--dry-run" help="Print prompt to stdout; do not write file"
+        }
+        cmd "scrub" {
+          flag "--feature <dir>" help="Feature dir used for optional allowlist"
+          flag "--body <text>" help="Prompt body to scrub"
+        }
+      }
+    }
+    cmd "audit" {
+      cmd "docs" {
+        cmd "rogue-refs" help="Inventory inbound assets/docs/ links on guides and agent entry docs" {}
+      }
+      cmd "feature" {
+        arg "<feature_dir>" help="Feature dir e.g. assets/specs/005-feature-demo"
+      }
+      cmd "security" {
+        flag "--strict" help="Fail on medium/high/critical per policy"
+        flag "--changed-only" help="Restrict scan to changed-file scope"
+        flag "--base <sha>" help="Diff base ref for changed-only mode"
+      }
+    }
+    cmd "worktree" {
+      cmd "add" {
+        arg "<feature>" help="NNN-slug"
+      }
+    }
+    cmd "library" {
+      cmd "manifest" {
+        flag "--dry-run" help="Print plan only; do not write manifest"
+        flag "--verify" help="Bidirectional check: YAML entries ↔ on-disk folders"
+      }
+    }
+    cmd "opencode" {
+      cmd "check" {}
+    }
     cmd "review-handoff" {
-      arg "<action>" help="classify|extract-evidence|prepare|scaffold-audit"
+      arg "<action>" help="classify|extract-evidence|prepare|scaffold-audit" {
+        choices "classify" "extract-evidence" "prepare" "scaffold-audit"
+      }
       flag "--feature <dir>" help="Feature dir (default handoff: handoff.md)"
       flag "--handoff <path>" help="Handoff markdown path (overrides --feature default)"
       flag "--base <sha>" default="HEAD~1" help="Git base for classify/prepare"
