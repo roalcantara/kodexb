@@ -88,6 +88,66 @@ The Layer-B conformance test (`conformance.script.spec.ts`) asserts that the
 profile's stage-id sequence, filtered to the `detectPhase()` order, is a
 subsequence match (no reordering, no omissions; interleaving allowed).
 
+## Memory model and retention
+
+The orchestrator persists two kinds of agent memory for each run, stored as
+JSON files in the run's daily directory under `tmp/workflow-runs/`.
+
+### Stage-scoped memory
+
+Created on first access when a stage starts. Isolated per stage; a stage on its
+second attempt reads the same file:
+
+```
+tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.memory.<stage>.json
+```
+
+### Shared (cross-stage) memory
+
+Persists across the full run so downstream stages see prior decisions. Written
+alongside every xstate snapshot:
+
+```
+tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.shared.json
+```
+
+### Conflict policy
+
+The profile's `memory.conflict` field controls how the orchestrator handles
+conflicting values between existing and incoming memory:
+
+| Policy | Behaviour |
+| ------ | --------- |
+| `prefer_latest` | Incoming overwrites existing silently — no pause |
+| `prompt_user` | Conflict blocks the merge; operator must resolve |
+| `block` | Conflict fails the operation with a diagnostic |
+
+Default (`prompt_user`) is the safest default for human-supervised runs.
+
+### Decision events
+
+Every resolved or defaulted decision emits an NDJSON event of type
+`decision.answered` or `decision.defaulted`, carrying `question_id`, `source`,
+and `rationale`. These events are part of the `WorkflowEvent` union and are
+appended to `<run_id>.ndjson` via `WorkflowRunWriter.emit()`.
+
+### Retention
+
+Profile `memory.retention` controls how long artifacts live:
+
+```yaml
+memory:
+  retention:
+    tmp_days: 30
+    durable_days: 365
+```
+
+- `tmp_days`: scratch files under `tmp/workflow-runs/` are pruned after this
+  many days by `mise run spec workflow prune` (or the automatic best-effort
+  prune during `run.summary`).
+- `durable_days`: archive copies in `tools/metrics/workflow-runs/` are retained
+  for this period; pruning is operator-initiated only.
+
 ## Sandbox (optional)
 
 The `sandbox` block is optional on a stage. MVP profiles may omit it; enforcement

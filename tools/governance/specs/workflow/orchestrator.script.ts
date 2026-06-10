@@ -4,13 +4,17 @@ import path from 'node:path'
 import { Value } from '@sinclair/typebox/value'
 import { createActor } from 'xstate'
 import { evaluateEvidence } from './evidence.script.ts'
+import { autoFillValues, canAutoFill, dedupQuestions } from './intervention.script.ts'
 import { workflowMachine } from './machine.script.ts'
+import { readSharedMemory, writeSharedMemory } from './memory.script.ts'
 import { ensureRunDir, type PersistenceConfig } from './persistence.script.ts'
 import { ENVELOPE_SCHEMA_VERSION, type Envelope, EnvelopeSchema } from './schemas/envelope.schema.ts'
 import type { Profile } from './schemas/profile.schema.ts'
 import { persistMachineSnapshot } from './snapshot.script.ts'
 import { invokeWithTelemetry } from './workflow_invoker.script.ts'
 import { generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow_run.script.ts'
+
+const ALL_QUESTIONS_ID = '__all__'
 
 export type StageCommandMap = Record<string, string>
 
@@ -118,6 +122,8 @@ export class Orchestrator {
 
   persistSnapshot(): void {
     if (!this.actor) return
+    const shared = this.actor.getSnapshot().context.shared_memory
+    writeSharedMemory(this.config.persistenceConfig.rootDir, this.dateStr, this.runId, shared)
     persistMachineSnapshot(
       this.actor,
       this.config.persistenceConfig,
@@ -126,7 +132,7 @@ export class Orchestrator {
       this.profile.name,
       this.profile.schema_version,
       this.startedAt,
-      this.actor.getSnapshot().context.shared_memory
+      shared
     )
   }
 
@@ -195,6 +201,44 @@ export class Orchestrator {
       if (snapshot.matches('evidence_pending')) {
         this.runEvidenceCheck(envelope)
       } else if (snapshot.matches('need_input')) {
+        const env = snapshot.context.envelope
+        const questions = env?.questions ?? []
+        const rawShared = readSharedMemory(this.config.persistenceConfig.rootDir, this.dateStr, this.runId)
+        const shared: Record<string, string> = {}
+        for (const [k, v] of Object.entries(rawShared)) {
+          shared[k] = typeof v === 'string' ? v : String(v ?? '')
+        }
+        const pending = dedupQuestions(questions, shared)
+
+        if (pending.length === 0) {
+          this.actor?.send({ type: 'INPUT.ANSWERED', question_id: ALL_QUESTIONS_ID, value: '' })
+          this.persistSnapshot()
+          continue
+        }
+
+        if (canAutoFill(pending, shared)) {
+          const values = autoFillValues(pending, shared)
+          const ts = new Date().toISOString()
+          for (const q of pending) {
+            const val = values[q.id] ?? ''
+            shared[q.id] = val
+            this.writer.emit({
+              type: 'decision.defaulted',
+              run_id: this.runId,
+              ts,
+              feature_dir: this.config.featureDir,
+              duration_ms: 0,
+              question_id: q.id,
+              source: 'auto-fill',
+              rationale: `auto-filled from shared memory: ${val}`
+            })
+          }
+          writeSharedMemory(this.config.persistenceConfig.rootDir, this.dateStr, this.runId, shared)
+          this.actor?.send({ type: 'INPUT.ANSWERED', question_id: ALL_QUESTIONS_ID, value: '' })
+          this.persistSnapshot()
+          continue
+        }
+
         this.persistSnapshot()
         if (!this.config.continueOnBlocked) break
         continue
