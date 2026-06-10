@@ -9,6 +9,22 @@ export type InvocationTelemetry = {
   featureDir: string
 }
 
+function expandSandbox(sandbox: Static<typeof SandboxDescriptor>): Static<typeof SandboxDescriptor> {
+  const ws = process.env.WORKSPACE_ROOT ?? process.cwd()
+  const tmp = process.env.TMPDIR ?? process.env.TMP ?? process.env.TEMP ?? '/tmp'
+  const expand = (s: string) =>
+    s
+      .replace(/\$\{WORKSPACE_ROOT\}/g, ws)
+      .replace(/\$\{TMP\}/g, tmp)
+      .replace(/\$\{TMPDIR\}/g, tmp)
+  const allowRoots = sandbox.fs_scope.allow_roots.map(r => expand(r))
+  const deny = (sandbox.fs_scope.deny ?? []).map(d => expand(d))
+  return {
+    ...sandbox,
+    fs_scope: { ...sandbox.fs_scope, allow_roots: allowRoots, deny }
+  }
+}
+
 export function invokeWithTelemetry(
   descriptor: CommandDescriptor,
   allowedPrefixes: string[],
@@ -18,7 +34,8 @@ export function invokeWithTelemetry(
   sandbox?: Static<typeof SandboxDescriptor>
 ): CommandResult {
   if (sandbox) {
-    const violation = checkSandbox(sandbox, { command: descriptor.command })
+    const expanded = expandSandbox(sandbox)
+    const violation = checkSandbox(expanded, { command: descriptor.command })
     if (violation) {
       const blockedResult: CommandResult = {
         exitCode: -1,
