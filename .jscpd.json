@@ -25,11 +25,11 @@
     "**/.superpowers/**",
     ".agents/skills/**",
     "src/shell/app/db/import.service.spec.ts",
-    "tools/governance/specs/workflow/machine.script.ts",
-    "tools/governance/specs/workflow/machine.script.spec.ts",
-    "tools/governance/specs/workflow/evidence.script.spec.ts",
-    "tools/governance/specs/workflow/memory.script.spec.ts",
-    "tools/governance/specs/workflow/orchestrator.script.spec.ts",
+    "packages/workflow-core/src/machine.script.ts",
+    "packages/workflow-core/src/machine.script.spec.ts",
+    "packages/workflow-core/src/evidence.script.spec.ts",
+    "packages/workflow-runtime/src/memory.script.spec.ts",
+    "packages/workflow-runtime/src/orchestrator.script.spec.ts",
     "tools/governance/specs/workflow_run.script.spec.ts",
     "tools/__tests__/fixtures/workflow/fixture-profile.yaml"
   ]

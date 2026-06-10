@@ -1,21 +1,7 @@
 import { afterEach, describe, expect, it } from 'bun:test'
 import { createActor } from 'xstate'
 import { type OrchestratorContext, workflowMachine } from './machine.script.ts'
-import { ENVELOPE_SCHEMA_VERSION, type Envelope } from './schemas/envelope.schema.ts'
-
-function makeEnvelope(overrides?: Partial<Envelope>): Envelope {
-  return {
-    schema_version: ENVELOPE_SCHEMA_VERSION,
-    stage: 'specify',
-    status: 'DONE',
-    artifacts_created: [],
-    evidence: [],
-    diagnostics: [],
-    retry_count: 0,
-    elapsed_ms: 100,
-    ...overrides
-  } as Envelope
-}
+import { makeEnvelope } from './schemas/envelope.fixture.ts'
 
 const STAGE_ORDER = [
   'specify',

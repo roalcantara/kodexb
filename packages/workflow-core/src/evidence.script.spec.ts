@@ -1,21 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import type { EvidenceResult } from './evidence.script.ts'
 import { evaluateEvidence } from './evidence.script.ts'
-import { ENVELOPE_SCHEMA_VERSION, type Envelope } from './schemas/envelope.schema.ts'
-
-function makeEnvelope(overrides?: Partial<Envelope>): Envelope {
-  return {
-    schema_version: ENVELOPE_SCHEMA_VERSION,
-    stage: 'specify',
-    status: 'DONE',
-    artifacts_created: [],
-    evidence: [],
-    diagnostics: [],
-    retry_count: 0,
-    elapsed_ms: 100,
-    ...overrides
-  } as Envelope
-}
+import { makeEnvelope } from './schemas/envelope.fixture.ts'
 
 describe('evaluateEvidence', () => {
   it('passes marker kind when file exists', () => {

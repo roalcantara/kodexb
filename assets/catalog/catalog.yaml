@@ -128,4 +128,5 @@ workflows:
   status: in-progress
   specs:
     - 009-agentic-workflow-orchestrator
+    - 010-workflow-packages
   superseded_by: null
