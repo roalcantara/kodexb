@@ -1,5 +1,6 @@
 # Every TypeScript module under tools/ must declare the .script.ts artifact suffix.
-# Exceptions: co-located tests (*.script.spec.ts) and type-only modules (*.types.ts).
+# Exceptions: co-located tests (*.script.spec.ts), type-only modules (*.types.ts),
+# and type-only schema modules (*.schema.ts).
 id: tools-must-use-script-suffix
 language: TypeScript
 files:

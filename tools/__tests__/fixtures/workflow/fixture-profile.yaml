@@ -16,3 +16,22 @@ transitions:
     on: DONE
 terminal:
   - gate
+default_retry:
+  max_attempts: 3
+  backoff: exponential
+  base_ms: 500
+  cap_ms: 30000
+  jitter: full
+  reset_on_new_cause: true
+  escalation_event: stage.escalated
+memory:
+  conflict: prompt_user
+  retention:
+    tmp_days: 30
+    durable_days: 365
+providers: {}
+shutdown:
+  grace_ms: 10000
+  signals:
+    - SIGINT
+    - SIGTERM

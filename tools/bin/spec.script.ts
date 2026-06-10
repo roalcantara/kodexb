@@ -10,7 +10,7 @@ import { spawnInherit } from '../support/lib/shared/spawn_inherit.script.ts'
 const SPECS = 'tools/governance/specs'
 const WORKFLOW = `${SPECS}/workflow`
 
-export const ALLOWED_WORKFLOW_NAMES = new Set(['orchestrated-handoff'])
+export const ALLOWED_WORKFLOW_NAMES = new Set(['orchestrated-handoff', 'resume'])
 
 /**
  * Validate the positional workflow name passed to `mise run spec workflow <name>`.
@@ -78,7 +78,8 @@ function main(): void {
       )
       break
     case 'resume':
-      spawnInherit(['specify', 'workflow', 'resume'], root)
+      console.error('spec resume: use "spec workflow resume" instead')
+      process.exit(2)
       break
     case 'worktree-add':
       spawnInherit(['bash', `${SPECS}/worktree-add.sh`, process.env.usage_feature ?? ''], root)
@@ -102,6 +103,9 @@ function main(): void {
       if (envBool('usage_next')) cmdArgs.push('--next')
       if (envBool('usage_lint')) cmdArgs.push('--lint')
       if (envBool('usage_dry_run')) cmdArgs.push('--dry-run')
+      if (process.env.usage_answer) cmdArgs.push('--answer', process.env.usage_answer)
+      if (process.env.usage_approve) cmdArgs.push('--approve', process.env.usage_approve)
+      if (process.env.usage_runId) cmdArgs.push('--run-id', process.env.usage_runId)
       spawnInherit(['bun', `${SPECS}/workflow_run.script.ts`, ...cmdArgs], root)
       break
     }
