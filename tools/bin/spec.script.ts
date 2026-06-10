@@ -44,6 +44,10 @@ export function rawJsonConflict(raw: boolean, json: boolean): string | null {
   return raw && json ? 'spec: --raw and --json are mutually exclusive' : null
 }
 
+/**
+ * Clean the environment of all `usage_*` variables.
+ * This is used to avoid leaking `usage_*` variables into the subprocesses.
+ */
 function cleanEnv(): Record<string, string | undefined> {
   const env = { ...process.env }
   for (const key of Object.keys(env)) {
@@ -54,8 +58,12 @@ function cleanEnv(): Record<string, string | undefined> {
   return env
 }
 
+/**
+ * Spawn a command and return its exit code, or 1 on error.
+ * This is used to avoid leaking `usage_*` variables into the subprocesses.
+ */
 function spawnExitCode(cmd: string[], root: string): number {
-  return Bun.spawnSync(cmd, { cwd: root, stdout: 'inherit', stderr: 'inherit', env: cleanEnv() }).exitCode
+  return Bun.spawnSync(cmd, { cwd: root, stdout: 'inherit', stderr: 'inherit', env: cleanEnv() }).exitCode ?? 1
 }
 
 type Env = Record<string, string | undefined>
@@ -217,6 +225,9 @@ function planWorkflow(rest: string[], env: Env, deps: { activeRun?: () => string
     if (env.usage_approve) argv.push('--approve', env.usage_approve)
     return { kind: 'spawn', argv }
   }
+  if (sub === 'bench') {
+    return { kind: 'spawn', argv: ['bun', 'tools/metrics/harnesses/perf/perf.script.ts', 'workflow-observability'] }
+  }
   // `run` (default): positional [feature], no --feat/--feature.
   const feature = featureFrom(env, sub === 'run' ? rest.slice(1) : rest)
   const argv = ['bun', `${SPECS}/workflow_run.script.ts`, 'orchestrated-handoff']
@@ -265,35 +276,17 @@ function runGateOrReady(plan: Extract<SpecPlan, { kind: 'runner' }>, root: strin
             s.push({
               id: 'tag',
               title: `tag test ${key}`,
-              run: () =>
-                Bun.spawnSync(['mise', 'run', 'test', 'tag', key], {
-                  cwd: root,
-                  stdout: 'inherit',
-                  stderr: 'inherit',
-                  env: cleanEnv()
-                }).exitCode
+              run: () => spawnExitCode(['mise', 'run', 'test', 'tag', key], root)
             })
           s.push({
             id: 'catalog',
             title: 'catalog validate',
-            run: () =>
-              Bun.spawnSync(['mise', 'run', 'catalog', 'validate', '--raw'], {
-                cwd: root,
-                stdout: 'inherit',
-                stderr: 'inherit',
-                env: cleanEnv()
-              }).exitCode
+            run: () => spawnExitCode(['mise', 'run', 'catalog', 'validate', '--raw'], root)
           })
           s.push({
             id: 'hk',
             title: 'hk check profile commit',
-            run: () =>
-              Bun.spawnSync(['hk', 'check', '--profile', 'commit'], {
-                cwd: root,
-                stdout: 'inherit',
-                stderr: 'inherit',
-                env: cleanEnv()
-              }).exitCode
+            run: () => spawnExitCode(['hk', 'check', '--profile', 'commit'], root)
           })
           s.push({
             id: 'gate',
