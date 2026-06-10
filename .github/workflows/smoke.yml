@@ -17,6 +17,8 @@ jobs:
         with:
           persist-credentials: false
       - uses: oven-sh/setup-bun@v2
-      - run: bun install
+      - run: bun ci
       - run: mise run spec gate
       - run: mise run catalog validate
+      - name: Orchestrator smoke (fixture feature dir)
+        run: mise run spec workflow orchestrated-handoff --feature tools/__tests__/fixtures/workflow/smoke-feature

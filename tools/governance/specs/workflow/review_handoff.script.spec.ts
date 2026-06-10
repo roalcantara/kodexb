@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { parseHandoffAcTable } from './handoff_generate.script.ts'
+import { parseHandoffAcTable } from '@kb/workflow-runtime'
 import {
   buildAuditScaffoldMarkdown,
   classifyPathHits,

@@ -17,7 +17,7 @@ module.exports = {
       from: { path: '^src/core/.+\\.schema\\.ts$' },
       to: {
         pathNot:
-          '(^@sinclair/typebox($|/compiler$)|^type-fest$|^node_modules/@sinclair/typebox/|^node_modules/type-fest/|\\.schema\\.ts$|/types/|/constants/)',
+          '(^@sinclair/typebox($|/compiler$)|^type-fest$|node_modules/@sinclair/typebox/|node_modules/type-fest/|\\.schema\\.ts$|/types/|/constants/)',
       },
     },
     {

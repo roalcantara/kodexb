@@ -37,9 +37,13 @@ RUN apt-get update \
        unzip \
   && rm -rf /var/lib/apt/lists/*
 
-# Copy lockfile + manifest first for better layer caching — this layer only
-# busts when dependencies change, not on source edits.
+# Copy lockfile + manifests first for better layer caching — this layer only
+# busts when dependencies change, not on source edits. Workspace package.json
+# files must be present before `bun install --frozen-lockfile` (root workspaces
+# in package.json); copying only root package.json + bun.lock fails CST/CI.
 COPY package.json bun.lock ./
+COPY packages/workflow-core/package.json packages/workflow-core/
+COPY packages/workflow-runtime/package.json packages/workflow-runtime/
 RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
 

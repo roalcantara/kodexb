@@ -2,10 +2,15 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import { hydrateMachineActor, persistMachineSnapshot, type SnapshotIO, workflowMachine } from '@kb/workflow-core'
+import { readStateSnapshot, writeStateSnapshot } from '@kb/workflow-runtime'
 import { createActor } from 'xstate'
-import { workflowMachine } from './workflow/machine.script.ts'
-import { hydrateMachineActor, persistMachineSnapshot } from './workflow/snapshot.script.ts'
 import { applyResumeAnswer, parseWorkflowArgs } from './workflow_run.script.ts'
+
+const snapshotIo: SnapshotIO = {
+  readSnapshot: readStateSnapshot,
+  writeSnapshot: writeStateSnapshot
+}
 
 const RUN_ID = 'test-resume-001'
 const DATE_STR = '2026-06-10'
@@ -100,6 +105,7 @@ describe('applyResumeAnswer', () => {
     persistMachineSnapshot(
       actor,
       { rootDir: runDir, metricsDir: path.join(runDir, 'metrics') },
+      snapshotIo,
       RUN_ID,
       DATE_STR,
       'fixture-test',
@@ -111,6 +117,7 @@ describe('applyResumeAnswer', () => {
     const hydrated = hydrateMachineActor(
       workflowMachine,
       { rootDir: runDir, metricsDir: path.join(runDir, 'metrics') },
+      snapshotIo,
       RUN_ID,
       DATE_STR
     )

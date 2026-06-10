@@ -275,6 +275,22 @@
       }
     },
     {
+      "includes": ["packages/**/*.script.ts", "packages/**/*.schema.ts"],
+      "linter": {
+        "rules": {
+          "nursery": {
+            "noExcessiveLinesPerFile": {
+              "level": "warn",
+              "options": {
+                "maxLines": 600,
+                "skipBlankLines": true
+              }
+            }
+          }
+        }
+      }
+    },
+    {
       "includes": ["tools/governance/registries/skill/**"],
       "linter": {
         "rules": {

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
+import { findActiveRun, listActiveRuns } from '@kb/workflow-runtime'
 import { type ResolveResult, resolveActiveFeatureDir } from '../governance/specs/resolve_active_feature_dir.script.ts'
 import { resolveCatalogKey } from '../governance/specs/resolve_catalog_key.script.ts'
-import { findActiveRun, listActiveRuns } from '../governance/specs/workflow/workflow_run.script.ts'
 /**
  * mise run spec — Spec Kit lint, trace, gate, legacy import (thin dispatch stub).
  */

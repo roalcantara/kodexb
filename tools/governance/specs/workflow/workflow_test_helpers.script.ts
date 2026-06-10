@@ -3,7 +3,7 @@ import { expect } from 'bun:test'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow_run.script.ts'
+import { generateRunId, slugFromFeatureDir, WorkflowRunWriter } from '@kb/workflow-runtime'
 
 export type FixtureKit = {
   root: string

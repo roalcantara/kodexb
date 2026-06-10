@@ -367,10 +367,21 @@ No engine code changes are needed — the provider commands are profile data onl
 
 ## Workflow smoke
 
-A nightly smoke workflow (`.github/workflows/smoke.yml`) runs
-`mise run spec gate` with no feature argument — the active SDD feature is
-inferred from `.specify/feature.json` (same resolution as `mise run spec
-ready`). Run manually via the GitHub Actions UI or `gh workflow run smoke.yml`.
+A nightly smoke workflow (`.github/workflows/smoke.yml`) runs on a schedule
+(`0 3 * * *`) and does not gate PR merges. Steps:
 
-The smoke runs on a schedule (`0 3 * * *`) and does not gate PR merges.
-Full orchestrator dogfood (driving a real feature dir) is deferred to 010.
+1. `bun ci` — frozen install for reproducibility.
+2. `mise run spec gate` — active SDD feature inferred from `.specify/feature.json`
+   (same resolution as `mise run spec ready`).
+3. `mise run catalog validate` — validates catalog entries, schema, tags.
+4. `mise run spec workflow orchestrated-handoff --feature tools/__tests__/fixtures/workflow/smoke-feature` —
+   orchestrator phase-detect / next-step smoke against a committed fixture dir.
+   Exit 0 and prints the next canonical step (e.g. `speckit.implement`); this is
+   NOT full profile execution — the fixture has no real implementation.
+
+The orchestrator step is smoke-only — it confirms the orchestrated-handoff
+pipeline resolves and suggests the correct next phase. Full profile execution
+is deferred to orchestrator dogfooding after `011-mise-sdd-cli`.
+
+See [`WORKFLOW_GUIDE.md`](WORKFLOW_GUIDE.md) § Package layout and
+`tools/__tests__/fixtures/workflow/smoke-feature/` for the fixture definition.

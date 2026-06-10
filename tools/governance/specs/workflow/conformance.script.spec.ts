@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import path from 'node:path'
-import { loadProfile } from './profile_loader.script.ts'
+import { loadProfile } from '@kb/workflow-runtime'
 
 const DEFAULT_PROFILE_PATH = path.resolve('assets/catalog/workflows/default.yaml')
 const DETECT_PHASE_ORDER = [

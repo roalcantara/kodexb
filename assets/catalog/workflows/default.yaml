@@ -48,6 +48,11 @@ stages:
   - id: review
     worker: primary
     human_gated: true
+  - id: gate
+    worker: primary
+    evidence:
+      - "mise run spec gate"
+      - "bash .agents/skills/app-quality-gate/scripts/gate.sh"
 
 transitions:
   - from: specify

@@ -7,6 +7,7 @@
  *   prepare          — combined JSON/text for reviewer agents
  *   scaffold-audit   — write tmp/reviews/review-{slug}-{sha}.md audit scaffold
  */
+import { UsageError, withUsage } from '@kb/workflow-runtime'
 import { chdirToRepoRoot } from '../../../support/lib/shared/repo_root.script.ts'
 import {
   classifyReviewSlice,
@@ -20,7 +21,6 @@ import {
   routeReviewSkills,
   scaffoldAuditReport
 } from './review_handoff_core.script.ts'
-import { UsageError, withUsage } from './usage.script.ts'
 
 const ACTIONS = ['classify', 'extract-evidence', 'prepare', 'scaffold-audit'] as const
 type Action = (typeof ACTIONS)[number]

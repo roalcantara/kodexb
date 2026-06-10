@@ -33,7 +33,9 @@
       "@shell/app/db/*": ["./src/shell/app/db/*"],
       "@shell/app/config/*": ["./src/shell/app/config/*"],
       "@testing": ["./src/__tests__/index.ts"],
-      "@testing/*": ["./src/__tests__/*"]
+      "@testing/*": ["./src/__tests__/*"],
+      "@kb/workflow-core": ["./packages/workflow-core/src/index.ts"],
+      "@kb/workflow-runtime": ["./packages/workflow-runtime/src/index.ts"]
     }
   },
   "include": ["src/**/*", "tools/**/*", "bdd/**/*.ts", "playwright.config.ts"],
