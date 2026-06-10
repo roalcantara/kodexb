@@ -68,19 +68,19 @@
 
 ## Phase 5: Profile + docs migration (MSC-4, MSC-10)
 
-- [ ] MSC-DOCS-01 Update [`default.yaml`](../../catalog/workflows/default.yaml) to post-011 command names.
-- [ ] MSC-DOCS-02 Update [`MISE_GUIDE.md`](../../guides/MISE_GUIDE.md) — SDD hub, output contract, migration table.
-- [ ] MSC-DOCS-03 Update [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md), [`CI_GUIDE.md`](../../guides/CI_GUIDE.md), [`TOOLS_GUIDE.md`](../../guides/TOOLS_GUIDE.md).
-- [ ] MSC-DOCS-04 Ripgrep migration pass: guides, specs, `.github`, `.agents`, `CLAUDE.md`, `AGENTS.md`.
-- [ ] MSC-DOCS-05 Update the `EXPECTED_PUBLIC_TASKS` (and `EXPECTED_PACKAGE_SCRIPTS` if touched) allowlist in the `policy` check — currently inline in `mise.toml` (`checkPublicTaskSurface`), moved to `tools/bin/policy.script.ts` by MSC-POL-01 — to the post-011 public-task surface (drop `audit`; keep `spec`, `app`, `catalog`, `policy`, `test`, and other current publics). Derive the exact delta by running `mise run policy check` and matching the reported `public-task-surface` expected-vs-actual diff (no guessing).
+- [X] MSC-DOCS-01 Update [`default.yaml`](../../catalog/workflows/default.yaml) to post-011 command names.
+- [X] MSC-DOCS-02 Update [`MISE_GUIDE.md`](../../guides/MISE_GUIDE.md) — SDD hub, output contract, migration table.
+- [X] MSC-DOCS-03 Update [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md), [`CI_GUIDE.md`](../../guides/CI_GUIDE.md), [`TOOLS_GUIDE.md`](../../guides/TOOLS_GUIDE.md).
+- [X] MSC-DOCS-04 Ripgrep migration pass: guides, specs, `.github`, `.agents`, `CLAUDE.md`, `AGENTS.md`.
+- [X] MSC-DOCS-05 Update the `EXPECTED_PUBLIC_TASKS` (and `EXPECTED_PACKAGE_SCRIPTS` if touched) allowlist in the `policy` check — currently inline in `mise.toml` (`checkPublicTaskSurface`), moved to `tools/bin/policy.script.ts` by MSC-POL-01 — to the post-011 public-task surface (drop `audit`; keep `spec`, `app`, `catalog`, `policy`, `test`, and other current publics). Derive the exact delta by running `mise run policy check` and matching the reported `public-task-surface` expected-vs-actual diff (no guessing).
 
 ---
 
 ## Phase 6: Orchestrator dogfood (MSC-8, MSC-9)
 
-- [ ] MSC-DOGFOOD-01 During implement: partial `mise run spec workflow run` with run log archived (MSC-8).
-- [ ] MSC-DOGFOOD-02 Complete full workflow run through terminal gate on `assets/specs/011-mise-sdd-cli`.
-- [ ] MSC-DOGFOOD-03 Record run id + stage timeline in PR / [`handoff.md`](./handoff.md).
+- [X] MSC-DOGFOOD-01 During implement: partial `mise run spec workflow run` with run log archived (MSC-8).
+- [X] MSC-DOGFOOD-02 Complete full workflow run through terminal gate on `assets/specs/011-mise-sdd-cli`.
+- [X] MSC-DOGFOOD-03 Record run id + stage timeline in PR / [`handoff.md`](./handoff.md).
 
 **Checkpoint**: orchestrator run `DONE` at gate; human gates documented if used.
 
@@ -88,8 +88,8 @@
 
 ## Phase 7: Closeout (MSC-10)
 
-- [ ] MSC-CLOSEOUT-01 `mise run spec lint assets/specs/011-mise-sdd-cli` + `mise run spec gate` + `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
-- [ ] MSC-CLOSEOUT-02 PR description lists MSC-1…MSC-9 with dogfood run id.
+- [X] MSC-CLOSEOUT-01 `mise run spec lint assets/specs/011-mise-sdd-cli` + `mise run spec gate` + `bash .agents/skills/app-quality-gate/scripts/gate.sh`.
+- [X] MSC-CLOSEOUT-02 PR description lists MSC-1…MSC-9 with dogfood run id.
 
 **Checkpoint**: [`handoff.md`](./handoff.md) verify block.
 
