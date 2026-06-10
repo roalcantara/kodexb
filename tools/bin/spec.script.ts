@@ -2,6 +2,7 @@
 import { findActiveRun, listActiveRuns } from '@kb/workflow-runtime'
 import { type ResolveResult, resolveActiveFeatureDir } from '../governance/specs/resolve_active_feature_dir.script.ts'
 import { resolveCatalogKey } from '../governance/specs/resolve_catalog_key.script.ts'
+import { runStepsAndPrint } from '../support/lib/cli/task_runner.script.ts'
 /**
  * mise run spec — Spec Kit lint, trace, gate, legacy import (thin dispatch stub).
  */
@@ -29,6 +30,10 @@ export function validateWorkflowName(name: string): string | null {
 /** Resolve feature dir for `mise run spec gate` (explicit arg or active-feature inference). */
 export function resolveSpecGateFeatureDir(explicitDir?: string): ResolveResult {
   return resolveActiveFeatureDir(explicitDir || undefined)
+}
+
+function spawnExitCode(cmd: string[], root: string): number {
+  return Bun.spawnSync(cmd, { cwd: root, stdout: 'inherit', stderr: 'inherit' }).exitCode
 }
 
 function envBool(name: string): boolean {
@@ -67,7 +72,21 @@ function main(): void {
         console.error(resolved.message)
         process.exit(resolved.exitCode)
       }
-      spawnInherit(['bash', `${SPECS}/gate.sh`, resolved.featureDir], root)
+      const report = runStepsAndPrint(
+        {
+          task: 'spec-gate',
+          command: `mise run spec gate ${resolved.featureDir}`,
+          steps: [
+            {
+              id: 'gate',
+              title: `spec gate ${resolved.featureDir}`,
+              run: () => spawnExitCode(['bash', `${SPECS}/gate.sh`, resolved.featureDir], root)
+            }
+          ]
+        },
+        { json: envBool('usage_json'), raw: envBool('usage_raw') }
+      )
+      process.exit(report.ok ? 0 : 1)
       break
     }
     case 'feature-init':
@@ -202,21 +221,51 @@ function main(): void {
         }
       }
 
-      const commands: string[][] = []
-      if (key) {
-        commands.push(['mise', 'run', 'test', 'tag', key])
-      }
-      commands.push(['mise', 'run', 'catalog', 'validate', '--raw'])
-      commands.push(['hk', 'check', '--profile', 'commit'])
-      commands.push(['bash', `${SPECS}/gate.sh`, dir])
-
-      for (const stepCmd of commands) {
-        const r = Bun.spawnSync(stepCmd, { cwd: root, stdout: 'inherit', stderr: 'inherit', stdin: 'inherit' })
-        if (r.exitCode !== 0) {
-          process.exit(r.exitCode ?? 1)
-        }
-      }
-      console.log('spec ready: OK')
+      const report = runStepsAndPrint(
+        {
+          task: 'spec-ready',
+          command: `mise run spec ready${dir ? ` ${dir}` : ''}`,
+          steps: [
+            ...(key
+              ? [
+                  {
+                    id: 'tag',
+                    title: `tag test ${key}`,
+                    run: () =>
+                      Bun.spawnSync(['mise', 'run', 'test', 'tag', key], {
+                        cwd: root,
+                        stdout: 'inherit',
+                        stderr: 'inherit'
+                      }).exitCode
+                  }
+                ]
+              : []),
+            {
+              id: 'catalog',
+              title: 'catalog validate',
+              run: () =>
+                Bun.spawnSync(['mise', 'run', 'catalog', 'validate', '--raw'], {
+                  cwd: root,
+                  stdout: 'inherit',
+                  stderr: 'inherit'
+                }).exitCode
+            },
+            {
+              id: 'hk',
+              title: 'hk check profile commit',
+              run: () =>
+                Bun.spawnSync(['hk', 'check', '--profile', 'commit'], {
+                  cwd: root,
+                  stdout: 'inherit',
+                  stderr: 'inherit'
+                }).exitCode
+            },
+            { id: 'gate', title: `spec gate ${dir}`, run: () => spawnExitCode(['bash', `${SPECS}/gate.sh`, dir], root) }
+          ]
+        },
+        { json: envBool('usage_json'), raw: envBool('usage_raw') }
+      )
+      process.exit(report.ok ? 0 : 1)
       break
     }
     case 'review-handoff': {
