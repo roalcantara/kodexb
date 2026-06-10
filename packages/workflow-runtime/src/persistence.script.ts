@@ -1,10 +1,8 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
+import type { PersistenceConfig } from '@kb/workflow-core'
 
-export type PersistenceConfig = {
-  rootDir: string
-  metricsDir: string
-}
+export type { PersistenceConfig }
 
 export function ensureRunDir(config: PersistenceConfig, dateStr: string): string {
   const dir = path.join(config.rootDir, dateStr)

@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
+import { type Envelope, EnvelopeSchema } from '@kb/workflow-core'
 import { Value } from '@sinclair/typebox/value'
-import { type Envelope, EnvelopeSchema } from './schemas/envelope.schema.ts'
 
 export type EnvelopeOutcome = {
   envelope: Envelope | null

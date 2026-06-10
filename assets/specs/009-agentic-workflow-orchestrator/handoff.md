@@ -3,17 +3,17 @@
 # Handoff — Agentic workflow orchestrator (`009`) — program closeout
 
 **Spec:** [`spec.md`](./spec.md) (AWO-1…AWO-13) · **Plan:** [`plan.md`](./plan.md) · **Tasks:** [`tasks.md`](./tasks.md)
-**Branch:** `feature/009-m4-retro-sandbox` · **Status:** **M1 gaps closed** — MVP–M4 complete; SMOKE-01 and PROFILE-SDD-01 remain open (010).
+**Branch:** merged to `main` · **Status:** **Program complete** — optional follow-ups split to [`010-workflow-packages`](../010-workflow-packages/) and [`011-mise-sdd-cli`](../011-mise-sdd-cli/).
 
 ---
 
 ## Agent workflow
 
-| Step | Action | Success signal |
-| ---- | ------ | -------------- |
-| 1 | Confirm branch | `feature/009-m4-retro-sandbox` |
-| 2 | Full verify (below) | All exit 0 |
-| 3 | Commit + push; `gh pr edit` | PR updated |
+| Step | Action                      | Success signal                 |
+| ---- | --------------------------- | ------------------------------ |
+| 1    | Confirm branch              | `feature/009-m4-retro-sandbox` |
+| 2    | Full verify (below)         | All exit 0                     |
+| 3    | Commit + push; `gh pr edit` | PR updated                     |
 
 ---
 
@@ -25,14 +25,15 @@
 - **M3**: PR/CI completion (AWO-6)
 - **M4**: retrospective + sandbox (AWO-8, 11)
 - **Polish**: crossref lint + NFR baselines + harness (AWO-12)
-- **Optional (partial)**: SDD bindings started, smoke CI validates spec gate; full bindings + dogfood → 010
+- **Optional (partial)**: SDD bindings started, smoke CI validates spec gate; remainder → **010** / **011**
 
-## Out of scope
+## Out of scope (successor specs)
 
-- `packages/workflow-core` / `packages/workflow-runtime` extraction (010)
+- `packages/workflow-core` / `packages/workflow-runtime` → [`010-workflow-packages`](../010-workflow-packages/)
+- Full per-stage SDD command bindings (PROFILE-SDD-01) → **010**
+- Orchestrator nightly smoke (SMOKE-01) → **010**
+- Mise SDD CLI hub (`spec test`, `task_runner`) → [`011-mise-sdd-cli`](../011-mise-sdd-cli/)
 - Process isolation (AWO-11 v2, OQ-8)
-- Full per-stage SDD command bindings (010)
-- Full orchestrator dogfood smoke (010)
 
 ---
 

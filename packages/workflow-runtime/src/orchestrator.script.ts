@@ -1,18 +1,24 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import type { Profile } from '@kb/workflow-core'
+import {
+  autoFillValues,
+  canAutoFill,
+  dedupQuestions,
+  ENVELOPE_SCHEMA_VERSION,
+  type Envelope,
+  evaluateEvidence,
+  persistMachineSnapshot,
+  type SnapshotIO,
+  workflowMachine
+} from '@kb/workflow-core'
 import { createActor } from 'xstate'
 import { loadInsights, mergeInsightsIntoStageMemory } from './agent_memory.script.ts'
-import { evaluateEvidence } from './evidence.script.ts'
-import { autoFillValues, canAutoFill, dedupQuestions } from './intervention.script.ts'
-import { workflowMachine } from './machine.script.ts'
 import { readSharedMemory, writeSharedMemory, writeStageMemory } from './memory.script.ts'
 import { orchestratedRunProviders } from './orchestrator_providers.script.ts'
 import { readEnvelopeFile, seedDispatchedKeys } from './orchestrator_resume.script.ts'
 import { writeRunRetrospective } from './orchestrator_retro.script.ts'
-import { ensureRunDir, type PersistenceConfig } from './persistence.script.ts'
-import { ENVELOPE_SCHEMA_VERSION, type Envelope } from './schemas/envelope.schema.ts'
-import type { Profile } from './schemas/profile.schema.ts'
-import { persistMachineSnapshot } from './snapshot.script.ts'
+import { ensureRunDir, type PersistenceConfig, readStateSnapshot, writeStateSnapshot } from './persistence.script.ts'
 import { spawnTeardownFireAndForget, type TeardownHandle } from './teardown_runner.script.ts'
 import { invokeWithTelemetry } from './workflow_invoker.script.ts'
 import { generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow_run.script.ts'
@@ -169,9 +175,14 @@ export class Orchestrator {
     if (!this.actor) return
     const shared = this.actor.getSnapshot().context.shared_memory
     writeSharedMemory(this.config.persistenceConfig.rootDir, this.dateStr, this.runId, shared)
+    const io: SnapshotIO = {
+      readSnapshot: readStateSnapshot,
+      writeSnapshot: writeStateSnapshot
+    }
     persistMachineSnapshot(
       this.actor,
       this.config.persistenceConfig,
+      io,
       this.runId,
       this.dateStr,
       this.profile.name,

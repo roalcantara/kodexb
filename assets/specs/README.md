@@ -10,6 +10,8 @@ catalog governance.
 | [`004-orchestrated-handoff/`](004-orchestrated-handoff/)                   | In progress — dual-analyze workflow + handoff-emit seam for worker dispatch                     |
 | [`005-workflow-observability/`](005-workflow-observability/)               | In progress — TypeBox-validated JSONL audit + runs CLI for orchestrated-handoff                 |
 | [`006-safety-hardening/`](006-safety-hardening/)                           | Draft — `spec security` subgate (secrets / deps / Electrobun surface) + handoff scrub validator |
-| [`009-agentic-workflow-orchestrator/`](009-agentic-workflow-orchestrator/) | Closing — full program on `feature/009-m4-retro-sandbox` (implementer in progress)              |
+| [`009-agentic-workflow-orchestrator/`](009-agentic-workflow-orchestrator/) | **Shipped** — program merged on `main`; optional follow-ups split to 010/011                    |
+| [`010-workflow-packages/`](010-workflow-packages/)                         | Draft — `@kb/workflow-*` workspaces + PROFILE-SDD-01 + SMOKE-01                                 |
+| [`011-mise-sdd-cli/`](011-mise-sdd-cli/)                                   | Draft — **blocked on 010**; mise SDD hub + `spec test` + orchestrator dogfood closeout          |
 
 Shipped registry (YAML only): [`assets/catalog/catalog.yaml`](../catalog/catalog.yaml).

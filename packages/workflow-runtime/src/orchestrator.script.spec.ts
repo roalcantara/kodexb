@@ -2,15 +2,30 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import {
+  autoFillValues,
+  canAutoFill,
+  dedupQuestions,
+  hydrateMachineActor,
+  persistMachineSnapshot,
+  type SnapshotIO,
+  workflowMachine
+} from '@kb/workflow-core'
 import { createActor } from 'xstate'
-import { autoFillValues, canAutoFill, dedupQuestions } from './intervention.script.ts'
-import { workflowMachine } from './machine.script.ts'
 import { Orchestrator, type OrchestratorConfig } from './orchestrator.script.ts'
+import { readStateSnapshot, writeStateSnapshot } from './persistence.script.ts'
 import { loadProfile } from './profile_loader.script.ts'
-import { hydrateMachineActor, persistMachineSnapshot } from './snapshot.script.ts'
 
-const FIXTURE_PROFILE = 'tools/__tests__/fixtures/workflow/fixture-profile.yaml'
-const FIXTURE_TEARDOWN = 'tools/__tests__/fixtures/workflow/fixture-profile-teardown.yaml'
+const snapshotIo: SnapshotIO = {
+  readSnapshot: readStateSnapshot,
+  writeSnapshot: writeStateSnapshot
+}
+
+const FIXTURE_PROFILE = path.resolve(import.meta.dir, '../../../tools/__tests__/fixtures/workflow/fixture-profile.yaml')
+const FIXTURE_TEARDOWN = path.resolve(
+  import.meta.dir,
+  '../../../tools/__tests__/fixtures/workflow/fixture-profile-teardown.yaml'
+)
 
 function writeEnvelope(dir: string, runId: string, stage: string, status: string, extra?: Record<string, unknown>) {
   const envelope = {
@@ -81,7 +96,7 @@ describe('orchestrator integration', () => {
     expect(raw.schema_version).toBe('009.1.0')
     expect(raw.xstate_snapshot).toBeTruthy()
 
-    const hydrated = hydrateMachineActor(workflowMachine, cfg.persistenceConfig, rid, dStr)
+    const hydrated = hydrateMachineActor(workflowMachine, cfg.persistenceConfig, snapshotIo, rid, dStr)
     expect(hydrated).not.toBeNull()
     if (hydrated) {
       expect(hydrated.state.run_id).toBe(rid)
@@ -156,6 +171,7 @@ describe('orchestrator integration', () => {
     persistMachineSnapshot(
       actor,
       { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
+      snapshotIo,
       'test-persist',
       cfgDateStr(),
       'fixture-test',
@@ -165,6 +181,7 @@ describe('orchestrator integration', () => {
     const hydrated = hydrateMachineActor(
       workflowMachine,
       { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
+      snapshotIo,
       'test-persist',
       cfgDateStr()
     )

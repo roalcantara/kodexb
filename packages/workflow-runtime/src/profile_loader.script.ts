@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
+import { type Profile, ProfileSchema } from '@kb/workflow-core'
 import { Value } from '@sinclair/typebox/value'
-import { type Profile, ProfileSchema } from './schemas/profile.schema.ts'
 
 export class ProfileLoadError extends Error {
   diagnostics: string[]

@@ -181,8 +181,8 @@ async function main(): Promise<void> {
   const existing = loadExistingBaseline()
   const dataset = loadDataset()
 
-  const { run: runGenerate } = await import('../../../governance/specs/workflow/handoff_generate.script.ts')
-  const { run: runOrchestrate } = await import('../../../governance/specs/workflow/orchestrated_handoff.script.ts')
+  const { runHandoffGenerate: runGenerate } = await import('@kb/workflow-runtime')
+  const { runOrchestratedHandoff: runOrchestrate } = await import('@kb/workflow-runtime')
 
   const results: Record<string, number[]> = {}
 

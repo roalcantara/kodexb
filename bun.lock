@@ -20,6 +20,7 @@
         "rehype-highlight": "^7.0.2",
         "type-fest": "^5.6.0",
         "xstate": "^5.32.0",
+        "yaml": "^2.9.0",
       },
       "devDependencies": {
         "@biomejs/biome": "^2.4.16",
@@ -42,6 +43,23 @@
         "release-it": "^20.0.1",
         "tailwindcss": "^4.3.0",
         "typescript": "^5",
+      },
+    },
+    "packages/workflow-core": {
+      "name": "@kb/workflow-core",
+      "version": "0.1.0",
+      "dependencies": {
+        "@sinclair/typebox": "^0.34.49",
+        "xstate": "^5.32.0",
+      },
+    },
+    "packages/workflow-runtime": {
+      "name": "@kb/workflow-runtime",
+      "version": "0.1.0",
+      "dependencies": {
+        "@kb/workflow-core": "workspace:*",
+        "@sinclair/typebox": "^0.34.49",
+        "xstate": "^5.32.0",
       },
     },
   },
@@ -178,6 +196,10 @@
     "@jscpd/html-reporter": ["@jscpd/html-reporter@4.2.4", "", { "dependencies": { "colors": "1.4.0", "fs-extra": "^11.2.0", "pug": "^3.0.3" } }, "sha512-6UljCTVGf7O+o6D6fs1zNBG+vR1PTn47W2mSgb5hzSrvNw60rLrVoAMZMnr/TeIEdd/OEgAu+icbdvvVBfnvJw=="],
 
     "@jscpd/tokenizer": ["@jscpd/tokenizer@4.2.4", "", { "dependencies": { "@jscpd/core": "4.2.4", "spark-md5": "^3.0.2" } }, "sha512-nM4kGyDvpcevt8t0zOsMQ82ShSc65c3LIQUHClTYwraiOGOmWgUQyen+JIiFCNF8eDCGR2Qa5iI5XBfGWYQzIg=="],
+
+    "@kb/workflow-core": ["@kb/workflow-core@workspace:packages/workflow-core"],
+
+    "@kb/workflow-runtime": ["@kb/workflow-runtime@workspace:packages/workflow-runtime"],
 
     "@logtape/logtape": ["@logtape/logtape@2.1.1", "", {}, "sha512-aULbCqUQGerfOsZ3CMvcKtueKzmdchluXYUd3bIHKmOIS93fx1ko0+hyRQ4flloGZ8EiyRPydZXiy8n1J/eAQA=="],
 

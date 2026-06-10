@@ -5,7 +5,7 @@
  */
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import { catalogPaths } from '../../support/catalog_paths.script.ts'
+import { catalogPaths } from '../../../tools/governance/support/catalog_paths.script.ts'
 import { parseHandoffAcTable } from './handoff_generate.script.ts'
 import { UsageError, withUsage } from './usage.script.ts'
 import { emitPhaseDecided, generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow_run.script.ts'

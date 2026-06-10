@@ -5,22 +5,35 @@
  */
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import { resolveActiveFeatureDir } from './resolve_active_feature_dir.script.ts'
-import { parseHandoffAcTable } from './workflow/handoff_generate.script.ts'
-import { createAnsweredDecision } from './workflow/intervention.script.ts'
-import { workflowMachine } from './workflow/machine.script.ts'
-import { readSharedMemory, writeSharedMemory } from './workflow/memory.script.ts'
-import { detectPhase, scanFeatureDir } from './workflow/orchestrated_handoff.script.ts'
-import { hydrateMachineActor, persistMachineSnapshot } from './workflow/snapshot.script.ts'
 import {
+  createAnsweredDecision,
+  hydrateMachineActor,
+  persistMachineSnapshot,
+  type SnapshotIO,
+  workflowMachine
+} from '@kb/workflow-core'
+import {
+  detectPhase,
   emitPhaseDecided,
   filesetFingerprint,
   generateRunId,
+  parseHandoffAcTable,
+  readSharedMemory,
+  readStateSnapshot,
+  scanFeatureDir,
   slugFromFeatureDir,
-  WorkflowRunWriter
-} from './workflow/workflow_run.script.ts'
+  WorkflowRunWriter,
+  writeSharedMemory,
+  writeStateSnapshot
+} from '@kb/workflow-runtime'
+import { resolveActiveFeatureDir } from './resolve_active_feature_dir.script.ts'
 
 export { emitPhaseDecided, filesetFingerprint }
+
+const snapshotIO: SnapshotIO = {
+  readSnapshot: readStateSnapshot,
+  writeSnapshot: writeStateSnapshot
+}
 
 export function applyResumeAnswer(
   hydrated: NonNullable<ReturnType<typeof hydrateMachineActor>>,
@@ -63,6 +76,7 @@ export function applyResumeAnswer(
   persistMachineSnapshot(
     hydrated.actor,
     { rootDir: runDir, metricsDir: path.join(runDir, 'metrics') },
+    snapshotIO,
     runId,
     dateStr,
     hydrated.state.profile_name,
@@ -207,6 +221,7 @@ function run(): void {
     const hydrated = hydrateMachineActor(
       workflowMachine,
       { rootDir: runDir, metricsDir: path.join(runDir, 'metrics') },
+      snapshotIO,
       runId,
       dateStr
     )

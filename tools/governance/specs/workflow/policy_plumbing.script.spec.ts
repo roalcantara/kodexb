@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import { runCommand } from './command_invoker.script.ts'
-import { validateCommandPrefix } from './execution_policy.script.ts'
+import { validateCommandPrefix } from '@kb/workflow-core'
+import { runCommand } from '@kb/workflow-runtime'
 
 const FIXTURE_PREFIXES = ['bun run', 'echo']
 

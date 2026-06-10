@@ -52,9 +52,9 @@ export function createDefaultedDecision(question: QuestionShape, rationale: stri
   }
 }
 
-export function createAnsweredDecision(question_id: string, value: string, timestamp: string): DecisionRecord {
+export function createAnsweredDecision(questionId: string, value: string, timestamp: string): DecisionRecord {
   return {
-    question_id,
+    question_id: questionId,
     value,
     source: 'answered',
     rationale: 'operator provided',

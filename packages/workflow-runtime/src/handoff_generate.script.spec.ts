@@ -3,6 +3,10 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import {
+  assertHandoffFile,
+  readHandoffEvents
+} from '../../../tools/governance/specs/workflow/workflow_test_helpers.script.ts'
+import {
   type AcRow,
   catalogKeyFromSlug,
   dispatchToOpencode,
@@ -14,7 +18,6 @@ import {
   slugFromFeatureDir
 } from './handoff_generate.script.ts'
 import { generateRunId, WorkflowRunWriter } from './workflow_run.script.ts'
-import { assertHandoffFile, readHandoffEvents } from './workflow_test_helpers.script.ts'
 
 type AcRowLike = AcRow
 

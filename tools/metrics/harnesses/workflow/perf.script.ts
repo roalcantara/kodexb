@@ -1,12 +1,22 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import {
+  ENVELOPE_SCHEMA_VERSION,
+  type Envelope,
+  hydrateMachineActor,
+  persistMachineSnapshot,
+  type SnapshotIO,
+  workflowMachine
+} from '@kb/workflow-core'
+import {
+  generateRunId,
+  loadProfile,
+  readStateSnapshot,
+  WorkflowRunWriter,
+  writeStateSnapshot
+} from '@kb/workflow-runtime'
 import { createActor } from 'xstate'
-import { workflowMachine } from '../../../governance/specs/workflow/machine.script.ts'
-import { loadProfile } from '../../../governance/specs/workflow/profile_loader.script.ts'
-import { ENVELOPE_SCHEMA_VERSION, type Envelope } from '../../../governance/specs/workflow/schemas/envelope.schema.ts'
-import { hydrateMachineActor, persistMachineSnapshot } from '../../../governance/specs/workflow/snapshot.script.ts'
-import { generateRunId, WorkflowRunWriter } from '../../../governance/specs/workflow/workflow_run.script.ts'
 
 const BASELINE_PATH = 'tools/metrics/baselines/workflow.json'
 const RESULTS_DIR = 'tools/metrics/results/workflow'
@@ -72,18 +82,29 @@ function run(): void {
 
     // (4) cold resume via hydrateMachineActor — persist snapshot first
     const dateStr = new Date().toISOString().slice(0, 10)
+    const snapshotIO: SnapshotIO = {
+      readSnapshot: readStateSnapshot,
+      writeSnapshot: writeStateSnapshot
+    }
     persistMachineSnapshot(
       actor,
       { rootDir: scratchDir, metricsDir },
+      snapshotIO,
       writer.runId,
       dateStr,
-      'perf-profile',
-      '009.1.0',
+      _profile?.name ?? 'test',
+      _profile?.schema_version ?? '009.1.0',
       new Date().toISOString()
     )
     actor.stop()
     const t3 = performance.now()
-    const hydrated = hydrateMachineActor(workflowMachine, { rootDir: scratchDir, metricsDir }, writer.runId, dateStr)
+    const hydrated = hydrateMachineActor(
+      workflowMachine,
+      { rootDir: scratchDir, metricsDir },
+      snapshotIO,
+      writer.runId,
+      dateStr
+    )
     results.cold_resume = {
       measured_ms: Math.round((performance.now() - t3) * 100) / 100,
       budget_ms: baseline.budgets.cold_resume?.p95_ms ?? 250,

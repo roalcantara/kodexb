@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'bun:test'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { findActiveRun, listActiveRuns } from '../governance/specs/workflow/workflow_run.script.ts'
+import { findActiveRun, listActiveRuns } from '@kb/workflow-runtime'
 import { ALLOWED_WORKFLOW_NAMES, resolveSpecGateFeatureDir, validateWorkflowName } from './spec.script.ts'
 
 describe('spec.script', () => {

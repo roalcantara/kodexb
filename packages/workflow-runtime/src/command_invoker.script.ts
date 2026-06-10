@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import { validateCommandPrefix } from './execution_policy.script.ts'
+import { validateCommandPrefix } from '@kb/workflow-core'
 
 export type CommandDescriptor = {
   command: string

@@ -197,23 +197,24 @@ Checkbox audit against `tools/governance/specs/workflow/` after M4 merge prep. P
 
 ### Completed (this PR)
 
-| Task               | Status  | Note                                                                                                                                          |
-| ------------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **M1-ENGINE-02**   | Done    | `teardown_runner.script.ts` + `command_invoker.script.ts` `runCommandAsync`; `AWO-5.5` latency/timeout specs in `orchestrator.script.spec.ts` |
-| **M1-ADAPTER-02**  | Done    | `orchestrator_resume.script.ts` seed key fix + `AWO-13.1`/`13.3` specs in `orchestrator.script.spec.ts`                                       |
-| **M1-CLI-01**      | Done    | Resume naming in `WORKFLOW_GUIDE.md`                                                                                                          |
-| **M1-CLI-02**      | Done    | `findActiveRun`/`listActiveRuns` in `spec.script.ts` + specs in `spec.script.spec.ts`                                                         |
-| **POLISH-01**      | Done    | `profile_guide_crossref.script.ts` + spec                                                                                                     |
-| **POLISH-02**      | Done    | NFR budgets in `workflow.json`; harness in `tools/metrics/harnesses/workflow/`                                                                |
+| Task              | Status | Note                                                                                                                                          |
+| ----------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **M1-ENGINE-02**  | Done   | `teardown_runner.script.ts` + `command_invoker.script.ts` `runCommandAsync`; `AWO-5.5` latency/timeout specs in `orchestrator.script.spec.ts` |
+| **M1-ADAPTER-02** | Done   | `orchestrator_resume.script.ts` seed key fix + `AWO-13.1`/`13.3` specs in `orchestrator.script.spec.ts`                                       |
+| **M1-CLI-01**     | Done   | Resume naming in `WORKFLOW_GUIDE.md`                                                                                                          |
+| **M1-CLI-02**     | Done   | `findActiveRun`/`listActiveRuns` in `spec.script.ts` + specs in `spec.script.spec.ts`                                                         |
+| **POLISH-01**     | Done   | `profile_guide_crossref.script.ts` + spec                                                                                                     |
+| **POLISH-02**     | Done   | NFR budgets in `workflow.json`; harness in `tools/metrics/harnesses/workflow/`                                                                |
 
-### Partial / deferred to 010
+### Partial / deferred to 010 and 011
 
-| Task               | Note |
-| ------------------ | ---- |
-| **PROFILE-SDD-01** | Only specify evidence + handoff post-trigger done; full per-stage bindings → 010 |
-| **SMOKE-01**       | Smoke spec gate only; full orchestrator dogfood → 010 |
-| `packages/*`       | Package extraction → 010 |
+| Task               | Owner   | Note                                                                          |
+| ------------------ | ------- | ----------------------------------------------------------------------------- |
+| **PROFILE-SDD-01** | **010** | Only specify evidence + handoff post-trigger done; full per-stage bindings    |
+| **SMOKE-01**       | **010** | Smoke spec gate only; orchestrator-driven gate                                |
+| `packages/*`       | **010** | `@kb/workflow-core` / `@kb/workflow-runtime`                                  |
+| Mise SDD CLI hub   | **011** | `spec test`, `task_runner`, breaking mise tree; orchestrator dogfood closeout |
 
 ### Closeout plan (2026-06-03, revised)
 
-If the table above still shows gaps after the 009 PR lands, fix on 009 (hotfix), not by expanding 010.
+009 merged on `main`. Remaining rows are **010** / **011** — not 009 hotfixes unless engine regression.

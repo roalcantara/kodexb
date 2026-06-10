@@ -1,6 +1,6 @@
+import type { Profile } from '@kb/workflow-core'
 import { checkCiGate } from './ci_gate.script.ts'
 import { capturePrRef, persistPrRef, runProvider } from './providers_runner.script.ts'
-import type { Profile } from './schemas/profile.schema.ts'
 import type { WorkflowRunWriter } from './workflow_run.script.ts'
 
 export function orchestratedRunProviders(

@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { type Envelope, EnvelopeSchema } from '@kb/workflow-core'
 import { Value } from '@sinclair/typebox/value'
-import { type Envelope, EnvelopeSchema } from './schemas/envelope.schema.ts'
 
 export function readEnvelopeFile(envPath: string): Envelope | null {
   if (!existsSync(envPath)) return null

@@ -8,8 +8,8 @@
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { sliceIdFromAcTag } from '../../registries/catalog/tag.script.ts'
-import { scrubPrompt } from '../../security/handoff_scrub.script.ts'
+import { sliceIdFromAcTag } from '../../../tools/governance/registries/catalog/tag.script.ts'
+import { scrubPrompt } from '../../../tools/governance/security/handoff_scrub.script.ts'
 import { UsageError, withUsage } from './usage.script.ts'
 import { generateRunId, WorkflowRunWriter } from './workflow_run.script.ts'
 

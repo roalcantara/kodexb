@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import { UsageError, withUsage } from '@kb/workflow-runtime'
 /**
  * mise run spec review-handoff — classify diff, route skills, extract Evidence.
  *
@@ -20,7 +21,6 @@ import {
   routeReviewSkills,
   scaffoldAuditReport
 } from './review_handoff_core.script.ts'
-import { UsageError, withUsage } from './usage.script.ts'
 
 const ACTIONS = ['classify', 'extract-evidence', 'prepare', 'scaffold-audit'] as const
 type Action = (typeof ACTIONS)[number]

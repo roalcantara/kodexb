@@ -11,9 +11,9 @@
  */
 import { existsSync } from 'node:fs'
 import path from 'node:path'
+import { UsageError, withUsage } from '@kb/workflow-runtime'
 import { runAudit } from './audit_core.script.ts'
 import { chooseRenderer, renderAudit } from './audit_output.script.ts'
-import { UsageError, withUsage } from './workflow/usage.script.ts'
 
 type CliOpts = {
   featureDir: string

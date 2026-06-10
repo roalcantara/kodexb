@@ -20,3 +20,5 @@ jobs:
       - run: bun install
       - run: mise run spec gate
       - run: mise run catalog validate
+      - name: Orchestrator smoke (fixture feature dir)
+        run: mise run spec workflow run --feature tools/__tests__/fixtures/workflow/smoke-feature --profile default

@@ -4,7 +4,7 @@
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { type AcRow, parseHandoffAcTable } from './handoff_generate.script.ts'
+import { type AcRow, parseHandoffAcTable } from '@kb/workflow-runtime'
 
 export const REVIEW_SLICES = ['implement-src', 'gherkin-bdd', 'governance-tools', 'docs-only', 'mixed'] as const
 
