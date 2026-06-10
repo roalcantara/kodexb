@@ -14,7 +14,12 @@ export function readEnvelopeFile(envPath: string): Envelope | null {
   }
 }
 
-export function seedDispatchedKeys(runDir: string, runId: string, addKey: (key: string) => void): void {
+export function seedDispatchedKeys(
+  runDir: string,
+  runId: string,
+  stageCommands: Record<string, string>,
+  addKey: (key: string) => void
+): void {
   const pattern = new RegExp(`${runId}\\.envelope\\.(.+)\\.json$`)
   try {
     for (const file of readdirSync(runDir)) {
@@ -24,7 +29,8 @@ export function seedDispatchedKeys(runDir: string, runId: string, addKey: (key: 
       const envPath = path.join(runDir, file)
       const envelope = readEnvelopeFile(envPath)
       if (envelope) {
-        addKey(envelope.idempotency_key ?? `${runId}:${stage}:<unknown>`)
+        const command = stageCommands[stage] ?? ''
+        addKey(envelope.idempotency_key ?? `${runId}:${stage}:${command}`)
       }
     }
   } catch {

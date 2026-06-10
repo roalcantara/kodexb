@@ -93,7 +93,7 @@ export class Orchestrator {
   }
 
   private seedDispatchedKeysFromDisk(): void {
-    seedDispatchedKeys(this.runDir, this.runId, key => this.dispatchedKeys.add(key))
+    seedDispatchedKeys(this.runDir, this.runId, this.config.stageCommands, key => this.dispatchedKeys.add(key))
   }
 
   dispatchStageCommand(stage: string): Envelope | null {

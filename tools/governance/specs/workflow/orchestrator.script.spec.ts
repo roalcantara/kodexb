@@ -401,6 +401,40 @@ describe('M4 retrospective and sandbox', () => {
     expect(memInsights.length).toBe(1)
     expect(memInsights[0]?.insight_id).toBe('ri-test4444')
   })
+
+  // --- AWO-13.3: idempotency ---
+
+  it('AWO-13.3: second dispatch skips invoke when envelope exists', () => {
+    const cfg = makeM4Config({ runId: 'test-idem', stageCommands: { specify: 'echo test' } })
+    const rid = cfg.runId as string
+    const orc = new Orchestrator(cfg)
+    writeEnvelope(orc.runDir, rid, 'specify', 'DONE')
+    const first = orc.dispatchStageCommand('specify')
+    expect(first).not.toBeNull()
+    const second = orc.dispatchStageCommand('specify')
+    expect(second).toEqual(first)
+  })
+
+  // --- AWO-13.1: shutdown grace ---
+
+  it('AWO-13.1: shutdown.completed after grace_ms', async () => {
+    const profile = loadProfile(FIXTURE_PROFILE)
+    const cfg: OrchestratorConfig = {
+      profile: { ...profile, shutdown: { grace_ms: 50, signals: ['SIGTERM'] } },
+      stageCommands: {},
+      featureDir: '__fixtures__/009-grace',
+      persistenceConfig: { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
+      runId: `test-grace-${Date.now()}`,
+      dateStr: new Date().toISOString().slice(0, 10),
+      continueOnBlocked: false
+    }
+    const orc = new Orchestrator(cfg)
+    orc.actor = createActor(workflowMachine, { input: {} })
+    orc.actor.start()
+    const t0 = performance.now()
+    await orc.shutdown('SIGTERM')
+    expect(performance.now() - t0).toBeGreaterThanOrEqual(45)
+  })
 })
 
 function cfgDateStr(): string {

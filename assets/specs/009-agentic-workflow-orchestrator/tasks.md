@@ -199,10 +199,10 @@ Checkbox audit against `tools/governance/specs/workflow/` after M4 merge prep. P
 
 | Task               | Status  | Note |
 | ------------------ | ------- | ---- |
-| **M1-ENGINE-02**   | Done    | Async fire-and-forget via `teardown_runner.script.ts`; wired in `orchestrator.script.ts` |
-| **M1-ADAPTER-02**  | Done    | SIGINT/SIGTERM trap + idempotency dedup + `seedDispatchedKeysFromDisk` |
-| **M1-CLI-01**      | Done    | Resume naming documented in `WORKFLOW_GUIDE.md` |
-| **M1-CLI-02**      | Done    | `findActiveRun`/`listActiveRuns` imported in `spec.script.ts` resume path |
+| **M1-ENGINE-02**   | Done    | `teardown_runner.script.ts` + `command_invoker.script.ts` `runCommandAsync`; `AWO-5.5` latency/timeout specs in `orchestrator.script.spec.ts` |
+| **M1-ADAPTER-02**  | Done    | `orchestrator_resume.script.ts` seed key fix + `AWO-13.1`/`13.3` specs in `orchestrator.script.spec.ts` |
+| **M1-CLI-01**      | Done    | Resume naming in `WORKFLOW_GUIDE.md` |
+| **M1-CLI-02**      | Done    | `findActiveRun`/`listActiveRuns` in `spec.script.ts` + specs in `spec.script.spec.ts` |
 | **POLISH-01**      | Done    | `profile_guide_crossref.script.ts` + spec |
 | **POLISH-02**      | Done    | NFR budgets in `workflow.json`; harness in `tools/metrics/harnesses/workflow/` |
 | **PROFILE-SDD-01** | Partial | Deferred to 010 — only specify evidence + handoff post-trigger done |

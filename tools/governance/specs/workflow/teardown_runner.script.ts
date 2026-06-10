@@ -1,4 +1,9 @@
-import { type CommandDescriptor, type CommandResult, runCommandAsync } from './command_invoker.script.ts'
+import {
+  type AsyncCommandHandle,
+  type CommandDescriptor,
+  type CommandResult,
+  runCommandAsync
+} from './command_invoker.script.ts'
 import type { InvocationTelemetry } from './workflow_invoker.script.ts'
 
 export type TeardownHandle = { command: string; abort: () => void }
@@ -11,22 +16,21 @@ export function spawnTeardownFireAndForget(
   _timeoutMs: number,
   onSettled: (result: CommandResult) => void
 ): TeardownHandle {
-  const invokedEvent = {
-    type: 'task.invoked' as const,
+  telemetry.writer.emit({
+    type: 'task.invoked',
     run_id: telemetry.writer.runId,
     ts: new Date().toISOString(),
     feature_dir: telemetry.featureDir,
     duration_ms: 0,
     command: descriptor.command,
-    role: 'teardown' as const,
+    role: 'teardown',
     stage
-  }
-  telemetry.writer.emit(invokedEvent)
+  })
 
   let aborted = false
-  const promise = runCommandAsync(descriptor, allowedPrefixes)
+  const handle: AsyncCommandHandle = runCommandAsync(descriptor, allowedPrefixes)
 
-  promise
+  handle.promise
     .then(result => {
       telemetry.writer.emit({
         type: 'task.completed',
@@ -49,6 +53,7 @@ export function spawnTeardownFireAndForget(
     command: descriptor.command,
     abort: () => {
       aborted = true
+      handle.kill()
     }
   }
 }

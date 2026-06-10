@@ -87,12 +87,14 @@ export function runCommand(descriptor: CommandDescriptor, allowedPrefixes: strin
   }
 }
 
-export async function runCommandAsync(
-  descriptor: CommandDescriptor,
-  allowedPrefixes: string[]
-): Promise<CommandResult> {
+export type AsyncCommandHandle = {
+  promise: Promise<CommandResult>
+  kill: () => void
+}
+
+export function runCommandAsync(descriptor: CommandDescriptor, allowedPrefixes: string[]): AsyncCommandHandle {
   const rejected = validatePrefix(descriptor.command, allowedPrefixes)
-  if (rejected) return rejected
+  if (rejected) return { promise: Promise.resolve(rejected), kill: () => {} }
 
   const t0 = performance.now()
   const cmd = descriptor.command
@@ -104,28 +106,41 @@ export async function runCommandAsync(
     stderr: 'pipe'
   })
 
+  let settled = false
   let killer: ReturnType<typeof setTimeout> | undefined
-  let killed = false
+
+  const doKill = () => {
+    if (settled) return
+    settled = true
+    clearTimeout(killer)
+    proc.kill()
+  }
 
   if (descriptor.timeout_ms) {
-    killer = setTimeout(() => {
-      killed = true
-      proc.kill()
-    }, descriptor.timeout_ms)
+    killer = setTimeout(doKill, descriptor.timeout_ms)
   }
 
-  const exitCode = await proc.exited
-  clearTimeout(killer)
+  const promise = (async (): Promise<CommandResult> => {
+    const exitCode = await proc.exited
+    clearTimeout(killer)
 
-  const stdout = await new Response(proc.stdout).text()
-  const stderr = await new Response(proc.stderr).text()
-  const durationMs = performance.now() - t0
+    if (settled) {
+      return {
+        exitCode: -1,
+        stdout: '',
+        stderr: `killed after ${descriptor.timeout_ms}ms`,
+        durationMs: performance.now() - t0,
+        rejected: true
+      }
+    }
+    settled = true
 
-  return {
-    exitCode: killed ? -1 : exitCode,
-    stdout,
-    stderr: killed ? `killed after ${descriptor.timeout_ms}ms` : stderr,
-    durationMs,
-    rejected: killed
-  }
+    const stdout = await new Response(proc.stdout).text()
+    const stderr = await new Response(proc.stderr).text()
+    const durationMs = performance.now() - t0
+
+    return { exitCode, stdout, stderr, durationMs }
+  })()
+
+  return { promise, kill: doKill }
 }
