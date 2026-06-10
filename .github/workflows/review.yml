@@ -35,10 +35,10 @@ jobs:
       - uses: ./.github/actions/setup-bun-project
         with:
           setup_mode: mise
-      - name: Run spec security strict base-diff scan
+      - name: Run spec audit security strict base-diff scan
         run: |
           BASE_REF="${{ github.base_ref }}"
-          mise run spec security --strict --base "$BASE_REF"
+          mise run spec audit security --strict --base "$BASE_REF"
 
   hk:
     if: ${{ !github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository }}
