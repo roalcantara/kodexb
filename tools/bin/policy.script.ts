@@ -1,11 +1,12 @@
 #!/usr/bin/env bun
 const CMD = process.env.usage_cmd ?? process.argv[2] ?? ''
-switch (CMD) {
-  case 'check':
-    console.error('policy check: delegated to mise (thin stub — full extraction deferred)')
-    process.exit(0)
-    break
-  default:
-    console.error(`policy: unknown subcommand "${CMD}"`)
-    process.exit(2)
+
+function run(): void {
+  if (CMD === 'check') {
+    const r = Bun.spawnSync(['mise', 'run', 'policy', 'check'], { stdio: ['inherit', 'inherit', 'inherit'] })
+    process.exit(r.exitCode ?? 0)
+  }
+  console.error(`policy: unknown subcommand "${CMD}"`)
+  process.exit(2)
 }
+run()

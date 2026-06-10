@@ -12,7 +12,7 @@ import { spawnInherit } from '../support/lib/shared/spawn_inherit.script.ts'
 const SPECS = 'tools/governance/specs'
 const WORKFLOW = `${SPECS}/workflow`
 
-export const ALLOWED_WORKFLOW_NAMES = new Set(['orchestrated-handoff', 'resume'])
+export const ALLOWED_WORKFLOW_NAMES = new Set(['orchestrated-handoff', 'resume', 'run'])
 
 /**
  * Validate the positional workflow name passed to `mise run spec workflow <name>`.
@@ -188,8 +188,9 @@ function main(): void {
         if (process.env.usage_approve) cmdArgs.push('--approve', process.env.usage_approve)
         spawnInherit(['bun', `${SPECS}/workflow_run.script.ts`, ...cmdArgs], root)
       } else {
-        const cmdArgs: string[] = ['orchestrated-handoff']
-        if (process.env.usage_feature) cmdArgs.push('--feature', process.env.usage_feature)
+        const cmdArgs: string[] = subcmd === 'run' ? ['orchestrated-handoff'] : ['orchestrated-handoff']
+        if (process.env.usage_feat ?? process.env.usage_feature)
+          cmdArgs.push('--feature', process.env.usage_feat ?? process.env.usage_feature ?? '')
         spawnInherit(['bun', `${SPECS}/workflow_run.script.ts`, ...cmdArgs], root)
       }
       break

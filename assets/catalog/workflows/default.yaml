@@ -30,7 +30,7 @@ stages:
     worker: primary
     human_gated: true
     triggers:
-      post: "mise run spec handoff-generate"
+      post: "mise run spec workflow handoff generate"
   - id: implement
     worker: primary
     sandbox:
