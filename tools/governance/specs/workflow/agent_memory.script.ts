@@ -1,5 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
+import { Type } from '@sinclair/typebox'
+import { Value } from '@sinclair/typebox/value'
 import type { RetroInsight } from './retrospective.script.ts'
 
 export type AgentMemoryEntry = {
@@ -17,6 +19,21 @@ export type AgentMemoryCatalog = {
   entries: AgentMemoryEntry[]
 }
 
+const AgentMemoryEntrySchema = Type.Object({
+  insight_id: Type.String(),
+  run_id: Type.String(),
+  timestamp: Type.String(),
+  description: Type.String(),
+  severity: Type.String(),
+  eventIds: Type.Array(Type.Number()),
+  tags: Type.Array(Type.String())
+})
+
+const AgentMemoryCatalogSchema = Type.Object({
+  schema_version: Type.Literal('009.1.0'),
+  entries: Type.Array(AgentMemoryEntrySchema)
+})
+
 export function defaultCatalog(): AgentMemoryCatalog {
   return { schema_version: '009.1.0', entries: [] }
 }
@@ -24,8 +41,8 @@ export function defaultCatalog(): AgentMemoryCatalog {
 export function loadCatalog(filePath: string): AgentMemoryCatalog {
   if (!existsSync(filePath)) return defaultCatalog()
   try {
-    const raw = JSON.parse(readFileSync(filePath, 'utf-8')) as Record<string, unknown>
-    if (!Array.isArray(raw.entries)) {
+    const raw = JSON.parse(readFileSync(filePath, 'utf-8'))
+    if (!Value.Check(AgentMemoryCatalogSchema, raw)) {
       return defaultCatalog()
     }
     return raw as AgentMemoryCatalog

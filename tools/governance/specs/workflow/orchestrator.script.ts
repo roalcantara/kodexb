@@ -1,4 +1,3 @@
-#!/usr/bin/env bun
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { createActor } from 'xstate'
@@ -88,10 +87,6 @@ export class Orchestrator {
     return path.join(this.runDir, `${this.runId}.envelope.${stage}.json`)
   }
 
-  private readEnvelope(envPath: string): Envelope | null {
-    return readEnvelopeFile(envPath)
-  }
-
   private seedDispatchedKeysFromDisk(): void {
     seedDispatchedKeys(this.runDir, this.runId, this.config.stageCommands, key => this.dispatchedKeys.add(key))
   }
@@ -101,7 +96,7 @@ export class Orchestrator {
     if (!command) return null
 
     const envPath = this.envelopePath(stage)
-    const existingEnvelope = this.readEnvelope(envPath)
+    const existingEnvelope = readEnvelopeFile(envPath)
     const idempotencyKey = existingEnvelope?.idempotency_key ?? `${this.runId}:${stage}:${command}`
 
     if (this.dispatchedKeys.has(idempotencyKey)) {
@@ -147,7 +142,7 @@ export class Orchestrator {
 
     if (!existsSync(envPath)) return null
 
-    return this.readEnvelope(envPath)
+    return readEnvelopeFile(envPath)
   }
 
   evidenceContext() {
@@ -209,9 +204,10 @@ export class Orchestrator {
     const stageOrder = this.stageOrder()
 
     const sigHandler = (signal: string) => {
-      this.shutdown(signal)
-        .then(() => process.exit(0))
-        .catch(() => process.exit(1))
+      this.shutdown(signal).catch(() => {
+        /* fire-and-forget */
+      })
+      this.shutdownRequested = true
     }
     const onSigInt = () => sigHandler('SIGINT')
     const onSigTerm = () => sigHandler('SIGTERM')
@@ -413,13 +409,18 @@ export class Orchestrator {
       })
     }
 
-    writeRunRetrospective(
-      this.writer.currentPath,
-      this.runId,
-      this.dateStr,
-      this.config.persistenceConfig,
-      this.catalogPath
-    )
+    const terminated =
+      finalSnapshot.matches('terminal_success') ||
+      finalSnapshot.matches('terminal_failure') ||
+      finalSnapshot.matches('blocked')
+    if (terminated || !ciPassed)
+      writeRunRetrospective(
+        this.writer.currentPath,
+        this.runId,
+        this.dateStr,
+        this.config.persistenceConfig,
+        this.catalogPath
+      )
 
     this.persistSnapshot()
 
@@ -437,18 +438,12 @@ export class Orchestrator {
       duration_ms: 0,
       signal
     })
-
     if (this.actor) {
       this.actor.send({ type: 'SHUTDOWN.REQUESTED', signal })
       this.persistSnapshot()
     }
-
-    for (const handle of this.teardownHandles) {
-      handle.abort()
-    }
-
+    for (const handle of this.teardownHandles) handle.abort()
     await Bun.sleep(this.profile.shutdown.grace_ms)
-
     this.writer.emit({
       type: 'shutdown.completed',
       run_id: this.runId,

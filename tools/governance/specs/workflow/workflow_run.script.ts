@@ -362,13 +362,24 @@ export function findActiveRun(root = 'tmp/workflow-runs'): string | null {
 export function listActiveRuns(root = 'tmp/workflow-runs'): string[] {
   if (!existsSync(root)) return []
   const runs: string[] = []
-  for (const dateEntry of readdirSync(root)) {
+  let dateEntries: string[] = []
+  try {
+    dateEntries = readdirSync(root)
+  } catch {
+    return []
+  }
+  for (const dateEntry of dateEntries) {
     const dateDir = path.join(root, dateEntry)
     if (!existsSync(dateDir)) continue
-    for (const file of readdirSync(dateDir)) {
+    let files: string[] = []
+    try {
+      files = readdirSync(dateDir)
+    } catch {
+      continue
+    }
+    for (const file of files) {
       if (!file.endsWith('.state.json')) continue
-      const runId = file.replace('.state.json', '')
-      runs.push(runId)
+      runs.push(file.replace('.state.json', ''))
     }
   }
   return runs.sort()

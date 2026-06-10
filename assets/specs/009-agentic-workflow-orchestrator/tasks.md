@@ -195,7 +195,7 @@ Checkbox audit against `tools/governance/specs/workflow/` after M4 merge prep. P
 | M1-ADAPTER-01  | `orchestrator.script.ts` wires machine + invoker + writer; no `speckit.*` in orchestrator |
 | M1-CLOSEOUT-01 | Workflow suite + spec lint/gate green through M4 closeout                                 |
 
-### Still open — deferred to 010
+### Completed (this PR)
 
 | Task               | Status  | Note                                                                                                                                          |
 | ------------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -206,13 +206,16 @@ Checkbox audit against `tools/governance/specs/workflow/` after M4 merge prep. P
 | **POLISH-01**      | Done    | `profile_guide_crossref.script.ts` + spec                                                                                                     |
 | **POLISH-02**      | Done    | NFR budgets in `workflow.json`; harness in `tools/metrics/harnesses/workflow/`                                                                |
 | **PROFILE-SDD-01** | Partial | Deferred to 010 — only specify evidence + handoff post-trigger done                                                                           |
-| **SMOKE-01**       | Partial | Deferred to 010 — `.github/workflows/smoke.yml` runs spec gate only                                                                           |
+| **SMOKE-01**       | Partial | Deferred to 010 — `.github/workflows/smoke.yml` runs spec gate only           |
 
-### Deferral (2026-06-03, revised)
+### Partial / deferred to 010
 
-| Scope                                                  | Owner                                                                      | Notes                                                            |
-| ------------------------------------------------------ | -------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| M1 remainder, polish, SDD bindings, smoke              | **009 closing PR** (`feature/009-m4-retro-sandbox`)                        | Implementer agent in done; see [`handoff.md`](./handoff.md)      |
-| `packages/workflow-core` / `packages/workflow-runtime` | **[`010-workflow-engine-completion`](../010-workflow-engine-completion/)** | **One PR** after 009 merges; assumes closeout baseline on `main` |
+| Task               | Note |
+| ------------------ | ---- |
+| **PROFILE-SDD-01** | Only specify evidence + handoff post-trigger done; full per-stage bindings → 010 |
+| **SMOKE-01**       | Smoke spec gate only; full orchestrator dogfood → 010 |
+| `packages/*`       | Package extraction → 010 |
+
+### Closeout plan (2026-06-03, revised)
 
 If the table above still shows gaps after the 009 PR lands, fix on 009 (hotfix), not by expanding 010.
