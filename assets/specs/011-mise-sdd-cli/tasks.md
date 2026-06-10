@@ -57,10 +57,10 @@
 
 ## Phase 4: `app` + `policy` extraction (MSC-7)
 
-- [ ] MSC-APP-01 Lift `app` inline bash → `tools/bin/app.script.ts` (`start`, `styles`, `gates`, `lifecycle`).
-- [ ] MSC-POL-01 Lift `policy` inline bun → `tools/bin/policy.script.ts`.
-- [ ] MSC-APP-02 `app gates` uses `task_runner` (quality, policy, all).
-- [ ] MSC-CAT-01 `catalog validate` adopts `task_runner` when multi-step.
+- [X] MSC-APP-01 Lift `app` inline bash → `tools/bin/app.script.ts` (`start`, `styles`, `gates`, `lifecycle`).
+- [X] MSC-POL-01 Lift `policy` inline bun → `tools/bin/policy.script.ts`.
+- [X] MSC-APP-02 `app gates` uses `task_runner` (quality, policy, all).
+- [X] MSC-CAT-01 `catalog validate` adopts `task_runner` when multi-step.
 
 **Checkpoint**: `mise run app gates all` + `mise run policy check` exit 0.
 
