@@ -122,6 +122,34 @@ describe('renderTaskReport raw mode', () => {
   })
 })
 
+describe('runSteps with command argv (raw mode)', () => {
+  it('runs a command step directly and records exit 0', () => {
+    const report = runSteps({
+      task: 'cmd-task',
+      command: 'x',
+      renderMode: 'raw',
+      steps: [{ id: 'ok', title: 'true', command: ['sh', '-c', 'exit 0'] }]
+    })
+    expect(report.ok).toBe(true)
+    expect(report.steps[0]?.exit).toBe(0)
+  })
+
+  it('propagates a non-zero command exit and halts', () => {
+    const report = runSteps({
+      task: 'cmd-task',
+      command: 'x',
+      renderMode: 'raw',
+      steps: [
+        { id: 'bad', title: 'false', command: ['sh', '-c', 'exit 3'] },
+        { id: 'after', title: 'skipped', command: ['sh', '-c', 'exit 0'] }
+      ]
+    })
+    expect(report.ok).toBe(false)
+    expect(report.steps[0]?.exit).toBe(3)
+    expect(report.steps[1]?.exit).toBe(-1)
+  })
+})
+
 describe('runStepsAndPrint', () => {
   it('is importable', async () => {
     const mod = await import('./task_runner.script.ts')

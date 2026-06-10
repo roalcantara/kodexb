@@ -4,23 +4,30 @@ import { resolveCatalogKey } from './resolve_catalog_key.script.ts'
 
 const SPECS = 'tools/governance/specs'
 
+const SCOPES = ['unit', 'e2e', 'smoke', 'regression'] as const
+
 function usage(): never {
-  console.error('Usage: mise run spec test [scope] [--feat <dir>]')
+  console.error('Usage: mise run spec test [scope] [feature]')
   console.error('  scope: unit | e2e | smoke | regression (omit = composite)')
+  console.error('  feature: feature dir (omit = active feature)')
   process.exit(2)
 }
 
-function main(): void {
-  const args = process.argv.slice(2)
-  const scope = args.shift() ?? ''
-  let featureDir = ''
+/**
+ * Parse `[scope] [feature]` positionals (review f18c5638 rule 05 — no `--feat`).
+ * A leading token matching a known scope is the scope; the remaining positional
+ * is the feature dir. A sole non-scope positional is treated as the feature.
+ */
+export function parseScopeFeature(args: string[]): { scope: string; featureDir: string } {
+  const rest = [...args]
+  let scope = ''
+  if (rest[0] && (SCOPES as readonly string[]).includes(rest[0])) scope = rest.shift() ?? ''
+  const featureDir = rest.shift() ?? ''
+  return { scope, featureDir }
+}
 
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--feat' && typeof args[i + 1] === 'string') {
-      featureDir = args[i + 1] ?? ''
-      i++
-    }
-  }
+function main(): void {
+  const { scope, featureDir } = parseScopeFeature(process.argv.slice(2))
 
   const cf = featureDir ? { ok: true as const, featureDir } : resolveActiveFeatureDir()
   if (!cf.ok) {
@@ -65,7 +72,7 @@ function main(): void {
     }
     case 'smoke': {
       const r = Bun.spawnSync(
-        ['mise', 'run', 'spec', 'workflow', 'run', '--feature', 'tools/__tests__/fixtures/workflow/smoke-feature'],
+        ['mise', 'run', 'spec', 'workflow', 'run', 'tools/__tests__/fixtures/workflow/smoke-feature'],
         { stdio: ['inherit', 'inherit', 'inherit'] }
       )
       process.exit(r.exitCode ?? 0)

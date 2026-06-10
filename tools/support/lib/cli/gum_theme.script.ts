@@ -195,3 +195,20 @@ export function gumNextSteps(lines: string[]): void {
 export function statusGlyph(ok: boolean, okChar = '✔', failChar = '✗'): string {
   return ok ? gumOk(okChar) : gumFail(failChar)
 }
+
+/**
+ * Run `argv` under `gum spin` with a titled spinner (TTY multi-step UX). Output
+ * is shown only on error (`--show-error`) so a passing run stays a clean
+ * spinner line. Falls back to a direct spawn (inherited stdio) when gum is
+ * unavailable. Returns the child exit code.
+ */
+export function gumSpinRun(title: string, argv: string[]): number {
+  if (!gumAvailable()) {
+    return Bun.spawnSync(argv, { stdio: ['inherit', 'inherit', 'inherit'] }).exitCode ?? 1
+  }
+  const child = Bun.spawnSync(['gum', 'spin', '--spinner', 'line', '--title', title, '--show-error', '--', ...argv], {
+    stdio: ['inherit', 'inherit', 'inherit'],
+    env: gumSubprocessEnv()
+  })
+  return child.exitCode ?? 1
+}

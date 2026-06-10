@@ -43,6 +43,17 @@ function tryResolveFromCwd(): string | undefined {
   return candidate
 }
 
+/**
+ * Normalized feature-dir resolution for the `spec` CLI (review f18c5638, rules
+ * 00–06): a single positional `[feature]` is preferred; there are no `--feature`
+ * / `--feat` flags. When the positional is absent, fall back to active-feature
+ * inference. `positional` wins over any legacy `usage_feature` value.
+ */
+export function resolveSpecFeatureDir(opts: { positional?: string; usage_feature?: string } = {}): ResolveResult {
+  const explicit = (opts.positional || opts.usage_feature || '').trim()
+  return resolveActiveFeatureDir(explicit || undefined)
+}
+
 export function resolveActiveFeatureDir(argDir?: string): ResolveResult {
   chdirToRepoRoot()
 

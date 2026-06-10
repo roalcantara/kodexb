@@ -1,4 +1,4 @@
-import { gumBold, gumFail, gumMuted, gumOk, statusGlyph } from './gum_theme.script.ts'
+import { gumBold, gumFail, gumMuted, gumOk, gumSpinRun, statusGlyph } from './gum_theme.script.ts'
 import { chooseRenderer, type RenderMode } from './render_mode.script.ts'
 
 export type StepResult = {
@@ -18,11 +18,34 @@ export type TaskRunReport = {
   steps: StepResult[]
 }
 
+export type RunStep = {
+  id: string
+  title: string
+  /** Closure form (default). Returns an exit code (or `{ exitCode }`). */
+  run?: () => number | { exitCode: number }
+  /**
+   * Optional argv. When present AND renderMode is `pretty`, the step runs under
+   * `gum spin` with a titled spinner (TTY multi-step UX, goal 4). In `raw`/`json`
+   * or when `run` is provided instead, it executes directly.
+   */
+  command?: string[]
+}
+
 export type RunStepsInput = {
   task: string
   command: string
-  steps: { id: string; title: string; run: () => number | { exitCode: number } }[]
+  steps: RunStep[]
   renderMode: RenderMode
+}
+
+function executeStep(step: RunStep, mode: RenderMode): number {
+  if (step.command && step.command.length > 0) {
+    if (mode === 'pretty') return gumSpinRun(step.title, step.command)
+    return Bun.spawnSync(step.command, { stdio: ['inherit', 'inherit', 'inherit'] }).exitCode ?? 1
+  }
+  if (!step.run) return 1
+  const outcome = step.run()
+  return typeof outcome === 'number' ? outcome : (outcome.exitCode ?? 1)
 }
 
 export function runSteps(input: RunStepsInput): TaskRunReport {
@@ -45,8 +68,7 @@ export function runSteps(input: RunStepsInput): TaskRunReport {
     }
 
     const s0 = performance.now()
-    const outcome = step.run()
-    const exitCode = typeof outcome === 'number' ? outcome : (outcome.exitCode ?? 1)
+    const exitCode = executeStep(step, input.renderMode)
     const duration = Math.round(performance.now() - s0)
 
     const ok = exitCode === 0
