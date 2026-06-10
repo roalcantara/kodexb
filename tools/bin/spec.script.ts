@@ -61,6 +61,7 @@ function main(): void {
       if (process.env.usage_root) cmdArgs.push('--root', process.env.usage_root)
       if (envBool('usage_strict')) cmdArgs.push('--strict')
       if (process.env.usage_target) cmdArgs.push(process.env.usage_target)
+      else if (process.env.usage_feature) cmdArgs.push(process.env.usage_feature)
       spawnInherit(['bun', `${SPECS}/lint.script.ts`, ...cmdArgs], root)
       break
     }
@@ -97,8 +98,7 @@ function main(): void {
     case 'test': {
       const scope = process.env.usage_scope ?? ''
       const cmdArgs: string[] = [scope]
-      const featDir = process.env.usage_feat ?? process.env.usage_feature_dir ?? ''
-      if (featDir) cmdArgs.push('--feat', featDir)
+      if (process.env.usage_feature) cmdArgs.push('--feat', process.env.usage_feature)
       spawnInherit(['bun', `${SPECS}/spec_test.script.ts`, ...cmdArgs.filter(Boolean)], root)
       break
     }
@@ -206,7 +206,8 @@ function main(): void {
           process.exit(2)
         }
       } else if (subcmd === 'feature') {
-        const cmdArgs: string[] = [process.env.usage_feature_dir ?? args.shift() ?? '']
+        const featDir = process.env.usage_feature_dir ?? process.env.usage_feature ?? args.shift() ?? ''
+        const cmdArgs: string[] = [featDir]
         if (envBool('usage_strict')) cmdArgs.push('--strict')
         if (envBool('usage_json')) cmdArgs.push('--json')
         if (envBool('usage_raw')) cmdArgs.push('--raw')

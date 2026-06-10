@@ -65,15 +65,7 @@ function main(): void {
     }
     case 'smoke': {
       const r = Bun.spawnSync(
-        [
-          'mise',
-          'run',
-          'spec',
-          'workflow',
-          'orchestrated-handoff',
-          '--feature',
-          'tools/__tests__/fixtures/workflow/smoke-feature'
-        ],
+        ['mise', 'run', 'spec', 'workflow', 'run', '--feature', 'tools/__tests__/fixtures/workflow/smoke-feature'],
         { stdio: ['inherit', 'inherit', 'inherit'] }
       )
       process.exit(r.exitCode ?? 0)

@@ -61,7 +61,7 @@ local hygieneSteps = new Mapping<String, Step> {
     ["mixed_line_ending"] = mixedLineEnding
     ["trailing_whitespace"] = trailingWhitespace
     ["spec-security-changed"] {
-        check = "mise run spec security --changed-only --strict"
+        check = "mise run spec audit security --changed-only --strict"
     }
     ["check_merge_conflict"] = Builtins.check_merge_conflict
     ["detect_private_key"] = Builtins.detect_private_key

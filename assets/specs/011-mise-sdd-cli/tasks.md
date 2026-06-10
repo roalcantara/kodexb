@@ -47,9 +47,9 @@
 - [X] MSC-TEST-01 Implement `tools/governance/specs/spec_test.script.ts`.
 - [X] MSC-TEST-02 Scope as a positional `[scope]` `choices` enum (`unit|e2e|smoke|regression`) in the `spec test` usage block + `--feat <dir>` flag. mise validates the enum (invalid value rejected pre-dispatch); **no script-side mutual-exclusion** — omitted `[scope]` runs the default composite.
 - [X] MSC-TEST-03 Default: active feature unit + e2e + governance specs for slug.
-- [X] MSC-TEST-04 Co-located `spec_test.script.spec.ts`.
-- [X] MSC-TEST-05 Update `.github/workflows/smoke.yml` if not fully orchestrator-driven from 010.
-- [X] MSC-TEST-06 Narrow `mise run test` usage to `ci` (+ document in `MISE_GUIDE.md`).
+- [ ] MSC-TEST-04 Co-located `spec_test.script.spec.ts`.
+- [ ] MSC-TEST-05 Update `.github/workflows/smoke.yml` if not fully orchestrator-driven from 010.
+- [ ] MSC-TEST-06 Narrow `mise run test` usage to `ci` (+ document in `MISE_GUIDE.md`).
 
 **Checkpoint**: `mise run spec test unit --feat assets/specs/011-mise-sdd-cli` exit 0.
 
@@ -60,7 +60,7 @@
 - [X] MSC-APP-01 Lift `app` inline bash → `tools/bin/app.script.ts` (`start`, `styles`, `gates`, `lifecycle`).
 - [X] MSC-POL-01 Lift `policy` inline bun → `tools/bin/policy.script.ts`.
 - [X] MSC-APP-02 `app gates` uses `task_runner` (quality, policy, all).
-- [X] MSC-CAT-01 `catalog validate` adopts `task_runner` when multi-step.
+- [ ] MSC-CAT-01 `catalog validate` adopts `task_runner` when multi-step.
 
 **Checkpoint**: `mise run app gates all` + `mise run policy check` exit 0.
 

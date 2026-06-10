@@ -777,6 +777,7 @@ BLOCK_ON_THREAT="true"
     cmd "gates" help="Run quality and/or policy gates" {
       flag "--quality" help="Run the full app quality gate"
       flag "--policy" help="Run embedded policy checks only"
+      flag "--all" help="Run quality + policy gates"
     }
     cmd "start" help="Start dev (package.json dev script; includes --watch)" {
       arg "[level]" help="Log level preset" {
@@ -1405,25 +1406,28 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
     esac
   ''' }
 "spec" = { description = "kb SDD spec hub: lint, trace, gate, test, workflow, audit, scaffold", usage = '''
-    flag "--raw" global #true help="Machine output (no gum styling)"
-    flag "--feat <dir>" global #true help="Feature dir (default: resolveActiveFeatureDir())"
-    flag "--json" global #true help="Machine-readable JSON where supported"
+    flag "--raw" help="Machine output (no gum styling)"
+    flag "--json" help="Machine-readable JSON where supported"
+    flag "--feature <dir>" help="Feature dir (default: auto-detect from .specify/feature.json)"
 
     cmd "lint" {
+      flag "--feature <dir>" help="Feature dir"
       flag "--all" help="Lint every assets/specs/NNN-*/spec.md"
       flag "--root <root>" default="assets/specs" help="Spec root for --all"
       flag "--strict" help="Exit non-zero on errors"
       arg "[target]" help="Feature dir or spec.md path"
     }
     cmd "trace" {
-      flag "--features <dir>" default="assets/features/e2e" help="Executable .feature root"
+      flag "--feature <dir>" help="Feature dir"
       flag "--strict" help="Exit non-zero on broken links"
       arg "<feature_dir>" help="Feature dir holding spec.md"
     }
     cmd "gate" {
+      flag "--feature <dir>" help="Feature dir (default: auto-detect)"
       arg "[feature_dir]" help="Feature dir (default: auto-detect)"
     }
     cmd "ready" {
+      flag "--feature <dir>" help="Feature dir (default: auto-detect)"
       arg "[feature_dir]" help="Feature dir (default: auto-detect)"
       flag "--key <key>" help="Catalog key for tag tests"
       flag "--phase <no>" help="Phase number for focused validation"
@@ -1433,13 +1437,19 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       flag "--slug <slug>" help="Feature slug"
     }
     cmd "test" {
+      flag "--feature <dir>" help="Feature dir"
       arg "[scope]" help="omitted = default composite" {
         choices "unit" "e2e" "smoke" "regression"
       }
     }
     cmd "workflow" {
-      cmd "run" {}
+      flag "--feature <dir>" help="Feature dir"
+      cmd "run" {
+        flag "--feature <dir>" help="Feature dir"
+        flag "--dry-run" help="Print next step, do not execute"
+      }
       cmd "resume" {
+        flag "--feature <dir>" help="Feature dir"
         arg "[runId]" help="Run ID to resume"
         flag "--answer <kv>" help="Answer key=value for NEED_INPUT stages"
         flag "--approve <stage>" help="Approve human-gated stage"
@@ -1474,6 +1484,9 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
         cmd "rogue-refs" help="Inventory inbound assets/docs/ links on guides and agent entry docs" {}
       }
       cmd "feature" {
+        flag "--strict" help="Exit non-zero on error-level findings"
+        flag "--json" help="Machine-readable JSON output"
+        flag "--raw" help="Plain text output (no gum styling)"
         arg "<feature_dir>" help="Feature dir e.g. assets/specs/005-feature-demo"
       }
       cmd "security" {
