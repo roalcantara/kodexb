@@ -205,8 +205,6 @@ Checkbox audit against `tools/governance/specs/workflow/` after M4 merge prep. P
 | **M1-CLI-02**      | Done    | `findActiveRun`/`listActiveRuns` in `spec.script.ts` + specs in `spec.script.spec.ts`                                                         |
 | **POLISH-01**      | Done    | `profile_guide_crossref.script.ts` + spec                                                                                                     |
 | **POLISH-02**      | Done    | NFR budgets in `workflow.json`; harness in `tools/metrics/harnesses/workflow/`                                                                |
-| **PROFILE-SDD-01** | Partial | Deferred to 010 — only specify evidence + handoff post-trigger done                                                                           |
-| **SMOKE-01**       | Partial | Deferred to 010 — `.github/workflows/smoke.yml` runs spec gate only           |
 
 ### Partial / deferred to 010
 

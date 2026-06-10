@@ -128,7 +128,7 @@ export function runCommandAsync(descriptor: CommandDescriptor, allowedPrefixes: 
       return {
         exitCode: -1,
         stdout: '',
-        stderr: `killed after ${descriptor.timeout_ms}ms`,
+        stderr: descriptor.timeout_ms ? `killed after ${descriptor.timeout_ms}ms` : 'killed by caller',
         durationMs: performance.now() - t0,
         rejected: true
       }

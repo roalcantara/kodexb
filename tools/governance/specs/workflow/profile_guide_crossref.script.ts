@@ -25,23 +25,25 @@ export function checkProfileGuideCrossref(profilePath: string, guidePath: string
   const profile = readFileSync(profilePath, 'utf-8')
   const guide = readFileSync(guidePath, 'utf-8')
 
-  const commandLines = profile
-    .split('\n')
-    .filter(l => l.includes('command:') || l.includes('- "mise') || l.includes('- "hk') || l.includes('- "gh'))
+  const lines = profile.split('\n')
+  const commandLines = lines
+    .map((line, idx) => ({ line, lineNum: idx + 1 }))
+    .filter(
+      ({ line: l }) => l.includes('command:') || l.includes('- "mise') || l.includes('- "hk') || l.includes('- "gh')
+    )
   const safetyCommands = commandLines.filter(
-    l => l.includes('hk check') || l.includes('gh pr') || l.includes('gitleaks')
+    ({ line: l }) => l.includes('hk check') || l.includes('gh pr') || l.includes('gitleaks')
   )
 
   const guideLower = guide.toLowerCase()
 
-  for (const cmd of safetyCommands) {
+  for (const { line: cmd, lineNum } of safetyCommands) {
     const trimmed = cmd
       .trim()
       .replace(/^-\s*"/, '')
       .replace(/"$/, '')
       .replace(/^-\s*/, '')
     if (!guideLower.includes(trimmed.toLowerCase())) {
-      const lineNum = profile.split('\n').indexOf(cmd) + 1
       findings.push({
         file: profilePath,
         line: lineNum,
