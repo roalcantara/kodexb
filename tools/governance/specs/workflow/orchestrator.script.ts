@@ -187,6 +187,15 @@ export class Orchestrator {
     const t0 = performance.now()
     const stageOrder = this.stageOrder()
 
+    const sigHandler = (signal: string) => {
+      this.shutdown(signal)
+      process.exit(0)
+    }
+    const onSigInt = () => sigHandler('SIGINT')
+    const onSigTerm = () => sigHandler('SIGTERM')
+    process.on('SIGINT', onSigInt)
+    process.on('SIGTERM', onSigTerm)
+
     if (this.catalogInsights.length > 0) {
       for (const stageId of stageOrder) {
         writeStageMemory(
@@ -329,6 +338,21 @@ export class Orchestrator {
         })
       }
 
+      if (stageDef.teardown && stageDef.teardown.length > 0) {
+        this.actor.send({ type: 'TEARDOWN.QUEUED', tasks: stageDef.teardown })
+        const timeout = stageDef.teardown_timeout_ms ?? this.profile.shutdown.grace_ms
+        for (const tdCmd of stageDef.teardown) {
+          invokeWithTelemetry(
+            { command: tdCmd, cwd: process.cwd(), timeout_ms: timeout },
+            this.allowedPrefixes,
+            'teardown',
+            stageId,
+            { writer: this.writer, featureDir: this.config.featureDir }
+          )
+          this.actor.send({ type: 'TEARDOWN.COMPLETED', task_id: tdCmd })
+        }
+      }
+
       this.writer.emit({
         type: 'stage.exited',
         run_id: this.runId,
@@ -373,6 +397,9 @@ export class Orchestrator {
     )
 
     this.persistSnapshot()
+
+    process.off('SIGINT', onSigInt)
+    process.off('SIGTERM', onSigTerm)
   }
 
   shutdown(signal: string): void {

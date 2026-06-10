@@ -1,7 +1,6 @@
 # Default kb workflow profile.
 # Stage order matches detectPhase() in orchestrated_handoff.script.ts:
 #   specify → plan → analyze-plan → tasks → analyze-tasks → handoff-generate → implement → review
-# command: values are stubs until PROFILE-SDD-* fills real bindings.
 schema_version: 009.1.0
 name: default
 description: "Default SDD workflow profile for kb"
@@ -18,6 +17,7 @@ stages:
     worker: primary
     evidence:
       - "mise run spec lint"
+      - "mise run spec gate"
   - id: plan
     worker: primary
   - id: analyze-plan
@@ -29,6 +29,8 @@ stages:
   - id: handoff-generate
     worker: primary
     human_gated: true
+    triggers:
+      post: "mise run spec handoff-generate"
   - id: implement
     worker: primary
     sandbox:

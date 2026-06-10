@@ -1,0 +1,20 @@
+name: Workflow Smoke
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      NODE_ENV: 'test'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: mise run spec gate assets/specs/009-agentic-workflow-orchestrator
+      - run: mise run catalog validate
