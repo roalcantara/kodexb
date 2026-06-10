@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { resolveActiveFeatureDir } from '../governance/specs/resolve_active_feature_dir.script.ts'
+import { type ResolveResult, resolveActiveFeatureDir } from '../governance/specs/resolve_active_feature_dir.script.ts'
 import { resolveCatalogKey } from '../governance/specs/resolve_catalog_key.script.ts'
 import { findActiveRun, listActiveRuns } from '../governance/specs/workflow/workflow_run.script.ts'
 /**
@@ -24,6 +24,11 @@ export function validateWorkflowName(name: string): string | null {
   if (name === '') return null
   if (ALLOWED_WORKFLOW_NAMES.has(name)) return null
   return `spec workflow: unknown workflow "${name}". Allowed: ${[...ALLOWED_WORKFLOW_NAMES].join(', ')}`
+}
+
+/** Resolve feature dir for `mise run spec gate` (explicit arg or active-feature inference). */
+export function resolveSpecGateFeatureDir(explicitDir?: string): ResolveResult {
+  return resolveActiveFeatureDir(explicitDir || undefined)
 }
 
 function envBool(name: string): boolean {
@@ -57,12 +62,12 @@ function main(): void {
       break
     }
     case 'gate': {
-      const dir = process.env.usage_feature_dir
-      if (!dir) {
-        console.error('spec gate: missing --feature-dir')
-        process.exit(2)
+      const resolved = resolveSpecGateFeatureDir(process.env.usage_feature_dir)
+      if (!resolved.ok) {
+        console.error(resolved.message)
+        process.exit(resolved.exitCode)
       }
-      spawnInherit(['bash', `${SPECS}/gate.sh`, dir], root)
+      spawnInherit(['bash', `${SPECS}/gate.sh`, resolved.featureDir], root)
       break
     }
     case 'feature-init':

@@ -1417,7 +1417,7 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       arg "<feature_dir>" help="Feature dir holding spec.md"
     }
     cmd "gate" {
-      arg "<feature_dir>" help="Feature dir to lint + trace + gate.sh"
+      arg "[feature_dir]" help="Feature dir (default: .specify/feature.json, branch NNN-slug, or cwd)"
     }
     cmd "feature-init" {
       flag "--id <id>" help="Three-digit id e.g. 001"

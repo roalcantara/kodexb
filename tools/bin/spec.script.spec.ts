@@ -3,7 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { findActiveRun, listActiveRuns } from '../governance/specs/workflow/workflow_run.script.ts'
-import { ALLOWED_WORKFLOW_NAMES, validateWorkflowName } from './spec.script.ts'
+import { ALLOWED_WORKFLOW_NAMES, resolveSpecGateFeatureDir, validateWorkflowName } from './spec.script.ts'
 
 describe('spec.script', () => {
   it('exports a dispatch entrypoint module', async () => {
@@ -37,6 +37,32 @@ describe('validateWorkflowName', () => {
 
   it('accepts empty string — mise expands the positional even when the operator omits it; caller decides the default', () => {
     expect(validateWorkflowName('')).toBeNull()
+  })
+})
+
+describe('resolveSpecGateFeatureDir', () => {
+  it('infers the active feature when omitted', () => {
+    const result = resolveSpecGateFeatureDir()
+    expect(result.ok).toBe(true)
+    if (result.ok) {
+      expect(result.featureDir.endsWith('spec.md') || result.featureDir.length > 0).toBe(true)
+    }
+  })
+
+  it('accepts an explicit dir and normalizes to the same path as inference', () => {
+    const inferred = resolveSpecGateFeatureDir()
+    expect(inferred.ok).toBe(true)
+    if (!inferred.ok) return
+    const explicit = resolveSpecGateFeatureDir(inferred.featureDir)
+    expect(explicit.ok).toBe(true)
+    if (explicit.ok) {
+      expect(explicit.featureDir).toBe(inferred.featureDir)
+    }
+  })
+
+  it('rejects a path without spec.md', () => {
+    const result = resolveSpecGateFeatureDir('/tmp/not-a-feature-dir')
+    expect(result.ok).toBe(false)
   })
 })
 

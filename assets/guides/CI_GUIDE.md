@@ -310,7 +310,7 @@ locally (CI-ephemeral keychain, GitHub OIDC token, repo write).
 | Draft release exists but `publish.yml` doesn't fire     | Trigger is `workflow_run: completed` — only fires when Release completes successfully                  |
 | ARM Linux leg fails with `bash: bun: command not found` | `setup-bun-project` action didn't install on `ubuntu-24.04-arm`; verify mise.toml has `bun = "latest"` |
 | `gh attestation verify` fails with "no attestations"    | `id-token: write` permission missing on the producing job                                              |
-| --- | --- |
+| ---                                                     | ---                                                                                                    |
 
 ## Orchestrator PR/CI bindings
 
@@ -319,11 +319,11 @@ PR and CI completion via profile `command:` bindings (AWO-6).
 
 ### Profile provider fields
 
-| Field | Purpose | Default (kb) |
-| ----- | ------- | ------------ |
-| `providers.pr_open` | Command to open a pull request | `gh pr create ...` |
-| `providers.pr_update` | Command to update an existing PR body/description | `gh pr edit ...` |
-| `providers.ci_status` | Command to check CI status (exit 0 = green) | `gh pr checks --interval 10 --required` |
+| Field                 | Purpose                                           | Default (kb)                            |
+| --------------------- | ------------------------------------------------- | --------------------------------------- |
+| `providers.pr_open`   | Command to open a pull request                    | `gh pr create ...`                      |
+| `providers.pr_update` | Command to update an existing PR body/description | `gh pr edit ...`                        |
+| `providers.ci_status` | Command to check CI status (exit 0 = green)       | `gh pr checks --interval 10 --required` |
 
 All provider commands are invoked through the L2 adapter (`providers_runner.script.ts`)
 which calls `invokeWithTelemetry` — the same executor used for stage commands.
@@ -367,9 +367,10 @@ No engine code changes are needed — the provider commands are profile data onl
 
 ## Workflow smoke
 
-A nightly smoke workflow (`.github/workflows/smoke.yml`) validates the
-orchestrator spec gate against fixture data. Run manually via the
-GitHub Actions UI or `gh workflow run smoke.yml`.
+A nightly smoke workflow (`.github/workflows/smoke.yml`) runs
+`mise run spec gate` with no feature argument — the active SDD feature is
+inferred from `.specify/feature.json` (same resolution as `mise run spec
+ready`). Run manually via the GitHub Actions UI or `gh workflow run smoke.yml`.
 
 The smoke runs on a schedule (`0 3 * * *`) and does not gate PR merges.
 Full orchestrator dogfood (driving a real feature dir) is deferred to 010.
