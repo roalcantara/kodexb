@@ -862,18 +862,18 @@ BLOCK_ON_THREAT="true"
       ;;
     gates)
       ran=false
-      if [[ "${usage_quality:-false}" == "true" ]]; then
+      if [[ "${usage_quality:-false}" == "true" || "${usage_all:-false}" == "true" ]]; then
         ran=true
         echo "app gates: running quality gate..."
         bash .agents/skills/app-quality-gate/scripts/gate.sh
       fi
-      if [[ "${usage_policy:-false}" == "true" ]]; then
+      if [[ "${usage_policy:-false}" == "true" || "${usage_all:-false}" == "true" ]]; then
         ran=true
         echo "app gates: running policy gate..."
         GATE_EMBEDDED_POLICY=1 bash .agents/skills/app-quality-gate/scripts/gate_policy.sh
       fi
       if [[ "$ran" != "true" ]]; then
-        echo "app gates: pass --quality and/or --policy" >&2
+        echo "app gates: pass --quality, --policy, and/or --all" >&2
         exit 2
       fi
       ;;

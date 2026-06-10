@@ -33,7 +33,7 @@ function main(): void {
 
   switch (scope) {
     case '': {
-      const unitExit = Bun.spawnSync(['bun', 'test', '--config', '/dev/null', `${SPECS}/`, `${cf.featureDir}/`], {
+      const unitExit = Bun.spawnSync(['bun', 'test', '--config', '/dev/null', SPECS], {
         stdio: ['inherit', 'inherit', 'inherit']
       }).exitCode
       if (key) {
@@ -46,10 +46,10 @@ function main(): void {
       break
     }
     case 'unit': {
-      const r = Bun.spawnSync(['bun', 'test', '--config', '/dev/null', cf.featureDir], {
+      const exitCode = Bun.spawnSync(['bun', 'test', '--config', '/dev/null', SPECS], {
         stdio: ['inherit', 'inherit', 'inherit']
-      })
-      process.exit(r.exitCode ?? 0)
+      }).exitCode
+      process.exit(exitCode ?? 0)
       break
     }
     case 'e2e': {

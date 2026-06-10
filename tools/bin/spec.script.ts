@@ -73,7 +73,8 @@ function main(): void {
       break
     }
     case 'gate': {
-      const resolved = resolveSpecGateFeatureDir(process.env.usage_feature_dir)
+      const dir = process.env.usage_feature_dir || process.env.usage_feature
+      const resolved = resolveSpecGateFeatureDir(dir)
       if (!resolved.ok) {
         console.error(resolved.message)
         process.exit(resolved.exitCode)
