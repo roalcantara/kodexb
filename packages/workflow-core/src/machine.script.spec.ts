@@ -18,6 +18,18 @@ function startActor(ctx?: Partial<OrchestratorContext>) {
   return createActor(workflowMachine, { input: ctx ?? {} }).start()
 }
 
+function startSpecifyActor(extraCtx?: Partial<OrchestratorContext>) {
+  const actor = startActor({
+    stage_order: STAGE_ORDER,
+    stage_index: 0,
+    current_stage: 'specify',
+    terminal_stages: ['gate'],
+    ...extraCtx
+  })
+  actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+  return actor
+}
+
 // biome-ignore lint/complexity/noExcessiveLinesPerFunction: test describe block
 describe('workflow orchestrator machine', () => {
   afterEach(() => {
@@ -42,13 +54,7 @@ describe('workflow orchestrator machine', () => {
 
   describe('AWO-1: auto-advance', () => {
     it('DONE + evidence passed + auto-advance goes to evidence_pending', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate']
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor()
       actor.send({
         type: 'STAGE.COMPLETE',
         envelope: makeEnvelope({
@@ -62,14 +68,7 @@ describe('workflow orchestrator machine', () => {
     })
 
     it('EVIDENCE.CHECKED passed + has next stage advances to running', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate'],
-        is_human_gated: false
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor({ is_human_gated: false })
       actor.send({ type: 'STAGE.COMPLETE', envelope: makeEnvelope({ stage: 'specify', status: 'DONE' }) })
       expect(actor.getSnapshot().value).toBe('evidence_pending')
       actor.send({ type: 'EVIDENCE.CHECKED', results: [{ kind: 'marker', ref: 'done.md', passed: true }] })
@@ -97,13 +96,7 @@ describe('workflow orchestrator machine', () => {
 
   describe('AWO-1 AC3: BLOCKED stops progression', () => {
     it('BLOCKED envelope goes to blocked state', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate']
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor()
       actor.send({
         type: 'STAGE.COMPLETE',
         envelope: makeEnvelope({
@@ -118,13 +111,7 @@ describe('workflow orchestrator machine', () => {
     })
 
     it('no auto-transition fires from blocked', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate']
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor()
       actor.send({ type: 'STAGE.COMPLETE', envelope: makeEnvelope({ stage: 'specify', status: 'BLOCKED' }) })
       expect(actor.getSnapshot().value).toBe('blocked')
       // Send unrelated event — should not change
@@ -134,13 +121,7 @@ describe('workflow orchestrator machine', () => {
     })
 
     it('STAGE.START from blocked transitions to running', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate']
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor()
       actor.send({ type: 'STAGE.COMPLETE', envelope: makeEnvelope({ stage: 'specify', status: 'BLOCKED' }) })
       actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
       expect(actor.getSnapshot().value).toBe('running')
@@ -150,13 +131,7 @@ describe('workflow orchestrator machine', () => {
 
   describe('AWO-2 AC3: DONE without evidence stays evidence_pending', () => {
     it('DONE claim with failing evidence stays in evidence_pending', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate']
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor()
       actor.send({
         type: 'STAGE.COMPLETE',
         envelope: makeEnvelope({
@@ -178,13 +153,7 @@ describe('workflow orchestrator machine', () => {
 
   describe('AWO-2 AC4: unverifiable evidence does not auto-advance', () => {
     it('evidence failed stays blocked, not advancing', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate']
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor()
       actor.send({
         type: 'STAGE.COMPLETE',
         envelope: makeEnvelope({
@@ -241,15 +210,7 @@ describe('workflow orchestrator machine', () => {
 
   describe('AWO-1 AC4: retry and escalate', () => {
     it('RETRYABLE_FAILURE within budget transitions to retrying', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate'],
-        max_retries: 3,
-        retry_count: 0
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor({ max_retries: 3, retry_count: 0 })
       actor.send({
         type: 'STAGE.COMPLETE',
         envelope: makeEnvelope({
@@ -264,15 +225,7 @@ describe('workflow orchestrator machine', () => {
     })
 
     it('RETRY transitions back to running', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate'],
-        max_retries: 3,
-        retry_count: 1
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor({ max_retries: 3, retry_count: 1 })
       actor.send({ type: 'STAGE.COMPLETE', envelope: makeEnvelope({ stage: 'specify', status: 'RETRYABLE_FAILURE' }) })
       expect(actor.getSnapshot().value).toBe('retrying')
       actor.send({ type: 'RETRY' })
@@ -281,15 +234,7 @@ describe('workflow orchestrator machine', () => {
     })
 
     it('RETRYABLE_FAILURE beyond budget transitions to escalated', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate'],
-        max_retries: 3,
-        retry_count: 3
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor({ max_retries: 3, retry_count: 3 })
       actor.send({ type: 'STAGE.COMPLETE', envelope: makeEnvelope({ stage: 'specify', status: 'RETRYABLE_FAILURE' }) })
       expect(actor.getSnapshot().value).toBe('escalated')
       actor.stop()
@@ -298,13 +243,7 @@ describe('workflow orchestrator machine', () => {
 
   describe('AWO-13: graceful shutdown', () => {
     it('SHUTDOWN.REQUESTED from running transitions to blocked', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate']
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor()
       actor.send({ type: 'SHUTDOWN.REQUESTED', signal: 'SIGINT' })
       expect(actor.getSnapshot().value).toBe('blocked')
       expect(actor.getSnapshot().context.shutdown_requested).toBe(true)
@@ -312,13 +251,7 @@ describe('workflow orchestrator machine', () => {
     })
 
     it('SHUTDOWN.REQUESTED from evidence_pending transitions to blocked', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate']
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor()
       actor.send({ type: 'STAGE.COMPLETE', envelope: makeEnvelope({ stage: 'specify', status: 'DONE' }) })
       actor.send({ type: 'SHUTDOWN.REQUESTED', signal: 'SIGTERM' })
       expect(actor.getSnapshot().value).toBe('blocked')
@@ -329,13 +262,7 @@ describe('workflow orchestrator machine', () => {
 
   describe('AWO-5.5: teardown tracking', () => {
     it('TEARDOWN.QUEUED adds tasks without blocking transitions', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate']
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor()
       actor.send({ type: 'TEARDOWN.QUEUED', tasks: ['cleanup-temp', 'archive-logs'] })
       expect(actor.getSnapshot().context.teardown_remaining).toEqual(['cleanup-temp', 'archive-logs'])
       // Teardown does not gate: STAGE.COMPLETE still transitions
@@ -375,13 +302,7 @@ describe('workflow orchestrator machine', () => {
 
   describe('NEED_INPUT flow', () => {
     it('NEED_INPUT goes to need_input state', () => {
-      const actor = startActor({
-        stage_order: STAGE_ORDER,
-        stage_index: 0,
-        current_stage: 'specify',
-        terminal_stages: ['gate']
-      })
-      actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+      const actor = startSpecifyActor()
       actor.send({
         type: 'STAGE.COMPLETE',
         envelope: makeEnvelope({

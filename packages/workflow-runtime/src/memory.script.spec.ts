@@ -35,7 +35,7 @@ describe('memory paths', () => {
   })
 })
 
-describe('stage memory I/O', () => {
+describe('memory I/O', () => {
   let scratch: string
 
   beforeEach(() => {
@@ -46,47 +46,39 @@ describe('stage memory I/O', () => {
     rmSync(scratch, { recursive: true, force: true })
   })
 
-  it('AWO-7 AC1: creates empty stage memory on first access', () => {
-    const data = ensureStageMemory(scratch, DATE_STR, RUN_ID, 'specify')
-    expect(data).toEqual({})
-    const p = stageMemoryPath(scratch, DATE_STR, RUN_ID, 'specify')
-    expect(existsSync(p)).toBe(true)
+  describe('stage memory I/O', () => {
+    it('AWO-7 AC1: creates empty stage memory on first access', () => {
+      const data = ensureStageMemory(scratch, DATE_STR, RUN_ID, 'specify')
+      expect(data).toEqual({})
+      const p = stageMemoryPath(scratch, DATE_STR, RUN_ID, 'specify')
+      expect(existsSync(p)).toBe(true)
+    })
+
+    it('AWO-7 AC1: reuses existing stage memory on subsequent access', () => {
+      writeStageMemory(scratch, DATE_STR, RUN_ID, 'specify', { key: 'val' })
+      const data = ensureStageMemory(scratch, DATE_STR, RUN_ID, 'specify')
+      expect(data).toEqual({ key: 'val' })
+    })
+
+    it('read/write stage memory round-trips', () => {
+      writeStageMemory(scratch, DATE_STR, RUN_ID, 'specify', { choice: 'react', confirmed: true })
+      const data = ensureStageMemory(scratch, DATE_STR, RUN_ID, 'specify')
+      expect(data).toEqual({ choice: 'react', confirmed: true })
+    })
   })
 
-  it('AWO-7 AC1: reuses existing stage memory on subsequent access', () => {
-    writeStageMemory(scratch, DATE_STR, RUN_ID, 'specify', { key: 'val' })
-    const data = ensureStageMemory(scratch, DATE_STR, RUN_ID, 'specify')
-    expect(data).toEqual({ key: 'val' })
-  })
+  describe('shared memory I/O', () => {
+    it('AWO-7 AC2: read/write shared memory', () => {
+      writeSharedMemory(scratch, DATE_STR, RUN_ID, { framework: 'vue', tests: true })
+      const data = readSharedMemory(scratch, DATE_STR, RUN_ID)
+      expect(data.framework).toBe('vue')
+      expect(data.tests).toBe(true)
+    })
 
-  it('read/write stage memory round-trips', () => {
-    writeStageMemory(scratch, DATE_STR, RUN_ID, 'specify', { choice: 'react', confirmed: true })
-    const data = ensureStageMemory(scratch, DATE_STR, RUN_ID, 'specify')
-    expect(data).toEqual({ choice: 'react', confirmed: true })
-  })
-})
-
-describe('shared memory I/O', () => {
-  let scratch: string
-
-  beforeEach(() => {
-    scratch = mkdtempSync(path.join(tmpdir(), 'mem-test-'))
-  })
-
-  afterEach(() => {
-    rmSync(scratch, { recursive: true, force: true })
-  })
-
-  it('AWO-7 AC2: read/write shared memory', () => {
-    writeSharedMemory(scratch, DATE_STR, RUN_ID, { framework: 'vue', tests: true })
-    const data = readSharedMemory(scratch, DATE_STR, RUN_ID)
-    expect(data.framework).toBe('vue')
-    expect(data.tests).toBe(true)
-  })
-
-  it('returns empty object for missing shared memory', () => {
-    const data = readSharedMemory(scratch, DATE_STR, 'nonexistent')
-    expect(data).toEqual({})
+    it('returns empty object for missing shared memory', () => {
+      const data = readSharedMemory(scratch, DATE_STR, 'nonexistent')
+      expect(data).toEqual({})
+    })
   })
 })
 

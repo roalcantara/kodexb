@@ -40,7 +40,7 @@ Co-located `*.spec.ts` move with modules. Update root `package.json` workspaces 
 
 ## PROFILE-SDD-01 (WEP-6)
 
-Extend [`default.yaml`](../../catalog/workflows/default.yaml) so each SDD stage has evidence and/or triggers aligned with [`orchestrated_handoff.script.ts`](../../../tools/governance/specs/orchestrated_handoff.script.ts) `detectPhase()` order:
+Extend [`default.yaml`](../../catalog/workflows/default.yaml) so each SDD stage has evidence and/or triggers aligned with [`orchestrated_handoff.script.ts`](../../../packages/workflow-runtime/src/orchestrated_handoff.script.ts) `detectPhase()` order:
 
 | Stage            | Binding intent                                  |
 | ---------------- | ----------------------------------------------- |

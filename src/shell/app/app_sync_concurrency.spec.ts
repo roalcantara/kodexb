@@ -1,9 +1,14 @@
 // @sync
-import { describe, expect, it } from 'bun:test'
-import fs from 'node:fs'
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import fs, { mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { factoryFor, syncFixtureDir } from '@testing'
 import { App } from './app'
 import { SyncDatabaseBusyError } from './lib/sync_database_busy.error'
+
+let workDir: string
+let dbPath: string
 
 function isSyncInFlight(app: App): boolean {
   return (app as unknown as { syncInFlight: boolean }).syncInFlight === true
@@ -40,8 +45,17 @@ async function waitForSyncInFlight(app: App, timeoutMs: number): Promise<void> {
 }
 
 describe('App.sync concurrency', () => {
+  beforeEach(() => {
+    workDir = mkdtempSync(join(tmpdir(), 'kb-sync-concurrency-'))
+    dbPath = join(workDir, 'kb.sqlite')
+  })
+
+  afterEach(() => {
+    rmSync(workDir, { recursive: true, force: true })
+  })
+
   it('rejects list and stats while sync owns the database file', async () => {
-    const app = makeCleanApp('/tmp/kb-sync-busy-test.sqlite')
+    const app = makeCleanApp(dbPath)
     const syncPromise = app.sync(syncFixtureDir)
     await waitForSyncInFlight(app, 2000)
     expect(() => app.list({ limit: 1 })).toThrow(SyncDatabaseBusyError)
@@ -53,7 +67,7 @@ describe('App.sync concurrency', () => {
   })
 
   it('keeps task projection stable after failed mutation then sync', async () => {
-    const app = makeCleanApp('/tmp/kb-sync-failed-mutation.sqlite')
+    const app = makeCleanApp(dbPath)
     await app.sync(syncFixtureDir)
     const before = await app.listMatchCount({ types: ['task'] })
 

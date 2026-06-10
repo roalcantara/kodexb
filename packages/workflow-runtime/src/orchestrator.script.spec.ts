@@ -43,6 +43,17 @@ function writeEnvelope(dir: string, runId: string, stage: string, status: string
   writeFileSync(filePath, JSON.stringify(envelope))
 }
 
+function createStartedActor() {
+  const actor = createActor(workflowMachine, { input: {} })
+  actor.start()
+  actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+  return actor
+}
+
+function readNdjsonLines(filePath: string): string[] {
+  return readFileSync(filePath, 'utf-8').trim().split('\n').filter(Boolean)
+}
+
 function makeOrchestratorConfig(scratchDir: string, extra?: Partial<OrchestratorConfig>): OrchestratorConfig {
   const profile = loadProfile(FIXTURE_PROFILE)
   return {
@@ -107,9 +118,7 @@ describe('orchestrator integration', () => {
   })
 
   it('AWO-13 AC1: SHUTDOWN.REQUESTED from running transitions to blocked', () => {
-    const actor = createActor(workflowMachine, { input: {} })
-    actor.start()
-    actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+    const actor = createStartedActor()
     actor.send({ type: 'SHUTDOWN.REQUESTED', signal: 'SIGINT' })
     expect(actor.getSnapshot().matches('blocked')).toBe(true)
     expect(actor.getSnapshot().context.shutdown_requested).toBe(true)
@@ -133,9 +142,7 @@ describe('orchestrator integration', () => {
   })
 
   it('teardown tracking does not gate transitions', () => {
-    const actor = createActor(workflowMachine, { input: {} })
-    actor.start()
-    actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
+    const actor = createStartedActor()
     actor.send({ type: 'TEARDOWN.QUEUED', tasks: ['cleanup'] })
     expect(actor.getSnapshot().context.teardown_remaining).toEqual(['cleanup'])
     actor.send({
@@ -260,25 +267,8 @@ describe('M4 retrospective and sandbox', () => {
     rmSync(scratchDir, { recursive: true, force: true })
   })
 
-  function makeM4Config(extra?: Partial<OrchestratorConfig>): OrchestratorConfig {
-    const profile = loadProfile(FIXTURE_PROFILE)
-    return {
-      profile,
-      stageCommands: {},
-      featureDir: '__fixtures__/009-workflow-orch',
-      persistenceConfig: {
-        rootDir: scratchDir,
-        metricsDir: path.join(scratchDir, 'metrics')
-      },
-      runId: `test-${Date.now()}`,
-      dateStr: new Date().toISOString().slice(0, 10),
-      continueOnBlocked: false,
-      ...extra
-    }
-  }
-
   it('AWO-8 AC1: terminal run writes .retro.md under metrics path', () => {
-    const cfg = makeM4Config({ runId: 'test-retro-ac1' })
+    const cfg = makeOrchestratorConfig(scratchDir, { runId: 'test-retro-ac1' })
     const orc = new Orchestrator(cfg)
     orc.run()
 
@@ -341,15 +331,12 @@ describe('M4 retrospective and sandbox', () => {
     )
 
     const sandboxProfile = loadProfile(fixturePath)
-    const cfg: OrchestratorConfig = {
+    const cfg = makeOrchestratorConfig(scratchDir, {
       profile: sandboxProfile,
       stageCommands: { specify: 'echo hello' },
       featureDir: '__fixtures__/009-sandbox',
-      persistenceConfig: { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
-      runId: `test-sandbox-${Date.now()}`,
-      dateStr: new Date().toISOString().slice(0, 10),
-      continueOnBlocked: false
-    }
+      runId: `test-sandbox-${Date.now()}`
+    })
     const orc = new Orchestrator(cfg)
     orc.run()
 
@@ -390,20 +377,11 @@ describe('M4 retrospective and sandbox', () => {
       })
     )
 
-    const profile = loadProfile(FIXTURE_PROFILE)
-    const cfg: OrchestratorConfig = {
-      profile,
-      stageCommands: {},
+    const cfg = makeOrchestratorConfig(scratchDir, {
       featureDir: '__fixtures__/009-retro-ac4',
-      persistenceConfig: {
-        rootDir: scratchDir,
-        metricsDir: path.join(scratchDir, 'metrics')
-      },
       runId: `test-ac4-${Date.now()}`,
-      dateStr: new Date().toISOString().slice(0, 10),
-      continueOnBlocked: false,
       catalogPath
-    }
+    })
 
     const orc = new Orchestrator(cfg)
     expect(orc.catalogInsights.length).toBe(1)
@@ -435,16 +413,11 @@ describe('M4 teardown and idempotency', () => {
   // --- AWO-13.3: idempotency ---
 
   it('AWO-13.3: second dispatch skips invoke when envelope exists', () => {
-    const profile = loadProfile(FIXTURE_PROFILE)
-    const cfg: OrchestratorConfig = {
-      profile,
+    const cfg = makeOrchestratorConfig(scratchDir, {
       stageCommands: { specify: 'echo test' },
       featureDir: '__fixtures__/009-idem',
-      persistenceConfig: { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
-      runId: 'test-idem',
-      dateStr: new Date().toISOString().slice(0, 10),
-      continueOnBlocked: false
-    }
+      runId: 'test-idem'
+    })
     const rid = cfg.runId as string
     const orc = new Orchestrator(cfg)
     writeEnvelope(orc.runDir, rid, 'specify', 'DONE')
@@ -458,15 +431,11 @@ describe('M4 teardown and idempotency', () => {
 
   it('AWO-13.1: shutdown.completed after grace_ms', async () => {
     const profile = loadProfile(FIXTURE_PROFILE)
-    const cfg: OrchestratorConfig = {
+    const cfg = makeOrchestratorConfig(scratchDir, {
       profile: { ...profile, shutdown: { grace_ms: 50, signals: ['SIGTERM'] } },
-      stageCommands: {},
       featureDir: '__fixtures__/009-grace',
-      persistenceConfig: { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
-      runId: `test-grace-${Date.now()}`,
-      dateStr: new Date().toISOString().slice(0, 10),
-      continueOnBlocked: false
-    }
+      runId: `test-grace-${Date.now()}`
+    })
     const orc = new Orchestrator(cfg)
     orc.actor = createActor(workflowMachine, { input: {} })
     orc.actor.start()
@@ -479,15 +448,12 @@ describe('M4 teardown and idempotency', () => {
 
   it('AWO-5.5: stage.exited precedes slow teardown task.completed', async () => {
     const tdProfile = loadProfile(FIXTURE_TEARDOWN)
-    const cfg: OrchestratorConfig = {
+    const cfg = makeOrchestratorConfig(scratchDir, {
       profile: tdProfile,
       stageCommands: { 'teardown-slow': 'echo done' },
       featureDir: '__fixtures__/009-td-slow',
-      persistenceConfig: { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
-      runId: `test-td-slow-${Date.now()}`,
-      dateStr: new Date().toISOString().slice(0, 10),
-      continueOnBlocked: false
-    }
+      runId: `test-td-slow-${Date.now()}`
+    })
     const orc = new Orchestrator(cfg)
     const rid = cfg.runId as string
     writeEnvelope(orc.runDir, rid, 'teardown-slow', 'DONE')
@@ -499,10 +465,7 @@ describe('M4 teardown and idempotency', () => {
 
     const ndjson = orc.writer.currentPath
     expect(ndjson).toBeTruthy()
-    const lines = readFileSync(ndjson as string, 'utf-8')
-      .trim()
-      .split('\n')
-      .filter(Boolean)
+    const lines = readNdjsonLines(ndjson as string)
     const exitedIdx = lines.findIndex(l => {
       const e = JSON.parse(l)
       return e.type === 'stage.exited' && e.stage === 'teardown-slow'
@@ -530,15 +493,12 @@ describe('M4 teardown and idempotency', () => {
       ],
       terminal: ['gate'] as string[]
     }
-    const cfg: OrchestratorConfig = {
+    const cfg = makeOrchestratorConfig(scratchDir, {
       profile,
       stageCommands: { 'teardown-timeout': 'echo done' },
       featureDir: '__fixtures__/009-td-timeout',
-      persistenceConfig: { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
-      runId: `test-td-timeout-${Date.now()}`,
-      dateStr: new Date().toISOString().slice(0, 10),
-      continueOnBlocked: false
-    }
+      runId: `test-td-timeout-${Date.now()}`
+    })
     const orc = new Orchestrator(cfg)
     const rid = cfg.runId as string
     writeEnvelope(orc.runDir, rid, 'teardown-timeout', 'DONE')
@@ -548,10 +508,7 @@ describe('M4 teardown and idempotency', () => {
     expect(performance.now() - t0).toBeLessThan(800)
 
     const ndjson = orc.writer.currentPath
-    const lines = readFileSync(ndjson as string, 'utf-8')
-      .trim()
-      .split('\n')
-      .filter(Boolean)
+    const lines = readNdjsonLines(ndjson as string)
     const exitedIdx = lines.findIndex(l => {
       const e = JSON.parse(l)
       return e.type === 'stage.exited' && e.stage === 'teardown-timeout'
@@ -569,16 +526,11 @@ describe('M4 teardown and idempotency', () => {
   // --- AWO-13.3: strengthen — task.invoked count unchanged ---
 
   it('AWO-13.3: second dispatch does not increase task.invoked count', () => {
-    const profile = loadProfile(FIXTURE_PROFILE)
-    const cfg: OrchestratorConfig = {
-      profile,
+    const cfg = makeOrchestratorConfig(scratchDir, {
       stageCommands: { specify: 'echo test' },
       featureDir: '__fixtures__/009-idem2',
-      persistenceConfig: { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
-      runId: 'test-idem2',
-      dateStr: new Date().toISOString().slice(0, 10),
-      continueOnBlocked: false
-    }
+      runId: 'test-idem2'
+    })
     const rid = cfg.runId as string
     const orc = new Orchestrator(cfg)
     writeEnvelope(orc.runDir, rid, 'specify', 'DONE', { idempotency_key: 'ik-spec' })
@@ -590,7 +542,7 @@ describe('M4 teardown and idempotency', () => {
 
     const ndjson = orc.writer.currentPath
     if (ndjson) {
-      const lines = readFileSync(ndjson, 'utf-8').trim().split('\n').filter(Boolean)
+      const lines = readNdjsonLines(ndjson)
       const invoked = lines.filter(l => {
         const e = JSON.parse(l)
         return e.type === 'task.invoked' && e.role === 'trigger.pre'

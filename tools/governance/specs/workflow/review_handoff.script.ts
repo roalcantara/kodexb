@@ -1,5 +1,4 @@
 #!/usr/bin/env bun
-import { UsageError, withUsage } from '@kb/workflow-runtime'
 /**
  * mise run spec review-handoff — classify diff, route skills, extract Evidence.
  *
@@ -8,6 +7,7 @@ import { UsageError, withUsage } from '@kb/workflow-runtime'
  *   prepare          — combined JSON/text for reviewer agents
  *   scaffold-audit   — write tmp/reviews/review-{slug}-{sha}.md audit scaffold
  */
+import { UsageError, withUsage } from '@kb/workflow-runtime'
 import { chdirToRepoRoot } from '../../../support/lib/shared/repo_root.script.ts'
 import {
   classifyReviewSlice,

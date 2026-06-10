@@ -1,6 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import type { Profile } from '@kb/workflow-core'
 import {
   autoFillValues,
   canAutoFill,
@@ -8,6 +7,7 @@ import {
   ENVELOPE_SCHEMA_VERSION,
   type Envelope,
   evaluateEvidence,
+  type Profile,
   persistMachineSnapshot,
   type SnapshotIO,
   workflowMachine
