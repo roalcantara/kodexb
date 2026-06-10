@@ -199,14 +199,14 @@ Checkbox audit against `tools/governance/specs/workflow/` after M4 merge prep. P
 
 | Task               | Status  | Note |
 | ------------------ | ------- | ---- |
-| **M1-ENGINE-02**   | Done    | Teardown fire-and-forget + timeout-injection wired in `orchestrator.script.ts` |
-| **M1-ADAPTER-02**  | Done    | SIGINT/SIGTERM trap + bounded grace wired in `orchestrator.script.ts` |
+| **M1-ENGINE-02**   | Done    | Async fire-and-forget via `teardown_runner.script.ts`; wired in `orchestrator.script.ts` |
+| **M1-ADAPTER-02**  | Done    | SIGINT/SIGTERM trap + idempotency dedup + `seedDispatchedKeysFromDisk` |
 | **M1-CLI-01**      | Done    | Resume naming documented in `WORKFLOW_GUIDE.md` |
-| **M1-CLI-02**      | Done    | `findActiveRun`/`listActiveRuns` wired in `spec.script.ts` resume path |
+| **M1-CLI-02**      | Done    | `findActiveRun`/`listActiveRuns` imported in `spec.script.ts` resume path |
 | **POLISH-01**      | Done    | `profile_guide_crossref.script.ts` + spec |
 | **POLISH-02**      | Done    | NFR budgets in `workflow.json`; harness in `tools/metrics/harnesses/workflow/` |
-| **PROFILE-SDD-01** | Partial | Specify evidence + handoff-generate post-trigger done; full per-stage bindings deferred |
-| **SMOKE-01**       | Partial | `.github/workflows/smoke.yml` runs spec gate; full orchestrator dogfood deferred |
+| **PROFILE-SDD-01** | Partial | Deferred to 010 — only specify evidence + handoff post-trigger done |
+| **SMOKE-01**       | Partial | Deferred to 010 — `.github/workflows/smoke.yml` runs spec gate only |
 
 ### Deferral (2026-06-03, revised)
 

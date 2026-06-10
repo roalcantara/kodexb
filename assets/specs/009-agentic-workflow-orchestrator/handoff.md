@@ -3,7 +3,7 @@
 # Handoff — Agentic workflow orchestrator (`009`) — program closeout
 
 **Spec:** [`spec.md`](./spec.md) (AWO-1…AWO-13) · **Plan:** [`plan.md`](./plan.md) · **Tasks:** [`tasks.md`](./tasks.md)
-**Branch:** `feature/009-m4-retro-sandbox` · **Status:** **COMPLETE** — all tasks `[X]`
+**Branch:** `feature/009-m4-retro-sandbox` · **Status:** **M1 gaps closed** — MVP–M4 complete; SMOKE-01 and PROFILE-SDD-01 remain open (010).
 
 ---
 

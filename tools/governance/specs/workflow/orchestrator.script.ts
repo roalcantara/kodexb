@@ -1,7 +1,6 @@
 #!/usr/bin/env bun
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import { Value } from '@sinclair/typebox/value'
 import { createActor } from 'xstate'
 import { loadInsights, mergeInsightsIntoStageMemory } from './agent_memory.script.ts'
 import { evaluateEvidence } from './evidence.script.ts'
@@ -9,11 +8,13 @@ import { autoFillValues, canAutoFill, dedupQuestions } from './intervention.scri
 import { workflowMachine } from './machine.script.ts'
 import { readSharedMemory, writeSharedMemory, writeStageMemory } from './memory.script.ts'
 import { orchestratedRunProviders } from './orchestrator_providers.script.ts'
+import { readEnvelopeFile, seedDispatchedKeys } from './orchestrator_resume.script.ts'
 import { writeRunRetrospective } from './orchestrator_retro.script.ts'
 import { ensureRunDir, type PersistenceConfig } from './persistence.script.ts'
-import { ENVELOPE_SCHEMA_VERSION, type Envelope, EnvelopeSchema } from './schemas/envelope.schema.ts'
+import { ENVELOPE_SCHEMA_VERSION, type Envelope } from './schemas/envelope.schema.ts'
 import type { Profile } from './schemas/profile.schema.ts'
 import { persistMachineSnapshot } from './snapshot.script.ts'
+import { spawnTeardownFireAndForget, type TeardownHandle } from './teardown_runner.script.ts'
 import { invokeWithTelemetry } from './workflow_invoker.script.ts'
 import { generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow_run.script.ts'
 
@@ -52,6 +53,7 @@ export class Orchestrator {
   readonly catalogPath: string
   readonly catalogInsights: ReturnType<typeof loadInsights>
   private dispatchedKeys = new Set<string>()
+  private teardownHandles: TeardownHandle[] = []
 
   actor: ReturnType<typeof createActor<typeof workflowMachine>> | null = null
   private shutdownRequested = false
@@ -86,12 +88,30 @@ export class Orchestrator {
     return path.join(this.runDir, `${this.runId}.envelope.${stage}.json`)
   }
 
+  private readEnvelope(envPath: string): Envelope | null {
+    return readEnvelopeFile(envPath)
+  }
+
+  private seedDispatchedKeysFromDisk(): void {
+    seedDispatchedKeys(this.runDir, this.runId, key => this.dispatchedKeys.add(key))
+  }
+
   dispatchStageCommand(stage: string): Envelope | null {
     const command = this.config.stageCommands[stage]
     if (!command) return null
 
-    const idempotencyKey = `${this.runId}:${stage}:${command}`
-    if (this.dispatchedKeys.has(idempotencyKey)) return null
+    const envPath = this.envelopePath(stage)
+    const existingEnvelope = this.readEnvelope(envPath)
+    const idempotencyKey = existingEnvelope?.idempotency_key ?? `${this.runId}:${stage}:${command}`
+
+    if (this.dispatchedKeys.has(idempotencyKey)) {
+      return existingEnvelope
+    }
+
+    if (existingEnvelope) {
+      this.dispatchedKeys.add(idempotencyKey)
+      return existingEnvelope
+    }
 
     this.dispatchedKeys.add(idempotencyKey)
 
@@ -125,16 +145,9 @@ export class Orchestrator {
       })
     }
 
-    const envPath = this.envelopePath(stage)
     if (!existsSync(envPath)) return null
 
-    try {
-      const raw = JSON.parse(readFileSync(envPath, 'utf-8'))
-      if (!Value.Check(EnvelopeSchema, raw)) return null
-      return raw as Envelope
-    } catch {
-      return null
-    }
+    return this.readEnvelope(envPath)
   }
 
   evidenceContext() {
@@ -190,12 +203,15 @@ export class Orchestrator {
     this.actor = createActor(workflowMachine, { input: {} })
     this.actor.start()
 
+    this.seedDispatchedKeysFromDisk()
+
     const t0 = performance.now()
     const stageOrder = this.stageOrder()
 
     const sigHandler = (signal: string) => {
       this.shutdown(signal)
-      process.exit(0)
+        .then(() => process.exit(0))
+        .catch(() => process.exit(1))
     }
     const onSigInt = () => sigHandler('SIGINT')
     const onSigTerm = () => sigHandler('SIGTERM')
@@ -348,14 +364,17 @@ export class Orchestrator {
         this.actor.send({ type: 'TEARDOWN.QUEUED', tasks: stageDef.teardown })
         const timeout = stageDef.teardown_timeout_ms ?? 30000
         for (const tdCmd of stageDef.teardown) {
-          invokeWithTelemetry(
+          const handle = spawnTeardownFireAndForget(
             { command: tdCmd, cwd: process.cwd(), timeout_ms: timeout },
             this.allowedPrefixes,
-            'teardown',
+            { writer: this.writer, featureDir: this.config.featureDir },
             stageId,
-            { writer: this.writer, featureDir: this.config.featureDir }
+            timeout,
+            () => {
+              this.actor?.send({ type: 'TEARDOWN.COMPLETED', task_id: tdCmd })
+            }
           )
-          this.actor.send({ type: 'TEARDOWN.COMPLETED', task_id: tdCmd })
+          this.teardownHandles.push(handle)
         }
       }
 
@@ -408,7 +427,7 @@ export class Orchestrator {
     process.off('SIGTERM', onSigTerm)
   }
 
-  shutdown(signal: string): void {
+  async shutdown(signal: string): Promise<void> {
     this.shutdownRequested = true
     this.writer.emit({
       type: 'shutdown.requested',
@@ -423,6 +442,12 @@ export class Orchestrator {
       this.actor.send({ type: 'SHUTDOWN.REQUESTED', signal })
       this.persistSnapshot()
     }
+
+    for (const handle of this.teardownHandles) {
+      handle.abort()
+    }
+
+    await Bun.sleep(this.profile.shutdown.grace_ms)
 
     this.writer.emit({
       type: 'shutdown.completed',

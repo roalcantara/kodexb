@@ -108,7 +108,9 @@ describe('orchestrator integration', () => {
     orc.actor = createActor(workflowMachine, { input: {} })
     orc.actor.start()
     orc.actor.send({ type: 'STAGE.START', stage_id: 'specify', stage_index: 0, is_human_gated: false })
-    orc.shutdown('SIGTERM')
+    orc.shutdown('SIGTERM').catch(() => {
+      /* fire-and-forget */
+    })
 
     const snapPath = path.join(scratchDir, dStr, `${rid}.state.json`)
     expect(existsSync(snapPath)).toBe(true)

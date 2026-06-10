@@ -34,9 +34,8 @@ export type CommandResult = {
   diagnostic?: { code: DiagnosticCode }
 }
 
-export function runCommand(descriptor: CommandDescriptor, allowedPrefixes: string[]): CommandResult {
-  const prefixCheck = validateCommandPrefix(descriptor.command, allowedPrefixes)
-
+function validatePrefix(command: string, allowedPrefixes: string[]): CommandResult | null {
+  const prefixCheck = validateCommandPrefix(command, allowedPrefixes)
   if (!prefixCheck.matched) {
     return {
       exitCode: -1,
@@ -48,6 +47,12 @@ export function runCommand(descriptor: CommandDescriptor, allowedPrefixes: strin
       diagnostic: { code: 'COMMAND_PREFIX_REJECTED' }
     }
   }
+  return null
+}
+
+export function runCommand(descriptor: CommandDescriptor, allowedPrefixes: string[]): CommandResult {
+  const rejected = validatePrefix(descriptor.command, allowedPrefixes)
+  if (rejected) return rejected
 
   const t0 = performance.now()
 
@@ -79,5 +84,48 @@ export function runCommand(descriptor: CommandDescriptor, allowedPrefixes: strin
       rejectionReason: String(err),
       diagnostic: { code: nodeErr.code === 'ENOENT' ? 'COMMAND_TARGET_MISSING' : 'COMMAND_EXECUTION_ERROR' }
     }
+  }
+}
+
+export async function runCommandAsync(
+  descriptor: CommandDescriptor,
+  allowedPrefixes: string[]
+): Promise<CommandResult> {
+  const rejected = validatePrefix(descriptor.command, allowedPrefixes)
+  if (rejected) return rejected
+
+  const t0 = performance.now()
+  const cmd = descriptor.command
+  const proc = Bun.spawn({
+    cmd: ['sh', '-c', cmd],
+    cwd: descriptor.cwd ?? process.cwd(),
+    env: safeEnv({ cwd: descriptor.cwd }),
+    stdout: 'pipe',
+    stderr: 'pipe'
+  })
+
+  let killer: ReturnType<typeof setTimeout> | undefined
+  let killed = false
+
+  if (descriptor.timeout_ms) {
+    killer = setTimeout(() => {
+      killed = true
+      proc.kill()
+    }, descriptor.timeout_ms)
+  }
+
+  const exitCode = await proc.exited
+  clearTimeout(killer)
+
+  const stdout = await new Response(proc.stdout).text()
+  const stderr = await new Response(proc.stderr).text()
+  const durationMs = performance.now() - t0
+
+  return {
+    exitCode: killed ? -1 : exitCode,
+    stdout,
+    stderr: killed ? `killed after ${descriptor.timeout_ms}ms` : stderr,
+    durationMs,
+    rejected: killed
   }
 }
