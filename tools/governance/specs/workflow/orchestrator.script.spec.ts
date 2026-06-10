@@ -10,6 +10,7 @@ import { loadProfile } from './profile_loader.script.ts'
 import { hydrateMachineActor, persistMachineSnapshot } from './snapshot.script.ts'
 
 const FIXTURE_PROFILE = 'tools/__tests__/fixtures/workflow/fixture-profile.yaml'
+const FIXTURE_TEARDOWN = 'tools/__tests__/fixtures/workflow/fixture-profile-teardown.yaml'
 
 function writeEnvelope(dir: string, runId: string, stage: string, status: string, extra?: Record<string, unknown>) {
   const envelope = {
@@ -401,11 +402,32 @@ describe('M4 retrospective and sandbox', () => {
     expect(memInsights.length).toBe(1)
     expect(memInsights[0]?.insight_id).toBe('ri-test4444')
   })
+})
+
+describe('M4 teardown and idempotency', () => {
+  let scratchDir: string
+
+  beforeEach(() => {
+    scratchDir = mkdtempSync(path.join(tmpdir(), 'orc-td-'))
+  })
+
+  afterEach(() => {
+    rmSync(scratchDir, { recursive: true, force: true })
+  })
 
   // --- AWO-13.3: idempotency ---
 
   it('AWO-13.3: second dispatch skips invoke when envelope exists', () => {
-    const cfg = makeM4Config({ runId: 'test-idem', stageCommands: { specify: 'echo test' } })
+    const profile = loadProfile(FIXTURE_PROFILE)
+    const cfg: OrchestratorConfig = {
+      profile,
+      stageCommands: { specify: 'echo test' },
+      featureDir: '__fixtures__/009-idem',
+      persistenceConfig: { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
+      runId: 'test-idem',
+      dateStr: new Date().toISOString().slice(0, 10),
+      continueOnBlocked: false
+    }
     const rid = cfg.runId as string
     const orc = new Orchestrator(cfg)
     writeEnvelope(orc.runDir, rid, 'specify', 'DONE')
@@ -434,6 +456,130 @@ describe('M4 retrospective and sandbox', () => {
     const t0 = performance.now()
     await orc.shutdown('SIGTERM')
     expect(performance.now() - t0).toBeGreaterThanOrEqual(45)
+  })
+
+  // --- AWO-5.5: teardown ordering ---
+
+  it('AWO-5.5: stage.exited precedes slow teardown task.completed', async () => {
+    const tdProfile = loadProfile(FIXTURE_TEARDOWN)
+    const cfg: OrchestratorConfig = {
+      profile: tdProfile,
+      stageCommands: { 'teardown-slow': 'echo done' },
+      featureDir: '__fixtures__/009-td-slow',
+      persistenceConfig: { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
+      runId: `test-td-slow-${Date.now()}`,
+      dateStr: new Date().toISOString().slice(0, 10),
+      continueOnBlocked: false
+    }
+    const orc = new Orchestrator(cfg)
+    const rid = cfg.runId as string
+    writeEnvelope(orc.runDir, rid, 'teardown-slow', 'DONE')
+    const t0 = performance.now()
+    orc.run()
+    await new Promise(r => setTimeout(r, 1500))
+
+    expect(performance.now() - t0).toBeLessThan(3000)
+
+    const ndjson = orc.writer.currentPath
+    expect(ndjson).toBeTruthy()
+    const lines = readFileSync(ndjson as string, 'utf-8')
+      .trim()
+      .split('\n')
+      .filter(Boolean)
+    const exitedIdx = lines.findIndex(l => {
+      const e = JSON.parse(l)
+      return e.type === 'stage.exited' && e.stage === 'teardown-slow'
+    })
+    const tdCompleteIdx = lines.findIndex(l => {
+      const e = JSON.parse(l)
+      return e.type === 'task.completed' && e.role === 'teardown'
+    })
+    expect(exitedIdx).toBeGreaterThan(-1)
+    expect(tdCompleteIdx).toBeGreaterThan(-1)
+    expect(exitedIdx).toBeLessThan(tdCompleteIdx)
+  })
+
+  it('AWO-5.5: teardown timeout injection at orchestrator', async () => {
+    const tdProfile = loadProfile(FIXTURE_TEARDOWN)
+    const profile = {
+      ...tdProfile,
+      stages: [
+        {
+          id: 'teardown-timeout' as const,
+          worker: 'primary' as const,
+          teardown: ['sleep 5'] as string[],
+          teardown_timeout_ms: 100
+        }
+      ],
+      terminal: ['gate'] as string[]
+    }
+    const cfg: OrchestratorConfig = {
+      profile,
+      stageCommands: { 'teardown-timeout': 'echo done' },
+      featureDir: '__fixtures__/009-td-timeout',
+      persistenceConfig: { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
+      runId: `test-td-timeout-${Date.now()}`,
+      dateStr: new Date().toISOString().slice(0, 10),
+      continueOnBlocked: false
+    }
+    const orc = new Orchestrator(cfg)
+    const rid = cfg.runId as string
+    writeEnvelope(orc.runDir, rid, 'teardown-timeout', 'DONE')
+    const t0 = performance.now()
+    orc.run()
+    await new Promise(r => setTimeout(r, 300))
+    expect(performance.now() - t0).toBeLessThan(800)
+
+    const ndjson = orc.writer.currentPath
+    const lines = readFileSync(ndjson as string, 'utf-8')
+      .trim()
+      .split('\n')
+      .filter(Boolean)
+    const exitedIdx = lines.findIndex(l => {
+      const e = JSON.parse(l)
+      return e.type === 'stage.exited' && e.stage === 'teardown-timeout'
+    })
+    const tdCompleteIdx = lines.findIndex(l => {
+      const e = JSON.parse(l)
+      return e.type === 'task.completed' && e.role === 'teardown'
+    })
+    expect(exitedIdx).toBeLessThan(tdCompleteIdx)
+
+    const tdEvent = JSON.parse(lines[tdCompleteIdx] as string)
+    expect(tdEvent.status).toBe('fail')
+  })
+
+  // --- AWO-13.3: strengthen — task.invoked count unchanged ---
+
+  it('AWO-13.3: second dispatch does not increase task.invoked count', () => {
+    const profile = loadProfile(FIXTURE_PROFILE)
+    const cfg: OrchestratorConfig = {
+      profile,
+      stageCommands: { specify: 'echo test' },
+      featureDir: '__fixtures__/009-idem2',
+      persistenceConfig: { rootDir: scratchDir, metricsDir: path.join(scratchDir, 'metrics') },
+      runId: 'test-idem2',
+      dateStr: new Date().toISOString().slice(0, 10),
+      continueOnBlocked: false
+    }
+    const rid = cfg.runId as string
+    const orc = new Orchestrator(cfg)
+    writeEnvelope(orc.runDir, rid, 'specify', 'DONE', { idempotency_key: 'ik-spec' })
+
+    const first = orc.dispatchStageCommand('specify')
+    expect(first).not.toBeNull()
+    const second = orc.dispatchStageCommand('specify')
+    expect(second).toEqual(first)
+
+    const ndjson = orc.writer.currentPath
+    if (ndjson) {
+      const lines = readFileSync(ndjson, 'utf-8').trim().split('\n').filter(Boolean)
+      const invoked = lines.filter(l => {
+        const e = JSON.parse(l)
+        return e.type === 'task.invoked' && e.role === 'trigger.pre'
+      })
+      expect(invoked.length).toBe(0)
+    }
   })
 })
 

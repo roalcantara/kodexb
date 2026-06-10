@@ -3,7 +3,7 @@
  * spec workflow — default run mode (TMF-8). Routes to orchestrated-handoff
  * with feature inference, allowlisted spawn, and NDJSON event recording.
  */
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { resolveActiveFeatureDir } from './resolve_active_feature_dir.script.ts'
 import { parseHandoffAcTable } from './workflow/handoff_generate.script.ts'
@@ -200,27 +200,7 @@ function run(): void {
     const runId = (args.runId as string) || ''
 
     if (!runId) {
-      // Find latest state file
-      const dateDir = path.join(runDir, dateStr)
-      if (!existsSync(dateDir)) {
-        console.error('spec workflow resume: no run directory found')
-        process.exit(2)
-      }
-      const stateFiles = readdirSync(dateDir)
-        .filter(f => f.endsWith('.state.json'))
-        .sort()
-        .reverse()
-      if (stateFiles.length === 0) {
-        console.error('spec workflow resume: no state files found')
-        process.exit(2)
-      }
-      const lastRun = stateFiles.at(0)
-      if (!lastRun) {
-        console.error('spec workflow resume: no state files found')
-        process.exit(2)
-      }
-      const lastRunId = lastRun.replace('.state.json', '')
-      console.error(`spec workflow resume: --run-id required. Latest: ${lastRunId}`)
+      console.error('spec workflow resume: --run-id required')
       process.exit(2)
     }
 
