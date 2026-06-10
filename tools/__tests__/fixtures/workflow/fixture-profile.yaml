@@ -10,9 +10,16 @@ stages:
     worker: primary
   - id: plan
     worker: primary
+  - id: pr-prep
+    worker: primary
+    triggers:
+      post: "echo pr-prep-done"
 transitions:
   - from: specify
     to: plan
+    on: DONE
+  - from: plan
+    to: pr-prep
     on: DONE
 terminal:
   - gate
@@ -29,7 +36,10 @@ memory:
   retention:
     tmp_days: 30
     durable_days: 365
-providers: {}
+providers:
+  pr_open: "echo pr-created"
+  pr_update: "echo pr-updated"
+  ci_status: "echo ci-green"
 shutdown:
   grace_ms: 10000
   signals:

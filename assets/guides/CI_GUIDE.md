@@ -2,7 +2,8 @@
 # CI / CD Guide
 
 Operational manual for kb's three GitHub Actions workflows, their local mirror
-tasks, and the Electrobun build + signing pipeline.
+tasks, the Electrobun build + signing pipeline, and the orchestrator PR/CI
+bindings.
 
 **Design context** (normative contract for the CI/CD system):
 
@@ -309,3 +310,57 @@ locally (CI-ephemeral keychain, GitHub OIDC token, repo write).
 | Draft release exists but `publish.yml` doesn't fire     | Trigger is `workflow_run: completed` — only fires when Release completes successfully                  |
 | ARM Linux leg fails with `bash: bun: command not found` | `setup-bun-project` action didn't install on `ubuntu-24.04-arm`; verify mise.toml has `bun = "latest"` |
 | `gh attestation verify` fails with "no attestations"    | `id-token: write` permission missing on the producing job                                              |
+| --- | --- |
+
+## Orchestrator PR/CI bindings
+
+The workflow orchestrator (`orchestrator.script.ts`) supports provider-agnostic
+PR and CI completion via profile `command:` bindings (AWO-6).
+
+### Profile provider fields
+
+| Field | Purpose | Default (kb) |
+| ----- | ------- | ------------ |
+| `providers.pr_open` | Command to open a pull request | `gh pr create ...` |
+| `providers.pr_update` | Command to update an existing PR body/description | `gh pr edit ...` |
+| `providers.ci_status` | Command to check CI status (exit 0 = green) | `gh pr checks --interval 10 --required` |
+
+All provider commands are invoked through the L2 adapter (`providers_runner.script.ts`)
+which calls `invokeWithTelemetry` — the same executor used for stage commands.
+The orchestrator never calls `gh` or provider APIs directly.
+
+### PR-prep stage
+
+A `pr-prep` stage is inserted after `implement` in the default workflow profile.
+Its `triggers.post` runs pre-PR checks (e.g. `hk check --profile pr`). This
+stage is processed by the standard stage loop.
+
+### CI gate flow
+
+After the stage loop completes, the orchestrator runs `runProviders()`:
+
+1. If `providers.pr_open` is set, it is invoked and the stdout is parsed for a
+   PR URL which is persisted to run-shared memory (`<run_id>.shared.json` →
+   `pr_ref` key).
+2. If `providers.ci_status` is set, it is invoked in a loop up to
+   `default_retry.max_attempts` times. The result is evaluated by
+   `ci_gate.script.ts` (`checkCiGate`):
+   - **exit 0** → CI passes, the loop exits.
+   - **non-zero within budget** → retry (R2R remediation).
+   - **non-zero after budget exhausted** → `stage.escalated` event emitted with
+     `cause: ci_retries_exhausted`.
+3. If no providers are configured (empty `providers: {}`), the orchestrator
+   skips the provider phase entirely.
+
+### Swapping providers
+
+To use a different CI provider (e.g. GitLab CI, CircleCI):
+
+```yaml
+# In assets/catalog/workflows/<profile>.yaml
+providers:
+  ci_status: "curl -s https://ci.example.com/projects/my-project/status | jq -e '.state == \"success\"'"
+  pr_open: "glab mr create ..."
+```
+
+No engine code changes are needed — the provider commands are profile data only.

@@ -11,6 +11,7 @@ execution_policy:
     - "mise run"
     - "hk check"
     - "bun run"
+    - "gh"
 
 stages:
   - id: specify
@@ -30,6 +31,10 @@ stages:
     human_gated: true
   - id: implement
     worker: primary
+  - id: pr-prep
+    worker: primary
+    triggers:
+      post: "hk check --profile pr"
   - id: review
     worker: primary
     human_gated: true
@@ -54,6 +59,9 @@ transitions:
     to: implement
     on: DONE
   - from: implement
+    to: pr-prep
+    on: DONE
+  - from: pr-prep
     to: review
     on: DONE
   - from: review
@@ -78,7 +86,10 @@ memory:
     tmp_days: 30
     durable_days: 365
 
-providers: {}
+providers:
+  pr_open: "gh pr create --title 'workflow: automated PR' --body 'Automated PR from orchestrator'"
+  pr_update: "gh pr edit --body '_workflow-run: ${RUN_ID}_'"
+  ci_status: "gh pr checks --watch --interval 10 --required"
 
 shutdown:
   grace_ms: 10000

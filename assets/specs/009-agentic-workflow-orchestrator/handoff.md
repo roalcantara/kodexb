@@ -1,151 +1,219 @@
 <!-- markdownlint-disable-file -->
 
-# Handoff — Agentic workflow orchestrator (`009`) — M2 slice
+# Handoff — Agentic workflow orchestrator (`009`) — M3 slice
 
-**Spec:** [`spec.md`](./spec.md) (AWO-3, AWO-7) · **Plan:** [`plan.md`](./plan.md) · **Tasks:** [`tasks.md`](./tasks.md) Phase 5
+**Spec:** [`spec.md`](./spec.md) (AWO-6) · **Plan:** [`plan.md`](./plan.md) · **Tasks:** [`tasks.md`](./tasks.md) Phase 6
 **Architecture:** [`review/002/tool-agnostic-engine-review.md`](./review/002/tool-agnostic-engine-review.md) (4-layer engine)
-**Program:** full multi-PR sequence in [`tasks.md`](./tasks.md) · **This handoff:** **M2 only** (PR 3). **Stop** after M2 closeout — do not start M3 until the operator merges the M2 PR.
+**Program:** full multi-PR sequence in [`tasks.md`](./tasks.md) · **This handoff:** **M3 only** (PR 4). **Stop** after M3 closeout — do not start M4 until the operator merges the M3 PR.
 
-**Prerequisite:** MVP (PR 1) + **M1** (PR 2) merged on `main` — substrate, `machine.script.ts`, `orchestrator.script.ts`, snapshot/resume CLI.
+**Prerequisite:** MVP + **M1** + **M2** merged on `main` — orchestrator, memory, intervention, resume CLI.
 
-## Branch (do this first)
+---
+
+## Agent workflow (follow in order)
+
+1. **Branch** — run the commands in [§ Branch](#branch-mandatory-first-step); confirm `git branch --show-current` prints `feature/009-m3-pr-ci-completion`.
+2. **Implement** — complete every unchecked task in [§ Implementation tasks](#implementation-tasks-phase-6--mark-x-in-tasksmd-when-done).
+3. **Verify** — run **every** command in [§ Verify](#verify-mandatory--all-must-exit-0); fix failures before continuing.
+4. **Review prep** — operator runs `/app-review-handoff` on this file (or you report Evidence exit codes).
+5. **Commit** — run [§ Commit](#commit-mandatory-after-verify-is-green) exactly; one commit for this slice.
+6. **Post-commit** — run [§ Post-commit](#post-commit-mandatory-after-commit) to push and open the PR.
+
+Do **not** skip steps or claim done while any Verify command is non-zero.
+
+---
+
+## Branch (mandatory first step)
+
+From a clean working tree on updated `main`:
 
 ```sh
 git fetch origin
 git checkout main
 git pull origin main
-git checkout -b feature/009-m2-intervention-memory
+git checkout -b feature/009-m3-pr-ci-completion
+git branch --show-current   # MUST print: feature/009-m3-pr-ci-completion
 ```
+
+If the branch already exists locally: `git checkout feature/009-m3-pr-ci-completion && git rebase main`.
+
+---
 
 ## Mission
 
-On the merged M1 orchestrator, ship **intervention minimization + memory**:
+On merged M2, ship **provider-agnostic PR/CI completion** (AWO-6):
 
-- **`intervention.script.ts`** (L1 pure) — question dedup against run-shared memory, batched prompts, `decision.defaulted` path (AWO-3.1–3.3)
-- **`memory.script.ts`** (L3 I/O) — stage-scoped + run-shared persistence, conflict policy, retention (AWO-7.1–7.4)
-- **Wire orchestrator + resume** — load/pass memory at dispatch; complete `--answer` in `tools/governance/specs/workflow_run.script.ts` (M1 left `TODO M2`); emit `decision.*` events via `WorkflowRunWriter`
-- **Guide** — memory model + retention in [`WORKFLOW_GUIDE.md`](../../guides/WORKFLOW_GUIDE.md) (M2-GUIDE-01)
+- **Profile** — add `providers.{pr_open,pr_update,ci_status}` to [`assets/catalog/workflows/default.yaml`](../../catalog/workflows/default.yaml) and a **PR-prep** stage (`triggers.post`, e.g. `hk check --profile pr`); extend fixture profile for tests.
+- **L2 adapter** — `providers_runner.script.ts`: invoke provider `command:` strings only via existing `runCommand` / `command_invoker` (no direct `gh` in engine).
+- **L1 policy** — `ci_gate.script.ts`: pure CI-status gate + R2R remediation decisions (green / pending / failing; retry budget from profile).
+- **Orchestrator** — wire implement → PR-prep → optional `pr_open` → CI gate → terminal success only when bound `ci_status` exits 0; R2R loop on CI failure per `default_retry`.
+- **Guide** — add **Orchestrator PR/CI bindings** section to [`CI_GUIDE.md`](../../guides/CI_GUIDE.md).
+
+**Invariant:** orchestrator code MUST NOT call `gh`, `git push`, or CI vendor APIs directly — only profile `command:` bindings ([AWO-6](spec.md#requirement-awo-6-pr-and-ci-green-completion-contract-provider-agnostic)).
+
+---
 
 ## Project overrides (read before coding)
 
 - **Load skills:** `app-context`, `app-testing`, `mise-tasks`
 - **Bun runtime**; `bun test`, `bun run`. No Node/Jest/Vitest.
-- **TypeBox only** for validation (`Type.*` + `Value.Check`). **No Zod.**
-- **No `bun:sqlite`** — memory is JSON files per [`data-model.md`](./data-model.md) + [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md).
-- **Co-located specs** for every new file; **no mocking** — real file I/O with `mkdtemp` scratch dirs and fixture profiles under `tools/__tests__/fixtures/workflow/`.
-- **Naming**: `snake_case.script.ts` / `*.schema.ts`; ls-lint + Biome enforce.
-- **Logging**: `getLogger(['kb','tools','spec','workflow', …])`; never `console.*`.
-- Work lives in `tools/`, **not** `src/`. The renderer MUST NOT import the runtime.
+- **TypeBox only** (`Type.*` + `Value.Check`). **No Zod.**
+- **Co-located specs** for every new `.script.ts`; **no mocking** — stub providers via fixture shell scripts under `tools/__tests__/fixtures/workflow/` (e.g. `stub-ci-green.sh`, `stub-ci-fail-then-pass.sh`).
+- **Naming:** `snake_case.script.ts`; ls-lint + Biome enforce.
+- **Logging:** `getLogger(['kb','tools','spec','workflow', …])`; never `console.*`.
+- Work lives in `tools/`, **not** `src/`.
+
+---
 
 ## Non-negotiable architecture (review 002)
 
-1. **Four layers.** L1 intervention logic stays pure (no I/O). `memory.script.ts` is L3 file I/O; orchestrator applies it at dispatch/resume boundaries.
-2. **L1 MUST NOT** contain `mise`/`hk`/`bun`/`gh`/`speckit` identifiers in constants, defaults, or type names.
-3. **Reuse, don't fork.** Extend `WorkflowRunWriter` + existing `decision.*` union members; persist to paths in [`data-model.md`](./data-model.md).
-4. **Memory paths (normative):**
-   - Stage: `tmp/workflow-runs/<date>/<run_id>.memory.<stage>.json`
-   - Shared: `tmp/workflow-runs/<date>/<run_id>.shared.json`
-5. **Conflict policy** from profile `memory.conflict`: `prefer_latest | prompt_user | block`.
-6. **Engine tests** use fixture profiles + stub data — never the kb toolchain in L1 specs.
+1. **Providers are profile data.** `pr_open` / `pr_update` / `ci_status` live in YAML; engine reads strings and dispatches through L2 only.
+2. **L1 (`ci_gate.script.ts`) stays pure** — no spawn, no `gh`/`mise`/`hk` string literals.
+3. **Spawn only in L2** — `command_invoker.script.ts` / `providers_runner.script.ts`; ast-grep enforces this.
+4. **PR reference** — persist provider stdout / parsed PR id in run-shared memory (`<run_id>.shared.json`) per AWO-6 AC2.
+5. **Tests use fixture profiles** — never real `gh` or GitHub in unit specs.
 
-## Implementation tasks (Phase 5 — mark `[X]` in tasks.md when done)
+---
 
-### ENGINE (L1)
+## Implementation tasks (Phase 6 — mark `[X]` in tasks.md when done)
 
-- [X] **M2-ENGINE-01** `intervention.script.ts` — dedup unresolved questions against run-shared memory; batch one prompt set per pause; `decision.defaulted` recording helper. Co-located `intervention.script.spec.ts`. Wire into `machine.script.ts` / `orchestrator.script.ts` at `need_input` boundaries. (AWO-3.1–3.3)
+### PROFILE
 
-### PROFILE / memory (L3)
+- [X] **M3-PROFILE-01** Extend `default.yaml`: `providers.pr_open`, `providers.pr_update`, `providers.ci_status` (kb defaults: `gh pr create …`, `gh pr edit …`, `gh pr checks …` or `mise run` wrappers); add **pr-prep** stage after `implement` with `triggers.post`; update transitions. Add/update fixture profile (`tools/__tests__/fixtures/workflow/fixture-pr-ci.yaml` or extend `fixture-profile.yaml`) with stub `command:` bindings. (AWO-6.1, AWO-6.2)
 
-- [X] **M2-PROFILE-01** `memory.script.ts` — read/write stage + shared JSON; apply `memory.conflict`; honor `memory.retention` knobs. Co-located `memory.script.spec.ts` per conflict mode + retention. Integrate with orchestrator bootstrap and `workflow_run.script.ts` resume. (AWO-7.1–7.4)
+### ADAPTER
+
+- [X] **M3-ADAPTER-01** Implement `providers_runner.script.ts` (invoke provider commands; capture PR ref → shared memory) and `ci_gate.script.ts` (CI gate policy + R2R inputs). Wire orchestrator: PR-prep stage, CI gate before `terminal_success`, remediation loop with stubbed green/pending/failing/then-passing providers. Co-located `providers_runner.script.spec.ts` + `ci_gate.script.spec.ts`; extend `orchestrator.script.spec.ts` for implement→PR-prep path. (AWO-6.3, AWO-6.4)
 
 ### GUIDE
 
-- [X] **M2-GUIDE-01** [P] Add **Memory model + retention** section to [`WORKFLOW_GUIDE.md`](../../guides/WORKFLOW_GUIDE.md) (paths, conflict enum, retention split vs OBSERVABILITY). Optionally document `mise run spec workflow resume --answer` / `--approve` if still missing from M1. (AWO-7)
-
-### Resume completion (M1 debt — required in M2)
-
-- [X] **M2-RESUME-01** Replace `TODO M2` in `tools/governance/specs/workflow_run.script.ts` — implement `--answer <qid>=<value>`: hydrate snapshot, write shared memory, emit `decision.answered`, auto-exit `need_input`. Default/ambiguous `run_id` resolution per AWO-3 AC4. Co-located `workflow_run.script.spec.ts`. (AWO-3.4)
+- [X] **M3-GUIDE-01** [P] Add **Orchestrator PR/CI bindings** to [`CI_GUIDE.md`](../../guides/CI_GUIDE.md) (provider fields, pr-prep stage, CI gate, swapping providers via profile only).
 
 ### Closeout
 
-- [X] **M2-CLOSEOUT-01** all Verify commands green; Phase 5 tasks `[X]` in [`tasks.md`](./tasks.md)
+- [X] **M3-CLOSEOUT-01** All [Verify](#verify-mandatory--all-must-exit-0) commands exit 0; Phase 6 tasks `[X]` in [`tasks.md`](./tasks.md); handoff checkboxes above `[X]`.
 
-## Maintainer AC checklist (M2 slice)
+---
 
-Each row is verified by the named Evidence; check only when the test is green.
+## Maintainer AC checklist (M3 slice)
 
-| ID        | Done when                                                               | Evidence                                                                                  |
-| --------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| AWO-3 AC1 | inferred inputs auto-fill from shared memory / context (fixture replay) | `bun test --config /dev/null tools/governance/specs/workflow/intervention.script.spec.ts` |
-| AWO-3 AC2 | duplicate questions removed; one batched prompt per pause               | `bun test --config /dev/null tools/governance/specs/workflow/intervention.script.spec.ts` |
-| AWO-3 AC3 | defaults recorded in shared memory + `decision.defaulted` event         | `bun test --config /dev/null tools/governance/specs/workflow/memory.script.spec.ts`       |
-| AWO-3 AC4 | `--answer` hydrates, persists, auto-resumes; default/ambiguous `run_id` | `bun test --config /dev/null tools/governance/specs/workflow_run.script.spec.ts`          |
-| AWO-7 AC1 | stage memory loaded/created before dispatch                             | `bun test --config /dev/null tools/governance/specs/workflow/memory.script.spec.ts`       |
-| AWO-7 AC2 | decisions in `<run_id>.shared.json` + `decision.*` NDJSON               | `bun test --config /dev/null tools/governance/specs/workflow/memory.script.spec.ts`       |
-| AWO-7 AC3 | each `memory.conflict` enum handled deterministically                   | `bun test --config /dev/null tools/governance/specs/workflow/memory.script.spec.ts`       |
-| AWO-7 AC4 | retention honors tmp/durable knobs                                      | `bun test --config /dev/null tools/governance/specs/workflow/memory.script.spec.ts`       |
+Check each row only when its Evidence command exits 0 **and** the test assertions match the AC.
 
-> AWO-3 AC1 baseline threshold lives in `tools/metrics/baselines/workflow.json` (POLISH-02). M2 may seed a minimal fixture corpus; do not block M2 on full NFR harness.
+| ID        | Done when                                                                                                                      | Evidence                                                                                                                    |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| AWO-6 AC1 | After implement, orchestrator enters PR-prep; commands resolve via profile `command:` only (no direct provider APIs in engine) | `bun test --config /dev/null ./tools/governance/specs/workflow/orchestrator.script.spec.ts` **and** `bun run lint:ast-grep` |
+| AWO-6 AC2 | `pr_open` binding runs when enabled; PR ref in shared memory; disabled profile skips `pr_open`                                 | `bun test --config /dev/null ./tools/governance/specs/workflow/providers_runner.script.spec.ts`                             |
+| AWO-6 AC3 | `terminal_success` only when bound `ci_status` exit 0; pending/failing block success                                           | `bun test --config /dev/null ./tools/governance/specs/workflow/ci_gate.script.spec.ts`                                      |
+| AWO-6 AC4 | CI failure enters R2R remediation; failing-then-passing stub succeeds; escalation at retry threshold                           | `bun test --config /dev/null ./tools/governance/specs/workflow/ci_gate.script.spec.ts`                                      |
+
+> Create the Evidence spec files in M3-ADAPTER-01 before marking AC rows done. Use `./` prefix on single-file test paths (Bun requirement).
+
+---
 
 ## Pitfalls (prior slices — don't reintroduce)
 
-- **Toolchain leak into L1** — intervention logic stays string-literal-free for kb tools.
-- **Inlining memory I/O in `machine.script.ts`** — keep file I/O in `memory.script.ts`; machine receives plain values.
-- **Second writer** — extend `WorkflowRunWriter` only.
-- **Skipping `--answer`** — M1 stub must be completed in M2-RESUME-01 (AWO-3 AC4).
-- **Implementing M3/M4 on this branch** — out of scope.
+- **Inlining `gh pr create` in orchestrator** — profile binding + `providers_runner` only.
+- **CI gate in L1 with spawn** — policy pure; execution in L2.
+- **Skipping fixture stubs** — real GitHub must not run in `bun test`.
+- **Implementing M4 on this branch** — retrospective/sandbox is next slice.
 
-## Verify (claim done only when all exit 0)
+---
+
+## Verify (mandatory — all must exit 0)
+
+Run from repo root. **After each command, confirm exit code 0** (`echo $?`).
 
 ```sh
+# Layer A — workflow engine (directory filter; includes new specs when present)
 bun test --config /dev/null tools/governance/specs/workflow/
-bun test --config /dev/null tools/governance/specs/workflow_run.script.spec.ts
-bun test --config /dev/null tools/bin/spec.script.spec.ts
+
+# Layer A — parent-level CLI specs (./ prefix required for single files)
+bun test --config /dev/null ./tools/governance/specs/workflow_run.script.spec.ts
+
+# CLI routing (if spec.workflow / resume touched)
+bun test --config /dev/null ./tools/bin/spec.script.spec.ts
+
+# Static — no direct spawn outside L2; no provider API leaks
 bun run lint:ast-grep
+
+# Spec document gates
 mise run spec lint assets/specs/009-agentic-workflow-orchestrator
 mise run spec gate assets/specs/009-agentic-workflow-orchestrator
+
+# Repo quality (operator merge bar — run before commit)
+mise run app gates --quality
+mise run spec ready
+bash .agents/skills/app-quality-gate/scripts/gate.sh
+
+# Regression (optional locally if slow; required before merge)
+CI=true NODE_ENV=test mise run test e2e --regression
 ```
 
-Operator before merge: `/app-review-handoff` on this file.
+**Per-AC Evidence** (must also pass individually during development):
+
+```sh
+bun test --config /dev/null ./tools/governance/specs/workflow/orchestrator.script.spec.ts
+bun test --config /dev/null ./tools/governance/specs/workflow/providers_runner.script.spec.ts
+bun test --config /dev/null ./tools/governance/specs/workflow/ci_gate.script.spec.ts
+```
+
+Operator before merge: `/app-review-handoff` on this file with Evidence exit codes.
+
+---
 
 ## Out of scope (this handoff)
 
-- M3 (AWO-6 PR/CI), M4 (AWO-8/11 retrospective/sandbox)
-- `PROFILE-SDD-*`, `SMOKE-*`, full `workflow.json` NFR harness (POLISH-02)
+- M4 (AWO-8, AWO-11 retrospective + sandbox)
+- POLISH-02 NFR harness; `PROFILE-SDD-*`, `SMOKE-*`
 - `packages/workflow-*`, `src/` changes, `hk.pkl` / `mise.toml` beyond doc refs
-- Committing or opening a PR — only when the operator asks
 
-## Suggested commit (operator, after review)
+---
+
+## Commit (mandatory after Verify is green)
+
+Stage only M3 files. One commit on `feature/009-m3-pr-ci-completion`:
 
 ```sh
-git add tools/governance/specs/workflow/ tools/governance/specs/workflow_run.script.ts tools/governance/specs/workflow_run.script.spec.ts assets/guides/WORKFLOW_GUIDE.md assets/specs/009-agentic-workflow-orchestrator/
+git add \
+  tools/governance/specs/workflow/ \
+  tools/governance/specs/workflow_run.script.ts \
+  assets/catalog/workflows/default.yaml \
+  tools/__tests__/fixtures/workflow/ \
+  assets/guides/CI_GUIDE.md \
+  assets/specs/009-agentic-workflow-orchestrator/
 
 git commit -m "$(cat <<'EOF'
-feat(workflow): Add intervention and memory
+feat(workflow): Add R2R remediation
 
-Introduce intervention dedup, memory.script persistence, decision
-events, and complete spec workflow resume --answer (AWO-3, 7).
+Provider bindings, PR-prep stage, CI gate, and R2R remediation
+via profile command strings only (AWO-6).
 
 EOF
 )"
 ```
 
-## Post-commit (operator)
+Verify commit succeeded: `git log -1 --oneline`.
+
+---
+
+## Post-commit (mandatory after commit)
 
 ```sh
 git push -u origin HEAD
 
 gh pr create \
-  --title "feat(workflow): 009 M2 intervention and memory" \
+  --title "feat(workflow): Add R2R remediation" \
   --body "$(cat <<'EOF'
 ## Summary
-- Add `intervention.script.ts` for question dedup and decision defaults
-- Add `memory.script.ts` for stage/shared JSON persistence and conflict policy
-- Complete `spec workflow resume --answer` and wire `decision.*` telemetry
+- Add profile `providers` bindings and PR-prep stage to default workflow
+- Add providers runner + CI gate policy with R2R remediation loop
+- Document orchestrator PR/CI bindings in CI_GUIDE.md
 
 ## Test plan
 - [x] `bun test --config /dev/null tools/governance/specs/workflow/`
-- [x] `bun test --config /dev/null tools/governance/specs/workflow_run.script.spec.ts`
+- [x] `bun test --config /dev/null ./tools/governance/specs/workflow/ci_gate.script.spec.ts`
+- [x] `bun test --config /dev/null ./tools/governance/specs/workflow/providers_runner.script.spec.ts`
+- [x] `bun run lint:ast-grep`
 - [x] `mise run spec gate assets/specs/009-agentic-workflow-orchestrator`
 - [x] `/app-review-handoff` on handoff.md
 
@@ -153,10 +221,13 @@ EOF
 )"
 ```
 
-## Roadmap (not in scope — promote to handoff.md after M2 merges)
+If `gh pr create` fails because a PR already exists: `gh pr view --web`.
+
+---
+
+## Roadmap (not in scope — promote to handoff.md after M3 merges)
 
 | Slice      | Phase | Requirements                                        | PR  |
 | ---------- | ----- | --------------------------------------------------- | --- |
-| **M3**     | 6     | AWO-6 — PR/CI completion (Post-MVP)                 | 4   |
 | **M4**     | 7     | AWO-8, AWO-11 — retrospective + sandbox enforcement | 5+  |
 | **Polish** | 8     | AWO-12.3 guide crossref; NFR baselines + harness    | —   |
