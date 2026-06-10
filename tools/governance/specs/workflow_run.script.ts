@@ -7,7 +7,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { resolveActiveFeatureDir } from './resolve_active_feature_dir.script.ts'
 import { parseHandoffAcTable } from './workflow/handoff_generate.script.ts'
-import { workflowMachine } from './workflow/machine.ts'
+import { workflowMachine } from './workflow/machine.script.ts'
 import { detectPhase, scanFeatureDir } from './workflow/orchestrated_handoff.script.ts'
 import { hydrateMachineActor } from './workflow/snapshot.script.ts'
 import {
@@ -49,13 +49,37 @@ export function parseWorkflowArgs(argv: string[]) {
         args.lint = true
         break
       case '--answer':
-        args.answer = argv[++i] ?? ''
+        {
+          const val = argv[i + 1]
+          if (val === undefined || val.startsWith('-')) {
+            console.error('spec workflow: --answer requires a value')
+            process.exit(2)
+          }
+          i += 1
+          args.answer = val
+        }
         break
       case '--approve':
-        args.approve = argv[++i] ?? ''
+        {
+          const val = argv[i + 1]
+          if (val === undefined || val.startsWith('-')) {
+            console.error('spec workflow: --approve requires a value')
+            process.exit(2)
+          }
+          i += 1
+          args.approve = val
+        }
         break
       case '--run-id':
-        args.runId = argv[++i] ?? ''
+        {
+          const val = argv[i + 1]
+          if (val === undefined || val.startsWith('-')) {
+            console.error('spec workflow: --run-id requires a value')
+            process.exit(2)
+          }
+          i += 1
+          args.runId = val
+        }
         break
       case '--help':
       case '-h':
@@ -163,12 +187,12 @@ function run(): void {
     const snap = hydrated.actor.getSnapshot()
     if (snap.matches('need_input') && args.approve) {
       hydrated.actor.send({ type: 'STAGE.APPROVED' })
-      console.error(`spec workflow resume: approved stage ${snap.context.current_stage}`)
+      console.log(`spec workflow resume: approved stage ${snap.context.current_stage}`)
     }
 
     // TODO M2: --answer processing with memory
 
-    console.error(`spec workflow resume: run ${runId} hydrated (state: ${snap.value})`)
+    console.log(`spec workflow resume: run ${runId} hydrated (state: ${snap.value})`)
     hydrated.actor.stop()
     process.exit(0)
   }

@@ -25,8 +25,8 @@
     "**/.superpowers/**",
     ".agents/skills/**",
     "src/shell/app/db/import.service.spec.ts",
-    "tools/governance/specs/workflow/machine.ts",
-    "tools/governance/specs/workflow/machine.spec.ts",
+    "tools/governance/specs/workflow/machine.script.ts",
+    "tools/governance/specs/workflow/machine.script.spec.ts",
     "tools/governance/specs/workflow/evidence.script.spec.ts",
     "tools/governance/specs/workflow/orchestrator.script.spec.ts",
     "tools/__tests__/fixtures/workflow/fixture-profile.yaml"

@@ -168,8 +168,14 @@ export const workflowMachine = setup({
       retry_cause: null
     })),
     setError: assign(({ event }) => {
-      if (event.type !== 'STAGE.COMPLETE') return {}
-      return { error_message: event.envelope.diagnostics?.[0]?.message ?? 'stage blocked' }
+      if (event.type === 'STAGE.COMPLETE') {
+        return { error_message: event.envelope.diagnostics?.[0]?.message ?? 'stage blocked' }
+      }
+      if (event.type === 'EVIDENCE.CHECKED') {
+        const firstFail = event.results.find(r => !r.passed)
+        return { error_message: firstFail?.diagnostic ?? 'evidence check failed' }
+      }
+      return {}
     }),
     clearEnvelope: assign(() => ({
       envelope: null,
@@ -200,9 +206,7 @@ export const workflowMachine = setup({
     running: {
       on: {
         'STAGE.COMPLETE': [
-          // biome-ignore lint/security/noSecrets: guard name false positive
           { target: 'need_input', guard: 'isDoneAndHumanGated', actions: 'assignEnvelope' },
-          // biome-ignore lint/security/noSecrets: guard name false positive
           { target: 'evidence_pending', guard: 'isDoneAndAutoAdvance', actions: 'assignEnvelope' },
           { target: 'need_input', guard: 'isNeedInput', actions: 'assignEnvelope' },
           { target: 'blocked', guard: 'isBlocked', actions: ['assignEnvelope', 'setError'] },

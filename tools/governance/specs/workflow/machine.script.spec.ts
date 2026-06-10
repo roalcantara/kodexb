@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'bun:test'
 import { createActor } from 'xstate'
-import { type OrchestratorContext, workflowMachine } from './machine.ts'
+import { type OrchestratorContext, workflowMachine } from './machine.script.ts'
 import { ENVELOPE_SCHEMA_VERSION, type Envelope } from './schemas/envelope.schema.ts'
 
 function makeEnvelope(overrides?: Partial<Envelope>): Envelope {
@@ -185,6 +185,7 @@ describe('workflow orchestrator machine', () => {
         results: [{ kind: 'marker', ref: 'checklists/missing.md', passed: false, diagnostic: 'marker not found' }]
       })
       expect(actor.getSnapshot().value).toBe('blocked')
+      expect(actor.getSnapshot().context.error_message).toBe('marker not found')
       actor.stop()
     })
   })

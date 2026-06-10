@@ -18,7 +18,7 @@ export function persistMachineSnapshot(
   shared_memory?: Record<string, unknown>
 ): string {
   const snapshot = actor.getPersistedSnapshot()
-  const state: PersistedRunState = {
+  const state: PersistedRunStateType = {
     schema_version: STATE_SCHEMA_VERSION,
     run_id: runId,
     profile_name,

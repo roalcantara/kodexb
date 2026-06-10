@@ -4,9 +4,9 @@ import path from 'node:path'
 import { Value } from '@sinclair/typebox/value'
 import { createActor } from 'xstate'
 import { evaluateEvidence } from './evidence.script.ts'
-import { workflowMachine } from './machine.ts'
+import { workflowMachine } from './machine.script.ts'
 import { ensureRunDir, type PersistenceConfig } from './persistence.script.ts'
-import { type Envelope, EnvelopeSchema } from './schemas/envelope.schema.ts'
+import { ENVELOPE_SCHEMA_VERSION, type Envelope, EnvelopeSchema } from './schemas/envelope.schema.ts'
 import type { Profile } from './schemas/profile.schema.ts'
 import { persistMachineSnapshot } from './snapshot.script.ts'
 import { invokeWithTelemetry } from './workflow_invoker.script.ts'
@@ -32,6 +32,7 @@ export class Orchestrator {
   readonly writer: WorkflowRunWriter
   readonly runDir: string
   readonly allowedPrefixes: string[]
+  readonly startedAt: string
 
   actor: ReturnType<typeof createActor<typeof workflowMachine>> | null = null
   private shutdownRequested = false
@@ -42,12 +43,9 @@ export class Orchestrator {
     this.allowedPrefixes = config.profile.execution_policy.allowed_prefixes
     this.dateStr = config.dateStr ?? new Date().toISOString().slice(0, 10)
     this.runId = config.runId ?? generateRunId(slugFromFeatureDir(config.featureDir))
+    this.startedAt = new Date().toISOString()
     this.writer = new WorkflowRunWriter(this.runId, config.featureDir, config.persistenceConfig.rootDir)
     this.runDir = ensureRunDir(config.persistenceConfig, this.dateStr)
-  }
-
-  startedAt(): string {
-    return new Date().toISOString()
   }
 
   stageOrder(): string[] {
@@ -81,7 +79,7 @@ export class Orchestrator {
         role: 'trigger.pre',
         stage,
         exit_code: result.exitCode,
-        status: result.rejected ? 'fail' : 'fail',
+        status: result.rejected ? 'fail' : result.exitCode === 0 ? 'ok' : 'fail',
         duration_ms: result.durationMs
       })
     }
@@ -127,7 +125,7 @@ export class Orchestrator {
       this.dateStr,
       this.profile.name,
       this.profile.schema_version,
-      this.startedAt(),
+      this.startedAt,
       this.actor.getSnapshot().context.shared_memory
     )
   }
@@ -169,7 +167,7 @@ export class Orchestrator {
         this.actor.send({
           type: 'STAGE.COMPLETE',
           envelope: {
-            schema_version: '009.1.0' as const,
+            schema_version: ENVELOPE_SCHEMA_VERSION,
             stage: stageId,
             status: 'BLOCKED',
             artifacts_created: [],

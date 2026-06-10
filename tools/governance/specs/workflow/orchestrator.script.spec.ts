@@ -3,7 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'no
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { createActor } from 'xstate'
-import { workflowMachine } from './machine.ts'
+import { workflowMachine } from './machine.script.ts'
 import { Orchestrator, type OrchestratorConfig } from './orchestrator.script.ts'
 import { loadProfile } from './profile_loader.script.ts'
 import { hydrateMachineActor, persistMachineSnapshot } from './snapshot.script.ts'
