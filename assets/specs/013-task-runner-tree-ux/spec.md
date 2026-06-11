@@ -2,7 +2,7 @@
 
 # Task runner tree UX — `app gates` spike
 
-**Feature Branch**: `feature/012-task-runner-tree-ux`
+**Feature Branch**: `feature/013-task-runner-tree-ux`
 **Release**: v0.x
 **Status**: Draft (spec only — no `plan.md` / `tasks.md` until UX is validated)
 **Predecessor**: [`011-mise-sdd-cli`](../011-mise-sdd-cli/) (flat `task_runner`, gum spin on `command[]` leaves)

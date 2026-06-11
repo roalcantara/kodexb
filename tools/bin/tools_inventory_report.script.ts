@@ -303,5 +303,5 @@ for (const row of rows) {
   outRows.push(cells)
 }
 
-await Bun.write(OUT, [csvLine(outHeader), ...outRows.map(csvLine)].join('\n') + '\n')
+await Bun.write(OUT, `${[csvLine(outHeader), ...outRows.map(csvLine)].join('\n')}\n`)
 console.log(`wrote ${OUT}: ${outRows.length} rows, ${outHeader.length} columns`)

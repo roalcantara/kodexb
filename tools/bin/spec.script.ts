@@ -183,6 +183,8 @@ export function planSpec(
       if (isTrue(env, 'usage_json')) argv.push('--json')
       return { kind: 'spawn', argv: argv.filter(Boolean) }
     }
+    case 'kit':
+      return { kind: 'spawn', argv: ['bun', 'tools/bin/spec_kit.script.ts', ...rest] }
     default:
       return { kind: 'error', message: `spec: unknown action ${cmd}`, exitCode: 2 }
   }

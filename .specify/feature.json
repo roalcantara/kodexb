@@ -1,1 +1,3 @@
-{ "feature_directory": "assets/specs/011-mise-sdd-cli" }
+{
+  "feature_directory": "assets/specs/012-spec-kit-orchestrator-loop"
+}

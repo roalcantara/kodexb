@@ -1253,6 +1253,34 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       flag "--head <sha>" default="HEAD" help="Git head for classify/prepare"
       flag "--focus <kind>" help="implement-src|gherkin-bdd|governance-tools|docs-only|mixed"
     }
+    cmd "kit" {
+      flag "--help" help="Show kit help"
+      cmd "help" {}
+      cmd "next" {
+        arg "[feature]" help="Feature dir (omitted: active feature)"
+        flag "--dry-run" help="Print resolved verb, do not execute"
+        flag "--approve" help="Clear pending human gate and continue"
+        flag "--loop" help="Repeat until terminal (Slice B)"
+      }
+      cmd "specify" { arg "[feature]" help="Feature dir" }
+      cmd "clarify" { arg "[feature]" help="Feature dir" }
+      cmd "checklist" { arg "[feature]" help="Feature dir" }
+      cmd "plan" { arg "[feature]" help="Feature dir" }
+      cmd "analyze" {
+        flag "--pass <pass>" help="plan|tasks" {
+          choices "plan" "tasks"
+        }
+        arg "[feature]" help="Feature dir"
+      }
+      cmd "tasks" { arg "[feature]" help="Feature dir" }
+      cmd "handoff-generate" { arg "[feature]" help="Feature dir" }
+      cmd "implement" { arg "[feature]" help="Feature dir" }
+      cmd "pr-prep" { arg "[feature]" help="Feature dir" }
+      cmd "review" { arg "[feature]" help="Feature dir" }
+      cmd "gate" { arg "[feature]" help="Feature dir" }
+      cmd "pr-open" { arg "[feature]" help="Feature dir" }
+      cmd "pr-check" { arg "[feature]" help="Feature dir" }
+    }
   ''', run = "bun tools/bin/spec.script.ts" }
 "catalog" = { description = "Shipped-feature registry (catalog.yaml metadata)", usage = '''
     cmd "list" {
