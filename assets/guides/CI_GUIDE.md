@@ -374,14 +374,12 @@ A nightly smoke workflow (`.github/workflows/smoke.yml`) runs on a schedule
 2. `mise run spec gate` — active SDD feature inferred from `.specify/feature.json`
    (same resolution as `mise run spec ready`).
 3. `mise run catalog validate` — validates catalog entries, schema, tags.
-4. `mise run spec workflow run tools/__tests__/fixtures/workflow/smoke-feature --dry-run` —
-   orchestrator phase-detect smoke against a committed fixture dir.
-   Exit 0 and prints the next canonical step (e.g. `speckit.implement`); this is
-   NOT full profile execution — the fixture has no real implementation.
+4. `mise run spec test smoke` — SKO-7 orchestrator loop on the committed fixture
+   `tools/__tests__/fixtures/workflow/smoke-feature/` (gate pre-seed + `KB_KIT_SMOKE`
+   tail stubs). Exit 0 through terminal `pr-check`.
 
-The orchestrator step is smoke-only — it confirms the workflow runner
-pipeline resolves and suggests the correct next phase. Full profile execution
-is deferred to orchestrator dogfooding after `011-mise-sdd-cli`.
+Operator dogfood (human gates, recoverable pause) is documented in
+[`assets/specs/012-spec-kit-orchestrator-loop/dogfood-smoke-feature.md`](../specs/012-spec-kit-orchestrator-loop/dogfood-smoke-feature.md).
 
 See [`WORKFLOW_GUIDE.md`](WORKFLOW_GUIDE.md) § Package layout and
 `tools/__tests__/fixtures/workflow/smoke-feature/` for the fixture definition.

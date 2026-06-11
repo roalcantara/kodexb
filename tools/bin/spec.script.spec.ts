@@ -69,11 +69,18 @@ describe('planSpec — every subcommand routes', () => {
     expect(argv).toContain('--dry-run')
     expect(argv).toContain('--verify')
   })
-  it('workflow run (default) targets orchestrated-handoff with feature', () => {
+  it('workflow run (default) delegates to spec_kit.script.ts next', () => {
     const argv = spawnArgv(plan('workflow', ['run'], { usage_feature: FEAT, usage_dry_run: 'true' }))
-    expect(argv).toContain('orchestrated-handoff')
-    expect(argv).toContain('--feature')
+    expect(argv.join(' ')).toContain('spec_kit.script.ts')
+    expect(argv).toContain('next')
+    expect(argv).toContain(FEAT)
     expect(argv).toContain('--dry-run')
+  })
+
+  it('workflow run non-dry includes --loop', () => {
+    const argv = spawnArgv(plan('workflow', ['run'], { usage_feature: FEAT }))
+    expect(argv.join(' ')).toContain('spec_kit.script.ts')
+    expect(argv).toContain('--loop')
   })
   it('workflow resume uses provided runId', () => {
     const testEnv: Record<string, string> = {}

@@ -1,5 +1,11 @@
 #!/usr/bin/env bun
+import { isKitSmokeMode } from '../kit_smoke.script.ts'
+
 export function run(_args: string[]): number {
+  if (isKitSmokeMode()) {
+    process.stdout.write('kit gate: smoke mode — skipping spec gate + gate.sh\n')
+    return 0
+  }
   process.stdout.write('kit gate: running mise run spec gate + bash gate.sh\n')
 
   const specGateResult = Bun.spawnSync(['mise', 'run', 'spec', 'gate', process.env.usage_feature ?? ''], {

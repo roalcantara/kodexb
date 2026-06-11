@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test'
+import { SMOKE_FIXTURE } from './smoke_harness.script.ts'
 import { parseScopeFeature } from './spec_test.script.ts'
 
 describe('spec_test.script', () => {
@@ -28,5 +29,12 @@ describe('parseScopeFeature', () => {
 
   it('does not treat a feature path as a scope', () => {
     expect(parseScopeFeature(['features/009-demo']).scope).toBe('')
+  })
+})
+
+describe('spec test smoke scope', () => {
+  it('uses committed smoke fixture under tools/', () => {
+    expect(SMOKE_FIXTURE).toBe('tools/__tests__/fixtures/workflow/smoke-feature')
+    expect(SMOKE_FIXTURE.startsWith('tools/')).toBe(true)
   })
 })
