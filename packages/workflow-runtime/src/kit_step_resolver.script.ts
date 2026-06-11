@@ -1,6 +1,7 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { type FileSet, scanFeatureDir } from './orchestrated_handoff.script.ts'
+import { readEnvelopeFile } from './orchestrator_resume.script.ts'
 
 export const terminalStageSentinel = '__terminal__' as const
 
@@ -56,7 +57,21 @@ export const ALL_CANONICAL_STAGES = CANONICAL_SEQUENCE.map(r => r.stage)
 
 const GATE_STAGES = new Set<KitStage>(['review-spec', 'review-plan', 'review-tasks', 'review-handoff'])
 
-export function resolveNext(featureDir: string, _runId?: string): ResolvedStep {
+function getEnvelopePath(runId: string, stage: string): string | null {
+  const root = 'tmp/workflow-runs'
+  if (!existsSync(root)) return null
+  try {
+    for (const dateDir of readdirSync(root)) {
+      const p = path.join(root, dateDir, runId, `${runId}.envelope.${stage}.json`)
+      if (existsSync(p)) return p
+    }
+  } catch {
+    // ignore
+  }
+  return null
+}
+
+export function resolveNext(featureDir: string, runId?: string): ResolvedStep {
   const files = scanFeatureDir(featureDir)
 
   for (const row of CANONICAL_SEQUENCE) {
@@ -67,7 +82,7 @@ export function resolveNext(featureDir: string, _runId?: string): ResolvedStep {
       continue
     }
 
-    const satisfied = stageSatisfied(row.stage, files, featureDir)
+    const satisfied = stageSatisfied(row.stage, files, featureDir, runId)
     if (!satisfied) {
       const hint = focusHintFor(row.stage)
       return { stage: row.stage, kind: row.kind, focusHint: hint }
@@ -77,7 +92,8 @@ export function resolveNext(featureDir: string, _runId?: string): ResolvedStep {
   return { stage: terminalStageSentinel, kind: 'terminal' }
 }
 
-function stageSatisfied(stage: KitStage, files: FileSet, featureDir: string): boolean {
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing complexity, refactor deferred
+function stageSatisfied(stage: KitStage, files: FileSet, featureDir: string, runId?: string): boolean {
   // biome-ignore lint/nursery/noUnnecessaryConditions: exhaustive switch over KitStage union — default is a safety net
   switch (stage) {
     case 'specify':
@@ -94,10 +110,47 @@ function stageSatisfied(stage: KitStage, files: FileSet, featureDir: string): bo
       return files.tasks && files.handoff
     case 'analyze-tasks':
       return files.analyzeTasksChecklist
-    case 'handoff-generate':
-      return files.handoffEmittedGherkin
-    case 'implement':
-      return files.implementComplete
+    case 'handoff-generate': {
+      if (files.handoffEmittedGherkin) return true
+      if (!runId) return false
+      const envPath = getEnvelopePath(runId, stage)
+      if (!envPath) return false
+      const envelope = readEnvelopeFile(envPath)
+      return envelope?.status === 'DONE'
+    }
+    case 'implement': {
+      if (!files.implementComplete) return false
+      if (!runId) return true
+      const reviewEnvPath = getEnvelopePath(runId, 'review')
+      if (reviewEnvPath) {
+        const reviewEnv = readEnvelopeFile(reviewEnvPath)
+        if (reviewEnv && reviewEnv.status === 'RETRYABLE_FAILURE') {
+          const implementEnvPath = getEnvelopePath(runId, 'implement')
+          if (!implementEnvPath) return false
+          try {
+            const reviewTime = statSync(reviewEnvPath).mtimeMs
+            const implementTime = statSync(implementEnvPath).mtimeMs
+            if (implementTime <= reviewTime) {
+              return false
+            }
+          } catch {
+            return false
+          }
+        }
+      }
+      return true
+    }
+    case 'pr-prep':
+    case 'review':
+    case 'gate':
+    case 'pr-open':
+    case 'pr-check': {
+      if (!runId) return false
+      const envPath = getEnvelopePath(runId, stage)
+      if (!envPath) return false
+      const envelope = readEnvelopeFile(envPath)
+      return envelope?.status === 'DONE'
+    }
     default:
       return false
   }

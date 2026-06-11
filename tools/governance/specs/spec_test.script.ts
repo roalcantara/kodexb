@@ -1,11 +1,9 @@
 #!/usr/bin/env bun
 import { resolveActiveFeatureDir } from './resolve_active_feature_dir.script.ts'
 import { resolveCatalogKey } from './resolve_catalog_key.script.ts'
+import { prepareSmokeFixture, SMOKE_FIXTURE, smokeChildEnv, teardownSmokeFixture } from './smoke_harness.script.ts'
 
 const SPECS = 'tools/governance/specs'
-
-// Smoke scope always uses the committed fixture feature dir — never a live assets/specs/NNN-*
-const SMOKE_FIXTURE = 'tools/__tests__/fixtures/workflow/smoke-feature'
 
 const SCOPES = ['unit', 'e2e', 'smoke', 'regression'] as const
 
@@ -74,10 +72,16 @@ function main(): void {
       break
     }
     case 'smoke': {
-      const r = Bun.spawnSync(['mise', 'run', 'spec', 'workflow', 'run', SMOKE_FIXTURE], {
-        stdio: ['inherit', 'inherit', 'inherit']
-      })
-      process.exit(r.exitCode ?? 0)
+      const state = prepareSmokeFixture(SMOKE_FIXTURE)
+      try {
+        const r = Bun.spawnSync(['mise', 'run', 'spec', 'workflow', 'run', SMOKE_FIXTURE], {
+          env: smokeChildEnv(),
+          stdio: ['inherit', 'inherit', 'inherit']
+        })
+        process.exit(r.exitCode ?? 1)
+      } finally {
+        teardownSmokeFixture(state)
+      }
       break
     }
     case 'regression': {

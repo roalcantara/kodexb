@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { writeEnvelope } from '../../packages/workflow-runtime/src/kit_envelope.script.ts'
 import {
@@ -113,7 +113,14 @@ function runVerbHandler(verb: string, featureDir: string, _env: Env, runId: stri
       exitCode = shellRun(['bun', 'packages/workflow-runtime/src/kit_verbs/gate.script.ts'])
       break
     case 'pr-open':
-      exitCode = shellRun(['bun', 'packages/workflow-runtime/src/kit_verbs/pr_open.script.ts'])
+      exitCode = shellRun([
+        'bun',
+        'packages/workflow-runtime/src/kit_verbs/pr_open.script.ts',
+        '--run-id',
+        runId,
+        '--feature',
+        featureDir
+      ])
       break
     case 'pr-check':
       exitCode = shellRun(['bun', 'packages/workflow-runtime/src/kit_verbs/pr_check.script.ts'])
@@ -159,15 +166,15 @@ function hasCliFlag(name: string): boolean {
   return process.argv.includes(`--${name}`) || process.argv.includes(`-${name[0]}`)
 }
 
-function runNext(featureDir: string, env: Env): number {
+function runNext(featureDir: string, env: Env, runId?: string): number {
   const dryRun = isTrue(env, 'usage_dry_run') || hasCliFlag('dry-run')
   const approveFlag = env.usage_approve || hasCliFlag('approve') || ''
   const jsonOutput = isTrue(env, 'usage_json') || hasCliFlag('json')
   const rawOutput = isTrue(env, 'usage_raw') || hasCliFlag('raw')
   const featureSlug = path.basename(featureDir).replace(/^\d+-/, '')
-  const runId = generateRunId(featureSlug)
+  const activeRunId = runId ?? generateRunId(featureSlug)
 
-  const step = resolveNext(featureDir, runId)
+  const step = resolveNext(featureDir, activeRunId)
 
   if (dryRun) {
     printResolved(step, {
@@ -180,39 +187,39 @@ function runNext(featureDir: string, env: Env): number {
 
   if (step.stage === terminalStageSentinel) {
     if (jsonOutput) {
-      process.stdout.write(`${JSON.stringify({ stage: terminalStageSentinel, runId })}\n`)
+      process.stdout.write(`${JSON.stringify({ stage: terminalStageSentinel, runId: activeRunId })}\n`)
     } else {
-      process.stdout.write(`runId: ${runId}    all stages complete — ready for manual testing\n`)
+      process.stdout.write(`runId: ${activeRunId}    all stages complete — ready for manual testing\n`)
     }
     return 0
   }
 
   if (isGateStage(step.stage)) {
     if (approveFlag) {
-      clearGate(featureDir, runId, step.stage)
-      const next = resolveNext(featureDir, runId)
+      clearGate(featureDir, activeRunId, step.stage)
+      const next = resolveNext(featureDir, activeRunId)
       if (isGateStage(next.stage)) {
         printGateResumeHint(next.stage)
         return 1
       }
       if (next.stage === terminalStageSentinel) {
-        process.stdout.write(`runId: ${runId}    all stages complete — ready for manual testing\n`)
+        process.stdout.write(`runId: ${activeRunId}    all stages complete — ready for manual testing\n`)
         return 0
       }
       const nextVerb = stageToVerb(next.stage)
-      const pf = preflightCheck(nextVerb, featureDir, runId, { approve: false })
+      const pf = preflightCheck(nextVerb, featureDir, activeRunId, { approve: false })
       if (!pf.allowed) {
         process.stderr.write(`kit next: blocked — ${pf.reason}\n`)
         return 1
       }
-      return runVerbHandler(nextVerb, featureDir, env, runId)
+      return runVerbHandler(nextVerb, featureDir, env, activeRunId)
     }
     printGateResumeHint(step.stage)
     return 1
   }
 
   const verb = stageToVerb(step.stage)
-  const preflight = preflightCheck(verb, featureDir, runId, { approve: Boolean(approveFlag) })
+  const preflight = preflightCheck(verb, featureDir, activeRunId, { approve: Boolean(approveFlag) })
   if (!preflight.allowed) {
     if (jsonOutput) {
       process.stdout.write(`${JSON.stringify({ blocked: true, stage: step.stage, reason: preflight.reason })}\n`)
@@ -223,7 +230,53 @@ function runNext(featureDir: string, env: Env): number {
     return 1
   }
 
-  return runVerbHandler(verb, featureDir, env, runId)
+  return runVerbHandler(verb, featureDir, env, activeRunId)
+}
+
+function runLoop(featureDir: string, env: Env): number {
+  const featureSlug = path.basename(featureDir).replace(/^\d+-/, '')
+  const runId = generateRunId(featureSlug)
+  const jsonOutput = isTrue(env, 'usage_json') || hasCliFlag('json')
+  let iteration = 0
+
+  for (;;) {
+    iteration += 1
+    const step = resolveNext(featureDir, runId)
+
+    if (jsonOutput) {
+      process.stdout.write(JSON.stringify({ type: 'stage.entered', runId, stage: step.stage, iteration }) + '\n')
+    } else {
+      process.stdout.write(`${runId} [${step.stage}] `)
+    }
+
+    const exitCode = runNext(featureDir, env, runId)
+
+    if (exitCode !== 0) {
+      return exitCode
+    }
+
+    if (step.stage === terminalStageSentinel) {
+      if (jsonOutput) {
+        process.stdout.write(JSON.stringify({ stage: terminalStageSentinel, runId }) + '\n')
+        return 0
+      }
+      process.stdout.write('\n')
+      const today = new Date().toISOString().slice(0, 10)
+      const prRefPath = path.resolve('tmp/workflow-runs', today, runId, 'pr_ref')
+      if (existsSync(prRefPath)) {
+        const prUrl = readFileSync(prRefPath, 'utf-8').trim()
+        process.stdout.write(`runId: ${runId}    PR: ${prUrl}    all stages complete — ready for manual testing\n`)
+      } else {
+        process.stdout.write(`runId: ${runId}    all stages complete — ready for manual testing\n`)
+      }
+      return 0
+    }
+
+    if (iteration > 50) {
+      process.stderr.write('kit loop: max iterations reached\n')
+      return 1
+    }
+  }
 }
 
 function main(): void {
@@ -250,6 +303,10 @@ function main(): void {
   }
 
   if (verb === 'next') {
+    const loopFlag = isTrue(env, 'usage_loop') || hasCliFlag('loop')
+    if (loopFlag) {
+      process.exit(runLoop(resolved.featureDir, env))
+    }
     process.exit(runNext(resolved.featureDir, env))
     return
   }

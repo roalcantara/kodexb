@@ -230,11 +230,15 @@ function planWorkflow(rest: string[], env: Env, deps: { activeRun?: () => string
   if (sub === 'bench') {
     return { kind: 'spawn', argv: ['bun', 'tools/metrics/harnesses/perf/perf.script.ts', 'workflow-observability'] }
   }
-  // `run` (default): positional [feature], no --feat/--feature.
+  // `run` (default): delegates to spec kit next
   const feature = featureFrom(env, sub === 'run' ? rest.slice(1) : rest)
-  const argv = ['bun', `${SPECS}/workflow_run.script.ts`, 'orchestrated-handoff']
-  if (feature) argv.push('--feature', feature)
-  if (isTrue(env, 'usage_dry_run')) argv.push('--dry-run')
+  const argv = ['bun', 'tools/bin/spec_kit.script.ts', 'next']
+  if (feature) argv.push(feature)
+  if (isTrue(env, 'usage_dry_run')) {
+    argv.push('--dry-run')
+    return { kind: 'spawn', argv }
+  }
+  argv.push('--loop')
   return { kind: 'spawn', argv }
 }
 

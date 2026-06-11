@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from 'bun:test'
-import { rmSync } from 'node:fs'
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import path from 'node:path'
 import { clearGate, isGateStage } from './kit_human_gate.script.ts'
 import {
   ALL_CANONICAL_STAGES,
@@ -66,5 +67,94 @@ describe('kit_step_resolver', () => {
     expect(ALL_CANONICAL_STAGES).toContain('review-plan')
     expect(ALL_CANONICAL_STAGES).toContain('clarify')
     expect(ALL_CANONICAL_STAGES).toContain('checklist')
+  })
+})
+
+describe('R2R — review RETRYABLE_FAILURE rewind', () => {
+  const runId = 'r2r-test-run'
+  const doneFile = `${FIXTURE}/checklists/implement-done.md`
+  const reqFile = `${FIXTURE}/checklists/requirements.md`
+
+  afterEach(() => {
+    rmSync('tmp/workflow-runs/r2r-test-run', { recursive: true, force: true })
+    try {
+      rmSync(doneFile)
+    } catch {
+      /* ok */
+    }
+    try {
+      rmSync(reqFile)
+    } catch {
+      /* ok */
+    }
+    cleanGates()
+  })
+
+  it('rewinds to implement when review envelope indicates RETRYABLE_FAILURE', () => {
+    const today = new Date().toISOString().slice(0, 10)
+    const runDir = path.join('tmp/workflow-runs', today, runId)
+    mkdirSync(runDir, { recursive: true })
+
+    // Pre-clear all gates and satisfy prerequisite stages
+    writeFileSync(doneFile, 'implement-done')
+    writeFileSync(reqFile, 'checklist requirements satisfied')
+    for (const gate of ['review-spec', 'review-plan', 'review-tasks', 'review-handoff'] as const) {
+      clearGate(FIXTURE, runId, gate)
+    }
+
+    // handoff-generate needs a DONE envelope to proceed past it
+    writeFileSync(
+      path.join(runDir, `${runId}.envelope.handoff-generate.json`),
+      JSON.stringify({
+        schema_version: '009.1.0',
+        stage: 'handoff-generate',
+        status: 'DONE',
+        artifacts_created: [],
+        evidence: [],
+        diagnostics: [],
+        retry_count: 0,
+        elapsed_ms: 10
+      })
+    )
+
+    // implement was previously DONE
+    writeFileSync(
+      path.join(runDir, `${runId}.envelope.implement.json`),
+      JSON.stringify({
+        schema_version: '009.1.0',
+        stage: 'implement',
+        status: 'DONE',
+        artifacts_created: [],
+        evidence: [],
+        diagnostics: [],
+        retry_count: 0,
+        elapsed_ms: 10
+      })
+    )
+    writeFileSync(
+      path.join(runDir, `${runId}.envelope.review.json`),
+      JSON.stringify({
+        schema_version: '009.1.0',
+        stage: 'review',
+        status: 'RETRYABLE_FAILURE',
+        artifacts_created: [],
+        evidence: [],
+        diagnostics: [{ code: 'REVIEW_FIX_REQUIRED', message: 'fix needed', severity: 'error' }],
+        retry_count: 1,
+        elapsed_ms: 100
+      })
+    )
+
+    const step = resolveNext(FIXTURE, runId)
+    expect(step.stage).toBe('implement')
+    expect(step.kind).toBe('LLM')
+  })
+
+  it('resolves terminal when all stages satisfied', () => {
+    for (const gate of ['review-spec', 'review-plan', 'review-tasks', 'review-handoff'] as const) {
+      clearGate(FIXTURE, 'test-run', gate)
+    }
+    const step = resolveNext(FIXTURE, 'test-run')
+    expect(step.kind).not.toBe('gate')
   })
 })

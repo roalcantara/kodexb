@@ -11,7 +11,11 @@ const DETECT_PHASE_ORDER = [
   'analyze-tasks',
   'handoff-generate',
   'implement',
-  'review'
+  'pr-prep',
+  'review',
+  'gate',
+  'pr-open',
+  'pr-check'
 ]
 
 describe('Layer-B conformance: default.yaml matches detectPhase() order (AWO-12.1)', () => {

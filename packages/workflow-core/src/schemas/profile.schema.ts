@@ -53,6 +53,7 @@ export const SandboxDescriptor = Type.Object({
 export const StageDefinition = Type.Object({
   id: Type.String(),
   worker: Type.String(),
+  command: Type.Optional(CommandString),
   sandbox: Type.Optional(SandboxDescriptor),
   optional: Type.Optional(Type.Boolean({ default: false })),
   human_gated: Type.Optional(Type.Boolean({ default: false })),

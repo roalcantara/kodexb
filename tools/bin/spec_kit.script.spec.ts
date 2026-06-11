@@ -96,3 +96,11 @@ describe('kit next — feature dir resolution', () => {
     expect(true).toBe(true)
   })
 })
+
+describe('kit next --loop', () => {
+  it('--loop emits stage name on stdout', () => {
+    cleanGates()
+    const { stdout } = runKit(['next', FIXTURE, '--loop'])
+    expect(stdout).toContain('review-spec')
+  })
+})

@@ -15,24 +15,31 @@ execution_policy:
 stages:
   - id: specify
     worker: primary
+    command: "mise run spec kit next"
     evidence:
       - "mise run spec lint"
       - "mise run spec gate"
   - id: plan
     worker: primary
+    command: "mise run spec kit next"
   - id: analyze-plan
     worker: primary
+    command: "mise run spec kit next"
   - id: tasks
     worker: primary
+    command: "mise run spec kit next"
   - id: analyze-tasks
     worker: primary
+    command: "mise run spec kit next"
   - id: handoff-generate
     worker: primary
     human_gated: true
+    command: "mise run spec kit next"
     triggers:
       post: "mise run spec workflow handoff generate"
   - id: implement
     worker: primary
+    command: "mise run spec kit next"
     sandbox:
       tool_allowlist: ["mise run", "hk check", "bun run", "gh"]
       fs_scope:
@@ -43,16 +50,25 @@ stages:
       acknowledged_unsafe: false
   - id: pr-prep
     worker: primary
+    command: "mise run spec kit next"
     triggers:
       post: "hk check --profile pr"
   - id: review
     worker: primary
     human_gated: true
+    command: "mise run spec kit next"
   - id: gate
     worker: primary
+    command: "mise run spec kit next"
     evidence:
       - "mise run spec gate"
       - "bash .agents/skills/app-quality-gate/scripts/gate.sh"
+  - id: pr-open
+    worker: primary
+    command: "mise run spec kit next"
+  - id: pr-check
+    worker: primary
+    command: "mise run spec kit next"
 
 transitions:
   - from: specify
@@ -82,9 +98,15 @@ transitions:
   - from: review
     to: gate
     on: DONE
+  - from: gate
+    to: pr-open
+    on: DONE
+  - from: pr-open
+    to: pr-check
+    on: DONE
 
 terminal:
-  - gate
+  - pr-check
 
 default_retry:
   max_attempts: 3

@@ -142,8 +142,8 @@
 
 **Independent Test**: `mise run catalog validate` passes; conformance spec green.
 
-- [ ] T030 [P] [US6] Update stage bindings in [assets/catalog/workflows/default.yaml](file:///Users/roalcantara/Work/bun/kb/assets/catalog/workflows/default.yaml) by adding `pr-open` and `pr-check` stages and mapping non-terminal commands to `spec kit next`.
-- [ ] T031 [US6] Update conformance tests in [tools/governance/specs/workflow/conformance.script.spec.ts](file:///Users/roalcantara/Work/bun/kb/tools/governance/specs/workflow/conformance.script.spec.ts) to assert the new catalog stages and transitions.
+- [x] T030 [P] [US6] Update stage bindings in [assets/catalog/workflows/default.yaml](file:///Users/roalcantara/Work/bun/kb/assets/catalog/workflows/default.yaml) by adding `pr-open` and `pr-check` stages and mapping non-terminal commands to `spec kit next`.
+- [x] T031 [US6] Update conformance tests in [tools/governance/specs/workflow/conformance.script.spec.ts](file:///Users/roalcantara/Work/bun/kb/tools/governance/specs/workflow/conformance.script.spec.ts) to assert the new catalog stages and transitions.
 
 **Checkpoint**: Catalog updated and validated
 
@@ -155,9 +155,9 @@
 
 **Independent Test**: `mise run spec kit next tools/__tests__/fixtures/workflow/smoke-feature --loop` advances until pause or terminal; NDJSON events emitted.
 
-- [ ] T032 [P] [US7] Write integration tests for the loop in [packages/workflow-runtime/src/orchestrator.script.spec.ts](file:///Users/roalcantara/Work/bun/kb/packages/workflow-runtime/src/orchestrator.script.spec.ts) and [tools/bin/spec_kit.script.spec.ts](file:///Users/roalcantara/Work/bun/kb/tools/bin/spec_kit.script.spec.ts).
-- [ ] T033 [US7] Implement loop runner in [tools/bin/spec_kit.script.ts](file:///Users/roalcantara/Work/bun/kb/tools/bin/spec_kit.script.ts) by calling the resolver, preflight check, and dispatch functions in a while loop until terminal success or block.
-- [ ] T034 [US7] Wire [tools/governance/specs/workflow_run.script.ts](file:///Users/roalcantara/Work/bun/kb/tools/governance/specs/workflow_run.script.ts) so that spec workflow run delegates directly to `spec kit next --loop`.
+- [x] T032 [P] [US7] Write integration tests for the loop in [packages/workflow-runtime/src/orchestrator.script.spec.ts](file:///Users/roalcantara/Work/bun/kb/packages/workflow-runtime/src/orchestrator.script.spec.ts) and [tools/bin/spec_kit.script.spec.ts](file:///Users/roalcantara/Work/bun/kb/tools/bin/spec_kit.script.spec.ts).
+- [x] T033 [US7] Implement loop runner in [tools/bin/spec_kit.script.ts](file:///Users/roalcantara/Work/bun/kb/tools/bin/spec_kit.script.ts) by calling the resolver, preflight check, and dispatch functions in a while loop until terminal success or block.
+- [x] T034 [US7] Wire [tools/governance/specs/workflow_run.script.ts](file:///Users/roalcantara/Work/bun/kb/tools/governance/specs/workflow_run.script.ts) so that spec workflow run delegates directly to `spec kit next --loop`.
 
 **Checkpoint**: Loop and workflow alias wired
 
@@ -169,8 +169,8 @@
 
 **Independent Test**: Simulated FIX envelope triggers automatic rewind inside `--loop`.
 
-- [ ] T035 [P] [US8] Write tests in [packages/workflow-runtime/src/orchestrator.script.spec.ts](file:///Users/roalcantara/Work/bun/kb/packages/workflow-runtime/src/orchestrator.script.spec.ts) simulating review failed transition.
-- [ ] T036 [US8] Implement rewind logic in [packages/workflow-runtime/src/orchestrator.script.ts](file:///Users/roalcantara/Work/bun/kb/packages/workflow-runtime/src/orchestrator.script.ts) resolving next stage to `implement` when a review envelope indicates `RETRYABLE_FAILURE`.
+- [x] T035 [P] [US8] Write tests in [packages/workflow-runtime/src/orchestrator.script.spec.ts](file:///Users/roalcantara/Work/bun/kb/packages/workflow-runtime/src/orchestrator.script.spec.ts) simulating review failed transition.
+- [x] T036 [US8] Implement rewind logic in [packages/workflow-runtime/src/orchestrator.script.ts](file:///Users/roalcantara/Work/bun/kb/packages/workflow-runtime/src/orchestrator.script.ts) resolving next stage to `implement` when a review envelope indicates `RETRYABLE_FAILURE`.
 
 **Checkpoint**: Automated review-fix R2R works in loop
 
@@ -182,8 +182,8 @@
 
 **Independent Test**: Loop transitions `gate` → `pr-open` → `pr-check`; stdout includes run id + PR URL.
 
-- [ ] T037 [P] [US9] Update stage execution in [packages/workflow-runtime/src/orchestrator.script.ts](file:///Users/roalcantara/Work/bun/kb/packages/workflow-runtime/src/orchestrator.script.ts) to execute `pr-open` and `pr-check` stages and remove the old `runProviders` runner.
-- [ ] T038 [US9] Update stdout success formatter in [tools/bin/spec_kit.script.ts](file:///Users/roalcantara/Work/bun/kb/tools/bin/spec_kit.script.ts) to print run ID, final stage, PR URL, and the message `"all stages complete — ready for manual testing"`.
+- [x] T037 [P] [US9] Update stage execution in [packages/workflow-runtime/src/orchestrator.script.ts](file:///Users/roalcantara/Work/bun/kb/packages/workflow-runtime/src/orchestrator.script.ts) to execute `pr-open` and `pr-check` stages and remove the old `runProviders` runner.
+- [x] T038 [US9] Update stdout success formatter in [tools/bin/spec_kit.script.ts](file:///Users/roalcantara/Work/bun/kb/tools/bin/spec_kit.script.ts) to print run ID, final stage, PR URL, and the message `"all stages complete — ready for manual testing"`.
 
 **Checkpoint**: PR/CI tail orchestrated inside loop
 
@@ -195,9 +195,9 @@
 
 **Independent Test**: `mise run spec test smoke` and nightly workflow green.
 
-- [ ] T039 [P] [US10] Update [.github/workflows/smoke.yml](file:///Users/roalcantara/Work/bun/kb/.github/workflows/smoke.yml) to configure the smoke task against the `smoke-feature` fixture.
-- [ ] T040 [US10] Implement smoke scope in [tools/governance/specs/spec_test.script.ts](file:///Users/roalcantara/Work/bun/kb/tools/governance/specs/spec_test.script.ts) to run the orchestrator loop on the `smoke-feature` fixture directory.
-- [ ] T041 [US10] **Slice B gate** — run plan.md Slice B checkpoint (all exit 0):
+- [x] T039 [P] [US10] Update [.github/workflows/smoke.yml](file:///Users/roalcantara/Work/bun/kb/.github/workflows/smoke.yml) to configure the smoke task against the `smoke-feature` fixture.
+- [x] T040 [US10] Implement smoke scope in [tools/governance/specs/spec_test.script.ts](file:///Users/roalcantara/Work/bun/kb/tools/governance/specs/spec_test.script.ts) to run the orchestrator loop on the `smoke-feature` fixture directory.
+- [x] T041 [US10] **Slice B gate** — [run](./dogfood-smoke-feature.md) plan.md Slice B checkpoint (all exit 0):
 
   ```sh
   mise run spec kit next tools/__tests__/fixtures/workflow/smoke-feature --loop
@@ -214,8 +214,8 @@
 
 **Purpose**: Final validation after Slice B (or after each slice PR if preferred)
 
-- [ ] T042 [P] Run full repo quality gate via [bash .agents/skills/app-quality-gate/scripts/gate.sh](file:///Users/roalcantara/Work/bun/kb/.agents/skills/app-quality-gate/scripts/gate.sh) and resolve tsc/lint findings.
-- [ ] T043 Update `handoff.md` AC Evidence table with run ids and command outputs; verify `checklists/requirements.md` and `checklists/orchestrator.md`
+- [x] T042 [P] Run full repo quality gate via [bash .agents/skills/app-quality-gate/scripts/gate.sh](file:///Users/roalcantara/Work/bun/kb/.agents/skills/app-quality-gate/scripts/gate.sh) and resolve tsc/lint findings.
+- [x] T043 Update `handoff.md` AC Evidence table with run ids and command outputs; verify `checklists/requirements.md` and `checklists/orchestrator.md`
 
 ---
 

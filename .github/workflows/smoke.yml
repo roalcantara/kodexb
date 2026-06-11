@@ -21,4 +21,4 @@ jobs:
       - run: mise run spec gate
       - run: mise run catalog validate
       - name: Orchestrator smoke (fixture feature dir)
-        run: mise run spec workflow run tools/__tests__/fixtures/workflow/smoke-feature --dry-run
+        run: mise run spec test smoke
