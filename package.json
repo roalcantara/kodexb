@@ -5,9 +5,7 @@
   "type": "module",
   "private": true,
   "workspaces": {
-    "packages": [
-      "packages/*"
-    ],
+    "packages": ["packages/*"],
     "catalog": {
       "xstate": "^5.32.0",
       "@sinclair/typebox": "^0.34.49"

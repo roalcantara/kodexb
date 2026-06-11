@@ -129,6 +129,7 @@ workflows:
   specs:
     - 009-agentic-workflow-orchestrator
     - 010-workflow-packages
+    - 012-spec-kit-orchestrator-loop
   superseded_by: null
 
 mise_sdd_cli:

@@ -77,8 +77,8 @@ describe('planSpec — every subcommand routes', () => {
   })
   it('workflow resume uses provided runId', () => {
     const testEnv: Record<string, string> = {}
-    testEnv['usage_runId'] = 'R1'
-    testEnv['usage_answer'] = 'q=1'
+    testEnv.usage_runId = 'R1'
+    testEnv.usage_answer = 'q=1'
     const argv = spawnArgv(plan('workflow', ['resume'], testEnv))
     expect(argv).toContain('R1')
     expect(argv).toContain('--answer')
@@ -130,6 +130,10 @@ describe('planSpec — every subcommand routes', () => {
     const p = plan('frobnicate', [])
     expect(p.kind).toBe('error')
     if (p.kind === 'error') expect(p.message).toContain('unknown action')
+  })
+  it('kit routes to spec_kit.script via spawn', () => {
+    const argv = spawnArgv(plan('kit', []))
+    expect(argv.join(' ')).toContain('spec_kit.script.ts')
   })
 })
 
