@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'bun:test'
-import { existsSync, rmSync } from 'node:fs'
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { KB_KIT_SMOKE_ENV } from '../../../packages/workflow-runtime/src/kit_smoke.script.ts'
 import { prepareSmokeFixture, SMOKE_FIXTURE, smokeChildEnv, teardownSmokeFixture } from './smoke_harness.script.ts'
@@ -23,5 +23,15 @@ describe('smoke_harness', () => {
 
   it('smokeChildEnv sets KB_KIT_SMOKE', () => {
     expect(smokeChildEnv()[KB_KIT_SMOKE_ENV]).toBe('1')
+  })
+
+  it('teardownSmokeFixture preserves pre-existing requirements.md', () => {
+    const reqPath = path.join(SMOKE_FIXTURE, 'checklists/requirements.md')
+    writeFileSync(reqPath, '# committed fixture\n')
+    const state = prepareSmokeFixture()
+    expect(state.createdPaths).not.toContain('checklists/requirements.md')
+    teardownSmokeFixture(state)
+    expect(existsSync(reqPath)).toBe(true)
+    expect(readFileSync(reqPath, 'utf-8')).toBe('# committed fixture\n')
   })
 })

@@ -40,7 +40,8 @@ export function prepareSmokeFixture(fixtureDir = SMOKE_FIXTURE): SmokeHarnessSta
 
 export function teardownSmokeFixture(state: SmokeHarnessState): void {
   rmSync(path.join(state.fixtureDir, '.gates'), { recursive: true, force: true })
-  for (const rel of [REQUIREMENTS_REL, IMPLEMENT_DONE_REL, ...state.createdPaths]) {
+  rmSync(path.join(state.fixtureDir, IMPLEMENT_DONE_REL), { force: true })
+  for (const rel of state.createdPaths) {
     rmSync(path.join(state.fixtureDir, rel), { force: true })
   }
 }

@@ -166,15 +166,40 @@ function hasCliFlag(name: string): boolean {
   return process.argv.includes(`--${name}`) || process.argv.includes(`-${name[0]}`)
 }
 
-function runNext(featureDir: string, env: Env, runId?: string): number {
+function printSingleStepTerminal(activeRunId: string, jsonOutput: boolean): void {
+  if (jsonOutput) {
+    process.stdout.write(`${JSON.stringify({ stage: terminalStageSentinel, runId: activeRunId })}\n`)
+  } else {
+    process.stdout.write(`runId: ${activeRunId}    all stages complete — ready for manual testing\n`)
+  }
+}
+
+function printLoopTerminal(runId: string, jsonOutput: boolean): void {
+  if (jsonOutput) {
+    process.stdout.write(`${JSON.stringify({ stage: terminalStageSentinel, runId })}\n`)
+    return
+  }
+  const today = new Date().toISOString().slice(0, 10)
+  const prRefPath = path.resolve('tmp/workflow-runs', today, runId, 'pr_ref')
+  if (existsSync(prRefPath)) {
+    const prUrl = readFileSync(prRefPath, 'utf-8').trim()
+    process.stdout.write(`runId: ${runId}    PR: ${prUrl}    all stages complete — ready for manual testing\n`)
+  } else {
+    process.stdout.write(`runId: ${runId}    all stages complete — ready for manual testing\n`)
+  }
+}
+
+function executeResolvedStep(
+  featureDir: string,
+  env: Env,
+  activeRunId: string,
+  step: ResolvedStep,
+  options?: { deferTerminalStdout?: boolean }
+): number {
   const dryRun = isTrue(env, 'usage_dry_run') || hasCliFlag('dry-run')
   const approveFlag = env.usage_approve || hasCliFlag('approve') || ''
   const jsonOutput = isTrue(env, 'usage_json') || hasCliFlag('json')
   const rawOutput = isTrue(env, 'usage_raw') || hasCliFlag('raw')
-  const featureSlug = path.basename(featureDir).replace(/^\d+-/, '')
-  const activeRunId = runId ?? generateRunId(featureSlug)
-
-  const step = resolveNext(featureDir, activeRunId)
 
   if (dryRun) {
     printResolved(step, {
@@ -186,10 +211,8 @@ function runNext(featureDir: string, env: Env, runId?: string): number {
   }
 
   if (step.stage === terminalStageSentinel) {
-    if (jsonOutput) {
-      process.stdout.write(`${JSON.stringify({ stage: terminalStageSentinel, runId: activeRunId })}\n`)
-    } else {
-      process.stdout.write(`runId: ${activeRunId}    all stages complete — ready for manual testing\n`)
+    if (!options?.deferTerminalStdout) {
+      printSingleStepTerminal(activeRunId, jsonOutput)
     }
     return 0
   }
@@ -203,7 +226,9 @@ function runNext(featureDir: string, env: Env, runId?: string): number {
         return 1
       }
       if (next.stage === terminalStageSentinel) {
-        process.stdout.write(`runId: ${activeRunId}    all stages complete — ready for manual testing\n`)
+        if (!options?.deferTerminalStdout) {
+          printSingleStepTerminal(activeRunId, jsonOutput)
+        }
         return 0
       }
       const nextVerb = stageToVerb(next.stage)
@@ -233,6 +258,13 @@ function runNext(featureDir: string, env: Env, runId?: string): number {
   return runVerbHandler(verb, featureDir, env, activeRunId)
 }
 
+function runNext(featureDir: string, env: Env, runId?: string): number {
+  const featureSlug = path.basename(featureDir).replace(/^\d+-/, '')
+  const activeRunId = runId ?? generateRunId(featureSlug)
+  const step = resolveNext(featureDir, activeRunId)
+  return executeResolvedStep(featureDir, env, activeRunId, step)
+}
+
 function runLoop(featureDir: string, env: Env): number {
   const featureSlug = path.basename(featureDir).replace(/^\d+-/, '')
   const runId = generateRunId(featureSlug)
@@ -243,33 +275,21 @@ function runLoop(featureDir: string, env: Env): number {
     iteration += 1
     const step = resolveNext(featureDir, runId)
 
+    if (step.stage === terminalStageSentinel) {
+      printLoopTerminal(runId, jsonOutput)
+      return 0
+    }
+
     if (jsonOutput) {
       process.stdout.write(JSON.stringify({ type: 'stage.entered', runId, stage: step.stage, iteration }) + '\n')
     } else {
       process.stdout.write(`${runId} [${step.stage}] `)
     }
 
-    const exitCode = runNext(featureDir, env, runId)
+    const exitCode = executeResolvedStep(featureDir, env, runId, step, { deferTerminalStdout: true })
 
     if (exitCode !== 0) {
       return exitCode
-    }
-
-    if (step.stage === terminalStageSentinel) {
-      if (jsonOutput) {
-        process.stdout.write(JSON.stringify({ stage: terminalStageSentinel, runId }) + '\n')
-        return 0
-      }
-      process.stdout.write('\n')
-      const today = new Date().toISOString().slice(0, 10)
-      const prRefPath = path.resolve('tmp/workflow-runs', today, runId, 'pr_ref')
-      if (existsSync(prRefPath)) {
-        const prUrl = readFileSync(prRefPath, 'utf-8').trim()
-        process.stdout.write(`runId: ${runId}    PR: ${prUrl}    all stages complete — ready for manual testing\n`)
-      } else {
-        process.stdout.write(`runId: ${runId}    all stages complete — ready for manual testing\n`)
-      }
-      return 0
     }
 
     if (iteration > 50) {
