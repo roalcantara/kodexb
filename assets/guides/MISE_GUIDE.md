@@ -147,9 +147,9 @@ Folder taxonomy: [`TOOLS_GUIDE.md`](TOOLS_GUIDE.md).
 | `hooks`   | [`tools/bin/hooks.script.ts`](../../tools/bin/hooks.script.ts)     | Cursor agent hook tests (`governance-audit`)          |
 | `catalog` | [`tools/bin/catalog.script.ts`](../../tools/bin/catalog.script.ts) | shipped-feature registry (`list`, `validate`, `ship`) |
 | `skill`   | [`tools/bin/skill.script.ts`](../../tools/bin/skill.script.ts)     | skill registry CLI                                    |
-| `spec`    | [`tools/bin/spec.script.ts`](../../tools/bin/spec.script.ts)       | SDD hub: lint, trace, gate, test, workflow, audit |
-| `app`     | [`tools/bin/app.script.ts`](../../tools/bin/app.script.ts)         | Dev lifecycle, styles, gates (default-dual)         |
-| `policy`  | [`tools/bin/policy.script.ts`](../../tools/bin/policy.script.ts)   | Task policy + usage spec checks                     |
+| `spec`    | [`tools/bin/spec.script.ts`](../../tools/bin/spec.script.ts)       | SDD hub: lint, trace, gate, test, workflow, audit     |
+| `app`     | [`tools/bin/app.script.ts`](../../tools/bin/app.script.ts)         | Dev lifecycle, styles, gates (default-dual)           |
+| `policy`  | [`tools/bin/policy.script.ts`](../../tools/bin/policy.script.ts)   | Task policy + usage spec checks                       |
 
 ### Catalog tag tests
 
@@ -208,13 +208,13 @@ task root only: **`--raw`** and **`--json`** (mutually exclusive). Feature dirs
 use optional positional **`[feature]`** (infer via `.specify/feature.json` when
 omitted) — not `--feature` / `--feat`.
 
-| Area | Examples |
-| ---- | -------- |
-| Validate | `mise run spec lint [feature]`, `trace`, `gate`, `ready … --key <catalog-key>` |
-| Test | `mise run spec test [scope] [feature]` — scopes: `unit`, `e2e`, `smoke`, `regression` |
+| Area     | Examples                                                                                   |
+| -------- | ------------------------------------------------------------------------------------------ |
+| Validate | `mise run spec lint [feature]`, `trace`, `gate`, `ready … --key <catalog-key>`             |
+| Test     | `mise run spec test [scope] [feature]` — scopes: `unit`, `e2e`, `smoke`, `regression`      |
 | Workflow | `mise run spec workflow run [feature] [--dry-run]`, `handoff generate`, `resume`, `runs …` |
-| Audit | `mise run spec audit feature [feature]`, `audit security`, `audit docs rogue-refs` |
-| Review | `mise run spec review-handoff classify\|extract-evidence\|prepare\|scaffold-audit` |
+| Audit    | `mise run spec audit feature [feature]`, `audit security`, `audit docs rogue-refs`         |
+| Review   | `mise run spec review-handoff classify\|extract-evidence\|prepare\|scaffold-audit`         |
 
 **`mise run app gates`** (no flags) runs quality + policy gates (rule 07 — no `--all`).
 Use `--quality` or `--policy` for a single gate.
@@ -225,7 +225,7 @@ e2e preview). Feature-scoped validation and tests use **`mise run spec test`**.
 Migration (removed): top-level `mise run audit`, `spec feature-init`,
 `spec workflow orchestrated-handoff`, `--feat`, `app gates --all`.
 
-See [`SDD_WORKFLOW_GUIDE.md`](SDD_WORKFLOW_GUIDE.md) and [`assets/specs/011-mise-sdd-cli/plan.md`](../specs/011-mise-sdd-cli/plan.md).
+Command tree details and workflow lifecycle: [`SDD_WORKFLOW_GUIDE.md`](SDD_WORKFLOW_GUIDE.md) (normative — do not depend on in-flight or archived spec folders for CLI shape).
 
 ## Package scripts
 

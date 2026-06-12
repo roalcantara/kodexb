@@ -1,6 +1,6 @@
 ---
 title: Code Style Guide
-description: Coding patterns, 12-Factor, and SOLID principles for kodexb
+description: Coding patterns, 12-Factor, and SOLID principles for kb
 ---
 <!-- markdownlint-disable-file -->
 
@@ -151,11 +151,11 @@ Repo tooling is TypeScript-first. Every `.ts` file under `tools/` (except
 `tools/orchestration/scripts/` shell helpers) uses the **`.script.ts`** artifact suffix.
 Co-located tests use **`.script.spec.ts`**. Type-only modules keep **`.types.ts`**.
 
-| Pattern           | Example                                                        |
-| ----------------- | -------------------------------------------------------------- |
-| `.script.ts`      | `tools/governance/registries/catalog/catalog.script.ts`        |
-| `.script.spec.ts` | `tools/governance/registries/catalog/tag.script.spec.ts`       |
-| `.types.ts`       | `tools/governance/registries/skill/skill_registry.types.ts`    |
+| Pattern           | Example                                                     |
+| ----------------- | ----------------------------------------------------------- |
+| `.script.ts`      | `tools/governance/registries/catalog/catalog.script.ts`     |
+| `.script.spec.ts` | `tools/governance/registries/catalog/tag.script.spec.ts`    |
+| `.types.ts`       | `tools/governance/registries/skill/skill_registry.types.ts` |
 
 ast-grep rules live under `tools/governance/policies/ast-grep/` as **`<id>.rule.yml`**.
 Enforced by ast-grep (`tools-must-use-script-suffix`, `tools-rules-must-use-rule-suffix`) and
@@ -167,12 +167,12 @@ ls-lint (see `.ls-lint.yml`).
 
 These were found in the codebase and are being migrated out. Do not use them in new files.
 
-| Banned suffix                         | Use instead      | Migration status                   |
-| ------------------------------------- | ---------------- | ---------------------------------- |
-| `.consts.ts`                          | `.const.ts`      | Cursor task: `naming-alignment.md` |
-| `.type.ts`                            | `.types.ts`      | Cursor task: `naming-alignment.md` |
-| `.view.tsx`                           | `.component.tsx` | Cursor task: `naming-alignment.md` |
-| `.lib.ts`, bare `.ts` under `tools/`  | `.script.ts`     | Enforced by ast-grep + ls-lint     |
+| Banned suffix                                                | Use instead      | Migration status                   |
+| ------------------------------------------------------------ | ---------------- | ---------------------------------- |
+| `.consts.ts`                                                 | `.const.ts`      | Cursor task: `naming-alignment.md` |
+| `.type.ts`                                                   | `.types.ts`      | Cursor task: `naming-alignment.md` |
+| `.view.tsx`                                                  | `.component.tsx` | Cursor task: `naming-alignment.md` |
+| `.lib.ts`, bare `.ts` under `tools/`                         | `.script.ts`     | Enforced by ast-grep + ls-lint     |
 | `tools/governance/policies/ast-grep/*.yml` (without `.rule`) | `*.rule.yml`     | Enforced by ast-grep + ls-lint     |
 
 ### Exceptions (no suffix)
@@ -340,14 +340,15 @@ window state. Has no business logic — delegates everything to `AppService`.
 
 Grouped into concern sub-folders — the folder provides context so prefixes drop from filenames:
 
-| File pattern      | Purpose                                                         |
-| ----------------- | --------------------------------------------------------------- |
-| `main.ts`         | Entry point — initialises window, loads config, starts RPC host |
-| `*.helper.ts`     | Process-level helpers (e.g. error dialogs)                      |
-| `rpc/host.ts`     | RPC host definition (binds the typed schema to the process)     |
-| `rpc/requests.ts` | RPC handler implementations — thin delegation to `AppService`   |
-| `rpc/schemas.ts`  | Aggregate TypeBox schemas for validating all RPC payloads       |
-| `window/state.ts` | Persists and restores window bounds between sessions            |
+| File pattern             | Purpose                                                         |
+| ------------------------ | --------------------------------------------------------------- |
+| `main.ts`                | Entry point — initialises window, loads config, starts RPC host |
+| `*.helper.ts`            | Process-level helpers (e.g. error dialogs)                      |
+| `rpc/server.ts`          | Elysia app — exported `RpcApp` type for Eden Treaty             |
+| `rpc/host.ts`            | Binds RPC server to Electrobun main process                     |
+| `rpc/routes/*.routes.ts` | Route modules — thin delegation to `AppService`                 |
+| `rpc/schemas.ts`         | Shared TypeBox schemas for RPC payloads                         |
+| `window/state.ts`        | Persists and restores window bounds between sessions            |
 
 ### `src/shell/renderer/` — UI layer
 

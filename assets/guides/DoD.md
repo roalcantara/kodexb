@@ -14,7 +14,7 @@ In order for a task to be considered completed, it MUST satisfy ALL of the follo
 
 - [ ] All requirements of the task are completely implemented
 - [ ] All acceptance criteria from the spec are met
-- [ ] Code follows the design document specifications
+- [ ] Code follows the design document specifications (in-flight feature: `plan.md` in `assets/specs/NNN-<slug>/`; product fixes without a spec: [`README.md`](README.md) + topic guides only)
 - [ ] Code follows the guides under the [guides](../guides) directory
 - [ ] Security subgate passes (`mise run spec audit security --strict`); handoff emit path passes `mise run spec workflow handoff scrub`
 

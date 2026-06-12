@@ -2,6 +2,8 @@
 
 Where rules and feature specs live, and what may link to what.
 
+**Agent entrypoint:** [`README.md`](README.md) — guide router and product snapshot (read before legacy or in-flight specs).
+
 ## Hard rules
 
 1. **Project rules** (every PR, every agent) live only in **`assets/guides/`** (and tool configs they reference: `biome.jsonc`, `hk.pkl`, etc.).
