@@ -1,8 +1,8 @@
 import type { SandboxDescriptor } from '@kb/workflow-core'
 import { checkSandbox } from '@kb/workflow-core'
 import type { Static } from '@sinclair/typebox'
-import { type CommandDescriptor, type CommandResult, runCommand } from './command_invoker.script.ts'
-import type { WorkflowEvent, WorkflowRunWriter } from './workflow_run.script.ts'
+import { type CommandDescriptor, type CommandResult, runCommand } from './command_invoker.script'
+import type { WorkflowEvent, WorkflowRunWriter } from './workflow_run.script'
 
 export type InvocationTelemetry = {
   writer: WorkflowRunWriter

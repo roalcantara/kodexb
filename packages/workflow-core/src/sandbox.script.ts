@@ -1,5 +1,5 @@
 import type { Static } from '@sinclair/typebox'
-import type { SandboxDescriptor } from './schemas/profile.schema.ts'
+import type { SandboxDescriptor } from './schemas/profile.schema'
 
 export type SandboxDimension = 'tool_allowlist' | 'fs_scope' | 'secret_handling' | 'network'
 

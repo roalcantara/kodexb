@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import type { ExecutionPolicyValidation } from './execution_policy.script.ts'
-import { validateCommandPrefix, validateExecutionPolicy } from './execution_policy.script.ts'
+import type { ExecutionPolicyValidation } from './execution_policy.script'
+import { validateCommandPrefix, validateExecutionPolicy } from './execution_policy.script'
 
 describe('validateCommandPrefix', () => {
   const PREFIXES = ['bun run', 'echo']

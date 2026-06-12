@@ -2,8 +2,8 @@ import { afterEach, describe, expect, it } from 'bun:test'
 import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { invokeWithTelemetry } from './workflow_invoker.script.ts'
-import { generateRunId, WorkflowRunWriter } from './workflow_run.script.ts'
+import { invokeWithTelemetry } from './workflow_invoker.script'
+import { generateRunId, WorkflowRunWriter } from './workflow_run.script'
 
 const ALLOWED = ['echo']
 let tmpRoot: string | null = null

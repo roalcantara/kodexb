@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { isKitSmokeMode } from '../kit_smoke.script.ts'
+import { isKitSmokeMode } from '../kit_smoke.script'
 
 export function run(_args: string[]): number {
   if (isKitSmokeMode()) {

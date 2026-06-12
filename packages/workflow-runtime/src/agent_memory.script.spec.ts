@@ -2,8 +2,8 @@ import { afterEach, describe, expect, it } from 'bun:test'
 import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { appendInsights, loadCatalog, loadInsights, mergeInsightsIntoStageMemory } from './agent_memory.script.ts'
-import type { RetroInsight } from './retrospective.script.ts'
+import { appendInsights, loadCatalog, loadInsights, mergeInsightsIntoStageMemory } from './agent_memory.script'
+import type { RetroInsight } from './retrospective.script'
 
 function makeInsight(overrides?: Partial<RetroInsight>): RetroInsight {
   return {

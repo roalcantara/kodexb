@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 import { existsSync } from 'node:fs'
 import path from 'node:path'
-import { writeEnvelope } from '../kit_envelope.script.ts'
-import { generateRunId, slugFromFeatureDir } from '../workflow_run.script.ts'
+import { writeEnvelope } from '../kit_envelope.script'
+import { generateRunId, slugFromFeatureDir } from '../workflow_run.script'
 
 function parseArgs(argv: string[]): { feature?: string } {
   const args: { feature?: string } = {}

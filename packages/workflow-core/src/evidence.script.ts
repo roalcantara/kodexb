@@ -1,5 +1,5 @@
 import type { Static } from '@sinclair/typebox'
-import type { Envelope, EvidenceEntry } from './schemas/envelope.schema.ts'
+import type { Envelope, EvidenceEntry } from './schemas/envelope.schema'
 
 type EvidenceEntryType = Static<typeof EvidenceEntry>
 type MarkerEntry = EvidenceEntryType & { kind: 'marker' }

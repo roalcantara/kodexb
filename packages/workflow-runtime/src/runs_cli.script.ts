@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
-import { bestEffortPrune } from './workflow_run.script.ts'
+import { bestEffortPrune } from './workflow_run.script'
 
 const RUNS_ROOT = 'tmp/workflow-runs'
 

@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
-import { type FileSet, scanFeatureDir } from './orchestrated_handoff.script.ts'
-import { readEnvelopeFile } from './orchestrator_resume.script.ts'
+import { type FileSet, scanFeatureDir } from './orchestrated_handoff.script'
+import { readEnvelopeFile } from './orchestrator_resume.script'
 
 export const terminalStageSentinel = '__terminal__' as const
 

@@ -1,13 +1,8 @@
 import { afterEach, describe, expect, it } from 'bun:test'
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { clearGate, isGateStage } from './kit_human_gate.script.ts'
-import {
-  ALL_CANONICAL_STAGES,
-  type ResolvedStep,
-  resolveNext,
-  terminalStageSentinel
-} from './kit_step_resolver.script.ts'
+import { clearGate, isGateStage } from './kit_human_gate.script'
+import { ALL_CANONICAL_STAGES, type ResolvedStep, resolveNext, terminalStageSentinel } from './kit_step_resolver.script'
 
 const FIXTURE = 'tools/__tests__/fixtures/workflow/smoke-feature'
 const gatesDir = `${FIXTURE}/.gates`

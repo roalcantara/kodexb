@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { Value } from '@sinclair/typebox/value'
-import { PROFILE_SCHEMA_VERSION, ProfileSchema } from './profile.schema.ts'
+import { PROFILE_SCHEMA_VERSION, ProfileSchema } from './profile.schema'
 
 function makeValidProfile(): unknown {
   return {

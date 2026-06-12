@@ -11,7 +11,7 @@ import {
   stageMemoryPath,
   writeSharedMemory,
   writeStageMemory
-} from './memory.script.ts'
+} from './memory.script'
 
 const RUN_ID = 'test-run-001'
 const DATE_STR = '2026-06-10'

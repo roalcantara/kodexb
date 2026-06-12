@@ -8,10 +8,10 @@
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { sliceIdFromAcTag } from '../../../tools/governance/registries/catalog/tag.script.ts'
-import { scrubPrompt } from '../../../tools/governance/security/handoff_scrub.script.ts'
-import { UsageError, withUsage } from './usage.script.ts'
-import { generateRunId, WorkflowRunWriter } from './workflow_run.script.ts'
+import { sliceIdFromAcTag } from './handoff_ac_tag.util'
+import { scrubPrompt } from './handoff_scrub.util'
+import { UsageError, withUsage } from './usage.script'
+import { generateRunId, WorkflowRunWriter } from './workflow_run.script'
 
 const FOCUS_VALUES = ['gherkin', 'catalog', 'e2e-fix'] as const
 const WORKER_VALUES = ['opencode'] as const

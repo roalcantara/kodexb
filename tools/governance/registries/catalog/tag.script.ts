@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs'
 import path from 'node:path'
+import { AC_TAG_RE, sliceIdFromAcTag } from '@kb/workflow-runtime'
 import { Glob } from 'bun'
 import { repoRoot } from '../../../support/lib/shared/repo_root.script.ts'
 import {
@@ -14,7 +15,7 @@ import { loadScanPaths, scanPathsPath } from './scan_paths.script.ts'
 
 export const CATALOG_TAG_TOKEN = /@([a-z][a-z0-9_]*)\b/g
 export const AC_SLICE_ID_RE = /^sf(\d+)ac(\d+)$/i
-export const AC_TAG_RE = /^@ac:SF-(\d+)_AC(\d+)$/i
+export { AC_TAG_RE }
 export const RESERVED_RUN_TAGS = new Set([
   'smoke',
   'regression',
@@ -61,12 +62,7 @@ export function acTagFromSliceId(slice: string): string | null {
   return parseAcSliceId(slice)
 }
 
-export function sliceIdFromAcTag(acTag: string): string | null {
-  const normalized = acTag.startsWith('@') ? acTag : `@${acTag}`
-  const match = normalized.match(AC_TAG_RE)
-  if (!match?.[1] || !match[2]) return null
-  return `sf${match[1]}ac${match[2]}`.toLowerCase()
-}
+export { sliceIdFromAcTag }
 
 export function lineHasAcTag(line: string, acTag: string): boolean {
   const want = acTag.startsWith('@') ? acTag : `@${acTag}`

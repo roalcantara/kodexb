@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { checkCiGate, isCiFailing, isCiGreen, isCiPending } from './ci_gate.script.ts'
+import { checkCiGate, isCiFailing, isCiGreen, isCiPending } from './ci_gate.script'
 
 describe('checkCiGate', () => {
   it('AWO-6 AC3: returns pass on exit code 0', () => {

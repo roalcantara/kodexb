@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'bun:test'
 import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { readStateSnapshot, writeStateSnapshot } from './persistence.script.ts'
+import { readStateSnapshot, writeStateSnapshot } from './persistence.script'
 
 let tmpRoot: string | null = null
 const DATE_STR = new Date().toISOString().slice(0, 10)

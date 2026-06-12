@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { orchestratedRunProviders } from './orchestrator_providers.script.ts'
+import { orchestratedRunProviders } from './orchestrator_providers.script'
 
 describe('orchestrator_providers', () => {
   it('exports orchestratedRunProviders', () => {

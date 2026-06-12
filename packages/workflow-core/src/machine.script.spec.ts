@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'bun:test'
 import { createActor } from 'xstate'
-import { type OrchestratorContext, workflowMachine } from './machine.script.ts'
-import { makeEnvelope } from './schemas/envelope.fixture.ts'
+import { type OrchestratorContext, workflowMachine } from './machine.script'
+import { makeEnvelope } from './schemas/envelope.fixture'
 
 const STAGE_ORDER = [
   'specify',

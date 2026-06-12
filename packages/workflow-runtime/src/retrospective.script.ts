@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto'
-import type { WorkflowEvent } from './workflow_run.script.ts'
+import type { WorkflowEvent } from './workflow_run.script'
 
 export type RetroRecommendation = {
   rank: number

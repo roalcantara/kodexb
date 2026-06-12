@@ -9,7 +9,7 @@ import {
   readHookInput,
   utcTimestamp,
   writeSessionState,
-} from './governance_audit.core.ts'
+} from './governance_audit.core'
 
 const config = loadConfig()
 if (config.skip) {

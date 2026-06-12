@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import { buildRetro } from './retrospective.script.ts'
-import type { WorkflowEvent } from './workflow_run.script.ts'
+import { buildRetro } from './retrospective.script'
+import type { WorkflowEvent } from './workflow_run.script'
 
 const INSIGHT_ID_REGEX = /^ri-/
 

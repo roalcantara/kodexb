@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { runCommand, runCommandAsync } from './command_invoker.script.ts'
+import { runCommand, runCommandAsync } from './command_invoker.script'
 
 const ALLOWED = ['bun run', 'echo', 'mkdir']
 const RESTRICTED = ['echo']

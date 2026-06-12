@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { Value } from '@sinclair/typebox/value'
-import { PersistedRunState, STATE_SCHEMA_VERSION } from './state.schema.ts'
+import { PersistedRunState, STATE_SCHEMA_VERSION } from './state.schema'
 
 function makeValidState(): unknown {
   return {

@@ -3,8 +3,8 @@ import {
   type CommandDescriptor,
   type CommandResult,
   runCommandAsync
-} from './command_invoker.script.ts'
-import type { InvocationTelemetry } from './workflow_invoker.script.ts'
+} from './command_invoker.script'
+import type { InvocationTelemetry } from './workflow_invoker.script'
 
 export type TeardownHandle = { command: string; abort: () => void }
 

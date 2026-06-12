@@ -14,7 +14,7 @@ import {
   shouldBlockThreats,
   utcTimestamp,
   writeSessionState,
-} from './governance_audit.core.ts'
+} from './governance_audit.core'
 
 const config = loadConfig()
 

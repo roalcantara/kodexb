@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'bun:test'
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { loadProfile, ProfileLoadError } from './profile_loader.script.ts'
+import { loadProfile, ProfileLoadError } from './profile_loader.script'
 
 let tmpDir: string | null = null
 

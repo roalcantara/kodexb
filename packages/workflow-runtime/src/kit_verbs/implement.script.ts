@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { featureDirFromArgv, isKitSmokeMode } from '../kit_smoke.script.ts'
+import { featureDirFromArgv, isKitSmokeMode } from '../kit_smoke.script'
 
 export function run(args: string[]): number {
   process.stdout.write('kit implement: dispatching /speckit-implement\n')

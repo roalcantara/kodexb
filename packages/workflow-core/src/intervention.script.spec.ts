@@ -7,7 +7,7 @@ import {
   createDefaultedDecision,
   dedupQuestions,
   type QuestionShape
-} from './intervention.script.ts'
+} from './intervention.script'
 
 const questions: QuestionShape[] = [
   { id: 'q1', prompt: 'Select framework?', options: ['vue', 'react', 'svelte'], default: 'react' },

@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'bun:test'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { readEnvelope, writeEnvelope } from './kit_envelope.script.ts'
+import { readEnvelope, writeEnvelope } from './kit_envelope.script'
 
 describe('kit_envelope', () => {
   let origCwd: string

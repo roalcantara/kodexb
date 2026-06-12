@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import { spawnTeardownFireAndForget } from './teardown_runner.script.ts'
-import { generateRunId, WorkflowRunWriter } from './workflow_run.script.ts'
+import { spawnTeardownFireAndForget } from './teardown_runner.script'
+import { generateRunId, WorkflowRunWriter } from './workflow_run.script'
 
 describe('spawnTeardownFireAndForget', () => {
   it('returns TeardownHandle with abort', async () => {

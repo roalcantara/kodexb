@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { writeRunRetrospective } from './orchestrator_retro.script.ts'
+import { writeRunRetrospective } from './orchestrator_retro.script'
 
 describe('orchestrator_retro', () => {
   it('exports writeRunRetrospective', () => {

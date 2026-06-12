@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
-import type { EvidenceResult } from './evidence.script.ts'
-import { evaluateEvidence } from './evidence.script.ts'
-import { makeEnvelope } from './schemas/envelope.fixture.ts'
+import type { EvidenceResult } from './evidence.script'
+import { evaluateEvidence } from './evidence.script'
+import { makeEnvelope } from './schemas/envelope.fixture'
 
 describe('evaluateEvidence', () => {
   it('passes marker kind when file exists', () => {

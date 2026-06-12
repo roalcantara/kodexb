@@ -1,6 +1,6 @@
-import { readSharedMemory, writeSharedMemory } from './memory.script.ts'
-import { invokeWithTelemetry } from './workflow_invoker.script.ts'
-import type { WorkflowRunWriter } from './workflow_run.script.ts'
+import { readSharedMemory, writeSharedMemory } from './memory.script'
+import { invokeWithTelemetry } from './workflow_invoker.script'
+import type { WorkflowRunWriter } from './workflow_run.script'
 
 export type ProviderRole = 'evidence' | 'trigger.pre' | 'trigger.post' | 'provider' | 'teardown' | 'retrospective'
 

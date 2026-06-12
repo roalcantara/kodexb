@@ -1,6 +1,6 @@
 import { assign, setup } from 'xstate'
-import type { EvidenceResult } from './evidence.script.ts'
-import type { Envelope } from './schemas/envelope.schema.ts'
+import type { EvidenceResult } from './evidence.script'
+import type { Envelope } from './schemas/envelope.schema'
 
 const TEARDOWN_EVENTS = {
   'TEARDOWN.QUEUED': { actions: 'queueTeardown' },

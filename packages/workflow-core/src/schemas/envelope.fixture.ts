@@ -1,4 +1,4 @@
-import { ENVELOPE_SCHEMA_VERSION, type Envelope } from './envelope.schema.ts'
+import { ENVELOPE_SCHEMA_VERSION, type Envelope } from './envelope.schema'
 
 export function makeEnvelope(overrides?: Partial<Envelope>): Envelope {
   return {

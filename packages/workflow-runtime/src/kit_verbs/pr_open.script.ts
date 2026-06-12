@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { isKitSmokeMode } from '../kit_smoke.script.ts'
+import { isKitSmokeMode } from '../kit_smoke.script'
 
 const PR_URL_RE = /https:\/\/github\.com\/[^\s/]+\/[^\s/]+\/pull\/\d+/
 const SMOKE_PR_URL = 'https://github.com/example/kb/pull/1'

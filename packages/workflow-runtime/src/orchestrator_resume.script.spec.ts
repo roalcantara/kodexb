@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'bun:test'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { readEnvelopeFile, seedDispatchedKeys } from './orchestrator_resume.script.ts'
+import { readEnvelopeFile, seedDispatchedKeys } from './orchestrator_resume.script'
 
 describe('orchestrator_resume', () => {
   let scratchDir: string

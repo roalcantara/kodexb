@@ -1,13 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import type { Static } from '@sinclair/typebox'
-import {
-  checkFsScope,
-  checkNetwork,
-  checkSandbox,
-  checkToolAllowlist,
-  validateSecretHandling
-} from './sandbox.script.ts'
-import type { SandboxDescriptor } from './schemas/profile.schema.ts'
+import { checkFsScope, checkNetwork, checkSandbox, checkToolAllowlist, validateSecretHandling } from './sandbox.script'
+import type { SandboxDescriptor } from './schemas/profile.schema'
 
 function makeSandbox(overrides?: Partial<Static<typeof SandboxDescriptor>>): Static<typeof SandboxDescriptor> {
   return {

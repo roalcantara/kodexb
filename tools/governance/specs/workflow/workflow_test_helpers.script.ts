@@ -1,9 +1,11 @@
 /* biome-ignore-all lint/suspicious/noMisplacedAssertion: intentional test helpers called from it() blocks */
 import { expect } from 'bun:test'
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { generateRunId, slugFromFeatureDir, WorkflowRunWriter } from '@kb/workflow-runtime'
+import { assertHandoffFile, generateRunId, readHandoffEvents, WorkflowRunWriter } from '@kb/workflow-runtime'
+
+export { assertHandoffFile, readHandoffEvents }
 
 export type FixtureKit = {
   root: string
@@ -54,17 +56,4 @@ export function expectEventBasics(event: Record<string, unknown>, expectedType: 
   expect(event.feature_dir).toBe(featureDir)
   expect(typeof event.duration_ms).toBe('number')
   expect(event.duration_ms as number).toBeGreaterThan(0)
-}
-
-export function readHandoffEvents(writer: WorkflowRunWriter) {
-  const raw = readFileSync(writer.currentPath as string, 'utf-8').trim()
-  const lines = raw.split('\n').filter(Boolean)
-  return { raw, lines }
-}
-
-export function assertHandoffFile(root: string) {
-  const slug = slugFromFeatureDir(root)
-  const handoffFilePath = path.resolve('tmp/handoffs', `opencode-${slug}-gherkin.md`)
-  expect(existsSync(handoffFilePath)).toBe(true)
-  return { slug, handoffFilePath }
 }

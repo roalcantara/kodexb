@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'bun:test'
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { captureEnvelope } from './envelope_capture.script.ts'
+import { captureEnvelope } from './envelope_capture.script'
 
 let tmpDir: string | null = null
 

@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { Type } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
-import type { RetroInsight } from './retrospective.script.ts'
+import type { RetroInsight } from './retrospective.script'
 
 export type AgentMemoryEntry = {
   insight_id: string

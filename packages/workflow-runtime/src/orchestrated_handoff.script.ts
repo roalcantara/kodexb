@@ -5,10 +5,10 @@
  */
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import { catalogPaths } from '../../../tools/governance/support/catalog_paths.script.ts'
-import { parseHandoffAcTable } from './handoff_generate.script.ts'
-import { UsageError, withUsage } from './usage.script.ts'
-import { emitPhaseDecided, generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow_run.script.ts'
+import { catalogPaths } from './catalog_paths.util'
+import { parseHandoffAcTable } from './handoff_generate.script'
+import { UsageError, withUsage } from './usage.script'
+import { emitPhaseDecided, generateRunId, slugFromFeatureDir, WorkflowRunWriter } from './workflow_run.script'
 
 export type FileSet = {
   spec: boolean
@@ -271,7 +271,7 @@ export function runLint(
       const sub = Bun.spawnSync(cmd, { stdout: 'inherit', stderr: 'inherit' })
       return { exitCode: sub.exitCode }
     })
-  const r = spawn(['bun', 'tools/governance/specs/lint.script.ts', '--strict', featureDir])
+  const r = spawn(['bun', 'tools/governance/specs/lint.script', '--strict', featureDir])
   return r.exitCode ?? 1
 }
 

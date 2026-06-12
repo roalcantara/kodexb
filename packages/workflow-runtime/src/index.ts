@@ -1,31 +1,45 @@
-export * from './agent_memory.script.ts'
-export * from './ci_gate.script.ts'
-export * from './command_invoker.script.ts'
-export * from './envelope_capture.script.ts'
-export type { AcRow, DispatchResult, Focus, HandoffInput, Worker } from './handoff_generate.script.ts'
-export { extractFileTouchList, parseHandoffAcTable, run as runHandoffGenerate } from './handoff_generate.script.ts'
-export * from './kit_envelope.script.ts'
-export * from './kit_human_gate.script.ts'
-export * from './kit_preflight.script.ts'
-export * from './kit_step_resolver.script.ts'
-export * from './memory.script.ts'
-export type { FileSet, NextSuggestion, Phase, Subtask, SubtaskType } from './orchestrated_handoff.script.ts'
+export * from './agent_memory.script'
+export { catalogPaths } from './catalog_paths.util'
+export * from './ci_gate.script'
+export * from './command_invoker.script'
+export * from './envelope_capture.script'
+export { AC_TAG_RE, sliceIdFromAcTag } from './handoff_ac_tag.util'
+export {
+  type HandoffAllowlist,
+  HandoffAllowlistSchema,
+  validateAllowlistShape
+} from './handoff_allowlist.util'
+export type { AcRow, DispatchResult, Focus, HandoffInput, Worker } from './handoff_generate.script'
+export {
+  extractFileTouchList,
+  parseHandoffAcTable,
+  run as runHandoffGenerate,
+  slugFromFeatureDir
+} from './handoff_generate.script'
+export { assertHandoffFile, readHandoffEvents } from './handoff_generate_test.util'
+export { HandoffScrubError, scrubPrompt } from './handoff_scrub.util'
+export * from './kit_envelope.script'
+export * from './kit_human_gate.script'
+export * from './kit_preflight.script'
+export * from './kit_step_resolver.script'
+export * from './memory.script'
+export type { FileSet, NextSuggestion, Phase, Subtask, SubtaskType } from './orchestrated_handoff.script'
 export {
   buildSubtaskManifest,
   detectPhase,
   run as runOrchestratedHandoff,
   scanFeatureDir
-} from './orchestrated_handoff.script.ts'
-export * from './orchestrator.script.ts'
-export * from './orchestrator_providers.script.ts'
-export * from './orchestrator_resume.script.ts'
-export * from './orchestrator_retro.script.ts'
-export type { PersistenceConfig } from './persistence.script.ts'
-export { dualWriteOnTerminal, ensureRunDir, readStateSnapshot, writeStateSnapshot } from './persistence.script.ts'
-export * from './profile_loader.script.ts'
-export * from './providers_runner.script.ts'
-export * from './retrospective.script.ts'
-export * from './teardown_runner.script.ts'
-export { UsageError, withUsage } from './usage.script.ts'
-export * from './workflow_invoker.script.ts'
-export * from './workflow_run.script.ts'
+} from './orchestrated_handoff.script'
+export * from './orchestrator.script'
+export * from './orchestrator_providers.script'
+export * from './orchestrator_resume.script'
+export * from './orchestrator_retro.script'
+export type { PersistenceConfig } from './persistence.script'
+export { dualWriteOnTerminal, ensureRunDir, readStateSnapshot, writeStateSnapshot } from './persistence.script'
+export * from './profile_loader.script'
+export * from './providers_runner.script'
+export * from './retrospective.script'
+export * from './teardown_runner.script'
+export { UsageError, withUsage } from './usage.script'
+export * from './workflow_invoker.script'
+export * from './workflow_run.script'

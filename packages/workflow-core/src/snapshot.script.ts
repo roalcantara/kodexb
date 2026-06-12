@@ -4,7 +4,7 @@ import {
   PersistedRunState,
   type PersistedRunState as PersistedRunStateType,
   STATE_SCHEMA_VERSION
-} from './schemas/state.schema.ts'
+} from './schemas/state.schema'
 
 export type PersistenceConfig = {
   rootDir: string

@@ -12,9 +12,9 @@ import {
   workflowMachine
 } from '@kb/workflow-core'
 import { createActor } from 'xstate'
-import { Orchestrator, type OrchestratorConfig } from './orchestrator.script.ts'
-import { readStateSnapshot, writeStateSnapshot } from './persistence.script.ts'
-import { loadProfile } from './profile_loader.script.ts'
+import { Orchestrator, type OrchestratorConfig } from './orchestrator.script'
+import { readStateSnapshot, writeStateSnapshot } from './persistence.script'
+import { loadProfile } from './profile_loader.script'
 
 const snapshotIo: SnapshotIO = {
   readSnapshot: readStateSnapshot,

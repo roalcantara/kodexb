@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { featureDirFromArgv, isKitSmokeMode, KB_KIT_SMOKE_ENV } from './kit_smoke.script.ts'
+import { featureDirFromArgv, isKitSmokeMode, KB_KIT_SMOKE_ENV } from './kit_smoke.script'
 
 describe('kit_smoke', () => {
   it('isKitSmokeMode is true when KB_KIT_SMOKE=1', () => {

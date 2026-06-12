@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { appendInsights } from './agent_memory.script.ts'
-import type { PersistenceConfig } from './persistence.script.ts'
-import { buildRetro } from './retrospective.script.ts'
-import type { WorkflowEvent } from './workflow_run.script.ts'
+import { appendInsights } from './agent_memory.script'
+import type { PersistenceConfig } from './persistence.script'
+import { buildRetro } from './retrospective.script'
+import type { WorkflowEvent } from './workflow_run.script'
 
 export function writeRunRetrospective(
   ndjsonPath: string | null,

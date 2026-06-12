@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { Value } from '@sinclair/typebox/value'
-import { parseArgs, showRun } from './runs_cli.script.ts'
+import { parseArgs, showRun } from './runs_cli.script'
 import {
   bestEffortPrune,
   filesetFingerprint,
@@ -14,7 +14,7 @@ import {
   WORKFLOW_EVENT_TYPES,
   WorkflowEvent,
   WorkflowRunWriter
-} from './workflow_run.script.ts'
+} from './workflow_run.script'
 
 function makePhaseDecided(): WorkflowEvent {
   return {

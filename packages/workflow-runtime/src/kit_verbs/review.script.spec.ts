@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { run } from './review.script.ts'
+import { run } from './review.script'
 
 describe('kit review', () => {
   let scratchDir: string
