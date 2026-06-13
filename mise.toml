@@ -774,6 +774,12 @@ BLOCK_ON_THREAT="true"
     cmd "styles" help="Compile Tailwind v4 renderer CSS" {
       flag "--watch" help="Rebuild when sources change (dev)"
     }
+    cmd "install" help="Build and install the local dev app to /Applications/kb.app"
+    cmd "uninstall" help="Remove the installed app bundle from /Applications/kb.app"
+    cmd "startup" help="Enable or disable launch-at-login for /Applications/kb.app" {
+      flag "--enable" help="Add kb to macOS login items"
+      flag "--disable" help="Remove kb from macOS login items"
+    }
     cmd "gates" help="Run quality and/or policy gates" {
       flag "--quality" help="Run the full app quality gate"
       flag "--policy" help="Run embedded policy checks only"
@@ -858,6 +864,22 @@ BLOCK_ON_THREAT="true"
         app_styles_watch
       else
         app_styles_once
+      fi
+      ;;
+    install)
+      bun run install:macos
+      ;;
+    uninstall)
+      bun run uninstall:macos
+      ;;
+    startup)
+      if [[ "${usage_enable:-false}" == "true" ]]; then
+        bun run startup:enable
+      elif [[ "${usage_disable:-false}" == "true" ]]; then
+        bun run startup:disable
+      else
+        echo "app: pass --enable or --disable for startup" >&2
+        exit 2
       fi
       ;;
     gates)

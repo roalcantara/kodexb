@@ -12,6 +12,16 @@ A native desktop knowledge management app built on [Electrobun][12].
 git clone https://github.com/roalcantara/kb
 cd kb
 mise run project setup
+bun run install:macos
+# or: mise run app install
+bun run startup:enable   # optional: open kb automatically at login
+# or: mise run app startup --enable
+open /Applications/kb.app
+
+To remove the installed copy later:
+
+bun run uninstall:macos
+# or: mise run app uninstall
 ```
 
 ## DEVELOPMENT

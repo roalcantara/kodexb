@@ -15,6 +15,10 @@
   },
   "scripts": {
     "start": "electrobun dev",
+    "install:macos": "bun tools/bin/macos_app.script.ts install",
+    "uninstall:macos": "bun tools/bin/macos_app.script.ts uninstall",
+    "startup:enable": "bun tools/bin/macos_app.script.ts login-item enable",
+    "startup:disable": "bun tools/bin/macos_app.script.ts login-item disable",
     "predev": "mise run -q app styles",
     "dev": "electrobun dev --watch",
     "prebuild": "mise run -q app styles",
