@@ -1,6 +1,6 @@
 import { loadConfiguration, loadSources, loadSupport } from '@cucumber/cucumber/api'
-import { bddTagExpression } from '../../../tools/governance/registries/catalog/tag.script.ts'
-import { repoRoot } from '../../../tools/support/lib/shared/repo_root.script.ts'
+import { bddTagExpression } from '../../../packages/ops/src/governance/registries/catalog/tag.script.ts'
+import { repoRoot } from '../../../packages/ops/src/support/lib/shared/repo_root.script.ts'
 
 export const UNIT_FEATURE_GLOB = 'assets/features/**/*.feature'
 export const UNIT_STEP_REGISTER = 'bdd/unit/support/register_steps.support.ts'

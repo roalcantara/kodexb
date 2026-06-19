@@ -1,15 +1,10 @@
 # Gitleaks ignore file
-# Use this to suppress false positives in the raw secret scan.
-# Format: [RuleID]:[File] or just [File]
-
-# Ignore security test fixtures
-tools/governance/security/fixtures/
-
-# Ignore test files that intentionally contain dummy tokens
-tools/governance/security/handoff_scrub.script.spec.ts
-tools/governance/security/checks/secrets.script.spec.ts
-tools/governance/specs/workflow/handoff_generate.script.spec.ts
-
-# Ignore temporary handoff artifacts and results
-tmp/handoffs/
-tmp/security-findings.json
+# Format: [RuleID]:[filePath]
+#
+# NOTE: All paths below are also covered by .gitleaks.toml [allowlist]
+# (the canonical source of truth). These entries exist to suppress
+# per-commit baseline findings that bypass the allowlist. If they
+# trigger WRN on every commit, the entries are already satisfied by
+# .gitleaks.toml and can be removed — the allowlist is sufficient.
+#
+# Known noise: security test fixtures, dummy token specs, output dirs.

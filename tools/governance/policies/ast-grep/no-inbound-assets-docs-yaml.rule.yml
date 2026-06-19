@@ -5,7 +5,7 @@ severity: error
 ignores:
   - "**/assets/docs/**"
   - "**/graphify-out/**"
-  - "tools/governance/policies/ast-grep/no-inbound-assets-docs-*.rule.yml"
+  - "packages/ops/src/governance/policies/ast-grep/no-inbound-assets-docs-*.rule.yml"
 rule:
   all:
     - kind: plain_scalar

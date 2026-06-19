@@ -1,0 +1,14 @@
+{
+  "name": "@kb/flow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schemas/*": "./src/schemas/*"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "catalog:",
+    "xstate": "catalog:"
+  }
+}

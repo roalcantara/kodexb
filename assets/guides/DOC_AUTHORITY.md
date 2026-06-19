@@ -2,6 +2,8 @@
 
 Where rules and feature specs live, and what may link to what.
 
+**Agent entrypoint:** [`README.md`](README.md) — guide router and product snapshot (read before legacy or in-flight specs).
+
 ## Hard rules
 
 1. **Project rules** (every PR, every agent) live only in **`assets/guides/`** (and tool configs they reference: `biome.jsonc`, `hk.pkl`, etc.).
@@ -33,7 +35,7 @@ renamed, archived, or removed after ship.
 1. Runtime code, tests, and tooling must not hardcode specific
   `assets/specs/<slug>/...` paths as durable references.
 2. Use feature-dir inputs, shared path loaders, or fixtures instead:
-  `tools/governance/support/catalog_paths.script.ts` (`specs_root`) and
+  `packages/ops/src/governance/support/catalog_paths.script.ts` (`specs_root`) and
   `tools/__tests__/fixtures/` for deterministic tests.
 3. Keep normative path policy in guides only. Any file outside
   `assets/guides/` may show operational examples, but may not define
@@ -120,7 +122,7 @@ mise run test tag command_palette --list
 mise run test tag command_palette
 ```
 
-Implementation: `tools/bin/test.script.ts`, `tools/bin/catalog.script.ts`; domain libs under
+Implementation: `bin/test.script.ts`, `bin/catalog.script.ts`; domain libs under
 `tools/governance/registries/catalog/`.
 
 **Catalog key rules:** stable after ship; grep-safe names; legacy `@spec:<slug>` deprecated for new work.
@@ -148,7 +150,7 @@ entries:
 | `entries[].folder`    | yes      | `NNN-slug` directory name          |
 | `entries[].birth_iso` | yes      | Git birth or mtime fallback        |
 
-Regenerate or verify: `bun tools/governance/specs/library_manifest.script.ts`
+Regenerate or verify: `bun packages/ops/src/governance/specs/library_manifest.script.ts`
 (flags: `--dry-run`, `--verify`). Not merged into `catalog.yaml`.
 
 Mise wrapper: `mise run spec library-manifest --verify`
@@ -214,9 +216,9 @@ Do not treat `assets/docs/` or legacy spec folders as a second source of truth f
 
 Until shared contracts finish migrating, these **tools** may still embed paths (not documentation links):
 
-- `tools/governance/specs/library_manifest.script.ts` — generates and verifies `assets/catalog/library.yaml` (legacy archive folder index)
+- `packages/ops/src/governance/specs/library_manifest.script.ts` — generates and verifies `assets/catalog/library.yaml` (legacy archive folder index)
 - `tools/metrics/harnesses/e2e-quality/e2e_metrics.script.ts` — reads `tools/metrics/baselines/e2e-quality/*`
-- `tools/governance/policies/rogue_refs.script.ts` — inventories inbound legacy links
+- `packages/ops/src/governance/policies/rogue_refs.script.ts` — inventories inbound legacy links
 
 **Rogue reference inventory:** `mise run audit rogue-refs` (writes `tmp/audit/`; diagnostic, not a merge gate).
 

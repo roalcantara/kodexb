@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.0/schema.json",
   "files": {
     "ignoreUnknown": false,
     "includes": [
@@ -20,7 +20,7 @@
       "!.code-review-graph",
       "!bdd/e2e/.generated",
       "!tmp",
-      "!tools/graphify-out",
+      "!packages/ops/src/graphify-out",
       "!.venv",
       "!.worktrees",
       "!.opencode"
@@ -37,7 +37,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "suspicious": {
         "noAlert": "error",
         "noConstantBinaryExpressions": "error",
@@ -49,7 +49,10 @@
         "noUnusedExpressions": "error",
         "useAwait": "error",
         "useErrorMessage": "error",
-        "useNumberToFixedDigitsArgument": "error"
+        "useNumberToFixedDigitsArgument": "error",
+        "noProto": "error",
+        "noShadow": "error",
+        "noUnnecessaryConditions": "error"
       },
       "style": {
         "noCommonJs": "error",
@@ -123,7 +126,11 @@
           "options": {
             "ignoreDifferentlyNamedParameters": true
           }
-        }
+        },
+        "noExcessiveClassesPerFile": "error",
+        "noExcessiveLinesPerFile": "error",
+        "useConsistentMethodSignatures": "error",
+        "useErrorCause": "error"
       },
       "complexity": {
         "noExcessiveCognitiveComplexity": "error",
@@ -138,7 +145,9 @@
         "noUselessCatchBinding": "error",
         "noUselessStringConcat": "error",
         "noUselessUndefined": "error",
-        "noVoid": "error"
+        "noVoid": "error",
+        "noRedundantDefaultExport": "error",
+        "noUselessReturn": "error"
       },
       "correctness": {
         "noUndeclaredDependencies": "off",
@@ -150,20 +159,11 @@
         }
       },
       "nursery": {
-        "noExcessiveClassesPerFile": "error",
-        "noExcessiveLinesPerFile": "error",
         "noFloatingPromises": "error",
         "noMisusedPromises": "error",
-        "noProto": "error",
-        "noRedundantDefaultExport": "error",
         "noDrizzleDeleteWithoutWhere": "error",
         "noDrizzleUpdateWithoutWhere": "error",
-        "noShadow": "error",
-        "noUnnecessaryConditions": "error",
-        "noUselessReturn": "error",
         "useAwaitThenable": "error",
-        "useConsistentMethodSignatures": "error",
-        "useErrorCause": "error",
         "useExhaustiveSwitchCases": "error",
         "useExpect": "error",
         "useImportsFirst": "error"
@@ -230,7 +230,8 @@
           "suspicious": {
             "noMisplacedAssertion": "off"
           },
-          "nursery": {
+          "nursery": {},
+          "style": {
             "noExcessiveLinesPerFile": "off"
           }
         }
@@ -257,12 +258,7 @@
             }
           },
           "style": {
-            "noMagicNumbers": "off"
-          },
-          "security": {
-            "noSecrets": "off"
-          },
-          "nursery": {
+            "noMagicNumbers": "off",
             "noExcessiveLinesPerFile": {
               "level": "warn",
               "options": {
@@ -270,7 +266,11 @@
                 "skipBlankLines": true
               }
             }
-          }
+          },
+          "security": {
+            "noSecrets": "off"
+          },
+          "nursery": {}
         }
       }
     },
@@ -278,7 +278,8 @@
       "includes": ["packages/**/*.script.ts", "packages/**/*.schema.ts"],
       "linter": {
         "rules": {
-          "nursery": {
+          "nursery": {},
+          "style": {
             "noExcessiveLinesPerFile": {
               "level": "warn",
               "options": {
@@ -291,7 +292,7 @@
       }
     },
     {
-      "includes": ["tools/governance/registries/skill/**"],
+      "includes": ["packages/ops/src/governance/registries/skill/**"],
       "linter": {
         "rules": {
           "complexity": {
@@ -300,19 +301,18 @@
           },
           "style": {
             "noMagicNumbers": "off",
-            "useNamingConvention": "off"
+            "useNamingConvention": "off",
+            "noExcessiveLinesPerFile": "off"
           },
           "performance": {
             "useTopLevelRegex": "off"
           },
-          "nursery": {
-            "noExcessiveLinesPerFile": "off"
-          }
+          "nursery": {}
         }
       }
     },
     {
-      "includes": ["tools/**/*.script.ts"],
+      "includes": ["packages/ops/src/**/*.script.ts", "packages/dev/src/**/*.script.ts", "bin/**/*.ts"],
       "linter": {
         "rules": {
           "complexity": {
@@ -321,7 +321,14 @@
           },
           "style": {
             "noMagicNumbers": "off",
-            "useNamingConvention": "off"
+            "useNamingConvention": "off",
+            "noExcessiveLinesPerFile": {
+              "level": "warn",
+              "options": {
+                "maxLines": 400,
+                "skipBlankLines": true
+              }
+            }
           },
           "security": {
             "noSecrets": "off"
@@ -333,23 +340,16 @@
             "noAwaitInLoops": "off",
             "useTopLevelRegex": "off"
           },
-          "nursery": {
-            "noExcessiveLinesPerFile": {
-              "level": "warn",
-              "options": {
-                "maxLines": 400,
-                "skipBlankLines": true
-              }
-            }
-          }
+          "nursery": {}
         }
       }
     },
     {
-      "includes": ["tools/governance/registries/skill/**/*.script.ts"],
+      "includes": ["packages/ops/src/governance/registries/skill/**/*.script.ts"],
       "linter": {
         "rules": {
-          "nursery": {
+          "nursery": {},
+          "style": {
             "noExcessiveLinesPerFile": "off"
           }
         }
@@ -367,15 +367,15 @@
             "noMagicNumbers": "off",
             "noDefaultExport": "off",
             "useConsistentMemberAccessibility": "off",
-            "useConsistentTypeDefinitions": "off"
+            "useConsistentTypeDefinitions": "off",
+            "noExcessiveClassesPerFile": "off",
+            "useConsistentMethodSignatures": "off"
           },
           "correctness": {
             "noUnusedFunctionParameters": "off",
             "noUnusedPrivateClassMembers": "off"
           },
           "nursery": {
-            "noExcessiveClassesPerFile": "off",
-            "useConsistentMethodSignatures": "off",
             "useImportsFirst": "off"
           },
           "performance": {
@@ -403,7 +403,8 @@
       "includes": ["src/shell/app/app.ts"],
       "linter": {
         "rules": {
-          "nursery": {
+          "nursery": {},
+          "style": {
             "noExcessiveLinesPerFile": {
               "level": "error",
               "options": {

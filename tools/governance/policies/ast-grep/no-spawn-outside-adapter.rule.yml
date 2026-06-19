@@ -3,7 +3,7 @@
 id: no-spawn-outside-adapter
 language: TypeScript
 files:
-  - "tools/governance/specs/workflow/**/*.ts"
+  - "packages/ops/src/governance/specs/workflow/**/*.ts"
 ignores:
   # L2 adapters (architecturally allowed to spawn)
   - "**/command_invoker.script.ts"

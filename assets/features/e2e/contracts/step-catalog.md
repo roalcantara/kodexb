@@ -45,23 +45,24 @@ Do not reuse the same phrase under different keywords.
 
 ## List navigation steps
 
-| Step                                      | Keyword | Task / question                        | Weak? |
-| ----------------------------------------- | ------- | -------------------------------------- | ----- |
-| I am viewing the knowledge list           | Given   | `ViewKnowledgeList`                    | N     |
-| I move to the first entry                 | When    | `SelectFirstEntry`                     | N     |
-| I move to the next entry                  | When    | `SelectNextEntry`                      | N     |
-| I open the detail preview                 | When    | `OpenDetailPreview.forSelectedEntry()` | N     |
-| I expand the detail view                  | When    | `ExpandDetailView`                     | N     |
-| I return to the split view                | When    | `ReturnToSplitView`                    | N     |
-| I return to the list view                 | When    | `ReturnToListView`                     | N     |
-| I see a bookmark entry                    | Then    | `EntryList.includesType('bookmark')`   | N     |
-| I see a command entry                     | Then    | `EntryList.includesType('command')`    | N     |
-| I see a cheat entry                       | Then    | `EntryList.includesType('cheat')`      | N     |
-| I see a task entry                        | Then    | `EntryList.includesType('task')`       | N     |
-| the list search is focused                | Then    | `SearchField.isFocused()`              | N     |
-| no detail panel is visible                | Then    | `DetailPanel.isHidden()`               | N     |
-| the selected row changes                  | Then    | `EntryList.selectedRowChanged()`       | N     |
-| the detail panel shows the selected entry | Then    | `DetailPanel.matchesSelectedEntry()`   | N     |
+| Step                                      | Keyword | Task / question                        | Weak?                  |
+| ----------------------------------------- | ------- | -------------------------------------- | ---------------------- |
+| I am viewing the knowledge list           | Given   | `ViewKnowledgeList`                    | N                      |
+| I move to the first entry                 | When    | `SelectFirstEntry`                     | N                      |
+| I move to the next entry                  | When    | `SelectNextEntry`                      | N                      |
+| I open the detail preview                 | When    | `OpenDetailPreview.forSelectedEntry()` | N                      |
+| I expand the detail view                  | When    | `ExpandDetailView`                     | N                      |
+| I return to the split view                | When    | `ReturnToSplitView`                    | N                      |
+| I return to the list view                 | When    | `ReturnToListView`                     | N                      |
+| I see a bookmark entry                    | Then    | `EntryList.includesType('bookmark')`   | N                      |
+| I see a command entry                     | Then    | `EntryList.includesType('command')`    | N                      |
+| I see a cheat entry                       | Then    | `EntryList.includesType('cheat')`      | N                      |
+| I see a task entry                        | Then    | `EntryList.includesType('task')`       | N                      |
+| the list search is focused                | Then    | `SearchField.isFocused()`              | N                      |
+| the list surface is focused               | Then    | `EntryList.surfaceFocused()`           | Listbox `Entries` role |
+| no detail panel is visible                | Then    | `DetailPanel.isHidden()`               | N                      |
+| the selected row changes                  | Then    | `EntryList.selectedRowChanged()`       | N                      |
+| the detail panel shows the selected entry | Then    | `DetailPanel.matchesSelectedEntry()`   | N                      |
 
 ## Search and filter steps
 
@@ -329,13 +330,13 @@ Paste-doc MAY map to `/api/pasteInTerminal` with cheat payload or a dedicated ro
 
 ### Then — toasts and surface
 
-| Step                                                 | Keyword | Task / question                                | Notes                     |
-| ---------------------------------------------------- | ------- | ---------------------------------------------- | ------------------------- |
-| a success action toast is shown                      | Then    | `ActionToast.isSuccess()`                      | Reuse `.cmp-action-toast` |
-| a success action toast is shown for copy title       | Then    | `ActionToast.isSuccessFor('Title copied')`     | Distinct message fragment |
-| a success action toast is shown for copy description | Then    | `ActionToast.isSuccessFor('Description copied')` |                         |
-| an error action toast is shown                       | Then    | `ActionToast.isError()`                        | Failure stub scenario     |
-| the knowledge list surface is visible                | Then    | `EntryList.surfaceVisible()`                   | Listbox `Entries` role    |
+| Step                                                 | Keyword | Task / question                                  | Notes                     |
+| ---------------------------------------------------- | ------- | ------------------------------------------------ | ------------------------- |
+| a success action toast is shown                      | Then    | `ActionToast.isSuccess()`                        | Reuse `.cmp-action-toast` |
+| a success action toast is shown for copy title       | Then    | `ActionToast.isSuccessFor('Title copied')`       | Distinct message fragment |
+| a success action toast is shown for copy description | Then    | `ActionToast.isSuccessFor('Description copied')` |                           |
+| an error action toast is shown                       | Then    | `ActionToast.isError()`                          | Failure stub scenario     |
+| the knowledge list surface is visible                | Then    | `EntryList.surfaceVisible()`                     | Listbox `Entries` role    |
 
 ### `@native-handoff` (optional)
 

@@ -40,7 +40,7 @@ const syncListeners: {
  *   - push messages: `syncProgress`, `syncComplete` from `App.sync` emitters.
  *
  * In the preview server the `electrobun/view` import is swapped at bundle
- * time for `tools/dev/preview/mock_electroview.script.ts`, which proxies `rpcCall`
+ * time for `packages/dev/src/preview/mock_electroview.script.ts`, which proxies `rpcCall`
  * through native `fetch` against the same `RpcApp` exposed over HTTP.
  */
 const webviewRpc = Electroview.defineRPC<DesktopRpcSchema>({
@@ -79,7 +79,11 @@ async function bridgeFetch(input: RequestInfo | URL, init?: RequestInit): Promis
   const path = `${parsed.pathname}${parsed.search}`
   const bodyText = await readInitBody(init?.body)
   const headers = extractHeaders(init?.headers)
-  const requestId = headers?.['x-request-id'] ?? headers?.['X-Request-Id']
+  const requestId = headers
+    ? 'x-request-id' in headers
+      ? headers['x-request-id']
+      : headers['X-Request-Id']
+    : undefined
 
   rpcClientLog.info('→ {method} {path}', { method, path, requestId })
 

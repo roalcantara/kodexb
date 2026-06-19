@@ -1,7 +1,7 @@
 import type { ElectrobunConfig } from 'electrobun'
 import packageJson from './package.json'
-import { rendererLogEnvPlugin } from './tools/dev/build/renderer_log_env.script'
-import { tsconfigPathsPlugin } from './tools/dev/build/tsconfig_paths.script'
+import { rendererLogEnvPlugin } from './packages/dev/src/build/renderer_log_env.script'
+import { tsconfigPathsPlugin } from './packages/dev/src/build/tsconfig_paths.script'
 
 const appIconset = 'assets/icons/app-logo.iconset'
 const tsconfigPath = new URL('./tsconfig.json', import.meta.url).pathname
@@ -33,7 +33,13 @@ export default {
   app: {
     name: packageJson.name,
     identifier: `sh.blackboard.${packageJson.name}`,
-    version: packageJson.version
+    version: packageJson.version,
+    /** Raycast / `open "kb://summon"` deep link (macOS, app in /Applications). */
+    urlSchemes: ['kb']
+  },
+  runtime: {
+    // Keep the summon agent alive when the launcher panel is dismissed (blur/minimize).
+    exitOnLastWindowClosed: false
   },
   build: {
     bun: {

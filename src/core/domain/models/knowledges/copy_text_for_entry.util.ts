@@ -5,13 +5,8 @@ import type { Knowledge } from './schemas/knowledge.schema'
  * `bookmark` / `command` → `key`; `cheat` / `task` → `doc` (body).
  */
 export function copyTextForEntry(entry: Knowledge): string {
-  switch (entry.type) {
-    case 'bookmark':
-    case 'command':
-    case 'shortcut':
-      return entry.key
-    case 'cheat':
-    case 'task':
-      return entry.doc ?? ''
+  if (entry.type === 'bookmark' || entry.type === 'command' || entry.type === 'shortcut') {
+    return entry.key
   }
+  return entry.doc ?? ''
 }

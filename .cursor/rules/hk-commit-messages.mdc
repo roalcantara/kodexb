@@ -2,14 +2,14 @@
 description: >
   When drafting, editing, or generating git commit messages (including
   Conventional Commits, commit message errors, or SCM commit descriptions),
-  match this repo's `tools/governance/policies/hooks/commit_message.script.ts` contract so
+  match this repo's `packages/ops/src/governance/policies/hooks/commit_message.script.ts` contract so
   messages pass the HK `commit-msg` hook without rewrite.
 alwaysApply: false
 ---
 
-# Commit messages must match `tools/hooks/commit_message.script.ts`
+# Commit messages must match `packages/ops/src/governance/policies/hooks/commit_message.script.ts`
 
-Single source of truth: **`tools/governance/policies/hooks/commit_message.script.ts`** (and **`assets/guides/GIT_COMMITS_GUIDE.md`** for prose style).
+Single source of truth: **`packages/ops/src/governance/policies/hooks/commit_message.script.ts`** (and **`assets/guides/GIT_COMMITS_GUIDE.md`** for prose style).
 
 When you output a **full** commit message (subject + body), it must satisfy at least:
 
@@ -29,7 +29,7 @@ When you output a **full** commit message (subject + body), it must satisfy at l
    ```bash
    _f=$(mktemp)
    printf '%s\n' '<paste message>' > "$_f"
-   bun tools/governance/policies/hooks/commit_message.script.ts "$_f"
+    bun packages/ops/src/governance/policies/hooks/commit_message.script.ts "$_f"
    rm -f "$_f"
    ```
 

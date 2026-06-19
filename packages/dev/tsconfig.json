@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "Preserve",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "verbatimModuleSyntax": true,
+    "paths": {
+      "@kb/flow": ["../flow/src/index.ts"],
+      "@kb/flow/*": ["../flow/src/*"],
+      "@kb/exec": ["../exec/src/index.ts"],
+      "@kb/exec/*": ["../exec/src/*"],
+      "@kb/ops": ["../ops/src/index.ts"],
+      "@kb/ops/*": ["../ops/src/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}

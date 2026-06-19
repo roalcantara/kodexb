@@ -133,7 +133,7 @@ local ciProfileSteps = new Mapping<String, Step> {
         check = """
           tmp="$(mktemp)"
           git log -1 --format=%B > "$tmp"
-          bun tools/governance/policies/hooks/commit_message.script.ts "$tmp"
+          bun packages/ops/src/governance/policies/hooks/commit_message.script.ts "$tmp"
           rm -f "$tmp"
           """
     }
@@ -325,7 +325,7 @@ local checkSteps = (hygieneSteps) {
 
 local commitMsgSteps = new Mapping<String, Step> {
     ["commit-message-policy"] {
-        check = "bun tools/governance/policies/hooks/commit_message.script.ts {{commit_msg_file}}"
+        check = "bun packages/ops/src/governance/policies/hooks/commit_message.script.ts {{commit_msg_file}}"
     }
 }
 

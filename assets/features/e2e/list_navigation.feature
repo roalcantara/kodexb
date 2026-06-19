@@ -21,7 +21,7 @@ Feature: List navigation
     And I expand the detail view
     And I return to the split view
     And I return to the list view
-    Then the list search is focused
+    Then the list surface is focused
     And no detail panel is visible
 
   Scenario: Row selection follows arrow keys in split view

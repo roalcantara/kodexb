@@ -15,14 +15,14 @@ export const parseNotes = (raw: RawNotes | null | undefined): NoteFragment[] => 
     return parseNotesFromBlocks([raw])
   }
 
-  return parseNotesFromBlocks(raw)
+  return parseNotesFromBlocks(raw as Array<Record<string, string> | null>)
 }
 
-function parseNotesFromBlocks(blocks: Record<string, string>[]): NoteFragment[] {
+function parseNotesFromBlocks(blocks: Array<Record<string, string> | null>): NoteFragment[] {
   const result: NoteFragment[] = []
 
   for (const item of blocks) {
-    if (item === null || typeof item !== 'object' || Array.isArray(item)) continue
+    if (item === null) continue
 
     const keys = Object.keys(item)
     if (keys.length === 0) continue

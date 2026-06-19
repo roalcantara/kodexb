@@ -8,7 +8,7 @@ ignores:
   - "**/.specify/**"
   - "**/tmp/**"
   - "**/graphify-out/**"
-  - "tools/governance/policies/ast-grep/*.rule.yml"
+  - "packages/ops/src/governance/policies/ast-grep/*.rule.yml"
 rule:
   all:
     - kind: plain_scalar

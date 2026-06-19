@@ -9,7 +9,7 @@ ignores:
   - "**/tmp/**"
   - "**/graphify-out/**"
   - "**/node_modules/**"
-  - "tools/governance/policies/ast-grep/*.rule.yml"
+  - "packages/ops/src/governance/policies/ast-grep/*.rule.yml"
 rule:
   all:
     - kind: string

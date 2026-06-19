@@ -8,10 +8,10 @@ ignores:
   - "**/.specify/**"
   - "**/tmp/**"
   - "**/graphify-out/**"
-  - "tools/governance/policies/ast-grep/**"
-  - "tools/**/migrations/**"
-  - "tools/**/migration/**"
-  - "tools/**/*migrate*.script.ts"
+  - "packages/ops/src/governance/policies/ast-grep/**"
+  - "packages/ops/src/**/migrations/**"
+  - "packages/ops/src/**/migration/**"
+  - "packages/ops/src/**/*migrate*.script.ts"
 rule:
   all:
     - kind: string

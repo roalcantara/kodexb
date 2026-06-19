@@ -106,6 +106,17 @@ export class EntryListSurfaceVisible implements Answerable {
   }
 }
 
+export class ListSurfaceIsFocused implements Answerable {
+  static now(): ListSurfaceIsFocused {
+    return new ListSurfaceIsFocused()
+  }
+
+  async answeredBy(actor: Actor): Promise<void> {
+    const surface = actor.page.getByRole('listbox', { name: 'Entries' })
+    await expect(surface).toBeFocused({ timeout: 15_000 })
+  }
+}
+
 export class EntryListSelectedRowChanged implements Answerable {
   static now(): EntryListSelectedRowChanged {
     return new EntryListSelectedRowChanged()

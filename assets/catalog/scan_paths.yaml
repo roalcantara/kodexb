@@ -3,7 +3,7 @@
 # on Feature/Scenario lines in Gherkin files).
 #
 # Add a (root, glob) pair here when a new home for spec files starts hosting
-# catalog-tagged tests. Loader: tools/governance/support/catalog_paths.script.ts.
+# catalog-tagged tests. Loader: packages/ops/src/governance/support/catalog_paths.script.ts.
 
 scan_paths:
   - root: assets/features
@@ -12,6 +12,6 @@ scan_paths:
     glob: "**/*.spec.ts"
   - root: src
     glob: "**/*.spec.tsx"
-  - root: tools
+  - root: packages/ops
     glob: "**/*.spec.ts"
 specs_root: assets/specs

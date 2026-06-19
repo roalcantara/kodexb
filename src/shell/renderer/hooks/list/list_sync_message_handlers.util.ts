@@ -44,7 +44,7 @@ export function listSyncMessageHandlers(deps: ListSyncMessageHandlerDeps) {
           phase: 'done',
           processed: result.filesProcessed,
           totalFiles: Math.max(prev.totalFiles, result.filesProcessed),
-          fileLog: prev.fileLog.length > 0 ? prev.fileLog : (result.fileLog ?? []),
+          fileLog: prev.fileLog.length > 0 ? prev.fileLog : result.fileLog,
           summary: result
         }
       })

@@ -47,8 +47,8 @@ function linksToDisplay(links: RpcKnowledge['links']): LinkDisplay[] {
 
 function primaryUrl(entry: RpcKnowledge): string | null {
   if (entry.key.startsWith('http://') || entry.key.startsWith('https://')) return entry.key
-  const firstLink = linksToDisplay(entry.links)[0]?.url
-  return firstLink ?? null
+  const link = linksToDisplay(entry.links)[0]
+  return link ? link.url : null
 }
 
 export type DetailPageViewProps = {

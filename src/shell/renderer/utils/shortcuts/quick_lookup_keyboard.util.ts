@@ -30,7 +30,10 @@ function handleShiftTabKey(
 ): boolean {
   if (e.key !== 'Tab' || !e.shiftKey) return false
   e.preventDefault()
-  setForcedMode(prev => (prev === 'chord' ? 'text' : prev === null ? 'chord' : prev === 'text' ? 'chord' : 'text'))
+  setForcedMode(prev => {
+    if (prev === 'chord') return 'text'
+    return 'chord'
+  })
   return true
 }
 

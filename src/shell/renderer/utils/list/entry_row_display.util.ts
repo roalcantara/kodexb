@@ -20,7 +20,7 @@ export function entryMetaText(entry: RpcKnowledge): string {
 }
 
 export function entryMetaSemanticClass(entry: RpcKnowledge): string {
-  switch (entry.type) {
+  switch (entry.type as string) {
     case 'command':
       return 'semantic-command'
     case 'bookmark':

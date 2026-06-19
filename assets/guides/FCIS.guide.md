@@ -10,12 +10,19 @@ Cursor does not auto-load this file; link from `.cursor/rules/codestyle.mdc` / `
 
 > 💡 A pattern that splits your codebase into two hard zones:
 
-| **ZONE**         | **LOCATION (KodexB CLI)** | **RULE**                                          |
-| ---------------- | ------------------------- | ------------------------------------------------- |
-| Functional Core  | `apps/kb/src/core/`       | Pure functions only. No I/O. No side effects.     |
-| Imperative Shell | `apps/kb/src/shell/`      | All I/O lives here. Calls core to make decisions. |
+**kb (this repo):** Desktop knowledge-base app — YAML sources on disk are authoritative;
+SQLite is a rebuildable index; renderer talks to main only via Eden Treaty. Stack
+decisions (TypeBox, no Drizzle, Fishery factories) are normative in § Stack decisions below
+and [`README.md`](./README.md) § Product snapshot.
 
-Other workspace packages use their own trees (e.g. `@kb/kli` under `packages/kli/src/` with `core/` vs `shell/` inside that package). The **idea** is always the same: pure core, imperative shell; only the path prefix changes.
+| **ZONE**         | **LOCATION (kb)** | **RULE**                                          |
+| ---------------- | ----------------- | ------------------------------------------------- |
+| Functional Core  | `src/core/`       | Pure functions only. No I/O. No side effects.     |
+| Imperative Shell | `src/shell/`      | All I/O lives here. Calls core to make decisions. |
+
+Other workspace packages use their own trees (e.g. `packages/workflow-core/src/` with
+`core/` vs shell-style modules). The **idea** is always the same: pure core, imperative shell;
+only the path prefix changes.
 
 In **this repo**, zones map to `src/core/`, `src/shared/`, `src/shell/app/`, `src/shell/main/`, and `src/shell/renderer/`. See [`ELECTROBUN.md`](./ELECTROBUN.md) for RPC wiring.
 
@@ -26,11 +33,26 @@ In **this repo**, zones map to `src/core/`, `src/shared/`, `src/shell/app/`, `sr
 - **Database:** `bun:sqlite` with typed prepared statements; no Drizzle ORM.
 - **Test data:** Fishery via `factoryFor`; YAML fixtures only under `src/__tests__/fixtures/sample/` for ImportService e2e.
 
+## Layer import rules (enforced)
+
+dependency-cruiser and ast-grep enforce these boundaries. Violations fail the quality gate.
+
+| From          | To                | Rule                                                                   |
+| ------------- | ----------------- | ---------------------------------------------------------------------- |
+| `renderer/`   | `shell/app/`      | **Forbidden** — use `@rpc/client` (Eden Treaty) only                   |
+| `core/`       | `shell/`          | **Forbidden** — core stays pure                                        |
+| `shared/`     | `shell/`          | **Forbidden** — shared stays I/O-free                                  |
+| `*.routes.ts` | `*.repository.ts` | **Forbidden** — routes delegate through `AppService`, not repositories |
+
+Every new Elysia route must also appear in `tools/dev/preview/server.script.ts` (browser preview parity).
+
+Key paths: RPC server `src/shell/main/rpc/server.ts`; schemas `src/shell/main/rpc/schemas.ts` and `src/shell/main/rpc/routes/*.routes.ts`; Eden client via `@rpc/client`.
+
 > 💡 **Shell (IMPURE)** fetches data, asks the core what to do, then acts on the answer.
 
 ```mermaid
 flowchart TB
-    subgraph SHELL[" apps/kb/src/shell/ - Imperative Shell "]
+    subgraph SHELL[" src/shell/ - Imperative Shell "]
         direction TB
         CLI["CLI commands"]
         subgraph STEPS[" 5-Step Handler Pattern "]
@@ -57,7 +79,7 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    subgraph CORE[" apps/kb/src/core/ - Functional Core "]
+    subgraph CORE[" src/core/ - Functional Core "]
         direction TB
         TYPES["types.ts"]
         VALID["validation"]
@@ -83,7 +105,7 @@ Pure functions mean you can log inputs at the shell boundary and reproduce any p
 
 **No framework lock-in at the core:**
 
-The functional core (`apps/kb/src/core/` for KodexB) has zero runtime dependencies on the shell. Switching HTTP stack, ORM, or runtime touches only the shell. Business logic in core stays untouched.
+The functional core (`src/core/` for kb) has zero runtime dependencies on the shell. Switching HTTP stack, ORM, or runtime touches only the shell. Business logic in core stays untouched.
 
 **Parallel development:**
 
@@ -95,7 +117,7 @@ Pure function signatures are the spec. canTransitionTo(current: TaskStatus, next
 
 **Safer code review:**
 
-Any PR touching only `apps/kb/src/core/` cannot introduce a regression caused by I/O, timing, or external state. That's a meaningful trust boundary.
+Any PR touching only `src/core/` cannot introduce a regression caused by I/O, timing, or external state. That's a meaningful trust boundary.
 
 **Incremental adoption:**
 
@@ -125,10 +147,10 @@ No minimum viable structure. Extract one pure function from a messy handler and 
 
 ### Key differences:
 - **[DDD][4]** encourages rich domain models—objects that encapsulate both data and behaviour (aggregates, entities, value objects with methods). FCIS enforces the opposite: data and behaviour are separate. A Task in FCIS is a plain type; `canTransitionTo` is a standalone function.
-- You can apply DDD thinking (bounded contexts, ubiquitous language) to a FCIS codebase. But you cannot use rich OOP domain objects in the functional core (`apps/kb/src/core/` here) without violating the purity constraint.
+- You can apply DDD thinking (bounded contexts, ubiquitous language) to a FCIS codebase. But you cannot use rich OOP domain objects in the functional core (`src/core/` here) without violating the purity constraint.
 - The classic Service → Repository → Database stack organises code by technical role. Business logic typically lives in a Service class that also coordinates I/O - calling repositories, dispatching events, logging. The layers are present, but the boundary between logic and I/O is blurry.
 
-**FCIS** makes that boundary a hard rule. The equivalent of a Service is split in two: pure logic goes to the core (`apps/kb/src/core/`), orchestration goes to the shell (`apps/kb/src/shell/`). There's no "service that also does I/O" - that's the entire violation FCIS exists to prevent.
+**FCIS** makes that boundary a hard rule. The equivalent of a Service is split in two: pure logic goes to the core (`src/core/`), orchestration goes to the shell (`src/shell/`). There's no "service that also does I/O" - that's the entire violation FCIS exists to prevent.
 
 ---
 
@@ -142,7 +164,7 @@ The tradeoff is pragmatism: you get most of the reasoning and testability benefi
 
 ---
 
-### The Core (`apps/kb/src/core/`)
+### The Core (`src/core/`)
 
 1. **ALLOWED:**
   - domain types
@@ -184,7 +206,7 @@ The tradeoff is pragmatism: you get most of the reasoning and testability benefi
 
 ---
 
-### The Shell (`apps/kb/src/shell/`)
+### The Shell (`src/shell/`)
 
 > 💡 Every handler follows the same 5 steps - no exceptions:
 
@@ -270,9 +292,9 @@ it('returns a new task without mutating the original', () => {
 
 ### Pre-Commit Checklist (HK)
 
-- [ ] No async/await in `apps/kb/src/core/`
-- [ ] No imports from `apps/kb/src/shell/` in `apps/kb/src/core/`
-- [ ] No console.log, process.env, fs.*, fetch in `apps/kb/src/core/`
+- [ ] No async/await in `src/core/`
+- [ ] No imports from `src/shell/` in `src/core/`
+- [ ] No console.log, process.env, fs.*, fetch in `src/core/`
 - [ ] new Date() only in shell, passed as param into core
 - [ ] All expected failures return Result<T>, nothing throws
 - [ ] Shell handlers follow parse → fetch → call → act → output

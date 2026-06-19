@@ -161,43 +161,43 @@ ls:
   tools/governance/policies/ast-grep:
     .yml: regex:^[a-z][a-z0-9-]+\.rule$
 
-  tools/governance/policies/hooks:
+  packages/ops/src/governance/policies/hooks:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/governance/registries/catalog:
+  packages/ops/src/governance/registries/catalog:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/governance/registries/skill:
+  packages/ops/src/governance/registries/skill:
     .ts: regex:^([a-z][a-z0-9_]*\.script(\.spec)?|skill_registry\.types)$
 
-  tools/governance/specs:
+  packages/ops/src/governance/specs:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/governance/policies:
+  packages/ops/src/governance/policies:
     .ts: regex:^layout_validate\.script(\.spec)?$
 
-  tools/bin:
+  packages/ops/src/bin:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/support/lib/shared:
+  packages/dev/src/preview:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/support/lib/cli:
+  packages/dev/src/build:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/dev/preview:
+  packages/ops/src/support/lib/shared:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/dev/build:
+  packages/ops/src/support/lib/cli:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/metrics/harnesses/perf:
+  packages/ops/src/metrics/harnesses/perf:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/metrics/harnesses/e2e-quality:
+  packages/ops/src/metrics/harnesses/e2e-quality:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
-  tools/tmp:
+  packages/ops/src/tmp:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
 ignore:

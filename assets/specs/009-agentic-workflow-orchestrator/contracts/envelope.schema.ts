@@ -1,7 +1,7 @@
 // Spec fixture for AWO-2 — stage-worker outcome envelope.
 // Schema shape adapted from a common agent-teams pattern, trimmed to
 // this project's surface. Ephemeral spike — promoted on the MVP slice to
-// tools/governance/specs/workflow/schemas/.
+// packages/ops/src/governance/specs/workflow/schemas/.
 // Runtime imports from that stable path, never from this spec folder.
 
 import { Type, type Static } from '@sinclair/typebox'

@@ -4,6 +4,8 @@ How kb uses **Spec Kit** and **specification-driven development (SDD)** for in-f
 features. Document authority and layer rules live in
 [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md); this guide describes the day-to-day workflow.
 
+**General agent entrypoint (no spec required):** [`README.md`](README.md).
+
 ## Spec lifecycle reference
 
 Use this quick lifecycle when routing work:

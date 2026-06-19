@@ -50,11 +50,11 @@ of Gitleaks but never replace it.
 
 Lockfile deltas are scanned via `git diff --name-only --staged bun.lock`
 plus a project-curated advisory list at
-`tools/governance/security/cve.list.yml`. The scan only touches added or
+`packages/ops/src/governance/security/cve.list.yml`. The scan only touches added or
 version-bumped packages — it does not re-scan the entire lockfile every
 run.
 
-The script entry point is `tools/governance/security/scan.script.ts`.
+The script entry point is `packages/ops/src/governance/security/scan.script.ts`.
 `bun audit` integration is wrapped behind the same scan harness so the
 advisory list and `bun audit` results compose into a single decision.
 
@@ -68,7 +68,7 @@ required safety settings on every declared `BrowserView`:
 - `navigation` has no wildcard origins
 
 Logic lives in
-`tools/governance/security/checks/electrobun_surface.script.ts`. The check
+`packages/ops/src/governance/security/checks/electrobun_surface.script.ts`. The check
 runs on every PR and in the `full` profile.
 
 ### Atomic security event logging
@@ -76,7 +76,7 @@ runs on every PR and in the `full` profile.
 Security scans emit events through the project's standard NDJSON event
 substrate (see [`OBSERVABILITY_GUIDE.md`](OBSERVABILITY_GUIDE.md)) using
 `O_APPEND` for atomic appends under concurrent invocations. The writer is
-`tools/governance/security/run_writer.script.ts`.
+`packages/ops/src/governance/security/run_writer.script.ts`.
 
 Events emitted include scan start/end, finding details (redacted), and
 the exit-policy decision (block / warn / pass). The same event substrate
@@ -85,7 +85,7 @@ powers retention and the `runs` CLI.
 ### File-selection fast path
 
 Local hook runs use a changed-files-only mode driven by
-`tools/governance/security/file_selection.script.ts`. CI runs use full
+`packages/ops/src/governance/security/file_selection.script.ts`. CI runs use full
 trees. The behavior is selected via the `--changed-only` flag in the hook
 step (`hk.pkl` `spec-security-changed`).
 
@@ -136,7 +136,7 @@ profile. If a check is wrong, fix the check or the rule, not the gate.
 ## Where security tooling lives
 
 ```
-tools/governance/security/
+packages/ops/src/governance/security/
 ├── scan.script.ts              CLI entry shell
 ├── run_writer.script.ts        O_APPEND event writer
 ├── retention.script.ts         Lazy + explicit prune
@@ -162,12 +162,12 @@ tools/governance/security/
 
 ## Runtime worker sandbox
 
-The working implement is the `tools/governance/specs/workflow/sandbox.script.ts` Adapter (L1 pure checker),
+The working implement is the `packages/ops/src/governance/specs/workflow/sandbox.script.ts` Adapter (L1 pure checker),
 wired through `workflow_invoker.script.ts`, which runs optional per-stage `sandbox` descriptor
 checks before dispatching commands:
 
 ```ts
-import { checkSandbox } from './tools/governance/specs/workflow/sandbox.script.ts'
+import { checkSandbox } from './packages/ops/src/governance/specs/workflow/sandbox.script.ts'
 
 const violation = checkSandbox(stage.sandbox, { command, path, host })
 ```

@@ -6,7 +6,7 @@ description: Official docs map and RPC shape for kb main ↔ renderer
 
 # Electrobun orientation (kb)
 
-Cursor rule (summary): use Bun per `.cursor/rules/use-bun-instead-of-node-vite-npm-pnpm.mdc`; this guide links **Blackboard Electrobun** docs and records how **kb** maps them to `design.md`.
+Cursor rule (summary): use Bun per `.cursor/rules/use-bun-instead-of-node-vite-npm-pnpm.mdc`; this guide links **Blackboard Electrobun** docs and records how **kb** wires RPC and the desktop shell (see also [`FCIS.guide.md`](./FCIS.guide.md)).
 
 ## Official documentation (read order)
 
@@ -37,7 +37,9 @@ Shared type (e.g. `KbDesktopRpcSchema` in `src/shared/rpc/kb_rpc_schema.ts`) has
 | Renderer → main (one-way)                       | **`bun.messages`**     | Renderer sends; Bun handles under `handlers.messages`.                                                                |
 | Main → renderer (request/response into webview) | **`webview.requests`** | Bun: `await win.webview.rpc.request.<method>(params)`.                                                                |
 
-**kb / `design.md` mapping:** `RendererToMain` methods align with **`bun.requests`**. `MainToRenderer` notifications align with **`webview.messages`**.
+**kb mapping:** `RendererToMain` methods align with **`bun.requests`**. `MainToRenderer` notifications align with **`webview.messages`**. Shared schema: `src/shared/rpc/kb_rpc_schema.ts`; HTTP RPC: `src/shell/main/rpc/server.ts`; route modules: `src/shell/main/rpc/routes/*.routes.ts`.
+
+**Preview mirror:** every POST `/api/...` handler added or changed must have a matching branch in [`tools/dev/preview/server.script.ts`](../../tools/dev/preview/server.script.ts).
 
 ## Build
 

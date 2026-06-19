@@ -1,5 +1,5 @@
 export type { LogRecord, Sink } from '@logtape/logtape'
-export { getLogger, withContext } from '@logtape/logtape'
+export { getLogger, type Logger, withContext } from '@logtape/logtape'
 export { type RepositoryStmts, repositoryStmts, type SqlEntry } from './db_query.logger'
 export { isLogVerbosity, type LogVerbosity, parseLogVerbosity } from './log_verbosity'
 export { configureMainLogging } from './main.config'

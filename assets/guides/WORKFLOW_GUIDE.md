@@ -13,10 +13,10 @@ event substrate.
 
 The workflow engine is split into two Bun workspace packages:
 
-| Package | Path | Layer | Owns |
-| --- | --- | --- | --- |
-| `@kb/workflow-core` | `packages/workflow-core/` | L1 (pure) | schemas, machine, evidence, intervention, snapshot, sandbox_policy, execution_policy |
-| `@kb/workflow-runtime` | `packages/workflow-runtime/` | L2 (runtime) | orchestrator, invokers, persistence, profile_loader, memory, retro, providers |
+| Package                | Path                         | Layer        | Owns                                                                                 |
+| ---------------------- | ---------------------------- | ------------ | ------------------------------------------------------------------------------------ |
+| `@kb/workflow-core`    | `packages/workflow-core/`    | L1 (pure)    | schemas, machine, evidence, intervention, snapshot, sandbox_policy, execution_policy |
+| `@kb/workflow-runtime` | `packages/workflow-runtime/` | L2 (runtime) | orchestrator, invokers, persistence, profile_loader, memory, retro, providers        |
 
 Governance CLI seams (conformance, crossref, review_handoff, policy plumbing) stay at
 `tools/governance/specs/workflow/` and import from the packages.
@@ -50,18 +50,18 @@ packages/workflow-core/src/schemas/profile.schema.ts
 
 ### Required top-level fields
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
-| `schema_version` | string | Must be `009.1.0` |
-| `name` | string | Profile name |
-| `execution_policy` | object | Command prefix allowlist (see below) |
-| `stages` | array[StageDefinition] | Stage graph |
-| `transitions` | array[StageTransition] | Allowed state transitions |
-| `terminal` | array[string] | Stage ids whose DONE ends the workflow |
-| `default_retry` | RetryPolicy | Default retry behavior |
-| `memory` | MemoryPolicy | Memory conflict and retention |
-| `providers` | ProviderBindings | Provider command bindings |
-| `shutdown` | ShutdownPolicy | Graceful shutdown knobs |
+| Field              | Type                   | Description                            |
+| ------------------ | ---------------------- | -------------------------------------- |
+| `schema_version`   | string                 | Must be `009.1.0`                      |
+| `name`             | string                 | Profile name                           |
+| `execution_policy` | object                 | Command prefix allowlist (see below)   |
+| `stages`           | array[StageDefinition] | Stage graph                            |
+| `transitions`      | array[StageTransition] | Allowed state transitions              |
+| `terminal`         | array[string]          | Stage ids whose DONE ends the workflow |
+| `default_retry`    | RetryPolicy            | Default retry behavior                 |
+| `memory`           | MemoryPolicy           | Memory conflict and retention          |
+| `providers`        | ProviderBindings       | Provider command bindings              |
+| `shutdown`         | ShutdownPolicy         | Graceful shutdown knobs                |
 
 ### execution_policy
 
@@ -85,11 +85,11 @@ execution_policy:
 
 ### kb authoring convention: `mise = verbs / hk = events`
 
-| Tool | Convention |
-| ---- | ---------- |
+| Tool       | Convention                                            |
+| ---------- | ----------------------------------------------------- |
 | `mise run` | SDD lifecycle verbs (`spec`, `lint`, `audit`, `gate`) |
-| `hk check` | Quality-gate checking (pre-commit, CI) |
-| `bun run` | Scripted tooling (`bun test`, `bun run <script>`) |
+| `hk check` | Quality-gate checking (pre-commit, CI)                |
+| `bun run`  | Scripted tooling (`bun test`, `bun run <script>`)     |
 
 ## Stage definitions
 
@@ -146,11 +146,11 @@ tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.shared.json
 The profile's `memory.conflict` field controls how the orchestrator handles
 conflicting values between existing and incoming memory:
 
-| Policy | Behaviour |
-| ------ | --------- |
+| Policy          | Behaviour                                        |
+| --------------- | ------------------------------------------------ |
 | `prefer_latest` | Incoming overwrites existing silently — no pause |
-| `prompt_user` | Conflict blocks the merge; operator must resolve |
-| `block` | Conflict fails the operation with a diagnostic |
+| `prompt_user`   | Conflict blocks the merge; operator must resolve |
+| `block`         | Conflict fails the operation with a diagnostic   |
 
 Default (`prompt_user`) is the safest default for human-supervised runs.
 
@@ -208,3 +208,31 @@ orchestrator resumes. Approved stages skip the `human_gated` guard.
 Envelopes that carry an `idempotency_key` are checked against the run NDJSON
 tail. If the key already appears in a completed task, the stage is skipped
 rather than re-dispatched.
+
+## Kit smoke operator dogfood
+
+Manual operator recipe for the **committed** smoke fixture (not live `assets/specs/NNN-*`
+dirs). Automated unattended path: `mise run spec test smoke` (see [`CI_GUIDE.md`](CI_GUIDE.md)
+§ Nightly smoke).
+
+**Fixture:** `tools/__tests__/fixtures/workflow/smoke-feature`
+
+**Prerequisites:** repo root; `mise` + `bun`; optional clean gate markers:
+`rm -rf tools/__tests__/fixtures/workflow/smoke-feature/.gates`
+
+| Intent                               | Command                                                                     |
+| ------------------------------------ | --------------------------------------------------------------------------- |
+| Peek next stage                      | `mise run spec kit next <fixture> --dry-run`                                |
+| Auto-advance until next human gate   | `mise run spec kit next <fixture> --loop` (expect exit `1` + approval hint) |
+| Clear one human gate + run next verb | `mise run spec kit next <fixture> --approve`                                |
+| Workflow alias (dry)                 | `mise run spec workflow run <fixture> --dry-run`                            |
+
+**Expected checks:**
+
+1. `--dry-run` stdout contains `review-spec` and a gate hint (`--approve` or operator review).
+2. `--loop` stderr contains `human gate "review-spec" requires approval`; exit `1` (recoverable pause).
+3. `--approve` stdout contains `kit checklist: dispatching /speckit-checklist`; exit `0`.
+4. `--dry-run` after a successful `--approve` differs from the first dry-run (stage advanced).
+
+Stub LLM verbs print dispatch lines and exit `0` without real `/speckit-*` or `gh` calls.
+Full unattended loop to terminal gate is CI/`spec test smoke`, not this recipe.

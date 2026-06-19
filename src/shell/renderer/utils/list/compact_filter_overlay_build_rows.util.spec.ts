@@ -14,7 +14,7 @@ describe('compactFilterOverlayBuildRows', () => {
         const sections = groupFilterRowsIntoSections(rows)
         expect(sections.map(s => s.title)).toEqual(['Quick', 'Task views', 'Types', 'Tags'])
         expect(sections[0]?.rows).toHaveLength(1)
-        expect(sections[1]?.rows.length).toBeGreaterThan(0)
+        expect(sections.some(section => section.title === 'Task views' && section.rows.length > 0)).toBe(true)
       })
     })
   })

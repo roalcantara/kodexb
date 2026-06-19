@@ -4,17 +4,20 @@
 id: tools-must-use-script-suffix
 language: TypeScript
 files:
-  - 'tools/**/*.ts'
+  - 'packages/ops/**/*.ts'
+  - 'packages/dev/**/*.ts'
 ignores:
-  - 'tools/**/*.script.ts'
-  - 'tools/**/*.script.spec.ts'
-  - 'tools/**/*.types.ts'
-  - 'tools/**/*.schema.ts'
-  - 'tools/**/*.schema.spec.ts'
+  - 'packages/ops/src/**/*.script.ts'
+  - 'packages/ops/src/**/*.script.spec.ts'
+  - 'packages/ops/src/**/*.types.ts'
+  - 'packages/ops/src/**/*.schema.ts'
+  - 'packages/ops/src/**/*.schema.spec.ts'
+  - 'packages/dev/src/**/*.script.ts'
+  - 'packages/dev/src/**/*.script.spec.ts'
 severity: error
 rule:
   kind: program
 message: >
-  Tools TypeScript must use the .script.ts suffix (e.g. tools/governance/registries/catalog/catalog.script.ts).
+  Tools TypeScript must use the .script.ts suffix (e.g. packages/ops/src/governance/registries/catalog/catalog.script.ts).
   Co-located tests use .script.spec.ts; type-only modules use .types.ts.
 note: See assets/guides/CODESTYLE_GUIDE.md — Tools directory naming.

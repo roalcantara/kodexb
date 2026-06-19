@@ -56,11 +56,11 @@ module.exports = {
       },
     },
     {
-      name: 'tools-non-dev-no-import-src',
+      name: 'ops-no-import-src',
       severity: 'error',
       comment:
-        'Only tools/dev/** may import src/ — see assets/guides/TOOLS_GUIDE.md',
-      from: { path: '^tools/(?!dev/)' },
+        '@kb/ops must not import src/ — decoupled from app source. @kb/dev may import src/ for bundler plugins.',
+      from: { path: '^packages/ops/src/' },
       to: { path: '^src/' },
     },
   ],

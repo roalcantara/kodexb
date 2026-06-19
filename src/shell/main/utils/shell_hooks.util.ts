@@ -7,6 +7,7 @@ import {
   type HandoffResult,
   type HandoffServices
 } from '../handoff/handoff_registry.service'
+import { adaptPositionForNativeWindow, adaptPositionFromNativeWindow } from '../window/darwin_window_frame.util'
 import { isUsableWorkArea, resolveInitialFrame, type Size, type WindowFrame } from '../window/placement.util'
 
 export type RunEntryHandoff = (
@@ -15,7 +16,7 @@ export type RunEntryHandoff = (
   services: HandoffServices
 ) => HandoffResult
 
-export const MAIN_WINDOW_DEFAULT_SIZE = { width: 680, height: 600 } as const satisfies Size
+export const MAIN_WINDOW_DEFAULT_SIZE = { width: 748, height: 600 } as const satisfies Size
 export const MAIN_WINDOW_RENDERER_URL = 'views://shell/index.html' as const
 
 export type MainWindowLike = {
@@ -37,12 +38,19 @@ export type ShellHooksUtils = {
   }) => Promise<string[]>
 }
 
+export type WindowPositionAdapter = {
+  platform: NodeJS.Platform
+  windowHeight: number
+  getDisplay: () => Display
+  getPrimaryDisplay: () => Display
+}
+
 /**
  * Initial window frame from the primary display, with debug logging when work area is missing.
  */
 export function computeInitialFrameFromDisplay(
   primary: Display | null | undefined,
-  log: { debug: (message: string) => void },
+  log: { debug: (message: string, properties?: Record<string, unknown>) => void },
   size: Size = MAIN_WINDOW_DEFAULT_SIZE
 ): WindowFrame {
   if (!isUsableWorkArea(primary?.workArea)) {
@@ -77,7 +85,8 @@ export function createShellHooks(
   getWin: () => MainWindowLike | null,
   utils: ShellHooksUtils,
   handoffServices?: HandoffServices,
-  runHandoff: RunEntryHandoff = defaultRunEntryHandoff
+  runHandoff: RunEntryHandoff = defaultRunEntryHandoff,
+  positionAdapter?: WindowPositionAdapter
 ): AppShellHooks {
   return {
     resizeWindow: (width, height) => {
@@ -86,17 +95,42 @@ export function createShellHooks(
     hideWindow: () => {
       getWin()?.minimize()
     },
-    getWindowPosition: () => getWin()?.getPosition() ?? null,
+    getWindowPosition: () => {
+      const win = getWin()
+      if (!win) return null
+      const native = win.getPosition()
+      if (!positionAdapter) return native
+      return adaptPositionFromNativeWindow(
+        native,
+        positionAdapter.platform,
+        positionAdapter.getDisplay(),
+        positionAdapter.getPrimaryDisplay(),
+        positionAdapter.windowHeight
+      )
+    },
     setWindowPosition: (x, y) => {
-      getWin()?.setPosition(x, y)
+      const win = getWin()
+      if (!win) return
+      if (!positionAdapter) {
+        win.setPosition(x, y)
+        return
+      }
+      const native = adaptPositionForNativeWindow(
+        { x, y },
+        positionAdapter.platform,
+        positionAdapter.getDisplay(),
+        positionAdapter.getPrimaryDisplay(),
+        positionAdapter.windowHeight
+      )
+      win.setPosition(native.x, native.y)
     },
     openExternal: url => openExternalWithFallback(url, utils, handoffServices, runHandoff),
-    showOpenDialog: async opts => {
-      const properties = opts?.properties ?? []
+    showOpenDialog: async (opts = {}) => {
+      const properties = opts.properties ?? []
       const canChooseDirectory = properties.includes('openDirectory')
       const canChooseFiles = properties.length === 0 || properties.includes('openFile')
       const paths = await utils.openFileDialog({
-        startingFolder: opts?.defaultPath,
+        startingFolder: opts.defaultPath,
         canChooseFiles,
         canChooseDirectory,
         allowsMultipleSelection: false
@@ -193,6 +227,9 @@ export function buildBrowserWindowCreateOptions<Rpc>(frame: WindowFrame, rpc: Rp
     frame,
     titleBarStyle: (isDarwin ? 'hidden' : 'default') as 'hidden' | 'default',
     transparent: true,
+    // Launcher agent: start tucked away on macOS until summon (Raycast, dock, or hotkey).
+    hidden: isDarwin,
+    activate: !isDarwin,
     rpc
   }
 }

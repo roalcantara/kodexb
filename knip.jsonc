@@ -11,15 +11,19 @@
     "bdd/e2e/support/fixtures.support.ts",
     "bdd/e2e/steps/**/*.ts",
     "bdd/e2e/support/preview_with_fixture.support.ts",
-    "tools/metrics/harnesses/e2e-quality/**/*.ts"
+    "bdd/e2e/screenplay/*.task.ts",
+    "bin/*.script.ts"
   ],
-  "project": [
-    "src/**/*.ts",
-    "src/shell/renderer/**/*.tsx",
-    "bdd/e2e/**/*.ts",
-    "tools/metrics/harnesses/e2e-quality/**/*.ts"
-  ],
-  "ignoreExportsUsedInFile": true,
+  "project": ["src/**/*.ts", "src/shell/renderer/**/*.tsx", "bdd/e2e/**/*.ts"],
   "ignoreDependencies": ["@types/three", "tailwindcss", "@tailwindcss/cli"],
-  "ignoreBinaries": ["mise"]
+  "ignoreBinaries": ["mise"],
+  "ignoreFiles": [
+    "packages/ops/src/bin/*.script.ts",
+    "packages/exec/src/kit_verbs/*.script.ts",
+    "packages/ops/src/governance/security/**/*.script.ts",
+    "packages/ops/src/governance/specs/**/*.script.ts",
+    "packages/ops/src/governance/registries/**/*.script.ts",
+    "packages/ops/src/governance/policies/hooks/*.script.ts",
+    "packages/ops/src/metrics/harnesses/**/*.script.ts"
+  ]
 }

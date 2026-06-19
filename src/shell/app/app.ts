@@ -55,7 +55,7 @@ export class App {
   private readonly listCache = new Map<string, RpcListEntry[]>()
   private listStatsCache: ListStats | null = null
   private dbStatsCache: RpcDbStats | null = null
-  private syncInFlight = false
+  private readonly syncGate = { inFlight: false }
   private readonly emit: SyncEmitter
   private readonly shellDelegates: ReturnType<typeof createAppShellDelegates>
 
@@ -94,7 +94,7 @@ export class App {
   }
 
   getDbForTaskMutation() {
-    if (this.syncInFlight) {
+    if (Reflect.get(this.syncGate, 'inFlight') === true) {
       throw new SyncDatabaseBusyError()
     }
     if (!this.db) {
@@ -179,7 +179,7 @@ export class App {
     const dir = sourcesDir ?? this.loaded.sources.path
     const dbPath = this.loaded.database.path
     const { raw: dbForSnapshot } = this.getDb()
-    this.syncInFlight = true
+    this.syncGate.inFlight = true
     try {
       return await runSourceImportSync({
         sourcesDir: dir,
@@ -192,7 +192,7 @@ export class App {
         testHooks
       })
     } finally {
-      this.syncInFlight = false
+      this.syncGate.inFlight = false
       this.closeDb()
     }
   }

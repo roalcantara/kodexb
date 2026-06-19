@@ -1,5 +1,5 @@
 # console.* is banned inside src/. Use getLogger([...]) from @shared/logging.
-# tools/ and test helpers may use console freely.
+# packages/ops/ and test helpers may use console freely.
 id: no-console-in-src
 language: TypeScript
 files:

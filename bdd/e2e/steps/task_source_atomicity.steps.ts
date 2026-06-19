@@ -20,7 +20,7 @@ async function setE2eFaultMode(page: import('@playwright/test').Page, mode: stri
   if (!resp.ok()) {
     throw new Error(
       'e2e/fault-mode endpoint not available. Start preview server with:\n' +
-        '  KB_E2E_FAULT_INJECTION=1 bun tools/dev/preview/server.script.ts'
+        '  KB_E2E_FAULT_INJECTION=1 bun packages/dev/src/preview/server.script.ts'
     )
   }
 }
