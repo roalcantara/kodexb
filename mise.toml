@@ -23,6 +23,7 @@ GOVERNANCE_LEVEL="standard"
 BLOCK_ON_THREAT="true"
 
 [tasks]
+"validate-launcher-placement" = { description = "Unit window specs + optional macOS desktop placement probe (KB_PLACEMENT_PROBE=1)", run = "bun tools/dev/launcher_placement_probe.script.ts" }
 "project" = { description = "Manage setup, dependencies, cleanup, icons, repository, and local maintenance", usage = '''
     cmd "setup" {}
     cmd "prepare" { flag "--ci" help="Install dependencies for CI" }

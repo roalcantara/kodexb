@@ -8,12 +8,14 @@ import {
   MACOS_MENU_BAR_INSET,
   normalizeDisplay,
   normalizeRectangle,
+  resolveDisplayAtCursor,
   resolveDisplayForPlacement,
   resolveEffectiveWorkArea,
   resolveInitialFrame,
   SAFE_FALLBACK_X,
   SAFE_FALLBACK_Y
 } from './placement.util'
+import { primaryDisplay } from './window.spec.fixtures'
 
 const fakeDisplay = (workArea: ReturnType<typeof factoryFor<'rectangle'>>) => ({
   id: 1,
@@ -22,6 +24,15 @@ const fakeDisplay = (workArea: ReturnType<typeof factoryFor<'rectangle'>>) => ({
   scaleFactor: 1,
   isPrimary: true
 })
+
+const bogusBottomStrip = (id: number) =>
+  normalizeDisplay({
+    id,
+    bounds: { x: 0, y: 0, width: 1920, height: 1080 },
+    workArea: { x: 0, y: 980, width: 1920, height: 100 },
+    scaleFactor: 2,
+    isPrimary: true
+  })
 
 describe('normalizeDisplay()', () => {
   it('uses bounds when workArea is missing', () => {
@@ -37,13 +48,7 @@ describe('normalizeDisplay()', () => {
   })
 
   it('replaces a thin work-area strip pinned to the bottom edge', () => {
-    const normalized = normalizeDisplay({
-      id: 3,
-      bounds: { x: 0, y: 0, width: 1920, height: 1080 },
-      workArea: { x: 0, y: 980, width: 1920, height: 100 },
-      scaleFactor: 2,
-      isPrimary: true
-    })
+    const normalized = bogusBottomStrip(3)
 
     expect(normalized.workArea).toEqual({
       x: 0,
@@ -233,6 +238,59 @@ describe('resolveDisplayForPlacement()', () => {
   })
 })
 
+describe('resolveDisplayAtCursor()', () => {
+  const primary = primaryDisplay
+  const external = {
+    id: 3,
+    bounds: { x: 1710, y: 0, width: 3008, height: 1692 },
+    workArea: { x: 1710, y: 0, width: 3008, height: 1692 },
+    scaleFactor: 2,
+    isPrimary: false
+  }
+
+  it('returns the display under the cursor', () => {
+    const screen = {
+      getCursorScreenPoint: () => ({ x: 3272, y: 878 }),
+      getAllDisplays: () => [primary, external],
+      getPrimaryDisplay: () => primary
+    }
+
+    expect(resolveDisplayAtCursor(screen).id).toBe(external.id)
+  })
+
+  it('returns the primary display when the cursor is on it', () => {
+    const screen = {
+      getCursorScreenPoint: () => ({ x: 800, y: 400 }),
+      getAllDisplays: () => [primary, external],
+      getPrimaryDisplay: () => primary
+    }
+
+    expect(resolveDisplayAtCursor(screen).id).toBe(primary.id)
+  })
+
+  it('falls back to the primary display when the cursor is off every display', () => {
+    const screen = {
+      getCursorScreenPoint: () => ({ x: -5000, y: -5000 }),
+      getAllDisplays: () => [primary, external],
+      getPrimaryDisplay: () => primary
+    }
+
+    expect(resolveDisplayAtCursor(screen).id).toBe(primary.id)
+  })
+
+  it('falls back to the primary display when getAllDisplays throws', () => {
+    const screen = {
+      getCursorScreenPoint: () => ({ x: 3272, y: 878 }),
+      getAllDisplays: (): never => {
+        throw new Error('no screens')
+      },
+      getPrimaryDisplay: () => primary
+    }
+
+    expect(resolveDisplayAtCursor(screen).id).toBe(primary.id)
+  })
+})
+
 describe('resolveInitialFrame()', () => {
   const windowSize = factoryFor('windowSize')
   const safeFallbackFrame = factoryFor('rectangle', {
@@ -264,13 +322,7 @@ describe('resolveInitialFrame()', () => {
   })
 
   describe('when work area is a bogus bottom strip', () => {
-    const display = normalizeDisplay({
-      id: 4,
-      bounds: { x: 0, y: 0, width: 1920, height: 1080 },
-      workArea: { x: 0, y: 980, width: 1920, height: 100 },
-      scaleFactor: 2,
-      isPrimary: true
-    })
+    const display = bogusBottomStrip(4)
 
     it('centers using corrected bounds instead of the strip', () => {
       expect(resolveInitialFrame(display, windowSize)).toEqual(

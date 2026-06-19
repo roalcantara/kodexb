@@ -72,11 +72,14 @@ describe('isLauncherDismissed', () => {
 })
 
 describe('presentLauncherWindow', () => {
-  it('sets frame before show and raises the panel', () => {
+  it('locks size, shows, then positions with screen coordinates', () => {
     const win = makeLauncherWindow()
     const callOrder: string[] = []
-    win.setFrame = mock(() => {
-      callOrder.push('setFrame')
+    win.setSize = mock((w: number, h: number) => {
+      callOrder.push(`setSize:${w}x${h}`)
+    })
+    win.setFrame = mock((x: number, y: number, w: number, h: number) => {
+      callOrder.push(`setFrame:${x},${y},${w}x${h}`)
     })
     win.show = mock(() => {
       callOrder.push('show')
@@ -84,7 +87,10 @@ describe('presentLauncherWindow', () => {
 
     presentLauncherWindow(win, screen, log)
 
-    expect(callOrder.indexOf('setFrame')).toBeLessThan(callOrder.indexOf('show'))
+    expect(callOrder.some(entry => entry.startsWith('setSize:748x600'))).toBe(true)
+    expect(callOrder.indexOf('show')).toBeLessThan(callOrder.findIndex(entry => entry.startsWith('setFrame:')))
+    expect(win.setSize).toHaveBeenCalledWith(748, 600)
+    expect(win.setFrame).toHaveBeenCalledWith(586, 240, 748, 600)
     expect(win.setVisibleOnAllWorkspaces).toHaveBeenCalledWith(true)
     expect(win.setAlwaysOnTop).toHaveBeenCalledWith(true)
     expect(win.show).toHaveBeenCalled()

@@ -4,6 +4,7 @@
  */
 /** biome-ignore-all lint/style/noMagicNumbers: magic numbers are allowed for window placement */
 import type { Display, Rectangle } from 'electrobun/bun'
+import { findDisplayAtPoint } from './display_at_cursor.util'
 
 export type Size = { width: number; height: number }
 export type WindowFrame = Rectangle
@@ -174,10 +175,7 @@ export function centerBoundsInWorkArea(workArea: Rectangle, size: Size): WindowF
 }
 
 /**
- * Resolve the display for launcher placement.
- *
- * Always uses the **primary display** (Electrobun Utils pattern). Multi-monitor
- * cursor placement is unreliable on macOS when the built-in panel is not primary.
+ * Resolve the **primary** display for launcher placement (Electrobun Utils pattern).
  */
 export function resolveDisplayForPlacement(screen: { getPrimaryDisplay: () => Display }): Display {
   try {
@@ -191,6 +189,28 @@ export function resolveDisplayForPlacement(screen: { getPrimaryDisplay: () => Di
       isPrimary: true
     })
   }
+}
+
+/**
+ * Resolve the display that currently contains the cursor, falling back to the
+ * primary display when the cursor is off every display or the Screen API throws.
+ *
+ * The Electrobun Screen API reports cursor and display bounds in the same
+ * top-left-origin global space, so {@link findDisplayAtPoint} can match directly.
+ */
+export function resolveDisplayAtCursor(screen: {
+  getCursorScreenPoint: () => { x: number; y: number }
+  getAllDisplays: () => Display[]
+  getPrimaryDisplay: () => Display
+}): Display {
+  try {
+    const displays = screen.getAllDisplays().map(normalizeDisplay)
+    const atCursor = findDisplayAtPoint(screen.getCursorScreenPoint(), displays)
+    if (atCursor) return atCursor
+  } catch {
+    // fall through to primary
+  }
+  return resolveDisplayForPlacement(screen)
 }
 
 /**

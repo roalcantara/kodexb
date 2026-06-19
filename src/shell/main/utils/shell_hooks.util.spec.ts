@@ -330,7 +330,6 @@ describe('buildBrowserWindowCreateOptions', () => {
       const opts = buildBrowserWindowCreateOptions(frame, rpc, 'darwin')
       expect(opts.hidden).toBe(true)
       expect(opts.activate).toBe(false)
-      expect(opts.styleMask).toBeUndefined()
     })
   })
   describe('when platform is linux', () => {

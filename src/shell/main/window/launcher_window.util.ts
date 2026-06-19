@@ -4,8 +4,8 @@ import {
   MAIN_WINDOW_DEFAULT_SIZE,
   type MainWindowLike
 } from '../utils/shell_hooks.util'
-import { adaptFrameForNativeWindow } from './darwin_window_frame.util'
-import { ensureWindowFrame, resolveDisplayForPlacement } from './placement.util'
+import { appendLauncherProbe, isLauncherProbeEnabled } from './launcher_frame_probe.util'
+import { ensureWindowFrame, resolveDisplayAtCursor, resolveDisplayForPlacement } from './placement.util'
 
 /** LogTape string + props logger (also satisfied by test mocks). */
 export type LauncherPresentLog = {
@@ -56,10 +56,12 @@ export function isLauncherDismissed(): boolean {
 }
 
 /**
- * Center the launcher on the **primary display** and raise it as a floating panel.
+ * Center the launcher on the **display under the cursor** and raise it as a
+ * floating panel.
  *
- * Placement follows the Electrobun Utils Screen example: center within
- * `primary.workArea`, then pass the frame to `BrowserWindow.setFrame`.
+ * Placement follows the Electrobun Utils Screen example: center within the
+ * cursor display's `workArea`, realize the window with `show()`, then pass
+ * **screen coordinates** to `setFrame` (no native Y-flip after realize).
  */
 export function presentLauncherWindow(
   win: LauncherWindow,
@@ -68,24 +70,60 @@ export function presentLauncherWindow(
   options: PresentLauncherOptions = {}
 ): void {
   const primary = resolveDisplayForPlacement(screen)
+  const target = resolveDisplayAtCursor(screen)
   const screenFrame = ensureWindowFrame(
-    computeInitialFrameFromDisplay(primary, log, MAIN_WINDOW_DEFAULT_SIZE),
+    computeInitialFrameFromDisplay(target, log, MAIN_WINDOW_DEFAULT_SIZE),
     MAIN_WINDOW_DEFAULT_SIZE
   )
-  const platform = options.platform ?? process.platform
-  const nativeFrame = adaptFrameForNativeWindow(screenFrame, platform, primary, primary)
+  const { width, height } = MAIN_WINDOW_DEFAULT_SIZE
+
   log.info(
-    `launcher present primary=${primary.id} screen=${screenFrame.x},${screenFrame.y} native=${nativeFrame.x},${nativeFrame.y} ${screenFrame.width}x${screenFrame.height} work=${primary.workArea.x},${primary.workArea.y} ${primary.workArea.width}x${primary.workArea.height}`,
-    { primaryId: primary.id, bounds: primary.bounds, workArea: primary.workArea, screenFrame, nativeFrame }
+    `launcher present target=${target.id} primary=${primary.id} screen=${screenFrame.x},${screenFrame.y} ${screenFrame.width}x${screenFrame.height} work=${target.workArea.x},${target.workArea.y} ${target.workArea.width}x${target.workArea.height}`,
+    {
+      targetId: target.id,
+      primaryId: primary.id,
+      bounds: target.bounds,
+      workArea: target.workArea,
+      screenFrame
+    }
   )
 
   options.armBlurGuard?.()
 
   win.setAlwaysOnTop(true)
   win.setVisibleOnAllWorkspaces(true)
-  win.setFrame(nativeFrame.x, nativeFrame.y, screenFrame.width, screenFrame.height)
+  win.setSize(width, height)
   win.show()
   win.activate()
+  win.setFrame(screenFrame.x, screenFrame.y, screenFrame.width, screenFrame.height)
+  win.setSize(width, height)
+
+  const readback = win.getFrame?.() ?? null
+  if (readback) {
+    log.debug(`launcher frame readback x=${readback.x} y=${readback.y} ${readback.width}x${readback.height}`, {
+      readback
+    })
+  }
+
+  if (isLauncherProbeEnabled()) {
+    appendLauncherProbe({
+      ts: new Date().toISOString(),
+      event: 'present',
+      cursor: screen.getCursorScreenPoint(),
+      displays: screen.getAllDisplays().map(d => ({
+        id: d.id,
+        bounds: d.bounds,
+        workArea: d.workArea
+      })),
+      targetId: target.id,
+      primaryId: primary.id,
+      screenFrame,
+      setFrameArgs: screenFrame,
+      setSizeBefore: { width, height },
+      setSizeAfter: { width, height },
+      readback
+    })
+  }
 
   launcherRaised = true
 }

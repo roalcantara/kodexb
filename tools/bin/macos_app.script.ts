@@ -67,28 +67,30 @@ export function runMacosAction(action: 'install' | 'uninstall' | 'login-item', m
     process.exit(1)
   }
 
-  switch (action) {
-    case 'install':
-      runShellCommand(buildInstallScript())
-      console.log(
-        '\nIf ⌘⌥/ does not summon kb, grant Accessibility for kb in System Settings → Privacy & Security, then restart the app.'
-      )
-      return
-    case 'uninstall':
-      runShellCommand(buildUninstallScript())
-      return
-    case 'login-item':
-      if (!mode) {
-        console.error('Specify enable or disable for login-item.')
-        process.exit(1)
-      }
-      runAppleScript(
-        buildLoginItemScript(mode),
-        mode === 'enable'
-          ? 'Login item enabled: kb will start hidden at login (/Applications/kb.app).'
-          : 'Login item disabled: kb removed from Login Items.'
-      )
-      return
+  if (action === 'install') {
+    runShellCommand(buildInstallScript())
+    console.log(
+      '\nIf ⌘⌥/ does not summon kb, grant Accessibility for kb in System Settings → Privacy & Security, then restart the app.'
+    )
+    return
+  }
+
+  if (action === 'uninstall') {
+    runShellCommand(buildUninstallScript())
+    return
+  }
+
+  if (action === 'login-item') {
+    if (!mode) {
+      console.error('Specify enable or disable for login-item.')
+      process.exit(1)
+    }
+    runAppleScript(
+      buildLoginItemScript(mode),
+      mode === 'enable'
+        ? 'Login item enabled: kb will start hidden at login (/Applications/kb.app).'
+        : 'Login item disabled: kb removed from Login Items.'
+    )
   }
 }
 

@@ -15,7 +15,6 @@ import {
   createShellHooks,
   MAIN_WINDOW_DEFAULT_SIZE
 } from './utils/shell_hooks.util'
-import { adaptFrameForNativeWindow } from './window/darwin_window_frame.util'
 import { createExternalFocusHandoff } from './window/external_focus_handoff.util'
 import {
   dismissLauncherWindow,
@@ -25,7 +24,12 @@ import {
   registerLauncherSummonShortcut,
   toggleLauncherWindow
 } from './window/launcher_window.util'
-import { ensureWindowFrame, normalizeDisplay, resolveDisplayForPlacement } from './window/placement.util'
+import {
+  ensureWindowFrame,
+  normalizeDisplay,
+  resolveDisplayAtCursor,
+  resolveDisplayForPlacement
+} from './window/placement.util'
 
 type WebviewRpc = ReturnType<typeof createWebviewRpc>
 
@@ -112,7 +116,7 @@ async function bootstrap() {
         ? {
             platform: process.platform,
             windowHeight: MAIN_WINDOW_DEFAULT_SIZE.height,
-            getDisplay: () => resolveDisplayForPlacement(screenApi()),
+            getDisplay: () => resolveDisplayAtCursor(screenApi()),
             getPrimaryDisplay: () => normalizeDisplay(Screen.getPrimaryDisplay())
           }
         : undefined
@@ -136,10 +140,9 @@ async function bootstrap() {
     computeInitialFrameFromDisplay(primaryDisplay, logger, MAIN_WINDOW_DEFAULT_SIZE),
     MAIN_WINDOW_DEFAULT_SIZE
   )
-  const initialFrame = adaptFrameForNativeWindow(initialScreenFrame, process.platform, primaryDisplay, primaryDisplay)
-  logger.debug('window create', { screenFrame: initialScreenFrame, nativeFrame: initialFrame })
+  logger.debug('window create', { screenFrame: initialScreenFrame })
 
-  const mainWin = new BrowserWindow(buildBrowserWindowCreateOptions(initialFrame, webviewRpc, process.platform))
+  const mainWin = new BrowserWindow(buildBrowserWindowCreateOptions(initialScreenFrame, webviewRpc, process.platform))
   win = mainWin
 
   if (pendingSummon) {
