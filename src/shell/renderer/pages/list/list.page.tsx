@@ -11,6 +11,7 @@ export function ListPage() {
     showSettings,
     filterOpen: p.filter.filterOpen,
     detailEntry: p.sel.detailEntry,
+    selectedId: p.sel.selectedId,
     listPageRef,
     filterButtonRef: p.filter.filterButtonRef,
     searchInputRef: p.searchInputRef,

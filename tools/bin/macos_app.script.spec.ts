@@ -18,13 +18,14 @@ describe('buildLoginItemScript', () => {
 
     expect(script).toContain('make login item at end')
     expect(script).toContain('/Applications/kb.app')
-    expect(script).toContain('hidden:false')
+    expect(script).toContain('hidden:true')
+    expect(script).toContain('every login item whose path is kbPath')
   })
 
-  it('builds a disable script that removes the installed app login item', () => {
+  it('builds a disable script that removes the login item by bundle path', () => {
     const script = buildLoginItemScript('disable')
 
-    expect(script).toContain('delete login item "kb"')
-    expect(script).toContain('try')
+    expect(script).toContain('path of li is kbPath')
+    expect(script).not.toContain('delete login item "kb"')
   })
 })

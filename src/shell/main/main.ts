@@ -3,6 +3,7 @@ import Electrobun, { BrowserWindow, GlobalShortcut, Screen, Utils } from 'electr
 import { App } from '../app/app'
 import { loadConfig } from '../app/config/config.loader'
 import type { HandoffServices } from './handoff/handoff_registry.service'
+import { runEntryHandoff } from './handoff/handoff_registry.service'
 import { reportConfigLoadErrorAndExit } from './helpers/error.helper'
 import { createSyncEmitter, createWebviewRpc } from './rpc/host'
 import { createRpcServer } from './rpc/server'
@@ -14,9 +15,17 @@ import {
   createShellHooks,
   MAIN_WINDOW_DEFAULT_SIZE
 } from './utils/shell_hooks.util'
-import { findDisplayAtPoint } from './window/display_at_cursor.util'
+import { adaptFrameForNativeWindow } from './window/darwin_window_frame.util'
 import { createExternalFocusHandoff } from './window/external_focus_handoff.util'
-import { resolveDisplayForPlacement } from './window/placement.util'
+import {
+  dismissLauncherWindow,
+  isLauncherDismissed,
+  LAUNCHER_SUMMON_ACCELERATOR,
+  presentLauncherWindow,
+  registerLauncherSummonShortcut,
+  toggleLauncherWindow
+} from './window/launcher_window.util'
+import { ensureWindowFrame, normalizeDisplay, resolveDisplayForPlacement } from './window/placement.util'
 
 type WebviewRpc = ReturnType<typeof createWebviewRpc>
 
@@ -28,6 +37,47 @@ async function bootstrap() {
   const verbosity = parseLogVerbosity()
   configureMainLogging()
   const logger = getLogger(['kb', 'main'])
+
+  let webviewRpc: WebviewRpc | null = null
+  let win: BrowserWindow<WebviewRpc> | null = null
+  let pendingSummon = false
+
+  const screenApi = () => ({
+    getCursorScreenPoint: () => Screen.getCursorScreenPoint(),
+    getAllDisplays: () => Screen.getAllDisplays(),
+    getPrimaryDisplay: () => Screen.getPrimaryDisplay()
+  })
+
+  const focusHandoff = createExternalFocusHandoff({
+    hide: () => {
+      if (win) dismissLauncherWindow(win)
+    },
+    show: () => {
+      requestSummon('handoff-show')
+    }
+  })
+
+  const requestSummon = (reason: string, url?: string) => {
+    logger.info(`summon requested (${reason})${url ? `: ${url}` : ''}`)
+    pendingSummon = true
+    if (win) {
+      focusHandoff.armGuard()
+      presentLauncherWindow(win, screenApi(), logger, { armBlurGuard: () => focusHandoff.armGuard() })
+      pendingSummon = false
+    }
+  }
+
+  if (process.platform === 'darwin') {
+    // Register before async bootstrap work — cold-start `open "kb://…"` can emit open-url immediately.
+    Electrobun.events.on('open-url', event => {
+      requestSummon('open-url', event.data.url)
+    })
+
+    Electrobun.events.on('reopen', () => {
+      requestSummon('reopen')
+    })
+  }
+
   const config = await loadConfig().catch(async err => {
     await reportConfigLoadErrorAndExit(err, {
       showMessageBox: Utils.showMessageBox,
@@ -37,19 +87,15 @@ async function bootstrap() {
     throw err
   })
 
-  let webviewRpc: WebviewRpc | null = null
-  let win: BrowserWindow<WebviewRpc> | null = null
-
-  const focusHandoff = createExternalFocusHandoff({
-    hide: () => win?.minimize(),
-    show: () => win?.unminimize()
-  })
-
   const handoffServices: HandoffServices = {
     armGuard: () => focusHandoff.armGuard(),
     disarmGuard: () => focusHandoff.disarmGuard(),
-    hide: () => win?.minimize(),
-    show: () => win?.unminimize()
+    hide: () => {
+      if (win) dismissLauncherWindow(win)
+    },
+    show: () => {
+      requestSummon('handoff')
+    }
   }
 
   const shellHooks = {
@@ -60,8 +106,20 @@ async function bootstrap() {
         openFileDialog: opts => Utils.openFileDialog(opts),
         openPath: path => Utils.openPath(path)
       },
-      handoffServices
+      handoffServices,
+      runEntryHandoff,
+      process.platform === 'darwin'
+        ? {
+            platform: process.platform,
+            windowHeight: MAIN_WINDOW_DEFAULT_SIZE.height,
+            getDisplay: () => resolveDisplayForPlacement(screenApi()),
+            getPrimaryDisplay: () => normalizeDisplay(Screen.getPrimaryDisplay())
+          }
+        : undefined
     ),
+    hideWindow: () => {
+      if (win) dismissLauncherWindow(win)
+    },
     quit: () => Utils.quit()
   }
   const lateEmit = createDeferredSyncEmit(() => webviewRpc, createSyncEmitter)
@@ -73,47 +131,62 @@ async function bootstrap() {
   // The main window loads trusted packaged renderer content at views://shell/index.html (bundled by Electrobun, no external origin).
   // Any future external or third-party webview must use sandbox: true,
   // partition isolation, and navigation allowlists per assets/guides/ELECTROBUN.md and electrobun-best-practices.
-  const resolvedDisplay = resolveDisplayForPlacement(
-    {
-      getCursorScreenPoint: () => Screen.getCursorScreenPoint(),
-      getAllDisplays: () => Screen.getAllDisplays(),
-      getPrimaryDisplay: () => Screen.getPrimaryDisplay()
-    },
-    findDisplayAtPoint
+  const primaryDisplay = resolveDisplayForPlacement(screenApi())
+  const initialScreenFrame = ensureWindowFrame(
+    computeInitialFrameFromDisplay(primaryDisplay, logger, MAIN_WINDOW_DEFAULT_SIZE),
+    MAIN_WINDOW_DEFAULT_SIZE
   )
-  const mainWin = new BrowserWindow(
-    buildBrowserWindowCreateOptions(
-      computeInitialFrameFromDisplay(resolvedDisplay, logger, MAIN_WINDOW_DEFAULT_SIZE),
-      webviewRpc,
-      process.platform
-    )
-  )
+  const initialFrame = adaptFrameForNativeWindow(initialScreenFrame, process.platform, primaryDisplay, primaryDisplay)
+  logger.debug('window create', { screenFrame: initialScreenFrame, nativeFrame: initialFrame })
+
+  const mainWin = new BrowserWindow(buildBrowserWindowCreateOptions(initialFrame, webviewRpc, process.platform))
   win = mainWin
 
-  mainWin.show()
-  mainWin.activate()
+  if (pendingSummon) {
+    focusHandoff.armGuard()
+    presentLauncherWindow(mainWin, screenApi(), logger, {
+      armBlurGuard: () => focusHandoff.armGuard(),
+      platform: process.platform
+    })
+    pendingSummon = false
+  }
 
-  /**
-   * Toggle minimize — must match `hideWindow` (Escape) which uses `minimize()`, not `hide()`.
-   */
-  GlobalShortcut.register('CommandOrControl+Alt+/', () => {
-    if (!win) return
-    if (win.isMinimized()) {
-      win.unminimize()
-      win.show()
-      win.activate()
-    } else {
-      win.minimize()
-    }
-  })
+  const presentOptions = { armBlurGuard: () => focusHandoff.armGuard(), platform: process.platform }
+
+  if (process.platform === 'darwin') {
+    registerLauncherSummonShortcut(
+      GlobalShortcut,
+      LAUNCHER_SUMMON_ACCELERATOR,
+      () => toggleLauncherWindow(mainWin, screenApi(), logger, presentOptions),
+      logger
+    )
+
+    mainWin.on('focus', () => {
+      if (focusHandoff.shouldDeferBlurMinimize()) return
+      if (isLauncherDismissed()) {
+        presentLauncherWindow(mainWin, screenApi(), logger, presentOptions)
+      }
+    })
+  } else {
+    mainWin.show()
+    mainWin.activate()
+
+    registerLauncherSummonShortcut(
+      GlobalShortcut,
+      LAUNCHER_SUMMON_ACCELERATOR,
+      () => toggleLauncherWindow(mainWin, screenApi(), logger, presentOptions),
+      logger
+    )
+  }
 
   registerBeforeQuitShortcutTeardown(Electrobun.events, GlobalShortcut)
 
   /**
-   * Minimize the main window when it loses focus.
+   * Minimize the launcher when it loses focus (Raycast / PowerToys dismiss pattern).
    */
   mainWin.on('blur', () => {
-    mainWin.minimize()
+    if (focusHandoff.shouldDeferBlurMinimize()) return
+    dismissLauncherWindow(mainWin)
   })
 }
 

@@ -33,7 +33,13 @@ export default {
   app: {
     name: packageJson.name,
     identifier: `sh.blackboard.${packageJson.name}`,
-    version: packageJson.version
+    version: packageJson.version,
+    /** Raycast / `open "kb://summon"` deep link (macOS, app in /Applications). */
+    urlSchemes: ['kb']
+  },
+  runtime: {
+    // Keep the summon agent alive when the launcher panel is dismissed (blur/minimize).
+    exitOnLastWindowClosed: false
   },
   build: {
     bun: {

@@ -9,6 +9,12 @@ export type ListPageFocusRingDeps = {
   showSettings: boolean
   filterOpen: boolean
   detailEntry: RpcKnowledge | null
+  /**
+   * Current list selection. Search auto-focus only fires when nothing is
+   * selected; otherwise returning to the list (e.g. ArrowLeft out of detail)
+   * keeps focus on the list surface so ArrowRight can re-advance.
+   */
+  selectedId: number | null
   listPageRef: RefObject<HTMLDivElement | null>
   filterButtonRef: RefObject<HTMLButtonElement | null>
   searchInputRef: RefObject<HTMLInputElement | null>
@@ -21,9 +27,22 @@ export type ListPageFocusRingDeps = {
  * `.cmp-filter-stack` — then wraps (Shift+Tab reverses).
  */
 export function useListPageFocusRing(deps: ListPageFocusRingDeps) {
-  const { showSettings, filterOpen, detailEntry, listPageRef, filterButtonRef, searchInputRef, listSurfaceRef } = deps
+  const {
+    showSettings,
+    filterOpen,
+    detailEntry,
+    selectedId,
+    listPageRef,
+    filterButtonRef,
+    searchInputRef,
+    listSurfaceRef
+  } = deps
 
-  const focusSearchWhenReady = !showSettings && !filterOpen && detailEntry === null
+  // Only auto-focus search when nothing is selected (fresh list / cleared
+  // selection). When a row is selected, returning to the list keeps focus on
+  // the list surface so ArrowRight can re-advance into split/detail instead of
+  // landing in the search field (which swallows view-navigation arrows).
+  const focusSearchWhenReady = !showSettings && !filterOpen && detailEntry === null && selectedId === null
 
   useEffect(() => {
     if (!focusSearchWhenReady) return

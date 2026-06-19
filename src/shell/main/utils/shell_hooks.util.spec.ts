@@ -325,6 +325,13 @@ describe('buildBrowserWindowCreateOptions', () => {
       // separately through a JS-driven handler over RPC.
       expect(buildBrowserWindowCreateOptions(frame, rpc, 'darwin').titleBarStyle).toBe('hidden')
     })
+
+    it('starts hidden as a background launcher agent until summon or dock focus', () => {
+      const opts = buildBrowserWindowCreateOptions(frame, rpc, 'darwin')
+      expect(opts.hidden).toBe(true)
+      expect(opts.activate).toBe(false)
+      expect(opts.styleMask).toBeUndefined()
+    })
   })
   describe('when platform is linux', () => {
     it('keeps the default native chrome elsewhere', () => {
