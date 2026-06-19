@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import { runBinMain } from '../support/lib/cli/dispatch.script'
 
 const TASK_SEPARATOR = ':'
 const COMPLEX_SCRIPT_PATTERN = /(&&|\|\||;|\||>|<|\bmkdir\b|\brm\b|\btee\b)/
@@ -320,4 +321,4 @@ async function main() {
   }
 }
 
-await main()
+runBinMain(() => main().then(() => undefined))

@@ -1,12 +1,10 @@
 #!/usr/bin/env bun
+import { configureOpsLogging } from '../support/lib/cli/ops_logging.script'
 import { type RunStep, runStepsAndPrint } from '../support/lib/cli/task_runner.script'
+import { usageCmd, usageFlag } from '../support/lib/cli/usage_env.script'
 
-const CMD = process.env.usage_cmd ?? process.argv[2] ?? ''
-const miscArgs = process.argv.slice(2).filter(a => a !== CMD)
-
-function envBool(name: string): boolean {
-  return process.env[name] === 'true'
-}
+const CMD = usageCmd(process.env, process.argv[2]) || ''
+const miscArgs = process.argv.slice(2).filter(a => a !== CMD && a !== process.argv[2])
 
 /**
  * `app gates` — review f18c5638 rule 07: no `--all`. Default (neither
@@ -39,15 +37,16 @@ export function gateSteps(sel: { quality: boolean; policy: boolean }): RunStep[]
 }
 
 function runGates(): never {
-  const sel = selectGates(envBool('usage_quality'), envBool('usage_policy'))
+  const sel = selectGates(usageFlag(process.env, 'quality'), usageFlag(process.env, 'policy'))
   const report = runStepsAndPrint(
     { task: 'app-gates', command: 'mise run app gates', steps: gateSteps(sel) },
-    { json: envBool('usage_json'), raw: envBool('usage_raw') }
+    { json: usageFlag(process.env, 'json'), raw: usageFlag(process.env, 'raw') }
   )
   process.exit(report.ok ? 0 : 1)
 }
 
 function run(): void {
+  configureOpsLogging()
   if (CMD === 'gates') runGates()
   const r = Bun.spawnSync(['mise', 'run', '_app_raw', CMD, ...miscArgs], { stdio: ['inherit', 'inherit', 'inherit'] })
   process.exit(r.exitCode ?? 0)

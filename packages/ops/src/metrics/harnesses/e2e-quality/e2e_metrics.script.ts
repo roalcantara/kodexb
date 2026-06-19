@@ -10,6 +10,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { repoRoot } from '../../../support/lib/shared/repo_root.script'
+import { firstLine } from '../../../support/lib/shared/text_file.script'
 
 const ROOT = repoRoot()
 const E2E_QUALITY_BASELINE = path.join(ROOT, 'tools/metrics/baselines/e2e-quality')
@@ -115,11 +116,11 @@ async function loadFeatureTags(): Promise<{
   let p1Total = 0
   for await (const rel of glob.scan(ROOT)) {
     const text = await readFile(path.join(ROOT, rel), 'utf-8')
-    const firstLine = text.split('\n')[0] ?? ''
-    if (firstLine.includes('@todo')) todoCount++
-    if (firstLine.includes('@native')) nativeCount++
-    if (firstLine.includes('@p0')) p0Total++
-    if (firstLine.includes('@p1')) p1Total++
+    const fl = firstLine(text)
+    if (fl.includes('@todo')) todoCount++
+    if (fl.includes('@native')) nativeCount++
+    if (fl.includes('@p0')) p0Total++
+    if (fl.includes('@p1')) p1Total++
   }
   return { todoCount, nativeCount, p0Total, p1Total }
 }

@@ -6,6 +6,10 @@
  *   bun packages/ops/src/governance/specs/lint.script.ts --all [--root assets/specs] [--strict]
  */
 import path from 'node:path'
+import { getLogger } from '@kb/shared/logging'
+import { usageFlags, usageStrings } from '../../support/lib/cli/usage_env.script'
+
+const log = getLogger(['kb', 'ops', 'lint'])
 
 type Finding = {
   file: string
@@ -180,15 +184,18 @@ function reportFindings(file: string, findings: Finding[]): number {
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2)
-  const strict = args.includes('--strict')
-  const all = args.includes('--all')
+  const flags = usageFlags(process.env as Record<string, string | undefined>, ['strict', 'all'])
+  const strings = usageStrings(process.env as Record<string, string | undefined>, ['root'])
+
+  const strict = flags.strict || args.includes('--strict')
+  const all = flags.all || args.includes('--all')
   const rootIdx = args.indexOf('--root')
-  const root = rootIdx >= 0 ? (args[rootIdx + 1] ?? 'assets/specs') : 'assets/specs'
+  const root = strings.root ?? (rootIdx >= 0 ? (args[rootIdx + 1] ?? 'assets/specs') : 'assets/specs')
   const target = args.find(a => !a.startsWith('--') && a !== root) ?? '.'
 
   const files = await resolveSpecFiles(target, all, root)
   if (files.length === 0) {
-    console.error(`spec lint: no spec.md found for "${all ? root : target}"`)
+    log.error(`spec lint: no spec.md found for "${all ? root : target}"`)
     process.exit(strict ? 1 : 0)
   }
 
@@ -200,6 +207,6 @@ async function main(): Promise<void> {
 }
 
 await main().catch(err => {
-  console.error(err)
+  log.error(err instanceof Error ? err.message : String(err))
   process.exit(1)
 })

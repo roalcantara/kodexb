@@ -46,6 +46,7 @@ COPY packages/dev/package.json packages/dev/
 COPY packages/exec/package.json packages/exec/
 COPY packages/flow/package.json packages/flow/
 COPY packages/ops/package.json packages/ops/
+COPY packages/shared/package.json packages/shared/
 RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
 

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { REPO_ROOT, spawnScript } from '../support/lib/testing/spawn_bin.script'
 import { gateSteps, selectGates } from './app.script'
-import { REPO_ROOT, spawnScript } from './shim_spawn.script'
 
 describe('selectGates', () => {
   const cases = [

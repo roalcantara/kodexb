@@ -7,7 +7,11 @@
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "paths": {
+      "@kb/shared": ["../shared/src/index.ts"],
+      "@kb/shared/*": ["../shared/src/*"]
+    }
   },
   "include": ["src/**/*"]
 }

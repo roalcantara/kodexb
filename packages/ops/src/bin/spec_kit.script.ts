@@ -1,12 +1,17 @@
 #!/usr/bin/env bun
-import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { writeEnvelope } from '@kb/exec/kit_envelope.script'
 import { clearGate, isGateStage, printGateResumeHint } from '@kb/exec/kit_human_gate.script'
 import { preflightCheck } from '@kb/exec/kit_preflight.script'
 import { type ResolvedStep, resolveNext, stageToVerb, terminalStageSentinel } from '@kb/exec/kit_step_resolver.script'
 import { generateRunId } from '@kb/exec/workflow_run.script'
+import { getLogger } from '@kb/shared/logging'
+import { readTextFileSync } from '@kb/shared/text_file'
 import { type ResolveResult, resolveActiveFeatureDir } from '../governance/specs/resolve_active_feature_dir.script'
+import { runBinMain } from '../support/lib/cli/dispatch.script'
+import { usageFlag, usageStrings } from '../support/lib/cli/usage_env.script'
+
+const log = getLogger(['kb', 'ops', 'spec_kit'])
 
 const ALL_KIT_VERBS = new Set([
   'next',
@@ -26,7 +31,6 @@ const ALL_KIT_VERBS = new Set([
 ])
 
 type Env = Record<string, string | undefined>
-const isTrue = (env: Env, k: string): boolean => env[k] === 'true'
 
 function helpText(): string {
   return [
@@ -62,11 +66,11 @@ function helpText(): string {
 }
 
 function resolveFeature(env: Env, rest: string[]): ResolveResult {
-  const positional = (env.usage_feature ?? rest[0] ?? '').trim()
+  const strings = usageStrings(env, ['feature'])
+  const positional = (strings.feature ?? rest[0] ?? '').trim()
   const resolved = resolveActiveFeatureDir(positional || undefined)
   if (resolved.ok) return resolved
-  // Fallback: accept a positional dir with spec.md when it is not the active feature.
-  if (positional && existsSync(path.join(positional, 'spec.md'))) {
+  if (positional && readTextFileSync(path.join(positional, 'spec.md')).isOk()) {
     return { ok: true, featureDir: positional }
   }
   return resolved
@@ -77,48 +81,34 @@ function shellRun(argv: string[]): number {
   return result.exitCode ?? 1
 }
 
+function makeKitHandler(scriptName: string, args: string[]): () => number {
+  return () => shellRun(['bun', `packages/exec/src/kit_verbs/${scriptName}.script.ts`, ...args])
+}
+
+function buildActionMap(featureDir: string, runId: string): Record<string, () => number> {
+  return {
+    specify: makeKitHandler('specify', ['--feature', featureDir]),
+    clarify: makeKitHandler('clarify', ['--feature', featureDir]),
+    checklist: makeKitHandler('checklist', ['--feature', featureDir]),
+    plan: makeKitHandler('plan', ['--feature', featureDir]),
+    analyze: makeKitHandler('analyze', ['--feature', featureDir]),
+    tasks: makeKitHandler('tasks', ['--feature', featureDir]),
+    'handoff-generate': makeKitHandler('handoff_generate', ['--feature', featureDir]),
+    implement: makeKitHandler('implement', ['--feature', featureDir]),
+    'pr-prep': makeKitHandler('pr_prep', []),
+    review: makeKitHandler('review', ['--feature', featureDir]),
+    gate: makeKitHandler('gate', []),
+    'pr-open': makeKitHandler('pr_open', ['--run-id', runId, '--feature', featureDir]),
+    'pr-check': makeKitHandler('pr_check', [])
+  }
+}
+
 function runVerbHandler(verb: string, featureDir: string, _env: Env, runId: string): number {
   const t0 = performance.now()
-  let exitCode: number
+  const actionMap = buildActionMap(featureDir, runId)
+  const handler = actionMap[verb]
 
-  switch (verb) {
-    case 'specify':
-    case 'clarify':
-    case 'checklist':
-    case 'plan':
-    case 'analyze':
-    case 'tasks':
-    case 'handoff-generate':
-    case 'implement': {
-      const handlerPath = `packages/exec/src/kit_verbs/${verb.replace(/-/g, '_')}.script.ts`
-      exitCode = shellRun(['bun', handlerPath, '--feature', featureDir])
-      break
-    }
-    case 'pr-prep':
-      exitCode = shellRun(['bun', 'packages/exec/src/kit_verbs/pr_prep.script.ts'])
-      break
-    case 'review':
-      exitCode = shellRun(['bun', 'packages/exec/src/kit_verbs/review.script.ts', '--feature', featureDir])
-      break
-    case 'gate':
-      exitCode = shellRun(['bun', 'packages/exec/src/kit_verbs/gate.script.ts'])
-      break
-    case 'pr-open':
-      exitCode = shellRun([
-        'bun',
-        'packages/exec/src/kit_verbs/pr_open.script.ts',
-        '--run-id',
-        runId,
-        '--feature',
-        featureDir
-      ])
-      break
-    case 'pr-check':
-      exitCode = shellRun(['bun', 'packages/exec/src/kit_verbs/pr_check.script.ts'])
-      break
-    default:
-      exitCode = 1
-  }
+  const exitCode = handler ? handler() : 1
 
   const elapsed = performance.now() - t0
   const status = exitCode === 0 ? 'DONE' : ('RETRYABLE_FAILURE' as const)
@@ -139,7 +129,7 @@ function runVerbHandler(verb: string, featureDir: string, _env: Env, runId: stri
 }
 
 function printResolved(step: ResolvedStep, env: Env): void {
-  if (isTrue(env, 'usage_json')) {
+  if (usageFlag(env, 'json')) {
     process.stdout.write(
       `${JSON.stringify({ stage: step.stage, kind: step.kind, focusHint: step.focusHint ?? null })}\n`
     )
@@ -151,10 +141,6 @@ function printResolved(step: ResolvedStep, env: Env): void {
   } else {
     process.stdout.write(`${step.stage}${hint}\n`)
   }
-}
-
-function hasCliFlag(name: string): boolean {
-  return process.argv.includes(`--${name}`) || process.argv.includes(`-${name[0]}`)
 }
 
 function printSingleStepTerminal(activeRunId: string, jsonOutput: boolean): void {
@@ -172,8 +158,9 @@ function printLoopTerminal(runId: string, jsonOutput: boolean): void {
   }
   const today = new Date().toISOString().slice(0, 10)
   const prRefPath = path.resolve('tmp/workflow-runs', today, runId, 'pr_ref')
-  if (existsSync(prRefPath)) {
-    const prUrl = readFileSync(prRefPath, 'utf-8').trim()
+  const prResult = readTextFileSync(prRefPath)
+  if (prResult.isOk()) {
+    const prUrl = prResult.value.trim()
     process.stdout.write(`runId: ${runId}    PR: ${prUrl}    all stages complete — ready for manual testing\n`)
   } else {
     process.stdout.write(`runId: ${runId}    all stages complete — ready for manual testing\n`)
@@ -187,10 +174,10 @@ function executeResolvedStep(
   step: ResolvedStep,
   options?: { deferTerminalStdout?: boolean }
 ): number {
-  const dryRun = isTrue(env, 'usage_dry_run') || hasCliFlag('dry-run')
-  const approveFlag = env.usage_approve || hasCliFlag('approve') || ''
-  const jsonOutput = isTrue(env, 'usage_json') || hasCliFlag('json')
-  const rawOutput = isTrue(env, 'usage_raw') || hasCliFlag('raw')
+  const dryRun = usageFlag(env, 'dry_run')
+  const approveFlag = usageFlag(env, 'approve')
+  const jsonOutput = usageFlag(env, 'json')
+  const rawOutput = usageFlag(env, 'raw')
 
   if (dryRun) {
     printResolved(step, {
@@ -225,7 +212,7 @@ function executeResolvedStep(
       const nextVerb = stageToVerb(next.stage)
       const pf = preflightCheck(nextVerb, featureDir, activeRunId, { approve: false })
       if (!pf.allowed) {
-        process.stderr.write(`kit next: blocked — ${pf.reason}\n`)
+        log.error(`kit next: blocked — ${pf.reason}`)
         return 1
       }
       return runVerbHandler(nextVerb, featureDir, env, activeRunId)
@@ -240,8 +227,8 @@ function executeResolvedStep(
     if (jsonOutput) {
       process.stdout.write(`${JSON.stringify({ blocked: true, stage: step.stage, reason: preflight.reason })}\n`)
     } else {
-      process.stderr.write(`kit next: blocked — ${preflight.reason}\n`)
-      if (preflight.resumeHint) process.stderr.write(`${preflight.resumeHint}\n`)
+      log.error(`kit next: blocked — ${preflight.reason}`)
+      if (preflight.resumeHint) log.info(preflight.resumeHint)
     }
     return 1
   }
@@ -259,7 +246,7 @@ function runNext(featureDir: string, env: Env, runId?: string): number {
 function runLoop(featureDir: string, env: Env): number {
   const featureSlug = path.basename(featureDir).replace(/^\d+-/, '')
   const runId = generateRunId(featureSlug)
-  const jsonOutput = isTrue(env, 'usage_json') || hasCliFlag('json')
+  const jsonOutput = usageFlag(env, 'json')
   let iteration = 0
 
   for (;;) {
@@ -284,46 +271,46 @@ function runLoop(featureDir: string, env: Env): number {
     }
 
     if (iteration > 50) {
-      process.stderr.write('kit loop: max iterations reached\n')
+      log.error('kit loop: max iterations reached')
       return 1
     }
   }
 }
 
-function main(): void {
+function main(): number {
   const args = process.argv.slice(2)
   const verb = args.shift() ?? ''
 
   if (!verb || verb === '--help' || verb === '-h' || verb === 'help') {
     process.stdout.write(helpText())
-    process.exit(verb === '--help' || verb === '-h' || verb === 'help' ? 0 : 2)
+    return verb === '--help' || verb === '-h' || verb === 'help' ? 0 : 2
   }
 
   if (!ALL_KIT_VERBS.has(verb)) {
-    process.stderr.write(`spec kit: unknown verb "${verb}"\n`)
-    process.stderr.write(`Allowed: ${[...ALL_KIT_VERBS].sort().join(', ')}\n`)
-    process.exit(2)
+    log.error(`spec kit: unknown verb "${verb}"`)
+    log.error(`Allowed: ${[...ALL_KIT_VERBS].sort().join(', ')}`)
+    return 2
   }
 
   const env: Env = process.env as Env
   const resolved = resolveFeature(env, args)
 
   if (!resolved.ok) {
-    process.stderr.write(`spec kit: ${resolved.message}\n`)
-    process.exit(resolved.exitCode)
+    log.error(`spec kit: ${resolved.message}`)
+    return resolved.exitCode
   }
 
   if (verb === 'next') {
-    const loopFlag = isTrue(env, 'usage_loop') || hasCliFlag('loop')
+    const loopFlag = usageFlag(env, 'loop')
     if (loopFlag) {
-      process.exit(runLoop(resolved.featureDir, env))
+      return runLoop(resolved.featureDir, env)
     }
-    process.exit(runNext(resolved.featureDir, env))
+    return runNext(resolved.featureDir, env)
   }
 
   const featureSlug = path.basename(resolved.featureDir).replace(/^\d+-/, '')
   const runId = generateRunId(featureSlug)
-  process.exit(runVerbHandler(verb, resolved.featureDir, env, runId))
+  return runVerbHandler(verb, resolved.featureDir, env, runId)
 }
 
-if (import.meta.main || (process.argv[1] && !process.argv[1].includes('.spec.'))) main()
+runBinMain(main)

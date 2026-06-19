@@ -8,6 +8,10 @@
  *   bun packages/ops/src/governance/specs/trace.script.ts <feature-dir> [--features assets/features/e2e] [--strict]
  */
 import path from 'node:path'
+import { getLogger } from '@kb/shared/logging'
+import { usageFlags, usageStrings } from '../../support/lib/cli/usage_env.script'
+
+const log = getLogger(['kb', 'ops', 'trace'])
 
 type Link = {
   requirement: string
@@ -39,7 +43,7 @@ function parseE2eTable(specText: string): Link[] {
     const reqM = cells[0]?.match(REQ_CELL)
     const tagM = cells[1]?.match(TAG_CELL)
     if (!reqM?.[1] || !tagM?.[1]) return
-    const scenario = (cells[2] ?? '').replace(/^["“]|["”]$/g, '').trim()
+    const scenario = (cells[2] ?? '').replace(/^[""']|[""']$/g, '').trim()
     if (!scenario) return
     links.push({ requirement: reqM[1], slug: tagM[1], scenario, line: i + 1 })
   })
@@ -101,14 +105,18 @@ async function loadFeatureTexts(featuresDir: string): Promise<{ file: string; te
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2)
-  const strict = args.includes('--strict')
+  const flags = usageFlags(process.env as Record<string, string | undefined>, ['strict'])
+  const strings = usageStrings(process.env as Record<string, string | undefined>, ['features'])
+
+  const strict = flags.strict || args.includes('--strict')
   const fIdx = args.indexOf('--features')
-  const featuresDir = fIdx >= 0 ? (args[fIdx + 1] ?? 'assets/features/e2e') : 'assets/features/e2e'
+  const featuresDir =
+    strings.features ?? (fIdx >= 0 ? (args[fIdx + 1] ?? 'assets/features/e2e') : 'assets/features/e2e')
   const featureDir = args.find(a => !a.startsWith('--') && a !== featuresDir) ?? '.'
 
   const specPath = path.join(featureDir, 'spec.md')
   if (!(await Bun.file(specPath).exists())) {
-    console.error(`spec trace: no spec.md at ${specPath}`)
+    log.error(`spec trace: no spec.md at ${specPath}`)
     process.exit(strict ? 1 : 0)
   }
 
@@ -135,6 +143,6 @@ async function main(): Promise<void> {
 }
 
 await main().catch(err => {
-  console.error(err)
+  log.error(err instanceof Error ? err.message : String(err))
   process.exit(1)
 })

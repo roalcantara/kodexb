@@ -1,5 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { configureOpsLogging } from '../../../support/lib/cli/ops_logging.script'
+import { usageCmd, usageFlag, usageOptString } from '../../../support/lib/cli/usage_env.script'
 import {
   chooseRenderer,
   type RenderMode,
@@ -58,16 +60,10 @@ const VALID_ACTIONS = new Set([
   'prune'
 ])
 
-function envBool(name: string): boolean {
-  return process.env[name] === 'true'
-}
-
-function parseCli(): CliOptions {
-  const argv = process.argv.slice(2)
+export function buildSkillCliOptions(env: Record<string, string | undefined>, argv: string[]): CliOptions {
   let i = 0
-  let action = process.env.usage_cmd ?? ''
+  let action = usageCmd(env)
   if (action && VALID_ACTIONS.has(action)) {
-    // mise passes action via env; skip if also duplicated in argv
     if (argv[0] === action) i = 1
   } else if (argv[0] && VALID_ACTIONS.has(argv[0])) {
     action = argv[0]
@@ -76,10 +72,10 @@ function parseCli(): CliOptions {
 
   const opts: CliOptions = {
     action,
-    raw: envBool('usage_raw'),
-    json: envBool('usage_json'),
-    dryRun: envBool('usage_dry_run'),
-    listSkills: envBool('usage_list_skills'),
+    raw: usageFlag(env, 'raw'),
+    json: usageFlag(env, 'json'),
+    dryRun: usageFlag(env, 'dry_run'),
+    listSkills: usageFlag(env, 'list_skills'),
     verbose: false,
     interactive: false,
     locations: new Set(),
@@ -130,11 +126,16 @@ function parseCli(): CliOptions {
     i++
   }
 
-  if (process.env.usage_type) opts.policyType = process.env.usage_type as PolicyType
-  if (process.env.usage_rationale) opts.rationale = process.env.usage_rationale
-  if (process.env.usage_description) opts.description = process.env.usage_description
-  if (process.env.usage_url) opts.url = process.env.usage_url
-  if (process.env.usage_skill_id) opts.skillId = process.env.usage_skill_id
+  const policyType = usageOptString(env, 'type')
+  if (policyType) opts.policyType = policyType as PolicyType
+  const rationale = usageOptString(env, 'rationale')
+  if (rationale) opts.rationale = rationale
+  const description = usageOptString(env, 'description')
+  if (description) opts.description = description
+  const url = usageOptString(env, 'url')
+  if (url) opts.url = url
+  const skillId = usageOptString(env, 'skill_id')
+  if (skillId) opts.skillId = skillId
 
   if (opts.json) opts.raw = true
 
@@ -441,7 +442,8 @@ export async function runPrune(dryRun: boolean, mode: RenderMode): Promise<void>
 }
 
 export async function main(): Promise<void> {
-  const opts = parseCli()
+  configureOpsLogging()
+  const opts = buildSkillCliOptions(process.env, process.argv.slice(2))
   if (!VALID_ACTIONS.has(opts.action)) {
     console.error('skill: action required: validate, sync, install, all, report, list, add, reconcile, create, prune')
     process.exit(1)

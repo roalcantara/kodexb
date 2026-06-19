@@ -14,7 +14,10 @@
       "@kb/exec": ["../exec/src/index.ts"],
       "@kb/exec/*": ["../exec/src/*"],
       "@kb/ops": ["./src/index.ts"],
-      "@kb/ops/*": ["./src/*"]
+      "@kb/ops/*": ["./src/*"],
+      "@kb/shared": ["../shared/src/index.ts"],
+      "@kb/shared/*": ["../shared/src/*"],
+      "@shared/logging": ["../../src/shared/logging/index.ts"]
     }
   },
   "include": ["src/**/*"]

@@ -1,6 +1,8 @@
 #!/usr/bin/env bun
 import path from 'node:path'
 import { performance } from 'node:perf_hooks'
+import { configureOpsLogging } from '../../support/lib/cli/ops_logging.script'
+import { usageFlag, usageOptString } from '../../support/lib/cli/usage_env.script'
 import { runDependenciesCheck } from './checks/dependencies.script'
 import { runElectrobunSurfaceCheck } from './checks/electrobun_surface.script'
 import { exitCodeForFindings } from './exit_policy.script'
@@ -9,7 +11,7 @@ import { pruneOlderThan } from './retention.script'
 import { appendSecurityRunEvent } from './run_writer.script'
 import { maxSeverity, type SecurityScanResult } from './security.types'
 
-type CliArgs = {
+export type CliArgs = {
   strict: boolean
   changedOnly: boolean
   base: string | null
@@ -26,34 +28,16 @@ function maxDurationMsFromEnv(): number {
   return Math.round(parsed)
 }
 
-function parseArgs(argv: string[]): CliArgs {
-  let strict = false
-  let changedOnly = false
-  let base: string | null = null
-  let json = false
-
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i]
-    if (!arg) continue
-    if (arg === '--strict') {
-      strict = true
-      continue
-    }
-    if (arg === '--changed-only') {
-      changedOnly = true
-      continue
-    }
-    if (arg === '--json') {
-      json = true
-      continue
-    }
-    if (arg === '--base') {
-      base = argv[i + 1] ?? null
-      i += 1
-      continue
-    }
-    throw new Error(`spec security: unknown argument ${arg}`)
-  }
+export function readSecurityScanArgs(env: Record<string, string | undefined>, argv: string[]): CliArgs {
+  const strict = usageFlag(env, 'strict') || argv.includes('--strict')
+  const changedOnly = usageFlag(env, 'changed_only') || argv.includes('--changed-only')
+  const json = usageFlag(env, 'json') || argv.includes('--json')
+  const envBase = usageOptString(env, 'base')
+  const argvBase = (() => {
+    const idx = argv.indexOf('--base')
+    return idx >= 0 && idx + 1 < argv.length ? (argv[idx + 1] ?? null) : null
+  })()
+  const base: string | null = envBase ?? argvBase
 
   return { strict, changedOnly, base, json }
 }
@@ -95,8 +79,9 @@ export function runScan(_args: CliArgs): SecurityScanResult {
 }
 
 function main(): number {
+  configureOpsLogging()
   const start = performance.now()
-  const args = parseArgs(process.argv.slice(2))
+  const args = readSecurityScanArgs(process.env, process.argv.slice(2))
   const result = runScan(args)
   result.durationMs = Math.max(0, Math.round(performance.now() - start))
 

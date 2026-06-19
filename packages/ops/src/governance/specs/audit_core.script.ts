@@ -5,10 +5,10 @@
  * readiness, cross-artifact hints. See assets/guides/SDD_WORKFLOW_GUIDE.md
  * for the full rule table.
  */
-import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { detectPhase, parseHandoffAcTable, scanFeatureDir } from '@kb/exec'
 import { repoRoot } from '../../support/lib/shared/repo_root.script'
+import { readTextFileSync } from '../../support/lib/shared/text_file.script'
 import { catalogPaths } from '../support/catalog_paths.script'
 
 export type Severity = 'error' | 'warn' | 'info'
@@ -45,12 +45,20 @@ function escapeRegex(raw: string): string {
   return raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
+type AcRow = ReturnType<typeof parseHandoffAcTable>[number]
+
+function readHandoffAcRows(handoffPath: string): { md: string; rows: AcRow[] } | null {
+  const handoffResult = readTextFileSync(handoffPath)
+  if (handoffResult.isErr()) return null
+  return { md: handoffResult.value, rows: parseHandoffAcTable(handoffResult.value) }
+}
+
 function checkQuartet(featureDir: string): Finding[] {
   const f: Finding[] = []
   const quartet = ['spec.md', 'plan.md', 'tasks.md', 'handoff.md'] as const
   for (const name of quartet) {
     const fp = quartetPath(featureDir, name)
-    if (!existsSync(fp)) {
+    if (readTextFileSync(fp).isErr()) {
       f.push({
         rule: `quartet.${name.replace('.md', '')}`,
         level: 'error',
@@ -74,13 +82,11 @@ function checkQuartet(featureDir: string): Finding[] {
   return f
 }
 
-function checkHandoffAcTable(featureDir: string): Finding[] {
+function checkHandoffAcTable(handoffPath: string, parsed: { md: string; rows: AcRow[] } | null): Finding[] {
   const f: Finding[] = []
-  const handoffPath = path.join(featureDir, 'handoff.md')
-  if (!existsSync(handoffPath)) return f
+  if (!parsed) return f
 
-  const md = readFileSync(handoffPath, 'utf-8')
-  const acRows = parseHandoffAcTable(md)
+  const { md, rows: acRows } = parsed
 
   const tableLine = md.split('\n').findIndex(l => /^\|\s*ID\s*\|\s*Done when\s*\|\s*Evidence\s*\|/i.test(l))
   if (tableLine < 0) {
@@ -144,9 +150,10 @@ function checkHandoffAcTable(featureDir: string): Finding[] {
 function checkTasksHygiene(featureDir: string): Finding[] {
   const f: Finding[] = []
   const tasksPath = path.join(featureDir, 'tasks.md')
-  if (!existsSync(tasksPath)) return f
+  const tasksResult = readTextFileSync(tasksPath)
+  if (tasksResult.isErr()) return f
 
-  const md = readFileSync(tasksPath, 'utf-8')
+  const md = tasksResult.value
   const lines = md.split('\n')
 
   const hasSampleLeak = /\bT001\b/.test(md) || /\bSAMPLE TASKS\b/i.test(md) || /illustration purposes only/i.test(md)
@@ -211,7 +218,6 @@ function checkPhaseReadiness(featureDir: string): Finding[] {
 
   const quartetComplete = files.spec && files.plan && files.tasks && files.handoff
 
-  // Group D rules
   f.push({
     rule: 'phase.detect',
     level: 'info',
@@ -248,14 +254,16 @@ function checkPhaseReadiness(featureDir: string): Finding[] {
   return f
 }
 
-function checkCrossRefs(featureDir: string): Finding[] {
+function checkCrossRefs(
+  featureDir: string,
+  handoffPath: string,
+  parsed: { md: string; rows: AcRow[] } | null
+): Finding[] {
   const f: Finding[] = []
-  const handoffPath = path.join(featureDir, 'handoff.md')
+  if (!parsed) return f
 
-  if (!existsSync(handoffPath)) return f
-
-  const handoffMd = readFileSync(handoffPath, 'utf-8')
-  const acRows = parseHandoffAcTable(handoffMd)
+  const handoffMd = parsed.md
+  const acRows = parsed.rows
   const acIds = acRows.map(r => r.id).filter(Boolean)
 
   if (acIds.length === 0) return f
@@ -263,10 +271,15 @@ function checkCrossRefs(featureDir: string): Finding[] {
   const specPath = path.join(featureDir, 'spec.md')
   const tasksPath = path.join(featureDir, 'tasks.md')
 
+  const specResult = readTextFileSync(specPath)
+  const tasksResult = readTextFileSync(tasksPath)
+  const specContent = specResult.isOk() ? specResult.value : ''
+  const tasksContent = tasksResult.isOk() ? tasksResult.value : ''
+
   for (const id of acIds) {
     const specId = id.split(' ')[0] ?? ''
-    const specFound = existsSync(specPath) && readFileSync(specPath, 'utf-8').includes(specId)
-    const tasksFound = existsSync(tasksPath) && readFileSync(tasksPath, 'utf-8').includes(specId)
+    const specFound = specContent.includes(specId)
+    const tasksFound = tasksContent.includes(specId)
 
     if (!specFound && !tasksFound) {
       f.push({
@@ -297,10 +310,12 @@ function checkCrossRefs(featureDir: string): Finding[] {
 
 export function runAudit(featureDir: string): AuditResult {
   const aFindings = checkQuartet(featureDir)
-  const bFindings = checkHandoffAcTable(featureDir)
+  const handoffPath = path.join(featureDir, 'handoff.md')
+  const handoffParsed = readHandoffAcRows(handoffPath)
+  const bFindings = checkHandoffAcTable(handoffPath, handoffParsed)
   const cFindings = checkTasksHygiene(featureDir)
   const dFindings = checkPhaseReadiness(featureDir)
-  const eFindings = checkCrossRefs(featureDir)
+  const eFindings = checkCrossRefs(featureDir, handoffPath, handoffParsed)
 
   const findings = [...aFindings, ...bFindings, ...cFindings, ...dFindings, ...eFindings]
 
@@ -308,7 +323,6 @@ export function runAudit(featureDir: string): AuditResult {
   const warns = findings.filter(f => f.level === 'warn').length
   const infos = findings.filter(f => f.level === 'info').length
 
-  // Extract phase info from phase.detect finding
   const phaseFind = findings.find(f => f.rule === 'phase.detect')
   const phase = phaseFind
     ? {

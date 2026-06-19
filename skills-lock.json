@@ -29,13 +29,13 @@
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/bun-development/SKILL.md",
-      "computedHash": "633e5fa8308b7fbc6e39f0e39d1d709b661a8f945b2fcf1d7a8bc12b94a76818"
+      "computedHash": "a7d8148962fc83d79ebf5e46811e465a0da3217e36276057dd17161cbd0cbe37"
     },
     "bun-runtime": {
       "source": "affaan-m/everything-claude-code",
       "sourceType": "github",
       "skillPath": "skills/bun-runtime/SKILL.md",
-      "computedHash": "bdac3d20723a536f7160ca2c08f369101b73e67a0f5f2a951910056716156c3c"
+      "computedHash": "73b3c91579ddd2f2dd7ebcf215774ea0de07823c1fe8de4b88b3225833bfa5cd"
     },
     "code-review-graph": {
       "source": "aradotso/trending-skills",

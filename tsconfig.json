@@ -41,7 +41,9 @@
       "@kb/ops": ["./packages/ops/src/index.ts"],
       "@kb/ops/*": ["./packages/ops/src/*"],
       "@kb/dev": ["./packages/dev/src/index.ts"],
-      "@kb/dev/*": ["./packages/dev/src/*"]
+      "@kb/dev/*": ["./packages/dev/src/*"],
+      "@kb/shared": ["./packages/shared/src/index.ts"],
+      "@kb/shared/*": ["./packages/shared/src/*"]
     }
   },
   "include": ["src/**/*", "packages/ops/src/**/*", "bdd/**/*.ts", "playwright.config.ts"],

@@ -4,6 +4,8 @@
  */
 import { mkdir } from 'node:fs/promises'
 import path from 'node:path'
+import { configureOpsLogging } from '../../../support/lib/cli/ops_logging.script'
+import { usageFlag } from '../../../support/lib/cli/usage_env.script'
 import { chdirToRepoRoot } from '../../../support/lib/shared/repo_root.script'
 
 const P50_QUANTILE = 0.5
@@ -60,11 +62,6 @@ type BenchmarkResult = {
 }
 type SpawnSyncOptions = NonNullable<Parameters<typeof Bun.spawnSync>[1]>
 
-function envBool(name: string): boolean {
-  const v = process.env[name]
-  return v === '1' || v === 'true' || v === 'yes'
-}
-
 function workflowObservabilityArgs(): string[] {
   const args: string[] = []
   if (process.env.usage_regression_pct) args.push('--regression-pct', process.env.usage_regression_pct)
@@ -74,8 +71,8 @@ function workflowObservabilityArgs(): string[] {
   if (process.env.usage_warmup) args.push('--warmup', process.env.usage_warmup)
   if (process.env.usage_iterations) args.push('--iterations', process.env.usage_iterations)
   if (process.env.usage_absolute_p95_ms) args.push('--absolute-p95-ms', process.env.usage_absolute_p95_ms)
-  if (envBool('usage_no_regression')) args.push('--no-regression')
-  if (envBool('usage_no_absolute_limits')) args.push('--no-absolute-limits')
+  if (usageFlag(process.env, 'no_regression')) args.push('--no-regression')
+  if (usageFlag(process.env, 'no_absolute_limits')) args.push('--no-absolute-limits')
   return args
 }
 type LatencySample = { p50: number; p99: number }
@@ -274,6 +271,7 @@ function printPerformanceReport(result: BenchmarkResult, violations: BenchmarkRe
 }
 
 async function main(): Promise<void> {
+  configureOpsLogging()
   const action = process.env.usage_cmd
   const port = Number.parseInt(process.env.usage_port ?? '3457', 10)
 

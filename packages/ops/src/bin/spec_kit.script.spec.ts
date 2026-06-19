@@ -9,10 +9,15 @@ function cleanGates() {
   rmSync(gatesDir, { recursive: true, force: true })
 }
 
-function runKit(args: string[]): { exitCode: number; stdout: string; stderr: string } {
+function runKit(
+  args: string[],
+  extraEnv?: Record<string, string>
+): { exitCode: number; stdout: string; stderr: string } {
   const repoRoot = path.resolve(import.meta.dir, '../../../..')
+  const env: Record<string, string> = { ...(process.env as Record<string, string>), LOG_LEVEL: 'warn', ...extraEnv }
   const result = Bun.spawnSync(['bun', 'packages/ops/src/bin/spec_kit.script.ts', ...args], {
     cwd: repoRoot,
+    env,
     stdout: 'pipe',
     stderr: 'pipe'
   })
@@ -48,7 +53,7 @@ describe('spec kit — help and routing', () => {
 describe('kit next — dry-run', () => {
   it('--dry-run resolves to a valid canonical stage', () => {
     cleanGates()
-    const { exitCode, stdout } = runKit(['next', FIXTURE, '--dry-run'])
+    const { exitCode, stdout } = runKit(['next', FIXTURE], { usage_dry_run: 'true' })
     expect(exitCode).toBe(0)
     expect(stdout.length).toBeGreaterThan(0)
     expect(stdout).not.toContain('__terminal__')
@@ -56,7 +61,7 @@ describe('kit next — dry-run', () => {
 
   it('--dry-run output mentions gate or stage name', () => {
     cleanGates()
-    const { exitCode, stdout } = runKit(['next', FIXTURE, '--dry-run'])
+    const { exitCode, stdout } = runKit(['next', FIXTURE], { usage_dry_run: 'true' })
     expect(exitCode).toBe(0)
     expect(stdout.trim().length).toBeGreaterThan(0)
   })
@@ -65,15 +70,15 @@ describe('kit next — dry-run', () => {
 describe('kit next — approve gate flow', () => {
   it('--approve clears current gate and dispatches next verb', () => {
     cleanGates()
-    const { exitCode } = runKit(['next', FIXTURE, '--approve'])
+    const { exitCode } = runKit(['next', FIXTURE], { usage_approve: 'true' })
     expect(exitCode).toBe(0)
   })
 
   it('--approve advances stage (dry-run changes after approve)', () => {
     cleanGates()
-    const before = runKit(['next', FIXTURE, '--dry-run'])
-    runKit(['next', FIXTURE, '--approve'])
-    const after = runKit(['next', FIXTURE, '--dry-run'])
+    const before = runKit(['next', FIXTURE], { usage_dry_run: 'true' })
+    runKit(['next', FIXTURE], { usage_approve: 'true' })
+    const after = runKit(['next', FIXTURE], { usage_dry_run: 'true' })
     expect(before.exitCode).toBe(0)
     expect(after.exitCode).toBe(0)
     expect(before.stdout.trim()).not.toBe(after.stdout.trim())
@@ -81,8 +86,8 @@ describe('kit next — approve gate flow', () => {
 
   it('multiple --approve calls advance through gates', () => {
     cleanGates()
-    runKit(['next', FIXTURE, '--approve'])
-    const { exitCode } = runKit(['next', FIXTURE, '--approve'])
+    runKit(['next', FIXTURE], { usage_approve: 'true' })
+    const { exitCode } = runKit(['next', FIXTURE], { usage_approve: 'true' })
     expect(exitCode).toBe(0)
   })
 })
@@ -103,7 +108,7 @@ describe('kit next — feature dir resolution', () => {
 describe('kit next --loop', () => {
   it('--loop emits stage name on stdout', () => {
     cleanGates()
-    const { stdout } = runKit(['next', FIXTURE, '--loop'])
+    const { stdout } = runKit(['next', FIXTURE], { usage_loop: 'true' })
     expect(stdout).toContain('review-spec')
   })
 })

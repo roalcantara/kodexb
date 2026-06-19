@@ -3,6 +3,7 @@ import path from 'node:path'
 import { AC_TAG_RE, sliceIdFromAcTag } from '@kb/exec'
 import { Glob } from 'bun'
 import { repoRoot } from '../../../support/lib/shared/repo_root.script'
+import { firstLine, lines } from '../../../support/lib/shared/text_file.script'
 import {
   type CatalogEntry,
   type CatalogFile,
@@ -118,11 +119,11 @@ async function collectPathsMatchingTag(
     const text = texts[i]
     if (!candidate || !text) continue
     if (scanAllLines) {
-      const hit = text.split('\n').some(line => lineHasCatalogTag(line, want))
+      const hit = lines(text).some(line => lineHasCatalogTag(line, want))
       if (hit) matches.push(path.relative(root, candidate).replace(/\\/g, '/'))
     } else {
-      const firstLine = text.split('\n')[0] ?? ''
-      if (lineHasCatalogTag(firstLine, want)) {
+      const fl = firstLine(text)
+      if (lineHasCatalogTag(fl, want)) {
         matches.push(path.relative(root, candidate).replace(/\\/g, '/'))
       }
     }
@@ -239,21 +240,21 @@ export type TagListJson = {
 }
 
 function formatPathList(label: string, paths: string[]): string[] {
-  const lines = [`  ${label}:`]
-  if (paths.length === 0) lines.push('    (none)')
-  else for (const p of paths) lines.push(`    ${p}`)
-  return lines
+  const out = [`  ${label}:`]
+  if (paths.length === 0) out.push('    (none)')
+  else for (const p of paths) out.push(`    ${p}`)
+  return out
 }
 
 function formatOneTagBlock(res: TagResolution, filter: TagLayerFilter): string[] {
   const filtered = filterResolution(res, filter)
-  const lines = [`${res.catalogId} (${res.tag}) [${res.entry.status ?? 'unknown'}]`]
-  if (res.entry.title) lines.push(`  title: ${res.entry.title}`)
-  if (res.entry.specs?.length) lines.push(`  specs: ${res.entry.specs.join(', ')}`)
-  lines.push(...formatPathList('e2e', filtered.features))
-  lines.push(...formatPathList('unit', filtered.units))
-  lines.push('')
-  return lines
+  const out = [`${res.catalogId} (${res.tag}) [${res.entry.status ?? 'unknown'}]`]
+  if (res.entry.title) out.push(`  title: ${res.entry.title}`)
+  if (res.entry.specs?.length) out.push(`  specs: ${res.entry.specs.join(', ')}`)
+  out.push(...formatPathList('e2e', filtered.features))
+  out.push(...formatPathList('unit', filtered.units))
+  out.push('')
+  return out
 }
 
 export function formatTagListText(resolutions: TagResolution[], filter: TagLayerFilter): string {

@@ -21,7 +21,6 @@
         "rehype-highlight": "^7.0.2",
         "type-fest": "^5.7.0",
         "xstate": "^5.32.1",
-        "yaml": "^2.9.0",
       },
       "devDependencies": {
         "@biomejs/biome": "^2.5.0",
@@ -59,7 +58,9 @@
       "version": "0.1.0",
       "dependencies": {
         "@kb/flow": "workspace:*",
+        "@kb/shared": "workspace:*",
         "@sinclair/typebox": "catalog:",
+        "neverthrow": "catalog:",
         "xstate": "catalog:",
       },
     },
@@ -77,6 +78,15 @@
       "dependencies": {
         "@kb/exec": "workspace:*",
         "@kb/flow": "workspace:*",
+        "@kb/shared": "workspace:*",
+      },
+    },
+    "packages/shared": {
+      "name": "@kb/shared",
+      "version": "0.1.0",
+      "dependencies": {
+        "@logtape/logtape": "catalog:",
+        "neverthrow": "catalog:",
       },
     },
   },
@@ -84,7 +94,9 @@
     "ansi-regex": "^5.0.1",
   },
   "catalog": {
+    "@logtape/logtape": "^2.1.5",
     "@sinclair/typebox": "^0.34.49",
+    "neverthrow": "^8.2.0",
     "xstate": "^5.32.0",
   },
   "packages": {
@@ -225,6 +237,8 @@
     "@kb/flow": ["@kb/flow@workspace:packages/flow"],
 
     "@kb/ops": ["@kb/ops@workspace:packages/ops"],
+
+    "@kb/shared": ["@kb/shared@workspace:packages/shared"],
 
     "@logtape/logtape": ["@logtape/logtape@2.1.5", "", {}, "sha512-59fyskQ9hR5mYQP9YMznZDtwRS4gIN7VIJkoRe0SLTmU+BQGaSP1s+ve8r+Binj1m6jNpwlF7yu9fz2/asSFLw=="],
 

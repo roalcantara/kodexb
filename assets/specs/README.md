@@ -15,5 +15,7 @@ catalog governance.
 | [`011-mise-sdd-cli/`](011-mise-sdd-cli/)                                   | **Shipped** — mise SDD hub + `spec test` + orchestrator dogfood closeout                                             |
 | [`012-spec-kit-orchestrator-loop/`](012-spec-kit-orchestrator-loop/)       | **Active** — Slice A: `spec kit` verbs + `kit next`; Slice B: orchestrator loop + smoke (see spec § Delivery slices) |
 | [`013-task-runner-tree-ux/`](013-task-runner-tree-ux/)                     | Draft (spec only) — tree pretty mode spike for `app gates`; not blocking 012                                         |
+| [`013-package-relocation/`](013-package-relocation/)                       | In progress — `@kb/flow`, `@kb/exec`, `@kb/ops`, root `bin/` shims                                                   |
+| [`014-ops-cli-kernel/`](014-ops-cli-kernel/)                               | Draft — mise-trusted `usage_*` kernel; thin bin + governance CLI migration (~1 day)                                  |
 
 Shipped registry (YAML only): [`assets/catalog/catalog.yaml`](../catalog/catalog.yaml).

@@ -7,7 +7,8 @@
     ".": "./src/index.types.ts"
   },
   "dependencies": {
+    "@kb/exec": "workspace:*",
     "@kb/flow": "workspace:*",
-    "@kb/exec": "workspace:*"
+    "@kb/shared": "workspace:*"
   }
 }

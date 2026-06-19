@@ -1,0 +1,24 @@
+--- OCK-DONE-03: Closeout metrics ---
+# Phase 8 (OCK-REF-01..05):
+#   usageFlags / usageStrings: batch env readers in usage_env.script.ts
+#   runBinMain: async-safe dispatch entry in dispatch.script.ts
+#   actionMap pattern in catalog.script.ts and test.script.ts
+#   parseTagCli / runE2e extracted to support/lib/cli/test_cli.script.ts
+#   readTextFile / readTextLines return Result<string|string[], Error> (neverthrow)
+#   loadAllowlist returns Promise<Result<HandoffAllowlist, HandoffAllowlistError>>
+#   catalog.script.ts: 74 LOC, test.script.ts: 116 LOC, test_cli.script.ts: 75 LOC
+#   process.argv in bin/: app:3, catalog:1, spec:2, spec_kit:2, macos_app:1, policy:1
+#     (test positional argv reads live in test_cli.script.ts under support/lib/cli/)
+# Phase 8 + bin/lib tests: 131 pass, 0 fail (16 usage_env + 6 test_cli + 109 bin/shared)
+# Quality gate: green (all stages pass, verified 2026-06-03)
+
+rg -l 'function envBool' packages/ops/src --glob '*.ts' | wc -l -> 0
+rg 'function parseCli' packages/ops/src -> (no matches)
+rg 'hasCliFlag' packages/ops/src -> (no matches)
+rg "from 'yaml'|from \"yaml\"" packages/ops/src -> (no matches)
+rg '"yaml"' package.json -> (no match in dependencies)
+wc -l packages/ops/src/bin/test.script.ts -> 116
+wc -l packages/ops/src/bin/catalog.script.ts -> 74
+wc -l packages/ops/src/support/lib/cli/test_cli.script.ts -> 75
+rg 'process\.argv' packages/ops/src/bin -c -> app:3, catalog:1, spec:2, spec_kit:2, macos_app:1, policy:1
+rg 'shim_spawn' packages/ops -> (no matches)
