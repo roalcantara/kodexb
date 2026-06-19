@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 /**
- * Smoke: real renderer bundle + RPC (see `tools/dev/preview/server.script.ts`), Chromium only.
+ * Smoke: real renderer bundle + RPC (see `packages/dev/src/preview/server.script.ts`), Chromium only.
  * Requires a non-empty list (at least one row). Empty DB → skipped (not a failure).
  *
  * DOM contract (kept in sync with `src/shell/renderer/components/list/`):

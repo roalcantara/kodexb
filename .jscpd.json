@@ -25,7 +25,9 @@
     "**/.superpowers/**",
     ".agents/skills/**",
     "src/shell/app/db/import.service.spec.ts",
-    "tools/governance/specs/workflow_run.script.spec.ts",
-    "tools/__tests__/fixtures/workflow/fixture-profile.yaml"
+    "packages/ops/src/governance/specs/workflow_run.script.spec.ts",
+    "packages/ops/src/__tests__/fixtures/workflow/fixture-profile.yaml",
+    "packages/dev/tsconfig.json",
+    "packages/ops/tsconfig.json"
   ]
 }

@@ -6,7 +6,7 @@ Normative guide for **`tools/`** — repository automation (scripts, validators,
 Not application product code (`src/`), agent skill prose (`.agents/skills/`), or registries/data
 (`assets/`).
 
-**Machine contract:** [`tools/tools.manifest.toml`](../../tools/tools.manifest.toml) — folder →
+**Machine contract:** [`packages/ops/tools.manifest.toml`](../../packages/ops/tools.manifest.toml) — folder →
 purpose family, enforced by `layout_validate.script.ts` in CI.
 
 ## Purpose families
@@ -147,7 +147,7 @@ Details: [`CODESTYLE_GUIDE.md`](CODESTYLE_GUIDE.md) § Tools directory.
 Regenerate:
 
 ```sh
-bun tools/bin/tools_inventory_report.script.ts
+bun bin/tools_inventory_report.script.ts
 ```
 
 (`coupling_role` and `proposed_home` in the CSV are analysis columns — not destination paths
@@ -159,10 +159,10 @@ User-facing commands: **`mise run <task>`** — not direct `bun tools/...` excep
 
 | Task | Stub | Domain |
 | ---- | ---- | ------ |
-| `test` | `tools/bin/test.script.ts` | catalog tag runner + test orchestration |
-| `catalog` | `tools/bin/catalog.script.ts` | `governance/registries/catalog/` |
-| `spec` | `tools/bin/spec.script.ts` | `governance/specs/` |
-| `skill` | `tools/bin/skill.script.ts` | `governance/registries/skill/` |
+| `test` | `bin/test.script.ts` | catalog tag runner + test orchestration |
+| `catalog` | `bin/catalog.script.ts` | `governance/registries/catalog/` |
+| `spec` | `bin/spec.script.ts` | `governance/specs/` |
+| `skill` | `bin/skill.script.ts` | `governance/registries/skill/` |
 | `perf` | (harness in place) | `metrics/harnesses/perf/perf.script.ts` |
 
 See [`MISE_GUIDE.md`](MISE_GUIDE.md) for task definitions.
@@ -171,7 +171,7 @@ See [`MISE_GUIDE.md`](MISE_GUIDE.md) for task definitions.
 
 | Check | Owner |
 | ----- | ----- |
-| Folder layout | `tools/tools.manifest.toml` + `layout_validate.script.ts` |
+| Folder layout | `packages/ops/tools.manifest.toml` + `layout_validate.script.ts` |
 | `src/` imports | dependency-cruiser |
 | Suffix contracts | ast-grep + ls-lint |
 

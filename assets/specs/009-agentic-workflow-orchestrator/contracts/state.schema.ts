@@ -3,7 +3,7 @@
 // header that carries identity, schema version, and the canonical run_id
 // from OBSERVABILITY_GUIDE.md.
 // Ephemeral spike — promoted on the MVP slice to
-// tools/governance/specs/workflow/schemas/.
+// packages/ops/src/governance/specs/workflow/schemas/.
 // Runtime imports from that stable path, never from this spec folder.
 
 import { Type, type Static } from '@sinclair/typebox'

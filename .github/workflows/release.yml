@@ -28,7 +28,7 @@ jobs:
         env:
           BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.event.after }}
-        run: bash tools/orchestration/scripts/check_squash_merge.sh "$BEFORE" "$AFTER"
+        run: bash packages/ops/src/orchestration/scripts/check_squash_merge.sh "$BEFORE" "$AFTER"
 
       - uses: ./.github/actions/setup-bun-project
         with:

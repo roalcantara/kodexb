@@ -1,6 +1,6 @@
 // Spec fixture for AWO-10 — workflow profile (unified command keyword).
 // Ephemeral spike — promoted on the MVP slice to
-// tools/governance/specs/workflow/schemas/.
+// packages/ops/src/governance/specs/workflow/schemas/.
 // Runtime imports from that stable path, never from this spec folder.
 
 import { Type, type Static } from '@sinclair/typebox'
@@ -11,7 +11,7 @@ export const PROFILE_SCHEMA_VERSION = '009.1.0' as const
 // NOT embed toolchain prefix defaults. Permitted prefixes are PROFILE DATA via
 // `ExecutionPolicy.allowed_prefixes`. Kb's actual values (`mise run`, `hk check`,
 // `bun run`) live ONLY in assets/catalog/workflows/default.yaml and in test
-// fixtures under tools/__tests__/fixtures/workflow/ — never as a constant here.
+// fixtures under packages/ops/src/__tests__/fixtures/workflow/ — never as a constant here.
 
 // AWO-9 — execution policy is profile-supplied; the engine validates the
 // algorithm but carries no prefix values.

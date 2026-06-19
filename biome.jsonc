@@ -20,7 +20,7 @@
       "!.code-review-graph",
       "!bdd/e2e/.generated",
       "!tmp",
-      "!tools/graphify-out",
+      "!packages/ops/src/graphify-out",
       "!.venv",
       "!.worktrees",
       "!.opencode"
@@ -292,7 +292,7 @@
       }
     },
     {
-      "includes": ["tools/governance/registries/skill/**"],
+      "includes": ["packages/ops/src/governance/registries/skill/**"],
       "linter": {
         "rules": {
           "complexity": {
@@ -312,7 +312,7 @@
       }
     },
     {
-      "includes": ["tools/**/*.script.ts"],
+      "includes": ["packages/ops/src/**/*.script.ts", "packages/dev/src/**/*.script.ts", "bin/**/*.ts"],
       "linter": {
         "rules": {
           "complexity": {
@@ -345,7 +345,7 @@
       }
     },
     {
-      "includes": ["tools/governance/registries/skill/**/*.script.ts"],
+      "includes": ["packages/ops/src/governance/registries/skill/**/*.script.ts"],
       "linter": {
         "rules": {
           "nursery": {},

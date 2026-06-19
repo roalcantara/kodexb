@@ -1,5 +1,5 @@
 /**
- * Boots tools/dev/preview/server.script.ts after creating the bdd e2e fixture and writing
+ * Boots packages/dev/src/preview/server.script.ts after creating the bdd e2e fixture and writing
  * bdd/e2e/.fixture-paths.json. Playwright must use this as webServer.command so
  * the running app and step definitions share one temp directory.
  */
@@ -14,4 +14,4 @@ writeFileSync(FIXTURE_PATHS_FILE, JSON.stringify(fixture))
 process.env.APP_CONFIG_PATH = fixture.configPath
 process.env.PORT = PREVIEW_PORT
 
-await import('../../../tools/dev/preview/server.script.ts')
+await import('../../../packages/dev/src/preview/server.script')

@@ -2,12 +2,12 @@
 id: tools-rules-must-use-rule-suffix
 language: Yaml
 files:
-  - 'tools/governance/policies/ast-grep/*.yml'
+  - 'packages/ops/src/governance/policies/ast-grep/*.yml'
 ignores:
-  - 'tools/governance/policies/ast-grep/*.rule.yml'
+  - 'packages/ops/src/governance/policies/ast-grep/*.rule.yml'
 severity: error
 rule:
   kind: document
 message: >
-  ast-grep rules must be named <id>.rule.yml under tools/governance/policies/ast-grep/.
+  ast-grep rules must be named <id>.rule.yml under packages/ops/src/governance/policies/ast-grep/.
 note: See assets/guides/CODESTYLE_GUIDE.md — Tools directory naming.

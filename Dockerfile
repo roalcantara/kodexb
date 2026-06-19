@@ -56,7 +56,7 @@ COPY . .
 # the final stage does not need to know the host arch or env.
 ARG ELECTROBUN_ENV=dev
 RUN set -eu; \
-    bash tools/orchestration/scripts/compile_renderer_styles.sh; \
+    bash packages/ops/src/orchestration/scripts/compile_renderer_styles.sh; \
     rm -f node_modules/electrobun/bin/electrobun; \
     bun run build:ci; \
     arch="$(uname -m)"; \

@@ -24,7 +24,7 @@
         "yaml": "^2.9.0",
       },
       "devDependencies": {
-        "@biomejs/biome": "2.5.0",
+        "@biomejs/biome": "^2.5.0",
         "@cucumber/cucumber": "^13.0.0",
         "@happy-dom/global-registrator": "^20.10.6",
         "@playwright/test": "^1.61.0",
@@ -46,21 +46,37 @@
         "typescript": "^5",
       },
     },
-    "packages/workflow-core": {
-      "name": "@kb/workflow-core",
+    "packages/dev": {
+      "name": "@kb/dev",
+      "version": "0.1.0",
+      "dependencies": {
+        "@kb/exec": "workspace:*",
+        "@kb/flow": "workspace:*",
+      },
+    },
+    "packages/exec": {
+      "name": "@kb/exec",
+      "version": "0.1.0",
+      "dependencies": {
+        "@kb/flow": "workspace:*",
+        "@sinclair/typebox": "catalog:",
+        "xstate": "catalog:",
+      },
+    },
+    "packages/flow": {
+      "name": "@kb/flow",
       "version": "0.1.0",
       "dependencies": {
         "@sinclair/typebox": "catalog:",
         "xstate": "catalog:",
       },
     },
-    "packages/workflow-runtime": {
-      "name": "@kb/workflow-runtime",
+    "packages/ops": {
+      "name": "@kb/ops",
       "version": "0.1.0",
       "dependencies": {
-        "@kb/workflow-core": "workspace:*",
-        "@sinclair/typebox": "catalog:",
-        "xstate": "catalog:",
+        "@kb/exec": "workspace:*",
+        "@kb/flow": "workspace:*",
       },
     },
   },
@@ -202,9 +218,13 @@
 
     "@jscpd/tokenizer": ["@jscpd/tokenizer@4.2.5", "", { "dependencies": { "@jscpd/core": "4.2.5", "spark-md5": "^3.0.2" } }, "sha512-UM8Wx/jwahmflqQExlcKMQTYOAy58N/fn7Pv6NYrkD3EZm/FTk7gW97wkXy5aDE1Ts9oBUpT9tLY2rz7ogCHAQ=="],
 
-    "@kb/workflow-core": ["@kb/workflow-core@workspace:packages/workflow-core"],
+    "@kb/dev": ["@kb/dev@workspace:packages/dev"],
 
-    "@kb/workflow-runtime": ["@kb/workflow-runtime@workspace:packages/workflow-runtime"],
+    "@kb/exec": ["@kb/exec@workspace:packages/exec"],
+
+    "@kb/flow": ["@kb/flow@workspace:packages/flow"],
+
+    "@kb/ops": ["@kb/ops@workspace:packages/ops"],
 
     "@logtape/logtape": ["@logtape/logtape@2.1.5", "", {}, "sha512-59fyskQ9hR5mYQP9YMznZDtwRS4gIN7VIJkoRe0SLTmU+BQGaSP1s+ve8r+Binj1m6jNpwlF7yu9fz2/asSFLw=="],
 

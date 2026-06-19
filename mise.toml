@@ -23,7 +23,7 @@ GOVERNANCE_LEVEL="standard"
 BLOCK_ON_THREAT="true"
 
 [tasks]
-"validate-launcher-placement" = { description = "Electrobun bump gate: unit window specs + optional macOS desktop placement probe (KB_PLACEMENT_PROBE=1). Run after any electrobun version change.", run = "bun tools/dev/launcher_placement_probe.script.ts" }
+"validate-launcher-placement" = { description = "Electrobun bump gate: unit window specs + optional macOS desktop placement probe (KB_PLACEMENT_PROBE=1). Run after any electrobun version change.", run = "bun packages/dev/src/launcher_placement_probe.script.ts" }
 "project" = { description = "Manage setup, dependencies, cleanup, icons, repository, and local maintenance", usage = '''
     cmd "setup" {}
     cmd "prepare" { flag "--ci" help="Install dependencies for CI" }
@@ -265,7 +265,7 @@ BLOCK_ON_THREAT="true"
             echo "OK: signed commit + signed tag verified."
         fi
         if [[ "${usage_check_squash:-false}" == "true" ]]; then
-            bash tools/orchestration/scripts/check_squash_merge.sh
+            bash packages/ops/src/orchestration/scripts/check_squash_merge.sh
         fi
         if [[ "${usage_dry_run:-false}" == "true" ]]; then
           bunx release-it --dry-run --ci
@@ -326,7 +326,7 @@ BLOCK_ON_THREAT="true"
       arg "[key]" help="Catalog key (e.g. sync_frecency_preserve)"
       arg "[slice]" help="Optional AC slice id (e.g. sf1ac1 maps to @ac:SF-1_AC1)"
     }
-  ''', run = "bun tools/bin/test.script.ts" }
+  ''', run = "bun bin/test.script.ts" }
 "perf" = { description = "Run performance benchmark workflows (preview-server, workflow-observability)", usage = '''
     cmd "run" {
       flag "--port <port>" default="3457" help="Preview server port for run action"
@@ -344,13 +344,13 @@ BLOCK_ON_THREAT="true"
       flag "--no-absolute-limits" help="Skip WOBS absolute p95 caps"
       cmd "extract-dataset" {
         flag "--feature <dir>" help="Source feature directory to snapshot (required)"
-        flag "--output <path>" default="tools/metrics/fixtures/perf/workflow-observability-feature.json" help="Output dataset JSON path"
+        flag "--output <path>" default="packages/ops/src/metrics/fixtures/perf/workflow-observability-feature.json" help="Output dataset JSON path"
       }
     }
-  ''', run = "bun tools/metrics/harnesses/perf/perf.script.ts" }
+  ''', run = "bun packages/ops/src/metrics/harnesses/perf/perf.script.ts" }
 "hooks" = { description = "Run tests for Cursor agent hooks (.cursor/hooks/)", usage = '''
     cmd "governance-audit" help="Governance audit threat-pattern unit tests"
-  ''', run = "bun tools/bin/hooks.script.ts" }
+  ''', run = "bun bin/hooks.script.ts" }
 "_icons" = { description = "Check and optionally fix SVG icon contrast", hide = true, usage = '''
     cmd "check" {}
     flag "--scope <scope>" help="Check scope" default="all" { choices "all" "brand" }
@@ -718,7 +718,7 @@ BLOCK_ON_THREAT="true"
     }
 
     run_tools_layout() {
-      bun tools/governance/policies/layout_validate.script.ts
+      bun packages/ops/src/governance/policies/layout_validate.script.ts
     }
 
     case "${usage_cmd:-check}" in
@@ -793,7 +793,7 @@ BLOCK_ON_THREAT="true"
       flag "--open-devtools" help="Print CEF DevTools URLs for kb renderer (Cmd+click; requires --cef)"
       flag "--force" help="Tear down any running kb-dev and watcher before start"
     }
-  ''', run = "bun tools/bin/app.script.ts" }
+  ''', run = "bun bin/app.script.ts" }
 "_app_raw" = { hide = true, run = '''
     #!/usr/bin/env bash
     set -euo pipefail
@@ -983,7 +983,7 @@ BLOCK_ON_THREAT="true"
         choices "text" "json"
       }
     }
-  ''', run = "bun tools/bin/policy.script.ts" }
+  ''', run = "bun bin/policy.script.ts" }
 "skill" = { description = "Validate, generate, install, and report skill registry artifacts", usage = '''
 cmd "validate" {
   flag "--raw" help="Plain text output (no gum)"
@@ -1040,7 +1040,7 @@ set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 CMD="${usage_cmd:-}"
-exec bun tools/bin/skill.script.ts "$CMD" "$@"
+exec bun bin/skill.script.ts "$CMD" "$@"
 ''' }
 # mise run docker build
 # mise run docker build --nocache --platform amd64
@@ -1304,7 +1304,7 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       cmd "pr-open" { arg "[feature]" help="Feature dir" }
       cmd "pr-check" { arg "[feature]" help="Feature dir" }
     }
-  ''', run = "bun tools/bin/spec.script.ts" }
+  ''', run = "bun bin/spec.script.ts" }
 "catalog" = { description = "Shipped-feature registry (catalog.yaml metadata)", usage = '''
     cmd "list" {
       flag "--json" help="Machine-readable JSON output"
@@ -1321,4 +1321,4 @@ exec bun tools/bin/skill.script.ts "$CMD" "$@"
       flag "--json" help="Machine-readable JSON output (includes provenance)"
       arg "<key>" help="Catalog key (e.g. command_palette)"
     }
-  ''', run = "bun tools/bin/catalog.script.ts" }
+  ''', run = "bun bin/catalog.script.ts" }

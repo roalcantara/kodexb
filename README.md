@@ -415,7 +415,7 @@ agent skill wiring, UI smoke checks, and maintenance workflows:
     - [jscpd][17] — copy-paste / duplication detection
   - [hk][7] — git hook manager
   - [ast-grep][18] — code structural search, lint, rewriting at large scale
-  - HK commit-message policy — `bun tools/hooks/commit_message.script.ts`
+  - HK commit-message policy — `bun packages/ops/src/governance/policies/hooks/commit_message.script.ts`
 
 ## CI / CD
 

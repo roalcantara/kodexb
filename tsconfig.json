@@ -34,10 +34,16 @@
       "@shell/app/config/*": ["./src/shell/app/config/*"],
       "@testing": ["./src/__tests__/index.ts"],
       "@testing/*": ["./src/__tests__/*"],
-      "@kb/workflow-core": ["./packages/workflow-core/src/index.ts"],
-      "@kb/workflow-runtime": ["./packages/workflow-runtime/src/index.ts"]
+      "@kb/flow": ["./packages/flow/src/index.ts"],
+      "@kb/flow/*": ["./packages/flow/src/*"],
+      "@kb/exec": ["./packages/exec/src/index.ts"],
+      "@kb/exec/*": ["./packages/exec/src/*"],
+      "@kb/ops": ["./packages/ops/src/index.ts"],
+      "@kb/ops/*": ["./packages/ops/src/*"],
+      "@kb/dev": ["./packages/dev/src/index.ts"],
+      "@kb/dev/*": ["./packages/dev/src/*"]
     }
   },
-  "include": ["src/**/*", "tools/**/*", "bdd/**/*.ts", "playwright.config.ts"],
-  "exclude": ["node_modules", "dist", "build"]
+  "include": ["src/**/*", "packages/ops/src/**/*", "bdd/**/*.ts", "playwright.config.ts"],
+  "exclude": ["node_modules", "dist", "build", "tools"]
 }

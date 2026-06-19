@@ -1,7 +1,6 @@
-# ─────────────────────────────────────────────────────────────────────────────
 # Draft `spec` task namespace for mise.toml — wires the deterministic checkers.
 # Paste under [tasks] in mise.toml and adjust to taste. Entrypoints are mise
-# tasks only (per the plan); tools/governance/specs/*.ts stay implementation detail.
+# tasks only (per the plan); packages/ops/src/governance/specs/*.ts stay implementation detail.
 #
 # Usage once wired:
 #   mise run spec lint  -- --all --strict
@@ -47,29 +46,29 @@
         [[ -n "${usage_root:-}" ]] && args+=(--root "$usage_root")
         [[ "${usage_strict:-false}" == "true" ]] && args+=(--strict)
         [[ -n "${usage_target:-}" ]] && args+=("$usage_target")
-        exec bun tools/governance/specs/lint.script.ts "${args[@]}"
+        exec bun packages/ops/src/governance/specs/lint.script.ts "${args[@]}"
         ;;
       trace)
         args=("$usage_feature_dir")
         [[ -n "${usage_features:-}" ]] && args+=(--features "$usage_features")
         [[ "${usage_strict:-false}" == "true" ]] && args+=(--strict)
-        exec bun tools/governance/specs/trace.script.ts "${args[@]}"
+        exec bun packages/ops/src/governance/specs/trace.script.ts "${args[@]}"
         ;;
       gate)
         dir="${usage_feature_dir:-assets/specs/001-sync-frecency-persistence}"
-        exec bash tools/governance/specs/gate.sh "$dir"
+        exec bash packages/ops/src/governance/specs/gate.sh "$dir"
         ;;
       feature-init)
-        exec bun tools/governance/specs/feature_init.script.ts --id "$usage_id" --slug "$usage_slug"
+        exec bun packages/ops/src/governance/specs/feature_init.script.ts --id "$usage_id" --slug "$usage_slug"
         ;;
       resume)
         exec specify workflow resume
         ;;
       worktree-add)
-        exec bash tools/governance/specs/worktree-add.sh "$usage_feature"
+        exec bash packages/ops/src/governance/specs/worktree-add.sh "$usage_feature"
         ;;
       opencode-check)
-        exec bash tools/governance/specs/opencode_check.sh
+        exec bash packages/ops/src/governance/specs/opencode_check.sh
         ;;
       *)
         echo "spec: unknown action ${CMD}" >&2

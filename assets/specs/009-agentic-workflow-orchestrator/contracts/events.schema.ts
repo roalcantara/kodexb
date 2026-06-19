@@ -2,7 +2,7 @@
 // orchestrator event-type extension over the canonical event base
 // defined in OBSERVABILITY_GUIDE.md.
 // Ephemeral spike — promoted on the MVP slice by EXTENDING the existing
-// WorkflowEvent union in tools/governance/specs/workflow/workflow_run.script.ts
+// WorkflowEvent union in packages/ops/src/governance/specs/workflow/workflow_run.script.ts
 // (do not fork a second writer or event union).
 // Runtime imports from that stable path, never from this spec folder.
 

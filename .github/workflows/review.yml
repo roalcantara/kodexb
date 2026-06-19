@@ -140,7 +140,7 @@ jobs:
       - name: Check baseline or create initial baseline
         run: mise run perf workflow-observability
       - name: Check security perf baseline
-        run: bun tools/governance/security/perf/check.script.ts
+        run: bun packages/ops/src/governance/security/perf/check.script.ts
 
   e2e-smoke:
     if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
@@ -292,7 +292,7 @@ jobs:
       - name: Ensure ElectroBun home exists
         run: mkdir -p ~/.electrobun
       - name: Compile renderer styles
-        run: bash tools/orchestration/scripts/compile_renderer_styles.sh
+        run: bash packages/ops/src/orchestration/scripts/compile_renderer_styles.sh
       - name: Smoke build (forced unsigned)
         env:
           ELECTROBUN_DEVELOPER_ID: ''

@@ -2,7 +2,7 @@
 /**
  * Run @unit Gherkin acceptance scenarios with Cucumber + Bun (no Playwright).
  */
-import { chdirToRepoRoot } from '../../../tools/support/lib/shared/repo_root.script.ts'
+import { chdirToRepoRoot } from '../../../packages/ops/src/support/lib/shared/repo_root.script.ts'
 import { runUnitBddSpawn, validateUnitBdd } from './unit_bdd.runner.ts'
 
 function parseArgs(argv: string[]): { catalogTags: string[]; acTag?: string; dryRun: boolean; validateOnly: boolean } {

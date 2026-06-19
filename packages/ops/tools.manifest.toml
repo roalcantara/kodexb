@@ -1,0 +1,39 @@
+# packages/ops/src/ layout contract — see assets/guides/TOOLS_GUIDE.md
+# Validated by packages/ops/src/governance/policies/layout_validate.script.ts
+# Only entries under packages/ops/src/ are listed here.
+version = 1
+
+[[folder]]
+path = "bin"
+purpose_family = "bin"
+imports_src = false
+
+[[folder]]
+path = "governance"
+purpose_family = "governance"
+imports_src = false
+
+[[folder]]
+path = "metrics"
+purpose_family = "metrics"
+imports_src = false
+
+[[folder]]
+path = "orchestration"
+purpose_family = "orchestration"
+imports_src = false
+
+[[folder]]
+path = "support"
+purpose_family = "support"
+imports_src = false
+
+[[file]]
+path = "tools.manifest.toml"
+purpose_family = "governance"
+imports_src = false
+
+[[file]]
+path = "index.types.ts"
+purpose_family = "types"
+imports_src = false
