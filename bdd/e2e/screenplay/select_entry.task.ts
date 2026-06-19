@@ -37,11 +37,14 @@ export class SelectEntryByTitle implements Performable {
   }
 
   async performAs(actor: Actor): Promise<void> {
+    await actor.page.locator('button.cmp-list-row').first().waitFor({ state: 'visible', timeout: 15_000 })
     const row = actor.page.locator('button.cmp-list-row', { hasText: this.title }).first()
+    await row.waitFor({ state: 'visible', timeout: 15_000 })
+    await row.scrollIntoViewIfNeeded()
     await row.click()
     await actor.page
       .locator('button.cmp-list-row--selected', { hasText: this.title })
-      .waitFor({ state: 'visible', timeout: 5_000 })
+      .waitFor({ state: 'visible', timeout: 15_000 })
     actor.remember('selectedEntryTitle', this.title)
   }
 }

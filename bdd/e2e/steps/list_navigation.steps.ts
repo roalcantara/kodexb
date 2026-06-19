@@ -1,5 +1,9 @@
 import { DetailPanelIsHidden, DetailPanelMatchesSelectedEntry } from '../screenplay/detail_panel.question'
-import { EntryListIncludesType, EntryListSelectedRowChanged } from '../screenplay/entry_list.question'
+import {
+  EntryListIncludesType,
+  EntryListSelectedRowChanged,
+  ListSurfaceIsFocused
+} from '../screenplay/entry_list.question'
 import {
   ExpandDetailView,
   OpenDetailPreview,
@@ -57,6 +61,10 @@ Then('I see a task entry', async ({ actor }) => {
 
 Then('the list search is focused', async ({ actor }) => {
   await actor.asksWhether(SearchFieldIsFocused.now())
+})
+
+Then('the list surface is focused', async ({ actor }) => {
+  await actor.asksWhether(ListSurfaceIsFocused.now())
 })
 
 Then('no detail panel is visible', async ({ actor }) => {

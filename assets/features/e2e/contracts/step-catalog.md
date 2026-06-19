@@ -59,6 +59,7 @@ Do not reuse the same phrase under different keywords.
 | I see a cheat entry                       | Then    | `EntryList.includesType('cheat')`      | N     |
 | I see a task entry                        | Then    | `EntryList.includesType('task')`       | N     |
 | the list search is focused                | Then    | `SearchField.isFocused()`              | N     |
+| the list surface is focused               | Then    | `EntryList.surfaceFocused()`           | Listbox `Entries` role    |
 | no detail panel is visible                | Then    | `DetailPanel.isHidden()`               | N     |
 | the selected row changes                  | Then    | `EntryList.selectedRowChanged()`       | N     |
 | the detail panel shows the selected entry | Then    | `DetailPanel.matchesSelectedEntry()`   | N     |
