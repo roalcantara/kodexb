@@ -1,7 +1,8 @@
-import { readFileSync } from 'node:fs'
 import path from 'node:path'
+import { readTextFileSync } from '@kb/shared/text_file'
 import { type Static, Type } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
+import { err, ok, type Result } from 'neverthrow'
 
 const ScanPathsEntrySchema = Type.Object({
   root: Type.String({ minLength: 1 }),
@@ -25,10 +26,29 @@ function repoRoot(): string {
   return new TextDecoder().decode(r.stdout).trim()
 }
 
+function readYamlFileSync(filePath: string): Result<Record<string, unknown>, Error> {
+  const textResult = readTextFileSync(filePath)
+  if (textResult.isErr()) return err(textResult.error)
+  try {
+    const raw = Bun.YAML.parse(textResult.value)
+    if (!raw || typeof raw !== 'object') {
+      return err(new Error(`${filePath}: expected a YAML object`))
+    }
+    return ok(raw as Record<string, unknown>)
+  } catch (e) {
+    return err(new Error(`${filePath}: ${e instanceof Error ? e.message : String(e)}`))
+  }
+}
+
 function loadCatalogPaths(): CatalogPaths {
   const filePath = path.join(repoRoot(), 'assets/catalog/scan_paths.yaml')
-  const raw = Bun.YAML.parse(readFileSync(filePath, 'utf-8'))
-  const parsed = raw && typeof raw === 'object' ? (raw as Partial<CatalogPaths>) : {}
+  const parsedResult = readYamlFileSync(filePath)
+
+  if (parsedResult.isErr()) {
+    throw parsedResult.error
+  }
+
+  const parsed = parsedResult.value as Partial<CatalogPaths>
 
   if (!Value.Check(CatalogPathsSchema, parsed)) {
     const errors = [...Value.Errors(CatalogPathsSchema, parsed)].map(e => `${e.path} ${e.message}`).join(', ')

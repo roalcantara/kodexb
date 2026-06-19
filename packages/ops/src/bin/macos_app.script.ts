@@ -1,4 +1,8 @@
 #!/usr/bin/env bun
+import { getLogger } from '@kb/shared/logging'
+import { usageCmd, usageStrings } from '../support/lib/cli/usage_env.script'
+
+const log = getLogger(['kb', 'ops', 'macos_app'])
 
 export function buildInstallCommands(): string[] {
   return [
@@ -58,19 +62,19 @@ function runShellCommand(command: string): void {
 function runAppleScript(command: string, successMessage?: string): void {
   const result = Bun.spawnSync(['osascript', '-e', command], { stdout: 'pipe', stderr: 'inherit', stdin: 'inherit' })
   if (result.exitCode !== 0) process.exit(result.exitCode ?? 1)
-  if (successMessage) console.log(successMessage)
+  if (successMessage) log.info(successMessage)
 }
 
 export function runMacosAction(action: 'install' | 'uninstall' | 'login-item', mode?: 'enable' | 'disable'): void {
   if (process.platform !== 'darwin') {
-    console.error('This helper is only supported on macOS.')
+    log.error('This helper is only supported on macOS.')
     process.exit(1)
   }
 
   if (action === 'install') {
     runShellCommand(buildInstallScript())
-    console.log(
-      '\nIf ⌘⌥/ does not summon kb, grant Accessibility for kb in System Settings → Privacy & Security, then restart the app.'
+    log.info(
+      'If ⌘⌥/ does not summon kb, grant Accessibility for kb in System Settings → Privacy & Security, then restart the app.'
     )
     return
   }
@@ -82,7 +86,7 @@ export function runMacosAction(action: 'install' | 'uninstall' | 'login-item', m
 
   if (action === 'login-item') {
     if (!mode) {
-      console.error('Specify enable or disable for login-item.')
+      log.error('Specify enable or disable for login-item.')
       process.exit(1)
     }
     runAppleScript(
@@ -95,9 +99,11 @@ export function runMacosAction(action: 'install' | 'uninstall' | 'login-item', m
 }
 
 if (import.meta.main || (process.argv[1] && !process.argv[1].includes('.spec.'))) {
-  const [command = 'help', mode] = Bun.argv.slice(2)
+  const env = process.env as Record<string, string | undefined>
+  const command: string = usageCmd(env, 'help')
+  const strings = usageStrings(env, ['mode'])
 
-  switch (command as string) {
+  switch (command) {
     case 'install':
       runMacosAction('install')
       break
@@ -105,10 +111,10 @@ if (import.meta.main || (process.argv[1] && !process.argv[1].includes('.spec.'))
       runMacosAction('uninstall')
       break
     case 'login-item':
-      runMacosAction('login-item', mode as 'enable' | 'disable')
+      runMacosAction('login-item', strings.mode as 'enable' | 'disable')
       break
     default:
-      console.log(
+      log.info(
         'Usage: bun packages/ops/src/bin/macos_app.script.ts [install|uninstall|login-item enable|login-item disable]'
       )
       process.exitCode = 1

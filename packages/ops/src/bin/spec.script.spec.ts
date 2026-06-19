@@ -120,6 +120,15 @@ describe('planSpec — every subcommand routes', () => {
     expect(argv.join(' ')).toContain('scan.script.ts')
     expect(argv).toContain('--changed-only')
   })
+  it('audit security passes --strict', () => {
+    const argv = spawnArgv(plan('audit', ['security'], { usage_strict: 'true' }))
+    expect(argv).toContain('--strict')
+  })
+  it('audit security passes --base', () => {
+    const argv = spawnArgv(plan('audit', ['security'], { usage_base: 'main' }))
+    expect(argv).toContain('--base')
+    expect(argv).toContain('main')
+  })
   it('ready resolves a runner plan', () => {
     expect(plan('ready', [], { usage_feature: FEAT }).kind).toBe('runner')
   })

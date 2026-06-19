@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'bun:test'
-import { firstLine, lines, readTextFile, readTextLines } from './text_file.script'
+import { writeFileSync } from 'node:fs'
+import { firstLine, lines, readTextFile, readTextFileSync, readTextLines, readTextLinesSync } from './text_file.script'
 
 describe('firstLine', () => {
   it('returns the first line without trailing \\r', () => {
@@ -29,6 +30,20 @@ describe('lines', () => {
   })
 })
 
+describe('readTextFileSync', () => {
+  it('returns ok with file content', () => {
+    const result = readTextFileSync(import.meta.path)
+    expect(result.isOk()).toBe(true)
+    expect(result._unsafeUnwrap().length).toBeGreaterThan(0)
+  })
+
+  it('returns err for nonexistent file', () => {
+    const result = readTextFileSync('/nonexistent/path.txt')
+    expect(result.isErr()).toBe(true)
+    expect(result._unsafeUnwrapErr()).toBeInstanceOf(Error)
+  })
+})
+
 describe('readTextFile', () => {
   it('returns ok with file content', async () => {
     const result = await readTextFile(import.meta.path)
@@ -40,6 +55,29 @@ describe('readTextFile', () => {
     const result = await readTextFile('/nonexistent/path.txt')
     expect(result.isErr()).toBe(true)
     expect(result._unsafeUnwrapErr()).toBeInstanceOf(Error)
+  })
+})
+
+describe('readTextLinesSync', () => {
+  it('returns first line with mode "first"', () => {
+    const tmp = `/tmp/text_file_sync_test_${Date.now()}.txt`
+    writeFileSync(tmp, 'line one\nline two\nline three\n')
+    const result = readTextLinesSync(tmp, 'first')
+    expect(result.isOk()).toBe(true)
+    expect(result._unsafeUnwrap()).toBe('line one')
+  })
+
+  it('returns all lines with mode "all"', () => {
+    const tmp = `/tmp/text_file_sync_test_all_${Date.now()}.txt`
+    writeFileSync(tmp, 'a\nb\nc\n')
+    const result = readTextLinesSync(tmp, 'all')
+    expect(result.isOk()).toBe(true)
+    expect(result._unsafeUnwrap()).toEqual(['a', 'b', 'c'])
+  })
+
+  it('returns err for nonexistent path', () => {
+    const result = readTextLinesSync('/nonexistent/path.txt', 'all')
+    expect(result.isErr()).toBe(true)
   })
 })
 

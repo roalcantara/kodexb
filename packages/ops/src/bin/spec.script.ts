@@ -251,6 +251,8 @@ function planAudit(rest: string[], env: Env): SpecPlan {
   if (sub === 'security') {
     const argv = ['bun', 'packages/ops/src/governance/security/scan.script.ts']
     if (isTrue(env, 'usage_changed_only')) argv.push('--changed-only')
+    if (isTrue(env, 'usage_strict')) argv.push('--strict')
+    if (env.usage_base) argv.push('--base', env.usage_base)
     return { kind: 'spawn', argv }
   }
   return { kind: 'error', message: `spec audit: unknown action ${sub}`, exitCode: 2 }

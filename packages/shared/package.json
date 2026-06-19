@@ -1,0 +1,14 @@
+{
+  "name": "@kb/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./logging": "./src/logging/index.ts",
+    "./text_file": "./src/text_file/index.ts"
+  },
+  "dependencies": {
+    "@logtape/logtape": "catalog:",
+    "neverthrow": "catalog:"
+  }
+}

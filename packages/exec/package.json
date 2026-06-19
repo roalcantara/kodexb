@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "@kb/flow": "workspace:*",
+    "@kb/shared": "workspace:*",
     "@sinclair/typebox": "catalog:",
+    "neverthrow": "catalog:",
     "xstate": "catalog:"
   }
 }

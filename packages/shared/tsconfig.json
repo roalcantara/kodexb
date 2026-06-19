@@ -4,14 +4,12 @@
     "target": "ESNext",
     "module": "Preserve",
     "moduleResolution": "bundler",
-    "strict": true,
-    "skipLibCheck": true,
-    "noEmit": true,
+    "types": ["bun"],
+    "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "paths": {
-      "@kb/shared": ["../shared/src/index.ts"],
-      "@kb/shared/*": ["../shared/src/*"]
-    }
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true
   },
   "include": ["src/**/*"]
 }

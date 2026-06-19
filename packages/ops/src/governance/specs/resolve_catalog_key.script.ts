@@ -1,6 +1,9 @@
-import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
+import { getLogger } from '@kb/shared/logging'
 import { chdirToRepoRoot } from '../../support/lib/shared/repo_root.script'
+import { readTextFileSync } from '../../support/lib/shared/text_file.script'
+
+const log = getLogger(['kb', 'ops', 'resolve_catalog_key'])
 
 const CATALOG_PATH = 'assets/catalog/catalog.yaml'
 const LEADING_DIGITS_RE = /^\d+-/
@@ -31,7 +34,8 @@ function collectKeys(catalogText: string): { key: string; specs: string[] }[] {
 
 export function resolveCatalogKey(featureDir: string): KeyResolveResult {
   chdirToRepoRoot()
-  if (!existsSync(CATALOG_PATH)) {
+  const catalogResult = readTextFileSync(CATALOG_PATH)
+  if (catalogResult.isErr()) {
     const fallback = catalogKeyFromSlug(path.basename(featureDir))
     return {
       ok: false,
@@ -40,8 +44,7 @@ export function resolveCatalogKey(featureDir: string): KeyResolveResult {
     }
   }
 
-  const catalogText = readFileSync(CATALOG_PATH, 'utf-8')
-  const entries = collectKeys(catalogText)
+  const entries = collectKeys(catalogResult.value)
 
   const dirBasename = path.basename(featureDir)
   const matching = entries.filter(e => e.specs.includes(dirBasename))
@@ -53,12 +56,12 @@ export function resolveCatalogKey(featureDir: string): KeyResolveResult {
   if (matching.length > 1) {
     const fallback = catalogKeyFromSlug(path.basename(featureDir))
     const msg = `spec warning: multiple catalog entries reference "${dirBasename}" — using derived key "${fallback}"`
-    console.error(msg)
+    log.error(msg)
     return { ok: false, key: fallback, warning: msg }
   }
 
   const fallback = catalogKeyFromSlug(path.basename(featureDir))
   const msg = `spec warning: no catalog entry references "${dirBasename}" — using derived key "${fallback}"`
-  console.error(msg)
+  log.error(msg)
   return { ok: false, key: fallback, warning: msg }
 }

@@ -90,10 +90,7 @@ runBinMain(() => {
       // biome-ignore lint/complexity/noUselessUndefined: needed for () => undefined type contract
       return undefined
     },
-    'spec-style': () =>
-      runSpecStyle(ROOT, strict, format ?? 'text')
-        .then(() => undefined)
-        .catch(() => undefined),
+    'spec-style': () => runSpecStyle(ROOT, strict, format ?? 'text').then(() => undefined),
     'e2e-preview': () => {
       spawnInherit(['bun', 'run', 'e2e:preview'], ROOT)
       // biome-ignore lint/complexity/noUselessUndefined: needed for () => undefined type contract

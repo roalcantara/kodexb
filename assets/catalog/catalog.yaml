@@ -138,3 +138,10 @@ mise_sdd_cli:
   specs:
     - 011-mise-sdd-cli
   superseded_by: null
+
+ops_cli_dry:
+  title: Ops CLI DRY refactoring
+  status: in-progress
+  specs:
+    - 015-ops-cli-dry
+  superseded_by: null
