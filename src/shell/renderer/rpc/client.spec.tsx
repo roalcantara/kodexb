@@ -259,6 +259,8 @@ describe('call', () => {
   })
 
   it('throws the unwrapped error message', async () => {
-    await expect(clientCall(Promise.resolve({ data: null, error: { value: 'boom', status: 500 } }))).rejects.toThrow('boom')
+    await expect(clientCall(Promise.resolve({ data: null, error: { value: 'boom', status: 500 } }))).rejects.toThrow(
+      'boom'
+    )
   })
 })

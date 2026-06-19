@@ -1,6 +1,6 @@
-import { Type } from '@sinclair/typebox'
 import { ENTRY_TYPE_VALUES } from '@shared/constants/entry_type.const'
 import { literalUnion, strictObject } from '@shared/typebox'
+import { Type } from '@sinclair/typebox'
 
 const PAGE_SIZE_SMALL = 25
 const PAGE_SIZE_MEDIUM = 50

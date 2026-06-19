@@ -40,10 +40,10 @@ Elysia + Eden Treaty, `bun:sqlite`, Biome + ls-lint + dependency-cruiser + knip.
 ## File Structure (created / modified)
 
 **Create:**
-- `src/shared/typebox/literal_union.util.ts` — `literalUnion(values)` builder (pure).
-- `src/shared/typebox/literal_union.util.spec.ts`
-- `src/shared/typebox/strict_object.util.ts` — `strictObject(props)` builder (pure).
-- `src/shared/typebox/strict_object.util.spec.ts`
+- `src/shared/typebox/literal_union.schema.ts` — `literalUnion(values)` builder (pure).
+- `src/shared/typebox/literal_union.schema.spec.ts`
+- `src/shared/typebox/strict_object.schema.ts` — `strictObject(props)` builder (pure).
+- `src/shared/typebox/strict_object.schema.spec.ts`
 - `src/shared/typebox/index.ts` — barrel for the two builders.
 - `src/shared/constants/entry_type.const.ts` — relocated `ENTRY_TYPE_VALUES` tuple (SRC-2 enabling step).
 - `src/shared/constants/entry_type.const.spec.ts`
@@ -78,8 +78,8 @@ after E because the `app.ts` cap depends on the post-SRC-4 line count.
 ### Task 1: `literalUnion` builder
 
 **Files:**
-- Create: `src/shared/typebox/literal_union.util.ts`
-- Create: `src/shared/typebox/literal_union.util.spec.ts`
+- Create: `src/shared/typebox/literal_union.schema.ts`
+- Create: `src/shared/typebox/literal_union.schema.spec.ts`
 - Modify: `tsconfig.json` (add alias)
 
 - [ ] **Step 1: Add the path alias**
@@ -92,12 +92,12 @@ In `tsconfig.json` `compilerOptions.paths`, add (after the `@shared/rpc` line):
 
 - [ ] **Step 2: Write the failing test**
 
-`src/shared/typebox/literal_union.util.spec.ts`:
+`src/shared/typebox/literal_union.schema.spec.ts`:
 
 ```ts
 import { Value } from '@sinclair/typebox/value'
 import { describe, expect, it } from 'bun:test'
-import { literalUnion } from './literal_union.util'
+import { literalUnion } from './literal_union.schema'
 
 describe('literalUnion', () => {
   it('accepts each member of a string tuple', () => {
@@ -121,12 +121,12 @@ describe('literalUnion', () => {
 
 - [ ] **Step 3: Run test, verify it fails**
 
-Run: `bun test src/shared/typebox/literal_union.util.spec.ts`
-Expected: FAIL — `Cannot find module './literal_union.util'`.
+Run: `bun test src/shared/typebox/literal_union.schema.spec.ts`
+Expected: FAIL — `Cannot find module './literal_union.schema'`.
 
 - [ ] **Step 4: Implement**
 
-`src/shared/typebox/literal_union.util.ts`:
+`src/shared/typebox/literal_union.schema.ts`:
 
 ```ts
 import { type TLiteral, type TUnion, Type } from '@sinclair/typebox'
@@ -149,7 +149,7 @@ export function literalUnion<const T extends readonly (string | number | boolean
 
 - [ ] **Step 5: Run test, verify it passes**
 
-Run: `bun test src/shared/typebox/literal_union.util.spec.ts`
+Run: `bun test src/shared/typebox/literal_union.schema.spec.ts`
 Expected: PASS (3 tests).
 
 - [ ] **Step 6: Typecheck the literal-preservation contract (SRC-1 #3)**
@@ -176,30 +176,30 @@ Expected: PASS — the `@ts-expect-error` is satisfied (so no error leaks), prov
 - [ ] **Step 7: Commit**
 
 ```bash
-git add tsconfig.json src/shared/typebox/literal_union.util.ts src/shared/typebox/literal_union.util.spec.ts
+git add tsconfig.json src/shared/typebox/literal_union.schema.ts src/shared/typebox/literal_union.schema.spec.ts
 git commit -m "Add literalUnion TypeBox builder"
 ```
 
-**Acceptance gate (SRC-1 AC1 partial, AC3):** `bun test src/shared/typebox/literal_union.util.spec.ts` green AND `bun run typecheck` green with the `@ts-expect-error` in place.
+**Acceptance gate (SRC-1 AC1 partial, AC3):** `bun test src/shared/typebox/literal_union.schema.spec.ts` green AND `bun run typecheck` green with the `@ts-expect-error` in place.
 
 ---
 
 ### Task 2: `strictObject` builder + barrel
 
 **Files:**
-- Create: `src/shared/typebox/strict_object.util.ts`
-- Create: `src/shared/typebox/strict_object.util.spec.ts`
+- Create: `src/shared/typebox/strict_object.schema.ts`
+- Create: `src/shared/typebox/strict_object.schema.spec.ts`
 - Create: `src/shared/typebox/index.ts`
 
 - [ ] **Step 1: Write the failing test**
 
-`src/shared/typebox/strict_object.util.spec.ts`:
+`src/shared/typebox/strict_object.schema.spec.ts`:
 
 ```ts
 import { Type } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
 import { describe, expect, it } from 'bun:test'
-import { strictObject } from './strict_object.util'
+import { strictObject } from './strict_object.schema'
 
 describe('strictObject', () => {
   it('accepts a matching object', () => {
@@ -216,12 +216,12 @@ describe('strictObject', () => {
 
 - [ ] **Step 2: Run test, verify it fails**
 
-Run: `bun test src/shared/typebox/strict_object.util.spec.ts`
+Run: `bun test src/shared/typebox/strict_object.schema.spec.ts`
 Expected: FAIL — module not found.
 
 - [ ] **Step 3: Implement**
 
-`src/shared/typebox/strict_object.util.ts`:
+`src/shared/typebox/strict_object.schema.ts`:
 
 ```ts
 import { type ObjectOptions, type TObject, type TProperties, Type } from '@sinclair/typebox'
@@ -241,13 +241,13 @@ export function strictObject<T extends TProperties>(
 `src/shared/typebox/index.ts`:
 
 ```ts
-export { literalUnion } from './literal_union.util'
-export { strictObject } from './strict_object.util'
+export { literalUnion } from './literal_union.schema'
+export { strictObject } from './strict_object.schema'
 ```
 
 - [ ] **Step 4: Run test, verify it passes**
 
-Run: `bun test src/shared/typebox/strict_object.util.spec.ts`
+Run: `bun test src/shared/typebox/strict_object.schema.spec.ts`
 Expected: PASS (2 tests).
 
 - [ ] **Step 5: Verify the alias resolves**
@@ -258,7 +258,7 @@ Expected: `function function`.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add src/shared/typebox/strict_object.util.ts src/shared/typebox/strict_object.util.spec.ts src/shared/typebox/index.ts
+git add src/shared/typebox/strict_object.schema.ts src/shared/typebox/strict_object.schema.spec.ts src/shared/typebox/index.ts
 git commit -m "Add strictObject TypeBox builder and barrel"
 ```
 

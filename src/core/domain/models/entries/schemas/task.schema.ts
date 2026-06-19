@@ -1,16 +1,12 @@
-import { type Static, Type } from '@sinclair/typebox'
+import { literalUnion } from '@shared/typebox/literal_union.schema'
+import type { Static } from '@sinclair/typebox'
 import { TypeCompiler } from '@sinclair/typebox/compiler'
 import type { Simplify } from 'type-fest'
 
-export const prioritySchema = Type.Union([
-  Type.Literal('low'),
-  Type.Literal('mid'),
-  Type.Literal('high'),
-  Type.Literal('urgent')
-])
+export const prioritySchema = literalUnion(['low', 'mid', 'high', 'urgent'] as const)
 export type Priority = Simplify<Static<typeof prioritySchema>>
 
-export const taskStatusSchema = Type.Union([Type.Literal('todo'), Type.Literal('doing'), Type.Literal('done')])
+export const taskStatusSchema = literalUnion(['todo', 'doing', 'done'] as const)
 export type TaskStatus = Simplify<Static<typeof taskStatusSchema>>
 
 const priorityChecker = TypeCompiler.Compile(prioritySchema)

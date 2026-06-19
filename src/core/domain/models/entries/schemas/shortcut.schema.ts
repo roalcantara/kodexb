@@ -1,5 +1,6 @@
 // pattern: Functional Core
 
+import { literalUnion } from '@shared/typebox/literal_union.schema'
 import { type Static, Type } from '@sinclair/typebox'
 import type { Simplify } from 'type-fest'
 import {
@@ -15,13 +16,13 @@ import { tagsSchema } from './tags.schema'
 const nonEmpty = Type.String({ minLength: 1, pattern: '\\S' })
 
 /** Stored binding modifiers (post-normalize). */
-export const modifierSchema = Type.Union(KEY_MODIFIER_VALUES.map(value => Type.Literal(value)))
+export const modifierSchema = literalUnion(KEY_MODIFIER_VALUES)
 
 /** YAML / parser tokens before hyper expansion. */
 export const authoringModifierSchema = Type.Union([modifierSchema, Type.Literal(HYPER_AUTHORING_TOKEN)])
 
 /** Canonical chord key token (see {@link KEY_ALIAS_VALUES} / {@link KEY_GLYPHS} in `key.const.ts`). */
-export const keyAliasSchema = Type.Union(KEY_ALIAS_VALUES.map(value => Type.Literal(value)))
+export const keyAliasSchema = literalUnion(KEY_ALIAS_VALUES)
 
 export const authoringChordStepSchema = Type.Object({
   modifiers: Type.Optional(Type.Array(authoringModifierSchema, { uniqueItems: true })),
@@ -36,14 +37,9 @@ export const chordStepSchema = Type.Object({
   display: Type.Optional(Type.String())
 })
 
-export const platformSchema = Type.Union([
-  Type.Literal('macos'),
-  Type.Literal('linux'),
-  Type.Literal('windows'),
-  Type.Literal('any')
-])
+export const platformSchema = literalUnion(['macos', 'linux', 'windows', 'any'] as const)
 
-export const scopeSchema = Type.Union([Type.Literal('global'), Type.Literal('local')])
+export const scopeSchema = literalUnion(['global', 'local'] as const)
 
 export const bindingSchema = Type.Object({
   id: Type.Optional(nonEmpty),

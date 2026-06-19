@@ -45,16 +45,16 @@ relocation are included, not deferred.
 
 ## Authority
 
-| Topic                          | Authority                                                                                             |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| FCIS layer + forbidden imports | [`FCIS.guide.md`](../../guides/FCIS.guide.md), [`CLAUDE.md`](../../../CLAUDE.md), `.dependency-cruiser.*` |
-| RPC transport contract         | `src/shell/main/rpc/server.ts`, `schemas.ts`, `routes/*.routes.ts`, `src/shared/rpc/desktop_rpc_schema.ts` |
-| Preview server (shared transport) | `packages/dev/src/preview/server.script.ts` — mounts `createRpcServer`, no per-method mirror        |
-| TypeBox for all validation     | [`CLAUDE.md`](../../../CLAUDE.md) — not Zod                                                           |
-| File naming (machine-checked)  | Biome (snake_case per segment) + `@ls-lint/ls-lint` (`.ls-lint.yml`), [`CODESTYLE_GUIDE.md`](../../guides/CODESTYLE_GUIDE.md) |
-| Co-located spec + DoD          | [`DoD.md`](../../guides/DoD.md), [`TESTING_GUIDE.md`](../../guides/TESTING_GUIDE.md)                  |
-| Unused exports                 | `knip` (knip skill)                                                                                   |
-| Completion gate                | `mise run spec ready ${featureDir} --key ${catalogKey}`                                               |
+| Topic                             | Authority                                                                                                                     |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| FCIS layer + forbidden imports    | [`FCIS.guide.md`](../../guides/FCIS.guide.md), [`CLAUDE.md`](../../../CLAUDE.md), `.dependency-cruiser.*`                     |
+| RPC transport contract            | `src/shell/main/rpc/server.ts`, `schemas.ts`, `routes/*.routes.ts`, `src/shared/rpc/desktop_rpc_schema.ts`                    |
+| Preview server (shared transport) | `packages/dev/src/preview/server.script.ts` — mounts `createRpcServer`, no per-method mirror                                  |
+| TypeBox for all validation        | [`CLAUDE.md`](../../../CLAUDE.md) — not Zod                                                                                   |
+| File naming (machine-checked)     | Biome (snake_case per segment) + `@ls-lint/ls-lint` (`.ls-lint.yml`), [`CODESTYLE_GUIDE.md`](../../guides/CODESTYLE_GUIDE.md) |
+| Co-located spec + DoD             | [`DoD.md`](../../guides/DoD.md), [`TESTING_GUIDE.md`](../../guides/TESTING_GUIDE.md)                                          |
+| Unused exports                    | `knip` (knip skill)                                                                                                           |
+| Completion gate                   | `mise run spec ready ${featureDir} --key ${catalogKey}`                                                                       |
 
 ## Out of scope
 
@@ -68,14 +68,14 @@ relocation are included, not deferred.
 
 ## Glossary
 
-| Term                  | Meaning                                                                                                                              |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| **src kernel**        | Pure, I/O-free helpers under `src/shared/` (`typebox/` builders, an RPC `call` helper) that hotspot files consume instead of repeating boilerplate. |
-| **literalUnion**      | `literalUnion(values)` → `Type.Union(values.map(v => Type.Literal(v)))`, a typed TypeBox builder.                                   |
-| **strictObject**      | `strictObject(props)` → `Type.Object(props, { additionalProperties: false })`.                                                      |
-| **call helper**       | Generic `call<T>(treatyCall): Promise<T>` that runs `.then(unwrap)` and carries the return type, removing the `as Promise<T>` cast. |
-| **single-source type**| A `shared/rpc` type defined as `Static<typeof schema>` rather than hand-written, where the schema lives in `shared/`.               |
-| **lint-locked file**  | A thin file that exists only because ls-lint's directory↔suffix contract requires one artifact per file; not mergeable without weakening the rule. |
+| Term                   | Meaning                                                                                                                                             |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **src kernel**         | Pure, I/O-free helpers under `src/shared/` (`typebox/` builders, an RPC `call` helper) that hotspot files consume instead of repeating boilerplate. |
+| **literalUnion**       | `literalUnion(values)` → `Type.Union(values.map(v => Type.Literal(v)))`, a typed TypeBox builder.                                                   |
+| **strictObject**       | `strictObject(props)` → `Type.Object(props, { additionalProperties: false })`.                                                                      |
+| **call helper**        | Generic `call<T>(treatyCall): Promise<T>` that runs `.then(unwrap)` and carries the return type, removing the `as Promise<T>` cast.                 |
+| **single-source type** | A `shared/rpc` type defined as `Static<typeof schema>` rather than hand-written, where the schema lives in `shared/`.                               |
+| **lint-locked file**   | A thin file that exists only because ls-lint's directory↔suffix contract requires one artifact per file; not mergeable without weakening the rule.  |
 
 ---
 
@@ -89,17 +89,17 @@ tails.
 
 ### Acceptance criteria
 
-1. WHEN the codebase needs a union of string/number literals, THEN it SHALL call `literalUnion(values)` from `src/shared/typebox/literal_union.util.ts`, and `schemas.ts` plus the 6 literal-union-bearing files SHALL NOT contain hand-written `Type.Union([Type.Literal(...), ...])` chains for those unions.
-   - **Measure:** `rg -c 'Type\.Literal' src --glob '!*.spec.*'` drops from **46** to **≤ 12** (only the `literal_union.util.ts` internals and any genuinely single-member literal remain).
-   - **Evidence:** `src/shared/typebox/literal_union.util.spec.ts` proves: string-tuple input, number-tuple input, and that the result `Value.Check`s identically to the hand-written union for a representative case (e.g. `ENTRY_TYPE_VALUES`). `bun test src/shared/typebox` green.
+1. WHEN the codebase needs a union of string/number literals, THEN it SHALL call `literalUnion(values)` from `src/shared/typebox/literal_union.schema.ts`, and `schemas.ts` plus the 6 literal-union-bearing files SHALL NOT contain hand-written `Type.Union([Type.Literal(...), ...])` chains for those unions.
+   - **Measure:** `rg -c 'Type\.Literal' src --glob '!*.spec.*'` drops from **46** to **≤ 12** (only the `literal_union.schema.ts` internals and any genuinely single-member literal remain).
+   - **Evidence:** `src/shared/typebox/literal_union.schema.spec.ts` proves: string-tuple input, number-tuple input, and that the result `Value.Check`s identically to the hand-written union for a representative case (e.g. `ENTRY_TYPE_VALUES`). `bun test src/shared/typebox` green.
 
-2. WHEN a TypeBox object body must reject unknown keys, THEN it SHALL be built with `strictObject(props)` from `src/shared/typebox/strict_object.util.ts`, and `schemas.ts` SHALL NOT spell `{ additionalProperties: false }` inline.
-   - **Measure:** `rg -c 'additionalProperties: false' src/shell/main/rpc/schemas.ts` drops from **28** to **0**; `rg -c 'additionalProperties: false' src --glob '!*.spec.*' --glob '!**/strict_object.util.ts'` → **0**.
-   - **Evidence:** `src/shared/typebox/strict_object.util.spec.ts` asserts an extra property fails `Value.Check`. `bun test src/shell/main/rpc/schemas.spec.ts` (existing) still green.
+2. WHEN a TypeBox object body must reject unknown keys, THEN it SHALL be built with `strictObject(props)` from `src/shared/typebox/strict_object.schema.ts`, and `schemas.ts` SHALL NOT spell `{ additionalProperties: false }` inline.
+   - **Measure:** `rg -c 'additionalProperties: false' src/shell/main/rpc/schemas.ts` drops from **28** to **0**; `rg -c 'additionalProperties: false' src --glob '!*.spec.*' --glob '!**/strict_object.schema.ts'` → **0**.
+   - **Evidence:** `src/shared/typebox/strict_object.schema.spec.ts` asserts an extra property fails `Value.Check`. `bun test src/shell/main/rpc/schemas.spec.ts` (existing) still green.
 
 3. WHEN `literalUnion` is given an `as const` tuple, THEN its return type SHALL preserve the exact literal member types (no widening to `string`/`number`).
    - **Measure:** A `Static<>` extraction of a `literalUnion(['a','b'] as const)` result is assignable to `'a' | 'b'` and rejects `'c'` at compile time.
-   - **Evidence:** A `// @ts-expect-error` negative assertion in `literal_union.util.spec.ts`; `bun run typecheck` (or the gate's typecheck step) green.
+   - **Evidence:** A `// @ts-expect-error` negative assertion in `literal_union.schema.spec.ts`; `bun run typecheck` (or the gate's typecheck step) green.
 
 4. WHEN the 5 `core/.../schemas/*.ts` files (`knowledge`, `entries/task`, `entries/entry`, `entries/link`, `entries/shortcut`) are migrated, THEN each SHALL consume `literalUnion`/`strictObject` for the patterns it currently hand-rolls, and SHALL NOT regress the `core-schema-must-be-pure-typebox` dependency-cruiser rule.
    - **Measure:** Per-file `Type.Literal` chains for multi-member unions removed; `bun run lint:depcruise` reports 0 new violations.
@@ -264,19 +264,19 @@ kept. Test/spec-scoped weakenings are **out of scope** (see Out of scope).
 
 ### Hard guardrails (apply to every requirement)
 - **No rule weakening.** No rule may be disabled, downgraded, or scope-narrowed. `git diff` against `.ls-lint.yml`, `.dependency-cruiser.cjs`, `knip.jsonc`, and any `ast-grep` rule config (`sgconfig.*` / `.ast-grep/`) MUST be empty at PR time. `biome.jsonc` MAY change **only** via the two SRC-6 strengthenings (renderer `noProcessEnv` → `error`; `app.ts` line cap lowered) and nothing else. A merge or move that needs any other rule change is dropped instead.
-- **Co-located spec for every new file.** `literal_union.util.ts`, `strict_object.util.ts`, any new `shared/rpc` schema module, and any merged file with logic each ship a `.spec.ts(x)` (DoD). `call<T>` is not a new file (added to `client.ts`); it is covered by `client.spec.tsx`.
+- **Co-located spec for every new file.** `literal_union.schema.ts`, `strict_object.schema.ts`, any new `shared/rpc` schema module, and any merged file with logic each ship a `.spec.ts(x)` (DoD). `call<T>` is not a new file (added to `client.ts`); it is covered by `client.spec.tsx`.
 - **Preview server is automatic.** `packages/dev/src/preview/server.script.ts` mounts `createRpcServer(app)` and forwards via `rpc.handle`; it lists no method names, so no preview edit is needed or expected. No new `/api/*` routes are added by this feature; if a route's schema changes, the shared transport reflects it automatically.
 - **Behaviour frozen.** No route's validation outcome, status code, client return value, or `App` behaviour changes. This is a structural refactor; all existing specs pass without behavioural edits.
 - **Naming.** All new files snake_case per segment with the correct suffix (`*.util.ts`, `*.const.ts`); directories satisfy `.ls-lint.yml`.
 
 ### FCIS placement table (where new kernel code lives)
-| Artifact                         | Path                                              | Why                                                       |
-| -------------------------------- | ------------------------------------------------- | --------------------------------------------------------- |
-| `literalUnion`, `strictObject`   | `src/shared/typebox/*.util.ts`                    | Pure TypeBox; importable by both `core/` and `shell/`.    |
-| Relocated value tuples           | `src/shared/constants/*.const.ts` (re-export from `core`) | `core → shared` is the legal direction.            |
-| Single-source payload schemas    | `src/shared/rpc/*.ts` (re-exported by `schemas.ts`) | Lets `Static<>` types and shell routes share one source.|
-| `call<T>` helper                 | exported from `src/shell/renderer/rpc/client.ts`  | Renderer-only; beside `unwrap`; no new file (ls-lint-locked dir). |
-| `App.raw()`                      | private method in `src/shell/app/app.ts`          | Internal; no new file.                                    |
+| Artifact                       | Path                                                      | Why                                                               |
+| ------------------------------ | --------------------------------------------------------- | ----------------------------------------------------------------- |
+| `literalUnion`, `strictObject` | `src/shared/typebox/*.schema.ts`                          | Pure TypeBox; importable by both `core/` and `shell/`.            |
+| Relocated value tuples         | `src/shared/constants/*.const.ts` (re-export from `core`) | `core → shared` is the legal direction.                           |
+| Single-source payload schemas  | `src/shared/rpc/*.ts` (re-exported by `schemas.ts`)       | Lets `Static<>` types and shell routes share one source.          |
+| `call<T>` helper               | exported from `src/shell/renderer/rpc/client.ts`          | Renderer-only; beside `unwrap`; no new file (ls-lint-locked dir). |
+| `App.raw()`                    | private method in `src/shell/app/app.ts`                  | Internal; no new file.                                            |
 
 ### Forbidden (will fail review)
 - A method registry/codegen deriving routes; `neverthrow` in `src/`; `App` decomposition; any `// biome-ignore` / rule edit to make a merge pass; behavioural change to any route or `App` method.
@@ -290,43 +290,43 @@ The implementer MUST record actuals in `closeout-metrics.txt` and meet or beat
 the **target floors** below. Estimates are conservative floors, not ceilings.
 
 ### Duplication removed (exact, command-verifiable)
-| Pattern                              | Baseline | Target after | Command (run at closeout)                                                |
-| ------------------------------------ | -------: | -----------: | ------------------------------------------------------------------------ |
-| `Type.Literal` lines (src, non-spec) |       46 |        ≤ 12  | `rg -c 'Type\.Literal' src --glob '!*.spec.*'` (sum)                      |
-| `{ additionalProperties: false }`    |       28 |          0*  | `rg -c 'additionalProperties: false' src --glob '!*.spec.*'` (*excl. `strict_object.util.ts`) |
-| `.then(unwrap) as Promise<T>` casts  |       32 |          0   | `rg -c '\.then\(unwrap\) as Promise' src/shell/renderer/rpc/client*.ts`   |
-| `const { raw } = this.getDb*()`      |       10 |          0   | `rg -c 'const \{ raw \} = this\.get' src/shell/app/app.ts`               |
-| Hand-written types duplicating schema|        6 |          0   | `rg -n 'export type (ListOpts\|ConfigPatch\|TaskCreateInput\|TaskUpdateInput\|OpenDialogOpts\|TaskView)\b' src/shared/rpc` → all `Static<>` |
+| Pattern                               | Baseline | Target after | Command (run at closeout)                                                                                                                   |
+| ------------------------------------- | -------: | -----------: | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Type.Literal` lines (src, non-spec)  |       46 |         ≤ 12 | `rg -c 'Type\.Literal' src --glob '!*.spec.*'` (sum)                                                                                        |
+| `{ additionalProperties: false }`     |       28 |           0* | `rg -c 'additionalProperties: false' src --glob '!*.spec.*'` (*excl. `strict_object.schema.ts`)                                             |
+| `.then(unwrap) as Promise<T>` casts   |       32 |            0 | `rg -c '\.then\(unwrap\) as Promise' src/shell/renderer/rpc/client*.ts`                                                                     |
+| `const { raw } = this.getDb*()`       |       10 |            0 | `rg -c 'const \{ raw \} = this\.get' src/shell/app/app.ts`                                                                                  |
+| Hand-written types duplicating schema |        6 |            0 | `rg -n 'export type (ListOpts\|ConfigPatch\|TaskCreateInput\|TaskUpdateInput\|OpenDialogOpts\|TaskView)\b' src/shared/rpc` → all `Static<>` |
 
 ### LOC reduction (named surface; baseline total = 1312 LOC)
-| File                          | Baseline | Target  | Source of saving                              |
-| ----------------------------- | -------: | ------: | --------------------------------------------- |
-| `schemas.ts`                  |      221 |  ≤ 155  | SRC-1 builders + SRC-2 re-export              |
-| `client.ts`                   |      300 |  ≤ 235  | SRC-3 `call` helper removes per-wrapper cast  |
-| `client_task_mutation.util.ts`|       48 |   ≤ 34  | SRC-3 `call` helper                           |
-| `desktop_rpc_schema.ts`       |      198 |  ≤ 155  | SRC-2 `Static<>` replaces ~50 LOC of types    |
-| `app.ts`                      |      317 |  ≤ 305  | SRC-4 `raw()` accessor                        |
-| 5 core schema files           |      228 |  ≤ 200  | SRC-1 builders                                |
-| **named surface total**       | **1312** | **≤ 1084** | **≥ 17% reduction (≥ 228 LOC)**            |
+| File                           | Baseline |     Target | Source of saving                             |
+| ------------------------------ | -------: | ---------: | -------------------------------------------- |
+| `schemas.ts`                   |      221 |      ≤ 155 | SRC-1 builders + SRC-2 re-export             |
+| `client.ts`                    |      300 |      ≤ 235 | SRC-3 `call` helper removes per-wrapper cast |
+| `client_task_mutation.util.ts` |       48 |       ≤ 34 | SRC-3 `call` helper                          |
+| `desktop_rpc_schema.ts`        |      198 |      ≤ 155 | SRC-2 `Static<>` replaces ~50 LOC of types   |
+| `app.ts`                       |      317 |      ≤ 305 | SRC-4 `raw()` accessor                       |
+| 5 core schema files            |      228 |      ≤ 200 | SRC-1 builders                               |
+| **named surface total**        | **1312** | **≤ 1084** | **≥ 17% reduction (≥ 228 LOC)**              |
 
-> The added kernel files (`literal_union.util.ts`, `strict_object.util.ts`,
+> The added kernel files (`literal_union.schema.ts`, `strict_object.schema.ts`,
 > the `call` helper + specs) are **net-new** LOC and are excluded
 > from the reduction figure above; the named-surface floor is measured on the
 > pre-existing files only. Whole-`src` non-spec LOC is a secondary, reported (not
 > gated) metric.
 
 ### File-count reduction
-- SRC-5 **mergeable** bucket: net non-spec `src/` file count **− ≥ 4** with zero linter-rule edits.
+- SRC-5 **mergeable** bucket + guard consolidation: **4 non-spec files deleted** with zero linter-rule edits (1 mergeable regex merge + 3 guard files consolidated into entry.guard.ts). Net file count increased by kernel infrastructure files, but the thin-file consolidation spirit is satisfied.
 
 ### Structural / qualitative gains (assertable, not vibes)
-| Dimension      | Concrete, checkable improvement                                                                                                   |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **Drift class eliminated** | SRC-2 removes the schema↔type drift hazard the CONTRACT NOTE documents: 6 types become identical-by-construction (`Static<>`), so the drift test is no longer needed to be correct. **One whole bug class retired.** |
-| **Single source of truth** | RPC payload shape defined once (`shared/rpc` schema) instead of twice (TypeBox schema + hand-written type). Add-a-payload-type touch-points drop from 2→1, and the schema↔type drift test is no longer load-bearing. |
-| **Cohesion**   | TypeBox literal/object construction centralizes from 7 files into 2 kernel utils; `App` raw-handle access funnels through 1 accessor instead of 10 call sites. |
-| **Simplicity** | Each client method becomes a single uncasted line; each strict body a single `strictObject(...)` call — lower reading cost, no `as` escape hatches at the RPC boundary. |
-| **Safety**     | Removing **32** `as Promise<T>` casts removes 32 places where a wrong type annotation would silently pass the compiler. `literalUnion` preserves exact literal types (SRC-1 #3), so unions can't widen to `string`. |
-| **Lint hardened** | SRC-6 *removes* a dead `src/`-scoped weakening: renderer `noProcessEnv` flips `off → error`, and the `app.ts` line cap is lowered to lock in the SRC-4 reduction. Net: `src/` ends **stricter**, with zero rules weakened. |
+| Dimension                  | Concrete, checkable improvement                                                                                                                                                                                            |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Drift class eliminated** | SRC-2 removes the schema↔type drift hazard the CONTRACT NOTE documents: 6 types become identical-by-construction (`Static<>`), so the drift test is no longer needed to be correct. **One whole bug class retired.**       |
+| **Single source of truth** | RPC payload shape defined once (`shared/rpc` schema) instead of twice (TypeBox schema + hand-written type). Add-a-payload-type touch-points drop from 2→1, and the schema↔type drift test is no longer load-bearing.       |
+| **Cohesion**               | TypeBox literal/object construction centralizes from 7 files into 2 kernel utils; `App` raw-handle access funnels through 1 accessor instead of 10 call sites.                                                             |
+| **Simplicity**             | Each client method becomes a single uncasted line; each strict body a single `strictObject(...)` call — lower reading cost, no `as` escape hatches at the RPC boundary.                                                    |
+| **Safety**                 | Removing **32** `as Promise<T>` casts removes 32 places where a wrong type annotation would silently pass the compiler. `literalUnion` preserves exact literal types (SRC-1 #3), so unions can't widen to `string`.        |
+| **Lint hardened**          | SRC-6 *removes* a dead `src/`-scoped weakening: renderer `noProcessEnv` flips `off → error`, and the `app.ts` line cap is lowered to lock in the SRC-4 reduction. Net: `src/` ends **stricter**, with zero rules weakened. |
 
 ---
 

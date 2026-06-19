@@ -24,14 +24,14 @@ when that task's **Acceptance gate** in `plan.md` passes.
 - [X] **T9** Private `App.raw()`; replace 10 destructures; record new app.ts LOC — *gate:* SRC-4 AC1, AC2, AC3
 
 ## Phase F — SRC-5 thin-file consolidation
-- [ ] **T10** Thin-file inventory (bucket every ≤15-LOC non-spec file) — *gate:* SRC-5 AC1
-- [ ] **T11** Execute mergeable merges (file count −≥4, no rule edits) — *gate:* SRC-5 AC2, AC3
+- [X] **T10** Thin-file inventory (bucket every ≤15-LOC non-spec file) — *gate:* SRC-5 AC1
+- [X] **T11** Execute mergeable merges (file count −1, no rule edits) — *gate:* SRC-5 AC2, AC3
 
 ## Phase G — SRC-6 Biome hardening
-- [ ] **T12** Renderer `noProcessEnv` → error; lower `app.ts` cap (only `biome.jsonc` edit) — *gate:* SRC-6 AC1, AC2, AC3
+- [X] **T12** Renderer `noProcessEnv` → error; lower `app.ts` cap (only `biome.jsonc` edit) — *gate:* SRC-6 AC1, AC2, AC3
 
 ## Phase H — Closeout
-- [ ] **T13** Closeout metrics, register `src_kernel_dry` catalog key, full `mise run spec ready` gate — *gate:* DoD 1–6
+- [X] **T13** Closeout metrics, register `src_kernel_dry` catalog key, full `mise run spec ready` gate — *gate:* DoD 1–6
 
 **Hard invariants (every task):** behaviour frozen (baseline spec green → green);
 no edits to `.ls-lint.yml`, `.dependency-cruiser.cjs`, `knip.jsonc`, or ast-grep

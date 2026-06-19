@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { Type } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
-import { strictObject } from './strict_object.util'
+import { strictObject } from './strict_object.schema'
 
 describe('strictObject', () => {
   it('accepts a matching object', () => {

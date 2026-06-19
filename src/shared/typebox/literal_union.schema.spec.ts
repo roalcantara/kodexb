@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import type { Static } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
-import { literalUnion } from './literal_union.util'
+import { literalUnion } from './literal_union.schema'
 
 describe('literalUnion', () => {
   it('accepts each member of a string tuple', () => {

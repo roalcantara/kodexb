@@ -31,6 +31,7 @@
       "@shared/rpc": ["./src/shared/rpc/index.ts"],
       "@shared/rpc/*": ["./src/shared/rpc/*"],
       "@shared/typebox": ["./src/shared/typebox/index.ts"],
+      "@shared/typebox/*": ["./src/shared/typebox/*"],
       "@shared/constants/*": ["./src/shared/constants/*"],
       "@shell/app/db/*": ["./src/shell/app/db/*"],
       "@shell/app/config/*": ["./src/shell/app/config/*"],

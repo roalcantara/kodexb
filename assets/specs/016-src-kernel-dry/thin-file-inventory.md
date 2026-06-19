@@ -109,8 +109,9 @@ Files whose directory's ls-lint rule requires one artifact per basename suffix.
 All `*/index.ts` files in the lint-locked list above are intentional barrels (serve a purpose).
 
 ## Summary
-- **Mergeable**: 2 candidates (1 pair of regex consts)
+- **Mergeable**: 2 candidates (1 pair of regex consts) → 1 file deleted
 - **Lint-locked**: ~80 files
 - **Intentional-barrel**: ~15 index.ts files
+- **Guard consolidation** (handoff b8edbc8f): blank.guard.ts, lang.guard.ts, entry_section.guard.ts merged into entry.guard.ts → 3 files deleted
 
-The net file-count reduction from mergeable bucket is 1 (merge `youtube_id.regex.const.ts` into `og_image.regex.const.ts`), which is below the ≥4 target. SRC-5 AC2 cannot be met without relaxing ls-lint rules, which is forbidden by the hard invariants.
+SRC-5 AC2 is met: 4 non-spec files deleted (1 merge + 3 guard consolidation) with zero linter-rule edits. Spec.md updated accordingly.

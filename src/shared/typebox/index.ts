@@ -1,2 +1,2 @@
-export { literalUnion } from './literal_union.util'
-export { strictObject } from './strict_object.util'
+export { literalUnion } from './literal_union.schema'
+export { strictObject } from './strict_object.schema'
