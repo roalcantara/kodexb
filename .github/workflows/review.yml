@@ -119,7 +119,7 @@ jobs:
           name: report-tests
           path: tmp/reports/tests
           retention-days: 7
-      - uses: mikepenz/action-junit-report@v5
+      - uses: mikepenz/action-junit-report@v6
         if: always()
         with:
           report_paths: tmp/reports/tests/junit.xml
@@ -172,7 +172,7 @@ jobs:
             tmp/playwright-report/
           retention-days: 7
           if-no-files-found: ignore
-      - uses: mikepenz/action-junit-report@v5
+      - uses: mikepenz/action-junit-report@v6
         if: always()
         with:
           report_paths: tmp/bdd/e2e/junit.xml
@@ -210,7 +210,7 @@ jobs:
             tmp/playwright-report/
           retention-days: 7
           if-no-files-found: ignore
-      - uses: mikepenz/action-junit-report@v5
+      - uses: mikepenz/action-junit-report@v6
         if: always()
         with:
           report_paths: tmp/bdd/e2e/junit.xml
@@ -254,7 +254,7 @@ jobs:
           name: report-cst
           path: tmp/reports/cst
           retention-days: 7
-      - uses: mikepenz/action-junit-report@v5
+      - uses: mikepenz/action-junit-report@v6
         if: always()
         with:
           report_paths: tmp/reports/cst/junit.xml
