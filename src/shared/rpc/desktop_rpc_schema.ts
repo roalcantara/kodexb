@@ -1,5 +1,6 @@
-import type { ElectrobunRPCSchema, RPCSchema } from 'electrobun/bun'
 import type { Static } from '@sinclair/typebox'
+import type { ElectrobunRPCSchema, RPCSchema } from 'electrobun/bun'
+import type { Knowledge } from '../../core'
 import type {
   configPatchSchema,
   listOptsSchema,
@@ -7,7 +8,6 @@ import type {
   taskCreateSchema,
   taskUpdateSchema
 } from './payload_schemas'
-import type { Knowledge } from '../../core'
 
 /** Stable id + source row shape returned from SQLite (discriminated `Knowledge`). */
 export type RpcKnowledge = Knowledge

@@ -1,5 +1,5 @@
-import type { EntryKey } from '../types'
 import { ENTRY_TYPE_VALUES } from '@shared/constants/entry_type.const'
+import type { EntryKey } from '../types'
 
 export { ENTRY_TYPE_VALUES }
 

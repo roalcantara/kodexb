@@ -1,5 +1,5 @@
-import { Value } from '@sinclair/typebox/value'
 import { describe, expect, it } from 'bun:test'
+import { Value } from '@sinclair/typebox/value'
 import { configPatchSchema, listOptsSchema, taskCreateSchema } from './payload_schemas'
 
 describe('payload_schemas', () => {

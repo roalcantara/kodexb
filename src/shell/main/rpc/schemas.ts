@@ -1,7 +1,7 @@
-export * from '@shared/rpc/payload_schemas'
-
-import { Type } from '@sinclair/typebox'
 import { literalUnion, strictObject } from '@shared/typebox'
+import { Type } from '@sinclair/typebox'
+
+export * from '@shared/rpc/payload_schemas'
 
 export const syncParamsInner = strictObject({
   sourcesDir: Type.Optional(Type.String({ minLength: 1 })),

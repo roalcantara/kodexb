@@ -1,6 +1,6 @@
+import { describe, expect, it } from 'bun:test'
 import type { Static } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
-import { describe, expect, it } from 'bun:test'
 import { literalUnion } from './literal_union.util'
 
 describe('literalUnion', () => {

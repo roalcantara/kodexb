@@ -1,6 +1,6 @@
+import { describe, expect, it } from 'bun:test'
 import { Type } from '@sinclair/typebox'
 import { Value } from '@sinclair/typebox/value'
-import { describe, expect, it } from 'bun:test'
 import { strictObject } from './strict_object.util'
 
 describe('strictObject', () => {

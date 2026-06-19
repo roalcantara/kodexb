@@ -23,7 +23,7 @@ const {
   setSyncMessageHandlers,
   onAfterSyncComplete,
   syncRpc,
-  call
+  call: clientCall
 } = await import('./client')
 
 beforeEach(() => {
@@ -254,13 +254,11 @@ describe('Eden Treaty client', () => {
 
 describe('call', () => {
   it('returns data on success (including null)', async () => {
-    await expect(call(Promise.resolve({ data: 42, error: null }))).resolves.toBe(42)
-    await expect(call(Promise.resolve({ data: null, error: null }))).resolves.toBeNull()
+    await expect(clientCall(Promise.resolve({ data: 42, error: null }))).resolves.toBe(42)
+    await expect(clientCall(Promise.resolve({ data: null, error: null }))).resolves.toBeNull()
   })
 
   it('throws the unwrapped error message', async () => {
-    await expect(
-      call(Promise.resolve({ data: null, error: { value: 'boom', status: 500 } }))
-    ).rejects.toThrow('boom')
+    await expect(clientCall(Promise.resolve({ data: null, error: { value: 'boom', status: 500 } }))).rejects.toThrow('boom')
   })
 })
