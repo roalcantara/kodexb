@@ -311,6 +311,7 @@ BLOCK_ON_THREAT="true"
     }
     cmd "e2e-preview" {}
     cmd "e2e" {
+      flag "--ci" help="Set CI=true and NODE_ENV=test for Playwright/BDD runs"
       flag "--smoke" help="P0 Gherkin smoke (@smoke) only"
       flag "--regression" help="P0+P1 Gherkin regression (@regression) only"
       flag "--debug" help="Playwright debug UI for BDD suite"

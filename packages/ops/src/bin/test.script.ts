@@ -15,7 +15,7 @@ import {
   runTaggedTests
 } from '../governance/registries/catalog/tag.script'
 import { chdirToRepoRoot } from '../support/lib/shared/repo_root.script'
-import { spawnInherit } from '../support/lib/shared/spawn_inherit.script'
+import { runInherit, spawnInherit } from '../support/lib/shared/spawn_inherit.script'
 
 const KNOWN_ACTIONS = new Set(['unit', 'ci', 'spec-audit', 'spec-style', 'e2e-preview', 'e2e', 'tag'])
 
@@ -277,73 +277,95 @@ async function runSpecStyle(root: string, strict: boolean, styleFormat: string):
   if (issues.length > 0 && strict) process.exit(1)
 }
 
+const METRICS_SCRIPT = 'packages/ops/src/metrics/harnesses/e2e-quality/e2e_metrics.script.ts'
+
+function applyE2eCiEnv(ci: boolean): void {
+  if (!ci) return
+  process.env.CI = 'true'
+  process.env.NODE_ENV = 'test'
+}
+
+function runE2e(root: string): void {
+  const ci = envBool('usage_ci')
+  const smoke = envBool('usage_smoke')
+  const regression = envBool('usage_regression')
+  const debug = envBool('usage_debug')
+  const metricsReport = envBool('usage_metrics_report') || envBool('usage_metrics-report')
+  const metricsCompare = envBool('usage_metrics_compare') || envBool('usage_metrics-compare')
+  const writeBaseline = envBool('usage_write_baseline') || envBool('usage_write-baseline')
+
+  if (smoke && regression) {
+    die('test e2e: --smoke and --regression are mutually exclusive', 2)
+  }
+
+  applyE2eCiEnv(ci)
+
+  if (writeBaseline) {
+    spawnInherit(['bun', METRICS_SCRIPT, 'write-baseline'], root)
+  }
+
+  const runSuite = smoke || regression || debug || (!metricsReport && !metricsCompare && !writeBaseline)
+
+  if (runSuite) {
+    const suiteCmd = smoke
+      ? ['bun', 'run', 'e2e:smoke']
+      : regression
+        ? ['bun', 'run', 'e2e:regression']
+        : debug
+          ? ['bun', 'run', 'e2e:bddgen']
+          : ['bun', 'run', 'e2e']
+    const suiteCode = runInherit(suiteCmd, root)
+    if (suiteCode !== 0) process.exit(suiteCode)
+  }
+
+  if (metricsReport) {
+    const reportCode = runInherit(['bun', METRICS_SCRIPT, 'report'], root)
+    if (reportCode !== 0) process.exit(reportCode)
+  }
+
+  if (metricsCompare) {
+    spawnInherit(['bun', METRICS_SCRIPT, 'compare'], root)
+  }
+
+  if (!runSuite && !metricsReport && !metricsCompare && !writeBaseline) {
+    die('test e2e: pass --smoke, --regression, --metrics-report, or another e2e flag', 2)
+  }
+}
+
 async function main(): Promise<void> {
   const ROOT = chdirToRepoRoot()
   const ACTION = process.env.usage_cmd ?? 'unit'
   const STRICT = envBool('usage_strict')
   const STYLE_FORMAT = process.env.usage_format ?? 'text'
 
-  switch (ACTION as string) {
-    case 'unit':
-      spawnInherit(['bun', 'test', '--pass-with-no-tests'], ROOT)
-      break
-    case 'ci': {
-      mkdirSync(path.join(ROOT, 'tmp/reports/tests'), { recursive: true })
-      spawnInherit(
-        [
-          'bun',
-          'test',
-          '--pass-with-no-tests',
-          '--reporter=junit',
-          '--reporter-outfile=tmp/reports/tests/junit.xml',
-          '--coverage',
-          '--coverage-dir=tmp/reports/tests/coverage'
-        ],
-        ROOT
-      )
-      break
-    }
-    case 'spec-audit':
-      runSpecAudit(ROOT, STRICT)
-      break
-    case 'spec-style':
-      await runSpecStyle(ROOT, STRICT, STYLE_FORMAT)
-      break
-    case 'e2e-preview':
-      spawnInherit(['bun', 'run', 'e2e:preview'], ROOT)
-      break
-    case 'e2e': {
-      const smoke = envBool('usage_smoke')
-      const regression = envBool('usage_regression')
-      const debug = envBool('usage_debug')
-      const metricsReport = envBool('usage_metrics_report') || envBool('usage_metrics-report')
-      const metricsCompare = envBool('usage_metrics_compare') || envBool('usage_metrics-compare')
-      const writeBaseline = envBool('usage_write_baseline') || envBool('usage_write-baseline')
-      if (metricsReport) {
-        spawnInherit(['bun', 'packages/ops/src/metrics/harnesses/e2e-quality/e2e_metrics.script.ts', 'report'], ROOT)
-      } else if (metricsCompare) {
-        spawnInherit(['bun', 'packages/ops/src/metrics/harnesses/e2e-quality/e2e_metrics.script.ts', 'compare'], ROOT)
-      } else if (writeBaseline) {
-        spawnInherit(
-          ['bun', 'packages/ops/src/metrics/harnesses/e2e-quality/e2e_metrics.script.ts', 'write-baseline'],
-          ROOT
-        )
-      } else if (smoke) {
-        spawnInherit(['bun', 'run', 'e2e:smoke'], ROOT)
-      } else if (regression) {
-        spawnInherit(['bun', 'run', 'e2e:regression'], ROOT)
-      } else if (debug) {
-        spawnInherit(['bun', 'run', 'e2e:bddgen'], ROOT)
-      } else {
-        spawnInherit(['bun', 'run', 'e2e'], ROOT)
-      }
-      break
-    }
-    case 'tag':
-      await runTagSubcommand(ROOT)
-      break
-    default:
-      die(`test: unknown action ${ACTION}`, 2)
+  if (ACTION === 'unit') {
+    spawnInherit(['bun', 'test', '--pass-with-no-tests'], ROOT)
+  } else if (ACTION === 'ci') {
+    mkdirSync(path.join(ROOT, 'tmp/reports/tests'), { recursive: true })
+    spawnInherit(
+      [
+        'bun',
+        'test',
+        '--pass-with-no-tests',
+        '--reporter=junit',
+        '--reporter-outfile=tmp/reports/tests/junit.xml',
+        '--coverage',
+        '--coverage-dir=tmp/reports/tests/coverage'
+      ],
+      ROOT
+    )
+  } else if (ACTION === 'spec-audit') {
+    runSpecAudit(ROOT, STRICT)
+  } else if (ACTION === 'spec-style') {
+    await runSpecStyle(ROOT, STRICT, STYLE_FORMAT)
+  } else if (ACTION === 'e2e-preview') {
+    spawnInherit(['bun', 'run', 'e2e:preview'], ROOT)
+  } else if (ACTION === 'e2e') {
+    runE2e(ROOT)
+  } else if (ACTION === 'tag') {
+    await runTagSubcommand(ROOT)
+  } else {
+    die(`test: unknown action ${ACTION}`, 2)
   }
 }
 
