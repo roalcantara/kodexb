@@ -1,0 +1,74 @@
+# 016-src-kernel-dry — baseline metrics (captured 2026-06-19, branch main @ d55a2c33)
+#
+# Reproduce any line below from repo root. The implementer MUST re-run the same
+# commands at closeout and record results in closeout-metrics.txt; the spec's
+# Quantified Gains targets are measured against THIS file.
+
+## LOC of in-scope files (wc -l)
+client.ts ........................................ 300
+client_task_mutation.util.ts ..................... 48
+schemas.ts (shell/main/rpc) ...................... 221
+app.ts (shell/app) ............................... 317
+desktop_rpc_schema.ts (shared/rpc) ............... 198
+core knowledge.schema.ts ......................... 40
+core entries/task.schema.ts ...................... 43
+core entries/entry.schema.ts ..................... 57
+core entries/link.schema.ts ...................... 9
+core entries/shortcut.schema.ts .................. 79
+-----------------------------------------------------
+named-surface TOTAL .............................. 1312
+
+# command:
+# wc -l src/shell/renderer/rpc/client.ts \
+#   src/shell/renderer/rpc/client_task_mutation.util.ts \
+#   src/shell/main/rpc/schemas.ts src/shell/app/app.ts \
+#   src/shared/rpc/desktop_rpc_schema.ts \
+#   src/core/domain/models/knowledges/schemas/knowledge.schema.ts \
+#   src/core/domain/models/entries/schemas/{task,entry,link,shortcut}.schema.ts
+
+## Duplicated-pattern counts (src, excluding *.spec.*)
+Type.Literal lines (literalUnion reach) .......... 46   # across 6 files
+  - of which in shell/main/rpc/schemas.ts ........ 24
+{ additionalProperties: false } (strictObject) ... 28   # all in schemas.ts
+.then(unwrap) as Promise<T> casts ................ 32   # client.ts 26 + client_task_mutation 6
+const { raw } = this.getDb*() in app.ts .......... 10
+files containing the literal-union pattern ....... 6
+
+# commands:
+# rg -c 'Type\.Literal' src --glob '!*.spec.*'                       (sum the counts)
+# rg -c 'additionalProperties: false' src --glob '!*.spec.*'
+# rg -c '\.then\(unwrap\) as Promise' src/shell/renderer/rpc/client.ts src/shell/renderer/rpc/client_task_mutation.util.ts
+# rg -c 'const \{ raw \} = this\.get' src/shell/app/app.ts
+
+## Hand-written duplicate payload types in desktop_rpc_schema.ts (SRC-2 target)
+# These each have a corresponding TypeBox schema in schemas.ts and are kept in
+# sync only by the CONTRACT NOTE drift test in schemas.spec.ts:
+#   TaskView, ListOpts, ConfigPatch, OpenDialogOpts, TaskCreateInput, TaskUpdateInput
+# ~50 LOC of hand-written interfaces derivable via Static<typeof schema>.
+
+## FCIS dependency direction (SRC-2 enabling fact — verified via .dependency-cruiser)
+core -> shared imports exist ..................... 8 files   (rg -l "from '@shared" src/core)
+shared -> core imports exist ..................... 0 files   (rg -l "from '@core" src/shared)
+# => established direction is core depends on shared. Value tuples needed by
+#    shared payload schemas (ENTRY_TYPE_VALUES etc.) must move DOWN to shared,
+#    re-exported from core/domain/constants for back-compat. shared MUST NOT
+#    import core (would create a cycle and trip 'no-shared-importing-shell'
+#    sibling rules / dependency-cruiser).
+
+## Thin files (<=15 LOC, non-spec) ............... ~40
+# command: find src -type f -name '*.ts*' ! -name '*.spec.*' -exec wc -l {} \; | awk '$1<=15'
+
+## SRC-6 — Biome overrides touching src/ (audited via biome.jsonc)
+# Only NON-TEST src-product weakening:
+#   src/shell/renderer/** -> style.noProcessEnv: "off"   (biome.jsonc ~L419-428)
+#   renderer process.env usages (non-spec): 0
+#     rg 'process\.env' src/shell/renderer --glob '!*.spec.*'  -> none
+#   => dead exception; SRC-6 AC1 flips it to "error".
+# TIGHTENING (keep, do not touch as weakening):
+#   src/shell/app/app.ts -> style.noExcessiveLinesPerFile.maxLines: 320  (~L402-418)
+#     app.ts is 317 LOC; SRC-6 AC2 lowers cap to post-SRC-4 size (round up to next 5).
+# OUT OF SCOPE (test/spec-scoped weakenings, conventional, postponed):
+#   src/__tests__/** and **/*.spec.ts(x): noMagicNumbers off, raised line budgets,
+#   noSecrets off, noMisplacedAssertion off, etc.
+# process.env used legitimately elsewhere (do NOT enable noProcessEnv globally):
+#   src/shared/logging/*, src/shell/main/** (NODE_ENV/LOG_LEVEL/KB_* gates).
