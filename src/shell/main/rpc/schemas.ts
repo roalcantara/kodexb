@@ -1,36 +1,19 @@
 import { ENTRY_TYPE_VALUES } from '@core/domain/constants'
 import { Type } from '@sinclair/typebox'
+import { literalUnion, strictObject } from '@shared/typebox'
 
 const PAGE_SIZE_SMALL = 25
 const PAGE_SIZE_MEDIUM = 50
 const PAGE_SIZE_LARGE = 100
 const PAGE_SIZE_XL = 200
-const pageSizePatchSchema = Type.Union([
-  Type.Literal(PAGE_SIZE_SMALL),
-  Type.Literal(PAGE_SIZE_MEDIUM),
-  Type.Literal(PAGE_SIZE_LARGE),
-  Type.Literal(PAGE_SIZE_XL)
-])
+const pageSizePatchSchema = literalUnion([PAGE_SIZE_SMALL, PAGE_SIZE_MEDIUM, PAGE_SIZE_LARGE, PAGE_SIZE_XL] as const)
 
 /** Upper bound for `list` pagination (guards pathological RPC payloads). */
 export const RPC_LIST_LIMIT_MAX = 10_000
 
 const taskViewValues = ['actionable', 'today', 'overdue', 'this_week', 'all_pending', 'all_doing'] as const
-const taskViewSchema = Type.Union([
-  Type.Literal(taskViewValues[0]),
-  Type.Literal(taskViewValues[1]),
-  Type.Literal(taskViewValues[2]),
-  Type.Literal(taskViewValues[3]),
-  Type.Literal(taskViewValues[4]),
-  Type.Literal(taskViewValues[5])
-])
-const entryTypeSchema = Type.Union([
-  Type.Literal(ENTRY_TYPE_VALUES[0]),
-  Type.Literal(ENTRY_TYPE_VALUES[1]),
-  Type.Literal(ENTRY_TYPE_VALUES[2]),
-  Type.Literal(ENTRY_TYPE_VALUES[3]),
-  Type.Literal(ENTRY_TYPE_VALUES[4])
-])
+const taskViewSchema = literalUnion(taskViewValues)
+const entryTypeSchema = literalUnion(ENTRY_TYPE_VALUES)
 
 const listFilterFields = {
   query: Type.Optional(Type.String()),
@@ -39,122 +22,84 @@ const listFilterFields = {
   taskView: Type.Optional(taskViewSchema)
 }
 
-export const listOptsSchema = Type.Object(
-  {
-    ...listFilterFields,
-    limit: Type.Optional(Type.Integer({ minimum: 1, maximum: RPC_LIST_LIMIT_MAX })),
-    offset: Type.Optional(Type.Integer({ minimum: 0 }))
-  },
-  { additionalProperties: false }
-)
+export const listOptsSchema = strictObject({
+  ...listFilterFields,
+  limit: Type.Optional(Type.Integer({ minimum: 1, maximum: RPC_LIST_LIMIT_MAX })),
+  offset: Type.Optional(Type.Integer({ minimum: 0 }))
+})
 
 /** Body for `getListStats` when computing contextual facet counts (no pagination keys). */
-export const listStatsFilterSchema = Type.Object(listFilterFields, { additionalProperties: false })
+export const listStatsFilterSchema = strictObject(listFilterFields)
 
-export const getEntryParams = Type.Object({ id: Type.Integer() }, { additionalProperties: false })
+export const getEntryParams = strictObject({ id: Type.Integer() })
 
-export const syncParamsInner = Type.Object(
-  {
-    sourcesDir: Type.Optional(Type.String({ minLength: 1 })),
-    skipLearnedRestore: Type.Optional(Type.Boolean())
-  },
-  { additionalProperties: false }
-)
+export const syncParamsInner = strictObject({
+  sourcesDir: Type.Optional(Type.String({ minLength: 1 })),
+  skipLearnedRestore: Type.Optional(Type.Boolean())
+})
 
-export const configPatchSchema = Type.Object(
-  {
-    sourcesDir: Type.Optional(Type.String({ minLength: 1 })),
-    dbPath: Type.Optional(Type.String({ minLength: 1 })),
-    configPath: Type.Optional(Type.String({ minLength: 1 })),
-    terminalApp: Type.Optional(Type.String()),
-    editorApp: Type.Optional(Type.String()),
-    pageSize: Type.Optional(pageSizePatchSchema)
-  },
-  { additionalProperties: false }
-)
+export const configPatchSchema = strictObject({
+  sourcesDir: Type.Optional(Type.String({ minLength: 1 })),
+  dbPath: Type.Optional(Type.String({ minLength: 1 })),
+  configPath: Type.Optional(Type.String({ minLength: 1 })),
+  terminalApp: Type.Optional(Type.String()),
+  editorApp: Type.Optional(Type.String()),
+  pageSize: Type.Optional(pageSizePatchSchema)
+})
 
-const priorityUnionSchema = Type.Union([
-  Type.Literal('low'),
-  Type.Literal('mid'),
-  Type.Literal('high'),
-  Type.Literal('urgent')
-])
+const priorityUnionSchema = literalUnion(['low', 'mid', 'high', 'urgent'] as const)
 
 const sourceVersionSchema = Type.Integer({ minimum: 0 })
 
-export const taskCreateSchema = Type.Object(
-  {
-    key: Type.String({ minLength: 1 }),
+export const taskCreateSchema = strictObject({
+  key: Type.String({ minLength: 1 }),
+  desc: Type.Optional(Type.String()),
+  tags: Type.Optional(Type.Array(Type.String())),
+  priority: Type.Optional(priorityUnionSchema),
+  dueDate: Type.Optional(Type.Number()),
+  dependsOn: Type.Optional(Type.Array(Type.Integer()))
+})
+
+export const taskUpdateSchema = strictObject({
+  id: Type.Integer(),
+  sourceVersion: Type.Optional(sourceVersionSchema),
+  patch: strictObject({
+    key: Type.Optional(Type.String({ minLength: 1 })),
     desc: Type.Optional(Type.String()),
     tags: Type.Optional(Type.Array(Type.String())),
     priority: Type.Optional(priorityUnionSchema),
+    status: Type.Optional(literalUnion(['todo', 'doing', 'done'] as const)),
     dueDate: Type.Optional(Type.Number()),
     dependsOn: Type.Optional(Type.Array(Type.Integer()))
-  },
-  { additionalProperties: false }
-)
+  })
+})
 
-export const taskUpdateSchema = Type.Object(
-  {
-    id: Type.Integer(),
-    sourceVersion: Type.Optional(sourceVersionSchema),
-    patch: Type.Object(
-      {
-        key: Type.Optional(Type.String({ minLength: 1 })),
-        desc: Type.Optional(Type.String()),
-        tags: Type.Optional(Type.Array(Type.String())),
-        priority: Type.Optional(priorityUnionSchema),
-        status: Type.Optional(Type.Union([Type.Literal('todo'), Type.Literal('doing'), Type.Literal('done')])),
-        dueDate: Type.Optional(Type.Number()),
-        dependsOn: Type.Optional(Type.Array(Type.Integer()))
-      },
-      { additionalProperties: false }
-    )
-  },
-  { additionalProperties: false }
-)
+export const dirSchema = literalUnion(['forward', 'backward'] as const)
+export const reorderDirSchema = literalUnion(['up', 'down'] as const)
 
-export const dirSchema = Type.Union([Type.Literal('forward'), Type.Literal('backward')])
-export const reorderDirSchema = Type.Union([Type.Literal('up'), Type.Literal('down')])
+export const emptyBodySchema = strictObject({})
 
-export const emptyBodySchema = Type.Object({}, { additionalProperties: false })
+export const listBindingsByChordSchema = strictObject({ hash: Type.String({ minLength: 1 }) })
 
-export const listBindingsByChordSchema = Type.Object(
-  { hash: Type.String({ minLength: 1 }) },
-  { additionalProperties: false }
-)
+export const recordBindingVisitSchema = strictObject({
+  id: Type.String({ minLength: 1 }),
+  weight: Type.Number({ default: 1.0 })
+})
 
-export const recordBindingVisitSchema = Type.Object(
-  {
-    id: Type.String({ minLength: 1 }),
-    weight: Type.Number({ default: 1.0 })
-  },
-  { additionalProperties: false }
-)
+export const openExternalSchema = strictObject({ url: Type.String({ minLength: 1 }) })
+export const pasteInTerminalSchema = strictObject({ cmd: Type.String({ minLength: 1 }) })
+export const runInTerminalSchema = strictObject({ cmd: Type.String({ minLength: 1 }) })
+export const pasteDocSchema = strictObject({ doc: Type.String({ minLength: 1 }) })
+export const openInEditorSchema = strictObject({ filePath: Type.String({ minLength: 1 }) })
+export const suggestTagsSchema = strictObject({ entryId: Type.Integer() })
 
-export const openExternalSchema = Type.Object({ url: Type.String({ minLength: 1 }) }, { additionalProperties: false })
-export const pasteInTerminalSchema = Type.Object(
-  { cmd: Type.String({ minLength: 1 }) },
-  { additionalProperties: false }
-)
-export const runInTerminalSchema = Type.Object({ cmd: Type.String({ minLength: 1 }) }, { additionalProperties: false })
-export const pasteDocSchema = Type.Object({ doc: Type.String({ minLength: 1 }) }, { additionalProperties: false })
-export const openInEditorSchema = Type.Object(
-  { filePath: Type.String({ minLength: 1 }) },
-  { additionalProperties: false }
-)
-export const suggestTagsSchema = Type.Object({ entryId: Type.Integer() }, { additionalProperties: false })
+export const hideWindowSchema = strictObject({})
 
-export const hideWindowSchema = Type.Object({}, { additionalProperties: false })
-
-export const syncInfoSchema = Type.Object({}, { additionalProperties: false })
-export const resizeWindowSchema = Type.Object(
-  {
-    width: Type.Integer({ minimum: 1 }),
-    height: Type.Integer({ minimum: 1 })
-  },
-  { additionalProperties: false }
-)
+export const syncInfoSchema = strictObject({})
+export const resizeWindowSchema = strictObject({
+  width: Type.Integer({ minimum: 1 }),
+  height: Type.Integer({ minimum: 1 })
+})
 
 /**
  * Body for `setWindowPosition` — `x`/`y` are screen coordinates, integer
@@ -164,58 +109,40 @@ export const resizeWindowSchema = Type.Object(
  */
 const WINDOW_COORD_MIN = -32_000
 const WINDOW_COORD_MAX = 32_000
-export const setWindowPositionSchema = Type.Object(
-  {
-    x: Type.Integer({ minimum: WINDOW_COORD_MIN, maximum: WINDOW_COORD_MAX }),
-    y: Type.Integer({ minimum: WINDOW_COORD_MIN, maximum: WINDOW_COORD_MAX })
-  },
-  { additionalProperties: false }
-)
+export const setWindowPositionSchema = strictObject({
+  x: Type.Integer({ minimum: WINDOW_COORD_MIN, maximum: WINDOW_COORD_MAX }),
+  y: Type.Integer({ minimum: WINDOW_COORD_MIN, maximum: WINDOW_COORD_MAX })
+})
 
-export const getWindowPositionSchema = Type.Object({}, { additionalProperties: false })
+export const getWindowPositionSchema = strictObject({})
 
-export const idWithDirSchema = Type.Object(
-  {
-    id: Type.Integer(),
-    sourceVersion: Type.Optional(sourceVersionSchema),
-    dir: dirSchema
-  },
-  { additionalProperties: false }
-)
+export const idWithDirSchema = strictObject({
+  id: Type.Integer(),
+  sourceVersion: Type.Optional(sourceVersionSchema),
+  dir: dirSchema
+})
 
-export const idWithReorderDirSchema = Type.Object(
-  {
-    id: Type.Integer(),
-    sourceVersion: Type.Optional(sourceVersionSchema),
-    dir: reorderDirSchema
-  },
-  { additionalProperties: false }
-)
+export const idWithReorderDirSchema = strictObject({
+  id: Type.Integer(),
+  sourceVersion: Type.Optional(sourceVersionSchema),
+  dir: reorderDirSchema
+})
 
-export const taskDeleteSchema = Type.Object(
-  {
-    id: Type.Integer(),
-    sourceVersion: Type.Optional(sourceVersionSchema)
-  },
-  { additionalProperties: false }
-)
+export const taskDeleteSchema = strictObject({
+  id: Type.Integer(),
+  sourceVersion: Type.Optional(sourceVersionSchema)
+})
 
 /** POST body for `showOpenDialog` accepts `{}` or `{ opts?: {...} }`. */
-const e2eFaultModes = Type.Union([Type.Literal('off'), Type.Literal('source_write_failed'), Type.Literal('unset')])
-export const e2eFaultModeSchema = Type.Object({ mode: e2eFaultModes }, { additionalProperties: false })
+const e2eFaultModes = literalUnion(['off', 'source_write_failed', 'unset'] as const)
+export const e2eFaultModeSchema = strictObject({ mode: e2eFaultModes })
 
-export const showOpenDialogSchema = Type.Object(
-  {
-    opts: Type.Optional(
-      Type.Object(
-        {
-          title: Type.Optional(Type.String()),
-          defaultPath: Type.Optional(Type.String()),
-          properties: Type.Optional(Type.Array(Type.Union([Type.Literal('openFile'), Type.Literal('openDirectory')])))
-        },
-        { additionalProperties: false }
-      )
-    )
-  },
-  { additionalProperties: false }
-)
+export const showOpenDialogSchema = strictObject({
+  opts: Type.Optional(
+    strictObject({
+      title: Type.Optional(Type.String()),
+      defaultPath: Type.Optional(Type.String()),
+      properties: Type.Optional(Type.Array(literalUnion(['openFile', 'openDirectory'] as const)))
+    })
+  )
+})
