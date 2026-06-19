@@ -12,6 +12,10 @@ deferred_majors:
     current_range: '^4.2.4'
     latest_major: 5
     reason: Major config/API changes; bump within 4.x (4.2.5) until .jscpd.json is migrated.
+  - package: '@playwright/test'
+    current_range: '^1.60.0'
+    latest_major: 1.61
+    reason: Playwright 1.61 breaks playwright-bdd 8.5.1 bddgen (registerESMLoader); bump with playwright-bdd 9 migration.
   - package: playwright-bdd
     current_range: '^8.5.1'
     latest_major: 9

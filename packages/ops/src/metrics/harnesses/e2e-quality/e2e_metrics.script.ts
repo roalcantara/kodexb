@@ -9,8 +9,9 @@
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import { repoRoot } from '../../../support/lib/shared/repo_root.script'
 
-const ROOT = path.resolve(import.meta.dir, '../../../..')
+const ROOT = repoRoot()
 const E2E_QUALITY_BASELINE = path.join(ROOT, 'tools/metrics/baselines/e2e-quality')
 const SCORES_PATH = path.join(E2E_QUALITY_BASELINE, 'scenario-scores.json')
 const BASELINE_PATH = path.join(E2E_QUALITY_BASELINE, 'quality-baseline.json')

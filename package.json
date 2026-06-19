@@ -79,7 +79,7 @@
     "@biomejs/biome": "^2.5.0",
     "@cucumber/cucumber": "^13.0.0",
     "@happy-dom/global-registrator": "^20.10.6",
-    "@playwright/test": "^1.61.0",
+    "@playwright/test": "^1.60.0",
     "@release-it/conventional-changelog": "^9",
     "@tailwindcss/cli": "^4.3.1",
     "@testing-library/react": "^16.3.2",

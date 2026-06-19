@@ -42,8 +42,10 @@ RUN apt-get update \
 # files must be present before `bun install --frozen-lockfile` (root workspaces
 # in package.json); copying only root package.json + bun.lock fails CST/CI.
 COPY package.json bun.lock ./
-COPY packages/workflow-core/package.json packages/workflow-core/
-COPY packages/workflow-runtime/package.json packages/workflow-runtime/
+COPY packages/dev/package.json packages/dev/
+COPY packages/exec/package.json packages/exec/
+COPY packages/flow/package.json packages/flow/
+COPY packages/ops/package.json packages/ops/
 RUN --mount=type=cache,target=/root/.bun/install/cache \
     bun install --frozen-lockfile
 

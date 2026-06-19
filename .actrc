@@ -27,7 +27,7 @@
 
 # `head.repo.full_name`; act populates `github.repository` from this env var
 
---eventpath tools/act/event.json
+--eventpath tools/orchestration/fixtures/act/event.json
 --env GITHUB_REPOSITORY=roalcantara/kodexb
 
 # Reuse pulled images instead of re-pulling each run
