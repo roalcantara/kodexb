@@ -8,7 +8,7 @@ import { spawnInherit } from '../support/lib/shared/spawn_inherit.script.ts'
 function main(): void {
   const root = chdirToRepoRoot()
   const cmd = process.env.usage_cmd ?? ''
-  switch (cmd) {
+  switch (cmd as string) {
     case 'rogue-refs':
       spawnInherit(['bun', 'tools/governance/policies/rogue_refs.script.ts'], root)
       break

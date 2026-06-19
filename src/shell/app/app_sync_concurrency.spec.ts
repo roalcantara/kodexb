@@ -11,7 +11,7 @@ let workDir: string
 let dbPath: string
 
 function isSyncInFlight(app: App): boolean {
-  return (app as unknown as { syncInFlight: boolean }).syncInFlight === true
+  return (app as unknown as { syncGate: { inFlight: boolean } }).syncGate.inFlight === true
 }
 
 function makeCleanApp(databasePath: string): App {

@@ -198,7 +198,7 @@ function main(): void {
   if ('exitCode' in parsed) process.exit(parsed.exitCode)
 
   const opts = parsed.value
-  switch (opts.action) {
+  switch (opts.action as string) {
     case 'classify':
       printClassify(opts)
       break

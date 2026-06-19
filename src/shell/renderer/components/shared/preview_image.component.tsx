@@ -81,10 +81,12 @@ export function PreviewImage({ url, fetchImage = defaultFetchImage, openUrl = de
     fetchImage(url)
       .then(result => {
         if (!alive) return
+        const payload: PreviewImageResult | null = result
+        if (payload === null) return
         window.clearTimeout(timeout)
         setLoading(false)
-        if (result?.url) {
-          setImageUrl(result.url)
+        if (payload.url) {
+          setImageUrl(payload.url)
           return
         }
         setHidden(true)

@@ -46,7 +46,7 @@ function parseCsv(text: string): { header: string[]; rows: string[][] } {
 }
 
 function csvField(v: string): string {
-  const s = String(v ?? '')
+  const s = String(v)
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
 }
 
@@ -65,7 +65,7 @@ for (const f of CONFIG_FILES) {
 const workflowFiles = await Array.fromAsync(new Glob('.github/workflows/*.yml').scan('.'))
 const workflowText = (await Promise.all(workflowFiles.map(f => Bun.file(f).text()))).join('\n')
 
-const lsLintText = configText['.ls-lint.yml'] ?? ''
+const lsLintText = configText['.ls-lint.yml'] || ''
 
 // ── import graph over tools/*.ts(x) (excludes graphify-out) ──────────────────
 
@@ -207,11 +207,11 @@ function configRefs(p: string, artifact: string): { refs: string; invokedBy: str
       invokedBy.push(invoker)
     }
   }
-  check('mise.toml', configText['mise.toml'] ?? '', 'mise')
-  check('package.json', configText['package.json'] ?? '', 'package_json')
-  check('hk.pkl', configText['hk.pkl'] ?? '', 'hk')
-  check('electrobun.config.ts', configText['electrobun.config.ts'] ?? '', 'electrobun_config')
-  check('sgconfig.yml', configText['sgconfig.yml'] ?? '', 'ast_grep')
+  check('mise.toml', configText['mise.toml'] || '', 'mise')
+  check('package.json', configText['package.json'] || '', 'package_json')
+  check('hk.pkl', configText['hk.pkl'] || '', 'hk')
+  check('electrobun.config.ts', configText['electrobun.config.ts'] || '', 'electrobun_config')
+  check('sgconfig.yml', configText['sgconfig.yml'] || '', 'ast_grep')
   const wfFile = mentions(workflowText, fileVariants)
   const wfFolder = workflowText.includes(folderPath)
   if (wfFile || wfFolder) refs.push('github_workflows')

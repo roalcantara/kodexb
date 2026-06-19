@@ -94,8 +94,7 @@ export function resolveNext(featureDir: string, runId?: string): ResolvedStep {
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: pre-existing complexity, refactor deferred
 function stageSatisfied(stage: KitStage, files: FileSet, featureDir: string, runId?: string): boolean {
-  // biome-ignore lint/nursery/noUnnecessaryConditions: exhaustive switch over KitStage union — default is a safety net
-  switch (stage) {
+  switch (stage as string) {
     case 'specify':
       return files.spec
     case 'clarify':
@@ -172,8 +171,7 @@ function checklistsRequirementsExists(featureDir: string): boolean {
 }
 
 function focusHintFor(stage: KitStage): string | undefined {
-  // biome-ignore lint/nursery/noUnnecessaryConditions: exhaustive switch over KitStage union — default is a safety net
-  switch (stage) {
+  switch (stage as string) {
     case 'specify':
       return 'Run /speckit-specify with feature description'
     case 'clarify':

@@ -24,11 +24,12 @@ export function loadProfile(path: string): Profile {
   try {
     const content = readFileSync(path, 'utf-8')
     raw = Bun.YAML.parse(content)
-  } catch (err) {
-    // biome-ignore lint/nursery/useErrorCause: cause propagated via ProfileLoadError constructor → super(message, options)
-    throw new ProfileLoadError(`failed to parse profile YAML: ${err}`, undefined, {
-      cause: err instanceof Error ? err : undefined
-    })
+  } catch (err: unknown) {
+    const loadError = new ProfileLoadError(`failed to parse profile YAML: ${String(err)}`)
+    if (err instanceof Error) {
+      loadError.cause = err
+    }
+    throw loadError
   }
 
   if (!raw || typeof raw !== 'object') {

@@ -56,7 +56,7 @@ function evaluateCommandEntry(entry: CommandEntry): EvidenceResult {
 
 export function evaluateEvidence(envelope: Envelope, ctx: EvidenceContext): EvidenceResult[] {
   return envelope.evidence.map(entry => {
-    switch (entry.kind) {
+    switch (entry.kind as string) {
       case 'marker':
         return evaluateMarkerEntry(entry as MarkerEntry, ctx)
       case 'artifact':

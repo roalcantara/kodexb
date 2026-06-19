@@ -37,7 +37,7 @@ function resolveConfig(raw: unknown, configPath: string, env: Env): Result<Resol
 }
 
 function testProfileRoot(env: Env): string {
-  return env.KB_TEST_DIR ?? path.join(tmpdir(), 'kb-test')
+  return env.KB_TEST_DIR || path.join(tmpdir(), 'kb-test')
 }
 
 /**

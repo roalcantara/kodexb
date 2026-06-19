@@ -45,7 +45,7 @@ function executeStep(step: RunStep, mode: RenderMode): number {
   }
   if (!step.run) return 1
   const outcome = step.run()
-  return typeof outcome === 'number' ? outcome : (outcome.exitCode ?? 1)
+  return typeof outcome === 'number' ? outcome : outcome.exitCode
 }
 
 export function runSteps(input: RunStepsInput): TaskRunReport {

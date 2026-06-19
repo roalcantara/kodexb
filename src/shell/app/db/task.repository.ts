@@ -104,7 +104,7 @@ export function updateTaskOrder(
 }
 
 export function findDependencies(db: Database, dependsOn: number[]): Knowledge[] {
-  if (!dependsOn || dependsOn.length === 0) return []
+  if (dependsOn.length === 0) return []
   const placeholders = dependsOn.map(() => '?').join(',')
   const sql = `${FIND_DEPENDENCIES_SQL}${placeholders})`
   const rows = db.query<KnowledgeRow, number[]>(sql).all(...dependsOn)

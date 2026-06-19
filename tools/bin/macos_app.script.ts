@@ -97,7 +97,7 @@ export function runMacosAction(action: 'install' | 'uninstall' | 'login-item', m
 if (import.meta.main) {
   const [command = 'help', mode] = Bun.argv.slice(2)
 
-  switch (command) {
+  switch (command as string) {
     case 'install':
       runMacosAction('install')
       break

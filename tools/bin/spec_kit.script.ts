@@ -281,7 +281,7 @@ function runLoop(featureDir: string, env: Env): number {
     }
 
     if (jsonOutput) {
-      process.stdout.write(JSON.stringify({ type: 'stage.entered', runId, stage: step.stage, iteration }) + '\n')
+      process.stdout.write(`${JSON.stringify({ type: 'stage.entered', runId, stage: step.stage, iteration })}\n`)
     } else {
       process.stdout.write(`${runId} [${step.stage}] `)
     }

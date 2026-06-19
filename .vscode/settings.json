@@ -1,3 +1,4 @@
 {
-  "speckit.specDirectories": ["assets/specs"]
+  "speckit.specDirectories": ["assets/specs"],
+  "bun.runtime": "/Users/roalcantara/.local/share/mise/shims/bun"
 }

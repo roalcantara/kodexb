@@ -31,18 +31,19 @@ const renderFragment = (format: string, payload: string) => {
 }
 
 const buildPreamble = (knowledge: Knowledge, now: Date, previewImageUrl?: string) => {
-  switch (knowledge.type) {
-    case 'command':
-      return buildCommandPreamble(knowledge)
-    case 'cheat':
-      return buildCheatPreamble(knowledge)
-    case 'bookmark':
-      return buildBookmarkPreamble(knowledge, previewImageUrl)
-    case 'task':
-      return buildTaskPreamble(knowledge, now)
-    case 'shortcut':
-      return buildShortcutPreamble(knowledge)
+  if (knowledge.type === 'command') {
+    return buildCommandPreamble(knowledge)
   }
+  if (knowledge.type === 'cheat') {
+    return buildCheatPreamble(knowledge)
+  }
+  if (knowledge.type === 'bookmark') {
+    return buildBookmarkPreamble(knowledge, previewImageUrl)
+  }
+  if (knowledge.type === 'task') {
+    return buildTaskPreamble(knowledge, now)
+  }
+  return buildShortcutPreamble(knowledge)
 }
 
 function renderNoteFragments(knowledge: Knowledge): string[] {

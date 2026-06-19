@@ -80,7 +80,6 @@ function parseCli(): CliOptions {
     json: envBool('usage_json'),
     dryRun: envBool('usage_dry_run'),
     listSkills: envBool('usage_list_skills'),
-    listFormat: 'grouped',
     verbose: false,
     interactive: false,
     locations: new Set(),

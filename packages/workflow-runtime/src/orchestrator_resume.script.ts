@@ -23,8 +23,8 @@ export function seedDispatchedKeys(
   const pattern = new RegExp(`${runId}\\.envelope\\.(.+)\\.json$`)
   try {
     for (const file of readdirSync(runDir)) {
-      const match = pattern.exec(file)
-      if (!match) continue
+      const match = file.match(pattern)
+      if (match === null) continue
       const stage = match[1] ?? ''
       const envPath = path.join(runDir, file)
       const envelope = readEnvelopeFile(envPath)

@@ -1,0 +1,31 @@
+# Deferred major dependency upgrades (see bun outdated "Latest" column).
+# Safe semver bumps are applied in package.json; items here need a dedicated migration + gate.
+schema_version: 1
+updated: 2026-06-03
+
+deferred_majors:
+  - package: typescript
+    current_range: '^5'
+    latest_major: 6
+    reason: Stay on TS 5 until a dedicated TS 6 migration pass (strict Bun/React tsconfig).
+  - package: jscpd
+    current_range: '^4.2.4'
+    latest_major: 5
+    reason: Major config/API changes; bump within 4.x (4.2.5) until .jscpd.json is migrated.
+  - package: playwright-bdd
+    current_range: '^8.5.1'
+    latest_major: 9
+    reason: Tied to playwright.config.ts defineBddConfig and bdd/e2e/; requires migration notes + full e2e.
+  - package: '@release-it/conventional-changelog'
+    current_range: '^9'
+    latest_major: 11
+    reason: Must upgrade with release-it plugin API; ^9 already satisfied at 9.0.4.
+
+electrobun_policy:
+  package: electrobun
+  pin: '^1.18.1'
+  gate_before_bump:
+    - bun run build
+    - bun run install:macos
+    - mise run validate-launcher-placement
+  note: Already at npm latest; any future bump needs release notes + launcher placement probe.

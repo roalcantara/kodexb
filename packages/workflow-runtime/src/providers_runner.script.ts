@@ -25,7 +25,7 @@ export function runProvider(
   })
   return {
     ok: result.exitCode === 0 && !result.rejected,
-    stdout: result.stdout ?? '',
+    stdout: result.stdout,
     exitCode: result.exitCode,
     durationMs: result.durationMs
   }

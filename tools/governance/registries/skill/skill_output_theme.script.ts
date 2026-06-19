@@ -13,13 +13,13 @@ export const CATEGORY_COLORS: Record<string, string> = {
   schema: GUM.error
 }
 
-export const POLICY_COLORS: Record<string, string> = {
+export const POLICY_COLORS = {
   required: GUM.success,
   routed: GUM.accent,
   optional: GUM.info,
   reference: GUM.muted,
   blocked: GUM.error
-}
+} as const satisfies Record<string, string>
 
 export const LOCATION_COLORS: Record<string, string> = {
   owned: GUM.success,

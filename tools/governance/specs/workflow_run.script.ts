@@ -201,7 +201,7 @@ function run(): void {
     console.error('spec workflow: --next is deprecated; use --dry-run instead')
   }
 
-  if (args.feature !== undefined && (args.feature === '' || String(args.feature).startsWith('-'))) {
+  if (typeof args.feature === 'string' && (args.feature === '' || args.feature.startsWith('-'))) {
     console.error(`spec workflow: --feature requires a value, got "${String(args.feature)}"`)
     process.exit(2)
   }

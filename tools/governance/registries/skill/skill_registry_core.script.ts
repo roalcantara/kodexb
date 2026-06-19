@@ -180,7 +180,7 @@ export function collectSkillListRows(
   } = {}
 ): SkillListRow[] {
   const rows: SkillListRow[] = []
-  for (const [id, skill] of Object.entries(registry.skills ?? {})) {
+  for (const [id, skill] of Object.entries(registry.skills)) {
     if (filters.locations && filters.locations.size > 0 && !filters.locations.has(skill.location)) continue
     const ptype = skill.policy?.type
     if (filters.types && filters.types.size > 0 && (!ptype || !filters.types.has(ptype))) continue
@@ -283,7 +283,7 @@ export function summarizeCounts(registry: SkillRegistry): {
   const byLoc: Record<string, number> = {}
   const byType: Record<string, number> = {}
   let ebTotal = 0
-  for (const skill of Object.values(registry.skills ?? {})) {
+  for (const skill of Object.values(registry.skills)) {
     const loc = skill.location || '?'
     const t = skill.policy?.type || '?'
     byLoc[loc] = (byLoc[loc] ?? 0) + 1

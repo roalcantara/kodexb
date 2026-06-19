@@ -251,7 +251,7 @@ export function renderValidate(payload: CatalogValidatePayload, json: boolean, r
 
   if (raw) {
     console.log(
-      `catalog validate: ${payload.valid ? 'OK' : 'FAILED'} (${payload.summary.errors ?? 0} errors, ${payload.summary.warnings ?? 0} warnings)`
+      `catalog validate: ${payload.valid ? 'OK' : 'FAILED'} (${payload.summary.errors} errors, ${payload.summary.warnings} warnings)`
     )
     for (const [k, v] of Object.entries(payload.summary)) {
       if (k === 'total' || k === 'errors' || k === 'warnings') continue
@@ -266,7 +266,7 @@ export function renderValidate(payload: CatalogValidatePayload, json: boolean, r
   }
 
   console.log(
-    `catalog validate: ${payload.valid ? 'OK' : 'FAILED'} (${payload.summary.errors ?? 0} errors, ${payload.summary.warnings ?? 0} warnings)`
+    `catalog validate: ${payload.valid ? 'OK' : 'FAILED'} (${payload.summary.errors} errors, ${payload.summary.warnings} warnings)`
   )
   for (const f of payload.findings) {
     const prefix = f.key ? `${f.key}: ` : f.file ? `${f.file}: ` : ''

@@ -64,7 +64,7 @@ export class Orchestrator {
   private teardownHandles: TeardownHandle[] = []
 
   actor: ReturnType<typeof createActor<typeof workflowMachine>> | null = null
-  private shutdownRequested = false
+  private readonly shutdownGate = { requested: false }
 
   constructor(config: OrchestratorConfig) {
     this.config = config
@@ -223,7 +223,7 @@ export class Orchestrator {
       this.shutdown(signal).catch(() => {
         /* fire-and-forget */
       })
-      this.shutdownRequested = true
+      this.shutdownGate.requested = true
     }
     const onSigInt = () => sigHandler('SIGINT')
     const onSigTerm = () => sigHandler('SIGTERM')
@@ -243,7 +243,7 @@ export class Orchestrator {
     }
 
     for (const [i, stageId] of stageOrder.entries()) {
-      if (this.shutdownRequested) break
+      if (Reflect.get(this.shutdownGate, 'requested') === true) break
 
       const stageDef = this.profile.stages.find(s => s.id === stageId)
       if (!stageDef) continue
@@ -366,7 +366,7 @@ export class Orchestrator {
           command: stageDef.triggers.post,
           role: 'trigger.post',
           stage: stageId,
-          exit_code: postResult.exitCode ?? undefined,
+          exit_code: postResult.exitCode,
           status: postResult.exitCode === 0 ? 'ok' : 'fail',
           duration_ms: postResult.durationMs
         })
@@ -445,7 +445,7 @@ export class Orchestrator {
   }
 
   async shutdown(signal: string): Promise<void> {
-    this.shutdownRequested = true
+    this.shutdownGate.requested = true
     this.writer.emit({
       type: 'shutdown.requested',
       run_id: this.runId,

@@ -168,7 +168,7 @@ function generateRecommendations(
 
 function eventSummary(event: WorkflowEvent): string {
   const e = event as AnyEvent
-  switch (event.type) {
+  switch (event.type as string) {
     case 'task.completed':
       return `[${e.role}] exit=${e.exit_code} stage=${e.stage ?? '-'} cmd=${String(e.command ?? '').slice(0, 60)}`
     case 'task.invoked':

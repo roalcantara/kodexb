@@ -326,7 +326,7 @@ describe('WorkflowEvent schema (WOBS-1)', () => {
   it('every variant label has a fixture', () => {
     for (const label of WORKFLOW_EVENT_TYPES) {
       let event: WorkflowEvent | undefined
-      switch (label) {
+      switch (label as string) {
         case 'phase_decided':
           event = makePhaseDecided()
           break

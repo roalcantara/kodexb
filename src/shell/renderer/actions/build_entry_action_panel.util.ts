@@ -209,18 +209,19 @@ function taskTypeActions(entry: RpcKnowledge, ctx: EntryActionContext, deps: Ent
 }
 
 function entryTypeActions(entry: RpcKnowledge, ctx: EntryActionContext, deps: EntryActionPanelDeps): EntryAction[] {
-  switch (entry.type) {
-    case 'bookmark':
-      return bookmarkTypeActions(entry, ctx, deps)
-    case 'command':
-      return commandTypeActions(entry, ctx, deps)
-    case 'cheat':
-      return cheatTypeActions(entry, ctx, deps)
-    case 'task':
-      return taskTypeActions(entry, ctx, deps)
-    case 'shortcut':
-      return [copyAction(entry, ctx), copyDescAction(entry, ctx), openEditorAction(entry, ctx, deps)]
+  if (entry.type === 'bookmark') {
+    return bookmarkTypeActions(entry, ctx, deps)
   }
+  if (entry.type === 'command') {
+    return commandTypeActions(entry, ctx, deps)
+  }
+  if (entry.type === 'cheat') {
+    return cheatTypeActions(entry, ctx, deps)
+  }
+  if (entry.type === 'task') {
+    return taskTypeActions(entry, ctx, deps)
+  }
+  return [copyAction(entry, ctx), copyDescAction(entry, ctx), openEditorAction(entry, ctx, deps)]
 }
 
 export function buildEntryActionPanel(ctx: EntryActionContext, deps: EntryActionPanelDeps): EntryAction[] {

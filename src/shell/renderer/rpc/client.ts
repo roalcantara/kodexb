@@ -79,7 +79,11 @@ async function bridgeFetch(input: RequestInfo | URL, init?: RequestInit): Promis
   const path = `${parsed.pathname}${parsed.search}`
   const bodyText = await readInitBody(init?.body)
   const headers = extractHeaders(init?.headers)
-  const requestId = headers?.['x-request-id'] ?? headers?.['X-Request-Id']
+  const requestId = headers
+    ? 'x-request-id' in headers
+      ? headers['x-request-id']
+      : headers['X-Request-Id']
+    : undefined
 
   rpcClientLog.info('→ {method} {path}', { method, path, requestId })
 

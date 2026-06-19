@@ -55,7 +55,7 @@ function parseTagCli(): {
   for (const arg of process.argv.slice(2)) {
     if (arg === 'tag') continue
     if (KNOWN_ACTIONS.has(arg)) continue
-    switch (arg) {
+    switch (arg as string) {
       case '--list':
         list = true
         break
@@ -283,7 +283,7 @@ async function main(): Promise<void> {
   const STRICT = envBool('usage_strict')
   const STYLE_FORMAT = process.env.usage_format ?? 'text'
 
-  switch (ACTION) {
+  switch (ACTION as string) {
     case 'unit':
       spawnInherit(['bun', 'test', '--pass-with-no-tests'], ROOT)
       break

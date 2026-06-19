@@ -125,12 +125,12 @@ export function createShellHooks(
       win.setPosition(native.x, native.y)
     },
     openExternal: url => openExternalWithFallback(url, utils, handoffServices, runHandoff),
-    showOpenDialog: async opts => {
-      const properties = opts?.properties ?? []
+    showOpenDialog: async (opts = {}) => {
+      const properties = opts.properties ?? []
       const canChooseDirectory = properties.includes('openDirectory')
       const canChooseFiles = properties.length === 0 || properties.includes('openFile')
       const paths = await utils.openFileDialog({
-        startingFolder: opts?.defaultPath,
+        startingFolder: opts.defaultPath,
         canChooseFiles,
         canChooseDirectory,
         allowsMultipleSelection: false

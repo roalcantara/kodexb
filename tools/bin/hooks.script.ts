@@ -9,7 +9,7 @@ function main(): void {
   const root = chdirToRepoRoot()
   const action = process.env.usage_cmd ?? ''
 
-  switch (action) {
+  switch (action as string) {
     case 'governance-audit':
       spawnInherit(['bun', 'test', '--config', '/dev/null', '.cursor/hooks/governance_audit.core.spec.ts'], root)
       break

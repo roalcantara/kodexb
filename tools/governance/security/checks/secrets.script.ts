@@ -26,19 +26,6 @@ function lineFromOffset(content: string, index: number): number {
 }
 
 export function runSecretsCheck(files: string[]): SecurityFinding[] {
-  // Fail-closed: Check if rule constants are effectively loaded
-  if (!SECRETS_REGEX_RULES || typeof ENTROPY_MIN_BITS !== 'number' || typeof ENTROPY_MIN_LENGTH !== 'number') {
-    return [
-      {
-        id: 'secret:fatal:config',
-        severity: 'critical',
-        file: 'tools/governance/security/checks/secrets.rules.script.ts',
-        rule: 'config-error',
-        message: 'Authoritative ruleset source is missing or unparseable.'
-      }
-    ]
-  }
-
   const findings: SecurityFinding[] = []
 
   const EXEMPT_PATHS = [

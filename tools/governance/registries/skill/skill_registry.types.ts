@@ -83,7 +83,7 @@ export type CliOptions = {
   json: boolean
   dryRun: boolean
   listSkills: boolean
-  listFormat: ListFormat
+  listFormat?: ListFormat
   verbose: boolean
   interactive: boolean
   locations: Set<SkillLocation>

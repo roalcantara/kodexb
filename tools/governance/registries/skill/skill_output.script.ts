@@ -337,26 +337,21 @@ export function renderReport(payload: ReportPayload, mode: RenderMode, listForma
     gumTable(
       ['Location', 'Count', 'Policy', 'Count'],
       [
-        [
-          locationBadge('owned'),
-          String(loc.owned ?? 0),
-          gumBadge('required', POLICY_COLORS.required ?? GUM.success),
-          String(pol.required ?? 0)
-        ],
+        [locationBadge('owned'), String(loc.owned), gumBadge('required', POLICY_COLORS.required), String(pol.required)],
         [
           locationBadge('project'),
-          String(loc.project ?? 0),
-          gumBadge('optional', POLICY_COLORS.optional ?? GUM.info),
-          String(pol.optional ?? 0)
+          String(loc.project),
+          gumBadge('optional', POLICY_COLORS.optional),
+          String(pol.optional)
         ],
         [
           locationBadge('global'),
-          String(loc.global ?? 0),
-          gumBadge('reference', POLICY_COLORS.reference ?? GUM.muted),
-          String(pol.reference ?? 0)
+          String(loc.global),
+          gumBadge('reference', POLICY_COLORS.reference),
+          String(pol.reference)
         ],
-        ['', '', gumBadge('routed', POLICY_COLORS.routed ?? GUM.accent), String(pol.routed ?? 0)],
-        ['', '', gumBadge('blocked', POLICY_COLORS.blocked ?? GUM.error), String(pol.blocked ?? 0)]
+        ['', '', gumBadge('routed', POLICY_COLORS.routed), String(pol.routed)],
+        ['', '', gumBadge('blocked', POLICY_COLORS.blocked), String(pol.blocked)]
       ]
     )
   )
