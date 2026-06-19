@@ -29,6 +29,7 @@
       "@shared/types": ["./src/shared/types/index.ts"],
       "@shared/logging": ["./src/shared/logging/index.ts"],
       "@shared/rpc": ["./src/shared/rpc/index.ts"],
+      "@shared/rpc/*": ["./src/shared/rpc/*"],
       "@shared/typebox": ["./src/shared/typebox/index.ts"],
       "@shared/constants/*": ["./src/shared/constants/*"],
       "@shell/app/db/*": ["./src/shell/app/db/*"],
