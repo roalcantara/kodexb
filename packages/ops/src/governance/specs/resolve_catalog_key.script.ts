@@ -1,6 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import { parse as parseYaml } from 'yaml'
 import { chdirToRepoRoot } from '../../support/lib/shared/repo_root.script'
 
 const CATALOG_PATH = 'assets/catalog/catalog.yaml'
@@ -18,7 +17,7 @@ export function slugFromFeatureDir(featureDir: string): string {
 export type KeyResolveResult = { ok: true; key: string } | { ok: false; key: string; warning: string }
 
 function collectKeys(catalogText: string): { key: string; specs: string[] }[] {
-  const doc = parseYaml(catalogText)
+  const doc = Bun.YAML.parse(catalogText) as Record<string, unknown>
   if (!doc || typeof doc !== 'object') return []
   return Object.entries(doc as Record<string, unknown>)
     .filter(([, v]) => v && typeof v === 'object' && !Array.isArray(v))

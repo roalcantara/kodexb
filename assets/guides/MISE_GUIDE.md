@@ -333,6 +333,64 @@ Before declaring implementation complete, run the repository quality gate:
 bash .agents/skills/app-quality-gate/scripts/gate.sh
 ```
 
+## Ops CLI kernel
+
+The project uses a lightweight kernel architecture for mise-backed CLI scripts.
+Mise owns CLI parsing and sets `usage_*` environment variables; scripts read
+these variables via kernel modules instead of parsing `process.argv` directly.
+
+### Kernel modules
+
+| Module                                                                                           | Exports                                                                                    |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| [`usage_env.script.ts`](../../packages/ops/src/support/lib/cli/usage_env.script.ts)              | `usageFlag`, `usageOptString`, `usageCmd`, `stripUsageEnv`, `copyUsageToChild`, `rawJsonConflict` |
+| [`dispatch.script.ts`](../../packages/ops/src/support/lib/cli/dispatch.script.ts)                | `runBinMain`, `forwardToScript`, `routeByUsageCmd`, `resolveUsageCmd`                      |
+| [`text_file.script.ts`](../../packages/ops/src/support/lib/shared/text_file.script.ts)           | `firstLine`, `lines`, `readTextFile`, `readTextLines`                                      |
+| [`ops_logging.script.ts`](../../packages/ops/src/support/lib/cli/ops_logging.script.ts)          | `configureOpsLogging`                                                                      |
+
+### Bin patterns
+
+Each entrypoint under `bin/*.script.ts` follows one of three patterns:
+
+1. **Forward stub** — one-liner via `forwardToScript` (e.g. `skill.script.ts`):
+   ```ts
+   runBinMain(() => forwardToScript('governance/registries/skill/skill_registry.script.ts', { passCmd: true, dropTokens: ['skill'] }))
+   ```
+
+2. **Route table** — dispatch by subcommand via `routeByUsageCmd` (e.g. `audit.script.ts`, `hooks.script.ts`):
+   ```ts
+   runBinMain(() => routeByUsageCmd({ task: 'audit', routes: { 'rogue-refs': ['bun', 'packages/ops/src/governance/policies/rogue_refs.script.ts'] } }))
+   ```
+
+3. **Domain dispatch** — direct call with `usage_*` helpers (e.g. `catalog.script.ts`, `test.script.ts`, `spec.script.ts`):
+   - All booleans via `usageFlag(process.env, '<name>')`
+   - All strings via `usageOptString(process.env, '<name>')`
+   - Action subcommand via `usageCmd(process.env)`
+   - `configureOpsLogging()` at `main()` start
+
+### Validation rules
+
+- **Mise-trusted** — no TypeBox/zod per-flag validation. Mise spec `choices` is
+  authoritative for bounded values.
+- Semantic mutexes enforced in domain code:
+  - `raw` + `json` conflict → `rawJsonConflict()`
+  - e2e `smoke` + `regression` → exit 2
+
+### Subprocess hygiene
+
+- **Default**: `stripUsageEnv(process.env)` when spawning children (prevents
+  `usage_*` leakage across process boundaries).
+- **Flag forwarding**: Use `copyUsageToChild(stripUsageEnv(process.env), process.env, ['strict', 'changed_only', ...])`
+  to pass specific `usage_*` keys to child processes (used in `spec.script.ts`
+  for `planAudit` security and kit spawns).
+- See `spawn_inherit.script.ts`: `runInherit(cmd, cwd, envOverlay?)` merges
+  `stripUsageEnv(process.env)` with `envOverlay`.
+
+### YAML policy
+
+Use `Bun.YAML.parse` / `Bun.YAML.stringify` only. The npm `yaml` package is not
+used (removed in feature `014-ops-cli-kernel`). See [`BUN_RUNTIME.md`](../BUN_RUNTIME.md).
+
 ## Performance dataset task
 
 The workflow-observability perf harness uses a persisted dataset fixture under

@@ -7,6 +7,8 @@ import { preflightCheck } from '@kb/exec/kit_preflight.script'
 import { type ResolvedStep, resolveNext, stageToVerb, terminalStageSentinel } from '@kb/exec/kit_step_resolver.script'
 import { generateRunId } from '@kb/exec/workflow_run.script'
 import { type ResolveResult, resolveActiveFeatureDir } from '../governance/specs/resolve_active_feature_dir.script'
+import { configureOpsLogging } from '../support/lib/cli/ops_logging.script'
+import { usageFlag } from '../support/lib/cli/usage_env.script'
 
 const ALL_KIT_VERBS = new Set([
   'next',
@@ -26,7 +28,6 @@ const ALL_KIT_VERBS = new Set([
 ])
 
 type Env = Record<string, string | undefined>
-const isTrue = (env: Env, k: string): boolean => env[k] === 'true'
 
 function helpText(): string {
   return [
@@ -139,7 +140,7 @@ function runVerbHandler(verb: string, featureDir: string, _env: Env, runId: stri
 }
 
 function printResolved(step: ResolvedStep, env: Env): void {
-  if (isTrue(env, 'usage_json')) {
+  if (usageFlag(env, 'json')) {
     process.stdout.write(
       `${JSON.stringify({ stage: step.stage, kind: step.kind, focusHint: step.focusHint ?? null })}\n`
     )
@@ -151,10 +152,6 @@ function printResolved(step: ResolvedStep, env: Env): void {
   } else {
     process.stdout.write(`${step.stage}${hint}\n`)
   }
-}
-
-function hasCliFlag(name: string): boolean {
-  return process.argv.includes(`--${name}`) || process.argv.includes(`-${name[0]}`)
 }
 
 function printSingleStepTerminal(activeRunId: string, jsonOutput: boolean): void {
@@ -187,10 +184,10 @@ function executeResolvedStep(
   step: ResolvedStep,
   options?: { deferTerminalStdout?: boolean }
 ): number {
-  const dryRun = isTrue(env, 'usage_dry_run') || hasCliFlag('dry-run')
-  const approveFlag = env.usage_approve || hasCliFlag('approve') || ''
-  const jsonOutput = isTrue(env, 'usage_json') || hasCliFlag('json')
-  const rawOutput = isTrue(env, 'usage_raw') || hasCliFlag('raw')
+  const dryRun = usageFlag(env, 'dry_run')
+  const approveFlag = usageFlag(env, 'approve') || ''
+  const jsonOutput = usageFlag(env, 'json')
+  const rawOutput = usageFlag(env, 'raw')
 
   if (dryRun) {
     printResolved(step, {
@@ -259,7 +256,7 @@ function runNext(featureDir: string, env: Env, runId?: string): number {
 function runLoop(featureDir: string, env: Env): number {
   const featureSlug = path.basename(featureDir).replace(/^\d+-/, '')
   const runId = generateRunId(featureSlug)
-  const jsonOutput = isTrue(env, 'usage_json') || hasCliFlag('json')
+  const jsonOutput = usageFlag(env, 'json')
   let iteration = 0
 
   for (;;) {
@@ -291,6 +288,7 @@ function runLoop(featureDir: string, env: Env): number {
 }
 
 function main(): void {
+  configureOpsLogging()
   const args = process.argv.slice(2)
   const verb = args.shift() ?? ''
 
@@ -314,7 +312,7 @@ function main(): void {
   }
 
   if (verb === 'next') {
-    const loopFlag = isTrue(env, 'usage_loop') || hasCliFlag('loop')
+    const loopFlag = usageFlag(env, 'loop')
     if (loopFlag) {
       process.exit(runLoop(resolved.featureDir, env))
     }

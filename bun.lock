@@ -21,7 +21,6 @@
         "rehype-highlight": "^7.0.2",
         "type-fest": "^5.7.0",
         "xstate": "^5.32.1",
-        "yaml": "^2.9.0",
       },
       "devDependencies": {
         "@biomejs/biome": "^2.5.0",

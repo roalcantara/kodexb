@@ -7,6 +7,7 @@ import {
 } from '../governance/specs/resolve_active_feature_dir.script'
 import { resolveCatalogKey } from '../governance/specs/resolve_catalog_key.script'
 import { runStepsAndPrint } from '../support/lib/cli/task_runner.script'
+import { copyUsageToChild, rawJsonConflict, stripUsageEnv } from '../support/lib/cli/usage_env.script'
 /**
  * mise run spec — Spec Kit lint, trace, gate, legacy import (thin dispatch stub).
  */
@@ -15,6 +16,8 @@ import { spawnInherit } from '../support/lib/shared/spawn_inherit.script'
 
 const SPECS = 'packages/ops/src/governance/specs'
 const WORKFLOW = `${SPECS}/workflow`
+
+export { rawJsonConflict } from '../support/lib/cli/usage_env.script'
 
 export const ALLOWED_WORKFLOW_NAMES = new Set(['orchestrated-handoff', 'resume', 'run'])
 
@@ -37,40 +40,20 @@ export function resolveSpecGateFeatureDir(explicitDir?: string): ResolveResult {
 }
 
 /**
- * Guard the mutually-exclusive global flags `--raw` / `--json` (review rule 00).
- * Returns an error message when both are set, else null.
- */
-export function rawJsonConflict(raw: boolean, json: boolean): string | null {
-  return raw && json ? 'spec: --raw and --json are mutually exclusive' : null
-}
-
-/**
- * Clean the environment of all `usage_*` variables.
- * This is used to avoid leaking `usage_*` variables into the subprocesses.
- */
-function cleanEnv(): Record<string, string | undefined> {
-  const env = { ...process.env }
-  for (const key of Object.keys(env)) {
-    if (key.startsWith('usage_')) {
-      delete env[key]
-    }
-  }
-  return env
-}
-
-/**
  * Spawn a command and return its exit code, or 1 on error.
- * This is used to avoid leaking `usage_*` variables into the subprocesses.
+ * Always strips usage_* variables to avoid leaking into subprocesses.
+ * Optional envOverlay is merged after stripping.
  */
-function spawnExitCode(cmd: string[], root: string): number {
-  return Bun.spawnSync(cmd, { cwd: root, stdout: 'inherit', stderr: 'inherit', env: cleanEnv() }).exitCode ?? 1
+function spawnExitCode(cmd: string[], root: string, envOverlay?: Record<string, string | undefined>): number {
+  const env = envOverlay ? { ...stripUsageEnv(process.env), ...envOverlay } : stripUsageEnv(process.env)
+  return Bun.spawnSync(cmd, { cwd: root, stdout: 'inherit', stderr: 'inherit', env }).exitCode ?? 1
 }
 
 type Env = Record<string, string | undefined>
 
 /** A resolved dispatch plan. `spawn` runs an argv; `runner` drives the task_runner; `error` aborts. */
 export type SpecPlan =
-  | { kind: 'spawn'; argv: string[] }
+  | { kind: 'spawn'; argv: string[]; env?: Record<string, string | undefined> }
   | { kind: 'runner'; task: 'spec-gate' | 'spec-ready'; featureDir: string; json: boolean; raw: boolean }
   | { kind: 'error'; message: string; exitCode: number }
 
@@ -184,7 +167,11 @@ export function planSpec(
       return { kind: 'spawn', argv: argv.filter(Boolean) }
     }
     case 'kit':
-      return { kind: 'spawn', argv: ['bun', 'packages/ops/src/bin/spec_kit.script.ts', ...rest] }
+      return {
+        kind: 'spawn',
+        argv: ['bun', 'packages/ops/src/bin/spec_kit.script.ts', ...rest],
+        env: copyUsageToChild(stripUsageEnv(process.env), process.env, ['dry_run', 'approve', 'json', 'raw', 'loop'])
+      }
     default:
       return { kind: 'error', message: `spec: unknown action ${cmd}`, exitCode: 2 }
   }
@@ -263,9 +250,7 @@ function planAudit(rest: string[], env: Env): SpecPlan {
   }
   if (sub === 'security') {
     const argv = ['bun', 'packages/ops/src/governance/security/scan.script.ts']
-    if (isTrue(env, 'usage_strict')) argv.push('--strict')
     if (isTrue(env, 'usage_changed_only')) argv.push('--changed-only')
-    if (env.usage_base) argv.push('--base', env.usage_base)
     return { kind: 'spawn', argv }
   }
   return { kind: 'error', message: `spec audit: unknown action ${sub}`, exitCode: 2 }
@@ -328,6 +313,10 @@ function main(): void {
     process.exit(plan.exitCode)
   }
   if (plan.kind === 'runner') runGateOrReady(plan, root)
+  if (plan.kind === 'spawn' && plan.env) {
+    const r = Bun.spawnSync(plan.argv, { cwd: root, stdout: 'inherit', stderr: 'inherit', env: plan.env })
+    process.exit(r.exitCode ?? 1)
+  }
   spawnInherit(plan.argv, root)
 }
 

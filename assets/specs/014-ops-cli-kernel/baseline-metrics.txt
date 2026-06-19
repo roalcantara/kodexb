@@ -1,0 +1,11 @@
+--- OCK-BASE-03: Baseline metrics ---
+dbf4aabf90e2d677:src
+
+rg -l 'function envBool' packages/ops/src --glob '*.ts' | wc -l -> 5
+rg 'function parseCli' packages/ops/src -> packages/ops/src/governance/registries/skill/skill_registry.script.ts
+rg 'hasCliFlag' packages/ops/src/bin/spec_kit.script.ts -> present
+rg "from 'yaml'" packages/ops/src -> 2 files
+rg '"yaml"' package.json -> found in dependencies
+rg 'process\.argv' packages/ops/src/bin -c -> app:3, audit:0, catalog:2, hooks:0, macos_app:1, policy:1, shim_spawn:0, skill:3, spec:2, spec_kit:3, test:1, tools_inventory_report:1
+wc -l packages/ops/src/bin/test.script.ts -> 375
+wc -l packages/ops/src/bin/*.script.ts -> 2399 total

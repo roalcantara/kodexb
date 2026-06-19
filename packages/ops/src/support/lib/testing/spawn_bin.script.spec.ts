@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { REPO_ROOT, spawnScript } from './shim_spawn.script'
+import { REPO_ROOT, spawnScript } from './spawn_bin.script'
 
 describe('spawnScript', () => {
   it('runs bun with the given script path from repo root', () => {

@@ -5,9 +5,7 @@
   "type": "module",
   "private": true,
   "workspaces": {
-    "packages": [
-      "packages/*"
-    ],
+    "packages": ["packages/*"],
     "catalog": {
       "xstate": "^5.32.0",
       "@sinclair/typebox": "^0.34.49"
@@ -115,8 +113,7 @@
     "react-markdown": "^10.1.0",
     "rehype-highlight": "^7.0.2",
     "type-fest": "^5.7.0",
-    "xstate": "^5.32.1",
-    "yaml": "^2.9.0"
+    "xstate": "^5.32.1"
   },
   "overrides": {
     "ansi-regex": "^5.0.1"

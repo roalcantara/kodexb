@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { Glob } from 'bun'
 import { repoRoot } from '../../../support/lib/shared/repo_root.script'
+import { firstLine, lines, readTextFile } from '../../../support/lib/shared/text_file.script'
 import { type CatalogEntry, catalogPath, catalogRunTag, listCatalogKeys, loadCatalog } from './catalog.script'
 import type { CatalogFinding, CatalogFindingCategory, CatalogValidatePayload } from './catalog_validate.types'
 import { loadScanPaths, SCAN_PATHS_REL, scanPathsPath } from './scan_paths.script'
@@ -70,16 +71,6 @@ function validateEntrySchema(
   }
 }
 
-async function readFirstLine(filePath: string): Promise<string> {
-  const text = await Bun.file(filePath).text()
-  return text.split('\n')[0] ?? ''
-}
-
-async function readAllLines(filePath: string): Promise<string[]> {
-  const text = await Bun.file(filePath).text()
-  return text.split('\n')
-}
-
 export async function validateTagPlacement(
   findings: CatalogFinding[],
   summary: Record<string, number>,
@@ -91,7 +82,7 @@ export async function validateTagPlacement(
   const full = path.join(root, relPath)
 
   if (relPath.endsWith('.feature')) {
-    const allLines = await readAllLines(full)
+    const allLines = lines((await readTextFile(full)).unwrapOr(''))
     const tagFound = allLines.some(line => lineHasCatalogTag(line, tag))
     if (!tagFound) {
       addFinding(
@@ -107,8 +98,7 @@ export async function validateTagPlacement(
   }
 
   if (relPath.includes('.spec.')) {
-    const first = await readFirstLine(full)
-    const trimmed = first.trim()
+    const trimmed = firstLine((await readTextFile(full)).unwrapOr('')).trim()
     if (!trimmed.startsWith('//') || !lineHasCatalogTag(trimmed, tag)) {
       addFinding(
         findings,
@@ -124,9 +114,10 @@ export async function validateTagPlacement(
 
 async function collectMembershipTagsInFile(relPath: string, root: string): Promise<string[]> {
   const full = path.join(root, relPath)
+  const text = (await readTextFile(full)).unwrapOr('')
 
   if (relPath.endsWith('.feature')) {
-    const allLines = await readAllLines(full)
+    const allLines = lines(text)
     const tags = new Set<string>()
     for (const line of allLines) {
       for (const t of extractCatalogRunTagsFromLine(line)) tags.add(t)
@@ -135,8 +126,7 @@ async function collectMembershipTagsInFile(relPath: string, root: string): Promi
   }
 
   if (relPath.includes('.spec.')) {
-    const first = await readFirstLine(full)
-    const trimmed = first.trim()
+    const trimmed = firstLine(text).trim()
     if (!trimmed.startsWith('//')) return []
     return extractCatalogRunTagsFromLine(trimmed)
   }
