@@ -6,6 +6,7 @@ import {
   resolveSpecFeatureDir
 } from '../governance/specs/resolve_active_feature_dir.script'
 import { resolveCatalogKey } from '../governance/specs/resolve_catalog_key.script'
+import { appendGovernanceSpawnFlags } from '../governance/specs/spec_governance_cli.script'
 import { runStepsAndPrint } from '../support/lib/cli/task_runner.script'
 import { copyUsageToChild, rawJsonConflict, stripUsageEnv } from '../support/lib/cli/usage_env.script'
 /**
@@ -139,6 +140,10 @@ export function planSpec(
       return planWorkflow(rest, env, deps)
     case 'audit':
       return planAudit(rest, env)
+    case 'conform': {
+      const featurePath = featureFrom(env, rest)
+      return planGovernanceFeatureSpawn('conform.script.ts', featurePath || undefined, env)
+    }
     case 'ready': {
       const resolved = resolveSpecFeatureDir({ positional: featureFrom(env, rest) })
       if (!resolved.ok) return { kind: 'error', message: resolved.message, exitCode: resolved.exitCode }
@@ -232,6 +237,25 @@ function planWorkflow(rest: string[], env: Env, deps: { activeRun?: () => string
   return { kind: 'spawn', argv }
 }
 
+function planGovernanceFeatureSpawn(
+  script: string,
+  featurePath: string | undefined,
+  env: Env,
+  auditFlags?: { strict?: boolean; fix?: boolean }
+): SpecPlan {
+  const resolved = resolveSpecFeatureDir({ positional: featurePath })
+  if (!resolved.ok) return { kind: 'error', message: resolved.message, exitCode: resolved.exitCode }
+  const argv = ['bun', `${SPECS}/${script}`, resolved.featureDir]
+  if (auditFlags?.strict && isTrue(env, 'usage_strict')) argv.push('--strict')
+  if (auditFlags?.fix && isTrue(env, 'usage_fix')) argv.push('--fix')
+  appendGovernanceSpawnFlags(argv, env)
+  return { kind: 'spawn', argv }
+}
+
+function planSddFeatureAudit(featurePath: string | undefined, env: Env): SpecPlan {
+  return planGovernanceFeatureSpawn('audit.script.ts', featurePath, env, { strict: true, fix: true })
+}
+
 function planAudit(rest: string[], env: Env): SpecPlan {
   const sub = rest[0] ?? ''
   if (sub === 'docs') {
@@ -240,13 +264,7 @@ function planAudit(rest: string[], env: Env): SpecPlan {
     return { kind: 'spawn', argv: ['bun', 'packages/ops/src/bin/audit.script.ts', 'rogue-refs'] }
   }
   if (sub === 'feature') {
-    const resolved = resolveSpecFeatureDir({ positional: env.usage_feature ?? rest[1] })
-    if (!resolved.ok) return { kind: 'error', message: resolved.message, exitCode: resolved.exitCode }
-    const argv = ['bun', `${SPECS}/audit.script.ts`, resolved.featureDir]
-    if (isTrue(env, 'usage_strict')) argv.push('--strict')
-    if (isTrue(env, 'usage_json')) argv.push('--json') // global flag
-    if (isTrue(env, 'usage_raw')) argv.push('--raw') // global flag
-    return { kind: 'spawn', argv }
+    return planSddFeatureAudit(env.usage_feature ?? rest[1], env)
   }
   if (sub === 'security') {
     const argv = ['bun', 'packages/ops/src/governance/security/scan.script.ts']
@@ -255,7 +273,9 @@ function planAudit(rest: string[], env: Env): SpecPlan {
     if (env.usage_base) argv.push('--base', env.usage_base)
     return { kind: 'spawn', argv }
   }
-  return { kind: 'error', message: `spec audit: unknown action ${sub}`, exitCode: 2 }
+  // Flat form: mise run spec audit [feature] — autodetect when omitted
+  const featurePath = sub && !sub.startsWith('-') ? sub : featureFrom(env, rest)
+  return planSddFeatureAudit(featurePath || undefined, env)
 }
 
 function runGateOrReady(plan: Extract<SpecPlan, { kind: 'runner' }>, root: string): never {

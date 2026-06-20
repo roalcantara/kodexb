@@ -8,6 +8,7 @@
 import path from 'node:path'
 import { getLogger } from '@kb/shared/logging'
 import { usageFlags, usageStrings } from '../../support/lib/cli/usage_env.script'
+import { requirementBlocks } from './spec_parse.script'
 
 const log = getLogger(['kb', 'ops', 'lint'])
 
@@ -19,8 +20,6 @@ type Finding = {
   message: string
 }
 
-const EARS_ID = /^##\s+REQUIREMENT\s+([A-Z]{2,}-\d+)\s*:/
-const ANY_REQUIREMENT = /^##\s+REQUIREMENT\b/
 const STOCK_HEADINGS = [
   /^##\s+User Scenarios?\s*&\s*Testing\b/i,
   /^##\s+Success Criteria\b/i,
@@ -35,22 +34,6 @@ const USER_STORY = /\*\*User story:\*\*/i
 const MEASURE = /\*\*Measure:\*\*/i
 const EVIDENCE = /\*\*Evidence:\*\*/i
 const AC_CONTEXT_LINES = 6
-
-function requirementBlocks(lines: string[]): { id: string | null; start: number; body: string[] }[] {
-  const blocks: { id: string | null; start: number; body: string[] }[] = []
-  let current: { id: string | null; start: number; body: string[] } | null = null
-  lines.forEach((raw, i) => {
-    const m = raw.match(EARS_ID)
-    if (ANY_REQUIREMENT.test(raw)) {
-      if (current) blocks.push(current)
-      current = { id: m?.[1] ?? null, start: i + 1, body: [] }
-      return
-    }
-    if (current) current.body.push(raw)
-  })
-  if (current) blocks.push(current)
-  return blocks
-}
 
 function lintStockHeadings(file: string, lines: string[]): Finding[] {
   const findings: Finding[] = []

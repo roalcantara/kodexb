@@ -128,6 +128,7 @@ project-specific situation.
 | Agent tool policy, trust, or audit-trail design    | `agent-governance`, after `app-context`                                                    |
 | Agent output rubrics or evaluator-optimizer loops  | `agentic-eval`, after `app-review-handoff` or `app-quality-gate` context                   |
 | Design or prototype intake                         | `stitch-design`, only under the prototype gate                                             |
+| Brainstorm / writing-plans before speckit analyze  | After landing spec/plan/tasks, run `mise run spec conform` then `/speckit-analyze`         |
 | React component translation from a design artifact | `react:components`, adapted to the project's renderer and guide stack                      |
 | Isolated parallel development                      | `using-git-worktrees`, only when requested or approved                                     |
 | Final verification reminder                        | `verification-before-completion`; `app-quality-gate` remains executable authority          |

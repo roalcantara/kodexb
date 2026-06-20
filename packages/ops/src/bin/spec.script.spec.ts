@@ -115,6 +115,24 @@ describe('planSpec — every subcommand routes', () => {
     expect(argv.join(' ')).toContain('audit.script.ts')
     expect(argv).toContain('--strict')
   })
+  it('flat audit autodetects active feature', () => {
+    const argv = spawnArgv(plan('audit', [], { usage_strict: 'true' }))
+    expect(argv.join(' ')).toContain('audit.script.ts')
+    expect(argv).toContain('--strict')
+  })
+  it('flat audit passes --fix flags', () => {
+    const argv = spawnArgv(
+      plan('audit', [], { usage_feature: FEAT, usage_fix: 'true', usage_dry_run: 'true', usage_force: 'true' })
+    )
+    expect(argv).toContain('--fix')
+    expect(argv).toContain('--dry-run')
+    expect(argv).toContain('--force')
+  })
+  it('conform routes to conform.script.ts', () => {
+    const argv = spawnArgv(plan('conform', [], { usage_feature: FEAT, usage_dry_run: 'true' }))
+    expect(argv.join(' ')).toContain('conform.script.ts')
+    expect(argv).toContain('--dry-run')
+  })
   it('audit security routes to scan.script', () => {
     const argv = spawnArgv(plan('audit', ['security'], { usage_changed_only: 'true' }))
     expect(argv.join(' ')).toContain('scan.script.ts')

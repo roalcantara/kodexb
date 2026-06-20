@@ -93,11 +93,11 @@ describe('audit.script', () => {
     expect(r.exitCode).toBe(2)
   })
 
-  it('missing args exits 2', () => {
+  it('autodetects active feature when args omitted', () => {
     const r = Bun.spawnSync(['bun', 'packages/ops/src/governance/specs/audit.script.ts'], {
-      env: { ...process.env },
+      env: { ...process.env, NO_COLOR: '1' },
       cwd: path.resolve(import.meta.dirname, '../../../../..')
     })
-    expect(r.exitCode).toBe(2)
+    expect(r.exitCode === 0 || r.exitCode === 1).toBe(true)
   })
 })

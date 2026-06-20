@@ -34,7 +34,7 @@ Normative files per in-flight feature:
 - `spec.md` — EARS requirements with **Measure** and **Evidence**
 - `plan.md` — design contract, file touch list, traceability
 - `tasks.md` — ordered work and verification
-- `handoff.md` — optional operator handoff and acceptance tracker
+- `handoff.md` — acceptance tracker (`ID | Done when | Evidence` table; part of normative quartet)
 
 Path policy reminder: command examples in this guide use the current default
 spec root (`assets/specs/`). In code and tests, do not hardcode specific
@@ -85,14 +85,28 @@ Companion scans only numbered feature folders:
 3. **Specify** — run `/speckit-specify` in Cursor (or write `spec.md` from
    `.specify/templates/spec-template.md`).
 
-4. **Clarify / plan / tasks** — `/speckit-clarify`, `/speckit-plan`, `/speckit-tasks`.
+4. **Clarify / plan / tasks** — `/speckit-clarify`, `/speckit-plan`, `/speckit-tasks` (or brainstorm-first authoring; see [Brainstorm-first path](#brainstorm-first-path) below).
 
-5. **Implement** — `/speckit-implement`; code under `src/` with co-located specs.
+5. **Normalize** — `mise run spec conform` (or `mise run spec audit --fix`) scaffolds handoff, task IDs, and analyze checklists.
 
-6. **Quality passes** (advisory) — `/speckit-checklist`, `/speckit-analyze`.
+6. **Implement** — `/speckit-implement`; code under `src/` with co-located specs.
+
+7. **Quality passes** (advisory) — `/speckit-checklist`, `/speckit-analyze`.
 
 Git auto-commit hooks are **disabled** in `.specify/extensions/git/git-config.yml`; commits
 are operator-initiated (see constitution).
+
+## Brainstorm-first path
+
+Use `brainstorming` / `writing-plans` when exploring alternatives before committing to a spec shape. That workflow often lands `spec.md`, `plan.md`, and `tasks.md` without Spec Kit analyze artifacts.
+
+After the quartet content is written:
+
+1. Run **`mise run spec conform`** (or **`mise run spec audit --fix`**) to scaffold `handoff.md`, renumber task IDs to **`T101+`**, and create stub `checklists/analyze-*.md`.
+2. Run **`/speckit-analyze`** twice (plan pass, then tasks pass) to replace generic checklist stubs and refine handoff “Done when” prose.
+3. Continue with implement / gate as usual.
+
+Task IDs use **`T101`, `T102`, …** (not `T001`) so audit hygiene passes without tripping the tasks-template sample-leak check.
 
 ## Deterministic gates (authoritative)
 
@@ -105,8 +119,17 @@ mise run spec lint assets/specs/NNN-slug --strict
 # Cross-file traceability (spec ↔ plan ↔ features)
 mise run spec trace assets/specs/NNN-slug --strict
 
-# Quartet + handoff + tasks readiness (post-tasks, pre-analyze)
-mise run spec audit feature assets/specs/NNN-slug --strict
+# Quartet + handoff + tasks readiness (post-tasks, pre-analyze; autodetects active feature)
+mise run spec audit --strict
+mise run spec audit assets/specs/NNN-slug --strict
+
+# Brainstorm → speckit bridge (scaffold handoff, T101+ task IDs, analyze checklists)
+mise run spec conform
+mise run spec conform assets/specs/NNN-slug
+
+# Apply audit fixes only (dry-run first)
+mise run spec audit --fix --dry-run
+mise run spec audit assets/specs/NNN-slug --fix --strict
 
 # lint + trace + full app quality gate
 mise run spec gate assets/specs/NNN-slug

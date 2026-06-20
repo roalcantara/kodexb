@@ -1240,18 +1240,31 @@ exec bun bin/skill.script.ts "$CMD" "$@"
       }
     }
     cmd "audit" {
+      flag "--strict" help="Exit non-zero on error-level findings"
+      flag "--fix" help="Apply deterministic audit scaffolding fixes"
+      flag "--dry-run" help="With --fix: print planned fixes without writing"
+      flag "--force" help="With --fix: overwrite existing handoff/checklist scaffolds"
+      arg "[feature]" help="Feature dir (omitted: active feature via feature.json / branch / cwd)"
       cmd "docs" {
         cmd "rogue-refs" help="Inventory inbound assets/docs/ links on guides and agent entry docs" {}
       }
       cmd "feature" {
-        flag "--strict" help="Exit non-zero on error-level findings"
-        arg "[feature]" help="Feature dir e.g. assets/specs/005-feature-demo (omitted: active feature)"
+        flag "--strict" help="Exit non-zero on error-level findings (alias)"
+        flag "--fix" help="Apply deterministic audit scaffolding fixes"
+        flag "--dry-run" help="With --fix: print planned fixes without writing"
+        flag "--force" help="With --fix: overwrite existing handoff/checklist scaffolds"
+        arg "[feature]" help="Feature dir (omitted: active feature)"
       }
       cmd "security" {
         flag "--strict" help="Fail on medium/high/critical per policy"
         flag "--changed-only" help="Restrict scan to changed-file scope"
         flag "--base <sha>" help="Diff base ref for changed-only mode"
       }
+    }
+    cmd "conform" {
+      flag "--dry-run" help="Print planned fixes without writing"
+      flag "--force" help="Overwrite existing handoff/checklist scaffolds"
+      arg "[feature]" help="Feature dir (omitted: active feature)"
     }
     cmd "worktree" {
       cmd "add" {

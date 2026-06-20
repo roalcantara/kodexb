@@ -124,3 +124,20 @@ export function resolveActiveFeatureDir(argDir?: string): ResolveResult {
     ].join('\n')
   }
 }
+
+/** Audit/conform: explicit path only requires spec.md (fixtures may live outside assets/specs). */
+export function resolveAuditFeatureDir(argDir?: string): ResolveResult {
+  chdirToRepoRoot()
+  if (argDir?.trim()) {
+    const resolved = path.resolve(argDir.trim())
+    if (!existsSync(path.join(resolved, 'spec.md'))) {
+      return {
+        ok: false,
+        exitCode: 2,
+        message: `spec audit: feature dir not found: ${resolved} (must contain spec.md)`
+      }
+    }
+    return { ok: true, featureDir: resolved }
+  }
+  return resolveActiveFeatureDir(undefined)
+}

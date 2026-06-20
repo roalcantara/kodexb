@@ -156,7 +156,10 @@ function checkTasksHygiene(featureDir: string): Finding[] {
   const md = tasksResult.value
   const lines = md.split('\n')
 
-  const hasSampleLeak = /\bT001\b/.test(md) || /\bSAMPLE TASKS\b/i.test(md) || /illustration purposes only/i.test(md)
+  const hasSampleLeak =
+    /\bT001\b/.test(md.replace(/`[^`]*`/g, '')) ||
+    /\bSAMPLE TASKS\b/i.test(md) ||
+    /illustration purposes only/i.test(md)
   if (hasSampleLeak) {
     f.push({
       rule: 'tasks.sample-leak',

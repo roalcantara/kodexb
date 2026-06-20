@@ -1,75 +1,41 @@
 #!/usr/bin/env bun
 /**
  * mise run spec audit — deterministic SDD readiness gate.
- *
- * Checks quartet presence, handoff AC table, tasks hygiene, phase readiness,
- * and cross-artifact hints. Exit codes: 0 pass (or pass-with-warns without
- * --strict), 1 failures, 2 usage/bad feature path.
- *
- * Usage:
- *   bun packages/ops/src/governance/specs/audit.script.ts <feature_dir> [--strict] [--json] [--raw]
  */
-import { existsSync } from 'node:fs'
-import path from 'node:path'
-import { UsageError, withUsage } from '@kb/exec'
+import { withUsage } from '@kb/exec'
 import { runAudit } from './audit_core.script'
+import { applyFixes, planFixes } from './audit_fix_core.script'
 import { chooseRenderer, renderAudit } from './audit_output.script'
-
-type CliOpts = {
-  featureDir: string
-  strict: boolean
-  json: boolean
-  raw: boolean
-}
-
-function parseArgs(argv: string[]): CliOpts {
-  let featureDir = ''
-  let strict = false
-  let json = false
-  let raw = false
-
-  for (let i = 0; i < argv.length; i++) {
-    const a = argv[i]
-    if (!a) continue
-    if (a === '--strict') {
-      strict = true
-      continue
-    }
-    if (a === '--json') {
-      json = true
-      continue
-    }
-    if (a === '--raw') {
-      raw = true
-      continue
-    }
-    if (a.startsWith('-')) throw new UsageError(`unknown flag: ${a}`)
-    if (!featureDir) {
-      featureDir = a
-      continue
-    }
-    throw new UsageError(`unexpected argument: ${a}`)
-  }
-
-  if (!featureDir) throw new UsageError('<feature_dir> is required')
-  if (json && raw) throw new UsageError('--json and --raw are mutually exclusive')
-
-  return { featureDir, strict, json, raw }
-}
+import {
+  parseGovernanceAuditArgs,
+  prepareGovernanceFeatureRun,
+  printFixPlanSummary
+} from './spec_governance_cli.script'
 
 function main(): number {
   const root = process.env.SPEC_AUDIT_ROOT ?? process.cwd()
-  const ar = withUsage(() => parseArgs(process.argv.slice(2)), 'spec audit', usageString())
+  const ar = withUsage(() => parseGovernanceAuditArgs(process.argv.slice(2)), 'spec audit', usageString())
   if ('exitCode' in ar) return ar.exitCode
   const args = ar.value
 
-  const resolvedDir = path.resolve(root, args.featureDir)
-  if (!existsSync(resolvedDir) || !existsSync(path.join(resolvedDir, 'spec.md'))) {
-    console.error(`spec audit: feature dir not found: ${resolvedDir} (must contain spec.md)`)
-    return 2
+  const prepared = prepareGovernanceFeatureRun(root, args.featureDir, 'spec audit')
+  if (!prepared.ok) {
+    console.error(prepared.message)
+    return prepared.exitCode
   }
 
-  const result = runAudit(resolvedDir)
+  if (args.fix) {
+    let plan = planFixes(prepared.resolvedDir, { force: args.force })
+    printFixPlanSummary('spec audit fix', plan, args.dryRun)
+    if (!args.dryRun) {
+      for (let pass = 0; pass < 3 && plan.actions.length > 0; pass++) {
+        applyFixes(prepared.resolvedDir, plan)
+        plan = planFixes(prepared.resolvedDir, { force: args.force })
+      }
+    }
+  }
+
+  const result = runAudit(prepared.resolvedDir)
   const mode = chooseRenderer({ json: args.json, raw: args.raw, isTty: process.stdout.isTTY })
   renderAudit(result, mode)
 
@@ -78,7 +44,7 @@ function main(): number {
 }
 
 function usageString(): string {
-  return 'Usage: mise run spec audit <feature_dir> [--strict] [--json] [--raw]'
+  return 'Usage: mise run spec audit [feature_dir] [--strict] [--fix] [--dry-run] [--force] [--json] [--raw]'
 }
 
 if (import.meta.main) process.exit(main())

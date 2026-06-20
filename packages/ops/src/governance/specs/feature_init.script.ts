@@ -52,8 +52,26 @@ async function main(): Promise<void> {
     path.join(dir, 'plan.md'),
     `# Implementation Plan: ${slug}\n\n**Branch**: \`${folder}\` | **Spec**: [spec.md](./spec.md)\n\n## E2e traceability\n\n| Requirement | Feature file | Scenario | Notes |\n| --- | --- | --- | --- |\n| SF-1 | \`assets/features/e2e/${slug.replace(/-/g, '_')}.feature\` | TBD | \`@spec:${slug}\` |\n`
   )
-  await Bun.write(path.join(dir, 'tasks.md'), `# Tasks — ${slug}\n\n## Phase 1\n\n- [ ] Task 1\n`)
-  await Bun.write(path.join(dir, 'handoff.md'), `# Handoff — \`${folder}\`\n\n**Spec:** \`assets/specs/${folder}/\`\n`)
+  await Bun.write(
+    path.join(dir, 'tasks.md'),
+    `# Tasks — ${slug}
+
+## Phase 1
+
+- [ ] **T101** First task — *gate:* SF-1 AC1
+`
+  )
+  await Bun.write(
+    path.join(dir, 'handoff.md'),
+    `# Handoff — \`${folder}\`
+
+**Spec:** [spec.md](./spec.md)
+
+| ID | Done when | Evidence |
+| --- | --- | --- |
+`
+  )
+  await Bun.write(path.join(dir, 'checklists/.gitkeep'), '')
   await Bun.write(
     path.join(dir, '.spec-context.json'),
     `${JSON.stringify({ feature_directory: `assets/specs/${folder}` }, null, 2)}\n`
