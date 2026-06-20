@@ -152,3 +152,10 @@ src_kernel_dry:
   specs:
     - 016-src-kernel-dry
   superseded_by: null
+
+src_cohesion:
+  title: src cohesion consolidation
+  status: in-progress
+  specs:
+    - 017-src-cohesion-consolidation
+  superseded_by: null

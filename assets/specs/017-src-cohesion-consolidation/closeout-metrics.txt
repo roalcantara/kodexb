@@ -1,0 +1,28 @@
+017-src-cohesion-consolidation — Closeout metrics
+Date: 2026-06-20
+
+=== COH-1: src/shared/logging regroup ===
+Target: 10 -> 7 non-spec, 5 specs
+Actual: 7 non-spec files, 5 spec files
+  (rpc.plugin.ts, logger.ts, log_verbosity.ts, main.config.ts,
+   renderer.config.ts, db_query.logger.ts, index.ts)
+index.ts @logtape/logtape imports: 0 (target: 0)
+
+=== COH-2: abstraction merges ===
+Target non-spec deletions: 8
+Actual non-spec deletions: 9
+  doc.bookmark.parser.ts, doc.cheat.parser.ts, doc.command.parser.ts,
+  doc.shortcut.parser.ts, doc.task.parser.ts,
+  extract_keywords.util.ts, cooccurrence.util.ts,
+  is_actionable.util.ts, is_overdue.util.ts
+detail/doc.*.parser.ts files: 1 (doc.parser.ts, merged from 5 + dispatcher)
+
+=== COH-3: ls-lint strengthening ===
+Verdict: PROCEED (0 new failures)
+.ls-lint.yml: additive only (6 new rule entries)
+Offending renames: 0
+
+=== Frozen rule files ===
+biome.jsonc: UNCHANGED
+.dependency-cruiser.cjs: UNCHANGED
+knip.jsonc: UNCHANGED

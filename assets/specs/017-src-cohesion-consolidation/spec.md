@@ -165,40 +165,29 @@ drift is caught — but only if it can be expressed cleanly at low cost.
 ### Acceptance criteria
 
 1. WHEN the spike runs, THEN it SHALL determine whether ls-lint can express the
-   suffix contract given the first-dot extension model (documented in
-   `baseline-metrics.txt`), and record the mechanism in
-   `assets/specs/017-src-cohesion-consolidation/lslint-spike.md`.
-   - **Measure:** The spike answers: can a rule key like `.util.ts` (or an ls-lint
-     `dirs`/extension option) govern `*.util.ts` files without false-matching
-     `*.x.util.ts`? For multi-segment cases (`doc.task.parser.ts`), is enforcement
-     possible per-dir?
-   - **Evidence:** `lslint-spike.md` with the tested config snippets and ls-lint
-     output for each.
+   suffix contract and record the mechanism in `lslint-spike.md`.
+   - **Measure:** The spike answers whether a rule key like `.util.ts` can govern
+     `*.util.ts` files without false-matching `*.x.util.ts`.
+   - **Evidence:** `lslint-spike.md` has tested config snippets and ls-lint output.
 
-2. WHEN the spike measures blast radius, THEN it SHALL report, per candidate suffix
-   (`util`, `hook`, `component`, `const`, `parser`, `schema`, `types`, `routes`,
-   `helper`, `factory`, `guard`, `config`), how many existing files would newly
-   **fail** a strengthened rule.
+2. WHEN the spike measures blast radius, THEN it SHALL report, per suffix type,
+   how many existing files would newly **fail** a strengthened rule.
    - **Measure:** A table of `suffix → new failures`, produced by adding the rule
      and running `bun run lint:ls`.
    - **Evidence:** Table in `lslint-spike.md`; raw ls-lint output retained.
 
-3. WHEN the strengthened contract is cleanly expressible AND total new failures are
-   **≤ 10**, THEN COH-3 SHALL add the strengthening rules to `.ls-lint.yml`, fix the
-   ≤ 10 offending filenames (renaming + import updates), and leave the contract
-   green; the lone pre-existing suffixless `src/shared/logging/logger.ts` SHALL
-   be either explicitly permitted or suffixed per the spike's recommendation
-   (`rpc.plugin.ts` already carries a suffix and needs no exemption).
-   - **Measure:** `bun run lint:ls` green with the new rules; `git diff .ls-lint.yml`
-     shows only additive strengthening (no rule removed or loosened).
+3. WHEN the contract is cleanly expressible AND total new failures are **≤ 10**,
+   THEN COH-3 SHALL add the strengthening rules to `.ls-lint.yml` and fix the
+   ≤ 10 offending filenames.
+   - **Measure:** `bun run lint:ls` green; `git diff .ls-lint.yml` shows only
+     additive strengthening (no rule removed or loosened).
    - **Evidence:** ls-lint green; renamed files' specs green; `rg` finds no stale imports.
 
 4. WHEN the contract is NOT cleanly expressible OR new failures are **> 10**, THEN
-   COH-3 SHALL ship only `lslint-spike.md` (the finding + a recommended follow-up),
-   make **no** `.ls-lint.yml` change, and the feature SHALL still pass its gate on
-   COH-1 + COH-2 alone.
+   COH-3 SHALL ship only `lslint-spike.md` (deferred), making **no** `.ls-lint.yml`
+   change, and the feature SHALL still pass on COH-1 + COH-2 alone.
    - **Measure:** `git diff .ls-lint.yml` empty; `lslint-spike.md` states "deferred"
-     with rationale and a proposed dedicated spec.
+     with rationale.
    - **Evidence:** Spike doc committed; gate green without COH-3 code changes.
 
 ---

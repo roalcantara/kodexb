@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { configureRendererLogging, rendererLoggingLowestLevelFromEnv } from './renderer.config'
+import { configureRendererLogging, RENDERER_BUILD_ENV, rendererLoggingLowestLevelFromEnv } from './renderer.config'
 
 function envRecord(entries: [string, string | undefined][]): Record<string, string | undefined> {
   return Object.fromEntries(entries)
@@ -32,5 +32,12 @@ describe('configureRendererLogging', () => {
     it('does not throw (singleton guard)', () => {
       expect(() => configureRendererLogging()).not.toThrow()
     })
+  })
+})
+
+describe('RENDERER_BUILD_ENV', () => {
+  it('exposes LOG_LEVEL and NODE_ENV keys from the build-time snapshot', () => {
+    expect(RENDERER_BUILD_ENV).toHaveProperty('LOG_LEVEL')
+    expect(RENDERER_BUILD_ENV).toHaveProperty('NODE_ENV')
   })
 })
