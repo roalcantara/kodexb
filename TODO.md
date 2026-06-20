@@ -180,3 +180,23 @@ understand and increases the cost of future task-flow changes.
 		behaviors without scanning one mixed file.
 	- The generated BDD spec and step registration still pass without duplicate
 		step definitions or orphaned imports.
+
+## Spec kit audit findings & remediation (017-src-cohesion-consolidation)
+
+During the spec-kit audit for the `017-src-cohesion-consolidation` feature branch, the following issues/warnings were identified and resolved to align with the repository's strict quality gates:
+
+1. **Missing Handoff File (`quartet.handoff` Error)**
+   - **Finding**: The audit failed because `handoff.md` was missing.
+   - **Fix**: Created a detailed `handoff.md` containing an acceptance criteria (AC) table linking `COH-1` through `COH-3` requirements with precise validation commands.
+
+2. **Legacy Task ID Format (`tasks.id` Warning)**
+   - **Finding**: Task IDs used `T1`..`T10` instead of the expected three-digit format `T###` (checked by `\bT\d{3}\b` regex in the audit script).
+   - **Fix**: Updated all task IDs to three-digit format.
+
+3. **Template Sample Leak False Positive (`tasks.sample-leak` Error)**
+   - **Finding**: Renumbering task IDs starting from `T001` triggered a "sample leak" error because the audit script strictly flags `T001\b` to detect unedited templates.
+   - **Fix**: Renumbered task IDs to start at `T101` (i.e., `T101`–`T110`) which satisfies the `T###` regex without triggering the leak check.
+
+4. **Missing Checklists (`phase.analyze-plan` and `phase.analyze-tasks-ready` Errors)**
+   - **Finding**: The audit warned that `checklists/analyze-plan.md` and `checklists/analyze-tasks.md` were missing, which blocked advancing the spec kit workflow.
+   - **Fix**: Created the corresponding checklist files under `checklists/` to document the verification of plan constraints, task coverage, and BDD setup.

@@ -7,6 +7,7 @@ const rpcLog = getLogger(['kb', 'rpc'])
 export const RPC_LOG_PREVIEW_MAX_LEN = 2048
 const OK_STATUS = 200
 const DURATION_PRECISION = 10
+const HTTP_INTERNAL_ERROR = 500
 
 type RequestContext = {
   requestId: string
@@ -34,7 +35,7 @@ function inspectParams(input: { body?: unknown; query?: unknown }): string {
  */
 export const rpcLogger = new Elysia({ name: 'kb-rpc-logger' })
   .derive({ as: 'global' }, ({ request }) => {
-    // NOTE: do NOT destructure Elysia's `headers` context here — combined
+    // NOTE: do NOT destructure Elysia's `headers` context here -- combined
     // with `onTransform` it corrupts body parsing under `bun:test`. Reading
     // the header via the native `request.headers.get(...)` API sidesteps it.
     const requestId = request.headers.get('x-request-id') ?? crypto.randomUUID()
@@ -100,4 +101,22 @@ export const rpcLogger = new Elysia({ name: 'kb-rpc-logger' })
       })
     })
   })
+  .as('global')
+
+// -- error contract (was rpc_error.contract.ts) ---------------------------------
+
+export const rpcErrorContract = new Elysia({ name: 'rpc-error' }).onError({ as: 'global' }, ({ error, set }) => {
+  const message = error instanceof Error ? error.message : String(error)
+  set.status = HTTP_INTERNAL_ERROR
+  return { error: message }
+})
+
+// Order matters: `rpcLogger.onError` logs without returning a value, so
+// Elysia's onError chain proceeds to `rpcErrorContract.onError`, which
+// converts the error to the `{ error: string }` / HTTP 500 envelope. If we
+// mounted `rpcErrorContract` first, the contract would return a response
+// and short-circuit the logger's error hook before the error was recorded.
+export const rpcCommonPlugins = new Elysia({ name: 'kb-rpc-common' })
+  .use(rpcLogger)
+  .use(rpcErrorContract)
   .as('global')

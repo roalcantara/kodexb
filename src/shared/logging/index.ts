@@ -4,6 +4,4 @@ export { type RepositoryStmts, repositoryStmts, type SqlEntry } from './db_query
 export { isLogVerbosity, type LogVerbosity, parseLogVerbosity } from './log_verbosity'
 export { configureMainLogging } from './main.config'
 export { configureRendererLogging } from './renderer.config'
-export { RPC_LOG_PREVIEW_MAX_LEN } from './rpc.middleware'
-export { rpcCommonPlugins } from './rpc_common.plugin'
-export { rpcErrorContract } from './rpc_error.contract'
+export { RPC_LOG_PREVIEW_MAX_LEN, rpcCommonPlugins, rpcErrorContract } from './rpc.plugin'

@@ -1,0 +1,54 @@
+# 017-src-cohesion-consolidation — baseline metrics (captured 2026-06-20, branch main)
+#
+# Reproduce from repo root. The implementer MUST re-run these at closeout and
+# record results in closeout-metrics.txt. Targets in spec.md → Quantified gains
+# are measured against THIS file.
+
+## COH-1 — src/shared/logging (centerpiece)
+non-spec files ................................... 10   (target: 7)
+spec files ...................................... 8    (target: 5)
+total files ..................................... 18   (target: 12)
+# command: ls src/shared/logging/*.ts | wc -l ; ls src/shared/logging/*.spec.ts | wc -l
+#
+# Merge map:
+#   rpc.middleware.ts + rpc_common.plugin.ts + rpc_error.contract.ts -> rpc.plugin.ts
+#     (+ their 3 specs -> rpc.plugin.spec.ts)
+#   renderer_build_env.ts -> folded into renderer.config.ts
+#     (+ renderer_build_env.spec.ts -> renderer.config.spec.ts)
+#   index.ts -> re-export logtape FROM ./logger (remove duplicated @logtape lines)
+#   KEEP separate: logger.ts, log_verbosity.ts, main.config.ts (node:async_hooks),
+#                  db_query.logger.ts
+#
+# Public barrel surface that MUST be preserved (src/shared/logging/index.ts):
+#   getLogger, Logger, withContext, LogRecord, Sink (logtape)
+#   repositoryStmts, RepositoryStmts, SqlEntry
+#   isLogVerbosity, LogVerbosity, parseLogVerbosity
+#   configureMainLogging, configureRendererLogging
+#   RPC_LOG_PREVIEW_MAX_LEN, rpcCommonPlugins, rpcErrorContract
+
+## COH-2 — other unpinned fragmented dirs (cohesion merges, no ls-lint change)
+# All targets are NOT in .ls-lint.yml AND keep their existing suffix
+# (*.util.ts / *.parser.ts / *.const.ts), so ls-lint is unaffected.
+src/core/domain/models/knowledges/detail ........ 9 non-spec  (5 doc.*.parser.ts are the prime merge -> doc.parser.ts)
+src/core/domain/models/knowledges/tags .......... 7 non-spec  (rank/extract/sorted/cooccurrence utils -> one tags.util.ts)
+src/core/domain/models/knowledges/task_views .... 8 non-spec  (is_actionable/is_overdue/show_task_section predicates -> fewer)
+src/core/helpers/list_opts ...................... 5 non-spec  (stable_cache_key + to_find_all_opts utils -> one)
+src/shared/constants ............................ 3 non-spec  (LEAVE — unrelated consts; merging hurts cohesion)
+# command per dir: find <dir> -maxdepth 1 -type f -name '*.ts*' ! -name '*.spec.*' | wc -l
+
+## COH-3 — ls-lint contract strengthening (research spike, gated)
+# ls-lint extension model (verified 2026-06-20 by probe): FIRST-DOT / greedy.
+#   - `.ts` / `.tsx` rule keys govern ONLY single-segment-extension files.
+#   - Suffixed files have multi-segment extensions with NO rule key -> unconstrained.
+#   - Proof: zz_probe.ts REJECTED by src/shell/renderer/rpc rule; zz_probe.util.ts ACCEPTED.
+# Files currently carrying a type suffix (would be in scope of a strengthened contract):
+#   .util:105  .hook:46  .component:40  .const:25  .parser:18  .schema:13
+#   .types:12  .routes:5  .helper:4  .factory:3  .config:2  .guard:1
+# command: find src -type f -name '*.<sfx>.ts' -o -name '*.<sfx>.tsx' | wc -l
+# Wrinkle: under first-dot, `doc.bookmark.parser.ts` ext = `.bookmark.parser.ts`
+#   != `doc.task.parser.ts` ext `.task.parser.ts`. So a single `.parser` rule key
+#   cannot govern both -> COH-3 must first determine whether ls-lint can express
+#   the suffix contract at all (config option / per-dir rule), THEN size violations.
+
+## ls-lint baseline
+`bun run lint:ls` -> exit 0 (green)

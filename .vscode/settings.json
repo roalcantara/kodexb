@@ -1,4 +1,5 @@
 {
   "speckit.specDirectories": ["assets/specs"],
-  "bun.runtime": "/Users/roalcantara/.local/share/mise/shims/bun"
+  "bun.runtime": "/Users/roalcantara/.local/share/mise/shims/bun",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
