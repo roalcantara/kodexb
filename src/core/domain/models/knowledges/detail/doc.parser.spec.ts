@@ -79,7 +79,10 @@ describe('buildPreamble', () => {
 
   describe('cheat preamble', () => {
     it('always returns an empty string', () => {
-      const out = buildPreamble({ ...baseCmdEntry, type: 'cheat', key: 'sample-cheat', desc: 'A cheat', tags: ['math'] }, now)
+      const out = buildPreamble(
+        { ...baseCmdEntry, type: 'cheat', key: 'sample-cheat', desc: 'A cheat', tags: ['math'] },
+        now
+      )
       expect(out).toBe('')
     })
   })

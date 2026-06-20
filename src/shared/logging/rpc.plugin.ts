@@ -116,7 +116,4 @@ export const rpcErrorContract = new Elysia({ name: 'rpc-error' }).onError({ as: 
 // converts the error to the `{ error: string }` / HTTP 500 envelope. If we
 // mounted `rpcErrorContract` first, the contract would return a response
 // and short-circuit the logger's error hook before the error was recorded.
-export const rpcCommonPlugins = new Elysia({ name: 'kb-rpc-common' })
-  .use(rpcLogger)
-  .use(rpcErrorContract)
-  .as('global')
+export const rpcCommonPlugins = new Elysia({ name: 'kb-rpc-common' }).use(rpcLogger).use(rpcErrorContract).as('global')

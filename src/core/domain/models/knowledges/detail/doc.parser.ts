@@ -1,5 +1,12 @@
 import type { Binding, ChordStep } from '../../entries/schemas/shortcut.schema'
-import type { BookmarkKnowledge, CheatKnowledge, CommandKnowledge, Knowledge, ShortcutKnowledge, TaskKnowledge } from '../schemas/knowledge.schema'
+import type {
+  BookmarkKnowledge,
+  CheatKnowledge,
+  CommandKnowledge,
+  Knowledge,
+  ShortcutKnowledge,
+  TaskKnowledge
+} from '../schemas/knowledge.schema'
 import { extractYouTubeId, youTubeEmbedUrl, youTubeThumbnailMq } from './youtube.parser'
 
 const buildBookmarkPreamble = (entry: BookmarkKnowledge, previewImageUrl?: string) => {

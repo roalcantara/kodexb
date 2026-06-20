@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { configureSync, type LogRecord } from '@logtape/logtape'
 import { Elysia, t } from 'elysia'
-import { rpcLogger, rpcCommonPlugins, rpcErrorContract } from './rpc.plugin'
+import { rpcCommonPlugins, rpcErrorContract, rpcLogger } from './rpc.plugin'
 
 type CapturedRecord = LogRecord & { category: readonly string[] }
 

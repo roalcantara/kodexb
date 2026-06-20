@@ -16,11 +16,19 @@ Actual non-spec deletions: 9
   extract_keywords.util.ts, cooccurrence.util.ts,
   is_actionable.util.ts, is_overdue.util.ts
 detail/doc.*.parser.ts files: 1 (doc.parser.ts, merged from 5 + dispatcher)
+Stale spec deletions: 2 (cooccurrence.util.spec.ts, extract_keywords.util.spec.ts)
 
 === COH-3: ls-lint strengthening ===
 Verdict: PROCEED (0 new failures)
 .ls-lint.yml: additive only (6 new rule entries)
 Offending renames: 0
+
+=== Test coverage (final) ===
+- task_views/filter_by_view.util.spec.ts: CREATED — 16 tests covering
+  actionable/overdue/today/this_week/all_pending/all_doing views + filter.
+- tags/rank_suggested_tags.util.spec.ts: 9 tests (up from 3) — 3 original
+  + 6 ported keyword extraction + co-occurrence tests through public API.
+- Stale spec deletions: cooccurrence.util.spec.ts, extract_keywords.util.spec.ts
 
 === Frozen rule files ===
 biome.jsonc: UNCHANGED

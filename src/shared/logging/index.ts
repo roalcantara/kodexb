@@ -1,6 +1,6 @@
-export { getLogger, type Logger, type LogRecord, type Sink, withContext } from './logger'
 export { type RepositoryStmts, repositoryStmts, type SqlEntry } from './db_query.logger'
 export { isLogVerbosity, type LogVerbosity, parseLogVerbosity } from './log_verbosity'
+export { getLogger, type Logger, type LogRecord, type Sink, withContext } from './logger'
 export { configureMainLogging } from './main.config'
 export { configureRendererLogging } from './renderer.config'
 export { RPC_LOG_PREVIEW_MAX_LEN, rpcCommonPlugins, rpcErrorContract } from './rpc.plugin'
