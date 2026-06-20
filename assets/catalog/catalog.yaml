@@ -145,3 +145,10 @@ ops_cli_dry:
   specs:
     - 015-ops-cli-dry
   superseded_by: null
+
+src_kernel_dry:
+  title: src kernel and DRY refactoring
+  status: in-progress
+  specs:
+    - 016-src-kernel-dry
+  superseded_by: null

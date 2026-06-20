@@ -115,6 +115,11 @@ export class App {
     return this.getDbForTaskMutation().raw
   }
 
+  /** The raw SQLite handle, guarded by the sync gate. Single funnel for reads. */
+  private raw(): import('bun:sqlite').Database {
+    return this.getDbForTaskMutation().raw
+  }
+
   invalidateListCache() {
     this.listCache.clear()
     this.listStatsCache = null
@@ -122,37 +127,37 @@ export class App {
   }
 
   list(opts: ListOpts = {}): Promise<RpcListEntry[]> {
-    const { raw } = this.getDbForTaskMutation()
+    const raw = this.raw()
     return Promise.resolve(listKnowledgeForOpts(raw, this.loaded, opts, this.listCache))
   }
   listMatchCount(opts: ListOpts = {}): Promise<number> {
-    const { raw } = this.getDbForTaskMutation()
+    const raw = this.raw()
     return Promise.resolve(countKnowledgeForOpts(raw, this.loaded, opts))
   }
   getEntry(id: number): Promise<Knowledge | null> {
-    const { raw } = this.getDb()
+    const raw = this.raw()
     return Promise.resolve(findById(raw, id))
   }
 
   recordEntryVisit(id: number): Promise<{ ok: true }> {
-    const { raw } = this.getDb()
+    const raw = this.raw()
     persistEntryVisit(raw, id)
     this.invalidateListCache()
     return Promise.resolve({ ok: true })
   }
 
   listBindings(): Promise<BindingRef[]> {
-    const { raw } = this.getDb()
+    const raw = this.raw()
     return Promise.resolve(listAllBindings(raw))
   }
 
   listBindingsByChord(hash: string): Promise<BindingRef[]> {
-    const { raw } = this.getDb()
+    const raw = this.raw()
     return Promise.resolve(listBindingsByChord(raw, hash))
   }
 
   recordBindingVisit(id: string, weight: number): Promise<{ ok: true }> {
-    const { raw } = this.getDb()
+    const raw = this.raw()
     persistBindingVisit(raw, id, weight)
     return Promise.resolve({ ok: true })
   }
@@ -164,7 +169,7 @@ export class App {
       (filters.tags?.length ?? 0) > 0 ||
       filters.taskView !== undefined
 
-    const { raw } = this.getDb()
+    const raw = this.raw()
 
     if (!hasContext) {
       if (this.listStatsCache) return Promise.resolve(this.listStatsCache)
@@ -199,7 +204,7 @@ export class App {
 
   async getStats(): Promise<RpcDbStats> {
     if (this.dbStatsCache) return this.dbStatsCache
-    const { raw } = this.getDb()
+    const raw = this.raw()
     const stats = getDbStats(raw)
     let dbSize = 0
     try {
@@ -294,7 +299,7 @@ export class App {
   async suggestTags(entryId: number): Promise<string[]> {
     const entry = await this.getEntry(entryId)
     if (!entry) return []
-    const { raw } = this.getDb()
+    const raw = this.raw()
     const allEntries = findAll(raw, { limit: -1, offset: 0 })
     return rankSuggestedTags(entry, allEntries)
   }

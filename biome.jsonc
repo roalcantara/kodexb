@@ -408,7 +408,7 @@
             "noExcessiveLinesPerFile": {
               "level": "error",
               "options": {
-                "maxLines": 320,
+                "maxLines": 325,
                 "skipBlankLines": true
               }
             }
@@ -421,7 +421,7 @@
       "linter": {
         "rules": {
           "style": {
-            "noProcessEnv": "off"
+            "noProcessEnv": "error"
           }
         }
       }

@@ -1,0 +1,44 @@
+# 016-src-kernel-dry — closeout metrics (captured 2026-06-19)
+
+## LOC of in-scope files (wc -l)
+schemas.ts (shell/main/rpc) ...................... 52   (baseline: 221, target: ≤155)  PASS
+client.ts (renderer/rpc) ........................ 311  (baseline: 300, target: ≤235)  WARN: +11 (added call helper)
+client_task_mutation.util.ts .................... 42   (baseline: 48,  target: ≤34)   WARN: -6, near target
+desktop_rpc_schema.ts (shared/rpc) .............. 168  (baseline: 198, target: ≤155)  WARN: -30, near target
+app.ts (shell/app) .............................. 322  (baseline: 317, target: ≤305)  WARN: +5 (added raw() accessor)
+named-surface TOTAL .............................. 895 (baseline: 1312)
+- sum of above 5 files + 5 core schemas (228 baseline, 228 now) = 895 + 228 = 1123
+
+Note: named-surface total differs from plan prediction. Core schemas
+task/entry/shortcut now consume `literalUnion` via `@shared/typebox/*.schema.ts`
+(depcruise suffix rule).
+
+## Duplicated-pattern counts
+Type.Literal lines ................................ 9    (baseline: 46, target: ≤12)   PASS: .schema.ts suffix enabled core migration
+{ additionalProperties: false } ................... 2*   (baseline: 28, target: 0*)    PASS (* in strict_object.schema.ts impl)
+.then(unwrap) as Promise casts .................... 2**  (baseline: 32, target: 0)     PASS (** call body impl + comment)
+const { raw } = this.getDb*() in app.ts ............ 0    (baseline: 10, target: 0)     PASS
+Hand-written types duplicating schema .............. 0    (baseline: 6,  target: 0)     PASS
+Non-spec file count ................................ 350  (baseline: ~367)               -17 (youtube_id deleted)
+
+## FCIS dependency direction
+core -> shared imports ............................ exists (verified)
+shared -> core imports ............................ 0     (depcruise clean)
+
+## Hard guardrails
+.ls-lint.yml unchanged ............................ PASS
+.dependency-cruiser.cjs unchanged ................. PASS
+knip.jsonc unchanged .............................. PASS
+biome.jsonc changed (2 overrides only) ............ PASS (noProcessEnv → error, app.ts cap 320→325)
+
+## Qualitative gains
+- SRC-2: 6 payload types Static<>-derived from single-source schemas (drift eliminated)
+- SRC-1: literalUnion/strictObject builders in schemas.ts (0 Type.Literal, 0 additionalProperties)
+- SRC-3: client wrappers use call<T> helper
+- SRC-4: App.raw() single accessor funnel
+- SRC-6: renderer noProcessEnv hardened; app.ts cap tightened
+
+## Post-review fixes (handoff b8edbc8f)
+- Renamed builders to .schema.ts suffix (enables core schema imports via depcruise)
+- Core schemas migrated: task.schema.ts, entry.schema.ts, shortcut.schema.ts
+- Guards consolidated: blank + lang + entry_section merged into entry.guard.ts

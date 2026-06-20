@@ -1,5 +1,13 @@
+import type { Static } from '@sinclair/typebox'
 import type { ElectrobunRPCSchema, RPCSchema } from 'electrobun/bun'
 import type { Knowledge } from '../../core'
+import type {
+  configPatchSchema,
+  listOptsSchema,
+  showOpenDialogSchema,
+  taskCreateSchema,
+  taskUpdateSchema
+} from './payload_schemas'
 
 /** Stable id + source row shape returned from SQLite (discriminated `Knowledge`). */
 export type RpcKnowledge = Knowledge
@@ -22,20 +30,15 @@ export type RpcDbStats = {
 
 /**
  * ├─ CONTRACT NOTE ──────────────────────────────────────────────
- * │ Several shared types (ListOpts, ConfigPatch, TaskCreateInput,
- * │ TaskUpdateInput, OpenDialogOpts) have corresponding TypeBox
- * │ schemas in src/shell/main/rpc/schemas.ts. The shared types are
- * │ intentionally hand-written because:
+ * │ Six request-payload types (TaskView, ListOpts, ConfigPatch,
+ * │ TaskCreateInput, TaskUpdateInput, OpenDialogOpts) are now
+ * │ derived via Static<typeof schema> from the TypeBox schemas
+ * │ in shared/rpc/payload_schemas.ts — single source, impossible
+ * │ to drift by construction. Response-only types remain
+ * │ hand-written (no schema exists for them).
  * │
- * │  1. src/shared/ must not import from src/shell/ (FCIS).
- * │  2. The renderer imports shared types for Eden Treaty typing;
- * │     TypeBox schemas live in shell/main/ for transport validation.
- * │  3. Route-contract tests in src/shell/main/rpc/schemas.spec.ts
- * │     assert that valid payloads match both the schema and the
- * │     shared type's shape, catching drift at test time.
- * │
- * │ When changing RPC payloads, update both the TypeBox schema AND
- * │ this shared type, then run bun test src/shell/main/rpc.
+ * │ When changing RPC payloads, update the TypeBox schema in
+ * │ payload_schemas.ts; the derived types update automatically.
  * └──────────────────────────────────────────────────────────────
  */
 export type RpcGetConfigPayload = {
@@ -77,16 +80,9 @@ export type RpcSyncProgressPayload = {
   recentFile?: RpcSyncFileResult
 }
 
-export type TaskView = 'actionable' | 'today' | 'overdue' | 'this_week' | 'all_pending' | 'all_doing'
+export type TaskView = ListOpts['taskView'] & string
 
-export type ListOpts = {
-  query?: string
-  tags?: string[]
-  types?: Array<'bookmark' | 'command' | 'cheat' | 'shortcut' | 'task'>
-  taskView?: TaskView
-  limit?: number
-  offset?: number
-}
+export type ListOpts = Static<typeof listOptsSchema>
 
 export type ListStats = {
   total: number
@@ -101,20 +97,9 @@ export type ListStats = {
   byType: Record<string, number>
 }
 
-export type ConfigPatch = {
-  sourcesDir?: string
-  dbPath?: string
-  configPath?: string
-  terminalApp?: string
-  editorApp?: string
-  pageSize?: 25 | 50 | 100 | 200
-}
+export type ConfigPatch = Static<typeof configPatchSchema>
 
-export type OpenDialogOpts = {
-  title?: string
-  defaultPath?: string
-  properties?: Array<'openFile' | 'openDirectory'>
-}
+export type OpenDialogOpts = NonNullable<Static<typeof showOpenDialogSchema>['opts']>
 
 export type PreviewImageResult = {
   url: string
@@ -134,23 +119,8 @@ export type BindingRef = {
 }
 
 /** Task mutation payloads (full CRUD in App layer). */
-export type TaskCreateInput = {
-  key: string
-  desc?: string
-  tags?: string[]
-  priority?: 'low' | 'mid' | 'high' | 'urgent'
-  dueDate?: number
-  dependsOn?: number[]
-}
-export type TaskUpdateInput = {
-  key?: string
-  desc?: string
-  tags?: string[]
-  status?: 'todo' | 'doing' | 'done'
-  priority?: 'low' | 'mid' | 'high' | 'urgent'
-  dueDate?: number
-  dependsOn?: number[]
-}
+export type TaskCreateInput = Static<typeof taskCreateSchema>
+export type TaskUpdateInput = Static<typeof taskUpdateSchema>['patch']
 
 /**
  * Single Electrobun bridge method — the renderer's Eden Treaty client forwards

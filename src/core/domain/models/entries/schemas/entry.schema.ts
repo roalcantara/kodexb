@@ -1,3 +1,4 @@
+import { literalUnion } from '@shared/typebox/literal_union.schema'
 import { type Static, Type } from '@sinclair/typebox'
 import type { Simplify, UnknownRecord } from 'type-fest'
 import { ENTRY_TYPE_VALUES } from '../../../constants'
@@ -10,7 +11,7 @@ import { shortcutEntrySchema } from './shortcut.schema'
 export { shortcutEntrySchema } from './shortcut.schema'
 
 /** Entry / knowledge row discriminant (`bookmark` | `command` | `cheat` | `task` | `shortcut`). */
-export const entryTypeSchema = Type.Union(ENTRY_TYPE_VALUES.map(value => Type.Literal(value)))
+export const entryTypeSchema = literalUnion(ENTRY_TYPE_VALUES)
 
 const row = sourceBaseEntryRowObjectSchema
 
@@ -24,8 +25,8 @@ export const taskEntrySchema = Type.Composite([
   row,
   Type.Object({
     type: Type.Literal('task'),
-    priority: Type.Optional(Type.Union(TASK_PRIORITY_VALUES.map(value => Type.Literal(value)))),
-    status: Type.Union(TASK_STATUS_VALUES.map(value => Type.Literal(value))),
+    priority: Type.Optional(literalUnion(TASK_PRIORITY_VALUES)),
+    status: literalUnion(TASK_STATUS_VALUES),
     dueDate: Type.Optional(Type.Number()),
     taskOrder: Type.Optional(Type.Integer()),
     dependsOn: Type.Optional(Type.Array(Type.Integer()))

@@ -1,7 +1,7 @@
+import { ENTRY_TYPE_VALUES } from '@shared/constants/entry_type.const'
 import type { EntryKey } from '../types'
 
-/** Entry type literals — single owner for schema/runtime literals (see `entry.schema`). */
-export const ENTRY_TYPE_VALUES = ['bookmark', 'command', 'cheat', 'task', 'shortcut'] as const
+export { ENTRY_TYPE_VALUES }
 
 /** Keys used for list/detail entry-type glyph + accent color. */
 export const ENTRY_KEYS = [...ENTRY_TYPE_VALUES, 'default'] as const

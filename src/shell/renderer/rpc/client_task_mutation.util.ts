@@ -1,8 +1,8 @@
 import type { RpcKnowledge, TaskCreateInput, TaskMutationOutcome, TaskUpdateInput } from '@shared/rpc'
-import { rpc, unwrap } from './client'
+import { call, rpc } from './client'
 
 export function createTask(input: TaskCreateInput): Promise<TaskMutationOutcome<RpcKnowledge>> {
-  return rpc.api.createTask.post(input).then(unwrap) as Promise<TaskMutationOutcome<RpcKnowledge>>
+  return call<TaskMutationOutcome<RpcKnowledge>>(rpc.api.createTask.post(input))
 }
 
 export function updateTask(
@@ -10,13 +10,11 @@ export function updateTask(
   patch: TaskUpdateInput,
   sourceVersion?: number
 ): Promise<TaskMutationOutcome<RpcKnowledge>> {
-  return rpc.api.updateTask.post({ id, patch, sourceVersion }).then(unwrap) as Promise<
-    TaskMutationOutcome<RpcKnowledge>
-  >
+  return call<TaskMutationOutcome<RpcKnowledge>>(rpc.api.updateTask.post({ id, patch, sourceVersion }))
 }
 
 export function deleteTask(id: number, sourceVersion?: number): Promise<TaskMutationOutcome<void>> {
-  return rpc.api.deleteTask.post({ id, sourceVersion }).then(unwrap) as Promise<TaskMutationOutcome<void>>
+  return call<TaskMutationOutcome<void>>(rpc.api.deleteTask.post({ id, sourceVersion }))
 }
 
 export function cycleStatus(
@@ -24,7 +22,7 @@ export function cycleStatus(
   dir: 'forward' | 'backward',
   sourceVersion?: number
 ): Promise<TaskMutationOutcome<RpcKnowledge>> {
-  return rpc.api.cycleStatus.post({ id, dir, sourceVersion }).then(unwrap) as Promise<TaskMutationOutcome<RpcKnowledge>>
+  return call<TaskMutationOutcome<RpcKnowledge>>(rpc.api.cycleStatus.post({ id, dir, sourceVersion }))
 }
 
 export function cyclePriority(
@@ -32,9 +30,7 @@ export function cyclePriority(
   dir: 'forward' | 'backward',
   sourceVersion?: number
 ): Promise<TaskMutationOutcome<RpcKnowledge>> {
-  return rpc.api.cyclePriority.post({ id, dir, sourceVersion }).then(unwrap) as Promise<
-    TaskMutationOutcome<RpcKnowledge>
-  >
+  return call<TaskMutationOutcome<RpcKnowledge>>(rpc.api.cyclePriority.post({ id, dir, sourceVersion }))
 }
 
 export function reorderTask(
@@ -42,7 +38,5 @@ export function reorderTask(
   dir: 'up' | 'down',
   sourceVersion?: number
 ): Promise<TaskMutationOutcome<RpcKnowledge[]>> {
-  return rpc.api.reorderTask.post({ id, dir, sourceVersion }).then(unwrap) as Promise<
-    TaskMutationOutcome<RpcKnowledge[]>
-  >
+  return call<TaskMutationOutcome<RpcKnowledge[]>>(rpc.api.reorderTask.post({ id, dir, sourceVersion }))
 }
