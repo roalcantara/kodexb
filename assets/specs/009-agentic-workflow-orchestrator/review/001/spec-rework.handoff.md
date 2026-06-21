@@ -154,6 +154,6 @@ Do not commit unless operator asks.
 
 - Review index: [`README.md`](./README.md)
 - Rationale: [`guides-first-review.md`](./guides-first-review.md)
-- Normative guides: [`assets/guides/DOC_AUTHORITY.md`](../../../guides/DOC_AUTHORITY.md),
-  [`WORKFLOW_SDD_GUIDE.md`](../../../guides/WORKFLOW_SDD_GUIDE.md),
-  [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md)
+- Normative guides: [`assets/guides/DOC_AUTHORITY.md`](../../../../guides/DOC_AUTHORITY.md),
+  [`WORKFLOW_SDD_GUIDE.md`](../../../../guides/WORKFLOW_SDD_GUIDE.md),
+  [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md)

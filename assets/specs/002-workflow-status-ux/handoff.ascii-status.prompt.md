@@ -393,7 +393,7 @@ Run `gate.sh` immediately before commit.
 
 ### Quality gate
 
-```
+```bash
 bash .agents/skills/app-quality-gate/scripts/gate.sh
 → exit code:
 ```
@@ -407,7 +407,7 @@ bash .agents/skills/app-quality-gate/scripts/gate.sh
 
 ### Sample output (018 default pretty — paste first 30 lines)
 
-```
+```text
 <paste from /tmp/ws018.txt>
 ```
 

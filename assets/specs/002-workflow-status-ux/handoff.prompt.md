@@ -253,7 +253,7 @@ Copy the filled block into your final handoff message.
 
 ### Quality gate
 
-```
+```bash
 bash .agents/skills/app-quality-gate/scripts/gate.sh
 → exit code: 0 (all stages passed)
 ```

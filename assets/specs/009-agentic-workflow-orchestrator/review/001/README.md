@@ -3,8 +3,8 @@
 # Review — `009-agentic-workflow-orchestrator`
 
 In-flight review artifacts for spec rework. **Normative truth** remains in
-[`assets/guides/`](../../../guides/) and [`assets/catalog/`](../../../catalog/)
-per [`DOC_AUTHORITY.md`](../../../guides/DOC_AUTHORITY.md). Files here are
+[`assets/guides/`](../../../../guides/) and [`assets/catalog/`](../../../../catalog/)
+per [`DOC_AUTHORITY.md`](../../../../guides/DOC_AUTHORITY.md). Files here are
 **task-scoped** to this feature folder and may be archived after ship.
 
 | File                                                 | Audience             | Purpose                                                |
