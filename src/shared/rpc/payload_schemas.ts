@@ -39,7 +39,8 @@ export const configPatchSchema = strictObject({
   configPath: Type.Optional(Type.String({ minLength: 1 })),
   terminalApp: Type.Optional(Type.String()),
   editorApp: Type.Optional(Type.String()),
-  pageSize: Type.Optional(pageSizePatchSchema)
+  pageSize: Type.Optional(pageSizePatchSchema),
+  advisories: Type.Optional(Type.Boolean())
 })
 
 const priorityUnionSchema = literalUnion(['low', 'mid', 'high', 'urgent'] as const)

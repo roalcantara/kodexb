@@ -31,7 +31,8 @@ function resolveConfig(raw: unknown, configPath: string, env: Env): Result<Resol
     display: {
       terminalApp: body.display?.terminalApp,
       editorApp: body.display?.editorApp,
-      pageSize
+      pageSize,
+      advisories: body.display?.advisories
     }
   })
 }
@@ -95,7 +96,7 @@ export async function loadConfig(pathArg?: string): Promise<LoadedConfig> {
  */
 export async function saveConfig(
   current: LoadedConfig,
-  patch: Partial<{ sourcesDir: string; dbPath: string; terminalApp: string; editorApp: string; pageSize: string }>
+  patch: Partial<{ sourcesDir: string; dbPath: string; terminalApp: string; editorApp: string; pageSize: string; advisories: boolean }>
 ): Promise<LoadedConfig> {
   const body: typeof DEFAULT_CONFIG_BODY = {
     database: { path: patch.dbPath ?? current.database.path },
@@ -103,7 +104,8 @@ export async function saveConfig(
     display: {
       terminalApp: patch.terminalApp ?? current.display.terminalApp,
       editorApp: patch.editorApp ?? current.display.editorApp,
-      pageSize: patch.pageSize ?? current.display.pageSize
+      pageSize: patch.pageSize ?? current.display.pageSize,
+      advisories: patch.advisories ?? current.display.advisories
     }
   }
   await fs.writeFile(current.configPath, `${Bun.YAML.stringify(body)}\n`, 'utf-8')

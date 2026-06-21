@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 
-import { loadConfig } from './config.loader'
+import { loadConfig, saveConfig } from './config.loader'
 
 const invalidFixture = path.join(import.meta.dir, '../../../__tests__/fixtures/config.invalid.yaml')
 const CONFIG_AT = /config at/
@@ -132,6 +132,38 @@ describe('loadConfig', () => {
       } finally {
         await rm(devDir, { recursive: true, force: true })
         delete process.env.APP_CONFIG_PATH
+      }
+    })
+  })
+
+  describe('display.advisories round-trip', () => {
+    it('loads advisories from YAML and persists through saveConfig', async () => {
+      const dir = await mkdtemp(path.join(tmpdir(), 'kb-cfg-adv-'))
+      const cfgPath = path.join(dir, 'config.yaml')
+      try {
+        await writeFile(cfgPath, 'display:\n  advisories: true\n', 'utf-8')
+        const cfg = await loadConfig(cfgPath)
+        expect(cfg.display.advisories).toBe(true)
+
+        const patched = await saveConfig(cfg, { advisories: false })
+        expect(patched.display.advisories).toBe(false)
+
+        const reloaded = await loadConfig(cfgPath)
+        expect(reloaded.display.advisories).toBe(false)
+      } finally {
+        await rm(dir, { recursive: true, force: true })
+      }
+    })
+
+    it('defaults to undefined when advisories is absent', async () => {
+      const dir = await mkdtemp(path.join(tmpdir(), 'kb-cfg-adv2-'))
+      const cfgPath = path.join(dir, 'config.yaml')
+      try {
+        await writeFile(cfgPath, 'display:\n  pageSize: "50"\n', 'utf-8')
+        const cfg = await loadConfig(cfgPath)
+        expect(cfg.display.advisories).toBeUndefined()
+      } finally {
+        await rm(dir, { recursive: true, force: true })
       }
     })
   })
