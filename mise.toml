@@ -350,6 +350,13 @@ BLOCK_ON_THREAT="true"
       }
     }
   ''', run = "bun packages/ops/src/metrics/harnesses/perf/perf.script.ts" }
+"audit" = { description = "Repo conformance audits (role-conformance metric)", usage = '''
+    cmd "roles" {
+      cmd "baseline" {}
+      cmd "compare" {}
+      flag "--write-baseline" help="Refresh the committed baseline"
+    }
+  ''', run = "bun packages/ops/src/metrics/harnesses/role-conformance/role_conformance.script.ts" }
 "hooks" = { description = "Run tests for Cursor agent hooks (.cursor/hooks/)", usage = '''
     cmd "governance-audit" help="Governance audit threat-pattern unit tests"
   ''', run = "bun bin/hooks.script.ts" }
