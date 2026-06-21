@@ -15,6 +15,7 @@ const MUTED = '#8892a4'
 const STATUS_GLYPH: Record<NodeStatus, string> = {
   done: '⏺',
   current: '◉',
+  next: '▶',
   pending: '○',
   debt: '⊘',
   skipped: '⊝'
@@ -23,6 +24,7 @@ const STATUS_GLYPH: Record<NodeStatus, string> = {
 const STATUS_COLOR: Record<NodeStatus, string> = {
   done: '#5ecfbe',
   current: '#5ecfbe',
+  next: '#5ecfbe',
   pending: MUTED,
   debt: '#f59e0b',
   skipped: MUTED
@@ -86,9 +88,7 @@ ${rows}
 
 /** Render a complete, self-contained HTML document for the report. */
 export function renderWorkflowStatusHtml(report: WorkflowProgressReport): string {
-  const activeIdx = report.columns.findIndex(
-    c => c.rail.status === 'current' || c.stack.some(n => n.status === 'current')
-  )
+  const activeIdx = report.columns.findIndex(c => c.rail.status === 'next' || c.stack.some(n => n.status === 'next'))
   const columnsHtml = report.columns.map((c, i) => columnBlock(c, i === activeIdx)).join('\n')
   const nextHint = report.next.focusHint ? ` <span style="color: ${MUTED};"># ${esc(report.next.focusHint)}</span>` : ''
   const debtBadge =
