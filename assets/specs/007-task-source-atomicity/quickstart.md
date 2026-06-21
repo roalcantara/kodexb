@@ -1,59 +1,17 @@
 # Quickstart: task source atomicity verification
 
-## Preconditions
-
-- Branch checked out: `007-task-source-atomicity`
-- Feature directory exists: `assets/specs/007-task-source-atomicity`
-- Local environment prepared via repo standard toolchain
-
-## 1. Run focused task mutation tests
-
-```bash
-bun test src/shell/app src/shell/main/rpc --filter task
-```
-
-Expected:
-- Conflict path tests pass.
-- Source-write failure tests pass.
-- Success path asserts source write before success outcome.
-
-## 2. Run relevant e2e trace scenario set
-
-```bash
-bun test bdd/e2e --filter task-source-atomicity
-```
-
-Expected:
-- No silent overwrite under concurrent mutation.
-- Failed source write does not create success projection state.
-
-## 3. Run strict audit and analyze pass
-
-```bash
-mise run spec audit assets/specs/007-task-source-atomicity --strict
-```
-
-```bash
-/speckit-analyze 007-task-source-atomicity
-```
-
-Expected:
-- Strict audit reports clean.
-- Analyze reports 0 CRITICAL and 0 HIGH issues before implementation.
-
-## 4. Run repository quality gate for completion
-
-```bash
-mise run spec ready assets/specs/007-task-source-atomicity --key task-source-atomicity
-```
-
-Expected:
-- Gate exits success.
-- No new security/perf/lint regressions.
-
-## 5. Manual smoke check (optional)
-
-- Trigger a task update while simulating source write failure (fixture/mocked failure path).
-- Confirm UI shows explicit failure message and task is not reported as successfully mutated.
-- Trigger two concurrent edits with stale version token.
-- Confirm one succeeds and the stale operation returns conflict.
+> **Superseded by [`assets/specs/008-task-mutation-failure-ux/quickstart.md`](../008-task-mutation-failure-ux/quickstart.md)**
+>
+> All task mutation failure UX verification has moved to the 008 spec directory.
+> The 008 quickstart covers unit tests, e2e validation, fault injection setup,
+> fixture isolation, phase-gated slice validation, and the full readiness gate.
+>
+> ## Key commands (from 008)
+>
+| Purpose | Command |
+|---|---|
+| Unit/route tests | `bun test src/shell/app src/shell/main/rpc --filter task` |
+| Tagged e2e | `mise run test tag task_source_atomicity --e2e` |
+| Fault injection e2e | `KB_E2E_FAULT_INJECTION=1 mise run test tag task_source_atomicity --e2e` |
+| Phase gate | `mise run spec ready --phase` |
+| Full readiness gate | `mise run spec ready assets/specs/008-task-mutation-failure-ux --key task_source_atomicity` |

@@ -192,7 +192,7 @@
 ### Tests for User Story 5
 
 - [x] T199 [P] [US5] Verify step registration health with `bun run bdd:e2e:bddgen` using bdd/e2e/steps/task_source_atomicity.steps.ts
-- [ ] T200 [P] [US5] Verify tagged e2e pass with `mise run test tag task_source_atomicity --e2e` for assets/features/e2e/task-source-atomicity.feature
+- [x] T200 [P] [US5] Verify tagged e2e pass with `mise run test tag task_source_atomicity --e2e` for assets/features/e2e/task-source-atomicity.feature
 
 ### Implementation for User Story 5
 
