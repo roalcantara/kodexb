@@ -5,6 +5,8 @@ import {
   deriveManifestNeedsHandoff,
   deriveWorkflowProgress,
   type FileSet,
+  matchNodeToNext,
+  normalizeCommand,
   parseTaskCheckboxes,
   slugFromDir
 } from './workflow_progress.script'
@@ -80,7 +82,9 @@ describe('deriveWorkflowProgress — phase mapping', () => {
   it('reports specify phase when spec.md is missing', () => {
     const report = derive({ files: makeFiles({ spec: false }) })
     expect(report.currentPhase).toBe('specify')
-    expect(report.columns[0]?.rail.status).toBe('current')
+    const intentRail = report.columns[0]?.rail
+    expect(intentRail?.status).toBe('next')
+    expect(normalizeCommand(intentRail?.label ?? '')).toBe(normalizeCommand(report.next.command))
     expect(report.columns[5]?.rail.status).toBe('pending')
   })
 
@@ -121,13 +125,13 @@ describe('deriveWorkflowProgress — dispatch column', () => {
     expect(dispatch?.stack[0]?.status).toBe('skipped')
   })
 
-  it('shows dispatch current when in handoff-generate phase', () => {
+  it('shows dispatch rail is next when in handoff-generate phase', () => {
     const report = derive({
       files: makeFiles({ analyzeTasksChecklist: true, handoffEmittedGherkin: false }),
       manifestNeedsHandoff: true
     })
     expect(report.currentPhase).toBe('handoff-generate')
-    expect(report.columns[3]?.rail.status).toBe('current')
+    expect(report.columns[3]?.rail.status).toBe('next')
   })
 })
 
@@ -141,7 +145,7 @@ describe('deriveWorkflowProgress — implement tasks', () => {
     '- [ ] **T106** Pending'
   ].join('\n')
 
-  it('parses tasks and marks current task in implement phase', () => {
+  it('parses tasks and marks only done/pending in implement phase', () => {
     const report = derive({
       files: makeFiles({ implementComplete: false }),
       tasksMd: IMPLEMENT_MID
@@ -152,8 +156,9 @@ describe('deriveWorkflowProgress — implement tasks', () => {
     const build = report.columns[4]
     const taskNodes = build?.stack.filter(n => n.kind === 'task') ?? []
     expect(taskNodes[0]?.status).toBe('done')
-    expect(taskNodes[3]?.status).toBe('current')
+    expect(taskNodes[3]?.status).toBe('pending')
     expect(taskNodes[4]?.status).toBe('pending')
+    expect(taskNodes?.every(n => n.status === 'done' || n.status === 'pending')).toBe(true)
   })
 })
 
@@ -182,5 +187,204 @@ describe('deriveWorkflowProgress — commit chunks passthrough', () => {
     })
     expect(report.commitChunks).toHaveLength(1)
     expect(report.commitChunks[0]?.id).toBe('C1')
+  })
+})
+
+function conformNode(report: ReturnType<typeof deriveWorkflowProgress>) {
+  return report.columns[2]?.stack.find(n => n.label === 'mise run spec conform')
+}
+
+describe('deriveWorkflowProgress — conform status', () => {
+  const CONFORMED_HANDOFF = [
+    '| ID | Done when | Evidence |',
+    '| --- | --- | --- |',
+    '| SF-1 AC1 | criterion | `evidence` |'
+  ].join('\n')
+  const CONFORMED_TASKS = '- [ ] **T101** First implementation task\n'
+
+  it('marks conform done at implement when handoff rows and T101+ tasks are present', () => {
+    const report = derive({
+      files: makeFiles({ implementComplete: false }),
+      handoffMd: CONFORMED_HANDOFF,
+      tasksMd: CONFORMED_TASKS
+    })
+    expect(report.currentPhase).toBe('implement')
+    expect(conformNode(report)?.status).toBe('done')
+  })
+
+  it('marks conform done at gate with default complete fixture', () => {
+    const report = derive({
+      handoffMd: CONFORMED_HANDOFF,
+      tasksMd: CONFORMED_TASKS
+    })
+    expect(conformNode(report)?.status).toBe('done')
+  })
+
+  it('marks conform pending when outputs are missing (no current)', () => {
+    const report = derive({ files: makeFiles({ analyzePlanChecklist: false }) })
+    expect(report.currentPhase).toBe('analyze-plan')
+    expect(conformNode(report)?.status).toBe('pending')
+  })
+
+  it('marks conform pending before tasks.md exists', () => {
+    const report = derive({ files: makeFiles({ tasks: false, handoff: false, analyzeTasksChecklist: false }) })
+    expect(report.currentPhase).toBe('tasks')
+    expect(conformNode(report)?.status).toBe('pending')
+  })
+})
+
+function stackNode(report: ReturnType<typeof deriveWorkflowProgress>, labelPart: string) {
+  for (const col of report.columns) {
+    const node = col.stack.find(n => n.label.includes(labelPart))
+    if (node) return node
+  }
+}
+
+describe('deriveWorkflowProgress — advisory and ship nodes', () => {
+  const CHUNK_C1 = { id: 'C1', paths: ['a.ts'], taskIds: ['T101', 'T102'] }
+  const CHUNK_C2 = { id: 'C2', paths: ['b.ts'], taskIds: ['T103'] }
+
+  it('skips clarify once plan stage is cleared', () => {
+    const report = derive()
+    expect(stackNode(report, '/speckit-clarify')?.status).toBe('skipped')
+  })
+
+  it('keeps clarify pending during specify', () => {
+    const report = derive({
+      files: makeFiles({
+        spec: true,
+        plan: false,
+        tasks: false,
+        handoff: false,
+        analyzePlanChecklist: false,
+        analyzeTasksChecklist: false,
+        handoffEmittedGherkin: false,
+        implementComplete: false
+      })
+    })
+    expect(report.currentPhase).toBe('plan')
+    expect(stackNode(report, '/speckit-clarify')?.status).toBe('pending')
+  })
+
+  it('keeps spec ready pending while the active commit chunk is incomplete', () => {
+    const report = derive({
+      files: makeFiles({ implementComplete: false }),
+      tasksMd: ['- [ ] **T101** First', '- [ ] **T102** Second'].join('\n'),
+      commitChunks: [CHUNK_C1, CHUNK_C2]
+    })
+    expect(stackNode(report, 'spec ready')?.status).toBe('pending')
+  })
+
+  it('marks spec ready pending when next rail wins the single next slot', () => {
+    const report = derive({
+      files: makeFiles({ implementComplete: false }),
+      tasksMd: ['- [x] **T101** First', '- [x] **T102** Second', '- [ ] **T103** Third'].join('\n'),
+      commitChunks: [CHUNK_C1, CHUNK_C2]
+    })
+    const ready = stackNode(report, 'spec ready')
+    expect(ready?.status).toBe('pending')
+    expect(ready?.label).toBe('mise run spec ready --phase C1 --commit')
+  })
+
+  it('marks ship closeout done and catalog promote pending at gate', () => {
+    const report = derive({ catalogStatus: 'in-progress' })
+    expect(report.currentPhase).toBe('gate')
+    expect(stackNode(report, 'spec closeout')?.status).toBe('done')
+    expect(stackNode(report, 'catalog promote')?.status).toBe('pending')
+  })
+
+  it('marks catalog promote done when catalog is shipped', () => {
+    const report = derive({ catalogStatus: 'shipped', catalogKey: 'workflow_status' })
+    expect(stackNode(report, 'catalog promote')?.status).toBe('done')
+  })
+})
+
+describe('normalizeCommand', () => {
+  const cases = [
+    { name: '/speckit-implement → speckit.implement', input: '/speckit-implement', want: 'speckit.implement' },
+    { name: 'speckit.implement stays speckit.implement', input: 'speckit.implement', want: 'speckit.implement' },
+    {
+      name: 'mise run spec gate strips dir',
+      input: 'mise run spec gate tmp/specs/test-018',
+      want: 'mise run spec gate'
+    },
+    { name: 'mise run spec gate strips {dir}', input: 'mise run spec gate {dir}', want: 'mise run spec gate' },
+    {
+      name: 'handoff generate strips dir',
+      input: 'mise run spec workflow handoff generate tmp/specs/test-018 --focus gherkin',
+      want: 'mise run spec workflow handoff generate --focus gherkin'
+    },
+    {
+      name: 'strips parenthetical hints',
+      input: 'speckit.specify (or `mise run spec init...`)',
+      want: 'speckit.specify'
+    }
+  ]
+  for (const { name, input, want } of cases) {
+    it(name, () => {
+      expect(normalizeCommand(input)).toBe(want)
+    })
+  }
+})
+
+describe('matchNodeToNext', () => {
+  it('matches /speckit-implement rail with speckit.implement command', () => {
+    expect(matchNodeToNext({ label: '/speckit-implement' }, { command: 'speckit.implement' })).toBe(true)
+  })
+
+  it('matches mise run spec gate rail with dir command', () => {
+    expect(
+      matchNodeToNext({ label: 'mise run spec gate {dir}' }, { command: 'mise run spec gate tmp/specs/test-018' })
+    ).toBe(true)
+  })
+
+  it('does not match unrelated rail', () => {
+    expect(matchNodeToNext({ label: '/speckit-specify' }, { command: 'speckit.implement' })).toBe(false)
+  })
+})
+
+describe('WSU-1 next semantics', () => {
+  it('derivation never assigns current (WSU-1 AC1)', () => {
+    const allStatuses = (report: ReturnType<typeof deriveWorkflowProgress>): NodeStatus[] =>
+      report.columns.flatMap(c => [c.rail, ...c.stack]).map(n => n.status)
+    const gateReport = derive()
+    expect(allStatuses(gateReport)).not.toContain('current')
+    const specifyReport = derive({ files: makeFiles({ spec: false }) })
+    expect(allStatuses(specifyReport)).not.toContain('current')
+    const planReport = derive({
+      files: makeFiles({
+        plan: false,
+        spec: true,
+        tasks: false,
+        handoff: false,
+        analyzePlanChecklist: false,
+        analyzeTasksChecklist: false,
+        handoffEmittedGherkin: false,
+        implementComplete: false
+      })
+    })
+    expect(allStatuses(planReport)).not.toContain('current')
+  })
+
+  it('exactly one node has status next (WSU-1 AC2)', () => {
+    const report = derive({ files: makeFiles({ implementComplete: false }) })
+    const nextNodes = report.columns.flatMap(c => [c.rail, ...c.stack]).filter(n => n.status === 'next')
+    expect(nextNodes).toHaveLength(1)
+    expect(nextNodes[0]?.label).toBe('/speckit-implement')
+  })
+
+  it('unchecked T### tasks are pending only (WSU-1 AC3)', () => {
+    const tasksMd = ['- [x] **T101** Done', '- [ ] **T102** Pending'].join('\n')
+    const report = derive({ files: makeFiles({ implementComplete: false }), tasksMd })
+    const taskNodes = report.columns[4]?.stack.filter(n => n.kind === 'task') ?? []
+    expect(taskNodes[0]?.status).toBe('done')
+    expect(taskNodes[1]?.status).toBe('pending')
+    expect(taskNodes.every(n => n.status === 'done' || n.status === 'pending')).toBe(true)
+  })
+
+  it('/speckit-implement rail is next when phase is implement (WSU-1 AC4)', () => {
+    const report = derive({ files: makeFiles({ implementComplete: false }) })
+    expect(report.currentPhase).toBe('implement')
+    expect(report.columns[4]?.rail.status).toBe('next')
   })
 })
