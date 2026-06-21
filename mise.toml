@@ -15,6 +15,7 @@ gum = "latest"
 biome = "latest"
 shellcheck = "latest"
 "npm:skills" = "1.5.10"
+"npm:@vercel/beautiful-mermaid" = "0.1.5"
 
 [env]
 HK_MISE = "1"
@@ -1230,7 +1231,15 @@ exec bun bin/skill.script.ts "$CMD" "$@"
           choices "pretty" "mermaid" "markdown"
         }
         flag "--subgraph" help="With --format mermaid: emit column subgraphs with artifact stacks"
+        flag "--source" help="With --format mermaid: emit mermaid source instead of terminal ASCII"
         flag "-o --output <path>" help="Write HTML report to path"
+        flag "--index" help="Render index view: show snapshot health per slug"
+        flag "--full" help="Like --index but include tail (implicit --index)"
+        flag "--refresh" help="Re-scan all feature dirs and re-record stale snapshots"
+        flag "--record" help="Record a new snapshot of current workflow progress"
+        flag "--list <slug>" help="List snapshot(s) for a slug"
+        flag "--compare-a <path>" help="First snapshot path for --compare"
+        flag "--compare-b <path>" help="Second snapshot path for --compare"
       }
       cmd "runs" {
         arg "<action>" help="list|show|tail|prune" {

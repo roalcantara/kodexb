@@ -186,7 +186,12 @@ function planWorkflowStatus(ctx: PlanCtx): SpecPlan {
   if (format && format !== 'pretty') argv.push('--format', format)
   const output = usageOptString(ctx.env, 'output')
   if (output) argv.push('-o', output)
-  pushUsageFlags(argv, ctx.env, ['json', 'raw', 'subgraph'])
+  const listSlug = usageOptString(ctx.env, 'list')
+  if (listSlug) argv.push('--list', listSlug)
+  const compareA = usageOptString(ctx.env, 'compare-a')
+  const compareB = usageOptString(ctx.env, 'compare-b')
+  if (compareA && compareB) argv.push('--compare', compareA, compareB)
+  pushUsageFlags(argv, ctx.env, ['json', 'raw', 'subgraph', 'source', 'index', 'full', 'refresh', 'record'])
   return planSpawn(argv)
 }
 
