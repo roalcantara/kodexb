@@ -15,7 +15,7 @@ compare` must never regress; no new `// biome-ignore`; biome caps only tighten.
 | ARCH-0 AC1 | core computes `structuralSuppressionCount`/`maxFileLoc`/`oversizedFileCount` | `bun test ./packages/ops/src/metrics/harnesses/role-conformance/role_conformance_core.script.spec.ts` | ✅ |
 | ARCH-0 AC2 | `compare` flags a rise in any of the three | `bun test ./packages/ops/src/metrics/harnesses/role-conformance/role_conformance.script.spec.ts` ; `mise run audit roles compare` (PASS) | ✅ |
 | ARCH-0 AC3 | baseline committed at 13/322/6 + TOOLS_GUIDE row | `cat tools/metrics/baselines/role-conformance/baseline.json` ; `rg role-conformance assets/guides/TOOLS_GUIDE.md` | ✅ (13/323/6 live; see Follow-up #1) |
-| ARCH-1 AC1 | `TaskView` core-owned | `rg "@shared/rpc" src/core \| rg TaskView` → 0 ; `bun test src/core` | ☐ |
+| ARCH-1 AC1 | `TaskView` core-owned | `rg "@shared/rpc" src/core \| rg TaskView` → 0 ; `bun test src/core` | ✅ |
 | ARCH-1 AC2 | one `BindingRef` def | `rg 'type BindingRef\|interface BindingRef' src` → 1 ; `bun test src/shell/app/db` | ☐ |
 | ARCH-1 AC3 | task policy in core | `bun test src/shell/app/db/task.repository.spec.ts` | ☐ |
 | ARCH-1 AC4 | overdue/blocked in core | `rg taskIsOverdue src/shell/renderer` (core import) ; `bun test src/shell/renderer` | ☐ |

@@ -1,4 +1,4 @@
-import type { TaskView } from '@shared/rpc'
+import type { TaskView } from './task_view.types'
 import type { Knowledge } from '../schemas/knowledge.schema'
 import { taskMatchesView } from './filter_by_view.util'
 import { TASK_VIEW_ORDER } from './task_view_order.const'

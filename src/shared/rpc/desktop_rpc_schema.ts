@@ -1,6 +1,7 @@
 import type { Static } from '@sinclair/typebox'
 import type { ElectrobunRPCSchema, RPCSchema } from 'electrobun/bun'
 import type { Knowledge } from '../../core'
+import type { TaskView } from '../../core/domain/models/knowledges/task_views/task_view.types'
 import type {
   configPatchSchema,
   listOptsSchema,
@@ -8,6 +9,10 @@ import type {
   taskCreateSchema,
   taskUpdateSchema
 } from './payload_schemas'
+
+// ARCH-1 AC1: `TaskView` is owned by core; re-exported here for backward
+// compatibility only. New consumers should import from `@core` directly.
+export type { TaskView } from '../../core/domain/models/knowledges/task_views/task_view.types'
 
 /** Stable id + source row shape returned from SQLite (discriminated `Knowledge`). */
 export type RpcKnowledge = Knowledge
@@ -79,8 +84,6 @@ export type RpcSyncProgressPayload = {
   total: number
   recentFile?: RpcSyncFileResult
 }
-
-export type TaskView = ListOpts['taskView'] & string
 
 export type ListOpts = Static<typeof listOptsSchema>
 

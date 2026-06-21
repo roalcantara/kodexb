@@ -1,4 +1,4 @@
-import type { TaskView } from '@shared/rpc'
+import type { TaskView } from './task_view.types'
 import type { Knowledge } from '../schemas/knowledge.schema'
 import { addDays, parseDue, startOfDay, type TaskKnowledge } from './task_date.util'
 
