@@ -5,9 +5,7 @@
   "type": "module",
   "private": true,
   "workspaces": {
-    "packages": [
-      "packages/*"
-    ],
+    "packages": ["packages/*"],
     "catalog": {
       "@logtape/logtape": "^2.1.5",
       "@sinclair/typebox": "^0.34.49",

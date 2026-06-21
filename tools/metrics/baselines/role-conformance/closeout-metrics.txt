@@ -8,7 +8,7 @@ Before (baseline.json on feature branch, 2026-06-21T13:10:41.730Z):
   utilPurityRatio: 0.808
   enforcedDirRatio: 0.635
 
-After (baseline.json at final SHA 8f21e763):
+After (baseline.json at final SHA 43965d43):
   totalUtil: 84
   mislabeledUtilCount: 0
   utilPurityRatio: 1.000

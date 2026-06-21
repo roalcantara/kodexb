@@ -1,4 +1,4 @@
-// @arch_role_taxonomy
+// @arch_role_taxonomy @role_suffix_migration
 import { describe, expect, it } from 'bun:test'
 import { buildReport, deriveDirCoverage, parseLockedDirs, renderReportMd, toBaseline } from './role_conformance.script'
 

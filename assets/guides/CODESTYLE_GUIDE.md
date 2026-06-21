@@ -284,7 +284,7 @@ Cheap-to-change literals can keep `kb` / `yaml`. They are not in scope for this 
 | Logging           | `parseKbLogVerbosity`, `isKbLogVerbosity`, `kbLowestLevel`    | `parseLogVerbosity`, `isLogVerbosity`, `lowestLevelForVerbosity`     |
 | Elysia plugin     | `name: 'kb-rpc-error'`                                        | `name: 'rpc-error'`                                                  |
 | SQL alias         | `kb_tag_row`                                                  | `tag_row`                                                            |
-| Source write-back | `app_task_yaml.util.ts`, `writeTaskToYaml`, `taskToYamlShape` | `app_task_source.util.ts`, `writeTaskToSource`, `taskToSourceRecord` |
+| Source write-back | `app_task_yaml.util.ts`, `writeTaskToYaml`, `taskToYamlShape` | `app_task_source.service.ts`, `writeTaskToSource`, `taskToSourceRecord` |
 | CSS tokens        | `--kb-bg`, `--kb-color-task`                                  | `--theme-bg`, `--theme-entry-color-task`                             |
 | CSS classes       | `.kb-entryRow`, `.kb-pt-filter-option`                        | `.theme-entry-row`, `.theme-compact-filter-option`                   |
 | Assets            | `assets/icons/kb-logo.*`                                      | `assets/icons/app-logo.*`                                            |

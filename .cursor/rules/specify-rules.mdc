@@ -6,7 +6,7 @@ alwaysApply: true
 
 <!-- SPECKIT START -->
 Active feature: see `.specify/feature.json` → `feature_directory`.
-Current implementation plan: `assets/specs/017-src-cohesion-consolidation/plan.md`.
+Current implementation plan: `assets/specs/019-role-suffix-migration/plan.md`.
 SDD gates (deterministic): `mise run spec lint|trace|audit|conform|gate`.
 After brainstorm-first spec authoring, run `mise run spec conform` before /speckit-analyze.
 <!-- SPECKIT END -->

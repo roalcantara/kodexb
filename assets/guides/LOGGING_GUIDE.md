@@ -70,8 +70,8 @@ Categories begin with `['kb', '<area>', ...]`. The canonical map:
 | ----------------------------- | --------------------------------------------------------- |
 | `['kb', 'main']`              | `src/shell/main/main.ts`                                  |
 | `['kb', 'app']`               | `src/shell/app/app.ts`                                    |
-| `['kb', 'app', 'sync']`       | `src/shell/app/db/import.service.ts` + `app_sync.util.ts` |
-| `['kb', 'app', 'task']`       | `src/shell/app/lib/app_task_source.util.ts`               |
+| `['kb', 'app', 'sync']`       | `src/shell/app/db/import.service.ts` + `app_sync.service.ts` |
+| `['kb', 'app', 'task']`       | `src/shell/app/lib/app_task_source.service.ts`               |
 | `['kb', 'rpc']`               | `src/shared/logging/rpc.middleware.ts`                    |
 | `['kb', 'sqlite']`            | `src/shared/logging/db_query.logger.ts`                   |
 | `['kb', 'ui']`                | renderer top-level                                        |
