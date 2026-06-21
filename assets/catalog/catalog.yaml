@@ -159,3 +159,10 @@ src_cohesion:
   specs:
     - 017-src-cohesion-consolidation
   superseded_by: null
+
+arch_role_taxonomy:
+  title: Architecture role-suffix taxonomy
+  status: shipped
+  specs:
+    - 018-architecture-role-taxonomy
+  superseded_by: null

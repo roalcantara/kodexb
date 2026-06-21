@@ -1,3 +1,4 @@
+// @arch_role_taxonomy
 import { describe, expect, it } from 'bun:test'
 import { classifyUtil, computeMetrics, isPureUtil } from './role_conformance_core.script'
 

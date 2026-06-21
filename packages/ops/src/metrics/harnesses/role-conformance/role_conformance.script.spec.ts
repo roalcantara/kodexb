@@ -1,3 +1,4 @@
+// @arch_role_taxonomy
 import { describe, expect, it } from 'bun:test'
 import { buildReport, deriveDirCoverage, renderReportMd, toBaseline } from './role_conformance.script'
 
