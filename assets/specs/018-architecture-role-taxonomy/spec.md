@@ -92,7 +92,7 @@ and renaming rests on reproducible evidence.
 ### Acceptance criteria
 
 1. WHEN the harness is built, THEN `packages/ops/src/metrics/harnesses/role-conformance/role_conformance.script.ts` (+ co-located `.script.spec.ts`) SHALL scan `src/` and emit, for each `.util.ts` non-spec file, a classification row (`path`, `imports-IO?`, `holds-state?`, `external-importers`, verdict `keep-util | rename→<suffix> | move→<dir>`) to an ephemeral report under `tmp/metrics/role-conformance/`.
-   - **Measure:** Running the harness writes a report covering **all 100** `.util.ts` files (`find src -name '*.util.ts' ! -name '*.spec.*' | wc -l` == report rows).
+   - **Measure:** Running the harness writes a report covering **every** `.util.ts` non-spec file (`find src -name '*.util.ts' ! -name '*.spec.*' | wc -l` == report rows; **99** at the first baseline).
    - **Evidence:** `bun test packages/ops/src/metrics/harnesses/role-conformance` green; a sample run report committed-by-reference in the roadmap.
 
 2. WHEN the harness computes aggregates, THEN it SHALL emit the **success metrics** `{ mislabeledUtilCount, utilPurityRatio, enforcedDirRatio, suffixViolations }` and write a committed baseline `tools/metrics/baselines/role-conformance/baseline.json` mirroring the `perf` baseline shape (`timestamp`, `git_sha`, `bun_version`, `thresholds`, `results`, `violations`, `summary`).
@@ -249,7 +249,7 @@ Tracked by the `role-conformance` baseline; one-off checks against
 
 | Metric / outcome                           | Baseline | Target (018) | Source |
 | ------------------------------------------ | -------: | -----------: | ------ |
-| `.util.ts` files classified                |      100 |          100 | harness report rows |
+| `.util.ts` files classified                |       99 |    every run | harness report rows |
 | `mislabeledUtilCount` (baseline established)|       ? |  recorded + ↓ by 7 after pilot | `baseline.json` `results` |
 | `utilPurityRatio`                          |        ? |     recorded, trend ↑ | `baseline.json` |
 | `enforcedDirRatio` (ls-lint coverage)      |   low   |     ↑ (all clean dirs) | `baseline.json` |
