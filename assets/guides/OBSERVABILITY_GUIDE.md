@@ -214,6 +214,65 @@ per its schema in the implementation home. Consumers import the `WorkflowEvent`
 union from the stable code path; this section is notice of the extension
 contract.
 
+## Workflow status snapshots
+
+In addition to NDJSON event streams, the project records **durable snapshots**
+of the SDD pipeline state via `mise run spec workflow status --record`.
+
+### File layout
+
+```
+tmp/metrics/workflow-status/<slug>/<run_id>.status.json
+```
+
+Each `<run_id>` is a timestamp with monotonic counter (e.g. `1748693624321.1`),
+ensuring uniqueness even for rapid successive writes.
+
+### Snapshot schema
+
+Each file is a JSON object with:
+
+| Field               | Type                  | Description                                    |
+| ------------------- | --------------------- | ---------------------------------------------- |
+| `meta.slug`         | string                | Feature slug                                   |
+| `meta.runId`        | string                | Unique run identifier                          |
+| `meta.recordedAt`   | string (ISO 8601)     | When the snapshot was written                  |
+| `meta.phase`        | string                | Current pipeline phase                         |
+| `meta.contentFingerprint` | string (hex)    | SHA-256 digest of feature files (16-char hex)  |
+| `summary.tasksDone` | number                | Count of completed T### tasks                  |
+| `summary.tasksTotal`| number                | Total T### tasks                               |
+| `summary.debtCount` | number                | Number of artifact debt entries                |
+| `summary.nextCommand` | string              | The `next` command verbatim                    |
+| `columns`           | array                 | Per-column rail + stack status (id, title, color, rail/stack statuses) |
+| `artifactDebt`      | array                 | Blocked artifacts (path, note)                 |
+| `raw`               | string                | Serialised `WorkflowProgressReport` (JSON)     |
+
+### Short-circuit cache
+
+On every invocation (without `--refresh`), `workflow status` computes a content
+fingerprint from `scanFeatureDir` + tasks/plan/handoff content digests. When
+the fingerprint matches the latest snapshot, the cached report is replayed
+from `raw` — avoiding file I/O and catalog lookups. Pass `--refresh` to force
+re-derivation.
+
+Implementation: `packages/ops/src/governance/specs/workflow_status_snapshot.script.ts`.
+
+### CLI surface
+
+```bash
+mise run spec workflow status --record             # write snapshot
+mise run spec workflow status --list <slug>        # list snapshots (newest first)
+mise run spec workflow status --compare <a> <b>    # diff two snapshot files
+mise run spec workflow status --refresh            # skip cache, force re-derive
+```
+
+### Retention
+
+Snapshots are written to `tmp/metrics/`, which follows the same retention
+policy as `tmp/workflow-runs/`. The `tmp/` hierarchy is excluded from jscpd,
+Biome, and git hygiene — no cleanup script is needed beyond the standard
+`tmp/` lifecycle. Snapshots are not committed.
+
 ## What this guide deliberately does not cover
 
 - In-process structured logging (`getLogger`, `withContext`,

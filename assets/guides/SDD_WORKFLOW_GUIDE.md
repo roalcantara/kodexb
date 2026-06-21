@@ -272,24 +272,48 @@ Shows a six-column SDD pipeline view (Intent · Design · Breakdown · Dispatch 
 Build · Ship), artifact debt, the **NEXT** command, and — during implement —
 the T### task checkboxes and Commit plan chunks for the active feature.
 
+Pretty output is pure-ASCII vertical layout with status tokens `[next]`,
+`[done]`, `[todo]`, `[skip]`, and `[debt]` — no ANSI, no gum subprocesses.
+
 ```bash
-mise run spec workflow status                      # active feature, gum pretty
+mise run spec workflow status                      # active feature, ASCII terminal output
 mise run spec workflow status assets/specs/NNN-slug
 mise run spec workflow status --json               # stable JSON (no ANSI)
-mise run spec workflow status --raw                # plain text, no gum
-mise run spec workflow status --format mermaid     # rail-only flowchart LR
-mise run spec workflow status --format mermaid --subgraph  # columns + artifact stacks
+mise run spec workflow status --raw                # plain text, unicode glyphs
+mise run spec workflow status --format mermaid     # terminal ASCII (rail-only)
+mise run spec workflow status --format mermaid --subgraph  # ASCII; falls back to rails if too wide
+mise run spec workflow status --format mermaid --source    # mermaid source for markdown embed
 mise run spec workflow status -o /tmp/status.html  # self-contained HTML grid
+mise run spec workflow status --index              # add cmd:/file:/task:/mise: kind prefixes
+mise run spec workflow status --full               # same as --index (vertical layout is complete)
+mise run spec workflow status --refresh            # force re-derive, skip snapshot cache
+mise run spec workflow status --record             # write durable snapshot
+mise run spec workflow status --list <slug>        # list recorded snapshots for a slug
+mise run spec workflow status --compare-a <a> --compare-b <b>  # diff two snapshot files
 ```
 
-- **NEXT banner** — verbatim from `detectPhase()`
-  (`packages/exec/src/orchestrated_handoff.script.ts`), the normative phase
-  detector. Files on disk do **not** advance the pipeline: a `tasks.md` that
-  exists before `checklists/analyze-plan.md` is shown as **artifact debt** (⊘),
-  not as a done stage.
-- **Dispatch column** — `skipped` (⊝) when the subtask manifest does not
-  require a `gherkin-bdd-handoff` (no operator smoke / Gherkin in plan).
-- Narrow terminals (<115 cols) render NEXT + artifact index only.
+- **Status tokens** — each node row starts with a token: `[next]` (the single
+  active item), `[done]`, `[todo]` (pending tasks), `[skip]` (skipped), or
+  `[debt]` (blocked artifact). The document always has exactly one `[next]`
+  row. Task rows never use `[next]`.
+- **`--index` / `--full`** — adds a kind prefix to every row label:
+  `cmd:` for commands, `file:` for artifacts, `task:` for tasks, and
+  `mise:` for mise commands. Default pretty shows status token + label only.
+  `--full` and `--index` produce identical output (vertical layout is already
+  complete; no grid to replace).
+- **`--refresh`** — bypass the snapshot short-circuit. By default,
+  `workflow status` computes a content fingerprint over `scanFeatureDir` +
+  tasks/plan/handoff content; when the fingerprint matches the latest recorded
+  snapshot, the cached report is replayed instead of re-deriving. Pass
+  `--refresh` to force re-derive.
+- **`--record`** — write a durable snapshot to
+  `tools/metrics/workflow-status/<slug>/<run_id>.status.json`. Snapshots include
+  the full column state, task counts, artifact debt, and a content fingerprint
+  for later short-circuit matching.
+- **`--list <slug>`** — list recorded snapshots for a slug (newest first),
+  showing path, recorded at timestamp, phase, and task completion ratio.
+- **`--compare <a> <b>`** — diff two snapshot files, showing phase changes,
+  task/debt deltas, and per-column rail/stack status changes.
 
 ### When to use opencode worker handoff vs primary implement
 

@@ -27,7 +27,7 @@ import {
   withUsage
 } from '@kb/exec'
 import { getLogger } from '@kb/shared/logging'
-import { gumMuted } from '../../support/lib/cli/gum_theme.script'
+
 import { chooseRenderer } from '../../support/lib/cli/render_mode.script'
 import { readTextFileSync } from '../../support/lib/shared/text_file.script'
 import { parseCommitPlanFromMarkdown } from './commit_plan_parse.script'
@@ -231,7 +231,7 @@ function main(): number {
     const { report } = buildWorkflowReportWithShortCircuit(featureDir, args.refresh)
     const html = renderWorkflowStatusHtml(report)
     writeFileSync(args.output, html)
-    console.log(gumMuted(`wrote ${args.output}`))
+    console.log(`wrote ${args.output}`)
     return 0
   }
 
@@ -239,13 +239,14 @@ function main(): number {
     const { report } = buildWorkflowReportWithShortCircuit(featureDir, args.refresh)
     const wantSource = args.source || !process.stdout.isTTY
     const out = emitMermaid(report, { subgraph: args.subgraph, source: wantSource })
-    if (out.note) console.error(gumMuted(out.note))
+    if (out.note) console.error(out.note)
     console.log(out.text)
     return 0
   }
 
-  const mode = chooseRenderer({ json: args.json, raw: args.raw, isTty: process.stdout.isTTY })
-  const flags: PrettyFlags = { showIndex: args.index || args.full, showGrid: !args.full || true }
+  let mode = chooseRenderer({ json: args.json, raw: args.raw, isTty: process.stdout.isTTY })
+  if (!args.raw && !args.json) mode = 'pretty'
+  const flags: PrettyFlags = { showIndex: args.index || args.full }
   const { report } = buildWorkflowReportWithShortCircuit(featureDir, args.refresh)
   renderWorkflowStatus(report, mode, flags)
   return 0
@@ -258,7 +259,7 @@ function handleRecord(featureDir: string): number {
     console.error(`snapshot write failed: ${result.error}`)
     return 1
   }
-  console.log(gumMuted(`snapshot written: ${result.value}`))
+  console.log(`snapshot written: ${result.value}`)
   return 0
 }
 

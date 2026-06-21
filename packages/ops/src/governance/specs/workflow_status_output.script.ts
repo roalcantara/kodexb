@@ -1,35 +1,18 @@
 /**
- * spec workflow status output — gum pretty, raw, json, and mermaid renderers.
+ * spec workflow status output — ASCII pretty, raw, json, and mermaid renderers.
  *
- * Pretty mode uses gum_theme.script.ts (Andromeda Void). The column grid is
- * built as pre-padded multiline strings in TS with local ANSI for each cell,
- * then joined with a SINGLE `gumJoinHorizontal` call. The sectioned index
- * (Proposal B) uses local ANSI for per-cell styling and ≤5 gum calls total
- * (gumJoinHorizontal + gumJoinVertical per section).
+ * Pretty mode uses a pure-ASCII formatter (no gum, no ANSI). Raw, JSON, and
+ * Mermaid paths are unchanged.
  */
-import type { NodeStatus, WorkflowColumn, WorkflowNode, WorkflowProgressReport } from '@kb/exec'
-import { ansiFore, ansiMuted, ansiOk, ansiStyle } from '../../support/lib/cli/ansi_theme.script'
-import {
-  GUM,
-  gumAccent,
-  gumBadge,
-  gumBold,
-  gumJoinHorizontal,
-  gumJoinVertical,
-  gumMuted,
-  gumNextSteps,
-  gumSection,
-  gumWarn
-} from '../../support/lib/cli/gum_theme.script'
+import type { WorkflowProgressReport } from '@kb/exec'
 import { mermaidAsciiWidth, renderMermaidTerminal } from '../../support/lib/cli/mermaid_terminal.script'
 import type { RenderMode } from '../../support/lib/cli/render_mode.script'
+import type { PrettyFlags } from './workflow_status_ascii.script'
+import { formatWorkflowStatusAscii } from './workflow_status_ascii.script'
 
-export type PrettyFlags = {
-  showIndex: boolean
-  showGrid: boolean
-}
+export type { PrettyFlags }
 
-const STATUS_GLYPH: Record<NodeStatus, string> = {
+const RAW_GLYPH: Record<string, string> = {
   done: '⏺',
   current: '◉',
   next: '▶',
@@ -38,158 +21,8 @@ const STATUS_GLYPH: Record<NodeStatus, string> = {
   skipped: '⊝'
 }
 
-function glyphFor(status: NodeStatus): string {
-  return STATUS_GLYPH[status]
-}
-
-const KIND_ICON: Record<string, string> = {
-  command: '⌘',
-  artifact: '·',
-  task: '☐',
-  mise: '$'
-}
-
-const TASK_DONE_ICON = '☑'
-
-function kindIcon(node: WorkflowNode): string {
-  if (node.kind === 'task' && node.status === 'done') return TASK_DONE_ICON
-  return KIND_ICON[node.kind] ?? '·'
-}
-
-const ESC = String.fromCharCode(27)
-const ANSI_RE = new RegExp(`${ESC}\\[[0-9;]*m`, 'g')
-
-function columnWidth(col: WorkflowColumn): number {
-  const labels = [col.rail.label, ...col.stack.map(n => n.label), col.title]
-  const widest = Math.max(...labels.map(l => l.length))
-  return Math.min(28, Math.max(14, widest + 2))
-}
-
-function padLine(text: string, width: number): string {
-  const clean = text.replace(ANSI_RE, '')
-  if (clean.length > width) {
-    return `${text.slice(0, width - 1)}…`
-  }
-  const cleanPad = ' '.repeat(Math.max(0, width - clean.length))
-  return `${text}${cleanPad}`
-}
-
-function truncate(label: string, max: number): string {
-  return label.length > max ? `${label.slice(0, max - 1)}…` : label
-}
-
-function nodeColor(node: WorkflowNode, groupColor: string): string {
-  if (node.status === 'next') return GUM.accent
-  if (node.status === 'done') return GUM.success
-  if (node.status === 'debt') return GUM.warn
-  return groupColor
-}
-
-function renderColumnBlock(col: WorkflowColumn, width: number, isActive: boolean): string[] {
-  const max = width - 2
-  const lines: string[] = []
-  const titleColor = isActive ? ansiStyle(col.title, GUM.label, true) : ansiFore(col.title, col.groupColor)
-  lines.push(titleColor)
-  const railGlyph = glyphFor(col.rail.status)
-  const railColor = col.rail.status === 'pending' ? ansiMuted(railGlyph) : ansiFore(railGlyph, col.groupColor)
-  lines.push(` ${railColor} ${ansiFore(truncate(col.rail.label, max), col.groupColor)}`)
-  for (const node of col.stack) {
-    const glyph = glyphFor(node.status)
-    const c = nodeColor(node, col.groupColor)
-    const styled = node.status === 'next' ? ansiStyle(glyph, c, true) : ansiOk(glyph)
-    const label =
-      node.status === 'next' ? ansiStyle(truncate(node.label, max), c, true) : ansiMuted(truncate(node.label, max))
-    const suffix = node.status === 'skipped' ? ' (skipped)' : ''
-    lines.push(` ${styled} ${label}${suffix}`)
-  }
-  return lines.map(l => padLine(l, width))
-}
-
-function renderColumnsGrid(report: WorkflowProgressReport): string {
-  const activeIdx = report.columns.findIndex(c => c.rail.status === 'next' || c.stack.some(n => n.status === 'next'))
-  const widths = report.columns.map(c => columnWidth(c))
-  const blocks = report.columns.map((c, i) => {
-    const lines = renderColumnBlock(c, widths[i] ?? 16, i === activeIdx)
-    return lines.join('\n')
-  })
-  return gumJoinHorizontal(blocks)
-}
-
-function nextBanner(report: WorkflowProgressReport): string {
-  const cmd = gumBold(report.next.command, GUM.label)
-  const hint = report.next.focusHint ? `    ${gumMuted(`# ${report.next.focusHint}`)}` : ''
-  return `${gumSection('Next step')}  ${gumAccent('▶')} ${cmd}${hint}`
-}
-
-/**
- * Sectioned index (Proposal B): sections per pipeline column with kind icons,
- * no Column/Kind columns, row foreground = groupColor, next row bold accent + ▸.
- */
-function renderSectionedIndex(report: WorkflowProgressReport): string {
-  const parts: string[] = []
-  for (const col of report.columns) {
-    const header = ansiStyle(`▸ ${col.title}`, col.groupColor, true)
-    const rows: string[] = [header]
-    const allNodes = [col.rail, ...col.stack]
-    for (const node of allNodes) {
-      const icon = kindIcon(node)
-      const prefix = node.status === 'next' ? '▸ ' : '  '
-      const label = truncate(node.label, 50)
-      let line: string
-      if (node.status === 'next') {
-        line = `${prefix}${ansiStyle(icon, GUM.accent, true)} ${ansiStyle(label, GUM.accent, true)}`
-      } else if (node.status === 'done') {
-        line = `${prefix}${ansiStyle(icon, GUM.success)} ${ansiMuted(label)}`
-      } else if (node.status === 'debt') {
-        line = `${prefix}${ansiStyle(icon, GUM.warn)} ${ansiMuted(label)}`
-      } else {
-        line = `${prefix}${ansiFore(icon, col.groupColor)} ${ansiMuted(label)}`
-      }
-      rows.push(line)
-    }
-    parts.push(rows.join('\n'))
-  }
-  if (parts.length === 0) return ''
-  const joined = gumJoinVertical(parts)
-  return joined
-}
-
-function renderPretty(report: WorkflowProgressReport, flags?: PrettyFlags): void {
-  const showIndex = flags ? flags.showIndex : false
-  const showGrid = flags ? flags.showGrid : true
-
-  const debtBadge =
-    report.artifactDebt.length > 0 ? `  ${gumBadge(`${report.artifactDebt.length} debt`, GUM.warn)}` : ''
-  const catalogBadge =
-    report.catalogStatus === 'shipped' ? `  ${gumBadge(`catalog: ${report.catalogKey ?? '?'}`, GUM.success)}` : ''
-  const lifecycle = report.lifecycleMismatch ? `  ${gumWarn('⚠ lifecycle mismatch')}` : ''
-
-  console.log(`${gumSection(`Spec workflow · ${report.slug}`)}${debtBadge}${catalogBadge}${lifecycle}`)
-  console.log(gumMuted(report.featureDir))
-  console.log('')
-
-  console.log(nextBanner(report))
-  console.log('')
-
-  const wide = (process.stdout.columns ?? 120) >= 115
-  if (showGrid && wide) {
-    console.log(renderColumnsGrid(report))
-    console.log('')
-  } else if (showGrid) {
-    console.log(gumMuted('(narrow terminal — showing summary; use --raw or wider terminal for columns)'))
-    console.log('')
-  }
-
-  if (showIndex) {
-    const index = renderSectionedIndex(report)
-    if (index) console.log(index)
-    console.log('')
-  }
-
-  gumNextSteps([report.next.command])
-}
-
 function renderRaw(report: WorkflowProgressReport): void {
+  const g = (s: string) => RAW_GLYPH[s] ?? '?'
   console.log(`Spec workflow · ${report.slug}`)
   console.log(`  ${report.featureDir}`)
   console.log(`  Phase: ${report.currentPhase}`)
@@ -206,10 +39,10 @@ function renderRaw(report: WorkflowProgressReport): void {
   }
   console.log('  Columns:')
   for (const col of report.columns) {
-    console.log(`    [${col.id}] ${glyphFor(col.rail.status)} ${col.rail.label}`)
+    console.log(`    [${col.id}] ${g(col.rail.status)} ${col.rail.label}`)
     for (const node of col.stack) {
       const suffix = node.status === 'skipped' ? ' (skipped)' : ''
-      console.log(`      ${glyphFor(node.status)} ${node.label}${suffix}`)
+      console.log(`      ${g(node.status)} ${node.label}${suffix}`)
     }
   }
   if (report.tasks.length > 0) {
@@ -224,6 +57,10 @@ function renderRaw(report: WorkflowProgressReport): void {
       console.log(`    ${c.id}${c.subject ? ` ${c.subject}` : ''} (${c.paths.length} paths)`)
     }
   }
+}
+
+function renderPretty(report: WorkflowProgressReport, flags?: PrettyFlags): void {
+  console.log(formatWorkflowStatusAscii(report, flags))
 }
 
 export type MermaidRenderOptions = {
