@@ -100,6 +100,22 @@ describe('renderMermaid', () => {
     expect(md).toContain('build --> ship')
     expect(md).not.toContain('subgraph')
   })
+
+  it('emits subgraph flowchart when subgraph option is set', () => {
+    const report = buildWorkflowReport(FIXTURES.implementMid)
+    const md = renderMermaid(report, { subgraph: true })
+    expect(md).toContain('flowchart LR')
+    expect(md).toContain('subgraph intent_col')
+    expect(md).toContain('subgraph build_col')
+    expect(md).toContain('intent_col --> design_col')
+    expect(md).toContain('build_col --> ship_col')
+    expect(md).toContain('build_rail')
+    expect(md).toContain(':::current')
+    expect(md).toContain(':::skipped')
+    expect(md).toContain('classDef done')
+    expect(md).toContain('style build_col stroke:#5ecfbe')
+    expect(md).not.toContain('intent --> design')
+  })
 })
 
 describe('renderWorkflowStatusHtml', () => {

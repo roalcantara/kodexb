@@ -186,7 +186,7 @@ function planWorkflowStatus(ctx: PlanCtx): SpecPlan {
   if (format && format !== 'pretty') argv.push('--format', format)
   const output = usageOptString(ctx.env, 'output')
   if (output) argv.push('-o', output)
-  pushUsageFlags(argv, ctx.env, ['json', 'raw'])
+  pushUsageFlags(argv, ctx.env, ['json', 'raw', 'subgraph'])
   return planSpawn(argv)
 }
 

@@ -278,6 +278,7 @@ mise run spec workflow status assets/specs/NNN-slug
 mise run spec workflow status --json               # stable JSON (no ANSI)
 mise run spec workflow status --raw                # plain text, no gum
 mise run spec workflow status --format mermaid     # rail-only flowchart LR
+mise run spec workflow status --format mermaid --subgraph  # columns + artifact stacks
 mise run spec workflow status -o /tmp/status.html  # self-contained HTML grid
 ```
 

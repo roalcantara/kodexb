@@ -186,9 +186,38 @@ function renderRaw(report: WorkflowProgressReport): void {
   }
 }
 
-/** Mermaid rail-only flat LR (6 macro commands, no stacks). */
-export function renderMermaid(report: WorkflowProgressReport): string {
-  const rails = report.columns.map(col => `  ${col.id}["${col.rail.label}"]`)
+export type MermaidRenderOptions = {
+  /** When true, emit one subgraph per column with rail + stack nodes and status classes. */
+  subgraph?: boolean
+}
+
+const MERMAID_CLASS_DEFS = [
+  'classDef done fill:#1a3d36,stroke:#5ecfbe,color:#e2e9f5',
+  'classDef current fill:#5ecfbe,color:#12151c,stroke:#5ecfbe',
+  'classDef pending fill:#1a1f29,stroke:#8892a4,color:#8892a4',
+  'classDef debt fill:#3d2a1a,stroke:#f59e0b,color:#f59e0b',
+  'classDef skipped fill:#1a1f29,stroke:#8892a4,color:#8892a4,stroke-dasharray:4 4'
+].join('\n')
+
+const SUBGRAPH_LABEL_MAX = 40
+
+function mermaidQuote(label: string): string {
+  const clean = label.replace(/"/g, '#quot;').replace(/\n/g, ' ')
+  return `"${clean}"`
+}
+
+function truncateMermaidLabel(label: string, max: number): string {
+  return label.length > max ? `${label.slice(0, max - 1)}…` : label
+}
+
+function activeColumnIndex(report: WorkflowProgressReport): number {
+  return report.columns.findIndex(
+    c => c.rail.status === 'current' || c.stack.some(n => n.status === 'current')
+  )
+}
+
+function renderMermaidRails(report: WorkflowProgressReport): string {
+  const rails = report.columns.map(col => `  ${col.id}[${mermaidQuote(col.rail.label)}]`)
   const links = report.columns
     .slice(0, -1)
     .map((col, i) => `  ${col.id} --> ${report.columns[i + 1]?.id}`)
@@ -196,6 +225,38 @@ export function renderMermaid(report: WorkflowProgressReport): string {
   const active = report.columns.find(c => c.rail.status === 'current')
   const activeLine = active ? `\n  style ${active.id} fill:#5ecfbe,color:#12151c,stroke:#5ecfbe` : ''
   return `flowchart LR\n${rails.join('\n')}\n${links}${activeLine}\n`
+}
+
+function renderMermaidSubgraph(report: WorkflowProgressReport): string {
+  const activeIdx = activeColumnIndex(report)
+  const blocks = report.columns.map(col => {
+    const sgId = `${col.id}_col`
+    const railId = `${col.id}_rail`
+    const railLine = `    ${railId}[${mermaidQuote(col.rail.label)}]:::${col.rail.status}`
+    const stackLines = col.stack.map((node, i) => {
+      const nodeId = `${col.id}_s${i}`
+      const label = truncateMermaidLabel(node.label, SUBGRAPH_LABEL_MAX)
+      return `    ${nodeId}[${mermaidQuote(label)}]:::${node.status}`
+    })
+    const inner = [railLine, ...stackLines].join('\n')
+    return `  subgraph ${sgId}[${mermaidQuote(col.title)}]\n    direction TB\n${inner}\n  end`
+  })
+  const links = report.columns
+    .slice(0, -1)
+    .map((col, i) => `  ${col.id}_col --> ${report.columns[i + 1]?.id}_col`)
+    .join('\n')
+  const activeCol = report.columns[activeIdx]
+  const activeStyle =
+    activeCol && activeIdx >= 0
+      ? `\n  style ${activeCol.id}_col stroke:#5ecfbe,stroke-width:3px`
+      : ''
+  return `flowchart LR\n${blocks.join('\n')}\n${links}\n${MERMAID_CLASS_DEFS}${activeStyle}\n`
+}
+
+/** Mermaid flowchart LR — rail-only by default; pass `{ subgraph: true }` for column stacks. */
+export function renderMermaid(report: WorkflowProgressReport, options?: MermaidRenderOptions): string {
+  if (options?.subgraph) return renderMermaidSubgraph(report)
+  return renderMermaidRails(report)
 }
 
 /** Render the report in the chosen mode to stdout. */

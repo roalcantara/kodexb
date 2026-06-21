@@ -1229,6 +1229,7 @@ exec bun bin/skill.script.ts "$CMD" "$@"
         flag "--format <format>" default="pretty" {
           choices "pretty" "mermaid" "markdown"
         }
+        flag "--subgraph" help="With --format mermaid: emit column subgraphs with artifact stacks"
         flag "-o --output <path>" help="Write HTML report to path"
       }
       cmd "runs" {

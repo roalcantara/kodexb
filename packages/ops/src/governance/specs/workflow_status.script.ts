@@ -35,6 +35,7 @@ type StatusArgs = {
   json: boolean
   raw: boolean
   format: 'pretty' | 'mermaid' | 'markdown'
+  subgraph: boolean
   output?: string
 }
 
@@ -47,10 +48,14 @@ class ArgError extends Error {
 }
 
 function parseArgs(argv: string[]): StatusArgs {
-  const args: Partial<StatusArgs> = { featureDir: '', json: false, raw: false, format: 'pretty' }
+  const args: Partial<StatusArgs> = { featureDir: '', json: false, raw: false, format: 'pretty', subgraph: false }
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i]
     if (!a) continue
+    if (a === '--subgraph') {
+      args.subgraph = true
+      continue
+    }
     if (a === '--json') {
       args.json = true
       continue
@@ -82,12 +87,15 @@ function parseArgs(argv: string[]): StatusArgs {
     throw new ArgError(`unexpected argument: ${a}`)
   }
   if (args.json && args.raw) throw new ArgError('--json and --raw are mutually exclusive')
+  if (args.subgraph && args.format !== 'mermaid') {
+    throw new ArgError('--subgraph requires --format mermaid')
+  }
   return args as StatusArgs
 }
 
 function usageString(): string {
   return [
-    'Usage: mise run spec workflow status [feature] [--json|--raw] [--format pretty|mermaid|markdown] [-o report.html]',
+    'Usage: mise run spec workflow status [feature] [--json|--raw] [--format pretty|mermaid|markdown] [--subgraph] [-o report.html]',
     '',
     'Shows six-column SDD pipeline progress, artifact debt, the NEXT command,',
     'and optional T### / Commit plan detail for the active feature.'
@@ -127,7 +135,7 @@ function main(): number {
   }
 
   if (args.format === 'mermaid') {
-    console.log(renderMermaid(report))
+    console.log(renderMermaid(report, { subgraph: args.subgraph }))
     return 0
   }
 
