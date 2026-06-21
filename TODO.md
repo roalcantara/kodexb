@@ -38,8 +38,8 @@ Fix before the next user-visible release.
 
 Catalog `task_source_atomicity` is **shipped**; code paths land in `008-task-mutation-failure-ux`. Residual doc/verify debt only:
 
-- [ ] Supersede `assets/specs/007-task-source-atomicity/quickstart.md` → pointer + commands from 008
-- [ ] Run `KB_E2E_FAULT_INJECTION=1 mise run test tag task_source_atomicity --e2e`; close **T200** in 008 `tasks.md`
+- [x] Supersede `assets/specs/007-task-source-atomicity/quickstart.md` → pointer + commands from 008
+- [x] Run `KB_E2E_FAULT_INJECTION=1 mise run test tag task_source_atomicity --e2e`; close **T200** in 008 `tasks.md`
 
 ---
 
