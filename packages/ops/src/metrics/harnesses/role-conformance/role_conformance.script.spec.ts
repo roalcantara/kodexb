@@ -24,7 +24,10 @@ describe('role_conformance runner', () => {
       mislabeledUtilCount: 1,
       utilPurityRatio: 0.5,
       enforcedDirRatio: 1,
-      suffixViolations: 1
+      suffixViolations: 1,
+      structuralSuppressionCount: 0,
+      maxFileLoc: 100,
+      oversizedFileCount: 0
     }
     const report = buildReport(files, { lockedDirs: 1, roleDirs: 2 }, baseline)
     const violation = report.violations.find(v => v.metric === 'enforcedDirRatio')
@@ -32,6 +35,45 @@ describe('role_conformance runner', () => {
     expect(violation?.value).toBe(0.5)
     expect(violation?.baseline).toBe(1)
     expect(report.summary).toBe('FAIL')
+  })
+
+  // ── ARCH-0 AC2: regressions in arch metrics are flagged ─────────────────
+  const sampleArchFiles = () => [{ path: 'src/a.util.ts', source: 'export const a=1' }]
+  const cleanBaseline = (arch: { structuralSuppressionCount: number; maxFileLoc: number; oversizedFileCount: number }) => ({
+    totalUtil: 1,
+    mislabeledUtilCount: 0,
+    utilPurityRatio: 1,
+    enforcedDirRatio: 1,
+    suffixViolations: 0,
+    ...arch
+  })
+
+  it('flags a rise in structuralSuppressionCount / maxFileLoc / oversizedFileCount', () => {
+    const report = buildReport(
+      sampleArchFiles(),
+      { lockedDirs: 1, roleDirs: 1 },
+      cleanBaseline({ structuralSuppressionCount: 0, maxFileLoc: 100, oversizedFileCount: 0 }),
+      'sha',
+      { structuralSuppressionCount: 1, maxFileLoc: 300, oversizedFileCount: 1 }
+    )
+    expect(report.violations.map(v => v.metric).sort()).toEqual([
+      'maxFileLoc',
+      'oversizedFileCount',
+      'structuralSuppressionCount'
+    ])
+    expect(report.summary).toBe('FAIL')
+  })
+
+  it('does not flag arch metrics when values are flat or improved', () => {
+    const report = buildReport(
+      sampleArchFiles(),
+      { lockedDirs: 1, roleDirs: 1 },
+      cleanBaseline({ structuralSuppressionCount: 5, maxFileLoc: 400, oversizedFileCount: 2 }),
+      'sha',
+      { structuralSuppressionCount: 0, maxFileLoc: 100, oversizedFileCount: 0 }
+    )
+    expect(report.violations).toHaveLength(0)
+    expect(report.summary).toBe('PASS')
   })
 
   it('deriveDirCoverage counts locked dirs among the src dirs', () => {

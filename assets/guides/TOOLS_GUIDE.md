@@ -64,6 +64,22 @@ output path on `run`.
 | e2e-quality      | `metrics/harnesses/e2e-quality/`      | `metrics/baselines/e2e-quality/quality-baseline.json` (+ `scenario-scores.json`, schema) | `tmp/metrics/e2e-quality/` or `tmp/e2e/metrics/` |
 | role-conformance | `metrics/harnesses/role-conformance/` | `metrics/baselines/role-conformance/baseline.json`                                       | `tmp/metrics/role-conformance/`                  |
 
+**`role-conformance` standing metrics.** The harness ratchets five util-role
+metrics (`totalUtil`, `mislabeledUtilCount`, `utilPurityRatio`,
+`enforcedDirRatio`, `suffixViolations`) plus three architecture-health metrics
+added in 020:
+
+- **`structuralSuppressionCount`** — occurrences of
+  `// biome-ignore lint/complexity/*` or `lint/style/noExcessiveLinesPerFile`
+  in non-spec `src/` (the team's own admissions of structural debt).
+  North-star: **0**.
+- **`maxFileLoc`** — longest non-spec `src/` file. Decreases as God files are
+  decomposed; ratcheted to never regress.
+- **`oversizedFileCount`** — non-spec `src/` files > 250 LOC (excludes
+  `src/__tests__/`). `compare` flags any rise; `baseline` ratchets the floor.
+
+A rise in any of the three is a FAIL just like `mislabeledUtilCount`.
+
 ## `bin/` — narrow definition
 
 **`bin/` holds only thin TypeScript dispatch stubs that delegate to `governance/*` domain logic**

@@ -1,6 +1,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { classifyUtil, computeMetrics, type RoleMetrics, type UtilRow } from './role_conformance_core.script'
+import {
+  type ArchMetrics,
+  classifyUtil,
+  computeArchMetrics,
+  computeMetrics,
+  type RoleMetrics,
+  type UtilRow,
+  ZERO_ARCH
+} from './role_conformance_core.script'
 
 const ROOT = path.resolve(import.meta.dir, '../../../../../..')
 const BASELINE_PATH = path.join(ROOT, 'tools/metrics/baselines/role-conformance/baseline.json')
@@ -15,14 +23,17 @@ export type RoleReport = {
   summary: 'PASS' | 'FAIL'
 }
 
+const ARCH_REGRESSION_METRICS = ['structuralSuppressionCount', 'maxFileLoc', 'oversizedFileCount'] as const
+
 export function buildReport(
   files: Array<{ path: string; source: string }>,
   dirs: { lockedDirs: number; roleDirs: number },
   baseline?: RoleMetrics,
-  gitSha: string = process.env.GIT_SHA ?? 'unknown'
+  gitSha: string = process.env.GIT_SHA ?? 'unknown',
+  arch: ArchMetrics = ZERO_ARCH
 ): RoleReport {
   const rows = files.map(f => classifyUtil(f.path, f.source))
-  const results = computeMetrics(rows, { locked: dirs.lockedDirs, roleDirs: dirs.roleDirs })
+  const results = computeMetrics(rows, { locked: dirs.lockedDirs, roleDirs: dirs.roleDirs }, arch)
   const violations: RoleReport['violations'] = []
   if (baseline) {
     if (results.mislabeledUtilCount > baseline.mislabeledUtilCount)
@@ -39,6 +50,9 @@ export function buildReport(
         value: results.enforcedDirRatio,
         baseline: baseline.enforcedDirRatio
       })
+    for (const k of ARCH_REGRESSION_METRICS) {
+      if (results[k] > baseline[k]) violations.push({ metric: k, value: results[k], baseline: baseline[k] })
+    }
   }
   return {
     timestamp: new Date().toISOString(),
@@ -88,6 +102,9 @@ export function renderReportMd(report: RoleReport): string {
     `| utilPurityRatio | ${report.results.utilPurityRatio} |`,
     `| enforcedDirRatio | ${report.results.enforcedDirRatio} |`,
     `| suffixViolations | ${report.results.suffixViolations} |`,
+    `| structuralSuppressionCount | ${report.results.structuralSuppressionCount} |`,
+    `| maxFileLoc | ${report.results.maxFileLoc} |`,
+    `| oversizedFileCount | ${report.results.oversizedFileCount} |`,
     '',
     ...(report.violations.length > 0
       ? [
@@ -119,6 +136,19 @@ async function scanUtilFiles(): Promise<Array<{ path: string; source: string }>>
   for await (const rel of glob.scan({ cwd: ROOT })) {
     if (rel.endsWith('.spec.ts')) continue
     out.push({ path: rel, source: await Bun.file(path.join(ROOT, rel)).text() })
+  }
+  return out
+}
+
+/** ARCH-0 — scan non-spec src ts/tsx files for arch metrics (suppress + LOC). */
+async function scanArchFiles(): Promise<Array<{ path: string; loc: number; source: string }>> {
+  const glob = new Bun.Glob('src/**/*.{ts,tsx}')
+  const out: Array<{ path: string; loc: number; source: string }> = []
+  for await (const rel of glob.scan({ cwd: ROOT })) {
+    if (rel.endsWith('.spec.ts') || rel.endsWith('.spec.tsx')) continue
+    if (rel.startsWith('src/__tests__/')) continue
+    const source = await Bun.file(path.join(ROOT, rel)).text()
+    out.push({ path: rel, loc: source.split('\n').length, source })
   }
   return out
 }
@@ -158,9 +188,11 @@ if (import.meta.main) {
   const rawAction = process.env.usage_cmd ?? process.argv[2] ?? 'compare'
   const action = rawAction.includes(' ') ? (rawAction.split(' ').at(-1) ?? rawAction) : rawAction
   const files = await scanUtilFiles()
+  const archFiles = await scanArchFiles()
+  const arch = computeArchMetrics(archFiles)
   const dirs = await deriveDirCoverageFromFiles()
   const baseline = action === 'baseline' ? undefined : await loadBaseline()
-  const report = buildReport(files, dirs, baseline, deriveGitSha())
+  const report = buildReport(files, dirs, baseline, deriveGitSha(), arch)
 
   const runDir = path.join(ROOT, 'tmp/metrics/role-conformance')
   fs.mkdirSync(runDir, { recursive: true })
@@ -171,7 +203,9 @@ if (import.meta.main) {
     await Bun.write(BASELINE_PATH, `${JSON.stringify(toBaseline(report), null, 2)}\n`)
   }
   console.log(
-    `${report.summary} mislabeled=${report.results.mislabeledUtilCount} purity=${report.results.utilPurityRatio}`
+    `${report.summary} mislabeled=${report.results.mislabeledUtilCount} purity=${report.results.utilPurityRatio} ` +
+      `suppressions=${report.results.structuralSuppressionCount} maxLoc=${report.results.maxFileLoc} ` +
+      `oversized=${report.results.oversizedFileCount}`
   )
   if (report.summary === 'FAIL') process.exitCode = 1
 }
