@@ -259,7 +259,8 @@ Tracked by the `role-conformance` baseline; one-off checks against
 
 > The `?` baselines are **established by ROLE-1's first run** (that is the point of
 > the metric); the spec's target is "recorded + a committed baseline to compare
-> against," with the pilot proving a measurable −7 on `mislabeledUtilCount`.
+> against," with the pilot proving a measurable −5 on `mislabeledUtilCount`
+> (`totalUtil` drops −7, but two renamed files were pure — so only −5 mislabeled).
 
 ### Structural / qualitative gains (assertable)
 | Dimension       | Concrete improvement |
@@ -276,7 +277,7 @@ Tracked by the `role-conformance` baseline; one-off checks against
 
 1. All ROLE-1 … ROLE-6 acceptance criteria met with evidence.
 2. `role-conformance` harness (`packages/ops/src/metrics/harnesses/role-conformance/`) + committed `tools/metrics/baselines/role-conformance/baseline.json` + `mise run audit roles` wired; `migration-roadmap.md`, `assets/guides/adr/0001-role-suffix-taxonomy.md`, and `closeout-metrics.txt` committed.
-3. Pilot dir `src/shell/main/handoff` matches the ROLE-5 single-word layout; 0 mislabeled `.util`; handoff suite green; behaviour unchanged; `compare` shows −7.
+3. Pilot dir `src/shell/main/handoff` matches the ROLE-5 single-word layout; 0 mislabeled `.util`; handoff suite green; behaviour unchanged; `compare` shows `mislabeledUtilCount −5`.
 4. `.ls-lint.yml` additive (conformant dirs + pilot dir/subdirs); `git diff biome.jsonc .dependency-cruiser.cjs knip.jsonc` empty.
 5. `CODESTYLE_GUIDE`, `TOOLS_GUIDE`, `CLAUDE.md`, `AGENTS.md`, and `TODO.md` P3 updated; no P-item silently dropped; no guide files relocated.
 6. Catalog key `arch_role_taxonomy` registered; `mise run spec ready assets/specs/018-architecture-role-taxonomy --key arch_role_taxonomy` green.
