@@ -193,12 +193,7 @@ single-word doctrine) as the worked example every roadmap PR copies.
 
 ### Acceptance criteria
 
-1. WHEN the pilot lands, THEN `src/shell/main/handoff` SHALL match this conformant, single-word layout (behaviour-frozen; importers + co-located specs updated):
-   - `registry.service.ts` (was `handoff_registry.service.ts`)
-   - `clipboard.port.ts` (was `electrobun_clipboard.port.ts`)
-   - `browser.adapter.ts`, `editor.adapter.ts`, `xdotool.adapter.ts` (were `*_handoff`/`*_available.util.ts`)
-   - `frontmost/app.resolver.ts` (was `resolve_frontmost_app.util.ts`), `frontmost/paste.adapter.ts` (was `paste_frontmost_handoff.util.ts`)
-   - `terminal/app.resolver.ts` (was `resolve_terminal_app_name.util.ts`), `terminal/command.adapter.ts` (was `terminal_handoff.util.ts`)
+1. WHEN the pilot lands, THEN `src/shell/main/handoff` SHALL match this conformant, single-word layout (behaviour-frozen; importers + co-located specs updated): `registry.service.ts` (was `handoff_registry.service.ts`), `clipboard.port.ts` (was `electrobun_clipboard.port.ts`), `browser.adapter.ts` / `editor.adapter.ts` / `xdotool.adapter.ts` (were `*_handoff`/`*_available.util.ts`), `frontmost/app.resolver.ts` (was `resolve_frontmost_app.util.ts`), `frontmost/paste.adapter.ts` (was `paste_frontmost_handoff.util.ts`), `terminal/app.resolver.ts` (was `resolve_terminal_app_name.util.ts`), `terminal/command.adapter.ts` (was `terminal_handoff.util.ts`).
    - **Measure:** `find src/shell/main/handoff -name '*.util.ts' ! -name '*.spec.*'` → empty; `rg -rn 'handoff_registry|electrobun_clipboard|browser_handoff|editor_handoff|terminal_handoff|paste_frontmost_handoff|resolve_frontmost_app|resolve_terminal_app_name|xdotool_available' src` → 0.
    - **Evidence:** `bun test src/shell/main/handoff` + `bun run typecheck` green, no behavioural edits.
 
