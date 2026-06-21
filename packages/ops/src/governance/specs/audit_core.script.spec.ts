@@ -167,4 +167,29 @@ describe('audit_core', () => {
       cleanup(dir)
     }
   })
+
+  it('implement-done with unchecked T### tasks reports tasks.incomplete error', () => {
+    const dir = makeFeatureDir()
+    writeQuartet(dir)
+    writeFileSync(
+      path.join(dir, 'tasks.md'),
+      `# Tasks
+
+## Phase 1
+
+- [ ] **T101** Do work — *gate:* SF-1 AC1
+- [x] **T102** Done work — *gate:* SF-1 AC2
+`
+    )
+    writeFileSync(path.join(dir, 'checklists', 'implement-done.md'), 'done\n')
+    try {
+      const result = runAudit(dir)
+      const incomplete = result.findings.find(f => f.rule === 'tasks.incomplete')
+      expect(incomplete).toBeDefined()
+      expect(incomplete?.level).toBe('error')
+      expect(result.summary.errors).toBeGreaterThanOrEqual(1)
+    } finally {
+      cleanup(dir)
+    }
+  })
 })

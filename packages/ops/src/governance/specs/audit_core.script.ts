@@ -211,6 +211,32 @@ function checkTasksHygiene(featureDir: string): Finding[] {
       message: 'No concrete paths (src/, packages/ops/src/, assets/, bdd/) in task descriptions'
     })
   }
+
+  const files = scanFeatureDir(featureDir)
+  const phase = detectPhase(files, featureDir)
+  const enforceComplete = files.implementComplete || phase.phase === 'gate'
+  if (enforceComplete) {
+    const unchecked = lines.filter(l => /^\s*[-*]\s+\[ \]\s+\*\*T\d{3}\*\*/.test(l))
+    if (unchecked.length > 0) {
+      f.push({
+        rule: 'tasks.incomplete',
+        level: 'error',
+        file: tasksPath,
+        message: `${unchecked.length} unchecked T### task(s) remain — mark [x] before spec gate`
+      })
+    }
+  }
+
+  const hasCloseoutTask = /\bspec closeout\b/i.test(md) || /\bspec ready\b/i.test(md) || /\bspec gate\b/i.test(md)
+  if (files.spec && files.plan && files.tasks && !hasCloseoutTask) {
+    f.push({
+      rule: 'tasks.closeout-missing',
+      level: 'warn',
+      file: tasksPath,
+      message: 'No closeout task mentioning spec closeout, spec ready, or spec gate'
+    })
+  }
+
   return f
 }
 

@@ -1196,6 +1196,14 @@ exec bun bin/skill.script.ts "$CMD" "$@"
       flag "--key <key>" help="Catalog key for tag tests"
       flag "--phase <no>" help="Phase number for focused validation"
     }
+    cmd "closeout" help="Agent-agnostic ship closeout: audit, handoff evidence, spec ready, optional commit" {
+      arg "[feature]" help="Feature dir (omitted: active feature)"
+      flag "--key <key>" help="Catalog key for tag tests (overrides auto-resolve)"
+      flag "--include-smoke" help="Run operator-smoke Evidence rows (skipped by default)"
+      flag "--dry-run" help="Print handoff evidence commands without executing"
+      flag "--commit" help="Create git commit after gate passes (operator-initiated)"
+      flag "--message <text>" help="Commit subject when --commit (default: chore(spec): closeout <slug>)"
+    }
     cmd "init" {
       flag "--id <id>" help="Three-digit id e.g. 001"
       flag "--slug <slug>" help="Feature slug"
@@ -1334,5 +1342,13 @@ exec bun bin/skill.script.ts "$CMD" "$@"
     cmd "ship" help="Ship-gate readiness check for a catalog key" {
       flag "--json" help="Machine-readable JSON output (includes provenance)"
       arg "<key>" help="Catalog key (e.g. command_palette)"
+    }
+    cmd "register" help="Append in-progress catalog entry for active or given feature dir" {
+      arg "[feature_dir]" help="Defaults to active feature from .specify/feature.json"
+    }
+    cmd "promote" help="Set catalog status to shipped when ship gate passes" {
+      flag "--dry-run" help="Print would-be promotion without writing catalog.yaml"
+      flag "--json" help="Machine-readable JSON output"
+      arg "<key>" help="Catalog key (e.g. src_cohesion)"
     }
   ''', run = "bun bin/catalog.script.ts" }

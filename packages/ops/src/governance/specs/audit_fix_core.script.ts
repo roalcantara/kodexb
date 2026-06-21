@@ -111,6 +111,42 @@ function stripTemplateLeak(md: string): string {
   return out
 }
 
+function planCloseoutTaskFix(featureDir: string): FixAction | null {
+  const tasksPath = path.join(featureDir, 'tasks.md')
+  const tasksResult = readTextFileSync(tasksPath)
+  if (tasksResult.isErr()) return null
+  const md = tasksResult.value
+  if (/\*\*T199\*\*/.test(md)) return null
+  if (!/\*\*T1\d{2}\*\*/.test(md)) return null
+  if (/\bspec ready\b/i.test(md) || /\bspec gate\b/i.test(md)) return null
+
+  return {
+    rule: 'tasks.closeout-missing',
+    file: tasksPath,
+    action: 'patch',
+    summary: 'Append T199 closeout task (spec closeout + optional --commit)'
+  }
+}
+
+function readTasksTextOrThrow(featureDir: string): { tasksPath: string; text: string } {
+  const tasksPath = path.join(featureDir, 'tasks.md')
+  const tasksResult = readTextFileSync(tasksPath)
+  if (tasksResult.isErr()) throw new Error(`cannot read ${tasksPath}`)
+  return { tasksPath, text: tasksResult.value }
+}
+
+function applyCloseoutTaskFix(featureDir: string): void {
+  const { tasksPath, text } = readTasksTextOrThrow(featureDir)
+  const rel = featureDir.replace(/\\/g, '/')
+  const block = `
+
+## Closeout
+
+- [ ] **T199** Run \`mise run spec closeout ${rel}\` (or \`spec ready\` without evidence replay); pass \`--commit\` when the operator wants a closeout commit — *gate:* DoD merge
+`
+  writeFileSync(tasksPath, `${text.trimEnd()}${block}`, 'utf8')
+}
+
 function planTasksFix(featureDir: string, findings: Finding[]): FixAction | null {
   const rules = new Set(findings.map(f => f.rule))
   if (!rules.has('tasks.id') && !rules.has('tasks.sample-leak')) return null
@@ -166,6 +202,9 @@ export function planFixes(featureDir: string, opts: FixOpts = {}): FixResult {
 
   const tasks = planTasksFix(featureDir, audit.findings)
   if (tasks) actions.push(tasks)
+
+  const closeout = planCloseoutTaskFix(featureDir)
+  if (closeout) actions.push(closeout)
 
   for (const rule of ['phase.analyze-plan', 'phase.analyze-tasks-ready'] as const) {
     const checklist = planChecklistFix(featureDir, rule, audit.findings, opts)
@@ -230,12 +269,10 @@ function applyHandoffFix(featureDir: string): void {
 }
 
 function applyTasksFix(featureDir: string): void {
-  const tasksPath = path.join(featureDir, 'tasks.md')
-  const tasksResult = readTextFileSync(tasksPath)
-  if (tasksResult.isErr()) throw new Error(`cannot read ${tasksPath}`)
-  const stripped = stripTemplateLeak(tasksResult.value)
-  const { text } = renumberTaskIds(stripped)
-  writeFileSync(tasksPath, text, 'utf8')
+  const { tasksPath, text } = readTasksTextOrThrow(featureDir)
+  const stripped = stripTemplateLeak(text)
+  const { text: renumbered } = renumberTaskIds(stripped)
+  writeFileSync(tasksPath, renumbered, 'utf8')
 }
 
 function applyChecklistFix(featureDir: string, rule: 'phase.analyze-plan' | 'phase.analyze-tasks-ready'): void {
@@ -255,6 +292,10 @@ export function applyFixes(featureDir: string, plan: FixResult): void {
     }
     if (action.rule === 'tasks.id' || action.rule === 'tasks.sample-leak') {
       applyTasksFix(featureDir)
+      continue
+    }
+    if (action.rule === 'tasks.closeout-missing') {
+      applyCloseoutTaskFix(featureDir)
       continue
     }
     if (action.rule === 'phase.analyze-plan' || action.rule === 'phase.analyze-tasks-ready') {

@@ -32,13 +32,13 @@ divergences, precedence is:
 kb practices **SDD**: specifications drive implementation; code expresses them
 in Bun, Electrobun, and TypeBox. Inspired by [GitHub Spec Kit — spec-driven.md][16].
 
-| Idea                       | kb practice                                                                                                                                                                                                                                  |
-| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Idea                       | kb practice                                                                                                                                                                                                                                                                           |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Specs as lingua franca** | Normative `spec.md`, `plan.md`, `tasks.md`, `handoff.md` in the active feature directory from `.specify/feature.json`; backlog/routing policy in [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md) and [`SDD_WORKFLOW_GUIDE.md`](../../assets/guides/SDD_WORKFLOW_GUIDE.md). |
-| **Executable specs**       | EARS in `spec.md` with **Measure** + **Evidence**; Gherkin in `assets/features/e2e/` when declared.                                                                                                                                          |
-| **Continuous refinement**  | `/speckit-clarify`, `/speckit-checklist`, `/speckit-analyze` — not one-shot doc dumps.                                                                                                                                                       |
-| **Intent-driven change**   | Pivots update requirements/design first; implementation and tests follow.                                                                                                                                                                    |
-| **Operational feedback**   | Incidents and review findings become new requirements or backlog rows — not silent code-only fixes.                                                                                                                                          |
+| **Executable specs**       | EARS in `spec.md` with **Measure** + **Evidence**; Gherkin in `assets/features/e2e/` when declared.                                                                                                                                                                                   |
+| **Continuous refinement**  | `/speckit-clarify`, `/speckit-checklist`, `/speckit-analyze` — not one-shot doc dumps.                                                                                                                                                                                                |
+| **Intent-driven change**   | Pivots update requirements/design first; implementation and tests follow.                                                                                                                                                                                                             |
+| **Operational feedback**   | Incidents and review findings become new requirements or backlog rows — not silent code-only fixes.                                                                                                                                                                                   |
 
 Spec Kit artifacts (`spec.md`, `checklists/`) **supplement** kb specs; they MUST
 NOT contradict normative files (see [Spec artifacts](#spec-artifacts)).
@@ -225,9 +225,10 @@ path rules in [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md)).
 3. **Constitution check** — `/speckit-analyze` SHOULD flag conflicts as **CRITICAL**;
    **`mise run spec lint --strict`** enforces EARS shape deterministically.
 4. **Human gates** — prototype approval; operator runs `mise run spec gate` before merge.
-5. **Chat agents commit WHEN ASKED**; workflow shell MAY commit after approved gate
-   via `mise run spec commit`. Git extension `auto_commit.*` hooks remain **false** except `after_implement.enabled: true` in
-   [`git-config.yml`](../extensions/git/git-config.yml).
+5. **Chat agents commit WHEN ASKED**; the Spec Kit CLI MAY auto-commit after
+   `/speckit-implement` when `after_implement.enabled: true` in
+   [`git-config.yml`](../extensions/git/git-config.yml) (does not run HK commit-message
+   policy — use `/commit-all` before merge). All other `auto_commit.*` hooks remain **false**.
 6. **Creative ambiguity** — load `brainstorming` when intent is unclear; record
    outcomes in specs, not only chat.
 
@@ -246,16 +247,16 @@ above):
 
 ## Spec artifacts
 
-| Artifact                 | Authority                                                      |
-| ------------------------ | -------------------------------------------------------------- |
-| `spec.md`                | **Normative** — EARS ids, Measure, Evidence; E2e pointer table |
-| `plan.md`                | **Normative** — design + E2e traceability (no Gherkin body)    |
-| `tasks.md`               | **Normative** — Done when + Evidence per task                  |
-| `handoff.md`             | **Normative** — implementer prompt + maintainer AC checklist   |
-| `assets/features/e2e/*`  | **Normative Gherkin** when e2e declared                        |
-| `checklists/`            | Spec quality checks; **not** a substitute for tests            |
-| Spec backlog index        | See [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md) and [`SDD_WORKFLOW_GUIDE.md`](../../assets/guides/SDD_WORKFLOW_GUIDE.md) |
-| Legacy `requirements.md` | Reference only under `assets/docs/specs/MILESTONE_*`           |
+| Artifact                 | Authority                                                                                                                               |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `spec.md`                | **Normative** — EARS ids, Measure, Evidence; E2e pointer table                                                                          |
+| `plan.md`                | **Normative** — design + E2e traceability (no Gherkin body)                                                                             |
+| `tasks.md`               | **Normative** — Done when + Evidence per task                                                                                           |
+| `handoff.md`             | **Normative** — implementer prompt + maintainer AC checklist                                                                            |
+| `assets/features/e2e/*`  | **Normative Gherkin** when e2e declared                                                                                                 |
+| `checklists/`            | Spec quality checks; **not** a substitute for tests                                                                                     |
+| Spec backlog index       | See [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md) and [`SDD_WORKFLOW_GUIDE.md`](../../assets/guides/SDD_WORKFLOW_GUIDE.md) |
+| Legacy `requirements.md` | Reference only under `assets/docs/specs/MILESTONE_*`                                                                                    |
 
 ---
 

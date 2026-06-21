@@ -102,9 +102,17 @@ In order for a task to be considered completed, it MUST satisfy ALL of the follo
 
 ## 8. Ship gate (catalog promotion)
 
-Before setting `status: shipped` in [`assets/catalog/catalog.yaml`](../catalog/catalog.yaml),
-ALL of the following MUST be satisfied. Governance: [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md)
+Before promoting a catalog entry to **`status: shipped`**, ALL of the following
+MUST be satisfied. Governance: [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md)
 § Catalog governance.
+
+Run **`mise run spec closeout assets/specs/NNN-slug`** (preferred) or **`mise run spec ready assets/specs/NNN-slug`**
+(runs gate then **`mise run catalog promote <key>`** when a catalog key resolves) or promote manually after gate:
+
+```bash
+mise run catalog promote <catalog-key>
+mise run catalog promote <catalog-key> --dry-run
+```
 
 - [ ] `catalog.yaml` entry; Gherkin + units tagged `@<key>`
 - [ ] No `enforced_by: none` on requirement lines

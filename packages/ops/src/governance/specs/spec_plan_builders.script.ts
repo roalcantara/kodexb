@@ -13,7 +13,13 @@ export type SpecEnv = Record<string, string | undefined>
 
 export type SpecPlan =
   | { kind: 'spawn'; argv: string[]; env?: Record<string, string | undefined> }
-  | { kind: 'runner'; task: 'spec-gate' | 'spec-ready'; featureDir: string; json: boolean; raw: boolean }
+  | {
+      kind: 'runner'
+      task: 'spec-gate' | 'spec-ready' | 'spec-closeout'
+      featureDir: string
+      json: boolean
+      raw: boolean
+    }
   | { kind: 'error'; message: string; exitCode: number }
 
 export type SpecPlanDeps = { activeRun?: () => string | null }
@@ -44,7 +50,11 @@ export function planSpawn(argv: string[], env?: Record<string, string | undefine
   return env ? { kind: 'spawn', argv, env } : { kind: 'spawn', argv }
 }
 
-export function planRunner(task: 'spec-gate' | 'spec-ready', featureDir: string, env: SpecEnv): SpecPlan {
+export function planRunner(
+  task: 'spec-gate' | 'spec-ready' | 'spec-closeout',
+  featureDir: string,
+  env: SpecEnv
+): SpecPlan {
   return {
     kind: 'runner',
     task,

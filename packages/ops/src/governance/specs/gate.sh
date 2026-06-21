@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# spec gate — lint + trace + security + app quality gate
+# spec gate — audit + lint + trace + security + app quality gate
 set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
@@ -10,6 +10,7 @@ if [[ -z "$FEATURE_DIR" ]]; then
 fi
 
 echo "── spec gate: ${FEATURE_DIR} ──"
+bun packages/ops/src/governance/specs/audit.script.ts "$FEATURE_DIR" --strict
 bun packages/ops/src/governance/specs/lint.script.ts "$FEATURE_DIR" --strict
 bun packages/ops/src/governance/specs/trace.script.ts "$FEATURE_DIR" --strict
 bun packages/ops/src/governance/security/scan.script.ts --strict

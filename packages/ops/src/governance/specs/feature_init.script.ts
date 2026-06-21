@@ -6,6 +6,7 @@
  *   bun packages/ops/src/governance/specs/feature_init.script.ts --id 001 --slug sync-frecency-persistence
  */
 import path from 'node:path'
+import { registerCatalogEntry } from '../registries/catalog/catalog_lifecycle.script'
 
 const ID_WIDTH = 3
 
@@ -59,6 +60,10 @@ async function main(): Promise<void> {
 ## Phase 1
 
 - [ ] **T101** First task — *gate:* SF-1 AC1
+
+## Closeout
+
+- [ ] **T199** Run \`mise run spec closeout assets/specs/${folder}\` (or \`spec ready\`); pass \`--commit\` when the operator wants a closeout commit — *gate:* DoD merge
 `
   )
   await Bun.write(
@@ -76,6 +81,13 @@ async function main(): Promise<void> {
     path.join(dir, '.spec-context.json'),
     `${JSON.stringify({ feature_directory: `assets/specs/${folder}` }, null, 2)}\n`
   )
+
+  try {
+    const reg = registerCatalogEntry(dir)
+    console.log(`feature-init: ${reg.message}`)
+  } catch (err) {
+    console.error(`feature-init: catalog register skipped (${String(err)})`)
+  }
 
   console.log(`✓ created ${dir}`)
 }

@@ -93,8 +93,12 @@ Companion scans only numbered feature folders:
 
 7. **Quality passes** (advisory) — `/speckit-checklist`, `/speckit-analyze`.
 
-Git auto-commit hooks are **disabled** in `.specify/extensions/git/git-config.yml`; commits
-are operator-initiated (see constitution).
+Git auto-commit hooks are **mostly disabled** in `.specify/extensions/git/git-config.yml`;
+**`after_implement`** is **enabled** so the Spec Kit CLI can commit implementation
+progress after `/speckit-implement`. That hook does **not** replace
+`app-quality-gate`, HK commit-message policy, or operator `/commit-all` before merge.
+Cursor `/speckit-implement` does not invoke Speckit hooks unless you run through the
+`specify` CLI with `auto_execute_hooks: true`.
 
 ## Brainstorm-first path
 
@@ -131,7 +135,7 @@ mise run spec conform assets/specs/NNN-slug
 mise run spec audit --fix --dry-run
 mise run spec audit assets/specs/NNN-slug --fix --strict
 
-# lint + trace + full app quality gate
+# lint + trace + spec audit + full app quality gate
 mise run spec gate assets/specs/NNN-slug
 
 # deterministic security subgate (standalone or as part of spec gate)
@@ -429,10 +433,11 @@ Rules (enforced by review, not lint):
 ## Shipping
 
 1. Gherkin + unit coverage for every requirement line (`enforced_by: none` is a ship blocker).
-2. `mise run spec gate assets/specs/NNN-slug`
-3. `bash .agents/skills/app-quality-gate/scripts/gate.sh` (included in `spec gate`)
-4. `mise run catalog ship <key>` when registering a new catalog entry
-5. After merge: archive legacy SDD per [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md) § Shipping
+2. All `tasks.md` T### checkboxes `[x]` before `checklists/implement-done.md` (enforced by `tasks.incomplete` at gate).
+3. **`mise run spec closeout assets/specs/NNN-slug`** — agent-agnostic closeout: `spec audit --strict`, replay handoff Evidence commands (operator-smoke skipped unless `--include-smoke`), then the same steps as **`spec ready`** (tag tests when a catalog key resolves, catalog validate, HK commit profile, `spec gate`, **`catalog promote`**). Pass **`--commit`** when the operator wants an automated closeout commit after gate passes.
+4. **`mise run spec ready assets/specs/NNN-slug`** — gate + HK + catalog promote without replaying handoff Evidence (use when evidence was run manually).
+5. `mise run catalog ship <key>` — readiness check only; **`mise run catalog promote <key>`** writes `status: shipped` after gate passes
+6. After merge: archive legacy SDD per [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md) § Shipping
 
 ## Precedence on conflicts
 

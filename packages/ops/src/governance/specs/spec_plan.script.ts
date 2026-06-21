@@ -244,6 +244,12 @@ function planReady(ctx: PlanCtx): SpecPlan {
   return planRunner('spec-ready', resolved.featureDir, ctx.env)
 }
 
+function planCloseout(ctx: PlanCtx): SpecPlan {
+  const resolved = resolveFeatureOrError(ctx.env, ctx.rest)
+  if (!resolved.ok) return resolved.plan
+  return planRunner('spec-closeout', resolved.featureDir, ctx.env)
+}
+
 function planReviewHandoff({ rest, env }: PlanCtx): SpecPlan {
   const action = (usageOptString(env, 'action') ?? rest[0] ?? '').trim()
   const argv = ['bun', `${WORKFLOW_ROOT}/review_handoff.script.ts`, action]
@@ -278,6 +284,7 @@ const SPEC_COMMANDS = {
   audit: planAudit,
   conform: planConform,
   ready: planReady,
+  closeout: planCloseout,
   'review-handoff': planReviewHandoff,
   kit: planKit
 } as const satisfies Record<string, PlannerFn>

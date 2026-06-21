@@ -1,0 +1,28 @@
+schema_version: '1.0'
+
+extension:
+  id: catalog-lifecycle
+  name: 'Catalog lifecycle'
+  version: '1.0.0'
+  description: 'Register in-progress catalog entries before implementation'
+  author: kb
+  license: MIT
+
+requires:
+  speckit_version: '>=0.2.0'
+
+provides:
+  commands:
+    - name: speckit.catalog.register
+      file: commands/speckit.catalog.register.md
+      description: 'Append in-progress catalog.yaml entry for the active feature'
+
+hooks:
+  before_implement:
+    command: speckit.catalog.register
+    optional: true
+    description: 'Register catalog entry as in-progress before implementation'
+
+tags:
+  - 'catalog'
+  - 'workflow'

@@ -1,13 +1,15 @@
 #!/usr/bin/env bun
 import { getLogger } from '@logtape/logtape'
 import { catalogListRows, loadCatalog } from '../governance/registries/catalog/catalog.script'
+import { promoteCatalogEntry, registerCatalogEntry } from '../governance/registries/catalog/catalog_lifecycle.script'
 import { renderShip, runShip } from '../governance/registries/catalog/catalog_ship.script'
 import { renderValidate, runValidate } from '../governance/registries/catalog/catalog_validate.script'
+import { resolveActiveFeatureDir } from '../governance/specs/resolve_active_feature_dir.script'
 import { runBinMain } from '../support/lib/cli/dispatch.script'
 import { usageCmd, usageFlags, usageStrings } from '../support/lib/cli/usage_env.script'
 import { chdirToRepoRoot } from '../support/lib/shared/repo_root.script'
 
-const VALID_ACTIONS = new Set(['list', 'validate', 'ship'])
+const VALID_ACTIONS = new Set(['list', 'validate', 'ship', 'register', 'promote'])
 
 function positionalArgs(action: string): string[] {
   const argv = process.argv.slice(2)
@@ -58,6 +60,41 @@ const actionMap: Record<string, () => undefined | number | Promise<undefined | n
     const payload = await runShip({ key: catalogKey })
     renderShip(payload, json)
     return payload.ready ? 0 : 1
+  },
+  register: () => {
+    const pos = positionalArgs('register')
+    const resolved = resolveActiveFeatureDir(pos[0])
+    if (!resolved.ok) {
+      logger().error(resolved.message)
+      return resolved.exitCode
+    }
+    try {
+      const result = registerCatalogEntry(resolved.featureDir)
+      console.log(`catalog register: ${result.message}`)
+      return 0
+    } catch (err) {
+      logger().error(String(err))
+      return 1
+    }
+  },
+  promote: async () => {
+    const { json } = usageFlags(process.env, ['json'])
+    const { key } = usageStrings(process.env, ['key'])
+    const dryRun = process.argv.includes('--dry-run')
+    const pos = positionalArgs('promote')
+    const catalogKey = key?.trim() || pos[0]
+    if (!catalogKey) {
+      logger().error('catalog promote: catalog key required (e.g. command_palette)')
+      return 2
+    }
+    const result = await promoteCatalogEntry(catalogKey, { dryRun })
+    if (json) {
+      console.log(JSON.stringify(result, null, 2))
+    } else {
+      console.log(`catalog promote: ${result.message}`)
+    }
+    if (result.action === 'skipped') return 1
+    return 0
   }
 }
 
@@ -67,7 +104,7 @@ runBinMain(() => {
   const resolved = action && VALID_ACTIONS.has(action) ? action : 'list'
   const handler = actionMap[resolved]
   if (!handler) {
-    logger().error(`catalog: unknown action ${resolved} (expected list|validate|ship)`)
+    logger().error(`catalog: unknown action ${resolved} (expected list|validate|ship|register|promote)`)
     return 2
   }
   return handler()

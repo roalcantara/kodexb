@@ -19,12 +19,13 @@ describe('specReadySteps', () => {
     expect(specReadySteps(FEAT, ROOT).map(s => s.id)).toEqual(['catalog', 'hk', 'gate'])
   })
 
-  it('with catalog key prepends tag step', () => {
+  it('with catalog key prepends tag step and appends promote', () => {
     expect(specReadySteps(FEAT, ROOT, { catalogKey: 'mise_sdd_cli' }).map(s => s.id)).toEqual([
       'tag',
       'catalog',
       'hk',
-      'gate'
+      'gate',
+      'promote'
     ])
   })
 
@@ -53,6 +54,16 @@ describe('buildSpecRunnerSteps', () => {
     const ids = steps.map(s => s.id)
     expect(ids).toContain('catalog')
     expect(ids).toContain('hk')
+    expect(ids).toContain('gate')
+  })
+
+  it('spec-closeout prepends audit and evidence before ready steps', () => {
+    const steps = buildSpecRunnerSteps(
+      { kind: 'runner', task: 'spec-closeout', featureDir: FEAT, json: false, raw: false },
+      ROOT
+    )
+    const ids = steps.map(s => s.id)
+    expect(ids.slice(0, 2)).toEqual(['audit', 'evidence'])
     expect(ids).toContain('gate')
   })
 })

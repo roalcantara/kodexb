@@ -150,6 +150,11 @@ describe('planSpec — every subcommand routes', () => {
   it('ready resolves a runner plan', () => {
     expect(plan('ready', [], { usage_feature: FEAT }).kind).toBe('runner')
   })
+  it('closeout resolves a spec-closeout runner plan', () => {
+    const p = plan('closeout', [], { usage_feature: FEAT })
+    expect(p.kind).toBe('runner')
+    if (p.kind === 'runner') expect(p.task).toBe('spec-closeout')
+  })
   it('ready --phase routes to phase.script', () => {
     const argv = spawnArgv(plan('ready', [], { usage_feature: FEAT, usage_phase: '3' }))
     expect(argv.join(' ')).toContain('phase.script.ts')

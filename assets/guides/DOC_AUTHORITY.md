@@ -35,8 +35,9 @@ renamed, archived, or removed after ship.
 1. Runtime code, tests, and tooling must not hardcode specific
   `assets/specs/<slug>/...` paths as durable references.
 2. Use feature-dir inputs, shared path loaders, or fixtures instead:
-  `packages/ops/src/governance/support/catalog_paths.script.ts` (`specs_root`) and
-  `tools/__tests__/fixtures/` for deterministic tests.
+  `packages/ops/src/governance/support/catalog_paths.script.ts` (`specs_root`),
+  `packages/ops/src/__tests__/fixtures/` for governance/ops tests, and
+  `tools/__tests__/fixtures/` for workflow smoke fixtures.
 3. Keep normative path policy in guides only. Any file outside
   `assets/guides/` may show operational examples, but may not define
   authority.
@@ -51,7 +52,8 @@ renamed, archived, or removed after ship.
 
 - Pass `--feature <dir>` at runtime; do not infer one slug in code.
 - Resolve default roots from catalog/config loaders.
-- Use fixture roots under `tools/__tests__/fixtures/` in tests.
+- Use fixture roots under `packages/ops/src/__tests__/fixtures/` (governance) or
+  `tools/__tests__/fixtures/` (workflow smoke) in tests — not live `assets/specs/NNN-*` slugs.
 
 ### Guardrail
 
@@ -191,8 +193,9 @@ legacy assets/docs/archive/NNN-slug/ stubbed (if present)
 superseded_by set in catalog
 ```
 
-**Ship gate (Definition of Done)** — before `status: shipped`: see
-[`DoD.md` § Ship gate (catalog promotion)](DoD.md#8-ship-gate-catalog-promotion).
+**Ship gate (Definition of Done)** — before `status: shipped`: run
+`mise run catalog promote <key>` (or `mise run spec ready` when the feature
+catalog key resolves). See [`DoD.md` § Ship gate (catalog promotion)](DoD.md#8-ship-gate-catalog-promotion).
 
 ### Duplication policy
 
