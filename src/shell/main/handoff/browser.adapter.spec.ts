@@ -30,7 +30,7 @@ describe('openInBrowser()', () => {
     })
 
     it('returns ok:true', async () => {
-      const { openInBrowser } = await import('./browser_handoff.util')
+      const { openInBrowser } = await import('./browser.adapter')
       expect(openInBrowser('https://example.com', 'darwin')).toEqual({ ok: true })
     })
   })
@@ -39,7 +39,7 @@ describe('openInBrowser()', () => {
     describe('when Utils.openExternal returns true', () => {
       it('returns ok:true', async () => {
         openExternalResult = true
-        const { openInBrowser } = await import('./browser_handoff.util')
+        const { openInBrowser } = await import('./browser.adapter')
         expect(openInBrowser('https://example.com', 'linux')).toEqual({ ok: true })
       })
     })
@@ -47,7 +47,7 @@ describe('openInBrowser()', () => {
     describe('when Utils.openExternal returns false', () => {
       it('returns error', async () => {
         openExternalResult = false
-        const { openInBrowser } = await import('./browser_handoff.util')
+        const { openInBrowser } = await import('./browser.adapter')
         expect(openInBrowser('https://example.com', 'linux')).toEqual({
           ok: false,
           error: expect.stringContaining('openExternal')
@@ -59,7 +59,7 @@ describe('openInBrowser()', () => {
   describe('when Utils.openExternal throws', () => {
     it('returns error with thrown message', async () => {
       openExternalResult = 'throw'
-      const { openInBrowser } = await import('./browser_handoff.util')
+      const { openInBrowser } = await import('./browser.adapter')
       expect(openInBrowser('https://example.com', 'linux')).toEqual({ ok: false, error: 'Error: bridge error' })
     })
   })

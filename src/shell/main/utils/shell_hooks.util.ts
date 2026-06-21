@@ -6,7 +6,7 @@ import {
   runEntryHandoff as defaultRunEntryHandoff,
   type HandoffResult,
   type HandoffServices
-} from '../handoff/handoff_registry.service'
+} from '../handoff/registry.service'
 import { adaptPositionForNativeWindow, adaptPositionFromNativeWindow } from '../window/darwin_window_frame.util'
 import { isUsableWorkArea, resolveInitialFrame, type Size, type WindowFrame } from '../window/placement.util'
 

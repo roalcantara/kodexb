@@ -49,6 +49,17 @@ ls:
   src/shell/main/window:
     .ts: regex:^(state|[a-z][a-z0-9_]*\.util)(\.spec)?$
 
+  # Handoff: cross-process/adapter bridge layer.
+  # Allowed suffixes: .adapter, .port, .service, .resolver
+  src/shell/main/handoff:
+    .ts: regex:^[a-z][a-z0-9_]*\.(adapter|port|service|resolver)(\.spec)?$
+
+  src/shell/main/handoff/frontmost:
+    .ts: regex:^[a-z][a-z0-9_]*\.(adapter|resolver)(\.spec)?$
+
+  src/shell/main/handoff/terminal:
+    .ts: regex:^[a-z][a-z0-9_]*\.(adapter|resolver)(\.spec)?$
+
   # ── Renderer: directory↔suffix contract ─────────────────────────────────────
   # Root: only the React root, entry point, and HTML shell.
   src/shell/renderer:

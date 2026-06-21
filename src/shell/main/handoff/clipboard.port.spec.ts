@@ -1,23 +1,25 @@
-import { describe, expect, it, mock } from 'bun:test'
+import { beforeAll, describe, expect, it, mock } from 'bun:test'
 
 let utilsClipboardReadText: () => string | null
 let utilsClipboardWriteText: (text: string) => void
 
-mock.module('electrobun/bun', () => ({
-  Utils: {
-    clipboardReadText: () => utilsClipboardReadText(),
-    clipboardWriteText: (text: string) => {
-      utilsClipboardWriteText(text)
+beforeAll(() => {
+  mock.module('electrobun/bun', () => ({
+    Utils: {
+      clipboardReadText: () => utilsClipboardReadText(),
+      clipboardWriteText: (text: string) => {
+        utilsClipboardWriteText(text)
+      }
     }
-  }
-}))
+  }))
+})
 
-describe('electrobun_clipboard.port', () => {
+describe('clipboard.port', () => {
   describe('readSystemClipboard', () => {
     describe('when Utils.clipboardReadText returns text', () => {
       it('returns that text', async () => {
         utilsClipboardReadText = () => 'hello'
-        const { readSystemClipboard } = await import('./electrobun_clipboard.port')
+        const { readSystemClipboard } = await import('./clipboard.port')
         expect(readSystemClipboard()).toBe('hello')
       })
     })
@@ -25,7 +27,7 @@ describe('electrobun_clipboard.port', () => {
     describe('when Utils.clipboardReadText returns null', () => {
       it('returns empty string', async () => {
         utilsClipboardReadText = () => null
-        const { readSystemClipboard } = await import('./electrobun_clipboard.port')
+        const { readSystemClipboard } = await import('./clipboard.port')
         expect(readSystemClipboard()).toBe('')
       })
     })
@@ -35,7 +37,7 @@ describe('electrobun_clipboard.port', () => {
         utilsClipboardReadText = () => {
           throw new Error('bridge unavailable')
         }
-        const { readSystemClipboard } = await import('./electrobun_clipboard.port')
+        const { readSystemClipboard } = await import('./clipboard.port')
         expect(readSystemClipboard()).toBe('')
       })
     })
@@ -47,7 +49,7 @@ describe('electrobun_clipboard.port', () => {
       utilsClipboardWriteText = (text: string) => {
         written = text
       }
-      const { writeSystemClipboard } = await import('./electrobun_clipboard.port')
+      const { writeSystemClipboard } = await import('./clipboard.port')
       writeSystemClipboard('test payload')
       expect(written).toBe('test payload')
     })
@@ -57,7 +59,7 @@ describe('electrobun_clipboard.port', () => {
         utilsClipboardWriteText = () => {
           throw new Error('bridge unavailable')
         }
-        const { writeSystemClipboard } = await import('./electrobun_clipboard.port')
+        const { writeSystemClipboard } = await import('./clipboard.port')
         expect(() => writeSystemClipboard('test')).not.toThrow()
       })
     })

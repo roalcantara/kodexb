@@ -8,7 +8,7 @@ describe('xdotoolAvailable()', () => {
   describe('when which xdotool succeeds', () => {
     it('returns true', async () => {
       setBunDollarThrow(false)
-      const { xdotoolAvailable } = await import('./xdotool_available.util')
+      const { xdotoolAvailable } = await import('./xdotool.adapter')
       expect(xdotoolAvailable()).toBe(true)
     })
   })
@@ -16,7 +16,7 @@ describe('xdotoolAvailable()', () => {
   describe('when which xdotool throws', () => {
     it('returns false', async () => {
       setBunDollarThrow(true)
-      const { xdotoolAvailable } = await import('./xdotool_available.util')
+      const { xdotoolAvailable } = await import('./xdotool.adapter')
       expect(xdotoolAvailable()).toBe(false)
     })
   })

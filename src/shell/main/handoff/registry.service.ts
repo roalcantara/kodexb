@@ -1,9 +1,9 @@
-import { type BrowserHandoffResult, openInBrowser } from './browser_handoff.util'
-import { type EditorHandoffResult, openInEditor as openInEditorUtil } from './editor_handoff.util'
-import { readSystemClipboard, writeSystemClipboard } from './electrobun_clipboard.port'
-import { type PasteFrontmostResult, pasteIntoFrontmostApp } from './paste_frontmost_handoff.util'
-import { resolveTerminalAppName } from './resolve_terminal_app_name.util'
-import { pasteInTerminal, runInTerminal, type TerminalHandoffResult } from './terminal_handoff.util'
+import { type BrowserHandoffResult, openInBrowser } from './browser.adapter'
+import { readSystemClipboard, writeSystemClipboard } from './clipboard.port'
+import { type EditorHandoffResult, openInEditor as openInEditorUtil } from './editor.adapter'
+import { type PasteFrontmostResult, pasteIntoFrontmostApp } from './frontmost/paste.adapter'
+import { resolveTerminalAppName } from './terminal/app.resolver'
+import { pasteInTerminal, runInTerminal, type TerminalHandoffResult } from './terminal/command.adapter'
 
 export type HandoffKind = 'browser-open' | 'terminal-paste' | 'terminal-run' | 'paste-frontmost' | 'editor-open'
 
