@@ -19,10 +19,7 @@ describe('role_conformance_core', () => {
     expect(classifyUtil('b.util.ts', "import 'node:os'").verdict).toBe('rename')
   })
   it('computeMetrics derives ratios', () => {
-    const rows = [
-      classifyUtil('a.util.ts', 'export const a=1'),
-      classifyUtil('b.util.ts', "import 'node:os'")
-    ]
+    const rows = [classifyUtil('a.util.ts', 'export const a=1'), classifyUtil('b.util.ts', "import 'node:os'")]
     const m = computeMetrics(rows, { locked: 1, roleDirs: 4 })
     expect(m).toEqual({
       totalUtil: 2,

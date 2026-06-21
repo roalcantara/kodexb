@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'bun:test'
 import { buildReport, deriveDirCoverage, renderReportMd, toBaseline } from './role_conformance.script'
 
+const sampleUtilFiles = () => [
+  { path: 'src/core/a.util.ts', source: 'export const a=1' },
+  { path: 'src/shell/main/b.util.ts', source: "import 'node:os'" }
+]
+
 describe('role_conformance runner', () => {
   it('builds rows + metrics from in-memory files', () => {
-    const files = [
-      { path: 'src/core/a.util.ts', source: 'export const a=1' },
-      { path: 'src/shell/main/b.util.ts', source: "import 'node:os'" }
-    ]
+    const files = sampleUtilFiles()
     const report = buildReport(files, { lockedDirs: 1, roleDirs: 2 })
     expect(report.results.totalUtil).toBe(2)
     expect(report.results.mislabeledUtilCount).toBe(1)
@@ -26,9 +28,7 @@ describe('role_conformance runner', () => {
   })
 
   it('renderReportMd produces markdown with metrics', () => {
-    const files = [
-      { path: 'src/core/a.util.ts', source: 'export const a=1' }
-    ]
+    const files = [{ path: 'src/core/a.util.ts', source: 'export const a=1' }]
     const report = buildReport(files, { lockedDirs: 1, roleDirs: 2 })
     const md = renderReportMd(report)
     expect(md).toContain('# Role-Conformance Report')
@@ -37,13 +37,10 @@ describe('role_conformance runner', () => {
   })
 
   it('toBaseline strips rows from report', () => {
-    const files = [
-      { path: 'src/core/a.util.ts', source: 'export const a=1' },
-      { path: 'src/shell/main/b.util.ts', source: "import 'node:os'" }
-    ]
+    const files = sampleUtilFiles()
     const report = buildReport(files, { lockedDirs: 1, roleDirs: 2 })
     const baseline = toBaseline(report)
-    expect((baseline as any).rows).toBeUndefined()
+    expect('rows' in baseline).toBe(false)
     expect(baseline.results.totalUtil).toBe(2)
     expect(baseline.summary).toBe('PASS')
   })

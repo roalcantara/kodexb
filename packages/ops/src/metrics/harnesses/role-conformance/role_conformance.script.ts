@@ -24,7 +24,11 @@ export function buildReport(
   const violations: RoleReport['violations'] = []
   if (baseline) {
     if (results.mislabeledUtilCount > baseline.mislabeledUtilCount)
-      violations.push({ metric: 'mislabeledUtilCount', value: results.mislabeledUtilCount, baseline: baseline.mislabeledUtilCount })
+      violations.push({
+        metric: 'mislabeledUtilCount',
+        value: results.mislabeledUtilCount,
+        baseline: baseline.mislabeledUtilCount
+      })
     if (results.utilPurityRatio < baseline.utilPurityRatio)
       violations.push({ metric: 'utilPurityRatio', value: results.utilPurityRatio, baseline: baseline.utilPurityRatio })
   }
@@ -39,19 +43,18 @@ export function buildReport(
   }
 }
 
-export function deriveDirCoverage(files: Array<{ path: string; source: string }>): { lockedDirs: number; roleDirs: number } {
-  const roleDirs = new Set(
-    files
-      .map(f => path.dirname(f.path))
-      .filter(d => /\/[a-z][a-z0-9_]*$/.test(d))
-  )
+export function deriveDirCoverage(files: Array<{ path: string; source: string }>): {
+  lockedDirs: number
+  roleDirs: number
+} {
+  const roleDirs = new Set(files.map(f => path.dirname(f.path)).filter(d => /\/[a-z][a-z0-9_]*$/.test(d)))
   return { lockedDirs: 0, roleDirs: roleDirs.size }
 }
 
 export function renderReportMd(report: RoleReport): string {
-  const rows = report.rows.map(r =>
-    `| ${r.path} | ${r.importsIO} | ${r.verdict} | ${r.suggestedSuffix ?? '-'} |`
-  ).join('\n')
+  const rows = report.rows
+    .map(r => `| ${r.path} | ${r.importsIO} | ${r.verdict} | ${r.suggestedSuffix ?? '-'} |`)
+    .join('\n')
   return [
     '# Role-Conformance Report',
     '',
@@ -61,20 +64,22 @@ export function renderReportMd(report: RoleReport): string {
     `**Bun:** ${report.bun_version}`,
     '',
     '## Metrics',
-    `| Metric | Value |`,
-    `|--------|-------|`,
+    '| Metric | Value |',
+    '|--------|-------|',
     `| totalUtil | ${report.results.totalUtil} |`,
     `| mislabeledUtilCount | ${report.results.mislabeledUtilCount} |`,
     `| utilPurityRatio | ${report.results.utilPurityRatio} |`,
     `| enforcedDirRatio | ${report.results.enforcedDirRatio} |`,
     `| suffixViolations | ${report.results.suffixViolations} |`,
     '',
-    ...(report.violations.length > 0 ? [
-      '## Violations',
-      '| Metric | Value | Baseline |',
-      '|--------|-------|----------|',
-      ...report.violations.map(v => `| ${v.metric} | ${v.value} | ${v.baseline} |`)
-    ] : []),
+    ...(report.violations.length > 0
+      ? [
+          '## Violations',
+          '| Metric | Value | Baseline |',
+          '|--------|-------|----------|',
+          ...report.violations.map(v => `| ${v.metric} | ${v.value} | ${v.baseline} |`)
+        ]
+      : []),
     '',
     '## File Classification',
     '| Path | Imports IO | Verdict | Suggested Suffix |',
@@ -84,7 +89,9 @@ export function renderReportMd(report: RoleReport): string {
   ].join('\n')
 }
 
-export function toBaseline(report: RoleReport): RoleReport {
+export type RoleBaseline = Omit<RoleReport, 'rows'>
+
+export function toBaseline(report: RoleReport): RoleBaseline {
   const { rows: _rows, ...rest } = report
   return rest
 }
@@ -111,7 +118,7 @@ async function deriveDirCoverageFromFiles(): Promise<{ lockedDirs: number; roleD
 
 if (import.meta.main) {
   const rawAction = process.env.usage_cmd ?? process.argv[2] ?? 'compare'
-  const action = rawAction.includes(' ') ? rawAction.split(' ').pop()! : rawAction
+  const action = rawAction.includes(' ') ? (rawAction.split(' ').at(-1) ?? rawAction) : rawAction
   const files = await scanUtilFiles()
   const dirs = await deriveDirCoverageFromFiles()
   const baseline = action === 'baseline' ? undefined : await loadBaseline()
@@ -124,6 +131,8 @@ if (import.meta.main) {
   if (action === 'baseline' || process.env.usage_write_baseline === 'true') {
     await Bun.write(BASELINE_PATH, JSON.stringify(toBaseline(report), null, 2))
   }
-  console.log(`${report.summary} mislabeled=${report.results.mislabeledUtilCount} purity=${report.results.utilPurityRatio}`)
+  console.log(
+    `${report.summary} mislabeled=${report.results.mislabeledUtilCount} purity=${report.results.utilPurityRatio}`
+  )
   if (report.summary === 'FAIL') process.exitCode = 1
 }
