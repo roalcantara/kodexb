@@ -211,9 +211,7 @@ function truncateMermaidLabel(label: string, max: number): string {
 }
 
 function activeColumnIndex(report: WorkflowProgressReport): number {
-  return report.columns.findIndex(
-    c => c.rail.status === 'current' || c.stack.some(n => n.status === 'current')
-  )
+  return report.columns.findIndex(c => c.rail.status === 'current' || c.stack.some(n => n.status === 'current'))
 }
 
 function renderMermaidRails(report: WorkflowProgressReport): string {
@@ -246,10 +244,7 @@ function renderMermaidSubgraph(report: WorkflowProgressReport): string {
     .map((col, i) => `  ${col.id}_col --> ${report.columns[i + 1]?.id}_col`)
     .join('\n')
   const activeCol = report.columns[activeIdx]
-  const activeStyle =
-    activeCol && activeIdx >= 0
-      ? `\n  style ${activeCol.id}_col stroke:#5ecfbe,stroke-width:3px`
-      : ''
+  const activeStyle = activeCol && activeIdx >= 0 ? `\n  style ${activeCol.id}_col stroke:#5ecfbe,stroke-width:3px` : ''
   return `flowchart LR\n${blocks.join('\n')}\n${links}\n${MERMAID_CLASS_DEFS}${activeStyle}\n`
 }
 
