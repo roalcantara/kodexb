@@ -1,0 +1,28 @@
+Role-suffix conformance migration — closeout metrics
+=====================================================
+Date: 2026-06-21
+
+Before (baseline.json on feature branch, 2026-06-21T13:10:41.730Z):
+  totalUtil: 100
+  mislabeledUtilCount: 19
+  utilPurityRatio: 0.808
+  enforcedDirRatio: 0.635
+
+After (baseline.json at final SHA 332dc35f):
+  totalUtil: 84
+  mislabeledUtilCount: 0
+  utilPurityRatio: 1.000
+  enforcedDirRatio: 0.676
+
+Delta:
+  mislabeledUtilCount: 19 -> 0  (-19, 100% reduction)
+  utilPurityRatio:     0.808 -> 1.000  (+0.192)
+  enforcedDirRatio:    0.635 -> 0.676  (+0.041)
+  totalUtil:           100 -> 84  (16 files removed: 8 renames + system changes)
+
+Notes:
+- mislabeledUtilCount dropped from 19 to 0 via: detector hardening
+  (type-only import filter + pure Node module exemption) + 8 file renames.
+- 6 false-positive files were correctly kept as .util after per-file review.
+- The detector-blind param-I/O files (import_bundle_persist, frecency_snapshot)
+  were renamed by human review per disposition table — recorded limitation.

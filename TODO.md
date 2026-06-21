@@ -86,12 +86,12 @@ Sorted by execution order: the handoff pilot and conformant-dir locks shipped in
 
 - [x] **Handoff pilot** — `src/shell/main/handoff` renamed to single-word role suffixes.
 - [x] **Conformant-dir locks** — additive `.ls-lint.yml` rules for 16 already-clean directories.
-- [ ] **Rename `src/__tests__/helpers`** — `rpc_route.spec.util.ts` to its real role suffix; `bun run lint:ls` green.
-- [ ] **Rename `src/shell/main/utils`** — `shell_hooks.util.ts` → `.service`/`.helper` by content.
-- [ ] **Rename `src/shell/main/window`** — `display_at_cursor`, `launcher_window`, `darwin_window_frame`, `load_window_state`, `launcher_frame_probe`, `placement` (`.util` → `.service`/`.port`/`.adapter` by FCIS role).
-- [ ] **Rename `src/shell/app/lib`** — `app_preview_fetch`, `app_sync`, `app_task_mutation`, `frecency_snapshot`, `app_task_source` (`.util` → `.service`/`.adapter`/`.repository`).
-- [ ] **Rename `src/shell/app/db`** — `import_bundle_persist.util.ts` → `.service`/`.repository` (after `app/lib` settles).
-- [ ] **Guide drift cross-check** — CODESTYLE/FCIS/foundation match implementation (naming/suffix rules, FCIS import boundaries, stack decisions: TypeBox, `bun:sqlite`, no Drizzle); fixes land in guides; `mise run app gates` green. ADR 0001 + the role vocabulary already shipped in 018.
+- [x] **Rename `src/__tests__/helpers`** — `rpc_route.spec.util.ts` → `rpc_route.helper.ts`; `bun run lint:ls` green.
+- [x] **Review `src/shell/main/utils`** — `shell_hooks.util.ts` kept as `.util` (false positive — type-only, injected ports; split deferred to P3 per 019 spec review).
+- [x] **Review `src/shell/main/window`** — `launcher_frame_probe.util.ts` → `launcher_frame_probe.adapter.ts`; remaining 5 files kept as `.util` (false positives per 019 per-file review).
+- [x] **Rename `src/shell/app/lib`** — `app_preview_fetch` → `.client`, `app_sync` → `.service`, `app_task_mutation` → `.service`, `app_task_source` → `.service`, `frecency_snapshot` → `.repository` (+ co-located specs).
+- [x] **Rename `src/shell/app/db`** — `import_bundle_persist.util.ts` → `import_bundle_persist.repository.ts`.
+- [x] **Guide drift cross-check** — CODESTYLE/FCIS/foundation match implementation (naming/suffix rules, FCIS import boundaries, stack decisions: TypeBox, `bun:sqlite`, no Drizzle); stale refs fixed in guides; `mise run app gates` green. ADR 0001 + the role vocabulary already shipped in 018.
 
 ### P2 — Improvements
 

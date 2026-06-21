@@ -166,3 +166,10 @@ arch_role_taxonomy:
   specs:
     - 018-architecture-role-taxonomy
   superseded_by: null
+
+role_suffix_migration:
+  title: Role-suffix conformance migration
+  status: shipped
+  specs:
+    - 019-role-suffix-migration
+  superseded_by: null

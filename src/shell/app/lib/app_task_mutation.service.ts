@@ -13,7 +13,7 @@ import {
   writeSourceDoc,
   writeTasksToSource,
   writeTaskToSource
-} from './app_task_source.util'
+} from './app_task_source.service'
 
 type AppLike = {
   getLog: () => ReturnType<typeof import('../../../shared/logging').getLogger>

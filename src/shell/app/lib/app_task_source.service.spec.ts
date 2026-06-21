@@ -9,7 +9,7 @@ import {
   removeTaskFromSource,
   taskToSourceRecord,
   writeTaskToSource
-} from './app_task_source.util'
+} from './app_task_source.service'
 
 let tmpDir = ''
 let sourcePath = ''

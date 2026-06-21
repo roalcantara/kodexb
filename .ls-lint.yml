@@ -27,12 +27,19 @@ ls:
   src/shell/app/db:
     .ts: regex:^([a-z][a-z0-9_]*\.(repository|service)|[a-z][a-z0-9_]+\.(util|const)|client|schema|index)(\.spec)?$
 
+  src/shell/app/lib:
+    .ts: regex:^([a-z][a-z0-9_]*(\.[a-z][a-z0-9_]+)*\.(util|service|repository|client|types|error)(\.spec)?)$
+
   # ── Main: directory↔suffix contract ─────────────────────────────────────────
   # Root: only the entry point and barrel. Everything else lives in a sub-folder.
   src/shell/main:
     .ts: regex:^(main|index)(\.spec)?$
 
   # Helpers mirror src/core/helpers/ — process-level OS-integration helpers.
+  # ── Test helpers: .helper / .util / .mock / .factory / .seed / .tmp / .types ──
+  src/__tests__/helpers:
+    .ts: regex:^([a-z][a-z0-9_]*(\.[a-z][a-z0-9_]+)*\.(util|helper|mock|factory|seed|tmp|types|quiet_stdio)(\.spec)?)$
+
   src/shell/main/helpers:
     .ts: regex:^[a-z][a-z0-9_]*\.helper(\.spec)?$
 
@@ -47,7 +54,10 @@ ls:
     .ts: regex:^[a-z][a-z0-9_]*\.util(\.spec)?$
 
   src/shell/main/window:
-    .ts: regex:^(state|[a-z][a-z0-9_]*\.util)(\.spec)?$
+    .ts: regex:^(state|[a-z][a-z0-9_]*\.(util|adapter))(\.spec)?$
+
+  src/shell/main/utils:
+    .ts: regex:^[a-z][a-z0-9_]*\.(util|types)(\.spec)?$
 
   # Handoff: cross-process/adapter bridge layer.
   # Allowed suffixes: .adapter, .port, .service (plus index barrel).

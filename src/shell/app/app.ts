@@ -26,10 +26,10 @@ import { recordEntryVisit as persistEntryVisit } from './db/frecency.repository'
 import { countKnowledgeForOpts, listKnowledgeForOpts } from './lib/app_list_query.util'
 import { buildListStats } from './lib/app_list_stats.util'
 import { buildListStatsForFilters } from './lib/app_list_stats_for_filters.util'
-import { fetchPreviewImageFromUrl } from './lib/app_preview_fetch.util'
+import { fetchPreviewImageFromUrl } from './lib/app_preview_fetch.client'
 import type { AppShellHooks } from './lib/app_shell_hooks.types'
 import { createAppShellDelegates } from './lib/app_shell_surface.util'
-import { type RunSourceImportSyncTestHooks, runSourceImportSync } from './lib/app_sync.util'
+import { type RunSourceImportSyncTestHooks, runSourceImportSync } from './lib/app_sync.service'
 import { getSyncInfoForSourcesDir } from './lib/app_sync_info.util'
 import {
   createTask as createTaskMutation,
@@ -38,8 +38,8 @@ import {
   deleteTask as deleteTaskMutation,
   reorderTask as reorderTaskMutation,
   updateTask as updateTaskMutation
-} from './lib/app_task_mutation.util'
-import type { TaskMutationLogContext } from './lib/app_task_source.util'
+} from './lib/app_task_mutation.service'
+import type { TaskMutationLogContext } from './lib/app_task_source.service'
 import { SyncDatabaseBusyError } from './lib/sync_database_busy.error'
 
 export type SyncEmitter = {

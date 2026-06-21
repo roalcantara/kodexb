@@ -14,7 +14,7 @@ export {
   type RpcRoutePluginFactory,
   rpcSpecPostJson,
   setupRpcRouteSpecSuite
-} from './helpers/rpc_route.spec.util'
+} from './helpers/rpc_route.helper'
 export { runRoute } from './helpers/run_route.util'
 export { recordingTerminalShellHook, throwingShellHook } from './helpers/shell_hook_spec.util'
 export { bindingRefFixture, bindingRefsForApps, bindingsCacheSample } from './helpers/testing.bindings.util'
