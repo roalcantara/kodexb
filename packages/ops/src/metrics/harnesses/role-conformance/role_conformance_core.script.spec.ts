@@ -98,6 +98,9 @@ describe('role_conformance_core', () => {
     it('flags fetch(', () => {
       expect(isPureUtil('const r = await fetch(u)')).toBe(false)
     })
+    it('does not flag node: module paths in string literals', () => {
+      expect(isPureUtil('const hint = "node:fs"\nexport const x = 1')).toBe(true)
+    })
   })
 
   describe('MIGR-1 regression — pure geometry helpers are pure', () => {

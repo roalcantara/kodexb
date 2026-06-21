@@ -66,11 +66,11 @@ both the dev terminal and DevTools for full coverage.
 
 Categories begin with `['kb', '<area>', ...]`. The canonical map:
 
-| Category                      | Owner file                                                |
+| Category                      | Owner files                                               |
 | ----------------------------- | --------------------------------------------------------- |
 | `['kb', 'main']`              | `src/shell/main/main.ts`                                  |
 | `['kb', 'app']`               | `src/shell/app/app.ts`                                    |
-| `['kb', 'app', 'sync']`       | `src/shell/app/db/import.service.ts` + `app_sync.service.ts` |
+| `['kb', 'app', 'sync']`       | `src/shell/app/db/import.service.ts`, `src/shell/app/lib/app_sync.service.ts` |
 | `['kb', 'app', 'task']`       | `src/shell/app/lib/app_task_source.service.ts`               |
 | `['kb', 'rpc']`               | `src/shared/logging/rpc.middleware.ts`                    |
 | `['kb', 'sqlite']`            | `src/shared/logging/db_query.logger.ts`                   |

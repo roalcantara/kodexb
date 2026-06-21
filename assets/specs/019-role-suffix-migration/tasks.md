@@ -105,7 +105,7 @@
 
 ### Implementation for User Story 5
 
-- [x] T115 [US5] Audit and fix guide naming/architectural drift in assets/guides/CODESTYLE_GUIDE.md, assets/guides/FCIS.guide.md, assets/guides/TOOLS_GUIDE.md, and CLAUDE.md/AGENTS.md
+- [x] T115 [US5] Audit and fix guide naming drift in assets/guides/CODESTYLE_GUIDE.md and assets/guides/LOGGING_GUIDE.md (renamed-path references for migrated shell files); cross-check FCIS/foundation/TODO P1 scope per handoff MIGR-6
 - [x] T116 [US5] Mark completed P1 backlog items as checked [x] in TODO.md
 
 ---

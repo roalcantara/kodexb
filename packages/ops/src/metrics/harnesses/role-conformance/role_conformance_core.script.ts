@@ -41,7 +41,7 @@ export function stripTypeImports(source: string): string {
  * `node:assert`) are intentionally NOT matched.
  */
 const IO_RE =
-  /(?:from\s+)?['"](?:node:(?:fs(?:\/promises)?|child_process|os|net|https?)|bun:sqlite|electrobun)|Bun\.\$|Bun\.spawn|\bfetch\s*\(/
+  /(?:from\s+|import\s+)['"](?:node:(?:fs(?:\/promises)?|child_process|os|net|https?)|bun:sqlite|electrobun)|Bun\.\$|Bun\.spawn|\bfetch\s*\(/
 
 export function isPureUtil(source: string): boolean {
   return !IO_RE.test(stripTypeImports(source))
