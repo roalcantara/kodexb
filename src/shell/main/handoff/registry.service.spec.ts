@@ -9,7 +9,7 @@ import {
   uninstallBunDollarMock,
   uninstallBunSpawnSyncMock
 } from '@testing'
-import type { HandoffKind } from './handoff_registry.service'
+import type { HandoffKind } from './registry.service'
 
 let clipboardContent = ''
 let openPathResult: boolean | 'throw' = false
@@ -25,20 +25,17 @@ function installHandoffRegistrySpecMocks(): void {
       openPath: () => {
         if (openPathResult === 'throw') throw new Error('openPath failed')
         return openPathResult
+      },
+      clipboardReadText: () => clipboardContent,
+      clipboardWriteText: (text: string) => {
+        clipboardContent = text
       }
-    }
-  }))
-  mock.module('./electrobun_clipboard.port', () => ({
-    readSystemClipboard: () => clipboardContent,
-    writeSystemClipboard: (text: string) => {
-      clipboardContent = text
     }
   }))
 }
 
 beforeAll(() => installBunDollarMock())
 beforeEach(() => {
-  mock.restore()
   installHandoffRegistrySpecMocks()
   clipboardContent = ''
   openPathResult = false
@@ -82,14 +79,14 @@ describe('runEntryHandoff', () => {
   describe('when browser-open has no url', () => {
     it('returns false with browser-open-failed code', async () => {
       clipboardContent = 'clip'
-      const { runEntryHandoff } = await import('./handoff_registry.service')
+      const { runEntryHandoff } = await import('./registry.service')
       const services = makeServices()
       const result = runEntryHandoff('browser-open', {}, services, HANDOFF_TEST_PLATFORM)
       expect(result).toEqual({ ok: false, error: 'No URL provided', code: 'browser-open-failed' })
     })
 
     it('calls hide, show, and disarmGuard', async () => {
-      const { runEntryHandoff } = await import('./handoff_registry.service')
+      const { runEntryHandoff } = await import('./registry.service')
       const services = makeServices()
       runEntryHandoff('browser-open', {}, services, HANDOFF_TEST_PLATFORM)
       expect(services.calls).toContain('hide')
@@ -100,7 +97,7 @@ describe('runEntryHandoff', () => {
 
   describe('when editor-open has no filePath', () => {
     it('returns false with editor-open-failed code', async () => {
-      const { runEntryHandoff } = await import('./handoff_registry.service')
+      const { runEntryHandoff } = await import('./registry.service')
       const services = makeServices()
       const result = runEntryHandoff('editor-open', {}, services, HANDOFF_TEST_PLATFORM)
       expect(result).toEqual({ ok: false, error: 'No file path provided', code: 'editor-open-failed' })
@@ -111,7 +108,7 @@ describe('runEntryHandoff', () => {
     it('restores clipboard and returns ok:true', async () => {
       clipboardContent = 'original-clip'
       setBunDollarThrow(false)
-      const { runEntryHandoff } = await import('./handoff_registry.service')
+      const { runEntryHandoff } = await import('./registry.service')
       const services = makeServices()
       const result = runEntryHandoff('terminal-paste', { cmd: 'ls -la' }, services, HANDOFF_TEST_PLATFORM)
 
@@ -127,7 +124,7 @@ describe('runEntryHandoff', () => {
     it('restores clipboard and returns error with terminal-paste-failed code', async () => {
       clipboardContent = 'original-clip'
       setBunDollarThrow(true)
-      const { runEntryHandoff } = await import('./handoff_registry.service')
+      const { runEntryHandoff } = await import('./registry.service')
       const services = makeServices()
       const result = runEntryHandoff('terminal-paste', { cmd: 'ls -la' }, services, HANDOFF_TEST_PLATFORM)
 
@@ -143,7 +140,7 @@ describe('runEntryHandoff', () => {
     it('restores clipboard and returns ok:true', async () => {
       clipboardContent = 'clip'
       setBunDollarThrow(false)
-      const { runEntryHandoff } = await import('./handoff_registry.service')
+      const { runEntryHandoff } = await import('./registry.service')
       const services = makeServices()
       const result = runEntryHandoff('terminal-run', { cmd: 'npm test' }, services, HANDOFF_TEST_PLATFORM)
 
@@ -159,7 +156,7 @@ describe('runEntryHandoff', () => {
         clipboardContent = 'original-clip'
         setBunDollarThrow(false)
         setBunSpawnSyncResult({ exitCode: 0, stdout: '', stderr: '' })
-        const { runEntryHandoff } = await import('./handoff_registry.service')
+        const { runEntryHandoff } = await import('./registry.service')
         const services = makeServices()
         const result = runEntryHandoff('paste-frontmost', { doc: 'paste-content' }, services, HANDOFF_TEST_PLATFORM)
 
@@ -175,7 +172,7 @@ describe('runEntryHandoff', () => {
       it('restores clipboard and returns paste-doc-failed code', async () => {
         clipboardContent = 'original-clip'
         setBunDollarThrow(true)
-        const { runEntryHandoff } = await import('./handoff_registry.service')
+        const { runEntryHandoff } = await import('./registry.service')
         const services = makeServices()
         const result = runEntryHandoff('paste-frontmost', { doc: 'paste-content' }, services, HANDOFF_TEST_PLATFORM)
 
@@ -189,7 +186,7 @@ describe('runEntryHandoff', () => {
   describe('when hide throws after clipboard write', () => {
     it('restores clipboard before showing and disarming', async () => {
       clipboardContent = 'original-clip'
-      const { runEntryHandoff } = await import('./handoff_registry.service')
+      const { runEntryHandoff } = await import('./registry.service')
       const throwingHide = {
         calls: [] as string[],
         armGuard: () => {
@@ -216,7 +213,7 @@ describe('runEntryHandoff', () => {
   describe('when adapter succeeds', () => {
     it('disarms guard and returns ok:true', async () => {
       openExternalResult = true
-      const { runEntryHandoff } = await import('./handoff_registry.service')
+      const { runEntryHandoff } = await import('./registry.service')
       const services = makeServices()
       const result = runEntryHandoff('browser-open', { url: 'https://example.com' }, services, HANDOFF_TEST_PLATFORM)
 
@@ -231,7 +228,7 @@ describe('runEntryHandoff', () => {
   describe('when adapter returns ok:false after hide', () => {
     it('calls show and returns browser-open-failed code', async () => {
       clipboardContent = 'clip'
-      const { runEntryHandoff } = await import('./handoff_registry.service')
+      const { runEntryHandoff } = await import('./registry.service')
       const services = makeServices()
       const result = runEntryHandoff('browser-open', { url: 'https://example.com' }, services, HANDOFF_TEST_PLATFORM)
 
@@ -275,7 +272,7 @@ describe('runEntryHandoff', () => {
     for (const { kind, payload, wantCode, wantError } of cases) {
       it(`returns "${wantCode}" for ${kind} with error matching "${wantError}"`, async () => {
         clipboardContent = ''
-        const { runEntryHandoff } = await import('./handoff_registry.service')
+        const { runEntryHandoff } = await import('./registry.service')
         const services = makeServices()
         const result = runEntryHandoff(kind, payload, services, HANDOFF_TEST_PLATFORM)
         expect(result).toMatchObject({ ok: false, code: wantCode })

@@ -109,13 +109,13 @@ The workflow engine lives at `tools/governance/specs/workflow/` today. 009 deliv
 
 **Slice:** MVP
 
-**User story:** As an agent, I want WORKFLOW_GUIDE to document package layout so I import the right layer.
+**User story:** As an agent, I want WORKFLOW_RUNTIME_GUIDE to document package layout so I import the right layer.
 
 ### Acceptance criteria
 
-1. WHEN an agent reads [`WORKFLOW_GUIDE.md`](../../guides/WORKFLOW_GUIDE.md), THEN the guide SHALL document `@kb/workflow-core` / `@kb/workflow-runtime` and governance CLI seams.
+1. WHEN an agent reads [`WORKFLOW_RUNTIME_GUIDE.md`](../../guides/WORKFLOW_RUNTIME_GUIDE.md), THEN the guide SHALL document `@kb/workflow-core` / `@kb/workflow-runtime` and governance CLI seams.
    - **Measure:** Guide section present; spec lint green.
-   - **Evidence:** `WORKFLOW_GUIDE.md` diff; `mise run spec lint` on 010 spec.
+   - **Evidence:** `WORKFLOW_RUNTIME_GUIDE.md` diff; `mise run spec lint` on 010 spec.
 
 ---
 

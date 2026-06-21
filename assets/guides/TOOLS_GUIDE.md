@@ -14,14 +14,14 @@ purpose family, enforced by `layout_validate.script.ts` in CI.
 Purpose answers **why the repo maintains this automation**. Coupling (`imports_src`,
 `coupling_role` in inventory) answers **what it may depend on**. Both axes are required.
 
-| Family | Job | Path under `tools/` |
-| ------ | --- | ------------------- |
-| **governance** | Enforce invariants — policies, registries, SDD workflow | `governance/policies/`, `governance/registries/`, `governance/specs/` |
-| **orchestration** | Sequence workflow steps when mise/GHA/HK fires | `orchestration/scripts/`, `orchestration/fixtures/` |
-| **metrics** | Repo metrics over time — harnesses + promoted baselines | `metrics/harnesses/`, `metrics/baselines/` |
-| **dev** | Product-adjacent runtime (preview server, bundler plugins) | `dev/preview/`, `dev/build/` |
-| **bin** | Thin TypeScript dispatch stubs (see below) | `bin/` (flat) |
-| **support** | Shared TS libraries imported by other tools | `support/lib/` only |
+| Family            | Job                                                        | Path under `tools/`                                                   |
+| ----------------- | ---------------------------------------------------------- | --------------------------------------------------------------------- |
+| **governance**    | Enforce invariants — policies, registries, SDD workflow    | `governance/policies/`, `governance/registries/`, `governance/specs/` |
+| **orchestration** | Sequence workflow steps when mise/GHA/HK fires             | `orchestration/scripts/`, `orchestration/fixtures/`                   |
+| **metrics**       | Repo metrics over time — harnesses + promoted baselines    | `metrics/harnesses/`, `metrics/baselines/`                            |
+| **dev**           | Product-adjacent runtime (preview server, bundler plugins) | `dev/preview/`, `dev/build/`                                          |
+| **bin**           | Thin TypeScript dispatch stubs (see below)                 | `bin/` (flat)                                                         |
+| **support**       | Shared TS libraries imported by other tools                | `support/lib/` only                                                   |
 
 **Target tree:**
 
@@ -58,10 +58,11 @@ runtime metrics under `src/`.
 `purpose_family=metrics/generated/*`; that is a logical role only. Harnesses must print their
 output path on `run`.
 
-| Series | Harness | Baseline (committed) | Generated (ephemeral) |
-| ------ | ------- | -------------------- | --------------------- |
-| perf | `metrics/harnesses/perf/` | `metrics/baselines/perf/baseline.json` | `tmp/metrics/perf/` |
-| e2e-quality | `metrics/harnesses/e2e-quality/` | `metrics/baselines/e2e-quality/quality-baseline.json` (+ `scenario-scores.json`, schema) | `tmp/metrics/e2e-quality/` or `tmp/e2e/metrics/` |
+| Series           | Harness                               | Baseline (committed)                                                                     | Generated (ephemeral)                            |
+| ---------------- | ------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| perf             | `metrics/harnesses/perf/`             | `metrics/baselines/perf/baseline.json`                                                   | `tmp/metrics/perf/`                              |
+| e2e-quality      | `metrics/harnesses/e2e-quality/`      | `metrics/baselines/e2e-quality/quality-baseline.json` (+ `scenario-scores.json`, schema) | `tmp/metrics/e2e-quality/` or `tmp/e2e/metrics/` |
+| role-conformance | `metrics/harnesses/role-conformance/` | `metrics/baselines/role-conformance/baseline.json`                                       | `tmp/metrics/role-conformance/`                  |
 
 ## `bin/` — narrow definition
 
@@ -86,11 +87,11 @@ Enforced by dependency-cruiser (`tools-non-dev-no-import-src` in `.dependency-cr
 
 ## Three-way disambiguation
 
-| Path | What it is |
-| ---- | ---------- |
-| `tools/governance/registries/catalog/` | **Code** — validate, list, ship; reads YAML |
-| `assets/catalog/catalog.yaml` | **Data** — shipped feature registry (metadata only) |
-| `tools/governance/policies/ast-grep/` | **Policy** — structural lint rules |
+| Path                                   | What it is                                          |
+| -------------------------------------- | --------------------------------------------------- |
+| `tools/governance/registries/catalog/` | **Code** — validate, list, ship; reads YAML         |
+| `assets/catalog/catalog.yaml`          | **Data** — shipped feature registry (metadata only) |
+| `tools/governance/policies/ast-grep/`  | **Policy** — structural lint rules                  |
 
 Same pattern for skills: `tools/governance/registries/skill/` (code) vs `assets/catalog/SKILLS.yaml`
 (data).
@@ -121,14 +122,14 @@ Same pattern for skills: `tools/governance/registries/skill/` (code) vs `assets/
 
 ## Governance vs orchestration vs metrics
 
-| Term | Meaning | Example |
-| ---- | ------- | ------- |
-| Governance | *Enforce* invariants | ast-grep rules, `mise run spec lint`, `mise run catalog validate`, `mise run policy check` |
-| Orchestration | *Sequence* workflow steps | style compile shell, HK calling validators |
-| Metrics | *Track numbers over time* | perf compare, e2e quality baseline |
-| Harness | Code that collects metrics | `perf.script.ts`, `e2e_metrics.script.ts` |
-| Baseline | Promoted reference JSON | `baseline.json`, `quality-baseline.json` |
-| Generated | Ephemeral run output | under `tmp/metrics/` |
+| Term          | Meaning                    | Example                                                                                    |
+| ------------- | -------------------------- | ------------------------------------------------------------------------------------------ |
+| Governance    | *Enforce* invariants       | ast-grep rules, `mise run spec lint`, `mise run catalog validate`, `mise run policy check` |
+| Orchestration | *Sequence* workflow steps  | style compile shell, HK calling validators                                                 |
+| Metrics       | *Track numbers over time*  | perf compare, e2e quality baseline                                                         |
+| Harness       | Code that collects metrics | `perf.script.ts`, `e2e_metrics.script.ts`                                                  |
+| Baseline      | Promoted reference JSON    | `baseline.json`, `quality-baseline.json`                                                   |
+| Generated     | Ephemeral run output       | under `tmp/metrics/`                                                                       |
 
 ## Artifact suffixes
 
@@ -139,10 +140,10 @@ Details: [`CODESTYLE_GUIDE.md`](CODESTYLE_GUIDE.md) § Tools directory.
 
 ## Inventory maintenance
 
-| File | Role |
-| ---- | ---- |
-| `tools/inventory/tools_file_inventory_source.csv` | Human judgments — edit this |
-| `tools/inventory/tools_file_inventory.csv` | **Generated** — do not hand-edit |
+| File                                              | Role                             |
+| ------------------------------------------------- | -------------------------------- |
+| `tools/inventory/tools_file_inventory_source.csv` | Human judgments — edit this      |
+| `tools/inventory/tools_file_inventory.csv`        | **Generated** — do not hand-edit |
 
 Regenerate:
 
@@ -157,23 +158,23 @@ during migration; after layout is stable they should match physical paths.)
 
 User-facing commands: **`mise run <task>`** — not direct `bun tools/...` except debugging.
 
-| Task | Stub | Domain |
-| ---- | ---- | ------ |
-| `test` | `bin/test.script.ts` | catalog tag runner + test orchestration |
-| `catalog` | `bin/catalog.script.ts` | `governance/registries/catalog/` |
-| `spec` | `bin/spec.script.ts` | `governance/specs/` |
-| `skill` | `bin/skill.script.ts` | `governance/registries/skill/` |
-| `perf` | (harness in place) | `metrics/harnesses/perf/perf.script.ts` |
+| Task      | Stub                    | Domain                                  |
+| --------- | ----------------------- | --------------------------------------- |
+| `test`    | `bin/test.script.ts`    | catalog tag runner + test orchestration |
+| `catalog` | `bin/catalog.script.ts` | `governance/registries/catalog/`        |
+| `spec`    | `bin/spec.script.ts`    | `governance/specs/`                     |
+| `skill`   | `bin/skill.script.ts`   | `governance/registries/skill/`          |
+| `perf`    | (harness in place)      | `metrics/harnesses/perf/perf.script.ts` |
 
 See [`MISE_GUIDE.md`](MISE_GUIDE.md) for task definitions.
 
 ## Enforcement
 
-| Check | Owner |
-| ----- | ----- |
-| Folder layout | `packages/ops/tools.manifest.toml` + `layout_validate.script.ts` |
-| `src/` imports | dependency-cruiser |
-| Suffix contracts | ast-grep + ls-lint |
+| Check            | Owner                                                            |
+| ---------------- | ---------------------------------------------------------------- |
+| Folder layout    | `packages/ops/tools.manifest.toml` + `layout_validate.script.ts` |
+| `src/` imports   | dependency-cruiser                                               |
+| Suffix contracts | ast-grep + ls-lint                                               |
 
 Layout validator skips gitignored paths (`tmp/`, `graphify-out/`).
 

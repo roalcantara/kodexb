@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'bun:test'
 import { existsSync, readFileSync } from 'node:fs'
 
-const GUIDE = 'assets/guides/SDD_WORKFLOW_GUIDE.md'
+const GUIDE = 'assets/guides/WORKFLOW_SDD_GUIDE.md'
 const CATALOG = '.specify/workflow-catalogs.yml'
 const WORKFLOW_YAML = '.specify/workflows/orchestrated-handoff/workflow.yml'
 const PLAN_TEMPLATE = '.specify/templates/plan-template.md'
@@ -35,7 +35,7 @@ function loadGuide(): string {
   return readFileSync(GUIDE, 'utf-8')
 }
 
-describe('SDD_WORKFLOW_GUIDE.md — orchestrated-handoff section (OHW-5 AC1)', () => {
+describe('WORKFLOW_SDD_GUIDE.md — orchestrated-handoff section (OHW-5 AC1)', () => {
   const guide = loadGuide()
 
   it('contains the § orchestrated-handoff workflow heading', () => {
@@ -60,7 +60,7 @@ describe('SDD_WORKFLOW_GUIDE.md — orchestrated-handoff section (OHW-5 AC1)', (
   })
 })
 
-describe('SDD_WORKFLOW_GUIDE.md — opencode v1 dispatch (OHW-5 AC2)', () => {
+describe('WORKFLOW_SDD_GUIDE.md — opencode v1 dispatch (OHW-5 AC2)', () => {
   const guide = loadGuide()
   it('describes opencode worker handoff vs primary implement', () => {
     expect(guide).toContain('Opencode worker handoff')
@@ -74,14 +74,14 @@ describe('SDD_WORKFLOW_GUIDE.md — opencode v1 dispatch (OHW-5 AC2)', () => {
   })
 })
 
-describe('SDD_WORKFLOW_GUIDE.md — Review-spec gate (OHW-6 AC2)', () => {
+describe('WORKFLOW_SDD_GUIDE.md — Review-spec gate (OHW-6 AC2)', () => {
   const guide = loadGuide()
   it('contains the literal "deterministic EARS gate" phrase', () => {
     expect(guide).toContain('deterministic EARS gate')
   })
 })
 
-describe('SDD_WORKFLOW_GUIDE.md — Plan skill routing (OHW-7 AC1)', () => {
+describe('WORKFLOW_SDD_GUIDE.md — Plan skill routing (OHW-7 AC1)', () => {
   const guide = loadGuide()
   it('contains a Plan skill routing section heading', () => {
     expect(guide).toMatch(RE_PLAN_SKILL_HEADING)
@@ -98,7 +98,7 @@ describe('SDD_WORKFLOW_GUIDE.md — Plan skill routing (OHW-7 AC1)', () => {
   })
 })
 
-describe('SDD_WORKFLOW_GUIDE.md — Normative quartet (OHW-8 AC1)', () => {
+describe('WORKFLOW_SDD_GUIDE.md — Normative quartet (OHW-8 AC1)', () => {
   const guide = loadGuide()
   it('contains the Normative quartet section', () => {
     expect(guide).toMatch(RE_NORMATIVE_HEADING)
@@ -206,7 +206,7 @@ describe('plan-template.md — OHW-8 AC2', () => {
   })
 })
 
-describe('SDD_WORKFLOW_GUIDE.md — phase order fence (T3)', () => {
+describe('WORKFLOW_SDD_GUIDE.md — phase order fence (T3)', () => {
   const guide = loadGuide()
   it('uses a `text`-labeled fence for the orchestrated-handoff phase order block', () => {
     expect(guide).toMatch(RE_PHASE_ORDER_FENCE)

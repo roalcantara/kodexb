@@ -6,7 +6,7 @@
 **Companion brief:** `<RESEARCH_BRIEF_PATH>` (Path A MVP).
 **Phase model reuse:** identical to [`004-orchestrated-handoff/spec.md`](../004-orchestrated-handoff/spec.md) — this PR observes, it does not redefine phases.
 
-This plan is pointer-only per [`SDD_WORKFLOW_GUIDE.md` § Normative quartet](../../guides/SDD_WORKFLOW_GUIDE.md#normative-quartet). EARS text is not copied here; tasks reference requirement IDs.
+This plan is pointer-only per [`WORKFLOW_SDD_GUIDE.md` § Normative quartet](../../guides/WORKFLOW_SDD_GUIDE.md#normative-quartet). EARS text is not copied here; tasks reference requirement IDs.
 
 ## Design contract
 
@@ -61,7 +61,7 @@ The feature ships in three orthogonal pieces, with two Path B layers explicitly 
 - `tools/metrics/baselines/workflow-observability/next-early-exit.json` (new)
 - `tools/bin/spec.script.ts` (new `runs` dispatcher case)
 - `mise.toml` (new `cmd "runs" {…}` block under `[tasks."spec"]`)
-- `assets/guides/SDD_WORKFLOW_GUIDE.md` (small section pointing at `mise run spec runs`)
+- `assets/guides/WORKFLOW_SDD_GUIDE.md` (small section pointing at `mise run spec runs`)
 - `hk.pkl` (verify `tmp` already excluded; no edit expected)
 - `.gitignore` (verify `tmp/` already covered; no edit expected)
 

@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-06-21T13:10:41.730Z",
+  "git_sha": "4fe6b582",
+  "bun_version": "1.3.14",
+  "results": {
+    "totalUtil": 92,
+    "mislabeledUtilCount": 14,
+    "utilPurityRatio": 0.848,
+    "enforcedDirRatio": 0.635,
+    "suffixViolations": 14
+  },
+  "violations": [],
+  "summary": "PASS"
+}

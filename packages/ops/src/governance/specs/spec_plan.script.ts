@@ -186,7 +186,18 @@ function planWorkflowStatus(ctx: PlanCtx): SpecPlan {
   if (format && format !== 'pretty') argv.push('--format', format)
   const output = usageOptString(ctx.env, 'output')
   if (output) argv.push('-o', output)
-  pushUsageFlags(argv, ctx.env, ['json', 'raw', 'subgraph'])
+  const listSlug = usageOptString(ctx.env, 'list')
+  const compareA = usageOptString(ctx.env, 'compare_a')
+  const compareB = usageOptString(ctx.env, 'compare_b')
+  if (listSlug && (compareA || compareB)) {
+    return planError('spec workflow status: --list cannot combine with --compare', 2)
+  }
+  if ((compareA && !compareB) || (!compareA && compareB)) {
+    return planError('spec workflow status: --compare requires both compare_a and compare_b', 2)
+  }
+  if (listSlug) argv.push('--list', listSlug)
+  if (compareA && compareB) argv.push('--compare', compareA, compareB)
+  pushUsageFlags(argv, ctx.env, ['json', 'raw', 'subgraph', 'source', 'index', 'full', 'refresh', 'record'])
   return planSpawn(argv)
 }
 

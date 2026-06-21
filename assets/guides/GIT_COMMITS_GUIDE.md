@@ -64,7 +64,7 @@ Each commit must represent a **single logical change**:
 (incremental) or **`mise run spec ready --commit`** (closeout flush). Each chunk runs
 `app-quality-gate` and HK commit-message policy before `git commit` — same rules as
 [`.cursor/commands/commit-all.md`](../../.cursor/commands/commit-all.md). See
-[`SDD_WORKFLOW_GUIDE.md`](SDD_WORKFLOW_GUIDE.md#commit-plan-tasksmd).
+[`WORKFLOW_SDD_GUIDE.md`](WORKFLOW_SDD_GUIDE.md#commit-plan-tasksmd).
 
 ## Standard Commit Format
 

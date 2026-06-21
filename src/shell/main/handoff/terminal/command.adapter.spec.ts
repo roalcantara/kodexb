@@ -10,7 +10,7 @@ for (const name of ['pasteInTerminal', 'runInTerminal'] as const) {
     describe('when platform is darwin', () => {
       describe('when Bun.$ succeeds', () => {
         it('returns ok:true', async () => {
-          const mod = await import('./terminal_handoff.util')
+          const mod = await import('./command.adapter')
           expect(mod[name]('Terminal', 'darwin')).toEqual({ ok: true })
         })
       })
@@ -18,7 +18,7 @@ for (const name of ['pasteInTerminal', 'runInTerminal'] as const) {
       describe('when Bun.$ throws', () => {
         it('returns error with thrown message', async () => {
           setBunDollarThrow(true)
-          const mod = await import('./terminal_handoff.util')
+          const mod = await import('./command.adapter')
           expect(mod[name]('Terminal', 'darwin')).toEqual({ ok: false, error: 'Error: osascript failed' })
         })
       })
@@ -36,7 +36,7 @@ for (const name of ['pasteInTerminal', 'runInTerminal'] as const) {
       describe('when xdotool is available', () => {
         it('returns ok:true', async () => {
           Bun.spawnSync = (() => ({ exitCode: 0, stdout: '', stderr: '' })) as unknown as typeof Bun.spawnSync
-          const mod = await import('./terminal_handoff.util')
+          const mod = await import('./command.adapter')
           expect(mod[name]('Terminal', 'linux')).toEqual({ ok: true })
         })
       })
@@ -44,7 +44,7 @@ for (const name of ['pasteInTerminal', 'runInTerminal'] as const) {
       describe('when xdotool is not available', () => {
         it('returns error about xdotool requirement', async () => {
           setBunDollarThrow(true)
-          const mod = await import('./terminal_handoff.util')
+          const mod = await import('./command.adapter')
           expect(mod[name]('Terminal', 'linux')).toEqual({
             ok: false,
             error: 'xdotool not found: install xdotool to enable Linux terminal handoff'
@@ -56,7 +56,7 @@ for (const name of ['pasteInTerminal', 'runInTerminal'] as const) {
     describe('when platform is neither darwin nor linux', () => {
       const expectedError = { ok: false as const, error: nonDarwinMessage }
       it('returns error about macOS or Linux requirement', async () => {
-        const mod = await import('./terminal_handoff.util')
+        const mod = await import('./command.adapter')
         expect(mod[name]('Terminal', 'win32')).toEqual(expectedError)
       })
     })

@@ -2,9 +2,9 @@
 
 # Handoff — Spec rework (guides-first)
 
-**Target:** DeepSeek / any implementer agent  
-**Feature:** `assets/specs/009-agentic-workflow-orchestrator/`  
-**Branch:** `feat/009-agentic-workflow-orchestrator` (or continue current feature branch)  
+**Target:** DeepSeek / any implementer agent
+**Feature:** `assets/specs/009-agentic-workflow-orchestrator/`
+**Branch:** `feat/009-agentic-workflow-orchestrator` (or continue current feature branch)
 **Read first:** [`guides-first-review.md`](./guides-first-review.md)
 
 ## Agent prompt
@@ -28,7 +28,7 @@ Per assets/guides/DOC_AUTHORITY.md:
 - Normative rules → assets/guides/ + assets/catalog/ + executables
 - assets/specs/NNN-slug/ is ephemeral in-flight context
 - Runtime must not hardcode assets/specs/009-* paths
-- Cite SDD_WORKFLOW_GUIDE.md, OBSERVABILITY_GUIDE.md, TOOLS_GUIDE.md — not 004/005 specs
+- Cite WORKFLOW_SDD_GUIDE.md, WORKFLOW_OBSERVABILITY_GUIDE.md, TOOLS_GUIDE.md — not 004/005 specs
 
 ## Required spec edits
 
@@ -36,7 +36,7 @@ Per assets/guides/DOC_AUTHORITY.md:
 
 Add after Introduction:
 
-- List guide files to update on ship (OBSERVABILITY, SDD, WORKFLOW_GUIDE stub,
+- List guide files to update on ship (OBSERVABILITY, SDD, WORKFLOW_RUNTIME_GUIDE stub,
   SECURITY, CI_GUIDE as slices land)
 - "Guide promotion checklist" table: spec section → target guide → owner slice
 - Explicit: ../contracts/ are spikes; promoted to packages/workflow-core/
@@ -96,7 +96,7 @@ Orchestrator tests use tools/__tests__/fixtures/workflow/ feature-dir stubs.
 
 ### 6. Fix nits
 
-- NFR table: events.jsonl → .ndjson (match OBSERVABILITY_GUIDE)
+- NFR table: events.jsonl → .ndjson (match WORKFLOW_OBSERVABILITY_GUIDE)
 - AWO-3 AC1: reference tools/metrics/baselines/workflow.json task in plan, not undefined N in spec
 - data-model.md: align contract paths with package promotion target
 - contracts/README.md: label as ephemeral spike; link to promotion rule
@@ -104,7 +104,7 @@ Orchestrator tests use tools/__tests__/fixtures/workflow/ feature-dir stubs.
 ### 7. Default profile placeholder
 
 Add spec note: assets/catalog/workflows/default.yaml is a plan deliverable (MVP);
-stage ids must replay SDD_WORKFLOW_GUIDE phase order (not 004 spec prose).
+stage ids must replay WORKFLOW_SDD_GUIDE phase order (not 004 spec prose).
 
 ## Explicit OUT OF SCOPE (this handoff)
 
@@ -154,6 +154,6 @@ Do not commit unless operator asks.
 
 - Review index: [`README.md`](./README.md)
 - Rationale: [`guides-first-review.md`](./guides-first-review.md)
-- Normative guides: [`assets/guides/DOC_AUTHORITY.md`](../../../guides/DOC_AUTHORITY.md),
-  [`SDD_WORKFLOW_GUIDE.md`](../../../guides/SDD_WORKFLOW_GUIDE.md),
-  [`OBSERVABILITY_GUIDE.md`](../../../guides/OBSERVABILITY_GUIDE.md)
+- Normative guides: [`assets/guides/DOC_AUTHORITY.md`](../../../../guides/DOC_AUTHORITY.md),
+  [`WORKFLOW_SDD_GUIDE.md`](../../../../guides/WORKFLOW_SDD_GUIDE.md),
+  [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md)

@@ -71,7 +71,7 @@ Only list what **differs** from the baseline for this feature (new RPC routes, t
 > **kb normative quartet:** `spec.md`, `plan.md`, `tasks.md`, `handoff.md`.
 > Satellites above are feature-scoped and SHOULD NOT be created when plan
 > complexity does not demand them. See
-> [`assets/guides/SDD_WORKFLOW_GUIDE.md` § Normative quartet](../../assets/guides/SDD_WORKFLOW_GUIDE.md#normative-quartet).
+> [`assets/guides/WORKFLOW_SDD_GUIDE.md` § Normative quartet](../../assets/guides/WORKFLOW_SDD_GUIDE.md#normative-quartet).
 
 ### Source Code (repository root)
 <!--

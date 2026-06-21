@@ -51,7 +51,7 @@
 
 ## Phase 5: Workflow guide (WEP-5)
 
-- [ ] WEP-GUIDE-WF-01 [P] Package layout section in [`WORKFLOW_GUIDE.md`](../../guides/WORKFLOW_GUIDE.md).
+- [ ] WEP-GUIDE-WF-01 [P] Package layout section in [`WORKFLOW_RUNTIME_GUIDE.md`](../../guides/WORKFLOW_RUNTIME_GUIDE.md).
 
 ---
 
@@ -78,7 +78,7 @@
 ## Phase 8: kb lint boundary (WEP-8)
 
 - [ ] WEP-LINT-01 Confirm `profile_guide_crossref.script.ts` is not imported by `packages/*`.
-- [ ] WEP-LINT-02 [P] Add WORKFLOW_GUIDE note: kb-only conformance lints vs engine packages.
+- [ ] WEP-LINT-02 [P] Add WORKFLOW_RUNTIME_GUIDE note: kb-only conformance lints vs engine packages.
 
 ---
 
@@ -98,7 +98,7 @@
 - [ ] WEP-PM-03 Run `bun install`; commit `bun.lock` catalog section.
 - [ ] WEP-PM-04 Fix handoff Evidence: `cd packages/workflow-core && bun test` (not `--config` path filter).
 - [ ] WEP-PM-05 Update `.github/workflows/smoke.yml` to `bun ci` (or `--frozen-lockfile`); drop redundant direct `spec gate` if orchestrator path covers it.
-- [ ] WEP-PM-06 [P] Document Bun PM conventions in [`WORKFLOW_GUIDE.md`](../../guides/WORKFLOW_GUIDE.md) § Package layout.
+- [ ] WEP-PM-06 [P] Document Bun PM conventions in [`WORKFLOW_RUNTIME_GUIDE.md`](../../guides/WORKFLOW_RUNTIME_GUIDE.md) § Package layout.
 - [ ] WEP-PM-07 Resolve Biome violations in `packages/workflow-*` so `gate.sh` exits 0.
 
 **Checkpoint**: `bash .agents/skills/app-quality-gate/scripts/gate.sh` green; WEP-10 AC1–AC5 evidenced.

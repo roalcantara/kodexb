@@ -1,13 +1,22 @@
 <!-- markdownlint-disable-file -->
 
-# Workflow guide — kb profile authoring
+# Workflow runtime guide
 
-Canonical source for **authoring workflow profiles** in `assets/catalog/workflows/`.
-Governs profile shape, `execution_policy` semantics, and the kb profile-authoring
-convention (`mise` = verbs / `hk` = events). This is L3 catalog guidance, not an
-engine API — see [`SDD_WORKFLOW_GUIDE.md`](SDD_WORKFLOW_GUIDE.md) for the SDD
-workflow lifecycle and [`OBSERVABILITY_GUIDE.md`](OBSERVABILITY_GUIDE.md) for the
-event substrate.
+Canonical source for the **workflow runtime**: profile YAML
+(`assets/catalog/workflows/`), `@kb/workflow-core` / `@kb/workflow-runtime`, and
+orchestrator behavior. Governs profile shape, `execution_policy` semantics, and the
+kb profile-authoring convention (`mise` = verbs / `hk` = events). This is L3 catalog
+guidance plus engine wiring — not the Bun app runtime. For Spec Kit operator flow, see
+[`WORKFLOW_SDD_GUIDE.md`](WORKFLOW_SDD_GUIDE.md). For run recordings, see
+[`WORKFLOW_OBSERVABILITY_GUIDE.md`](WORKFLOW_OBSERVABILITY_GUIDE.md).
+
+### Related workflow docs
+
+| Guide                                                                | Question                                                               |
+| -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [`WORKFLOW_SDD_GUIDE.md`](WORKFLOW_SDD_GUIDE.md)                     | How do I build/ship a feature with Spec Kit?                           |
+| **This guide**                                                       | How does the workflow runtime work (profiles, packages, orchestrator)? |
+| [`WORKFLOW_OBSERVABILITY_GUIDE.md`](WORKFLOW_OBSERVABILITY_GUIDE.md) | What was recorded during a run (NDJSON, runs CLI)?                     |
 
 ## Package layout
 
@@ -184,6 +193,10 @@ The `sandbox` block is optional on a stage. MVP profiles may omit it; enforcemen
 lands in M4. See [`SECURITY_GUIDE.md`](SECURITY_GUIDE.md) for sandbox semantics.
 
 ## Resume
+
+Operator commands for orchestrated-handoff and Spec Kit handoffs live in
+[`WORKFLOW_SDD_GUIDE.md`](WORKFLOW_SDD_GUIDE.md) (§ orchestrated-handoff workflow).
+This section documents runtime resume semantics only.
 
 The canonical resume command is `mise run spec workflow resume`. The bare
 `mise run spec resume` is deprecated and redirects to `spec workflow resume`.

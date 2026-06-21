@@ -81,6 +81,7 @@ Load these at the start of any project task:
 - `app-rpc` — when touching Elysia routes or the Eden Treaty client
 - `app-testing` — when writing or modifying tests
 - `app-quality-gate` — before marking anything done
+- `role-conformance` audit — `mise run audit roles compare` after any rename/removal of `.util.ts` files
 - `app-review-handoff` — after a worker completes a handoff prompt (AC + Evidence review)
 
 Optional companion skills for narrower situations:
@@ -160,11 +161,11 @@ with this `CLAUDE.md`, **the guides win** — open a PR to fix `CLAUDE.md`.
 - [`assets/guides/MISE_GUIDE.md`](assets/guides/MISE_GUIDE.md) — when to use `mise run` vs `bun run`
 - [`assets/guides/SKILLS.md`](assets/guides/SKILLS.md) — skill adoption ledger, routing rationale, optional companions
 - [`assets/catalog/SKILLS.yaml`](assets/catalog/SKILLS.yaml) — structured skill registry; use `mise run skill add|create|reconcile|validate|sync|install|list|report` (see [`assets/guides/SKILLS.md`](assets/guides/SKILLS.md))
-- [`assets/guides/WORKFLOW_GUIDE.md`](assets/guides/WORKFLOW_GUIDE.md) — workflow profile shape, execution_policy, kb authoring convention
+- [`assets/guides/WORKFLOW_RUNTIME_GUIDE.md`](assets/guides/WORKFLOW_RUNTIME_GUIDE.md) — workflow profile shape, execution_policy, kb authoring convention
 - [`assets/guides/CI_GUIDE.md`](assets/guides/CI_GUIDE.md) — review/release/publish workflows
-- [`assets/guides/OBSERVABILITY_GUIDE.md`](assets/guides/OBSERVABILITY_GUIDE.md) — workflow event substrate, NDJSON schema, `runs` CLI, retention, dual-write rule
+- [`assets/guides/WORKFLOW_OBSERVABILITY_GUIDE.md`](assets/guides/WORKFLOW_OBSERVABILITY_GUIDE.md) — workflow event substrate, NDJSON schema, `runs` CLI, retention, dual-write rule
 - [`assets/guides/SECURITY_GUIDE.md`](assets/guides/SECURITY_GUIDE.md) — gitleaks via hk, dependency CVE checks, Electrobun config AST, `mise run spec ready`
 - [`assets/guides/BUN_RUNTIME.md`](assets/guides/BUN_RUNTIME.md) — Bun YAML/JSON5/SQLite quick reference
 - [`assets/guides/ELECTROBUN.md`](assets/guides/ELECTROBUN.md) — Electrobun official-docs map + RPC shape
 
-Spec workflow and authority: [`assets/guides/SDD_WORKFLOW_GUIDE.md`](assets/guides/SDD_WORKFLOW_GUIDE.md) + [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md). **Do not add `docs/superpowers/`** — that path is a common external skill default and is **gitignored** in this repo to prevent drift.
+Spec workflow and authority: [`assets/guides/WORKFLOW_SDD_GUIDE.md`](assets/guides/WORKFLOW_SDD_GUIDE.md) + [`assets/guides/DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md). **Do not add `docs/superpowers/`** — that path is a common external skill default and is **gitignored** in this repo to prevent drift.

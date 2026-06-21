@@ -99,7 +99,7 @@ steps:
 
   # Handoff emit happens outside this YAML (see spec OHW-1 AC2 + clarifications):
   #   mise run spec handoff-generate --feature {{ inputs.feature_dir }} --focus gherkin
-  # See assets/guides/SDD_WORKFLOW_GUIDE.md § orchestrated-handoff.
+  # See assets/guides/WORKFLOW_SDD_GUIDE.md § orchestrated-handoff.
 
   - id: review-handoff
     type: gate

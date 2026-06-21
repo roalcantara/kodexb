@@ -6,7 +6,7 @@ Canonical source of truth for the project's **repository safety
 primitives**: secret scanning, dependency CVE checks, Electrobun config
 AST validation, and the consolidated `mise run spec ready` gate. Companion
 to [`CI_GUIDE.md`](CI_GUIDE.md) (CI workflow shape) and
-[`OBSERVABILITY_GUIDE.md`](OBSERVABILITY_GUIDE.md) (event substrate that
+[`WORKFLOW_OBSERVABILITY_GUIDE.md`](WORKFLOW_OBSERVABILITY_GUIDE.md) (event substrate that
 security tooling emits through).
 
 If anything here disagrees with code or `hk.pkl`, the code is wrong —
@@ -74,7 +74,7 @@ runs on every PR and in the `full` profile.
 ### Atomic security event logging
 
 Security scans emit events through the project's standard NDJSON event
-substrate (see [`OBSERVABILITY_GUIDE.md`](OBSERVABILITY_GUIDE.md)) using
+substrate (see [`WORKFLOW_OBSERVABILITY_GUIDE.md`](WORKFLOW_OBSERVABILITY_GUIDE.md)) using
 `O_APPEND` for atomic appends under concurrent invocations. The writer is
 `packages/ops/src/governance/security/run_writer.script.ts`.
 

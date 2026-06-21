@@ -68,8 +68,8 @@
 
 ### GUIDE (promotion — per spec guide-promotion checklist)
 
-- [X] MVP-GUIDE-01 [P] [MVP] Promote the envelope + event-extension contract into [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md) (event-extension section references the promoted code path, not the spec folder). (AWO-2, AWO-12.2)
-- [X] MVP-GUIDE-02 [P] [MVP] Create `assets/guides/WORKFLOW_GUIDE.md` stub: profile shape, `execution_policy`, and the **kb profile-authoring convention** (`mise = verbs / hk = events`) as L3 authoring guidance — explicitly not an engine API. Add it to the `CLAUDE.md` guide index. (AWO-10; review 002 §B)
+- [X] MVP-GUIDE-01 [P] [MVP] Promote the envelope + event-extension contract into [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md) (event-extension section references the promoted code path, not the spec folder). (AWO-2, AWO-12.2)
+- [X] MVP-GUIDE-02 [P] [MVP] Create `assets/guides/WORKFLOW_RUNTIME_GUIDE.md` stub: profile shape, `execution_policy`, and the **kb profile-authoring convention** (`mise = verbs / hk = events`) as L3 authoring guidance — explicitly not an engine API. Add it to the `CLAUDE.md` guide index. (AWO-10; review 002 §B)
 
 ### MVP closeout
 
@@ -98,7 +98,7 @@
 
 ### CLI (L4)
 
-- [X] M1-CLI-01 [M1] **Resolve `spec resume` vs `spec workflow resume` naming**: decide the canonical subcommand (recommend `mise run spec workflow resume` for namespace consistency), document the decision in `WORKFLOW_GUIDE.md`, and reconcile every spec/plan reference (spec.md AWO-3 AC4, AWO-5 AC4 currently say `spec workflow resume`). Add `ALLOWED_WORKFLOW_NAMES` guard.
+- [X] M1-CLI-01 [M1] **Resolve `spec resume` vs `spec workflow resume` naming**: decide the canonical subcommand (recommend `mise run spec workflow resume` for namespace consistency), document the decision in `WORKFLOW_RUNTIME_GUIDE.md`, and reconcile every spec/plan reference (spec.md AWO-3 AC4, AWO-5 AC4 currently say `spec workflow resume`). Add `ALLOWED_WORKFLOW_NAMES` guard.
 - [X] M1-CLI-02 [M1] Implement `resume [<run_id>] --answer <qid>=<value>` / `--approve <stage>` routing in `tools/bin/spec.script.ts`: `<run_id>` defaults to the single active run, errors with candidate list when ambiguous; hydrates snapshot, applies to shared memory, auto-resumes. Co-located spec covers default-resolution + ambiguous error. (AWO-3.4, AWO-5.4)
 
 ### M1 closeout
@@ -116,7 +116,7 @@
 - [X] M2-ENGINE-01 [M2] Implement the intervention minimizer + question dedup (against run-shared memory) and the `decision.defaulted` path. Co-located spec for dedup + default logging. (AWO-3.1, AWO-3.2, AWO-3.3)
 - [X] M2-PROFILE-01 [M2] Implement `memory.script.ts` — stage-scoped (`<run_id>.memory.<stage>.json`) + run-shared (`<run_id>.shared.json`) read/write, conflict policy enum (`prefer_latest | prompt_user | block`), retention knobs. Co-located spec per conflict mode + retention. (AWO-7.1–7.4)
 - [X] M2-RESUME-01 [M2] Complete `--answer` handler in `workflow_run.script.ts`: read/write shared memory, emit `decision.answered`, send `INPUT.ANSWERED`, update snapshot. (AWO-3.4)
-- [X] M2-GUIDE-01 [P] [M2] Add the memory model + retention section to `WORKFLOW_GUIDE.md`. (AWO-7)
+- [X] M2-GUIDE-01 [P] [M2] Add the memory model + retention section to `WORKFLOW_RUNTIME_GUIDE.md`. (AWO-7)
 - [X] M2-CLOSEOUT-01 [M2] `bun test … tools/governance/specs/workflow/` + spec lint + `mise run spec gate`.
 
 ---
@@ -172,7 +172,7 @@
 MVP-ENGINE-01  (envelope schema + neutral EvidenceEntry kinds)
 MVP-PROFILE-01 (profile schema promotion)
 MVP-GUIDE-01   (OBSERVABILITY promotion)
-MVP-GUIDE-02   (WORKFLOW_GUIDE stub)
+MVP-GUIDE-02   (WORKFLOW_RUNTIME_GUIDE stub)
 # Then ENGINE-02/03, PROFILE-02/03/04, ADAPTER-01..05 serialize where they share files.
 ```
 
@@ -201,7 +201,7 @@ Checkbox audit against `tools/governance/specs/workflow/` after M4 merge prep. P
 | ----------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | **M1-ENGINE-02**  | Done   | `teardown_runner.script.ts` + `command_invoker.script.ts` `runCommandAsync`; `AWO-5.5` latency/timeout specs in `orchestrator.script.spec.ts` |
 | **M1-ADAPTER-02** | Done   | `orchestrator_resume.script.ts` seed key fix + `AWO-13.1`/`13.3` specs in `orchestrator.script.spec.ts`                                       |
-| **M1-CLI-01**     | Done   | Resume naming in `WORKFLOW_GUIDE.md`                                                                                                          |
+| **M1-CLI-01**     | Done   | Resume naming in `WORKFLOW_RUNTIME_GUIDE.md`                                                                                                          |
 | **M1-CLI-02**     | Done   | `findActiveRun`/`listActiveRuns` in `spec.script.ts` + specs in `spec.script.spec.ts`                                                         |
 | **POLISH-01**     | Done   | `profile_guide_crossref.script.ts` + spec                                                                                                     |
 | **POLISH-02**     | Done   | NFR budgets in `workflow.json`; harness in `tools/metrics/harnesses/workflow/`                                                                |

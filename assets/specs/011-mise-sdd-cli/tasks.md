@@ -70,7 +70,7 @@
 
 - [X] MSC-DOCS-01 Update [`default.yaml`](../../catalog/workflows/default.yaml) to post-011 command names.
 - [X] MSC-DOCS-02 Update [`MISE_GUIDE.md`](../../guides/MISE_GUIDE.md) — SDD hub, output contract, migration table.
-- [X] MSC-DOCS-03 Update [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md), [`CI_GUIDE.md`](../../guides/CI_GUIDE.md), [`TOOLS_GUIDE.md`](../../guides/TOOLS_GUIDE.md).
+- [X] MSC-DOCS-03 Update [`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md), [`CI_GUIDE.md`](../../guides/CI_GUIDE.md), [`TOOLS_GUIDE.md`](../../guides/TOOLS_GUIDE.md).
 - [X] MSC-DOCS-04 Ripgrep migration pass: guides, specs, `.github`, `.agents`, `CLAUDE.md`, `AGENTS.md`.
 - [X] MSC-DOCS-05 Update the `EXPECTED_PUBLIC_TASKS` (and `EXPECTED_PACKAGE_SCRIPTS` if touched) allowlist in the `policy` check — currently inline in `mise.toml` (`checkPublicTaskSurface`), moved to `tools/bin/policy.script.ts` by MSC-POL-01 — to the post-011 public-task surface (drop `audit`; keep `spec`, `app`, `catalog`, `policy`, `test`, and other current publics). Derive the exact delta by running `mise run policy check` and matching the reported `public-task-surface` expected-vs-actual diff (no guessing).
 

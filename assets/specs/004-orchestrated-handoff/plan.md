@@ -4,7 +4,7 @@
 
 **Spec:** [`spec.md`](./spec.md) — requirements OHW-1 … OHW-8.
 
-This plan is pointer-only per [`SDD_WORKFLOW_GUIDE.md` § Normative quartet](../../guides/SDD_WORKFLOW_GUIDE.md#normative-quartet).
+This plan is pointer-only per [`WORKFLOW_SDD_GUIDE.md` § Normative quartet](../../guides/WORKFLOW_SDD_GUIDE.md#normative-quartet).
 It does not copy EARS AC text; tasks reference requirement IDs.
 
 ## Design contract
@@ -47,7 +47,7 @@ Mise wiring lives in [`mise.toml`](../../../mise.toml) under
 | OHW-2       | `tools/governance/specs/workflow/handoff_generate.script.ts`       |
 | OHW-3       | `tools/governance/specs/workflow/orchestrated_handoff.script.ts`   |
 | OHW-4       | `dispatchToOpencode()` in `handoff_generate.script.ts`             |
-| OHW-5       | `assets/guides/SDD_WORKFLOW_GUIDE.md` § orchestrated-handoff, `.specify/memory/constitution.md` analyze footnote |
+| OHW-5       | `assets/guides/WORKFLOW_SDD_GUIDE.md` § orchestrated-handoff, `.specify/memory/constitution.md` analyze footnote |
 | OHW-6       | `runLint()` in orchestrator + guide § Review-spec gate             |
 | OHW-7       | Guide § Plan skill routing + handoff-generate prompt template      |
 | OHW-8       | Guide § Normative quartet + plan template trim + this file (no satellites) + handoff-generate slice-section trim |
@@ -70,7 +70,7 @@ Mise wiring lives in [`mise.toml`](../../../mise.toml) under
 - `tools/governance/specs/workflow/usage.script.ts`
 - `tools/bin/spec.script.ts`
 - `mise.toml`
-- `assets/guides/SDD_WORKFLOW_GUIDE.md`
+- `assets/guides/WORKFLOW_SDD_GUIDE.md`
 - `tools/governance/specs/PLAN_PUNCHLIST.md`
 
 ## Non-functional constraints

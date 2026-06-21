@@ -20,7 +20,7 @@
 
 **Purpose**: Confirm the code map and create the shared scaffolding the security scripts will reuse.
 
-- [X] T101 Verify command and gate touch points in `tools/bin/spec.script.ts`, `hk.pkl`, `.github/workflows/review.yml`, `.specify/memory/constitution.md`, `assets/guides/SDD_WORKFLOW_GUIDE.md`, and `assets/guides/CI_GUIDE.md`
+- [X] T101 Verify command and gate touch points in `tools/bin/spec.script.ts`, `hk.pkl`, `.github/workflows/review.yml`, `.specify/memory/constitution.md`, `assets/guides/WORKFLOW_SDD_GUIDE.md`, and `assets/guides/CI_GUIDE.md`
 - [X] T002 [P] Create the `tools/governance/security/` module layout plus shared TypeBox models in `tools/governance/security/security.types.ts` and `tools/governance/security/events.types.ts`
 - [X] T003 [P] Seed deterministic fixtures and perf-baseline destinations under `tools/governance/security/fixtures/` and `tools/metrics/baselines/`
 
@@ -146,7 +146,7 @@
 
 - [X] T033 [US5] Emit `security_run` events from `tools/governance/security/scan.script.ts` and `tools/governance/security/handoff_scrub.script.ts`, and keep `tmp/security/` ignored in `.gitignore`
 - [X] T034 [US5] Update `.specify/memory/constitution.md` to bind Principle IX and add the required security-subgate review row
-- [X] T035 [US5] Update `assets/guides/SDD_WORKFLOW_GUIDE.md`, `assets/guides/CI_GUIDE.md`, and any related governance docs to describe `spec security`, `spec handoff-scrub`, and `spec ready`
+- [X] T035 [US5] Update `assets/guides/WORKFLOW_SDD_GUIDE.md`, `assets/guides/CI_GUIDE.md`, and any related governance docs to describe `spec security`, `spec handoff-scrub`, and `spec ready`
 
 **Checkpoint**: SH-8, SH-9, and SH-10 are documented and observable without weakening existing gates.
 

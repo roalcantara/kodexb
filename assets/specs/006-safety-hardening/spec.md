@@ -283,7 +283,7 @@ security subgate so the binding is explicit.
    - **Measure:** Diff review of the constitution; version line reads `1.4.0`; the new clause and table row are present.
    - **Evidence:** PR diff; amendment log entry appended to [spec-kit-constitution-log.md](../../docs/specs/spec-kit-constitution-log.md).
 
-2. WHEN slice 5 lands, THEN [SDD_WORKFLOW_GUIDE.md § Deterministic gates](../../guides/SDD_WORKFLOW_GUIDE.md#deterministic-gates-authoritative) SHALL list `mise run spec security` and [orchestrated-handoff § Dispatch](../../guides/SDD_WORKFLOW_GUIDE.md#dispatch) SHALL reference `spec handoff-scrub` as the emit-time validator.
+2. WHEN slice 5 lands, THEN [WORKFLOW_SDD_GUIDE.md § Deterministic gates](../../guides/WORKFLOW_SDD_GUIDE.md#deterministic-gates-authoritative) SHALL list `mise run spec security` and [orchestrated-handoff § Dispatch](../../guides/WORKFLOW_SDD_GUIDE.md#dispatch) SHALL reference `spec handoff-scrub` as the emit-time validator.
    - **Measure:** Guide diff review; both anchors present and resolved.
    - **Evidence:** PR diff.
 
@@ -340,7 +340,7 @@ shippable; each leaves the gate strictly stronger than before, never weaker.
    allowlist schema + integration into `handoff_generate.script.ts`.
 5. **Slice 5 — constitution amendment + guide updates + `spec gate` chain.**
    Flips `spec gate` to require `spec security --strict`; bumps constitution
-   to v1.4.0; updates [SDD_WORKFLOW_GUIDE.md](../../guides/SDD_WORKFLOW_GUIDE.md),
+   to v1.4.0; updates [WORKFLOW_SDD_GUIDE.md](../../guides/WORKFLOW_SDD_GUIDE.md),
    [DoD.md](../../guides/DoD.md), and [CI_GUIDE.md](../../guides/CI_GUIDE.md).
 
 ## Performance / non-functional notes

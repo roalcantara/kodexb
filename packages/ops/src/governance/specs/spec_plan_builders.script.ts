@@ -40,7 +40,12 @@ const USAGE_FLAG_TO_ARG: Record<string, string> = {
   changed_only: '--changed-only',
   verify: '--verify',
   dispatch: '--dispatch',
-  subgraph: '--subgraph'
+  subgraph: '--subgraph',
+  source: '--source',
+  index: '--index',
+  full: '--full',
+  refresh: '--refresh',
+  record: '--record'
 }
 
 export function planError(message: string, exitCode: number): SpecPlan {

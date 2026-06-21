@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { setBunSpawnSyncResult, setupBunSpawnSyncMock } from '@testing'
 
-import { resolveFrontmostAppBundleId } from './resolve_frontmost_app.util'
+import { resolveFrontmostAppBundleId } from './app.resolver'
 
 setupBunSpawnSyncMock({ stdout: Buffer.from('') })
 

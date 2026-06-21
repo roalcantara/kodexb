@@ -27,7 +27,7 @@ This feature adds **`mise run spec kit <verb>`** — thin mise wrappers that mir
 | Phase / file-set detector         | [`orchestrated_handoff.script.ts`](../../../packages/workflow-runtime/src/orchestrated_handoff.script.ts)               |
 | Profile catalog                   | [`assets/catalog/workflows/default.yaml`](../../catalog/workflows/default.yaml)                                         |
 | Review seam                       | [`.agents/skills/app-review-handoff/SKILL.md`](../../../.agents/skills/app-review-handoff/SKILL.md)                     |
-| SDD operator guide                | [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md)                                                           |
+| SDD operator guide                | [`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md)                                                           |
 
 ## Out of scope
 

@@ -57,7 +57,7 @@ No more hand-rolled prompts; no more @unit/Playwright misrouting.
 ### Session 2026-06-06
 
 - Q: Where does the spec land? → A: `assets/specs/004-orchestrated-handoff/` (Spec Kit shape per `DOC_AUTHORITY.md`). The `docs/superpowers/` default is gitignored in this repo.
-- Q: Should the workflow YAML embed `type: script` steps for handoff emission? → A: **No** — workflow YAML registers canonical `speckit.*` phases + human gates only. Handoff emission and orchestration are invoked outside YAML via `mise run spec workflow …` and `mise run spec handoff-generate …`. The seam is documented in `SDD_WORKFLOW_GUIDE.md`.
+- Q: Should the workflow YAML embed `type: script` steps for handoff emission? → A: **No** — workflow YAML registers canonical `speckit.*` phases + human gates only. Handoff emission and orchestration are invoked outside YAML via `mise run spec workflow …` and `mise run spec handoff-generate …`. The seam is documented in `WORKFLOW_SDD_GUIDE.md`.
 - Q: Worker dispatch semantics? → A: v1 emits prompt files always; `--dispatch` flag (or `ORCHESTRATED_HANDOFF_DISPATCH=1` env) additionally pipes the prompt to `opencode run`. v2 multi-provider dispatch (codex / claude / deepseek) is out of scope.
 - Q: Pilot acceptance — does the emitted handoff need @e2e? → A: **Yes** — when the source `handoff.md` AC table contains an operator-smoke / browser-scenario row (e.g. SF-3 AC3), the emitted prompt MUST include at least one `@e2e` Playwright instruction alongside `@unit` Cucumber rows. The "no Playwright for @unit" pitfall still holds.
 - Q: How is the `opencode` integration grounded? → A: Per [opencode CLI docs](https://opencode.ai/docs/cli/), the non-interactive entry is `opencode run [message..]`. Dispatch shells out via Bun argv for small prompts and switches to stdin or a temp file when the body exceeds an argv-safe threshold; `Bun.which('opencode')` is the liveness probe.
@@ -153,7 +153,7 @@ deterministic subtask manifest, so I don't need to remember which phase I'm in.
 
 ### Acceptance criteria
 
-1. WHEN `mise run spec workflow orchestrated-handoff --feature <dir> --next` runs, THEN the script SHALL print exactly one canonical next command to stdout, derived from file presence and the 10-row transition table documented in `SDD_WORKFLOW_GUIDE.md` § orchestrated-handoff (transitions detailed below this AC).
+1. WHEN `mise run spec workflow orchestrated-handoff --feature <dir> --next` runs, THEN the script SHALL print exactly one canonical next command to stdout, derived from file presence and the 10-row transition table documented in `WORKFLOW_SDD_GUIDE.md` § orchestrated-handoff (transitions detailed below this AC).
    - **Measure:** Table-driven test over the 10 transitions.
    - **Evidence:** `bun test tools/governance/specs/workflow/orchestrated_handoff.script.spec.ts`.
 
@@ -232,13 +232,13 @@ the file and tell me why dispatch was skipped.
 ## REQUIREMENT OHW-5: SDD guide documents the workflow end-to-end
 
 **User story:** As a contributor coming to this workflow cold, I want
-`SDD_WORKFLOW_GUIDE.md` to tell me when to choose `orchestrated-handoff` over
+`WORKFLOW_SDD_GUIDE.md` to tell me when to choose `orchestrated-handoff` over
 `speckit`, what commands to run, and how to resume an interrupted run, so I
 don't need to read the source.
 
 ### Acceptance criteria
 
-1. WHEN the PR lands, THEN `SDD_WORKFLOW_GUIDE.md` SHALL no longer mark `orchestrated-handoff` as "Deferred to a follow-up PR" AND SHALL contain a top-level section that lists the canonical entry commands (`mise run spec workflow orchestrated-handoff --feature …`, `mise run spec handoff-generate --feature …`, `mise run spec resume`).
+1. WHEN the PR lands, THEN `WORKFLOW_SDD_GUIDE.md` SHALL no longer mark `orchestrated-handoff` as "Deferred to a follow-up PR" AND SHALL contain a top-level section that lists the canonical entry commands (`mise run spec workflow orchestrated-handoff --feature …`, `mise run spec handoff-generate --feature …`, `mise run spec resume`).
    - **Measure:** Grep the rendered guide for the new section and the absence of the deferred line.
    - **Evidence:** `bun test tools/governance/specs/workflow/` (guide-content fixture spec) and manual diff review.
 
@@ -246,7 +246,7 @@ don't need to read the source.
    - **Measure:** Section presence + required substrings (`opencode worker handoff`, `tmp/handoffs/`, `--focus`, `v1 opencode-only`).
    - **Evidence:** `bun test tools/governance/specs/workflow/`.
 
-3. WHEN `orchestrated-handoff` introduces dual-analyze (the constitution currently lists a single Analyze row), THEN this PR SHALL add a constitution footnote on the Analyze row recording the dual-pass behavior AND SHALL document the full phase order (including both analyze passes) in `SDD_WORKFLOW_GUIDE.md` § orchestrated-handoff. Precedence still stands: `assets/guides/ > CLAUDE.md > constitution > templates`.
+3. WHEN `orchestrated-handoff` introduces dual-analyze (the constitution currently lists a single Analyze row), THEN this PR SHALL add a constitution footnote on the Analyze row recording the dual-pass behavior AND SHALL document the full phase order (including both analyze passes) in `WORKFLOW_SDD_GUIDE.md` § orchestrated-handoff. Precedence still stands: `assets/guides/ > CLAUDE.md > constitution > templates`.
    - **Measure:** Diff confirms (a) one footnote on `.specify/memory/constitution.md` § SDD Pipeline Analyze row and (b) new phase-order block in guide. No principle bodies edited.
    - **Evidence:** PR diff review + grep for footnote marker.
 
@@ -265,7 +265,7 @@ guardrail (per `PLAN_PUNCHLIST.md` §1 and §5).
    - **Measure:** Spawn-shape test asserts the orchestrator invokes `lint.script.ts` with the feature dir and `--strict` flags; exit code propagates.
    - **Evidence:** `bun test tools/governance/specs/workflow/orchestrated_handoff.script.spec.ts`.
 
-2. WHEN the `SDD_WORKFLOW_GUIDE.md` § orchestrated-handoff documents the review-spec gate, THEN it SHALL state: "Before approving plan, run `mise run spec lint <featureDir> --strict` — deterministic EARS gate; checklist and analyze are advisory only."
+2. WHEN the `WORKFLOW_SDD_GUIDE.md` § orchestrated-handoff documents the review-spec gate, THEN it SHALL state: "Before approving plan, run `mise run spec lint <featureDir> --strict` — deterministic EARS gate; checklist and analyze are advisory only."
    - **Measure:** Guide-content grep for the literal substring `deterministic EARS gate`.
    - **Evidence:** `bun test tools/governance/specs/workflow/sdd_guide_content.script.spec.ts`.
 
@@ -283,11 +283,11 @@ plans stay slim. "Load all skills" is an anti-pattern.
 
 ### Acceptance criteria
 
-1. WHEN this PR lands, THEN `assets/guides/SDD_WORKFLOW_GUIDE.md` SHALL contain a section "Plan skill routing" (or link to a dedicated `SDD_PLAN_SKILL_ROUTING.md`) with a routing table mapping plan touch-areas to specific skills, AND SHALL state the cap rule "Maximum 4 skills unless operator explicitly expands scope".
+1. WHEN this PR lands, THEN `assets/guides/WORKFLOW_SDD_GUIDE.md` SHALL contain a section "Plan skill routing" (or link to a dedicated `SDD_PLAN_SKILL_ROUTING.md`) with a routing table mapping plan touch-areas to specific skills, AND SHALL state the cap rule "Maximum 4 skills unless operator explicitly expands scope".
    - **Measure:** Guide-content grep for the table heading and the cap rule.
    - **Evidence:** `bun test tools/governance/specs/workflow/sdd_guide_content.script.spec.ts`.
 
-2. WHEN a contributor reads `.cursor/skills/speckit-plan/SKILL.md`, THEN the file SHALL begin with a kb-fork section pointing at the routing table and instructing the planner to load at most 4 skills before Phase 0 research. If the upstream Spec Kit skill is not present in this repo (kb has not forked it yet), this AC is satisfied by adding a documentation note in `SDD_WORKFLOW_GUIDE.md` § Plan skill routing that names the upstream skill and the routing rule, and by referencing the routing doc from the handoff-generate prompt template (per AC3).
+2. WHEN a contributor reads `.cursor/skills/speckit-plan/SKILL.md`, THEN the file SHALL begin with a kb-fork section pointing at the routing table and instructing the planner to load at most 4 skills before Phase 0 research. If the upstream Spec Kit skill is not present in this repo (kb has not forked it yet), this AC is satisfied by adding a documentation note in `WORKFLOW_SDD_GUIDE.md` § Plan skill routing that names the upstream skill and the routing rule, and by referencing the routing doc from the handoff-generate prompt template (per AC3).
    - **Measure:** Either grep `.cursor/skills/speckit-plan/SKILL.md` for the routing pointer, or grep the guide for the upstream-skill compatibility note.
    - **Evidence:** Diff review + `bun test tools/governance/specs/workflow/sdd_guide_content.script.spec.ts`.
 
@@ -307,7 +307,7 @@ when plan complexity demands**.
 
 ### Acceptance criteria
 
-1. WHEN this PR lands, THEN `SDD_WORKFLOW_GUIDE.md` SHALL document the rule: "**Normative quartet:** `spec.md`, `plan.md`, `tasks.md`, `handoff.md`. Optional satellites (`research.md`, `data-model.md`, `contracts/`, `quickstart.md`) are feature-scoped and SHOULD be created only when `plan.md` Technical Context has unresolved NEEDS CLARIFICATION or cross-module contracts. `plan.md` and `tasks.md` SHALL NOT copy EARS AC text — reference requirement IDs (OHW-n, SF-n) instead. Checklist and analyze outputs are advisory snapshots, not second specs."
+1. WHEN this PR lands, THEN `WORKFLOW_SDD_GUIDE.md` SHALL document the rule: "**Normative quartet:** `spec.md`, `plan.md`, `tasks.md`, `handoff.md`. Optional satellites (`research.md`, `data-model.md`, `contracts/`, `quickstart.md`) are feature-scoped and SHOULD be created only when `plan.md` Technical Context has unresolved NEEDS CLARIFICATION or cross-module contracts. `plan.md` and `tasks.md` SHALL NOT copy EARS AC text — reference requirement IDs (OHW-n, SF-n) instead. Checklist and analyze outputs are advisory snapshots, not second specs."
    - **Measure:** Guide-content grep for `Normative quartet` and the no-copy rule.
    - **Evidence:** `bun test tools/governance/specs/workflow/sdd_guide_content.script.spec.ts`.
 

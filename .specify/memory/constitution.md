@@ -4,7 +4,7 @@ SYNC IMPACT REPORT
 Version change: 1.2.0 → 1.4.0
 Bump rationale: PATCH (1.3.0) + PATCH (1.3.1) + PATCH. SDD path migration, spec.md/plan.md
   authority, deterministic spec lint/trace gates, Gherkin in assets/features/e2e/,
-  git-config auto_commit documented, SDD_WORKFLOW_GUIDE reference. 1.3.1:
+  git-config auto_commit documented, WORKFLOW_SDD_GUIDE reference. 1.3.1:
   Fix amendment log [12] link to canonical path; terse speckit completion reports.
    1.3.2: Document mise run spec audit in analyze-dual footnote.
    1.4.0: Add mandatory `mise run spec security` subgate and emit-time
@@ -34,7 +34,7 @@ in Bun, Electrobun, and TypeBox. Inspired by [GitHub Spec Kit — spec-driven.md
 
 | Idea                       | kb practice                                                                                                                                                                                                                                                                           |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Specs as lingua franca** | Normative `spec.md`, `plan.md`, `tasks.md`, `handoff.md` in the active feature directory from `.specify/feature.json`; backlog/routing policy in [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md) and [`SDD_WORKFLOW_GUIDE.md`](../../assets/guides/SDD_WORKFLOW_GUIDE.md). |
+| **Specs as lingua franca** | Normative `spec.md`, `plan.md`, `tasks.md`, `handoff.md` in the active feature directory from `.specify/feature.json`; backlog/routing policy in [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md) and [`WORKFLOW_SDD_GUIDE.md`](../../assets/guides/WORKFLOW_SDD_GUIDE.md). |
 | **Executable specs**       | EARS in `spec.md` with **Measure** + **Evidence**; Gherkin in `assets/features/e2e/` when declared.                                                                                                                                                                                   |
 | **Continuous refinement**  | `/speckit-clarify`, `/speckit-checklist`, `/speckit-analyze` — not one-shot doc dumps.                                                                                                                                                                                                |
 | **Intent-driven change**   | Pivots update requirements/design first; implementation and tests follow.                                                                                                                                                                                                             |
@@ -214,7 +214,7 @@ path rules in [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md)).
     enforces quartet/handoff/tasks readiness deterministically between tasks and
     analyze. Phase order and completion markers (`checklists/analyze-plan.md`,
     `checklists/analyze-tasks.md`) are documented in
-    [`assets/guides/SDD_WORKFLOW_GUIDE.md` § orchestrated-handoff workflow](../../assets/guides/SDD_WORKFLOW_GUIDE.md#orchestrated-handoff-workflow).
+    [`assets/guides/WORKFLOW_SDD_GUIDE.md` § orchestrated-handoff workflow](../../assets/guides/WORKFLOW_SDD_GUIDE.md#orchestrated-handoff-workflow).
 
 ### Workflow rules
 
@@ -256,7 +256,7 @@ above):
 | `handoff.md`             | **Normative** — implementer prompt + maintainer AC checklist                                                                            |
 | `assets/features/e2e/*`  | **Normative Gherkin** when e2e declared                                                                                                 |
 | `checklists/`            | Spec quality checks; **not** a substitute for tests                                                                                     |
-| Spec backlog index       | See [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md) and [`SDD_WORKFLOW_GUIDE.md`](../../assets/guides/SDD_WORKFLOW_GUIDE.md) |
+| Spec backlog index       | See [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md) and [`WORKFLOW_SDD_GUIDE.md`](../../assets/guides/WORKFLOW_SDD_GUIDE.md) |
 | Legacy `requirements.md` | Reference only under `assets/docs/specs/MILESTONE_*`                                                                                    |
 
 ---

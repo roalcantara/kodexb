@@ -9,6 +9,7 @@
   "dependencies": {
     "@kb/exec": "workspace:*",
     "@kb/flow": "workspace:*",
-    "@kb/shared": "workspace:*"
+    "@kb/shared": "workspace:*",
+    "beautiful-mermaid": "^1.1.3"
   }
 }

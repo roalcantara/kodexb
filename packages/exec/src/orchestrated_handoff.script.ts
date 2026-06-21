@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * spec workflow orchestrated-handoff — phase detection + subtask manifest.
- * See assets/guides/SDD_WORKFLOW_GUIDE.md.
+ * See assets/guides/WORKFLOW_SDD_GUIDE.md.
  */
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'

@@ -60,34 +60,44 @@ Architecture depth: [`FCIS.guide.md`](FCIS.guide.md), [`ELECTROBUN.md`](ELECTROB
 
 ## Guide router
 
-| I need to…                                     | Read                                                                                                                |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Understand layers / purity / forbidden imports | [`FCIS.guide.md`](FCIS.guide.md)                                                                                    |
-| Name files, suffixes, FCIS layout              | [`CODESTYLE_GUIDE.md`](CODESTYLE_GUIDE.md)                                                                          |
-| Add or change Elysia routes / Eden client      | [`ELECTROBUN.md`](ELECTROBUN.md) § RPC + `app-rpc` skill; mirror `tools/dev/preview/server.script.ts`               |
-| Write or run tests                             | [`TESTING_GUIDE.md`](TESTING_GUIDE.md), [`FISHERY_GUIDE.md`](FISHERY_GUIDE.md), [`BDD_GUIDE.md`](BDD_GUIDE.md)      |
-| Style renderer UI                              | [`STYLING_GUIDE.md`](STYLING_GUIDE.md)                                                                              |
-| Logging                                        | [`LOGGING_GUIDE.md`](LOGGING_GUIDE.md)                                                                              |
-| Mise tasks / `mise run` vs `bun run`           | [`MISE_GUIDE.md`](MISE_GUIDE.md)                                                                                    |
-| Spec Kit / SDD workflow                        | [`SDD_WORKFLOW_GUIDE.md`](SDD_WORKFLOW_GUIDE.md)                                                                    |
-| Workflow profiles / orchestrator YAML          | [`WORKFLOW_GUIDE.md`](WORKFLOW_GUIDE.md), [`OBSERVABILITY_GUIDE.md`](OBSERVABILITY_GUIDE.md)                        |
-| CI / release / nightly smoke                   | [`CI_GUIDE.md`](CI_GUIDE.md)                                                                                        |
-| Security / handoff scrub / spec ready          | [`SECURITY_GUIDE.md`](SECURITY_GUIDE.md)                                                                            |
-| Tools layout (`tools/` taxonomy)               | [`TOOLS_GUIDE.md`](TOOLS_GUIDE.md)                                                                                  |
-| Code review graph                              | [`CRG.md`](CRG.md)                                                                                                  |
-| Commits / branches                             | [`GIT_COMMITS_GUIDE.md`](GIT_COMMITS_GUIDE.md), [`GIT_GUIDE.md`](GIT_GUIDE.md)                                      |
-| Definition of done                             | [`DoD.md`](DoD.md)                                                                                                  |
-| Bun APIs (YAML, SQLite, test)                  | [`BUN_RUNTIME.md`](BUN_RUNTIME.md)                                                                                  |
-| E2e step phrases / fixtures                    | [`BDD_GHERKIN_GUIDE.md`](BDD_GHERKIN_GUIDE.md), [`../features/e2e/contracts/`](../features/e2e/contracts/README.md) |
-| Document layers / catalog governance           | [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md)                                                                              |
-| Backlog (non-normative)                        | root [`TODO.md`](../../TODO.md)                                                                                     |
+| I need to…                                     | Read                                                                                                                           |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Understand layers / purity / forbidden imports | [`FCIS.guide.md`](FCIS.guide.md)                                                                                               |
+| Name files, suffixes, FCIS layout              | [`CODESTYLE_GUIDE.md`](CODESTYLE_GUIDE.md)                                                                                     |
+| Add or change Elysia routes / Eden client      | [`ELECTROBUN.md`](ELECTROBUN.md) § RPC + `app-rpc` skill; mirror `tools/dev/preview/server.script.ts`                          |
+| Write or run tests                             | [`TESTING_GUIDE.md`](TESTING_GUIDE.md), [`FISHERY_GUIDE.md`](FISHERY_GUIDE.md), [`BDD_GUIDE.md`](BDD_GUIDE.md)                 |
+| Style renderer UI                              | [`STYLING_GUIDE.md`](STYLING_GUIDE.md)                                                                                         |
+| Logging                                        | [`LOGGING_GUIDE.md`](LOGGING_GUIDE.md)                                                                                         |
+| Mise tasks / `mise run` vs `bun run`           | [`MISE_GUIDE.md`](MISE_GUIDE.md)                                                                                               |
+| Spec Kit / SDD workflow                        | [`WORKFLOW_SDD_GUIDE.md`](WORKFLOW_SDD_GUIDE.md)                                                                               |
+| Workflow profiles / orchestrator YAML          | [`WORKFLOW_RUNTIME_GUIDE.md`](WORKFLOW_RUNTIME_GUIDE.md), [`WORKFLOW_OBSERVABILITY_GUIDE.md`](WORKFLOW_OBSERVABILITY_GUIDE.md) |
+| CI / release / nightly smoke                   | [`CI_GUIDE.md`](CI_GUIDE.md)                                                                                                   |
+| Security / handoff scrub / spec ready          | [`SECURITY_GUIDE.md`](SECURITY_GUIDE.md)                                                                                       |
+| Tools layout (`tools/` taxonomy)               | [`TOOLS_GUIDE.md`](TOOLS_GUIDE.md)                                                                                             |
+| Code review graph                              | [`CRG.md`](CRG.md)                                                                                                             |
+| Commits / branches                             | [`GIT_COMMITS_GUIDE.md`](GIT_COMMITS_GUIDE.md), [`GIT_GUIDE.md`](GIT_GUIDE.md)                                                 |
+| Definition of done                             | [`DoD.md`](DoD.md)                                                                                                             |
+| Bun APIs (YAML, SQLite, test)                  | [`BUN_RUNTIME.md`](BUN_RUNTIME.md)                                                                                             |
+| E2e step phrases / fixtures                    | [`BDD_GHERKIN_GUIDE.md`](BDD_GHERKIN_GUIDE.md), [`../features/e2e/contracts/`](../features/e2e/contracts/README.md)            |
+| Document layers / catalog governance           | [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md)                                                                                         |
+| Backlog (non-normative)                        | root [`TODO.md`](../../TODO.md)                                                                                                |
+
+### When to read which workflow guide
+
+| Guide                                                                | Primary question                             | Open when                                                                                          |
+| -------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| [`WORKFLOW_SDD_GUIDE.md`](WORKFLOW_SDD_GUIDE.md)                     | How do I build/ship a feature with Spec Kit? | `/speckit-*`, quartet, `mise run spec lint\|gate\|conform`, orchestrated-handoff operator commands |
+| [`WORKFLOW_RUNTIME_GUIDE.md`](WORKFLOW_RUNTIME_GUIDE.md)             | How does the workflow **runtime** work?      | Profile YAML, `@kb/workflow-core` / `@kb/workflow-runtime`, resume semantics, kit smoke            |
+| [`WORKFLOW_OBSERVABILITY_GUIDE.md`](WORKFLOW_OBSERVABILITY_GUIDE.md) | What was recorded during a run?              | NDJSON events, `runs list/show/tail/prune`, retention                                              |
+
+Spec Kit workspace map: [`.specify/README.md`](../../.specify/README.md).
 
 ---
 
 ## Spec workflow (when the task names a feature)
 
 Use **Spec Kit** on `assets/specs/NNN-<slug>/` (`spec.md`, `plan.md`, `tasks.md`, `handoff.md`).
-Commands: [`SDD_WORKFLOW_GUIDE.md`](SDD_WORKFLOW_GUIDE.md), [`MISE_GUIDE.md`](MISE_GUIDE.md) § SDD hub.
+Commands: [`WORKFLOW_SDD_GUIDE.md`](WORKFLOW_SDD_GUIDE.md), [`MISE_GUIDE.md`](MISE_GUIDE.md) § SDD hub.
 
 For **product fixes without a spec** (bugs, UX, refactors): follow guides + co-located tests;
 no quartet required unless the maintainer opened one.

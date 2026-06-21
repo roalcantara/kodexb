@@ -1,5 +1,5 @@
 import { getLogger } from '@shared/logging'
-import { xdotoolAvailable } from './xdotool_available.util'
+import { xdotoolAvailable } from '../xdotool.adapter'
 
 const log = getLogger(['kb', 'main', 'handoff', 'paste-frontmost'])
 

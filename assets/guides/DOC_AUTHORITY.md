@@ -22,7 +22,7 @@ defined only in `assets/guides/`.
   operation, tests, examples, and command usage.
 - Files outside `assets/guides/` must not define new normative path policy.
 - When in doubt, defer to this guide and
-  [`SDD_WORKFLOW_GUIDE.md`](SDD_WORKFLOW_GUIDE.md).
+  [`WORKFLOW_SDD_GUIDE.md`](WORKFLOW_SDD_GUIDE.md).
 
 ## In-flight specs are ephemeral
 

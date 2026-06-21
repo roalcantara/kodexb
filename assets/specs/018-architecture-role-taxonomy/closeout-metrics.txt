@@ -1,0 +1,26 @@
+# Architecture role-taxonomy — Closeout metrics
+#
+# Baseline  = before T101 (role-conformance harness first run)
+# Current   = after T108 (handoff locked, all phases complete)
+# SpecGoal  = target from spec.md (accepted mild imprecision in inventory)
+
+Metric                  Baseline    Current     SpecGoal    Notes
+─────────────────────────────────────────────────────────────────────
+totalUtil               99          92          ~100        −7 moved out of .util
+mislabeledUtilCount     19          14          13          −5 from handoff pilot
+utilPurityRatio         0.808       0.848       0.87        +0.040 from handoff
+enforcedDirRatio        –           0.635       0.05        lockedDirs now counted (was hardcoded 0)
+suffixViolations        19          14          13          mirrors mislabeled
+
+# Phases completed:
+#   A — ROLE-1 harness  (T101–T103)
+#   B — ROLE-2 vocabulary + ADR  (T104)
+#   C — ROLE-3 roadmap  (T105)
+#   D — ROLE-4 conformant locks  (T106)
+#   E — ROLE-5 handoff pilot  (T107–T108)
+
+# Key wins:
+#   - Handoff pilot migrated 7 files to single-word layout
+#   - ls-lint locks 8 directories (5 conformant + 3 handoff)
+#   - 62/62 tests pass, typecheck clean
+#   - mislabeledUtilCount reduced by 26% (19 → 14)

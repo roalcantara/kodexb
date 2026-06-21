@@ -21,7 +21,7 @@ Branch: continue on `feature/009-m2-intervention-memory` (amend or follow-up com
 
 - Add integration test for AWO-3 AC3 (shared memory + `decision.defaulted` event); update `handoff.md` Evidence row if file moves
 - Mark Phase 5 `[X]` checkboxes in `handoff.md` (tasks.md already done)
-- Optional: `WORKFLOW_GUIDE.md` § resume `--answer` / `--approve` (handoff optional note)
+- Optional: `WORKFLOW_RUNTIME_GUIDE.md` § resume `--answer` / `--approve` (handoff optional note)
 
 ## Out of scope
 

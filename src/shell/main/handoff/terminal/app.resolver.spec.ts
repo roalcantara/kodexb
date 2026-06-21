@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
-import { resolveTerminalAppName } from './resolve_terminal_app_name.util'
+import { resolveTerminalAppName } from './app.resolver'
 
 describe('resolveTerminalAppName()', () => {
   describe('when terminalApp is set', () => {

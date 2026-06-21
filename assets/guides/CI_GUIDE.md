@@ -379,8 +379,8 @@ A nightly smoke workflow (`.github/workflows/smoke.yml`) runs on a schedule
    tail stubs). Exit 0 through terminal `pr-check`.
 
 Operator dogfood (human gates, recoverable pause) is documented in
-[`WORKFLOW_GUIDE.md`](WORKFLOW_GUIDE.md) § Kit smoke operator dogfood (committed fixture
+[`WORKFLOW_RUNTIME_GUIDE.md`](WORKFLOW_RUNTIME_GUIDE.md) § Kit smoke operator dogfood (committed fixture
 `tools/__tests__/fixtures/workflow/smoke-feature/`).
 
-See [`WORKFLOW_GUIDE.md`](WORKFLOW_GUIDE.md) § Package layout and
+See [`WORKFLOW_RUNTIME_GUIDE.md`](WORKFLOW_RUNTIME_GUIDE.md) § Package layout and
 `tools/__tests__/fixtures/workflow/smoke-feature/` for the fixture definition.

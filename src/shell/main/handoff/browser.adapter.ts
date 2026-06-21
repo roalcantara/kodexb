@@ -1,6 +1,6 @@
 import { KNOWN_BROWSER_BUNDLE_IDS } from '@core/handoff/known_browsers.const'
 import { Utils } from 'electrobun/bun'
-import { resolveFrontmostAppBundleId } from './resolve_frontmost_app.util'
+import { resolveFrontmostAppBundleId } from './frontmost/app.resolver'
 
 export type BrowserHandoffResult = { ok: true } | { ok: false; error: string }
 

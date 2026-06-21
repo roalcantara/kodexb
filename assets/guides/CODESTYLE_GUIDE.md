@@ -93,6 +93,7 @@ collection of the same kind (e.g. `rpc.host.schemas.ts` exports many schemas).
 | ---------------- | ------------------------------------------------- | --------------------------- |
 | `.service.ts`    | Business logic orchestration                      | `app.service.ts`            |
 | `.repository.ts` | Data access (queries, writes)                     | `entry.repository.ts`       |
+| `.resolver.ts`   | Resolves an identifier/value from a lookup or env | `app.resolver.ts`            |
 | `.schema.ts`     | TypeBox schema + inferred input type              | `config.schema.ts`          |
 | `.schemas.ts`    | Aggregate: re-exports multiple schemas            | `rpc.host.schemas.ts`       |
 | `.loader.ts`     | File / resource loading                           | `config.loader.ts`          |
@@ -105,7 +106,7 @@ collection of the same kind (e.g. `rpc.host.schemas.ts` exports many schemas).
 | `.client.ts`     | Client wrapper around an external API / process   | `rpc.client.ts`             |
 | `.host.ts`       | Server / host side of a protocol                  | `rpc.host.ts`               |
 | `.logger.ts`     | Logger implementation                             | `console.logger.ts`         |
-| `.util.ts`       | Pure stateless helper functions                   | `crc32.util.ts`             |
+| `.util.ts`       | Pure helper functions with **no I/O imports** (`node:*`, `bun:sqlite`, `electrobun`, `Bun.$`, `fetch`) — the harness enforces this import rule only, not full statelessness; shell I/O artifacts use a role suffix | `crc32.util.ts` |
 | `.const.ts`      | Named constants (singular — one module of consts) | `entry.const.ts`            |
 | `.types.ts`      | Type-only module (no runtime code)                | `entry.types.ts`            |
 | `.builder.ts`    | Fluent or step-wise object builder                | `factories.builder.ts`      |
@@ -182,6 +183,32 @@ These were found in the codebase and are being migrated out. Do not use them in 
 | `index.ts` | Barrel exports | Universal convention |
 | `main.ts`  | Entrypoints    | Universal convention |
 | `app.tsx`  | Renderer root  | Universal convention |
+
+### Single-word names & subfolders
+
+Prefer a **single-word filename** licensed by its suffix. When a qualifier is
+shared by two or more files, introduce a **subfolder** carrying it instead of a
+compound name. Merge into one file only when the files are a single abstraction.
+Compound names are a last resort.
+
+Worked example — `src/shell/main/handoff/` converted to this doctrine:
+
+```
+handoff/
+├── registry.service.ts          # was handoff_registry.service.ts
+├── clipboard.port.ts            # was electrobun_clipboard.port.ts
+├── browser.adapter.ts           # was browser_handoff.util.ts
+├── editor.adapter.ts            # was editor_handoff.util.ts
+├── xdotool.adapter.ts           # was xdotool_available.util.ts
+├── frontmost/
+│   ├── app.resolver.ts          # was resolve_frontmost_app.util.ts
+│   └── paste.adapter.ts         # was paste_frontmost_handoff.util.ts
+└── terminal/
+    ├── app.resolver.ts          # was resolve_terminal_app_name.util.ts
+    └── command.adapter.ts       # was terminal_handoff.util.ts
+```
+
+See [ADR-0001](adr/0001-role-suffix-taxonomy.md) for the full decision record.
 
 ### Directory ↔ Suffix contract
 

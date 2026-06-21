@@ -2,8 +2,8 @@
 
 # Tool-agnostic workflow engine — architectural review
 
-**Date:** 2026-06-09  
-**Status:** Actionable input for spec/plan/contracts rework (review 002)  
+**Date:** 2026-06-09
+**Status:** Actionable input for spec/plan/contracts rework (review 002)
 **Builds on:** [`review/001/guides-first-review.md`](../001/guides-first-review.md)
 
 ## Premise
@@ -114,7 +114,7 @@ Engine tests use **fixture profiles** with prefixes like `bun run` or
   are catalog data.
 
 **Convention (mise/hk/bun):** move to **Guide promotion** → MISE_GUIDE +
-WORKFLOW_GUIDE as **kb profile authoring**, not engine API.
+WORKFLOW_RUNTIME_GUIDE as **kb profile authoring**, not engine API.
 
 ---
 
@@ -203,5 +203,5 @@ is adapter/M4 — same as execution policy.
 - [ ] Plan slice table lists ENGINE / ADAPTER / PROFILE / CLI task families
 - [ ] `contracts/profile.schema.ts` spike: no `DEFAULT_COMMAND_ALLOWLIST` export
 - [ ] `research.md` decision on invoker updated for Executor port
-- [ ] Guide promotion: kb toolchain convention → WORKFLOW_GUIDE / MISE_GUIDE, not engine
+- [ ] Guide promotion: kb toolchain convention → WORKFLOW_RUNTIME_GUIDE / MISE_GUIDE, not engine
 - [ ] `mise run spec lint` on feature dir passes after edits

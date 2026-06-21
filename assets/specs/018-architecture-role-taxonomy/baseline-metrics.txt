@@ -1,0 +1,62 @@
+# 018-architecture-role-taxonomy — baseline metrics (captured 2026-06-21, branch main)
+#
+# 018 ships: a role-conformance METRIC HARNESS (the audit, repeatable), the
+# finalized vocabulary, conformant-dir ls-lint locks, ONE pilot slice (handoff),
+# and the doc/TODO sync. The bulk renames are roadmap PRs, NOT 018.
+
+## Role-conformance metric harness (the audit, as a tools/metrics series)
+# Follows the perf/e2e-quality precedent (run/report/compare):
+#   harness code  : packages/ops/src/metrics/harnesses/role-conformance/role_conformance.script.ts
+#   committed base: tools/metrics/baselines/role-conformance/baseline.json
+#   ephemeral run : tmp/metrics/role-conformance/   (gitignored)
+#   mise command  : mise run audit roles  (baseline | compare ; --write-baseline)  [mirrors `perf`]
+#   results keys  : { mislabeledUtilCount, utilPurityRatio, enforcedDirRatio, suffixViolations }
+#   mislabeled detector: a `.util.ts` importing node:* / bun:sqlite / electrobun/* / Bun.$ / fetch
+#     (or holding state) is NOT a pure helper -> counts toward mislabeledUtilCount.
+# NOT in the ephemeral assets/specs/ dir (DOC_AUTHORITY); NOT a new tools/audits/ tree.
+
+## Audit scope — `.util.ts` is the dominant ("junk-drawer") suffix
+src .util.ts non-spec TOTAL ..................... 100
+  src/shell/main ............................... 18
+  src/shell/renderer ........................... 41
+  src/shell/app ................................ 16
+  src/core ..................................... 18
+  src/shared ................................... 0
+# command: find src -name '*.util.ts*' ! -name '*.spec.*' | wc -l   (per dir variants)
+
+## CODESTYLE_GUIDE suffix vocabulary (existing authority — 018 reconciles to it)
+# `.util.ts` is DEFINED as "Pure stateless helper functions". Existing role
+# suffixes already include: .service .repository .schema .adapter .state .client
+# .util .const .types .parser .assembler .helper .port .factory .guard
+# .component .hook .page .routes .plugin .middleware .contract .config .loader .error
+# Guide already says: "Rails-style — Convention over configuration: know the
+# folder, know the suffix, done." (§ File Naming)
+
+## ADR convention
+# NONE exists. find . -type d -iname adr -> empty. Decisions are normative in
+# guides today (FCIS.guide.md § Stack decisions); assets/guides is the doctrine
+# single-source-of-truth. 018 introduces assets/guides/adr/0001-role-suffix-taxonomy.md
+# cross-linked from CODESTYLE_GUIDE. (Mass relocation of guides -> assets/docs REJECTED.)
+
+## Pilot dir — src/shell/main/handoff (single-word doctrine: subfolder carries shared qualifier)
+# After pilot:
+#   registry.service.ts          (was handoff_registry.service.ts)
+#   clipboard.port.ts            (was electrobun_clipboard.port.ts)
+#   browser.adapter.ts           (was browser_handoff.util.ts         — I/O openInBrowser)
+#   editor.adapter.ts            (was editor_handoff.util.ts          — I/O openInEditor)
+#   xdotool.adapter.ts           (was xdotool_available.util.ts       — wraps xdotool)
+#   frontmost/app.resolver.ts    (was resolve_frontmost_app.util.ts   — lookup)
+#   frontmost/paste.adapter.ts   (was paste_frontmost_handoff.util.ts — I/O paste)
+#   terminal/app.resolver.ts     (was resolve_terminal_app_name.util.ts — lookup)
+#   terminal/command.adapter.ts  (was terminal_handoff.util.ts        — I/O paste/run)
+# New vocab introduced by 018: `.resolver.ts` (others use existing `.adapter`/`.service`/`.port`).
+# Leaf words (command/paste/app) MAY be refined by the pilot; suffix+subfolder fixed.
+
+## TODO.md P3 backlog reconciled by 018 (reorder/subsume, not duplicate)
+# Subsumed (naming/relocation): P3-7 (suffix-contract relocation), P2-9 (guides match impl, naming half)
+# Sequenced-ahead-of / referenced: P3-12 (app_*.util junk drawer), P3-13 (types in .component.tsx),
+#   P3-15 (micro-dirs), P3-5 (components/shared split)
+# Stay separate large specs (roadmap points at them): P3-1 (App split), P3-16 (features/ tree)
+
+## ls-lint baseline
+`bun run lint:ls` -> exit 0 (green); 017 COH-3 added basename-regex enforcement for core/knowledges/* dirs.

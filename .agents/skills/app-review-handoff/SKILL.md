@@ -268,7 +268,7 @@ narrower than new gherkin slices.
 
 ## Related
 
-- SDD workflow: [`assets/guides/SDD_WORKFLOW_GUIDE.md`](../../../assets/guides/SDD_WORKFLOW_GUIDE.md) § Review handoff
+- SDD workflow: [`assets/guides/WORKFLOW_SDD_GUIDE.md`](../../../assets/guides/WORKFLOW_SDD_GUIDE.md) § Review handoff
 - Handoff generator: `tools/governance/specs/workflow/handoff_generate.script.ts`
 - AC table parser: `parseHandoffAcTable()` in same module
 - Review CLI: `mise run spec review-handoff {classify|extract-evidence|prepare|scaffold-audit}`
