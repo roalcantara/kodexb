@@ -7,7 +7,7 @@ requirements in [`spec.md`](./spec.md). Check a box only when the task's
 ## Phase A — ROLE-1 role-conformance harness
 - [x] **T101** Pure classification core (`role_conformance_core.script.ts`) — *gate:* ROLE-1 AC1/AC2 core
 - [x] **T102** IO runner: scan + `buildReport` + report.md — *gate:* ROLE-1 AC1
-- [x] **T103** `mise run audit roles` wiring + commit first `baseline.json` (`totalUtil==100`) — *gate:* ROLE-1 AC2/AC3/AC4
+- [x] **T103** `mise run audit roles` wiring + commit first `baseline.json` (`totalUtil==99`) — *gate:* ROLE-1 AC2/AC3/AC4
 
 ## Phase B — ROLE-2 vocabulary + ADR
 - [x] **T104** Add `.resolver` + single-word doctrine + `.util` purity rule in CODESTYLE; seed `assets/guides/adr/0001` — *gate:* ROLE-2 AC1–4

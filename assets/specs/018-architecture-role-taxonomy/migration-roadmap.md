@@ -27,7 +27,7 @@ needed). See `.ls-lint.yml` diff in 018.
 | **Dir**     | `src/__tests__/helpers` (7 files, 1 mislabeled) |
 | **Mislabeled** | `rpc_route.spec.util.ts` — rename to proper suffix |
 | **Target**  | Rename file to match its actual role (spec helper) |
-| **Action**  | Rename to `<name>.spec.util.ts` or remove `.util` if not a util |
+| **Action**  | Rename to `<name>.spec.ts` (drop `.util`, else the metric keeps counting it) |
 | **Gate**    | `bun test src/__tests__ && bun run lint:ls` |
 | **P-item**  | P3-7 (misplaced artifacts) |
 | **Depends** | Foundation |

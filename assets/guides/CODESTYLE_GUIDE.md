@@ -93,7 +93,7 @@ collection of the same kind (e.g. `rpc.host.schemas.ts` exports many schemas).
 | ---------------- | ------------------------------------------------- | --------------------------- |
 | `.service.ts`    | Business logic orchestration                      | `app.service.ts`            |
 | `.repository.ts` | Data access (queries, writes)                     | `entry.repository.ts`       |
-| `.resolver.ts`   | Resolves an identifier/value from a lookup or env | `frontmost_app.resolver.ts` |
+| `.resolver.ts`   | Resolves an identifier/value from a lookup or env | `app.resolver.ts`            |
 | `.schema.ts`     | TypeBox schema + inferred input type              | `config.schema.ts`          |
 | `.schemas.ts`    | Aggregate: re-exports multiple schemas            | `rpc.host.schemas.ts`       |
 | `.loader.ts`     | File / resource loading                           | `config.loader.ts`          |
@@ -106,7 +106,7 @@ collection of the same kind (e.g. `rpc.host.schemas.ts` exports many schemas).
 | `.client.ts`     | Client wrapper around an external API / process   | `rpc.client.ts`             |
 | `.host.ts`       | Server / host side of a protocol                  | `rpc.host.ts`               |
 | `.logger.ts`     | Logger implementation                             | `console.logger.ts`         |
-| `.util.ts`       | Pure, **stateless, side-effect-free** helper functions (no I/O imports — `node:*`, `bun:sqlite`, `electrobun`, `Bun.$`, `fetch`); shell I/O artifacts use a role suffix | `crc32.util.ts` |
+| `.util.ts`       | Pure helper functions with **no I/O imports** (`node:*`, `bun:sqlite`, `electrobun`, `Bun.$`, `fetch`) — the harness enforces this import rule only, not full statelessness; shell I/O artifacts use a role suffix | `crc32.util.ts` |
 | `.const.ts`      | Named constants (singular — one module of consts) | `entry.const.ts`            |
 | `.types.ts`      | Type-only module (no runtime code)                | `entry.types.ts`            |
 | `.builder.ts`    | Fluent or step-wise object builder                | `factories.builder.ts`      |

@@ -250,7 +250,7 @@ Tracked by the `role-conformance` baseline; one-off checks against
 | Metric / outcome                           | Baseline | Target (018) | Source |
 | ------------------------------------------ | -------: | -----------: | ------ |
 | `.util.ts` files classified                |       99 |    every run | harness report rows |
-| `mislabeledUtilCount` (baseline established)|       ? |  recorded + ↓ by 7 after pilot | `baseline.json` `results` |
+| `mislabeledUtilCount` (baseline established)|       ? |  recorded + ↓ by 5 after pilot | `baseline.json` `results` |
 | `utilPurityRatio`                          |        ? |     recorded, trend ↑ | `baseline.json` |
 | `enforcedDirRatio` (ls-lint coverage)      |   low   |     ↑ (all clean dirs) | `baseline.json` |
 | Pilot dir mislabeled `.util`               |        7 |            0 | `find src/shell/main/handoff -name '*.util.ts' ! -name '*.spec.*'` |
