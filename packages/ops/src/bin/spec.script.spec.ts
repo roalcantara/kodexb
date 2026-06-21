@@ -107,9 +107,6 @@ describe('planSpec — every subcommand routes', () => {
   it('workflow handoff scrub routes to handoff_scrub', () => {
     expect(spawnArgv(plan('workflow', ['handoff', 'scrub'])).join(' ')).toContain('handoff_scrub.script.ts')
   })
-  it('audit docs rogue-refs routes', () => {
-    expect(spawnArgv(plan('audit', ['docs', 'rogue-refs'])).join(' ')).toContain('rogue-refs')
-  })
   it('audit feature resolves the dir', () => {
     const argv = spawnArgv(plan('audit', ['feature'], { usage_feature: FEAT, usage_strict: 'true' }))
     expect(argv.join(' ')).toContain('audit.script.ts')

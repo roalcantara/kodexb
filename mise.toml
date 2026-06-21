@@ -1262,9 +1262,6 @@ exec bun bin/skill.script.ts "$CMD" "$@"
       flag "--dry-run" help="With --fix: print planned fixes without writing"
       flag "--force" help="With --fix: overwrite existing handoff/checklist scaffolds"
       arg "[feature]" help="Feature dir (omitted: active feature via feature.json / branch / cwd)"
-      cmd "docs" {
-        cmd "rogue-refs" help="Inventory inbound assets/docs/ links on guides and agent entry docs" {}
-      }
       cmd "feature" {
         flag "--strict" help="Exit non-zero on error-level findings (alias)"
         flag "--fix" help="Apply deterministic audit scaffolding fixes"

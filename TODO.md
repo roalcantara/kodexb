@@ -26,14 +26,11 @@ Fix before the next user-visible release.
 
 ## P1 — High ROI (shippable chunks)
 
-### Chunk 2 — Rogue reference cleanup *(3 actionable hits)*
+### Chunk 2 — Rogue reference cleanup *(retired)*
 
 **Handoff:** [`.cursor/plans/todo_p1_chunk2_rogue_refs_handoff.md`](.cursor/plans/todo_p1_chunk2_rogue_refs_handoff.md)
 
-- [ ] Allowlist `assets/guides/README.md` in rogue-ref scanner (3 false positives — negative guidance table)
-- [ ] Retire `rogue_refs.script.ts` + mise/spec wiring when actionable count is **0**
-
-Inventory: `mise run spec audit docs rogue-refs` (diagnostic, not a merge gate).
+- [x] Retire `rogue_refs.script.ts` + mise/spec wiring (0 actionable hits, scanner deleted)
 
 ### Chunk 3 — 008 closeout hygiene *(optional)*
 
@@ -98,6 +95,7 @@ Large refactors; schedule after P0–P2 unless a feature touches the same files.
 - [x] **P1-crg** — CRG.md self-contained
 - [x] **P1-ci** — CI_GUIDE self-contained
 - [x] **P2-archive-rename** — `assets/docs/specs/` → `assets/docs/archive/`; rogue-refs sweep
+- [x] **P1-chunk2-rogue-refs** — retired rogue-ref scanner (0 actionable hits, files deleted, wiring removed)
 - [x] **P2-built-layer** — shipped feature records promoted per doc-promotion policy
 - [x] **P2-spec-kit-active** — in-flight policy in [`DOC_AUTHORITY.md`](assets/guides/DOC_AUTHORITY.md)
 - [x] Archive sweep + library_manifest verification

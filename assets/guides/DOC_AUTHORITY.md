@@ -221,9 +221,7 @@ Until shared contracts finish migrating, these **tools** may still embed paths (
 
 - `packages/ops/src/governance/specs/library_manifest.script.ts` — generates and verifies `assets/catalog/library.yaml` (legacy archive folder index)
 - `tools/metrics/harnesses/e2e-quality/e2e_metrics.script.ts` — reads `tools/metrics/baselines/e2e-quality/*`
-- `packages/ops/src/governance/policies/rogue_refs.script.ts` — inventories inbound legacy links
-
-**Rogue reference inventory:** `mise run audit rogue-refs` (writes `tmp/audit/`; diagnostic, not a merge gate).
+**Rogue reference migration complete** — the diagnostic scanner has been retired; no actionable inbound links remain.
 
 **Spec system backlog:** root [`TODO.md`](../../TODO.md) tracks remaining P0–P2 migration items.
 

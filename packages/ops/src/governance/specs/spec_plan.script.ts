@@ -206,15 +206,6 @@ function planWorkflow(ctx: PlanCtx): SpecPlan {
   return planWorkflowDefault(ctx)
 }
 
-const AUDIT_SUBCOMMANDS = new Set(['docs', 'feature', 'security'])
-
-function planAuditDocs({ rest }: PlanCtx): SpecPlan {
-  if ((rest[1] ?? '') !== 'rogue-refs') {
-    return planError(`spec audit docs: unknown action ${rest[1] ?? ''}`, 2)
-  }
-  return planSpawn(bunPath('packages/ops/src/bin/audit.script.ts', 'rogue-refs'))
-}
-
 function planAuditFeature({ rest, env }: PlanCtx): SpecPlan {
   return planSddFeatureAudit(usageOptString(env, 'feature') ?? rest[1], env)
 }
@@ -226,8 +217,9 @@ function planAuditSecurity({ env }: PlanCtx): SpecPlan {
   return planSpawn(argv)
 }
 
+const AUDIT_SUBCOMMANDS = new Set(['feature', 'security'])
+
 const AUDIT_ACTIONS = {
-  docs: planAuditDocs,
   feature: planAuditFeature,
   security: planAuditSecurity
 } as const satisfies Record<string, PlannerFn>
