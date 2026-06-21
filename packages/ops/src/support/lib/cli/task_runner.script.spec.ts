@@ -1,3 +1,4 @@
+// @mise_sdd_cli
 import { describe, expect, it } from 'bun:test'
 import { type RunStepsInput, renderTaskReport, runSteps, type TaskRunReport } from './task_runner.script'
 

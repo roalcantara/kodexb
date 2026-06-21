@@ -1,3 +1,4 @@
+// @src_cohesion
 import { describe, expect, it } from 'bun:test'
 import { factoryFor } from '@testing'
 import type { BookmarkKnowledge, CommandKnowledge, TaskKnowledge } from '../schemas/knowledge.schema'
