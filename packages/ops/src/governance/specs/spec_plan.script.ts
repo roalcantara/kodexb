@@ -34,7 +34,7 @@ export { resolveSpecGateFeatureDir } from './spec_gate_feature_dir.script'
 export type { PlanCtx, PlannerFn, SpecEnv, SpecPlan, SpecPlanDeps } from './spec_plan_builders.script'
 export { planGovernanceFeatureSpawn, planSddFeatureAudit } from './spec_plan_builders.script'
 
-export const ALLOWED_WORKFLOW_NAMES = new Set(['orchestrated-handoff', 'resume', 'run'])
+export const ALLOWED_WORKFLOW_NAMES = new Set(['orchestrated-handoff', 'resume', 'run', 'status'])
 
 /**
  * Validate the positional workflow name passed to `mise run spec workflow <name>`.
@@ -178,12 +178,25 @@ function planWorkflowDefault(ctx: PlanCtx): SpecPlan {
   return planWorkflowKitNext(ctx, sub === 'run' ? ctx.rest.slice(1) : ctx.rest)
 }
 
+function planWorkflowStatus(ctx: PlanCtx): SpecPlan {
+  const feature = featureFrom(ctx.env, ctx.rest.slice(1))
+  const argv = bunSpec('workflow_status.script.ts')
+  if (feature) argv.push(feature)
+  const format = usageOptString(ctx.env, 'format')
+  if (format && format !== 'pretty') argv.push('--format', format)
+  const output = usageOptString(ctx.env, 'output')
+  if (output) argv.push('-o', output)
+  pushUsageFlags(argv, ctx.env, ['json', 'raw'])
+  return planSpawn(argv)
+}
+
 const WORKFLOW_ACTIONS = {
   handoff: planWorkflowHandoff,
   runs: planWorkflowRuns,
   resume: planWorkflowResume,
   bench: planWorkflowBench,
-  run: planWorkflowRun
+  run: planWorkflowRun,
+  status: planWorkflowStatus
 } as const satisfies Record<string, PlannerFn>
 
 function planWorkflow(ctx: PlanCtx): SpecPlan {

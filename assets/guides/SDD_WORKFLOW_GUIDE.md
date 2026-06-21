@@ -266,6 +266,30 @@ table in this guide. For XML subtask manifests, use workflow bench or legacy
 Legacy names removed in 011: `spec workflow orchestrated-handoff`, `--next`,
 `--feat`, top-level `mise run audit`, `spec feature-init`, `app gates --all`.
 
+### Workflow status (`mise run spec workflow status`)
+
+Shows a six-column SDD pipeline view (Intent · Design · Breakdown · Dispatch ·
+Build · Ship), artifact debt, the **NEXT** command, and — during implement —
+the T### task checkboxes and Commit plan chunks for the active feature.
+
+```bash
+mise run spec workflow status                      # active feature, gum pretty
+mise run spec workflow status assets/specs/NNN-slug
+mise run spec workflow status --json               # stable JSON (no ANSI)
+mise run spec workflow status --raw                # plain text, no gum
+mise run spec workflow status --format mermaid     # rail-only flowchart LR
+mise run spec workflow status -o /tmp/status.html  # self-contained HTML grid
+```
+
+- **NEXT banner** — verbatim from `detectPhase()`
+  (`packages/exec/src/orchestrated_handoff.script.ts`), the normative phase
+  detector. Files on disk do **not** advance the pipeline: a `tasks.md` that
+  exists before `checklists/analyze-plan.md` is shown as **artifact debt** (⊘),
+  not as a done stage.
+- **Dispatch column** — `skipped` (⊝) when the subtask manifest does not
+  require a `gherkin-bdd-handoff` (no operator smoke / Gherkin in plan).
+- Narrow terminals (<115 cols) render NEXT + artifact index only.
+
 ### When to use opencode worker handoff vs primary implement
 
 - **Primary implement (Cursor / opencode / `speckit.implement`)** — code under

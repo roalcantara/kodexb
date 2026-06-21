@@ -27,6 +27,8 @@
     "src/shell/app/db/import.service.spec.ts",
     "packages/ops/src/governance/specs/workflow_run.script.spec.ts",
     "packages/ops/src/__tests__/fixtures/workflow/fixture-profile.yaml",
+    "packages/ops/src/__tests__/fixtures/workflow_status/**",
+    ".cursor/plans/**",
     "packages/dev/tsconfig.json",
     "packages/ops/tsconfig.json"
   ]

@@ -1224,6 +1224,13 @@ exec bun bin/skill.script.ts "$CMD" "$@"
         flag "--answer <kv>" help="Answer key=value for NEED_INPUT stages"
         flag "--approve <stage>" help="Approve human-gated stage"
       }
+      cmd "status" {
+        arg "[feature]" help="Feature dir (omitted: active feature)"
+        flag "--format <format>" default="pretty" {
+          choices "pretty" "mermaid" "markdown"
+        }
+        flag "-o --output <path>" help="Write HTML report to path"
+      }
       cmd "runs" {
         arg "<action>" help="list|show|tail|prune" {
           choices "list" "show" "tail" "prune"
