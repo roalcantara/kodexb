@@ -1,3 +1,4 @@
+import fs from 'node:fs'
 import path from 'node:path'
 import { classifyUtil, computeMetrics, type RoleMetrics, type UtilRow } from './role_conformance_core.script'
 
@@ -162,6 +163,7 @@ if (import.meta.main) {
   const report = buildReport(files, dirs, baseline, deriveGitSha())
 
   const runDir = path.join(ROOT, 'tmp/metrics/role-conformance')
+  fs.mkdirSync(runDir, { recursive: true })
   await Bun.write(path.join(runDir, 'latest.json'), JSON.stringify(report, null, 2))
   await Bun.write(path.join(runDir, 'report.md'), renderReportMd(report))
 
