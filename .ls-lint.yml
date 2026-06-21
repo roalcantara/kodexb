@@ -111,6 +111,9 @@ ls:
   src/shell/renderer/constants:
     .ts: regex:([a-z][a-z0-9_]*\.const|index)
 
+  src/shell/renderer/actions:
+    .ts: regex:([a-z][a-z0-9_]*\.(util|types)(\.spec)?|index)
+
   src/shell/renderer/components/list:
     .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
 
@@ -129,7 +132,16 @@ ls:
   src/shell/renderer/styles/components:
     .css: regex:^[a-z][a-z0-9_]*$
 
-  # ── Core: directory↔suffix contract ─────────────────────────────────────────
+  # ── Core helpers: subdirectory suffix contract ─────────────────────────────
+  src/core/helpers/entry_action:
+    .ts: regex:([a-z][a-z0-9_]*\.(util|const)(\.spec)?|index)
+
+  src/core/helpers/frecency:
+    .ts: regex:([a-z][a-z0-9_]*\.util(\.spec)?|index)
+
+  src/core/helpers/list_opts:
+    .ts: regex:([a-z][a-z0-9_]*\.(util|const|types)(\.spec)?|index)
+
   src/core/helpers:
     .ts: regex:^([a-z][a-z0-9_]*\.helper(\.spec)?|index)$
 
@@ -189,6 +201,9 @@ ls:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
   packages/ops/src/support/lib/cli:
+    .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
+
+  packages/ops/src/metrics/harnesses/role-conformance:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
   packages/ops/src/metrics/harnesses/perf:
