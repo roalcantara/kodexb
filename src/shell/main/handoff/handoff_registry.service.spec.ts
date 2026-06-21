@@ -192,10 +192,19 @@ describe('runEntryHandoff', () => {
       const { runEntryHandoff } = await import('./handoff_registry.service')
       const throwingHide = {
         calls: [] as string[],
-        armGuard: () => { throwingHide.calls.push('armGuard') },
-        disarmGuard: () => { throwingHide.calls.push('disarmGuard') },
-        hide: () => { throwingHide.calls.push('hide'); throw new Error('hide crashed') },
-        show: () => { throwingHide.calls.push('show') }
+        armGuard: () => {
+          throwingHide.calls.push('armGuard')
+        },
+        disarmGuard: () => {
+          throwingHide.calls.push('disarmGuard')
+        },
+        hide: () => {
+          throwingHide.calls.push('hide')
+          throw new Error('hide crashed')
+        },
+        show: () => {
+          throwingHide.calls.push('show')
+        }
       }
       const result = runEntryHandoff('terminal-paste', { cmd: 'ls -la' }, throwingHide, HANDOFF_TEST_PLATFORM)
 

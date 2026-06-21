@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test'
 import { render } from '@testing-library/react'
 
 import { defaultEntryActionPanelDeps } from '../../actions/entry_action_panel_deps.util'
-import { ListMain, EMPTY_TAG_COUNTS } from './list_main.component'
+import { EMPTY_TAG_COUNTS, ListMain } from './list_main.component'
 
 const shellStub = {
   data: {

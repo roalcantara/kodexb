@@ -24,6 +24,7 @@ import { ListResultsBody } from './list_results_body.component'
 import { ListSearchFilterChrome } from './list_search_filter_chrome.component'
 
 const EMPTY_TAG_COUNTS: Readonly<Record<string, number>> = Object.freeze({})
+
 export { EMPTY_TAG_COUNTS }
 
 export type ListMainProps = {

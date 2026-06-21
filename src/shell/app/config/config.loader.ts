@@ -96,7 +96,14 @@ export async function loadConfig(pathArg?: string): Promise<LoadedConfig> {
  */
 export async function saveConfig(
   current: LoadedConfig,
-  patch: Partial<{ sourcesDir: string; dbPath: string; terminalApp: string; editorApp: string; pageSize: string; advisories: boolean }>
+  patch: Partial<{
+    sourcesDir: string
+    dbPath: string
+    terminalApp: string
+    editorApp: string
+    pageSize: string
+    advisories: boolean
+  }>
 ): Promise<LoadedConfig> {
   const body: typeof DEFAULT_CONFIG_BODY = {
     database: { path: patch.dbPath ?? current.database.path },
