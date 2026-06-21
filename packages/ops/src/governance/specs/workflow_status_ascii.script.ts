@@ -52,11 +52,11 @@ function truncateLabel(label: string, max: number): string {
 }
 
 function columnHeader(col: WorkflowColumn, activeCol: boolean): string {
-  let title = `── ${col.title}`
+  let title = `-- ${col.title}`
   if (activeCol) title += ' (active)'
-  title += ' ──'
+  title += ' --'
   const remaining = Math.max(0, HEADER_WIDTH - title.length)
-  return title + '─'.repeat(remaining)
+  return title + '-'.repeat(remaining)
 }
 
 function columnActive(report: WorkflowProgressReport): boolean[] {
@@ -123,7 +123,7 @@ export function formatWorkflowStatusAscii(report: WorkflowProgressReport, flags?
   const showIndex = flags ? flags.showIndex : false
   const parts: string[] = []
 
-  parts.push(`Spec workflow · ${report.slug}`)
+  parts.push(`Spec workflow . ${report.slug}`)
   parts.push(`  ${report.featureDir}`)
   parts.push('')
   parts.push(`Phase: ${report.currentPhase}`)

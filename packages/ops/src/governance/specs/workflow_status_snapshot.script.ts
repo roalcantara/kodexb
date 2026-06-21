@@ -12,7 +12,12 @@ import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { filesetFingerprint, scanFeatureDir, type WorkflowProgressReport } from '@kb/exec'
-import { type Static, Type } from '@sinclair/typebox'
+import { FormatRegistry, type Static, Type } from '@sinclair/typebox'
+import { Value } from '@sinclair/typebox/value'
+
+if (!FormatRegistry.Has('date-time')) {
+  FormatRegistry.Set('date-time', value => typeof value === 'string' && !Number.isNaN(Date.parse(value)))
+}
 
 // ── Schema ────────────────────────────────────────────────────────────────
 
@@ -186,8 +191,13 @@ export function listSnapshots(slug: string): SnapshotEntry[] {
 export function compareSnapshots(aPath: string, bPath: string): string {
   const lines: string[] = []
 
-  const readSnap = (p: string): WorkflowStatusSnapshotT =>
-    JSON.parse(readFileSync(p, 'utf-8')) as WorkflowStatusSnapshotT
+  const readSnap = (p: string): WorkflowStatusSnapshotT => {
+    const parsed: unknown = JSON.parse(readFileSync(p, 'utf-8'))
+    if (!Value.Check(WorkflowStatusSnapshot, parsed)) {
+      throw new Error(`invalid snapshot schema: ${p}`)
+    }
+    return parsed
+  }
 
   let a: WorkflowStatusSnapshotT
   let b: WorkflowStatusSnapshotT

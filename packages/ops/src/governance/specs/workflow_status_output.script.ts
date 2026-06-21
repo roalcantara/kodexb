@@ -155,12 +155,13 @@ export function emitMermaid(report: WorkflowProgressReport, options?: MermaidEmi
     let ascii = renderMermaidTerminal(source, subgraph)
     let width = mermaidAsciiWidth(ascii)
     if (width > termWidth && subgraph) {
+      const subgraphWidth = width
       const railSource = renderMermaid(report, { subgraph: false })
       ascii = renderMermaidTerminal(railSource, false)
       width = mermaidAsciiWidth(ascii)
       return {
         text: ascii,
-        note: `subgraph diagram (${width} cols) exceeds terminal — showing rail-only; use --source for full mermaid`
+        note: `subgraph diagram (${subgraphWidth} cols) exceeds terminal — showing rail-only; use --source for full mermaid`
       }
     }
     return { text: ascii }

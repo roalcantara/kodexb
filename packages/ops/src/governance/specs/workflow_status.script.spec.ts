@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test'
+import { rmSync } from 'node:fs'
 import path from 'node:path'
 import { detectPhase, scanFeatureDir } from '@kb/exec'
 import { buildWorkflowReport } from './workflow_status.script'
@@ -193,23 +194,28 @@ describe('workflow_status next semantics', () => {
 
 describe('snapshot record/list/compare integration', () => {
   it('record then list then compare returns meaningful diff', () => {
-    const { report } = buildWorkflowReport(FIXTURES.implementMid)
     const slug = 'e2e-workflow-status-test'
+    rmSync(path.join('tools', 'metrics', 'workflow-status', slug), { recursive: true, force: true })
+    try {
+      const { report } = buildWorkflowReport(FIXTURES.implementMid)
 
-    const r1 = recordSnapshot(report, slug)
-    expect(r1.isErr()).toBe(false)
+      const r1 = recordSnapshot(report, slug)
+      expect(r1.isErr()).toBe(false)
 
-    const entries = listSnapshots(slug)
-    expect(entries.length).toBeGreaterThanOrEqual(1)
-    expect(entries[0]?.phase).toBe('implement')
+      const entries = listSnapshots(slug)
+      expect(entries.length).toBeGreaterThanOrEqual(1)
+      expect(entries[0]?.phase).toBe('implement')
 
-    const report2 = { ...report, currentPhase: 'gate' } as typeof report
-    const r2 = recordSnapshot(report2, slug)
-    expect(r2.isErr()).toBe(false)
+      const report2 = { ...report, currentPhase: 'gate' } as typeof report
+      const r2 = recordSnapshot(report2, slug)
+      expect(r2.isErr()).toBe(false)
 
-    if (r1.value && r2.value) {
-      const diff = compareSnapshots(r1.value, r2.value)
-      expect(diff).toContain('Phase: implement → gate')
+      if (r1.value && r2.value) {
+        const diff = compareSnapshots(r1.value, r2.value)
+        expect(diff).toContain('Phase: implement → gate')
+      }
+    } finally {
+      rmSync(path.join('tools', 'metrics', 'workflow-status', slug), { recursive: true, force: true })
     }
   })
 })

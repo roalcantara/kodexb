@@ -158,6 +158,10 @@ function parseArgs(argv: string[]): StatusArgs {
   if (args.source && args.format !== 'mermaid') {
     throw new ArgError('--source requires --format mermaid')
   }
+  const snapshotModes = [args.listSlug, args.compare, args.record].filter(Boolean)
+  if (snapshotModes.length > 1) {
+    throw new ArgError('--list, --compare, and --record are mutually exclusive')
+  }
   return args as StatusArgs
 }
 

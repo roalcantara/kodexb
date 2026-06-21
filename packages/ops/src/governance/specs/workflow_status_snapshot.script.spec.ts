@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { mkdirSync, readFileSync, rmSync } from 'node:fs'
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import type { WorkflowProgressReport } from '@kb/exec'
 import {
@@ -12,11 +12,21 @@ import {
 } from './workflow_status_snapshot.script'
 
 const TMP_ROOT = path.join(import.meta.dirname, '..', '..', '__tests__', 'fixtures', 'workflow_status')
-const SNAPSHOT_TMP = path.join(TMP_ROOT, '__snapshots_test')
+const SNAPSHOT_ROOT = path.join('tools', 'metrics', 'workflow-status')
 
-function cleanTempDir(): void {
-  rmSync(SNAPSHOT_TMP, { recursive: true, force: true })
-  mkdirSync(SNAPSHOT_TMP, { recursive: true })
+function rmSnapshotSlugs(...slugs: string[]): void {
+  for (const slug of slugs) {
+    rmSync(path.join(SNAPSHOT_ROOT, slug), { recursive: true, force: true })
+  }
+}
+
+function withSnapshotTest(slugs: string[], fn: () => void): void {
+  rmSnapshotSlugs(...slugs)
+  try {
+    fn()
+  } finally {
+    rmSnapshotSlugs(...slugs)
+  }
 }
 
 const MOCK_REPORT_BASE: WorkflowProgressReport = {
@@ -90,18 +100,9 @@ const MOCK_REPORT_BASE: WorkflowProgressReport = {
   commitChunks: [{ id: 'C1', subject: 'phase 1', paths: ['src/foo.ts'] }]
 }
 
-function withCleanDir(fn: () => void): void {
-  cleanTempDir()
-  try {
-    fn()
-  } finally {
-    cleanTempDir()
-  }
-}
-
 describe('recordSnapshot', () => {
   it('writes a snapshot JSON file', () =>
-    withCleanDir(() => {
+    withSnapshotTest(['implement-mid'], () => {
       const report: WorkflowProgressReport = {
         ...MOCK_REPORT_BASE,
         slug: 'implement-mid',
@@ -135,8 +136,22 @@ describe('compareSnapshots', () => {
     expect(diff).toContain('error reading snapshots')
   })
 
+  it('returns error message for invalid snapshot shape', () => {
+    const badDir = path.join(SNAPSHOT_ROOT, '__invalid_shape_test')
+    mkdirSync(badDir, { recursive: true })
+    const badPath = path.join(badDir, 'bad.status.json')
+    writeFileSync(badPath, JSON.stringify({ not: 'a snapshot' }))
+    try {
+      const diff = compareSnapshots(badPath, badPath)
+      expect(diff).toContain('error reading snapshots')
+      expect(diff).toContain('invalid snapshot schema')
+    } finally {
+      rmSync(badDir, { recursive: true, force: true })
+    }
+  })
+
   it('diffs two valid snapshots', () =>
-    withCleanDir(() => {
+    withSnapshotTest(['implement-mid', 'gate-ready'], () => {
       const r1 = recordSnapshot(
         { ...MOCK_REPORT_BASE, featureDir: path.join(TMP_ROOT, 'implement-mid') },
         'implement-mid'
@@ -171,9 +186,9 @@ describe('readLatestSnapshot', () => {
     expect(readLatestSnapshot('nosuch-slug')).toBeNull()
   })
 
-  it('reads back a recorded snapshot', () =>
-    withCleanDir(() => {
-      const slug = `readtest-${Date.now()}`
+  it('reads back a recorded snapshot', () => {
+    const slug = `readtest-${Date.now()}`
+    withSnapshotTest([slug], () => {
       const r1 = recordSnapshot({ ...MOCK_REPORT_BASE, featureDir: path.join(TMP_ROOT, 'implement-mid') }, slug)
       expect(r1.isErr()).toBe(false)
       const snap = readLatestSnapshot(slug)
@@ -183,7 +198,8 @@ describe('readLatestSnapshot', () => {
         expect(snap.next.command).toBe('bun run speckit-implement')
         expect(snap.columns).toHaveLength(6)
       }
-    }))
+    })
+  })
 })
 
 describe('SnapshotEntry type shape', () => {
