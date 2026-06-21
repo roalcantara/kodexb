@@ -5,7 +5,10 @@ const log = getLogger(['kb', 'main', 'handoff', 'clipboard'])
 function getUtils(): { clipboardReadText: () => string | null; clipboardWriteText: (text: string) => void } {
   // Lazy require so bun test mock.module can intercept before first call
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Utils } = require('electrobun/bun') as { Utils: { clipboardReadText: () => string | null; clipboardWriteText: (text: string) => void } }
+  // biome-ignore lint/style/noCommonJs: lazy require allows bun test mock.module to intercept
+  const { Utils } = require('electrobun/bun') as {
+    Utils: { clipboardReadText: () => string | null; clipboardWriteText: (text: string) => void }
+  }
   return Utils
 }
 
