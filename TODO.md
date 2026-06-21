@@ -21,6 +21,11 @@ Fix before the next user-visible release.
 | P0-2 | **Handoff clipboard `finally` restore**                         | `runEntryHandoff` restores clipboard on success/failure paths but **not** in the `catch` block (`handoff_registry.service.ts`).                                                                        |
 | P0-3 | **Config contract drift**                                       | `configPath`, `display.advisories` — round-trip or remove from schema/docs.                                                                                                                            |
 | P0-4 | **EMPTY tag/array memo bust**                                   | `{}` fallback may bust `EntryRow` memo when tags are empty — audit list query cache keys.                                                                                                              |
+|      |                                                                 |                                                                                                                                                                                                        |
+| ➡️ `c1` | fireMutation: surface transport errors via `onMutationError` — **committed**                                                                                                                            |
+| ➡️ `c2` | handoff clipboard: hoist clipboard vars, `catch`+throw — **committed**                                                                                                                                |
+| ➡️ `c3` | advisories/configPath: `resolveConfig` + `saveConfig` + RPC schema — **committed**                                                                                                                     |
+| ➡️ `c4` | EMPTY_TAG_COUNTS: module-level `Object.freeze({})` in list_main + entry_row — **committed**                                                                                                           |
 
 ---
 
