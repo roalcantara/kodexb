@@ -155,10 +155,19 @@ describe('planSpec — every subcommand routes', () => {
     expect(p.kind).toBe('runner')
     if (p.kind === 'runner') expect(p.task).toBe('spec-closeout')
   })
-  it('ready --phase routes to phase.script', () => {
+  it('ready --phase routes to phase.script when commit is absent', () => {
     const argv = spawnArgv(plan('ready', [], { usage_feature: FEAT, usage_phase: '3' }))
     expect(argv.join(' ')).toContain('phase.script.ts')
     expect(argv).toContain('3')
+  })
+  it('ready --phase with --commit routes to runner not phase.script', () => {
+    const p = plan('ready', [], { usage_feature: FEAT, usage_phase: 'C1', usage_commit: 'true' })
+    expect(p.kind).toBe('runner')
+    if (p.kind === 'runner') expect(p.task).toBe('spec-ready')
+  })
+  it('ready --commit routes to runner', () => {
+    const p = plan('ready', [], { usage_feature: FEAT, usage_commit: 'true' })
+    expect(p.kind).toBe('runner')
   })
   it('review-handoff routes the action', () => {
     const argv = spawnArgv(plan('review-handoff', [], { usage_action: 'classify' }))

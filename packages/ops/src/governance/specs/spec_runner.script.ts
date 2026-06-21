@@ -4,7 +4,7 @@
 
 import { type RunStep, runStepsAndPrint } from '../../support/lib/cli/task_runner.script'
 import { runInherit } from '../../support/lib/shared/spawn_inherit.script'
-import { runCloseoutCommit } from './closeout_commit.script'
+import { applyPhaseCommit, applyRemaining } from './commit_plan_apply.script'
 import { runHandoffEvidence } from './handoff_evidence.script'
 import { resolveCatalogKey } from './resolve_catalog_key.script'
 import type { SpecPlan } from './spec_plan.script'
@@ -15,13 +15,15 @@ const GATE_SH = `${SPECS_ROOT}/gate.sh`
 export type SpecReadyOpts = {
   catalogKey?: string
   catalogWarning?: string
+  commit?: boolean
+  phaseId?: string
+  commitMessage?: string
+  dryRun?: boolean
 }
 
 export type SpecCloseoutOpts = SpecReadyOpts & {
   includeOperatorSmoke?: boolean
   evidenceDryRun?: boolean
-  commit?: boolean
-  commitMessage?: string
 }
 
 export function specGateSteps(featureDir: string, root: string): RunStep[] {
@@ -34,10 +36,51 @@ export function specGateSteps(featureDir: string, root: string): RunStep[] {
   ]
 }
 
+function commitFlushStep(featureDir: string, root: string, opts: SpecReadyOpts): RunStep {
+  return {
+    id: 'commit-flush',
+    title: 'commit plan flush remaining',
+    run: () =>
+      applyRemaining({
+        root,
+        featureDir,
+        messageOverride: opts.commitMessage,
+        dryRun: opts.dryRun,
+        strictCoverage: true
+      })
+  }
+}
+
+function commitPhaseStep(featureDir: string, root: string, opts: SpecReadyOpts): RunStep {
+  const phaseId = opts.phaseId ?? ''
+  return {
+    id: 'commit-chunk',
+    title: `commit plan chunk ${phaseId}`,
+    run: () =>
+      applyPhaseCommit({
+        root,
+        featureDir,
+        phaseId,
+        messageOverride: opts.commitMessage,
+        dryRun: opts.dryRun
+      })
+  }
+}
+
 export function specReadySteps(featureDir: string, root: string, opts: SpecReadyOpts = {}): RunStep[] {
   if (opts.catalogWarning) console.error(opts.catalogWarning)
   const key = opts.catalogKey
   const steps: RunStep[] = []
+
+  if (opts.commit && opts.phaseId) {
+    steps.push(commitPhaseStep(featureDir, root, opts))
+    return steps
+  }
+
+  if (opts.commit) {
+    steps.push(commitFlushStep(featureDir, root, opts))
+  }
+
   if (key) {
     steps.push({
       id: 'tag',
@@ -73,6 +116,15 @@ export function specReadySteps(featureDir: string, root: string, opts: SpecReady
 }
 
 export function specCloseoutSteps(featureDir: string, root: string, opts: SpecCloseoutOpts = {}): RunStep[] {
+  const readyOpts: SpecReadyOpts = {
+    catalogKey: opts.catalogKey,
+    catalogWarning: opts.catalogWarning,
+    commit: opts.commit,
+    phaseId: opts.phaseId,
+    commitMessage: opts.commitMessage,
+    dryRun: opts.dryRun
+  }
+
   const steps: RunStep[] = [
     {
       id: 'audit',
@@ -91,24 +143,37 @@ export function specCloseoutSteps(featureDir: string, root: string, opts: SpecCl
         })
         return result.ok ? 0 : 1
       }
-    },
-    ...specReadySteps(featureDir, root, opts)
+    }
   ]
 
   if (opts.commit) {
-    steps.push({
-      id: 'commit',
-      title: 'git commit closeout',
-      run: () =>
-        runCloseoutCommit({
-          root,
-          featureDir,
-          message: opts.commitMessage
-        })
-    })
+    steps.push(commitFlushStep(featureDir, root, readyOpts))
   }
 
+  steps.push(...specReadySteps(featureDir, root, { ...readyOpts, commit: false }))
+
   return steps
+}
+
+function readyOptsFromEnv(base: SpecReadyOpts): SpecReadyOpts {
+  const commitFlag = process.env.usage_commit === 'true'
+  const commitMessage =
+    process.env.usage_commit_message?.trim() ||
+    (process.env.usage_commit?.trim() && process.env.usage_commit !== 'true'
+      ? process.env.usage_commit.trim()
+      : undefined) ||
+    process.env.usage_message?.trim() ||
+    undefined
+  const hasCommit = commitFlag || Boolean(commitMessage)
+  const phaseId = process.env.usage_phase?.trim() || undefined
+
+  return {
+    ...base,
+    commit: hasCommit || base.commit,
+    phaseId: phaseId ?? base.phaseId,
+    commitMessage: commitMessage ?? base.commitMessage,
+    dryRun: process.env.usage_dry_run === 'true' || base.dryRun
+  }
 }
 
 export function buildSpecRunnerSteps(plan: Extract<SpecPlan, { kind: 'runner' }>, root: string): RunStep[] {
@@ -116,17 +181,17 @@ export function buildSpecRunnerSteps(plan: Extract<SpecPlan, { kind: 'runner' }>
   if (plan.task === 'spec-gate') return specGateSteps(dir, root)
   const keyResult = resolveCatalogKey(dir)
   const key = process.env.usage_key || keyResult.key
-  const readyOpts: SpecReadyOpts = {
+  const baseReady: SpecReadyOpts = {
     catalogKey: key || undefined,
     catalogWarning: !keyResult.ok && keyResult.warning ? keyResult.warning : undefined
   }
+  const readyOpts = readyOptsFromEnv(baseReady)
+
   if (plan.task === 'spec-closeout') {
     return specCloseoutSteps(dir, root, {
       ...readyOpts,
       includeOperatorSmoke: process.env.usage_include_smoke === 'true',
-      evidenceDryRun: process.env.usage_dry_run === 'true',
-      commit: process.env.usage_commit === 'true',
-      commitMessage: process.env.usage_message
+      evidenceDryRun: process.env.usage_dry_run === 'true'
     })
   }
   return specReadySteps(dir, root, readyOpts)

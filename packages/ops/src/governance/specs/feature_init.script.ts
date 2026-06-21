@@ -63,7 +63,7 @@ async function main(): Promise<void> {
 
 ## Closeout
 
-- [ ] **T199** Run \`mise run spec closeout assets/specs/${folder}\` (or \`spec ready\`); pass \`--commit\` when the operator wants a closeout commit — *gate:* DoD merge
+- [ ] **T199** Run \`mise run spec closeout assets/specs/${folder}\`; pass \`--commit\` to flush remaining Commit plan — *gate:* DoD merge
 `
   )
   await Bun.write(

@@ -142,7 +142,7 @@ function applyCloseoutTaskFix(featureDir: string): void {
 
 ## Closeout
 
-- [ ] **T199** Run \`mise run spec closeout ${rel}\` (or \`spec ready\` without evidence replay); pass \`--commit\` when the operator wants a closeout commit — *gate:* DoD merge
+- [ ] **T199** Run \`mise run spec closeout ${rel}\`; pass \`--commit\` to flush remaining Commit plan via \`spec ready\` — *gate:* DoD merge
 `
   writeFileSync(tasksPath, `${text.trimEnd()}${block}`, 'utf8')
 }
@@ -189,6 +189,52 @@ function planChecklistFix(
   }
 }
 
+function planCommitPlanFix(featureDir: string, findings: Finding[]): FixAction | null {
+  if (!findings.some(f => f.rule === 'tasks.commit-plan-missing')) return null
+  const tasksPath = path.join(featureDir, 'tasks.md')
+  const tasksResult = readTextFileSync(tasksPath)
+  if (tasksResult.isErr()) return null
+  if (/^##\s+Commit plan\s*$/im.test(tasksResult.value)) return null
+
+  return {
+    rule: 'tasks.commit-plan-missing',
+    file: tasksPath,
+    action: 'patch',
+    summary: 'Scaffold ## Commit plan section with example C1 chunk'
+  }
+}
+
+function renderCommitPlanStub(featureDir: string): string {
+  const rel = featureDir.replace(/\\/g, '/')
+  return `
+
+## Commit plan
+
+Incremental: \`mise run spec ready --phase C1 --commit\`
+Closeout flush: \`mise run spec ready --commit\` or \`mise run spec closeout ${rel} --commit\`
+
+### C1 — First logical chunk
+- **Phase:** 1
+- **Tasks:** T101
+- **Paths:** \`src/example.ts\`
+- **Subject:** \`feat(scope): Describe first atomic change\`
+- **Body:**
+  Explain what this chunk delivers and why it is isolated.
+
+  Changes:
+  - List capabilities enabled by this commit
+`
+}
+
+function applyCommitPlanFix(featureDir: string): void {
+  const { tasksPath, text } = readTasksTextOrThrow(featureDir)
+  const closeoutIdx = text.search(/^##\s+Closeout\s*$/im)
+  const insertAt = closeoutIdx >= 0 ? closeoutIdx : text.length
+  const stub = renderCommitPlanStub(featureDir)
+  const next = `${text.slice(0, insertAt).trimEnd()}${stub}${closeoutIdx >= 0 ? `\n${text.slice(closeoutIdx)}` : ''}`
+  writeFileSync(tasksPath, next, 'utf8')
+}
+
 export function planFixes(featureDir: string, opts: FixOpts = {}): FixResult {
   const audit = runAudit(featureDir)
   const actions: FixAction[] = []
@@ -205,6 +251,9 @@ export function planFixes(featureDir: string, opts: FixOpts = {}): FixResult {
 
   const closeout = planCloseoutTaskFix(featureDir)
   if (closeout) actions.push(closeout)
+
+  const commitPlan = planCommitPlanFix(featureDir, audit.findings)
+  if (commitPlan) actions.push(commitPlan)
 
   for (const rule of ['phase.analyze-plan', 'phase.analyze-tasks-ready'] as const) {
     const checklist = planChecklistFix(featureDir, rule, audit.findings, opts)
@@ -296,6 +345,10 @@ export function applyFixes(featureDir: string, plan: FixResult): void {
     }
     if (action.rule === 'tasks.closeout-missing') {
       applyCloseoutTaskFix(featureDir)
+      continue
+    }
+    if (action.rule === 'tasks.commit-plan-missing') {
+      applyCommitPlanFix(featureDir)
       continue
     }
     if (action.rule === 'phase.analyze-plan' || action.rule === 'phase.analyze-tasks-ready') {

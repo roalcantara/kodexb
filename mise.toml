@@ -1194,15 +1194,17 @@ exec bun bin/skill.script.ts "$CMD" "$@"
     cmd "ready" {
       arg "[feature]" help="Feature dir (omitted: active feature)"
       flag "--key <key>" help="Catalog key for tag tests"
-      flag "--phase <no>" help="Phase number for focused validation"
+      flag "-p --phase <id>" help="Chunk C1, index 1, or phase letter; lint checkpoint without --commit"
+      flag "--commit" help="Apply Commit plan chunk (--phase) or flush remaining then ship"
+      flag "-c --commit-message <message>" help="Subject+body override; must match tasks.md plan"
+      flag "--dry-run" help="Print commit plan staging without git write"
     }
     cmd "closeout" help="Agent-agnostic ship closeout: audit, handoff evidence, spec ready, optional commit" {
       arg "[feature]" help="Feature dir (omitted: active feature)"
       flag "--key <key>" help="Catalog key for tag tests (overrides auto-resolve)"
       flag "--include-smoke" help="Run operator-smoke Evidence rows (skipped by default)"
-      flag "--dry-run" help="Print handoff evidence commands without executing"
-      flag "--commit" help="Create git commit after gate passes (operator-initiated)"
-      flag "--message <text>" help="Commit subject when --commit (default: chore(spec): closeout <slug>)"
+      flag "--dry-run" help="Print handoff evidence / commit plan without executing writes"
+      flag "--commit" help="Flush remaining Commit plan chunks before final gate (requires valid plan in tasks.md)"
     }
     cmd "init" {
       flag "--id <id>" help="Three-digit id e.g. 001"

@@ -10,6 +10,8 @@ import { detectPhase, parseHandoffAcTable, scanFeatureDir } from '@kb/exec'
 import { repoRoot } from '../../support/lib/shared/repo_root.script'
 import { readTextFileSync } from '../../support/lib/shared/text_file.script'
 import { catalogPaths } from '../support/catalog_paths.script'
+import { listDirtyPaths } from './commit_plan_apply.script'
+import { readCommitPlan } from './commit_plan_parse.script'
 
 export type Severity = 'error' | 'warn' | 'info'
 
@@ -147,13 +149,21 @@ function checkHandoffAcTable(handoffPath: string, parsed: { md: string; rows: Ac
   return f
 }
 
-function checkTasksHygiene(featureDir: string): Finding[] {
-  const f: Finding[] = []
+type TasksContent = { tasksPath: string; md: string }
+
+function loadTasksContent(featureDir: string): TasksContent | null {
   const tasksPath = path.join(featureDir, 'tasks.md')
   const tasksResult = readTextFileSync(tasksPath)
-  if (tasksResult.isErr()) return f
+  if (tasksResult.isErr()) return null
+  return { tasksPath, md: tasksResult.value }
+}
 
-  const md = tasksResult.value
+function checkTasksHygiene(featureDir: string): Finding[] {
+  const f: Finding[] = []
+  const tasks = loadTasksContent(featureDir)
+  if (!tasks) return f
+
+  const { tasksPath, md } = tasks
   const lines = md.split('\n')
 
   const hasSampleLeak =
@@ -234,6 +244,65 @@ function checkTasksHygiene(featureDir: string): Finding[] {
       level: 'warn',
       file: tasksPath,
       message: 'No closeout task mentioning spec closeout, spec ready, or spec gate'
+    })
+  }
+
+  return f
+}
+
+function checkCommitPlan(featureDir: string): Finding[] {
+  const f: Finding[] = []
+  const tasks = loadTasksContent(featureDir)
+  if (!tasks) return f
+
+  const { tasksPath, md } = tasks
+  const hasImplTask = /\*\*T1(0[1-9]|[1-8]\d|9[0-8])\*\*/.test(md)
+  const hasCommitPlan = /^##\s+Commit plan\s*$/im.test(md)
+  const files = scanFeatureDir(featureDir)
+  const phase = detectPhase(files, featureDir)
+  const atGate = files.implementComplete || phase.phase === 'gate'
+
+  if (hasImplTask && !hasCommitPlan) {
+    f.push({
+      rule: 'tasks.commit-plan-missing',
+      level: atGate ? 'error' : 'warn',
+      file: tasksPath,
+      message: 'Missing `## Commit plan` section — author planned atomic commits in tasks.md before implement'
+    })
+    return f
+  }
+
+  if (!hasCommitPlan) return f
+
+  const { plan, errors } = readCommitPlan(featureDir)
+  for (const err of errors) {
+    const rule =
+      err.kind === 'inline-drift'
+        ? 'tasks.commit-plan-inline-drift'
+        : err.kind === 'validation' || err.kind === 'parse' || err.kind === 'duplicate-id'
+          ? 'tasks.commit-plan-invalid'
+          : 'tasks.commit-plan-missing'
+    f.push({
+      rule,
+      level: 'error',
+      file: tasksPath,
+      message: err.message
+    })
+  }
+
+  if (!plan || !atGate) return f
+
+  const dirty = listDirtyPaths(repoRoot())
+  if (dirty.length === 0) return f
+
+  const covered = new Set(plan.chunks.flatMap(c => c.paths))
+  const orphans = dirty.filter(d => ![...covered].some(p => d === p || d.startsWith(`${p}/`)))
+  if (orphans.length > 0) {
+    f.push({
+      rule: 'tasks.commit-plan-orphan-dirty',
+      level: 'error',
+      file: tasksPath,
+      message: `${orphans.length} dirty path(s) not in Commit plan — run \`mise run spec ready --commit\` or update plan: ${orphans.slice(0, 5).join(', ')}${orphans.length > 5 ? '…' : ''}`
     })
   }
 
@@ -343,10 +412,11 @@ export function runAudit(featureDir: string): AuditResult {
   const handoffParsed = readHandoffAcRows(handoffPath)
   const bFindings = checkHandoffAcTable(handoffPath, handoffParsed)
   const cFindings = checkTasksHygiene(featureDir)
+  const commitFindings = checkCommitPlan(featureDir)
   const dFindings = checkPhaseReadiness(featureDir)
   const eFindings = checkCrossRefs(featureDir, handoffPath, handoffParsed)
 
-  const findings = [...aFindings, ...bFindings, ...cFindings, ...dFindings, ...eFindings]
+  const findings = [...aFindings, ...bFindings, ...cFindings, ...commitFindings, ...dFindings, ...eFindings]
 
   const errors = findings.filter(f => f.level === 'error').length
   const warns = findings.filter(f => f.level === 'warn').length

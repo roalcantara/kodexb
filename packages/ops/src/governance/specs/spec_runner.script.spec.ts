@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { catalogPaths } from '../support/catalog_paths.script'
-import { buildSpecRunnerSteps, specGateSteps, specReadySteps } from './spec_runner.script'
+import { buildSpecRunnerSteps, specCloseoutSteps, specGateSteps, specReadySteps } from './spec_runner.script'
 
 const FEAT = `${catalogPaths.specs_root}/011-mise-sdd-cli`
 const ROOT = process.cwd()
@@ -29,10 +29,31 @@ describe('specReadySteps', () => {
     ])
   })
 
+  it('with commit and phase runs chunk step only', () => {
+    expect(specReadySteps(FEAT, ROOT, { commit: true, phaseId: 'C1' }).map(s => s.id)).toEqual(['commit-chunk'])
+  })
+
+  it('with commit only prepends flush before ship steps', () => {
+    const ids = specReadySteps(FEAT, ROOT, { commit: true }).map(s => s.id)
+    expect(ids[0]).toBe('commit-flush')
+    expect(ids).toContain('gate')
+  })
+
   it('every step has a run closure', () => {
     for (const step of specReadySteps(FEAT, ROOT, { catalogKey: 'demo' })) {
       expect(typeof step.run).toBe('function')
     }
+  })
+})
+
+describe('specCloseoutSteps', () => {
+  it('with commit inserts flush before gate and omits duplicate flush in ready', () => {
+    const ids = specCloseoutSteps(FEAT, ROOT, { commit: true }).map(s => s.id)
+    expect(ids.slice(0, 2)).toEqual(['audit', 'evidence'])
+    const flushIdx = ids.indexOf('commit-flush')
+    const gateIdx = ids.indexOf('gate')
+    expect(flushIdx).toBeGreaterThan(-1)
+    expect(gateIdx).toBeGreaterThan(flushIdx)
   })
 })
 

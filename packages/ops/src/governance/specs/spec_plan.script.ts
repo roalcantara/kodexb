@@ -238,7 +238,10 @@ function planReady(ctx: PlanCtx): SpecPlan {
   const resolved = resolveFeatureOrError(ctx.env, ctx.rest)
   if (!resolved.ok) return resolved.plan
   const phaseNo = (usageOptString(ctx.env, 'phase') ?? '').trim()
-  if (phaseNo) {
+  const commitRaw = (usageOptString(ctx.env, 'commit') ?? '').trim()
+  const commitMessage = (usageOptString(ctx.env, 'commit_message') ?? '').trim()
+  const hasCommit = usageFlag(ctx.env, 'commit') || commitRaw === 'true' || Boolean(commitMessage)
+  if (phaseNo && !hasCommit) {
     return planSpawn(bunSpec('phase.script.ts', resolved.featureDir, '--phase', phaseNo))
   }
   return planRunner('spec-ready', resolved.featureDir, ctx.env)

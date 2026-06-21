@@ -225,10 +225,11 @@ path rules in [`DOC_AUTHORITY.md`](../../assets/guides/DOC_AUTHORITY.md)).
 3. **Constitution check** — `/speckit-analyze` SHOULD flag conflicts as **CRITICAL**;
    **`mise run spec lint --strict`** enforces EARS shape deterministically.
 4. **Human gates** — prototype approval; operator runs `mise run spec gate` before merge.
-5. **Chat agents commit WHEN ASKED**; the Spec Kit CLI MAY auto-commit after
-   `/speckit-implement` when `after_implement.enabled: true` in
-   [`git-config.yml`](../extensions/git/git-config.yml) (does not run HK commit-message
-   policy — use `/commit-all` before merge). All other `auto_commit.*` hooks remain **false**.
+5. **Chat agents commit WHEN ASKED**; SDD features use **`## Commit plan`** in
+   `tasks.md` and **`mise run spec ready --phase … --commit`** / **`spec ready --commit`**
+   for plan-driven atomic commits (gate + HK per chunk — no generic closeout messages).
+   Spec Kit `after_implement` in [`git-config.yml`](../extensions/git/git-config.yml)
+   does not replace that flow. All other `auto_commit.*` hooks remain **false**.
 6. **Creative ambiguity** — load `brainstorming` when intent is unclear; record
    outcomes in specs, not only chat.
 
@@ -251,7 +252,7 @@ above):
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `spec.md`                | **Normative** — EARS ids, Measure, Evidence; E2e pointer table                                                                          |
 | `plan.md`                | **Normative** — design + E2e traceability (no Gherkin body)                                                                             |
-| `tasks.md`               | **Normative** — Done when + Evidence per task                                                                                           |
+| `tasks.md`               | **Normative** — ordered tasks, **Commit plan**, Done when + Evidence per task                                                           |
 | `handoff.md`             | **Normative** — implementer prompt + maintainer AC checklist                                                                            |
 | `assets/features/e2e/*`  | **Normative Gherkin** when e2e declared                                                                                                 |
 | `checklists/`            | Spec quality checks; **not** a substitute for tests                                                                                     |

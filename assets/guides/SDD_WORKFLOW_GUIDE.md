@@ -90,15 +90,48 @@ Companion scans only numbered feature folders:
 5. **Normalize** — `mise run spec conform` (or `mise run spec audit --fix`) scaffolds handoff, task IDs, and analyze checklists.
 
 6. **Implement** — `/speckit-implement`; code under `src/` with co-located specs.
+   After each green phase, record work with **`mise run spec ready --phase Cn --commit`**
+   (messages and pathspecs come from **`## Commit plan`** in `tasks.md`).
 
 7. **Quality passes** (advisory) — `/speckit-checklist`, `/speckit-analyze`.
 
 Git auto-commit hooks are **mostly disabled** in `.specify/extensions/git/git-config.yml`;
-**`after_implement`** is **enabled** so the Spec Kit CLI can commit implementation
-progress after `/speckit-implement`. That hook does **not** replace
-`app-quality-gate`, HK commit-message policy, or operator `/commit-all` before merge.
+**`after_implement`** is **enabled** for the Spec Kit CLI but does **not** run HK
+commit-message policy or `app-quality-gate`. Use **`mise run spec ready --phase … --commit`**
+(incremental) or **`/commit-all`** (ad-hoc) for plan-driven atomic commits.
 Cursor `/speckit-implement` does not invoke Speckit hooks unless you run through the
 `specify` CLI with `auto_execute_hooks: true`.
+
+## Commit plan (tasks.md)
+
+Author **`## Commit plan`** in `tasks.md` during `/speckit-tasks` (one `### C#` chunk per
+logical phase). Each chunk lists **Paths**, **Subject**, **Body**, and optional **Tasks**
+/ **Phase** links. Mirror subjects on task lines with `*commit:* \`type(scope): Subject\``.
+
+`mise run spec conform` scaffolds an empty Commit plan when implementation tasks exist.
+
+**Incremental** (one chunk, gate + HK per chunk, no catalog promote):
+
+```bash
+mise run spec ready --phase C1 --commit
+mise run spec ready -p 1 --commit          # same chunk by index
+mise run spec ready -p A --commit          # same chunk by phase letter
+```
+
+Optional `-c` / `--commit-message` must **match** the plan entry (not a freeform override).
+
+**Closeout flush** (remaining dirty chunks, then ship gate):
+
+```bash
+mise run spec ready --commit
+mise run spec closeout assets/specs/NNN-slug --commit   # audit + evidence + flush + promote
+```
+
+**Mid-authoring checkpoint** (lint/trace only, no git):
+
+```bash
+mise run spec ready --phase 1
+```
 
 ## Brainstorm-first path
 
@@ -434,7 +467,7 @@ Rules (enforced by review, not lint):
 
 1. Gherkin + unit coverage for every requirement line (`enforced_by: none` is a ship blocker).
 2. All `tasks.md` T### checkboxes `[x]` before `checklists/implement-done.md` (enforced by `tasks.incomplete` at gate).
-3. **`mise run spec closeout assets/specs/NNN-slug`** — agent-agnostic closeout: `spec audit --strict`, replay handoff Evidence commands (operator-smoke skipped unless `--include-smoke`), then the same steps as **`spec ready`** (tag tests when a catalog key resolves, catalog validate, HK commit profile, `spec gate`, **`catalog promote`**). Pass **`--commit`** when the operator wants an automated closeout commit after gate passes.
+3. **`mise run spec closeout assets/specs/NNN-slug`** — agent-agnostic closeout: `spec audit --strict`, replay handoff Evidence commands (operator-smoke skipped unless `--include-smoke`), flush remaining **Commit plan** chunks when `--commit` is passed (before final gate), then tag/catalog/HK/gate/**`catalog promote`**. Use **`mise run spec ready --commit`** when evidence was run manually and you only need flush + ship.
 4. **`mise run spec ready assets/specs/NNN-slug`** — gate + HK + catalog promote without replaying handoff Evidence (use when evidence was run manually).
 5. `mise run catalog ship <key>` — readiness check only; **`mise run catalog promote <key>`** writes `status: shipped` after gate passes
 6. After merge: archive legacy SDD per [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md) § Shipping
