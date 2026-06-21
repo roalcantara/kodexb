@@ -32,15 +32,6 @@ Fix before the next user-visible release.
 
 - [x] Retire `rogue_refs.script.ts` + mise/spec wiring (0 actionable hits, scanner deleted)
 
-### Chunk 3 — 008 closeout hygiene *(optional)*
-
-**Handoff:** [`.cursor/plans/todo_p1_chunk3_008_closeout_handoff.md`](.cursor/plans/todo_p1_chunk3_008_closeout_handoff.md)
-
-Catalog `task_source_atomicity` is **shipped**; code paths land in `008-task-mutation-failure-ux`. Residual doc/verify debt only:
-
-- [x] Supersede `assets/specs/007-task-source-atomicity/quickstart.md` → pointer + commands from 008
-- [x] Run `KB_E2E_FAULT_INJECTION=1 mise run test tag task_source_atomicity --e2e`; close **T200** in 008 `tasks.md`
-
 ---
 
 ## P2 — Improvements (medium ROI)
@@ -109,6 +100,7 @@ Delivered via **`007-task-source-atomicity`** + **`008-task-mutation-failure-ux`
 - [x] **FP3** Quickstart aligned in 008 (`assets/specs/008-task-mutation-failure-ux/quickstart.md`)
 - [x] **FP4** Feature-local atomicity tasks (`Atomicity conflict probe` in seed fixture; scenarios decoupled from `Release Todo Task`)
 - [x] **FP5** Atomicity BDD split (`task_source_atomicity.steps.ts`, dedicated screenplay)
+- [x] **P1-chunk3-008-closeout** — 007 quickstart superseded; T200/T208 e2e verified with fault injection (3/3)
 
 ### SDD tooling & specs (011–017)
 
