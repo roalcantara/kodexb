@@ -243,6 +243,18 @@ function artifactStatus(filePresent: boolean, stageCleared: boolean): NodeStatus
   return 'pending'
 }
 
+/**
+ * handoff.md is premature debt only after analyze-plan clears and before
+ * analyze-tasks clears — same gate as `deriveArtifactDebt`.
+ */
+function handoffArtifactStageCleared(cleared: ClearedStages): boolean {
+  return !cleared.analyzePlan || cleared.analyzeTasks
+}
+
+function handoffPrematureDebt(files: FileSet, cleared: ClearedStages): boolean {
+  return Boolean(files.handoff && cleared.analyzePlan && !cleared.analyzeTasks)
+}
+
 function railStatus(stageCleared: boolean, currentColumn: boolean): NodeStatus {
   if (stageCleared) return 'done'
   if (currentColumn) return 'current'
@@ -306,7 +318,7 @@ function buildBreakdownColumn(
 ): WorkflowColumn {
   const railStatusVal = railStatus(cleared.tasks, currentColumn)
   const tasksStatus = artifactStatus(files.tasks, cleared.tasks)
-  const handoffStatus = artifactStatus(files.handoff, cleared.tasks)
+  const handoffStatus = artifactStatus(files.handoff, handoffArtifactStageCleared(cleared))
   const analyzeTasksArtifact = artifactStatus(files.analyzeTasksChecklist, cleared.analyzeTasks)
   const analyzeCommandStatus: NodeStatus = cleared.analyzeTasks
     ? 'done'
@@ -449,7 +461,7 @@ function deriveArtifactDebt(files: FileSet, cleared: ClearedStages, featureDir: 
     })
   }
   // handoff.md exists but analyze-tasks gate not cleared (only when analyze-plan is done).
-  if (files.handoff && cleared.analyzePlan && !cleared.analyzeTasks) {
+  if (handoffPrematureDebt(files, cleared)) {
     debt.push({
       path: 'handoff.md',
       blockedAt: 'analyze-tasks',

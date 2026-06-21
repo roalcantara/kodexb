@@ -103,9 +103,13 @@ describe('deriveWorkflowProgress — debt rules', () => {
   it('marks handoff.md debt only when analyze-plan is cleared but analyze-tasks is not', () => {
     const beforeAnalyzePlan = derive({ files: makeFiles({ analyzePlanChecklist: false }) })
     expect(beforeAnalyzePlan.artifactDebt.some(d => d.path === 'handoff.md')).toBe(false)
+    const breakdownBefore = beforeAnalyzePlan.columns[2]
+    expect(breakdownBefore?.stack.find(n => n.path === 'handoff.md')?.status).not.toBe('debt')
 
     const atAnalyzeTasks = derive({ files: makeFiles({ analyzeTasksChecklist: false }) })
     expect(atAnalyzeTasks.artifactDebt.some(d => d.path === 'handoff.md' && d.blockedAt === 'analyze-tasks')).toBe(true)
+    const breakdownAt = atAnalyzeTasks.columns[2]
+    expect(breakdownAt?.stack.find(n => n.path === 'handoff.md')?.status).toBe('debt')
   })
 })
 
