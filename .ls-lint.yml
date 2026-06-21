@@ -50,9 +50,10 @@ ls:
     .ts: regex:^(state|[a-z][a-z0-9_]*\.util)(\.spec)?$
 
   # Handoff: cross-process/adapter bridge layer.
-  # Allowed suffixes: .adapter, .port, .service, .resolver
+  # Allowed suffixes: .adapter, .port, .service (plus index barrel).
+  # .resolver is scoped to frontmost/ and terminal/ below.
   src/shell/main/handoff:
-    .ts: regex:^[a-z][a-z0-9_]*\.(adapter|port|service|resolver)(\.spec)?$
+    .ts: regex:^([a-z][a-z0-9_]*\.(adapter|port|service)(\.spec)?|index)$
 
   src/shell/main/handoff/frontmost:
     .ts: regex:^[a-z][a-z0-9_]*\.(adapter|resolver)(\.spec)?$
