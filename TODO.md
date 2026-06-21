@@ -87,6 +87,7 @@ Parent items stay open until every nested checkbox is `[x]`.
 - [ ] **P2-9** — THE guides (CODESTYLE, FCIS, foundation) SHALL match implementation; run cross-check and fix drift:
   - [ ] A cross-check SHALL cover naming/suffix rules, FCIS import boundaries, and foundation stack decisions (TypeBox, `bun:sqlite`, no Drizzle).
   - [ ] Drift fixes SHALL land in guides (guides win over stale agent entrypoints); `mise run app gates` SHALL stay green.
+  - *Naming/suffix half subsumed by 018-architecture-role-taxonomy (vocabulary + ADR committed).*
 - [ ] **P2-10** — WHEN `mise run app gates` runs on a TTY without `--raw`/`--json`, THE task runner SHALL render **tree pretty mode** only for that command (predecessor: **011**, spike: **013-task-runner-tree-ux**):
   - [ ] THE runner SHALL show root `[app > gates]` and one child group per 011 rule 07 selection (`quality`, `policy`; `--quality` / `--policy` alone show one branch).
   - [ ] THE `quality` group SHALL expose leaf lines for `gate.sh` stages (autofix, embedded policy, lint+typecheck, tests, preview smoke, build smoke); build skip on non-macOS SHALL appear as an explicit leaf.
@@ -109,6 +110,10 @@ Parent items stay open until every nested checkbox is `[x]`.
 
 Parent items stay open until every nested checkbox is `[x]`.
 
+> **Sequencing note:** Role-naming roadmap PRs (→ 018 roadmap) SHALL precede
+> P3-1 (App split) and P3-16 (features/ tree) to avoid rename conflicts after
+> restructuring. See `assets/specs/018-architecture-role-taxonomy/migration-roadmap.md`.
+
 - [ ] **P3-1** — THE monolithic `App` class SHALL split into ~5 focused services:
   - [ ] `app.ts` SHALL shed `noExcessiveLinesPerFile` pressure by splitting lifecycle, list/query, task mutation, sync/import, and config/surface concerns.
   - [ ] Each extracted module SHALL keep co-located specs; dependency-cruiser FCIS rules SHALL stay green.
@@ -124,12 +129,14 @@ Parent items stay open until every nested checkbox is `[x]`.
 - [ ] **P3-5** — THE `components/shared/` tree SHALL distinguish primitives from sync feature code:
   - [ ] Primitives (chips, badges, markdown) SHALL stay separate from sync-feature components (`sync_modal*`, preview helpers).
   - [ ] The boundary SHALL be documented in STYLING_GUIDE or CODESTYLE_GUIDE so new shared code lands in the right subtree.
+  - [ ] *→ 018 roadmap PRs cross-ref: renames in shared dirs may affect imports.*
 - [ ] **P3-6** — WHEN styling list/renderer surfaces, THE repo SHALL reconcile kind-first TypeScript layout with feature-first CSS:
   - [ ] A new list/renderer change SHALL not require edits across 4–5 unrelated CSS roots for one feature tweak.
   - [ ] Component folder layout and `components/*.css` partial ownership SHALL be documented or aligned.
-- [ ] **P3-7** — Misplaced artifacts (page components in wrong folders, hook-shaped utils, false `use_*` suffixes) SHALL be relocated to match the suffix contract:
-  - [ ] `mise run app gates` ls-lint stage SHALL report zero suffix violations for touched renderer/shell paths.
-  - [ ] False `use_*` files without hook semantics SHALL be renamed to `.util.ts` or merged into callers.
+- [x] **P3-7** — Misplaced artifacts (page components in wrong folders, hook-shaped utils, false `use_*` suffixes) SHALL be relocated to match the suffix contract:
+  - [x] `mise run app gates` ls-lint stage SHALL report zero suffix violations for touched renderer/shell paths.
+  - [x] False `use_*` files without hook semantics SHALL be renamed to `.util.ts` or merged into callers.
+  - *Subsumed by 018-architecture-role-taxonomy (→ 018 roadmap PR-0..PR-5).*
 - [ ] **P3-8** — Overdue/blocked task rules currently in the renderer SHALL move to core if they are domain policy:
   - [ ] `taskIsOverdue` / `taskIsBlocked` in `task_state.util.ts` SHALL align with or merge into core `task_views` predicates (`is_overdue.util.ts`, actionable rules).
   - [ ] Renderer SHALL consume core predicates only; no duplicate date/dependency policy in shell/renderer.
@@ -145,15 +152,18 @@ Parent items stay open until every nested checkbox is `[x]`.
 - [ ] **P3-12** — THE `App` hub and `shell/app/lib/` bucket SHALL decompose into narrower modules:
   - [ ] `shell/app/lib/` SHALL not remain a catch-all for unrelated domains (list stats, sync, task source, preview, shell surface).
   - [ ] New app-side behavior SHALL land in a named service module, not ad-hoc `app_*.util.ts` growth without boundary review.
+  - *→ 018 roadmap PR-5 covers `shell/app/lib/` renames; PR-4 covers `shell/app/db/`. Coordinate with decomposition.*
 - [ ] **P3-13** — Types SHALL NOT be imported from `.component.tsx` files (e.g. sync modal state):
   - [ ] `SyncModalModel` and similar types SHALL move to `.types.ts` or `.model.ts` modules (today imported from `sync_modal.component.tsx` in specs and siblings).
   - [ ] `rg "from '\\./.*\\.component'"` in non-spec renderer code SHALL not import types from components.
+  - *→ 018 roadmap cross-ref: type moves may interact with shell/app/lib renames.*
 - [ ] **P3-14** — THE renderer SHALL provide shared overlay primitives so modal chrome is not duplicated:
   - [ ] At least one shared overlay primitive (backdrop, header, focus trap, dismiss) SHALL back sync modal, task sheet chrome, and filter overlay patterns.
   - [ ] Duplicate modal layout CSS/JSX SHALL shrink measurably (jscpd or manual inventory in PR).
 - [ ] **P3-15** — Micro-dirs (`core/handoff`, `core/validation`, …) SHALL merge or document to reduce navigation noise:
   - [ ] Each micro-dir SHALL either merge into a parent domain folder or gain a one-line README/index explaining why it stays separate.
   - [ ] `ls-lint` suffix rules for `core/validation` and knowledges subtrees SHALL stay satisfied after moves.
+  - *→ 018 roadmap cross-ref: core/validation util renames may factor into merge decision.*
 - [ ] **P3-16** — THE codebase SHALL migrate to a full `features/` tree layout:
   - [ ] A migration plan SHALL map current `renderer/components/{list,task,shortcuts,...}` to feature modules without breaking FCIS import rules.
   - [ ] Migration SHALL proceed incrementally; no big-bang directory shuffle in one PR.
