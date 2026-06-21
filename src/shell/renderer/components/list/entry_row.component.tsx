@@ -11,6 +11,8 @@ import { getIcon } from '../../utils/shared/get_icon.util'
 import { BadgeAccessory } from '../shared/badge_accessory.component'
 import { EntryRowFrecencyIndicator } from './entry_row_frecency_indicator.component'
 
+const EMPTY_TAG_COUNTS: Readonly<Record<string, number>> = Object.freeze({})
+
 type DragHandlers = {
   draggable?: boolean
   onDragStart?: (e: React.DragEvent) => void
@@ -62,7 +64,7 @@ function CompactListEntryRow({
   const isTask = entry.type === 'task'
   const rowCls = selected ? 'cmp-list-row cmp-list-row--selected' : 'cmp-list-row'
   const tileCls = entryGlyphTileClass(entry)
-  const tags = entryTagItems(entry, tagCounts ?? {})
+  const tags = entryTagItems(entry, tagCounts ?? EMPTY_TAG_COUNTS)
   const pointer = rowPointerHandlers(entry.id, onSelect, onHoverEntry)
   return (
     <button type="button" className={rowCls} data-entry-id={entry.id} tabIndex={-1} {...pointer}>
@@ -109,7 +111,7 @@ function EntryRowComponent({
   onCyclePriority,
   maxFrecencyScore = 0,
   compact,
-  tagCounts = {}
+  tagCounts = EMPTY_TAG_COUNTS
 }: EntryRowProps) {
   if (compact) {
     return (
