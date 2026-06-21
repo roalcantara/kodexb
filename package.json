@@ -1,11 +1,13 @@
 {
   "name": "kb",
-  "version": "0.15.12",
+  "version": "0.15.13",
   "description": "Native desktop knowledge management app built on Electrobun",
   "type": "module",
   "private": true,
   "workspaces": {
-    "packages": ["packages/*"],
+    "packages": [
+      "packages/*"
+    ],
     "catalog": {
       "@logtape/logtape": "^2.1.5",
       "@sinclair/typebox": "^0.34.49",
