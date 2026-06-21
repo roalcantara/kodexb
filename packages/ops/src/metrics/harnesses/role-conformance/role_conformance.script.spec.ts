@@ -17,6 +17,23 @@ describe('role_conformance runner', () => {
     expect(report.summary).toBe('PASS')
   })
 
+  it('flags a drop in enforcedDirRatio against the baseline', () => {
+    const files = sampleUtilFiles()
+    const baseline = {
+      totalUtil: 2,
+      mislabeledUtilCount: 1,
+      utilPurityRatio: 0.5,
+      enforcedDirRatio: 1,
+      suffixViolations: 1
+    }
+    const report = buildReport(files, { lockedDirs: 1, roleDirs: 2 }, baseline)
+    const violation = report.violations.find(v => v.metric === 'enforcedDirRatio')
+    expect(violation).toBeDefined()
+    expect(violation?.value).toBe(0.5)
+    expect(violation?.baseline).toBe(1)
+    expect(report.summary).toBe('FAIL')
+  })
+
   it('deriveDirCoverage counts locked dirs among the src dirs', () => {
     const srcDirs = new Set(['src/core', 'src/shell/main', 'src/shell/app'])
     const lockedDirs = new Set(['src/core', 'src/shell/app', 'src/not-scanned'])

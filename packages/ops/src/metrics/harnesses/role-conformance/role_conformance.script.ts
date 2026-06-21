@@ -32,6 +32,12 @@ export function buildReport(
       })
     if (results.utilPurityRatio < baseline.utilPurityRatio)
       violations.push({ metric: 'utilPurityRatio', value: results.utilPurityRatio, baseline: baseline.utilPurityRatio })
+    if (results.enforcedDirRatio < baseline.enforcedDirRatio)
+      violations.push({
+        metric: 'enforcedDirRatio',
+        value: results.enforcedDirRatio,
+        baseline: baseline.enforcedDirRatio
+      })
   }
   return {
     timestamp: new Date().toISOString(),
@@ -122,10 +128,10 @@ async function loadBaseline(): Promise<RoleMetrics | undefined> {
 }
 
 async function scanSrcDirs(): Promise<Set<string>> {
-  const glob = new Bun.Glob('src/**/*.ts')
+  const glob = new Bun.Glob('src/**/*.{ts,tsx}')
   const dirs = new Set<string>()
   for await (const rel of glob.scan({ cwd: ROOT })) {
-    if (rel.endsWith('.spec.ts')) continue
+    if (rel.endsWith('.spec.ts') || rel.endsWith('.spec.tsx')) continue
     dirs.add(path.dirname(rel))
   }
   return dirs
