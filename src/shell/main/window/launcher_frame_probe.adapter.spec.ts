@@ -8,7 +8,7 @@ import {
   clearLauncherProbeFile,
   isLauncherProbeEnabled,
   type LauncherProbePayload
-} from './launcher_frame_probe.util'
+} from './launcher_frame_probe.adapter'
 
 const basePayload = (): LauncherProbePayload => ({
   ts: '2026-01-01T00:00:00.000Z',

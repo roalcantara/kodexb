@@ -6,7 +6,7 @@ import { recordBindingVisit } from '../db/binding_frecency.repository'
 import { openDatabase } from '../db/client'
 import { upsert } from '../db/entry.repository'
 import { recordEntryVisit } from '../db/frecency.repository'
-import { exportLearnedSnapshot, restoreLearnedSnapshot } from './frecency_snapshot.util'
+import { exportLearnedSnapshot, restoreLearnedSnapshot } from './frecency_snapshot.repository'
 
 describe('exportLearnedSnapshot()', () => {
   it('exports entry and binding rows', () => {

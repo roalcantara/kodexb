@@ -4,7 +4,7 @@ import {
   MAIN_WINDOW_DEFAULT_SIZE,
   type MainWindowLike
 } from '../utils/shell_hooks.util'
-import { appendLauncherProbe, isLauncherProbeEnabled } from './launcher_frame_probe.util'
+import { appendLauncherProbe, isLauncherProbeEnabled } from './launcher_frame_probe.adapter'
 import { ensureWindowFrame, resolveDisplayAtCursor, resolveDisplayForPlacement } from './placement.util'
 
 /** LogTape string + props logger (also satisfied by test mocks). */

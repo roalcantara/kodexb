@@ -3,7 +3,7 @@ import fs from 'node:fs/promises'
 import type { RpcImportResult, RpcSyncProgressPayload } from '@shared/rpc'
 import { openDatabase } from '../db/client'
 import { ImportService } from '../db/import.service'
-import { exportLearnedSnapshot, restoreLearnedSnapshot } from './frecency_snapshot.util'
+import { exportLearnedSnapshot, restoreLearnedSnapshot } from './frecency_snapshot.repository'
 
 type AppLog = ReturnType<typeof import('../../../shared/logging').getLogger>
 

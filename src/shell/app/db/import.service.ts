@@ -9,7 +9,7 @@ import { parseSourceFileResilient } from '../../../core/domain/models/entries/pa
 import { listAllBindings } from './binding.repository'
 import { openDatabase } from './client'
 import { rebuildFts } from './entry.repository'
-import { upsertKnowledgeBundleInTransaction } from './import_bundle_persist.util'
+import { upsertKnowledgeBundleInTransaction } from './import_bundle_persist.repository'
 import { hardCollisionWarningMessages } from './import_collision_warnings.util'
 
 type ParsedSourceBundle =

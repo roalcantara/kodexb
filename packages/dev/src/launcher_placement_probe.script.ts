@@ -17,7 +17,7 @@ import { MAIN_WINDOW_DEFAULT_SIZE } from '../../../../src/shell/main/utils/shell
 import {
   LAUNCHER_PROBE_PATH,
   type LauncherProbePayload
-} from '../../../../src/shell/main/window/launcher_frame_probe.util'
+} from '../../../../src/shell/main/window/launcher_frame_probe.adapter'
 import {
   centerBoundsInWorkArea,
   normalizeDisplay,
