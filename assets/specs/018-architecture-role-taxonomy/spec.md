@@ -203,8 +203,8 @@ single-word doctrine) as the worked example every roadmap PR copies.
    - **Measure:** Rules present for the dir + two subdirs; lint exit 0.
    - **Evidence:** `.ls-lint.yml` diff.
 
-3. WHEN the pilot lands, THEN handoff behaviour SHALL be unchanged, AND re-running `mise run audit roles compare` SHALL show `mislabeledUtilCount` reduced by the 7 pilot files versus the ROLE-1 baseline.
-   - **Measure:** No assertion changes beyond import/filename edits; compare shows the expected metric delta.
+3. WHEN the pilot lands, THEN handoff behaviour SHALL be unchanged, AND re-running `mise run audit roles compare` SHALL show `mislabeledUtilCount` reduced by 5 (19 → 14) and `totalUtil` reduced by 7 (99 → 92) versus the ROLE-1 baseline — the 2-file gap is expected because `resolve_frontmost_app.util.ts` and `resolve_terminal_app_name.util.ts` were pure (no I/O imports) and thus not mislabeled, though they still leave the `.util.ts` scan when renamed to `.resolver.ts`.
+   - **Measure:** No assertion changes beyond import/filename edits; compare shows `mislabeledUtilCount −5` and `totalUtil −7`.
    - **Evidence:** `bun test src/shell/main/handoff` green; harness compare output.
 
 ---
