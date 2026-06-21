@@ -24,7 +24,7 @@ STRICT SCOPE — render + CLI glue only:
   from default terminal output)
 - TOUCH workflow_status.script.ts only for: remove gumMuted; force pretty when
   --index/--full on non-TTY
-- UPDATE assets/guides/SDD_WORKFLOW_GUIDE.md workflow status subsection
+- UPDATE assets/guides/WORKFLOW_SDD_GUIDE.md workflow status subsection
 
 DO NOT TOUCH:
 - packages/exec/src/workflow_progress.script.ts (derivation)
@@ -250,7 +250,7 @@ Execute in order. Check each box in the completion report.
 
 ### Phase 4 — Docs
 
-- [ ] **WSU-A.12** Update [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md)
+- [ ] **WSU-A.12** Update [`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md)
   § Workflow status: describe ASCII layout, tokens, remove gum/narrow-terminal/grid
   claims; fix snapshot path to `tools/metrics/workflow-status/` if still wrong.
 
@@ -273,10 +273,10 @@ exactly. If any row fails, handoff is **not** complete.
 | WSU-A AC8  | `--raw` unchanged for scripting                       | `mise run spec workflow status assets/specs/018-architecture-role-taxonomy --raw 2>&1 \| head -3`                                                                                                                           | Still prints `Spec workflow ·`, `Phase:`, `NEXT:` in raw layout (same as before this handoff)                                                                                                |
 | WSU-A AC9  | Snapshots still work                                  | `mise run spec workflow status assets/specs/018-architecture-role-taxonomy --record 2>&1` then `mise run spec workflow status --list architecture-role-taxonomy 2>&1`                                                       | Record prints path under `tools/metrics/workflow-status/`. List exit 0, shows ≥1 row                                                                                                         |
 | WSU-A AC10 | Compare via mise                                      | `A=tools/metrics/workflow-status/architecture-role-taxonomy/<latest>.status.json` (two paths); `mise run spec workflow status --compare-a "$A" --compare-b "$A" --raw 2>&1`                                                 | Output starts with `Comparing:` . Exit 0. Does **not** print `Spec workflow ·` feature status                                                                                                |
-| WSU-A AC11 | Fixture implement-mid sanity                          | `mise run spec workflow status packages/ops/src/__tests__/fixtures/workflow_status/implement-mid --refresh 2>&1`                                                                                                            | Contains `[next]  /speckit-implement`. At least one `[done]` row whose label starts with `T101` (from `tasks.md`, not stale snapshot cache). Exit 0                                         |
+| WSU-A AC11 | Fixture implement-mid sanity                          | `mise run spec workflow status packages/ops/src/__tests__/fixtures/workflow_status/implement-mid --refresh 2>&1`                                                                                                            | Contains `[next]  /speckit-implement`. At least one `[done]` row whose label starts with `T101` (from `tasks.md`, not stale snapshot cache). Exit 0                                          |
 | WSU-A AC12 | Existing tests still pass                             | `bun test --config /dev/null packages/exec/src/workflow_progress.script.spec.ts packages/ops/src/governance/specs/workflow_status.script.spec.ts packages/ops/src/governance/specs/workflow_status_snapshot.script.spec.ts` | Exit 0. No test file edits required                                                                                                                                                          |
 | WSU-A AC13 | Quality gate                                          | `bash .agents/skills/app-quality-gate/scripts/gate.sh`                                                                                                                                                                      | Exit 0 on commit tree                                                                                                                                                                        |
-| WSU-A AC14 | SDD guide accurate                                    | `rg 'gum pretty' assets/guides/SDD_WORKFLOW_GUIDE.md`                                                                                                                                                                       | Zero matches. Guide describes ASCII tokens `[done]`/`[next]`/`[todo]`                                                                                                                        |
+| WSU-A AC14 | SDD guide accurate                                    | `rg 'gum pretty' assets/guides/WORKFLOW_SDD_GUIDE.md`                                                                                                                                                                       | Zero matches. Guide describes ASCII tokens `[done]`/`[next]`/`[todo]`                                                                                                                        |
 
 ---
 
@@ -332,7 +332,7 @@ Single atomic commit (≤50-char subject):
 
 | Subject                                   | Paths                                                                                                                             |
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `fix(spec): ASCII workflow status output` | `workflow_status_ascii.script.ts` (new), `workflow_status_output.script.ts`, `workflow_status.script.ts`, `SDD_WORKFLOW_GUIDE.md` |
+| `fix(spec): ASCII workflow status output` | `workflow_status_ascii.script.ts` (new), `workflow_status_output.script.ts`, `workflow_status.script.ts`, `WORKFLOW_SDD_GUIDE.md` |
 
 Run `gate.sh` immediately before commit.
 
@@ -345,7 +345,7 @@ Run `gate.sh` immediately before commit.
 | [`packages/ops/src/governance/specs/workflow_status_ascii.script.ts`](../../../packages/ops/src/governance/specs/workflow_status_ascii.script.ts)   | **new** — pure ASCII formatter         |
 | [`packages/ops/src/governance/specs/workflow_status_output.script.ts`](../../../packages/ops/src/governance/specs/workflow_status_output.script.ts) | pretty path → ASCII; remove gum grid   |
 | [`packages/ops/src/governance/specs/workflow_status.script.ts`](../../../packages/ops/src/governance/specs/workflow_status.script.ts)               | drop gumMuted; force pretty on --index |
-| [`assets/guides/SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md)                                                                         | ASCII docs                             |
+| [`assets/guides/WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md)                                                                         | ASCII docs                             |
 
 ---
 

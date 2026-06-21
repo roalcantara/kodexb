@@ -23,7 +23,7 @@ re-litigated here. This file records the remaining **technology** choices.
 ## Decision: extend the existing `WorkflowEvent` union — do not fork
 
 - **Decision:** Add the orchestrator event types as **additive members** of the `WorkflowEvent` union already exported by `tools/governance/specs/workflow/workflow_run.script.ts`, and reuse `WorkflowRunWriter` for all NDJSON appends.
-- **Rationale:** AWO-12 requires extension, not a parallel lane; the `runs_cli` reader and retention already operate over that union, so reuse keeps the read surface and OBSERVABILITY_GUIDE contract intact. A second writer would risk the dual-writer race the project already guards against.
+- **Rationale:** AWO-12 requires extension, not a parallel lane; the `runs_cli` reader and retention already operate over that union, so reuse keeps the read surface and WORKFLOW_OBSERVABILITY_GUIDE contract intact. A second writer would risk the dual-writer race the project already guards against.
 - **Alternatives considered:** a separate `orchestrator_run.script.ts` writer (rejected — duplicate NDJSON path, divergent schema versioning, breaks `runs show`).
 
 ## Decision: profile = YAML in catalog, validated by TypeBox at load
@@ -35,7 +35,7 @@ re-litigated here. This file records the remaining **technology** choices.
 ## Decision: Executor port + profile-owned execution policy (tool-agnostic)
 
 - **Decision:** The engine (L1) defines an `Executor` port — `run(opaque command descriptor) → exit code + streams` — and never spawns. A single L2 adapter (`command_invoker.script.ts` / kb executor) implements it: `Bun.spawn` lives only there, and it enforces the **active profile's** `execution_policy.allowed_prefixes`. The engine embeds **no** default prefixes and no `mise`/`hk`/`bun`/`gh` constants; prefix values are catalog data (kb supplies them in `default.yaml`). An ast-grep rule bans `Bun.spawn` / `child_process` outside the adapter. The prefix-validation **algorithm** may be pure; the prefix **values** are never hardcoded in engine modules.
-- **Rationale:** Makes the engine reusable across catalogs (kb desktop, a future web app with `pnpm`/`nx`) — extractability is a prerequisite, not a follow-up. Still satisfies AWO-9's uniform, bypass-proof surface. The mise=verbs / hk=events split moves to kb profile-authoring guidance (MISE_GUIDE / WORKFLOW_GUIDE), not engine code.
+- **Rationale:** Makes the engine reusable across catalogs (kb desktop, a future web app with `pnpm`/`nx`) — extractability is a prerequisite, not a follow-up. Still satisfies AWO-9's uniform, bypass-proof surface. The mise=verbs / hk=events split moves to kb profile-authoring guidance (MISE_GUIDE / WORKFLOW_RUNTIME_GUIDE), not engine code.
 - **Alternatives considered:** baked-in `DEFAULT_COMMAND_ALLOWLIST = ['mise run','hk check','bun run']` in the schema module (rejected, review 002 — couples the engine to kb's toolchain, blocks reuse); per-call spawn scattered across modules (rejected — unauditable, policy unenforceable).
 
 ## Decision: capture worker envelope via file convention

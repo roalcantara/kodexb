@@ -30,7 +30,7 @@ and [`spec-rework.handoff.md`](./spec-rework.handoff.md). What changed:
 - **Package boundary** documented forward-looking (implement under `tools/governance/workflow/`, promote to `packages/workflow-*`; renderer never imports the runtime). Reconciled stray `src/core/workflow` / `src/shell/app/workflow` references to the implementation home.
 - **E2E table replaced** with Layer A/B/C enforcement; dropped `@agentic_workflow_orchestrator` as a product catalog tag; fixtures moved to `tools/__tests__/fixtures/workflow/`.
 - **Default profile** noted as an MVP plan deliverable replaying the SDD phase order.
-- **Nits fixed:** `events.jsonl` → `.ndjson` and sibling-flat path shape in the NFR table and OQ-1; removed the undefined `N` in AWO-3 AC1; fixed the `OBSERVABILITY_GUIDE.md` link that pointed back into this in-flight spec.
+- **Nits fixed:** `events.jsonl` → `.ndjson` and sibling-flat path shape in the NFR table and OQ-1; removed the undefined `N` in AWO-3 AC1; fixed the `WORKFLOW_OBSERVABILITY_GUIDE.md` link that pointed back into this in-flight spec.
 
 No runtime code written; no commit made (per handoff DoD).
 
@@ -38,7 +38,7 @@ No runtime code written; no commit made (per handoff DoD).
 
 Second-pass considerations (implementation-path reality check):
 
-- **Path correction (verified bug).** The shipped workflow code lives at `tools/governance/specs/workflow/` (`workflow_run.script.ts` with `WorkflowRunWriter` + `WorkflowEvent` union, `orchestrated_handoff.script.ts` with `detectPhase()`, `runs_cli`, `handoff_generate`). The rework-001 docs invented `tools/governance/workflow/`. Corrected across `spec.md`, `plan.md`, `data-model.md`, `contracts/`, and `OBSERVABILITY_GUIDE.md`. Renamed the spec section to **Implementation home & package boundary** (fixed the dependent anchor).
+- **Path correction (verified bug).** The shipped workflow code lives at `tools/governance/specs/workflow/` (`workflow_run.script.ts` with `WorkflowRunWriter` + `WorkflowEvent` union, `orchestrated_handoff.script.ts` with `detectPhase()`, `runs_cli`, `handoff_generate`). The rework-001 docs invented `tools/governance/workflow/`. Corrected across `spec.md`, `plan.md`, `data-model.md`, `contracts/`, and `WORKFLOW_OBSERVABILITY_GUIDE.md`. Renamed the spec section to **Implementation home & package boundary** (fixed the dependent anchor).
 - **Reuse narrative added to `plan.md`.** Explicit: *extend* the existing `WorkflowEvent` union + `WorkflowRunWriter` (AWO-12/AWO-4) and *compose* `detectPhase()` as the Layer-B input / M1 guard — do not fork a second writer or detector.
 - **`packages/workflow-*` demoted.** Now an optional, trigger-gated later extraction, not the default promotion path; this feature extends the existing tree in place.
 - **Input scope qualifier (line 9).** Added a one-sentence "full vision; MVP ships substrate only" note so PR 1 is not over-scoped.

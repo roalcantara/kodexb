@@ -80,7 +80,7 @@ Do not commit unless asked.
 
 ## Diff paths (WIP)
 
-**Modified:** `orchestrator.script.ts`, `orchestrator.script.spec.ts`, `workflow_invoker.script.ts`, `profile_loader.script.ts`, `profile_loader.script.spec.ts`, `default.yaml`, `fixture-profile.yaml`, `SECURITY_GUIDE.md`, `OBSERVABILITY_GUIDE.md`, `handoff.md`
+**Modified:** `orchestrator.script.ts`, `orchestrator.script.spec.ts`, `workflow_invoker.script.ts`, `profile_loader.script.ts`, `profile_loader.script.spec.ts`, `default.yaml`, `fixture-profile.yaml`, `SECURITY_GUIDE.md`, `WORKFLOW_OBSERVABILITY_GUIDE.md`, `handoff.md`
 
 **Untracked:** `retrospective.script.ts`, `retrospective.script.spec.ts`, `agent_memory.script.ts`, `agent_memory.script.spec.ts`, `sandbox.script.ts`, `sandbox.script.spec.ts`, `orchestrator_retro.script.ts`, `orchestrator_providers.script.ts`, `assets/catalog/agent_memory.yaml`
 

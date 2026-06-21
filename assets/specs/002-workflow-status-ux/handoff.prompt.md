@@ -118,7 +118,7 @@ Execute in order. Check each box in your completion report.
 - [ ] **WSU-4.6** `--compare <path-a> <path-b>`: phase delta, per-node status flips, task checkbox delta, debt delta; stable text table output.
 - [ ] **WSU-4.7** `--from-snapshot` / auto short-circuit when latest snapshot fingerprints match (unless `--refresh`).
 - [ ] **WSU-4.8** Co-located `.spec.ts` for schema, writer round-trip, compare logic (use mkdtemp — do not commit fixture snapshots unless operator asks).
-- [ ] **WSU-4.9** Cross-link [`assets/guides/OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md) + [`assets/guides/SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md).
+- [ ] **WSU-4.9** Cross-link [`assets/guides/WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md) + [`assets/guides/WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md).
 
 ### Phase 5 — Docs + integration
 
@@ -146,7 +146,7 @@ Mark **Done when** + run **Evidence**. All rows required for handoff sign-off.
 | WSU-4 AC1 | `--record` writes valid JSON under `tools/metrics/workflow-status/<slug>/` passing TypeBox check   | `mise run spec workflow status assets/specs/018-architecture-role-taxonomy --record` + read file                                                                                          |
 | WSU-4 AC2 | `--list` and `--compare` exit 0 with meaningful delta between two snapshots                        | unit test + manual compare before/after toggling one task checkbox in fixture                                                                                                             |
 | WSU-4 AC3 | Fingerprint short-circuit skips re-derive when unchanged (unless `--refresh`)                      | unit test with mocked fingerprints                                                                                                                                                        |
-| WSU-5 AC1 | SDD + Observability guides updated for snapshots and flags                                         | `git diff assets/guides/SDD_WORKFLOW_GUIDE.md assets/guides/OBSERVABILITY_GUIDE.md`                                                                                                       |
+| WSU-5 AC1 | SDD + Observability guides updated for snapshots and flags                                         | `git diff assets/guides/WORKFLOW_SDD_GUIDE.md assets/guides/WORKFLOW_OBSERVABILITY_GUIDE.md`                                                                                                       |
 
 ---
 
@@ -182,7 +182,7 @@ Use atomic commits (≤50-char subject, imperative mood). Suggested sequence:
 | C2    | `feat(spec): Fast ANSI workflow status render` | `ansi_theme.script.ts`, `workflow_status_output.script.ts`, `.spec.ts`                    |
 | C3    | `feat(spec): Add workflow status CLI flags`    | `workflow_status.script.ts`, `spec_plan.script.ts`, `mise.toml`                           |
 | C4    | `feat(spec): Add workflow status snapshots`    | snapshot schema/write/compare modules, `.spec.ts`                                         |
-| C5    | `docs(spec): Document workflow status UX`      | `SDD_WORKFLOW_GUIDE.md`, `OBSERVABILITY_GUIDE.md`                                         |
+| C5    | `docs(spec): Document workflow status UX`      | `WORKFLOW_SDD_GUIDE.md`, `WORKFLOW_OBSERVABILITY_GUIDE.md`                                         |
 
 Run **`bash .agents/skills/app-quality-gate/scripts/gate.sh`** before **each** commit if the working tree contains unrelated changes (stash or split chunks).
 
@@ -202,8 +202,8 @@ Run **`bash .agents/skills/app-quality-gate/scripts/gate.sh`** before **each** c
 | [`packages/ops/src/support/lib/cli/ansi_theme.script.ts`](../../../packages/ops/src/support/lib/cli/ansi_theme.script.ts)                               | **new** — local ANSI                           |
 | [`packages/ops/src/governance/specs/workflow_status_snapshot.script.ts`](../../../packages/ops/src/governance/specs/workflow_status_snapshot.script.ts) | **new** — schema, write, read, compare         |
 | [`mise.toml`](../../../mise.toml)                                                                                                                       | usage flags                                    |
-| [`assets/guides/SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md)                                                                             | workflow status section                        |
-| [`assets/guides/OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md)                                                                           | status snapshot path                           |
+| [`assets/guides/WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md)                                                                             | workflow status section                        |
+| [`assets/guides/WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md)                                                                           | status snapshot path                           |
 
 ---
 
@@ -235,21 +235,21 @@ Copy the filled block into your final handoff message.
 
 ### Acceptance criteria
 
-| ID        | Pass? | Evidence (command output or test name)                  |
-| --------- | ----- | ------------------------------------------------------- |
-| WSU-1 AC1 | ☑     | `next` in `StageStatus`; tests in workflow_progress.script.spec.ts |
-| WSU-1 AC2 | ☑     | raw renderer outputs one `next`; `railStatus` returns `next`      |
-| WSU-1 AC3 | ☑     | T### tasks derived as `pending` only                            |
-| WSU-1 AC4 | ☑     | `/speckit-implement` rail → `next` when phase is implement      |
-| WSU-2 AC1 | ☑     | `--index` flag required; default pretty omits index              |
-| WSU-2 AC2 | ☑     | `--index` sectioned; `--full` grid + index                       |
-| WSU-2 AC3 | ☑     | local ANSI eliminates per-cell subprocess; --index completes in ~200ms (well under 500ms target) |
+| ID        | Pass? | Evidence (command output or test name)                                                                                                                                                                                   |
+| --------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| WSU-1 AC1 | ☑     | `next` in `StageStatus`; tests in workflow_progress.script.spec.ts                                                                                                                                                       |
+| WSU-1 AC2 | ☑     | raw renderer outputs one `next`; `railStatus` returns `next`                                                                                                                                                             |
+| WSU-1 AC3 | ☑     | T### tasks derived as `pending` only                                                                                                                                                                                     |
+| WSU-1 AC4 | ☑     | `/speckit-implement` rail → `next` when phase is implement                                                                                                                                                               |
+| WSU-2 AC1 | ☑     | `--index` flag required; default pretty omits index                                                                                                                                                                      |
+| WSU-2 AC2 | ☑     | `--index` sectioned; `--full` grid + index                                                                                                                                                                               |
+| WSU-2 AC3 | ☑     | local ANSI eliminates per-cell subprocess; --index completes in ~200ms (well under 500ms target)                                                                                                                         |
 | WSU-2 AC4 | ☐     | 6–10 calls default pretty; 7–11 with `--index` (target ≤5 not met — remaining calls are structural gumSection/gumJoin*/gumNextSteps; meeting ≤5 requires replacing structural gum with local ANSI, tracked as follow-up) |
-| WSU-3 AC1 | ☑     | KIND_ICON map + local ANSI; no Column/Kind columns               |
-| WSU-3 AC2 | ☑     | `next` row uses `▶` + accent color                                |
-| WSU-4 AC1 | ☑     | `--record` writes valid JSON; TypeBox schema validates            |
-| WSU-4 AC2 | ☑     | `--list` and `--compare` exit 0 with meaningful delta             |
-| WSU-4 AC3 | ☑     | fingerprint short-circuit in snapshot module                     |
+| WSU-3 AC1 | ☑     | KIND_ICON map + local ANSI; no Column/Kind columns                                                                                                                                                                       |
+| WSU-3 AC2 | ☑     | `next` row uses `▶` + accent color                                                                                                                                                                                       |
+| WSU-4 AC1 | ☑     | `--record` writes valid JSON; TypeBox schema validates                                                                                                                                                                   |
+| WSU-4 AC2 | ☑     | `--list` and `--compare` exit 0 with meaningful delta                                                                                                                                                                    |
+| WSU-4 AC3 | ☑     | fingerprint short-circuit in snapshot module                                                                                                                                                                             |
 
 ### Quality gate
 

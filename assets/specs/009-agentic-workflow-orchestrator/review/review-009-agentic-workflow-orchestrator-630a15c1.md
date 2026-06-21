@@ -4,7 +4,7 @@ Verdict: **REQUEST_CHANGES** · Branch: `009-agentic-workflow-orchestrator` · `
 
 ## Scope
 
-Operator reported `mise run app gates --quality` PASS and `mise run spec ready` PASS. Re-derived from handoff AC Evidence + working tree (not implementer chat). **HEAD commit is docs-only**; MVP implementation lives in unstaged/untracked paths under `tools/governance/specs/workflow/`, `assets/catalog/workflows/default.yaml`, `assets/guides/WORKFLOW_GUIDE.md`.
+Operator reported `mise run app gates --quality` PASS and `mise run spec ready` PASS. Re-derived from handoff AC Evidence + working tree (not implementer chat). **HEAD commit is docs-only**; MVP implementation lives in unstaged/untracked paths under `tools/governance/specs/workflow/`, `assets/catalog/workflows/default.yaml`, `assets/guides/WORKFLOW_RUNTIME_GUIDE.md`.
 
 ## AC matrix
 
@@ -91,11 +91,11 @@ Do not commit unless asked.
 
 ## Diff paths (committed a9e5d68..630a15c1)
 
-- CLAUDE.md, assets/guides/OBSERVABILITY_GUIDE.md, assets/specs/009-agentic-workflow-orchestrator/** (spec/plan/contracts/review)
+- CLAUDE.md, assets/guides/WORKFLOW_OBSERVABILITY_GUIDE.md, assets/specs/009-agentic-workflow-orchestrator/** (spec/plan/contracts/review)
 
 ## Diff paths (uncommitted MVP — review scope)
 
 - tools/governance/specs/workflow/{command_invoker,envelope_capture,evidence,execution_policy,persistence,profile_loader,workflow_invoker,conformance,policy_plumbing}.script*
 - tools/governance/specs/workflow/schemas/{envelope,profile,state}.schema*
 - tools/governance/specs/workflow/workflow_run.script.ts (+ spec)
-- assets/catalog/workflows/default.yaml, assets/guides/WORKFLOW_GUIDE.md
+- assets/catalog/workflows/default.yaml, assets/guides/WORKFLOW_RUNTIME_GUIDE.md

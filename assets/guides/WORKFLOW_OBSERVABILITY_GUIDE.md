@@ -1,15 +1,24 @@
 <!-- markdownlint-disable-file -->
 
-# Observability guide
+# Workflow observability guide
 
 Canonical source of truth for **how the project records what happened during
 a workflow run**: event substrate, schema, file layout, CLI surface,
-retention. Companion to [`SDD_WORKFLOW_GUIDE.md`](SDD_WORKFLOW_GUIDE.md) (which
-covers the workflow itself) and [`LOGGING_GUIDE.md`](LOGGING_GUIDE.md) (which
-covers in-process structured logging via `getLogger`).
+retention. Companion to [`WORKFLOW_SDD_GUIDE.md`](WORKFLOW_SDD_GUIDE.md) (Spec Kit
+operator flow) and [`WORKFLOW_RUNTIME_GUIDE.md`](WORKFLOW_RUNTIME_GUIDE.md) (profile
+and orchestrator semantics). In-process structured logging via `getLogger` is in
+[`LOGGING_GUIDE.md`](LOGGING_GUIDE.md).
 
 If anything here disagrees with code, the code is wrong — open a PR to fix
 the code, not the guide.
+
+### Related workflow docs
+
+| Guide                                                    | Question                                                               |
+| -------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [`WORKFLOW_SDD_GUIDE.md`](WORKFLOW_SDD_GUIDE.md)         | How do I build/ship a feature with Spec Kit?                           |
+| [`WORKFLOW_RUNTIME_GUIDE.md`](WORKFLOW_RUNTIME_GUIDE.md) | How does the workflow runtime work (profiles, packages, orchestrator)? |
+| **This guide**                                           | What was recorded during a run (NDJSON, runs CLI)?                     |
 
 ## Why this guide exists
 
@@ -142,10 +151,10 @@ their own readers — extend the CLI instead.
 
 ## Retention
 
-| Layer | Default | Configurable via | Pruner |
-| ----- | ------- | ---------------- | ------ |
-| `tmp/workflow-runs/` | 30 days | workflow profile `memory.retention.tmp_days` | `mise run spec runs prune`; lazy prune on `runs list` |
-| `tools/metrics/workflow-runs/` | 365 days | workflow profile `memory.retention.durable_days` | operator-driven task; never `runs prune` |
+| Layer                          | Default  | Configurable via                                 | Pruner                                                |
+| ------------------------------ | -------- | ------------------------------------------------ | ----------------------------------------------------- |
+| `tmp/workflow-runs/`           | 30 days  | workflow profile `memory.retention.tmp_days`     | `mise run spec runs prune`; lazy prune on `runs list` |
+| `tools/metrics/workflow-runs/` | 365 days | workflow profile `memory.retention.durable_days` | operator-driven task; never `runs prune`              |
 
 `hk.pkl` excludes `tmp/` from hygiene writers so retention pruning is
 local-disk-only and never touches committed history.
@@ -171,12 +180,12 @@ success is blocked until resolved.
 
 Project-wide budgets for emission overhead:
 
-| Operation | Budget |
-| --------- | ------ |
-| Single event append (`O_APPEND` to `tmp/`) | ≤ 5 ms p95 |
-| Snapshot atomic rewrite | ≤ 20 ms p95 |
-| Schema validation | ≤ 2 ms p95 per event |
-| Terminal dual-write to `tools/metrics/` | ≤ 200 ms p95 |
+| Operation                                  | Budget               |
+| ------------------------------------------ | -------------------- |
+| Single event append (`O_APPEND` to `tmp/`) | ≤ 5 ms p95           |
+| Snapshot atomic rewrite                    | ≤ 20 ms p95          |
+| Schema validation                          | ≤ 2 ms p95 per event |
+| Terminal dual-write to `tools/metrics/`    | ≤ 200 ms p95         |
 
 Baselines live at `tools/metrics/baselines/workflow.json`.
 
@@ -196,18 +205,18 @@ tools/governance/specs/workflow/workflow_run.script.ts  (Awo009Event union membe
 The canonical event base (`WorkflowEventBase`) remains the authority for the
 shared fields. Extension event types include:
 
-| Event type | Purpose |
-| ---------- | ------- |
-| `stage.entered` / `stage.exited` | Stage lifecycle |
-| `stage.retried` / `stage.escalated` | Retry and escalation |
-| `transition.auto` / `transition.gated` | State machine transitions |
-| `task.invoked` / `task.completed` | Command execution (telemetry) |
-| `decision.requested` / `decision.defaulted` / `decision.answered` | Operator decisions |
-| `sandbox.violation` | Sandbox enforcement (M4) |
-| `continuity.violation` | Schema drift detection |
-| `schema.violation` | Payload validation failure |
-| `shutdown.requested` / `shutdown.completed` | Graceful shutdown |
-| `run.summary` | Terminal outcome summary |
+| Event type                                                        | Purpose                       |
+| ----------------------------------------------------------------- | ----------------------------- |
+| `stage.entered` / `stage.exited`                                  | Stage lifecycle               |
+| `stage.retried` / `stage.escalated`                               | Retry and escalation          |
+| `transition.auto` / `transition.gated`                            | State machine transitions     |
+| `task.invoked` / `task.completed`                                 | Command execution (telemetry) |
+| `decision.requested` / `decision.defaulted` / `decision.answered` | Operator decisions            |
+| `sandbox.violation`                                               | Sandbox enforcement (M4)      |
+| `continuity.violation`                                            | Schema drift detection        |
+| `schema.violation`                                                | Payload validation failure    |
+| `shutdown.requested` / `shutdown.completed`                       | Graceful shutdown             |
+| `run.summary`                                                     | Terminal outcome summary      |
 
 Each type extends `WorkflowEventBase` with stage-scoped or run-scoped fields
 per its schema in the implementation home. Consumers import the `WorkflowEvent`
@@ -232,20 +241,20 @@ ensuring uniqueness even for rapid successive writes.
 
 Each file is a JSON object with:
 
-| Field               | Type                  | Description                                    |
-| ------------------- | --------------------- | ---------------------------------------------- |
-| `meta.slug`         | string                | Feature slug                                   |
-| `meta.runId`        | string                | Unique run identifier                          |
-| `meta.recordedAt`   | string (ISO 8601)     | When the snapshot was written                  |
-| `meta.phase`        | string                | Current pipeline phase                         |
-| `meta.contentFingerprint` | string (hex)    | SHA-256 digest of feature files (16-char hex)  |
-| `summary.tasksDone` | number                | Count of completed T### tasks                  |
-| `summary.tasksTotal`| number                | Total T### tasks                               |
-| `summary.debtCount` | number                | Number of artifact debt entries                |
-| `summary.nextCommand` | string              | The `next` command verbatim                    |
-| `columns`           | array                 | Per-column rail + stack status (id, title, color, rail/stack statuses) |
-| `artifactDebt`      | array                 | Blocked artifacts (path, note)                 |
-| `raw`               | string                | Serialised `WorkflowProgressReport` (JSON)     |
+| Field                     | Type              | Description                                                            |
+| ------------------------- | ----------------- | ---------------------------------------------------------------------- |
+| `meta.slug`               | string            | Feature slug                                                           |
+| `meta.runId`              | string            | Unique run identifier                                                  |
+| `meta.recordedAt`         | string (ISO 8601) | When the snapshot was written                                          |
+| `meta.phase`              | string            | Current pipeline phase                                                 |
+| `meta.contentFingerprint` | string (hex)      | SHA-256 digest of feature files (16-char hex)                          |
+| `summary.tasksDone`       | number            | Count of completed T### tasks                                          |
+| `summary.tasksTotal`      | number            | Total T### tasks                                                       |
+| `summary.debtCount`       | number            | Number of artifact debt entries                                        |
+| `summary.nextCommand`     | string            | The `next` command verbatim                                            |
+| `columns`                 | array             | Per-column rail + stack status (id, title, color, rail/stack statuses) |
+| `artifactDebt`            | array             | Blocked artifacts (path, note)                                         |
+| `raw`                     | string            | Serialised `WorkflowProgressReport` (JSON)                             |
 
 ### Short-circuit cache
 
@@ -278,7 +287,7 @@ Biome, and git hygiene — no cleanup script is needed beyond the standard
 - In-process structured logging (`getLogger`, `withContext`,
   `repositoryStmts`). See [`LOGGING_GUIDE.md`](LOGGING_GUIDE.md).
 - Workflow phase order or SDD lifecycle.
-  See [`SDD_WORKFLOW_GUIDE.md`](SDD_WORKFLOW_GUIDE.md).
+  See [`WORKFLOW_SDD_GUIDE.md`](WORKFLOW_SDD_GUIDE.md).
 - Repository safety checks (gitleaks, dependency CVEs, Electrobun config
   AST). See [`SECURITY_GUIDE.md`](SECURITY_GUIDE.md).
 - OpenTelemetry / distributed tracing. Deferred unconditionally; revisit

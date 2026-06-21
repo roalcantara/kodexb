@@ -2,8 +2,8 @@
 
 # Guides-first review — agentic workflow orchestrator
 
-**Date:** 2026-06-08  
-**Status:** Actionable input for spec rework  
+**Date:** 2026-06-08
+**Status:** Actionable input for spec rework
 **Premise:** Normative truth lives in [`assets/guides/`](../../../guides/) +
 [`assets/catalog/`](../../../catalog/) + executables (Gherkin,
 `tools/**/*.spec.ts`). This spec folder is **in-flight only**. Rework should
@@ -20,9 +20,9 @@ then archive/trim the spec.
 | Current drift                                                     | Guides-first fix                                                                                                                    |
 | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | Contracts under `../contracts/`                                   | Target: `packages/workflow-core/` or `tools/governance/workflow/schemas/` + **OBSERVABILITY / SDD guide** pointers (not spec paths) |
-| `OBSERVABILITY_GUIDE.md` links to `assets/specs/009-…/contracts/` | Link to **stable code path** after promotion; spec is not authority per [`DOC_AUTHORITY.md`](../../../guides/DOC_AUTHORITY.md)      |
-| Requirements cite legacy spec phase order                         | Cite **[`SDD_WORKFLOW_GUIDE.md`](../../../guides/SDD_WORKFLOW_GUIDE.md)** § orchestrated-handoff only                               |
-| `assets/catalog/workflows/` assumed but not in catalog README     | Extend **[`assets/catalog/README.md`](../../../catalog/README.md)** + **`WORKFLOW_GUIDE.md`** (or SDD subsection) for profile ARE   |
+| `WORKFLOW_OBSERVABILITY_GUIDE.md` links to `assets/specs/009-…/contracts/` | Link to **stable code path** after promotion; spec is not authority per [`DOC_AUTHORITY.md`](../../../guides/DOC_AUTHORITY.md)      |
+| Requirements cite legacy spec phase order                         | Cite **[`WORKFLOW_SDD_GUIDE.md`](../../../guides/WORKFLOW_SDD_GUIDE.md)** § orchestrated-handoff only                               |
+| `assets/catalog/workflows/` assumed but not in catalog README     | Extend **[`assets/catalog/README.md`](../../../catalog/README.md)** + **`WORKFLOW_RUNTIME_GUIDE.md`** (or SDD subsection) for profile ARE   |
 
 **Concrete rework task:** Add a spec section **“Guide promotion checklist”** —
 list every normative paragraph that must land in guides before ship, with zero
@@ -32,7 +32,7 @@ runtime imports of `assets/specs/009-*`.
 
 ## 01 — Worker transport: direction that fits this project
 
-**Best fit (per [`SDD_WORKFLOW_GUIDE.md`](../../../guides/SDD_WORKFLOW_GUIDE.md)):**
+**Best fit (per [`WORKFLOW_SDD_GUIDE.md`](../../../guides/WORKFLOW_SDD_GUIDE.md)):**
 **artifact-gated orchestration + declared commands + worker dispatch only at
 documented seams** — not “call `speckit.*` programmatically.”
 
@@ -179,7 +179,7 @@ with **product** — avoid that.
 **Layer B — Guide conformance (AWO-12)**
 
 - **Where:** integration test loads `assets/catalog/workflows/default.yaml`
-- **Asserts:** stage order matches **SDD_WORKFLOW_GUIDE** phase list
+- **Asserts:** stage order matches **WORKFLOW_SDD_GUIDE** phase list
 - **No** Gherkin required
 
 **Layer C — Product / release (only when orchestrator drives shipped behavior)**
@@ -203,7 +203,7 @@ orchestrator meta-tests — orchestrator tests use **synthetic fixture feature d
 3. Add **`plan.md` slice table** — MVP→M4 as PRs inside **one** spec (§02).
 4. Add **“Package boundary”** section — `workflow-core` / `workflow-runtime` / no renderer import (§03–04).
 5. Replace **e2e declaration** with Layer A/B/C table (§05).
-6. Add **guide deliverables per slice** (OBSERVABILITY, SDD, WORKFLOW_GUIDE, CI_GUIDE, SECURITY).
+6. Add **guide deliverables per slice** (OBSERVABILITY, SDD, WORKFLOW_RUNTIME_GUIDE, CI_GUIDE, SECURITY).
 7. **Trim scope:** Move AWO-6, 8, 11 to “Post-MVP.”
 8. **Fix nits:** `events.jsonl` → `.ndjson`; define N in `tools/metrics/baselines/workflow.json` task.
 

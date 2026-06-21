@@ -2,7 +2,7 @@
  * spec audit core — deterministic SDD readiness checks for a feature dir.
  *
  * Groups A–E: quartet presence, handoff AC table, tasks hygiene, phase
- * readiness, cross-artifact hints. See assets/guides/SDD_WORKFLOW_GUIDE.md
+ * readiness, cross-artifact hints. See assets/guides/WORKFLOW_SDD_GUIDE.md
  * for the full rule table.
  */
 import path from 'node:path'

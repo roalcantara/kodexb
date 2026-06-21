@@ -3,7 +3,7 @@
 # Tasks — `004-orchestrated-handoff`
 
 Ordered tasks reference requirement IDs from [`spec.md`](./spec.md). No EARS
-text copied here per [`SDD_WORKFLOW_GUIDE.md` § Normative quartet](../../guides/SDD_WORKFLOW_GUIDE.md#normative-quartet).
+text copied here per [`WORKFLOW_SDD_GUIDE.md` § Normative quartet](../../guides/WORKFLOW_SDD_GUIDE.md#normative-quartet).
 
 ## Phase 1 — Workflow registration
 
@@ -40,7 +40,7 @@ text copied here per [`SDD_WORKFLOW_GUIDE.md` § Normative quartet](../../guides
 | #  | Task                                                                                            | Done when                                                                                                                            | Refs            |
 | -- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | --------------- |
 | 16 | Mise subcommands (`spec workflow`, `spec handoff-generate`) + dispatcher cases                  | `mise run spec workflow …` and `mise run spec handoff-generate …` both work                                                          | OHW-1, OHW-2    |
-| 17 | `SDD_WORKFLOW_GUIDE.md` orchestrated-handoff section (phase order, commands, focus, dispatch)   | Section present; no "Deferred" line                                                                                                   | OHW-5 AC1, AC2  |
+| 17 | `WORKFLOW_SDD_GUIDE.md` orchestrated-handoff section (phase order, commands, focus, dispatch)   | Section present; no "Deferred" line                                                                                                   | OHW-5 AC1, AC2  |
 | 18 | Constitution footnote on Analyze row                                                            | `[^analyze-dual]` footnote present                                                                                                    | OHW-5 AC3       |
 | 19 | Guide subsection "Review-spec gate" with deterministic-EARS phrasing                            | Substring `deterministic EARS gate` present                                                                                            | OHW-6 AC2       |
 | 20 | Guide subsection "Plan skill routing" with cap rule                                             | Routing table + `Maximum 4 skills` present                                                                                            | OHW-7 AC1       |

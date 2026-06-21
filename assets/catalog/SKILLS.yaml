@@ -971,7 +971,7 @@ skills:
         app_context_optional: Evaluator-optimizer and rubric patterns for agent output quality — gates remain authoritative.
   ai-team-orchestration:
     location: project
-    rationale: Multi-agent team bootstrap from awesome-copilot (PROJECT_BRIEF, role prompts, parallel chats). Read for coordination ideas — speckit, orchestrated-handoff, and SDD_WORKFLOW_GUIDE remain canonical.
+    rationale: Multi-agent team bootstrap from awesome-copilot (PROJECT_BRIEF, role prompts, parallel chats). Read for coordination ideas — speckit, orchestrated-handoff, and WORKFLOW_SDD_GUIDE remain canonical.
     policy:
       type: reference
       usage:

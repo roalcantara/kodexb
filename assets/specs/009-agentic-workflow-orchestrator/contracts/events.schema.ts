@@ -1,6 +1,6 @@
 // Spec fixture for AWO-4 / AWO-9.4 / AWO-11.4 / AWO-12.2 / AWO-13 —
 // orchestrator event-type extension over the canonical event base
-// defined in OBSERVABILITY_GUIDE.md.
+// defined in WORKFLOW_OBSERVABILITY_GUIDE.md.
 // Ephemeral spike — promoted on the MVP slice by EXTENDING the existing
 // WorkflowEvent union in packages/ops/src/governance/specs/workflow/workflow_run.script.ts
 // (do not fork a second writer or event union).

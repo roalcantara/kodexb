@@ -77,7 +77,7 @@ Keep smoke **non-blocking** for PR merges; engine unit tests stay synthetic.
 | ------- | -------------------------------------------- |
 | WEP-1…3 | `packages/*`, `package.json`                 |
 | WEP-4   | governance shims, conformance specs          |
-| WEP-5   | `WORKFLOW_GUIDE.md`                          |
+| WEP-5   | `WORKFLOW_RUNTIME_GUIDE.md`                          |
 | WEP-6   | `assets/catalog/workflows/default.yaml`      |
 | WEP-7   | `.github/workflows/smoke.yml`, `CI_GUIDE.md` |
 | WEP-8   | `profile_guide_crossref.script.ts` placement |

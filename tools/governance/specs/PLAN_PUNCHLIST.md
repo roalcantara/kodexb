@@ -79,7 +79,7 @@ tasks.md`), e2e docs (`assets/docs/specs/e2e/step-catalog.md`), `.cursor/rules`
 
 ### 8. Write the guide before/with the constitution bump
 Repo precedence is `assets/guides/ > CLAUDE.md > constitution > templates`.
-P0 amends the constitution while `SDD_WORKFLOW_GUIDE.md` waits until P2 —
+P0 amends the constitution while `WORKFLOW_SDD_GUIDE.md` waits until P2 —
 constitution leads a guide that contradicts it. **Edit:** move the guide into P0
 (or same phase) and have the constitution *reference* it.
 

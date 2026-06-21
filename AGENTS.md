@@ -152,7 +152,7 @@ Optional: **sessionStart** hooks in [`.cursor/hooks.json`](.cursor/hooks.json) r
 (audit logging; see [`.cursor/hooks/README.md`](.cursor/hooks/README.md)) and
 [`electrobun_session_start.ts`](.cursor/hooks/electrobun_session_start.ts) (Electrobun skill routing).
 
-Repo docs: `assets/guides/ELECTROBUN.md`, `assets/guides/FCIS.guide.md`, `assets/guides/DOC_AUTHORITY.md`, `assets/guides/SDD_WORKFLOW_GUIDE.md` (never `docs/superpowers/` — gitignored).
+Repo docs: `assets/guides/ELECTROBUN.md`, `assets/guides/FCIS.guide.md`, `assets/guides/DOC_AUTHORITY.md`, `assets/guides/WORKFLOW_SDD_GUIDE.md` (never `docs/superpowers/` — gitignored).
 
 ### Verification
 

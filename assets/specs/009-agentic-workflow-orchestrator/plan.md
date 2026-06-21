@@ -6,7 +6,7 @@
 **Authority:** normative truth lives in [`assets/guides/`](../../guides/) +
 [`assets/catalog/`](../../catalog/) + executables per
 [`DOC_AUTHORITY.md`](../../guides/DOC_AUTHORITY.md). This plan is pointer-only
-per [`SDD_WORKFLOW_GUIDE.md` § Normative quartet](../../guides/SDD_WORKFLOW_GUIDE.md#normative-quartet);
+per [`WORKFLOW_SDD_GUIDE.md` § Normative quartet](../../guides/WORKFLOW_SDD_GUIDE.md#normative-quartet);
 EARS text is not copied here — tasks reference requirement IDs.
 
 **Scope posture:** the original spec was over-scoped. This plan ships **one
@@ -48,13 +48,13 @@ defaults. Permitted command prefixes are profile data
 | Topic | Delta |
 | ----- | ----- |
 | RPC | None — no `src/shell` or renderer surface in v1 (renderer MUST NOT import the runtime) |
-| DB | None — no `bun:sqlite` tables; run state is NDJSON + snapshot files per OBSERVABILITY_GUIDE |
+| DB | None — no `bun:sqlite` tables; run state is NDJSON + snapshot files per WORKFLOW_OBSERVABILITY_GUIDE |
 | Catalog | New `workflows:` section in `assets/catalog/catalog.yaml`; new `assets/catalog/workflows/default.yaml` (MVP) |
 | AWO-9 | Executor port (L1) + profile-owned `execution_policy` (L3); single L2 adapter enforces prefixes — **not** a `mise`/`hk`/`bun` allowlist baked into core |
 | Tooling | Extend `tools/governance/specs/workflow/`: `schemas/*.schema.ts`, `profile_loader.script.ts`, `command_invoker.script.ts` (Executor impl), `machine.ts` (M1), `orchestrator.script.ts` (M1); extend the `WorkflowEvent` union |
 | Dependency | Add `xstate` (runtime) |
 | E2e | None — orchestrator is infrastructure; enforced by Layer A/B (tools specs + profile replay), Gherkin/Layer C deferred |
-| Guides | Promote schema/profile/persistence prose into OBSERVABILITY/SDD + new `WORKFLOW_GUIDE.md` stub, per the spec's guide-promotion checklist |
+| Guides | Promote schema/profile/persistence prose into OBSERVABILITY/SDD + new `WORKFLOW_RUNTIME_GUIDE.md` stub, per the spec's guide-promotion checklist |
 
 ## Technical Context
 
@@ -148,7 +148,7 @@ duplicates).
 
 [`workflow_run.script.ts`](../../../tools/governance/specs/workflow/workflow_run.script.ts)
 already exports the `WorkflowEvent` union, the `WorkflowRunWriter` class
-(sibling-flat NDJSON per [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md)),
+(sibling-flat NDJSON per [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md)),
 and emits `phase_decided` / `handoff_written` / `manifest_emitted` /
 `dispatch_invoked`. [`orchestrated_handoff.script.ts`](../../../tools/governance/specs/workflow/orchestrated_handoff.script.ts)
 already exports `detectPhase()` (the SDD transition table). Therefore:
@@ -161,9 +161,9 @@ already exports `detectPhase()` (the SDD transition table). Therefore:
 
 | Slice | Requirements | PR | Task families | Primary artifacts (under `tools/governance/specs/workflow/`) | Guide / catalog deliverables |
 | ----- | ------------ | -- | ------------- | ------------------------------------------------------------ | ---------------------------- |
-| **MVP** | AWO-2, AWO-9, AWO-10, AWO-4, AWO-12 | PR 1 | ENGINE, ADAPTER, PROFILE, CONFORMANCE | `schemas/*.schema.ts` (envelope, profile **with `execution_policy`, no `DEFAULT_COMMAND_ALLOWLIST`**, state); **extend** `workflow_run.script.ts` `WorkflowEvent` union (not a new writer); `profile_loader.script.ts` (validates `execution_policy`); `command_invoker.script.ts` (Executor impl, profile-driven prefixes); `conformance.script.spec.ts` (Layer B, composes `detectPhase()`) | Promote envelope/event extension into [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md); add `WORKFLOW_GUIDE.md` stub for profile shape + kb prefix convention; register `workflows:` in `assets/catalog/catalog.yaml`; commit `assets/catalog/workflows/default.yaml` (includes `execution_policy` + minimal stage graph; `command:` values may be stubs until PROFILE-SDD) |
+| **MVP** | AWO-2, AWO-9, AWO-10, AWO-4, AWO-12 | PR 1 | ENGINE, ADAPTER, PROFILE, CONFORMANCE | `schemas/*.schema.ts` (envelope, profile **with `execution_policy`, no `DEFAULT_COMMAND_ALLOWLIST`**, state); **extend** `workflow_run.script.ts` `WorkflowEvent` union (not a new writer); `profile_loader.script.ts` (validates `execution_policy`); `command_invoker.script.ts` (Executor impl, profile-driven prefixes); `conformance.script.spec.ts` (Layer B, composes `detectPhase()`) | Promote envelope/event extension into [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md); add `WORKFLOW_RUNTIME_GUIDE.md` stub for profile shape + kb prefix convention; register `workflows:` in `assets/catalog/catalog.yaml`; commit `assets/catalog/workflows/default.yaml` (includes `execution_policy` + minimal stage graph; `command:` values may be stubs until PROFILE-SDD) |
 | **M1** | AWO-1, AWO-5, AWO-13 | PR 2 | ENGINE, ADAPTER, CLI | `machine.ts` (xstate definition + guards); `orchestrator.script.ts` (actor); seam dispatcher; shutdown trap; `mise run spec workflow` routing + resume | SDD § auto-progression + seam dispatch; [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md) § graceful shutdown |
-| **M2** | AWO-3, AWO-7 | PR 3 | ENGINE, PROFILE | intervention/dedup logic; `memory.script.ts` (stage-scoped + shared) | `WORKFLOW_GUIDE.md` § memory model + retention |
+| **M2** | AWO-3, AWO-7 | PR 3 | ENGINE, PROFILE | intervention/dedup logic; `memory.script.ts` (stage-scoped + shared) | `WORKFLOW_RUNTIME_GUIDE.md` § memory model + retention |
 | **M3** *(Post-MVP)* | AWO-6 | PR 4 | PROFILE, ADAPTER | `providers/*` command bindings; CI-status gate | [`CI_GUIDE.md`](../../guides/CI_GUIDE.md) § orchestrator PR/CI bindings |
 | **M4** *(Post-MVP)* | AWO-8, AWO-11 | PR 5+ | ENGINE, ADAPTER, PROFILE | retrospective stage; sandbox descriptor enforcement | OBSERVABILITY (metrics archive); SECURITY § worker sandbox |
 | **Optional** | — | nightly/CI | PROFILE-SDD, SMOKE | full `default.yaml` `command:` bindings; dogfood `mise run spec gate` integration | — |

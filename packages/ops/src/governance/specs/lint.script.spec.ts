@@ -8,7 +8,7 @@ describe('governance docs security references', () => {
   })
 
   it('SDD workflow guide lists security gate and scrub dispatch guard', async () => {
-    const guide = await Bun.file('assets/guides/SDD_WORKFLOW_GUIDE.md').text()
+    const guide = await Bun.file('assets/guides/WORKFLOW_SDD_GUIDE.md').text()
     expect(guide).toContain('mise run spec audit security --strict')
     expect(guide).toContain('spec workflow handoff scrub')
   })

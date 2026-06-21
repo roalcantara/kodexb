@@ -1,7 +1,7 @@
 # CodeRabbit review — adopt / skip + implementation handoff
 
-**Feature:** `011-mise-sdd-cli`  
-**Branch:** `feature/011-mise-sdd-cli` (PR #28)  
+**Feature:** `011-mise-sdd-cli`
+**Branch:** `feature/011-mise-sdd-cli` (PR #28)
 **Context:** Post-merge polish pass on CodeRabbit findings. Shipped CLI follows **operator rules 00–07** (review `review-011-mise-sdd-cli-f18c5638.md`): positional `[feature]` only; **no** `--feat` / `--feature` on the mise tree; `app gates` with no flags = quality + policy; **no** `--all`.
 
 ---
@@ -34,7 +34,7 @@ CodeRabbit partially read **stale** surfaces (`_app_raw` bash, pre-011 `plan.md`
 
 > Optional positional `[feature]` (feature dir or path to `spec.md`). When omitted, resolve via `resolveActiveFeatureDir()` (`.specify/feature.json`, then branch, then cwd). **No `--feat` / `--feature` flags on the mise `spec` tree** (internal spawn may still pass `--feature` to downstream scripts).
 
-**Files:** `assets/specs/011-mise-sdd-cli/spec.md`, `plan.md`, `tasks.md` (historical MSC lines — add footnote “superseded by positional-only ship”), `assets/guides/SDD_WORKFLOW_GUIDE.md` if it mentions `--feat`.
+**Files:** `assets/specs/011-mise-sdd-cli/spec.md`, `plan.md`, `tasks.md` (historical MSC lines — add footnote “superseded by positional-only ship”), `assets/guides/WORKFLOW_SDD_GUIDE.md` if it mentions `--feat`.
 
 ---
 
@@ -56,7 +56,7 @@ CodeRabbit partially read **stale** surfaces (`_app_raw` bash, pre-011 `plan.md`
 | **CodeRabbit** | `cmd "bench" {}` exists; `spec.script.ts` does not route `bench`.                                                                                                                                                                                                                                                                                |
 | **Verdict**    | **Adopt**                                                                                                                                                                                                                                                                                                                                        |
 | **Rationale**  | Real gap. `tasks.md` MSC-SPEC-02 requires `workflow … bench` dispatch. `plan.md` maps legacy `spec workflow perf` → `spec workflow bench`. Today `bench` falls through to orchestrated-handoff default — **wrong**.                                                                                                                              |
-| **Action**     | In `planWorkflow()` (`tools/bin/spec.script.ts`), add `if (sub === 'bench')` → spawn perf harness, e.g. `['bun', 'tools/metrics/harnesses/perf/perf.script.ts', 'workflow-observability']` (confirm against `plan.md` § migration table and `SDD_WORKFLOW_GUIDE.md` “workflow bench”). Add `spec.script.spec.ts` case for `workflow bench` argv. |
+| **Action**     | In `planWorkflow()` (`tools/bin/spec.script.ts`), add `if (sub === 'bench')` → spawn perf harness, e.g. `['bun', 'tools/metrics/harnesses/perf/perf.script.ts', 'workflow-observability']` (confirm against `plan.md` § migration table and `WORKFLOW_SDD_GUIDE.md` “workflow bench”). Add `spec.script.spec.ts` case for `workflow bench` argv. |
 
 ---
 

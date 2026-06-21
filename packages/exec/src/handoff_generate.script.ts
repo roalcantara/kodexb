@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * spec handoff-generate — emit tmp/handoffs/opencode-{slug}-{focus}.md
- * from a feature's handoff.md AC table. See assets/guides/SDD_WORKFLOW_GUIDE.md.
+ * from a feature's handoff.md AC table. See assets/guides/WORKFLOW_SDD_GUIDE.md.
  *
  * Opencode integration per https://opencode.ai/docs/cli/ — non-interactive
  * entry is `opencode run [message..]`.
@@ -219,7 +219,7 @@ Catalog key: ${catalogKey}
 Required reading:
 1. ${featureDir}/spec.md, plan.md, tasks.md, handoff.md
 2. assets/guides/BDD_GUIDE.md, assets/guides/TESTING_GUIDE.md
-3. assets/guides/SDD_WORKFLOW_GUIDE.md § Plan skill routing — load at most 4 skills (cap rule); never "load all skills" (OHW-7)
+3. assets/guides/WORKFLOW_SDD_GUIDE.md § Plan skill routing — load at most 4 skills (cap rule); never "load all skills" (OHW-7)
 4. assets/features/${slug.replace(RE_PRESERVE_SUFFIX, '')}.feature (if it exists)
 5. packages/ops/src/governance/registries/catalog/tag.script.ts — \`sliceIdFromAcTag\`, \`e2eTagExpression\`
 

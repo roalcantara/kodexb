@@ -31,7 +31,7 @@
 
 5. **CI install** — `.github/workflows/smoke.yml`: `bun ci` instead of `bun install`; consider dropping standalone `mise run spec gate` if orchestrator smoke covers terminal gate.
 
-6. **WORKFLOW_GUIDE** — short § on catalog + `workspace:*` + per-package `bunfig.toml`.
+6. **WORKFLOW_RUNTIME_GUIDE** — short § on catalog + `workspace:*` + per-package `bunfig.toml`.
 
 7. **`bun install`** — refresh `bun.lock`; confirm catalog section present.
 

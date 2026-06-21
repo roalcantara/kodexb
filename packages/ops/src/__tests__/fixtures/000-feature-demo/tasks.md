@@ -3,7 +3,7 @@
 # Tasks — `000-feature-demo`
 
 Ordered tasks reference requirement IDs from [`spec.md`](./spec.md). No EARS
-text copied here per [`SDD_WORKFLOW_GUIDE.md` § Normative quartet](../../guides/SDD_WORKFLOW_GUIDE.md#normative-quartet).
+text copied here per [`WORKFLOW_SDD_GUIDE.md` § Normative quartet](../../guides/WORKFLOW_SDD_GUIDE.md#normative-quartet).
 
 ## Phase 1 — Event schema + writer (MVP)
 
@@ -63,7 +63,7 @@ text copied here per [`SDD_WORKFLOW_GUIDE.md` § Normative quartet](../../guides
 | #   | Task                                                                                         | Done when                                                                                                  | Refs                   |
 | --- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------- |
 | 24  | Run the orchestrator and handoff-generate against pilot 003 with MVP instrumentation on      | `tmp/workflow-runs/<date>/<run_id>.ndjson` written; `mise run spec runs show <run_id>` displays the events | WOBS-2, WOBS-3, WOBS-6 |
-| 25  | Add a short section to `assets/guides/SDD_WORKFLOW_GUIDE.md` describing `mise run spec runs` | Section names the four actions, the JSONL path, and the retention rule                                     | WOBS-6                 |
+| 25  | Add a short section to `assets/guides/WORKFLOW_SDD_GUIDE.md` describing `mise run spec runs` | Section names the four actions, the JSONL path, and the retention rule                                     | WOBS-6                 |
 | 26  | Add `tasks.md` references for Phase 8 follow-ups so v0.13.x has an entry point               | Phase 8 below kept as a tracker, not implemented in this PR                                                | spec § Out of scope    |
 
 ## Phase 8 — v0.13.x follow-ups (NOT shipped in this PR)

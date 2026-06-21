@@ -225,7 +225,7 @@ e2e preview). Feature-scoped validation and tests use **`mise run spec test`**.
 Migration (removed): top-level `mise run audit`, `spec feature-init`,
 `spec workflow orchestrated-handoff`, `--feat`, `app gates --all`.
 
-Command tree details and workflow lifecycle: [`SDD_WORKFLOW_GUIDE.md`](SDD_WORKFLOW_GUIDE.md) (normative — do not depend on in-flight or archived spec folders for CLI shape).
+Command tree details and workflow lifecycle: [`WORKFLOW_SDD_GUIDE.md`](WORKFLOW_SDD_GUIDE.md) (normative — do not depend on in-flight or archived spec folders for CLI shape).
 
 ## Package scripts
 

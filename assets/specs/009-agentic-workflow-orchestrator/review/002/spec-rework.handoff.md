@@ -2,9 +2,9 @@
 
 # Handoff — Spec rework 002 (tool-agnostic engine)
 
-**Target:** Implementer agent  
-**Feature:** `assets/specs/009-agentic-workflow-orchestrator/`  
-**Read first:** [`tool-agnostic-engine-review.md`](./tool-agnostic-engine-review.md)  
+**Target:** Implementer agent
+**Feature:** `assets/specs/009-agentic-workflow-orchestrator/`
+**Read first:** [`tool-agnostic-engine-review.md`](./tool-agnostic-engine-review.md)
 **Prior pass:** [`review/001/spec-rework.handoff.md`](../001/spec-rework.handoff.md)
 
 ## Agent prompt
@@ -40,11 +40,11 @@ Update review/002/README.md changelog section when done (mark applied + list fil
    ENGINE-* unit tests.
 
 4. **Kb convention preserved in guides:** "mise = verbs / hk = events /
-   orchestrator = decisions" stays in MISE_GUIDE + WORKFLOW_GUIDE as profile
+   orchestrator = decisions" stays in MISE_GUIDE + WORKFLOW_RUNTIME_GUIDE as profile
    authoring guidance — not in engine API or DEFAULT_* constants.
 
 5. **Layer B (AWO-12):** Conformance test asserts stage **graph order** vs
-   SDD_WORKFLOW_GUIDE / detectPhase() — NOT that every command: string exists
+   WORKFLOW_SDD_GUIDE / detectPhase() — NOT that every command: string exists
    or passes in CI.
 
 6. **detectPhase()** remains kb-specific composition (tools/governance/specs/workflow/),
@@ -144,7 +144,7 @@ Remove or reword glossary rows that imply engine defaults to mise/hk/bun.
 ### README.md (contracts/)
 
 - Note execution_policy is profile-owned; kb defaults live in default.yaml example
-  in WORKFLOW_GUIDE stub (not in schema constants).
+  in WORKFLOW_RUNTIME_GUIDE stub (not in schema constants).
 
 ## Required research.md edits
 

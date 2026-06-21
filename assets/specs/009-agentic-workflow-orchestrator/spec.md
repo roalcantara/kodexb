@@ -21,7 +21,7 @@ conditions so human interventions happen only when needed.
 
 **Progression model (guides-native).** The orchestrator does not call
 `speckit.*` commands programmatically. It advances the workflow exactly the
-way the [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md)
+way the [`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md)
 orchestrated-handoff section already defines:
 
 - **Progression** is driven by repo-verifiable **artifact gates** — filesets and checklist markers (`analyze-plan.md`, `analyze-tasks.md`, `handoff.md`, `implement-done.md`).
@@ -33,8 +33,8 @@ The orchestrator decides *when* to emit a gate or dispatch a seam, not *how*
 to run Speckit inside Bun.
 
 This is an **evolution layer** that composes the project's existing
-contracts — the SDD phase order in [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md),
-the event substrate in [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md),
+contracts — the SDD phase order in [`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md),
+the event substrate in [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md),
 the repository safety primitives in [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md) —
 into a single orchestration kernel. It does not replace any of them; it
 wires them together and adds the runtime sandbox and graceful-shutdown
@@ -49,7 +49,7 @@ on existing tools rather than building new runtime infrastructure:
 - **mise** ([`mise.toml`](../../../mise.toml)) for executable verbs — gates, linters, transitions, provider calls, retrospectives. See [`MISE_GUIDE.md`](../../guides/MISE_GUIDE.md).
 - **hk** ([`hk.pkl`](../../../hk.pkl)) for pre/post-stage event bundles, reusing the existing `commit / pr / ci / full / slow` profiles. See [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md#hk-profile-policy).
 - **TypeBox** for every schema (envelope, profile, event extensions).
-- **NDJSON event substrate** per [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md) — the orchestrator extends the base envelope with its own event types, never forks it.
+- **NDJSON event substrate** per [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md) — the orchestrator extends the base envelope with its own event types, never forks it.
 - **`assets/catalog/` + `tools/metrics/`** as the storage planes for workflow profiles (ARE) and historical run records (DONE/DID), respectively.
 
 The genuinely new build surface is therefore narrow: profile loader,
@@ -61,7 +61,7 @@ extension.
 
 `mise = verbs / hk = events / orchestrator = decisions` is a **kb profile
 authoring convention**, documented in [`MISE_GUIDE.md`](../../guides/MISE_GUIDE.md)
-and the `WORKFLOW_GUIDE.md` stub — **not** an engine API or a set of
+and the `WORKFLOW_RUNTIME_GUIDE.md` stub — **not** an engine API or a set of
 `DEFAULT_*` constants. The engine (L1) is tool-agnostic: the profile schema
 expresses every action as a unified `command:` string and never distinguishes
 `mise`/`hk`/`bun` at the keyword level. Which prefixes are permitted is
@@ -90,15 +90,15 @@ ships:
 
 | Spec content | Target guide | Owner slice |
 | ------------ | ------------ | ----------- |
-| Outcome envelope + evidence contract | [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md) (event extension) + new `WORKFLOW_GUIDE.md` stub (or SDD subsection) | MVP |
+| Outcome envelope + evidence contract | [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md) (event extension) + new `WORKFLOW_RUNTIME_GUIDE.md` stub (or SDD subsection) | MVP |
 | Command-invocation contract + allowlist; `mise=verbs / hk=events` | [`MISE_GUIDE.md`](../../guides/MISE_GUIDE.md) + [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md#hk-profile-policy) | MVP |
-| Profile shape (ARE) + `catalog.yaml` `workflows:` section | [`assets/catalog/README.md`](../../catalog/README.md) + `WORKFLOW_GUIDE.md` | MVP |
-| Run-state persistence + sibling-flat layout + dual-write | [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md) | MVP |
-| Stage-graph replays SDD phase order | [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md) | MVP |
-| Auto-progression + seam dispatch + graceful shutdown | [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md) + [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md) | M1 |
-| Memory model + retention | `WORKFLOW_GUIDE.md` | M2 |
+| Profile shape (ARE) + `catalog.yaml` `workflows:` section | [`assets/catalog/README.md`](../../catalog/README.md) + `WORKFLOW_RUNTIME_GUIDE.md` | MVP |
+| Run-state persistence + sibling-flat layout + dual-write | [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md) | MVP |
+| Stage-graph replays SDD phase order | [`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md) | MVP |
+| Auto-progression + seam dispatch + graceful shutdown | [`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md) + [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md) | M1 |
+| Memory model + retention | `WORKFLOW_RUNTIME_GUIDE.md` | M2 |
 | PR/CI provider bindings | [`CI_GUIDE.md`](../../guides/CI_GUIDE.md) | M3 (Post-MVP) |
-| Retrospective archive + cross-run guidance; worker sandbox | [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md) (metrics) + [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md) | M4 (Post-MVP) |
+| Retrospective archive + cross-run guidance; worker sandbox | [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md) (metrics) + [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md) | M4 (Post-MVP) |
 
 ## Delivery slices (one spec, many PRs)
 
@@ -125,7 +125,7 @@ integration-heavy requirements and are not blocking the first PRs.
 **Default profile:** `assets/catalog/workflows/default.yaml` is an **MVP plan
 deliverable**, not part of this spec. Its stage ids MUST match the
 **executable `detectPhase()` order** — the runtime encoding of the
-[`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md) phase order —
+[`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md) phase order —
 namely `specify → plan → analyze-plan → tasks → analyze-tasks →
 handoff-generate → implement → review`. `detectPhase()` (not the guide prose)
 is the Layer-B anchor because it is the deterministic source of truth; the
@@ -185,7 +185,7 @@ Invariants:
 - Rewriting existing feature specs outside the orchestrator flow
 - Changing project governance gates or quality policy thresholds
 - Building a cloud service; this scope is local workflow orchestration
-- Replacing the canonical event substrate, schema, or `runs` CLI defined in [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md); the orchestrator extends, never forks
+- Replacing the canonical event substrate, schema, or `runs` CLI defined in [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md); the orchestrator extends, never forks
 - Replacing the repository safety primitives defined in [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md); the orchestrator consumes them through declared commands
 - Replacing `hk` or `mise` with a custom runner **in kb's default profile**; their roles are load-bearing for kb (L3), though the engine itself is runner-agnostic
 - **Engine embedding kb toolchain defaults or command catalogs** — the L1 engine carries no `mise`/`hk`/`bun`/`gh` defaults, no `DEFAULT_*` prefix constants, and no command inventory; all such values are profile (L3) data
@@ -207,7 +207,7 @@ Invariants:
 | Input gate               | Explicit pause that requests human input                                                                                                                              |
 | Evidence                 | Verifiable output proving stage completion; an `EvidenceEntry` of kind `command` (run via the Executor adapter), `artifact`, or `marker` — toolchain-neutral                |
 | Workflow profile         | TypeBox-validated YAML in `assets/catalog/workflows/<name>.yaml` defining stage graph, policies, command bindings, retry, memory, providers                           |
-| Stage graph              | Directed graph of stages embedded in the workflow profile; superset of the canonical SDD phase order in [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md) |
+| Stage graph              | Directed graph of stages embedded in the workflow profile; superset of the canonical SDD phase order in [`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md) |
 | Command binding          | Per-action `command:` string declared on a stage / trigger / evidence entry in the profile; opaque to the engine                                                      |
 | Executor                 | Port invoked by the engine: `run(opaque command descriptor)` → exit code + streams. Implemented by the L2 runtime adapter; the engine knows only the interface         |
 | execution_policy         | Profile field carrying `allowed_prefixes: string[]` (≥ 1) and optional future knobs; the **only** place permitted command prefixes are defined — never an engine default |
@@ -233,7 +233,7 @@ Invariants:
 - Q: Should the spec keep separate keywords for verbs (mise) and events (hk)? → A: No; one `command:` keyword for both. The mise/hk distinction is **kb profile-authoring** convention documented in [`MISE_GUIDE.md`](../../guides/MISE_GUIDE.md) — not an engine API or default.
 - Q: Should the orchestrator build its own state machine or adopt an existing one? → A: Adopt **xstate**; the orchestrator owns transition policy + guards + persistence + side-effect-actor lifetimes, not transition mechanics.
 - Q: Where do workflow profiles live? → A: `assets/catalog/workflows/<name>.yaml`, indexed in `assets/catalog/catalog.yaml`; profiles are project characteristics (ARE).
-- Q: Where do run records live? → A: Dual-write per [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md#durable-archive). Live tail at `tmp/workflow-runs/<date>/<run_id>.ndjson`; durable archive at `tools/metrics/workflow-runs/<date>/<run_id>.ndjson` (DONE/DID).
+- Q: Where do run records live? → A: Dual-write per [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md#durable-archive). Live tail at `tmp/workflow-runs/<date>/<run_id>.ndjson`; durable archive at `tools/metrics/workflow-runs/<date>/<run_id>.ndjson` (DONE/DID).
 - Q: How should teardown side-effects relate to stage progression? → A: Spawned as fire-and-forget xstate actors; they do not block transitions; their lifecycle is captured as `task.*` events.
 
 ### Session 2026-06-09
@@ -312,7 +312,7 @@ is designed for.
 ### Persistence (sibling-flat layout)
 
 All artifacts for a run share the `<run_id>` stem inside a daily folder,
-per [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md#file-layout-sibling-flat):
+per [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md#file-layout-sibling-flat):
 
 - Live snapshot: `tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.state.json` (xstate snapshot; atomic rewrite via rename)
 - Live event tail: `tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.ndjson` (append-only, O_APPEND)
@@ -412,8 +412,8 @@ Schemas, event-type extensions, and the profile shape live in
 
 ### Acceptance criteria
 
-1. WHEN workflow state changes, THEN the orchestrator SHALL persist the xstate snapshot to `tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.state.json` and append an event to `tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.ndjson` that validates against the canonical event base in [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md#event-schema).
-   - **Measure:** 100% of transitions produce a durable snapshot rewrite AND an event append; both writes complete within the budgets in [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md#performance-budgets) and the [NFRs](#non-functional-requirements-nfrs).
+1. WHEN workflow state changes, THEN the orchestrator SHALL persist the xstate snapshot to `tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.state.json` and append an event to `tmp/workflow-runs/<YYYY-MM-DD>/<run_id>.ndjson` that validates against the canonical event base in [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md#event-schema).
+   - **Measure:** 100% of transitions produce a durable snapshot rewrite AND an event append; both writes complete within the budgets in [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md#performance-budgets) and the [NFRs](#non-functional-requirements-nfrs).
    - **Evidence:** Persistence tests across all transition types; schema-compat test against the canonical event base schema.
 
 2. WHEN orchestration restarts after interruption, THEN it SHALL rehydrate the actor via `createActor(machine, { snapshot: <persisted> })` and resume from the latest consistent state.
@@ -424,8 +424,8 @@ Schemas, event-type extensions, and the profile shape live in
    - **Measure:** 100% of retry and escalation events are logged with the required fields, validated against the event-extension schema in [`contracts/events.schema.ts`](contracts/events.schema.ts).
    - **Evidence:** Event-log assertions in integration tests + schema-validation tests.
 
-4. WHEN the workflow reaches a terminal stage, THEN the orchestrator SHALL (a) dual-write the event file to `tools/metrics/workflow-runs/<YYYY-MM-DD>/<run_id>.ndjson` per the [dual-write rule](../../guides/OBSERVABILITY_GUIDE.md#dual-write-rule-at-terminal), and (b) emit a final summary event including stage timeline, interventions requested, validation outcomes, and performance metrics (lead time, per-stage duration, retry counts).
-   - **Measure:** 100% of terminal runs produce both the durable archive copy and the summary event with all required metric fields populated; archive write completes within the dual-write budget from [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md#performance-budgets).
+4. WHEN the workflow reaches a terminal stage, THEN the orchestrator SHALL (a) dual-write the event file to `tools/metrics/workflow-runs/<YYYY-MM-DD>/<run_id>.ndjson` per the [dual-write rule](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md#dual-write-rule-at-terminal), and (b) emit a final summary event including stage timeline, interventions requested, validation outcomes, and performance metrics (lead time, per-stage duration, retry counts).
+   - **Measure:** 100% of terminal runs produce both the durable archive copy and the summary event with all required metric fields populated; archive write completes within the dual-write budget from [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md#performance-budgets).
    - **Evidence:** End-to-end terminal-run assertions; archive-promotion tests verifying file existence and content equivalence with the live tail.
 
 ---
@@ -510,7 +510,7 @@ Schemas, event-type extensions, and the profile shape live in
    - **Measure:** 100% deterministic handling of memory conflict scenarios; policy enum is exhaustive.
    - **Evidence:** Conflict-policy tests under each enum value.
 
-4. WHEN the workflow ends, THEN memory artifacts SHALL be retained or pruned per the profile's `memory.retention.{tmp_days,durable_days}` knobs and the [retention rules](../../guides/OBSERVABILITY_GUIDE.md#retention) in `OBSERVABILITY_GUIDE.md`.
+4. WHEN the workflow ends, THEN memory artifacts SHALL be retained or pruned per the profile's `memory.retention.{tmp_days,durable_days}` knobs and the [retention rules](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md#retention) in `WORKFLOW_OBSERVABILITY_GUIDE.md`.
    - **Measure:** 100% of completed runs apply configured retention policy; pruning honors the live/durable layer split.
    - **Evidence:** Retention-policy tests across both layers.
 
@@ -632,11 +632,11 @@ Schemas, event-type extensions, and the profile shape live in
 
 ### Acceptance criteria
 
-1. WHEN the default workflow profile is loaded, THEN its stage-id sequence SHALL be a **superset of the executable `detectPhase()` order** (`specify → plan → analyze-plan → tasks → analyze-tasks → handoff-generate → implement → review`) — the runtime encoding of the [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md) phase order. **Superset** means: every `detectPhase()` phase id appears, in the same relative order; the profile MAY interleave additional orchestrator-only stages between them but MUST NOT reorder or omit a `detectPhase()` phase.
+1. WHEN the default workflow profile is loaded, THEN its stage-id sequence SHALL be a **superset of the executable `detectPhase()` order** (`specify → plan → analyze-plan → tasks → analyze-tasks → handoff-generate → implement → review`) — the runtime encoding of the [`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md) phase order. **Superset** means: every `detectPhase()` phase id appears, in the same relative order; the profile MAY interleave additional orchestrator-only stages between them but MUST NOT reorder or omit a `detectPhase()` phase.
    - **Measure:** the Layer-B test extracts the profile's stage ids, filters to the `detectPhase()` set, and asserts that filtered sequence equals `detectPhase()`'s order exactly.
    - **Evidence:** `conformance.script.spec.ts` loads `default.yaml`, composes `detectPhase()` (does not re-derive the order), and asserts the filtered-subsequence equality.
 
-2. WHEN run events are persisted, THEN they SHALL conform to the canonical event base in [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md#event-schema), extended (not forked) with the orchestrator event types in [`contracts/events.schema.ts`](contracts/events.schema.ts). The `mise run spec runs {list|show|tail|prune}` CLI SHALL operate over orchestrator-extended event streams without modification.
+2. WHEN run events are persisted, THEN they SHALL conform to the canonical event base in [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md#event-schema), extended (not forked) with the orchestrator event types in [`contracts/events.schema.ts`](contracts/events.schema.ts). The `mise run spec runs {list|show|tail|prune}` CLI SHALL operate over orchestrator-extended event streams without modification.
    - **Measure:** Every orchestrator event validates against the union of (canonical base) and (extension); `mise run spec runs show <run_id>` succeeds on an orchestrator-produced run.
    - **Evidence:** Schema-compat tests; CLI integration test against a fixture run.
 
@@ -644,7 +644,7 @@ Schemas, event-type extensions, and the profile shape live in
    - **Measure:** When the optional lint runs, 100% of safety commands in `default.yaml` resolve to documented `SECURITY_GUIDE.md` entries; the engine/runtime carries no command catalog.
    - **Evidence:** `profile_guide_crossref` test (kb-only) **or** a manual checklist — not `orchestrator.script.ts` logic.
 
-4. WHEN the canonical event base in [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md) bumps without a corresponding extension bump, OR the live tail and durable archive write different schema versions, THEN the orchestrator SHALL hold archive writes and emit a `continuity.violation` event identifying the offending field. Terminal success SHALL be blocked until resolved.
+4. WHEN the canonical event base in [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md) bumps without a corresponding extension bump, OR the live tail and durable archive write different schema versions, THEN the orchestrator SHALL hold archive writes and emit a `continuity.violation` event identifying the offending field. Terminal success SHALL be blocked until resolved.
    - **Measure:** Zero terminal-success outcomes with a `continuity.violation` event in the run log.
    - **Evidence:** Failure-injection tests with the canonical base bumped without an extension catch-up.
 
@@ -734,7 +734,7 @@ slice ships — via the layers below, not a Gherkin product tag.
 | Layer | What it enforces | Where | Run |
 | ----- | ---------------- | ----- | --- |
 | **A — Runtime** | Envelopes, snapshots, command invocation, sandbox, shutdown (most AWO) | `tools/governance/specs/workflow/**/*.spec.ts` | `bun test --config /dev/null tools/governance/specs/workflow/` |
-| **B — Guide conformance** | AWO-12: default profile's stage order matches [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md) phase list | integration test loading `assets/catalog/workflows/default.yaml` | same Layer-A runner |
+| **B — Guide conformance** | AWO-12: default profile's stage order matches [`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md) phase list | integration test loading `assets/catalog/workflows/default.yaml` | same Layer-A runner |
 | **C — Product / release** | Only if/when the operator CLI becomes shipped product behavior | `assets/features/<domain>.feature` with `@<catalog_key>` | catalog runner — **deferred** until operator-facing |
 
 **Fixtures:** orchestrator tests use synthetic feature-dir stubs under
@@ -745,7 +745,7 @@ orchestrator meta-tests.
 
 ## Assumptions (optional)
 
-- Workflow progression is observable from **repo artifacts** (filesets + checklist markers) and verifiable through **declared commands** (`mise run spec audit / lint / trace / gate`, `hk` profiles) — the orchestrator does **not** call `speckit.*` programmatically. See [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md) § orchestrated-handoff.
+- Workflow progression is observable from **repo artifacts** (filesets + checklist markers) and verifiable through **declared commands** (`mise run spec audit / lint / trace / gate`, `hk` profiles) — the orchestrator does **not** call `speckit.*` programmatically. See [`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md) § orchestrated-handoff.
 - Worker execution happens at documented seams (`implement-src`, `gherkin-bdd-handoff`, `review-fix`); v1 dispatch is opencode via `mise run spec handoff-generate … --dispatch`. Speckit `/speckit-*` skills stay the parallel human/agent path.
 - Stage workers can be constrained to emit envelopes validated by the [AWO-2](#requirement-awo-2-strict-stage-outcome-contract-and-evidence-validation) TypeBox schema.
 - Local workspace contains enough context to infer common defaults per [AWO-3](#requirement-awo-3-human-intervention-minimization-policy) AC1.
@@ -759,12 +759,12 @@ orchestrator meta-tests.
 
 | #    | Question                                                                                                                                                                                                | Status                 | Notes                                                                                                                                                                                                                                                                                                                                 |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| OQ-1 | Should orchestration state live under `tmp/` or a dedicated persisted runtime path?                                                                                                                     | Resolved               | Dual-write, sibling-flat per [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md#file-layout-sibling-flat). Live state at `tmp/workflow-runs/<date>/<id>.ndjson`; terminal events promoted to `tools/metrics/workflow-runs/<date>/<id>.ndjson`. See State model + data-model.md.                                            |
+| OQ-1 | Should orchestration state live under `tmp/` or a dedicated persisted runtime path?                                                                                                                     | Resolved               | Dual-write, sibling-flat per [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md#file-layout-sibling-flat). Live state at `tmp/workflow-runs/<date>/<id>.ndjson`; terminal events promoted to `tools/metrics/workflow-runs/<date>/<id>.ndjson`. See State model + data-model.md.                                            |
 | OQ-2 | Should quality gate run only at terminal stage or as stage-level evidence for implement and review transitions?                                                                                         | Resolved               | Stage-level evidence for implement and terminal full run by default profile.                                                                                                                                                                                                                                                          |
 | OQ-3 | Which profile file path should be canonical for workflow YAML definitions?                                                                                                                              | Resolved               | `assets/catalog/workflows/<name>.yaml`, indexed in `assets/catalog/catalog.yaml`. Precedence: `--profile <name>` → `.specify/profile.yaml` → `assets/catalog/workflows/default.yaml` → built-in.                                                                                                                                      |
 | OQ-4 | Which provider does the default profile bind for `pr_open` / `pr_update` / `ci_status` in v1?                                                                                                           | Resolved               | `gh pr create`, `gh pr edit`, `gh pr checks`. The orchestrator does not depend on these by name; swapping the provider is a profile change ([AWO-6](#requirement-awo-6-pr-and-ci-green-completion-contract-provider-agnostic) invariant).                                                                                             |
 | OQ-5 | Does the retrospective stage write only to `tools/metrics/workflow-runs/`, or also append cross-run guidance to `assets/catalog/agent_memory.yaml`?                                                     | Resolved               | Both. Per-run artifact lands at `tools/metrics/workflow-runs/<date>/<run_id>.retro.md`; cross-run guidance is appended to `assets/catalog/agent_memory.yaml` (creating the catalog entry on first use) so [AWO-8](#requirement-awo-8-built-in-retrospective-and-self-improvement-loop) AC4 is trivially satisfied on subsequent runs. |
-| OQ-6 | Adopt LogTape in `tools/`, or stay on direct NDJSON emission?                                                                                                                                           | Resolved (conditional) | Adopt LogTape **only if** it lands as a thin wrapper over `O_APPEND` NDJSON emission and preserves the [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md) contract verbatim. Otherwise defer. Decision belongs in the implementation plan after a small spike.                                                           |
+| OQ-6 | Adopt LogTape in `tools/`, or stay on direct NDJSON emission?                                                                                                                                           | Resolved (conditional) | Adopt LogTape **only if** it lands as a thin wrapper over `O_APPEND` NDJSON emission and preserves the [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md) contract verbatim. Otherwise defer. Decision belongs in the implementation plan after a small spike.                                                           |
 | OQ-7 | Should `hk.pkl` declare a new `workflow` profile dedicated to orchestrator-driven gate bundles, or only reuse `commit / pr / ci / full / slow`?                                                         | Resolved               | Reuse the existing profiles. Adding a new profile bloats the hk surface for no operational gain.                                                                                                                                                                                                                                      |
 | OQ-8 | Should AWO-11 introduce a `process-isolation` mode (subprocess sandbox via `bun spawn` with deny-by-default capabilities) in v1, or stay declarative (descriptor + enforcement at dispatcher boundary)? | Open                   | Declarative in v1 keeps the surface small; process isolation is a clear v2 follow-up if descriptor-based enforcement proves insufficient.                                                                                                                                                                                             |
 | OQ-9 | Should command-prefix allowlist defaults live in the engine or the catalog? | Resolved | Catalog + adapter only. The L1 engine carries **no** toolchain defaults; `execution_policy.allowed_prefixes` is required profile data, supplied by kb only in `assets/catalog/workflows/default.yaml`. |

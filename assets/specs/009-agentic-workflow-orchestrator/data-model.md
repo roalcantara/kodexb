@@ -4,9 +4,9 @@
 
 Companion to [`spec.md`](spec.md). Defines storage layout, file lifecycles,
 and the relationship between live and durable run records. Canonical
-sources of truth: [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md)
+sources of truth: [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md)
 for the event substrate, [`SECURITY_GUIDE.md`](../../guides/SECURITY_GUIDE.md)
-for repository safety primitives, [`SDD_WORKFLOW_GUIDE.md`](../../guides/SDD_WORKFLOW_GUIDE.md)
+for repository safety primitives, [`WORKFLOW_SDD_GUIDE.md`](../../guides/WORKFLOW_SDD_GUIDE.md)
 for the SDD phase order.
 
 ## Storage layout (sibling-flat)
@@ -55,7 +55,7 @@ durable archive
 
 ## Why sibling-flat
 
-The `runs` CLI defined in [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md#read-side-cli)
+The `runs` CLI defined in [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md#read-side-cli)
 locates a run by globbing `<run_id>.*` within the daily folder. Sibling-flat
 lets all run artifacts (events, state, shared, memory, retro) share one
 discovery path without nested directories. New artifact types added by
@@ -78,7 +78,7 @@ and adds a stable path for analytics built on `tools/metrics/`.
 
 ## Retention
 
-Inherits the policy table in [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md#retention).
+Inherits the policy table in [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md#retention).
 Profile knobs override defaults:
 
 - `memory.retention.tmp_days` (default 30) — scratch layer pruning.
@@ -92,7 +92,7 @@ Profile knobs override defaults:
 | `ProfileSchema` | this spec | Same |
 | `Awo009Event` | this spec | Same; must remain a strict extension of the canonical event base |
 | `PersistedRunState` | this spec | Same; xstate snapshot opacity preserved |
-| `WorkflowEventBase` | [`OBSERVABILITY_GUIDE.md`](../../guides/OBSERVABILITY_GUIDE.md) | If bumped without an extension catch-up, AWO-12.4 emits `continuity.violation` and blocks terminal success |
+| `WorkflowEventBase` | [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md) | If bumped without an extension catch-up, AWO-12.4 emits `continuity.violation` and blocks terminal success |
 
 ## Engine vs catalog separation (review 002)
 

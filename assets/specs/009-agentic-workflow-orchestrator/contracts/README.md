@@ -41,7 +41,7 @@ Every schema carries a top-level `schema_version` field. Bumps follow:
 - **Minor** — additive required fields with a documented default. Migration script lives next to the schema.
 - **Major** — breaking field rename, removal, or type change. Requires a profile + run-state migration path.
 
-The canonical event base owned by [`OBSERVABILITY_GUIDE.md`](../../../guides/OBSERVABILITY_GUIDE.md)
+The canonical event base owned by [`WORKFLOW_OBSERVABILITY_GUIDE.md`](../../../guides/WORKFLOW_OBSERVABILITY_GUIDE.md)
 is the parent schema for `events.schema.ts`. Bumping the base without
 bumping the orchestrator extension triggers the `continuity.violation`
 event defined in AWO-12.4.
@@ -52,7 +52,7 @@ event defined in AWO-12.4.
 module carries **no** `DEFAULT_COMMAND_ALLOWLIST` and no `mise`/`hk`/`bun`/`gh`
 prefix constants — the L1 engine is toolchain-agnostic. Kb's actual prefix
 values live only in the `assets/catalog/workflows/default.yaml` example
-(documented in the `WORKFLOW_GUIDE.md` stub) and in test fixtures under
+(documented in the `WORKFLOW_RUNTIME_GUIDE.md` stub) and in test fixtures under
 `tools/__tests__/fixtures/workflow/`. The `sandbox` descriptor shape stays in
 the schema but is an **optional** stage field; enforcement is an
 adapter/M4 concern.

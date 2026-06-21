@@ -96,7 +96,7 @@ tools/bin/spec.script.ts
 └── review.yml
 
 assets/guides/
-├── SDD_WORKFLOW_GUIDE.md
+├── WORKFLOW_SDD_GUIDE.md
 └── CI_GUIDE.md
 
 .specify/memory/

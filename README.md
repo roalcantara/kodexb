@@ -304,7 +304,7 @@ emit terse findings before merge. It complements — does not replace —
 | [`app-testing`](.agents/skills/app-testing/SKILL.md)               | Specs, fixtures, BDD harnesses                |
 | [`app-quality-gate`](.agents/skills/app-quality-gate/SKILL.md)     | Before commit or declaring done               |
 | [`app-review-handoff`](.agents/skills/app-review-handoff/SKILL.md) | After worker handoff — AC + Evidence review   |
-| [SDD workflow](assets/guides/SDD_WORKFLOW_GUIDE.md)                | Spec Kit phases, orchestrated-handoff, gates  |
+| [SDD workflow](assets/guides/WORKFLOW_SDD_GUIDE.md)                | Spec Kit phases, orchestrated-handoff, gates  |
 
 Review-handoff CLI (deterministic prep before the LLM review pass):
 

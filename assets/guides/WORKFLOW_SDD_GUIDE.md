@@ -1,10 +1,19 @@
-# SDD workflow guide
+# Workflow SDD guide
 
 How kb uses **Spec Kit** and **specification-driven development (SDD)** for in-flight
 features. Document authority and layer rules live in
 [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md); this guide describes the day-to-day workflow.
 
 **General agent entrypoint (no spec required):** [`README.md`](README.md).
+
+### Related workflow docs
+
+| Guide                                                                | Question                                                               |
+| -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **This guide**                                                       | How do I build/ship a feature with Spec Kit?                           |
+| [`WORKFLOW_RUNTIME_GUIDE.md`](WORKFLOW_RUNTIME_GUIDE.md)             | How does the workflow runtime work (profiles, packages, orchestrator)? |
+| [`WORKFLOW_OBSERVABILITY_GUIDE.md`](WORKFLOW_OBSERVABILITY_GUIDE.md) | What was recorded during a run (NDJSON, runs CLI)?                     |
+| [`.specify/README.md`](../../.specify/README.md)                     | Spec Kit workspace folder map and extensions                           |
 
 ## Spec lifecycle reference
 
@@ -47,7 +56,8 @@ Binding principles for Spec Kit commands: [`.specify/memory/constitution.md`](..
 
 ## Spec Kit workspace
 
-kb ships a **vanilla** Spec Kit workspace under `.specify/`:
+kb ships a **vanilla** Spec Kit workspace under `.specify/`. Folder map and
+extensions index: [`.specify/README.md`](../../.specify/README.md).
 
 - Templates: `.specify/templates/`
 - Default workflow: `.specify/workflows/speckit/` (full specify → plan → tasks → implement cycle)
