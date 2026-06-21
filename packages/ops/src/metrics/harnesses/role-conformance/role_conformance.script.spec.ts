@@ -1,6 +1,6 @@
 // @arch_role_taxonomy
 import { describe, expect, it } from 'bun:test'
-import { buildReport, deriveDirCoverage, renderReportMd, toBaseline } from './role_conformance.script'
+import { buildReport, deriveDirCoverage, parseLockedDirs, renderReportMd, toBaseline } from './role_conformance.script'
 
 const sampleUtilFiles = () => [
   { path: 'src/core/a.util.ts', source: 'export const a=1' },
@@ -17,15 +17,19 @@ describe('role_conformance runner', () => {
     expect(report.summary).toBe('PASS')
   })
 
-  it('deriveDirCoverage counts unique role dirs', () => {
-    const files = [
-      { path: 'src/core/a.util.ts', source: '' },
-      { path: 'src/core/b.util.ts', source: '' },
-      { path: 'src/shell/main/c.util.ts', source: '' }
-    ]
-    const result = deriveDirCoverage(files)
-    expect(result.roleDirs).toBe(2)
-    expect(result.lockedDirs).toBe(0)
+  it('deriveDirCoverage counts locked dirs among the src dirs', () => {
+    const srcDirs = new Set(['src/core', 'src/shell/main', 'src/shell/app'])
+    const lockedDirs = new Set(['src/core', 'src/shell/app', 'src/not-scanned'])
+    const result = deriveDirCoverage(srcDirs, lockedDirs)
+    expect(result.roleDirs).toBe(3)
+    expect(result.lockedDirs).toBe(2)
+  })
+
+  it('parseLockedDirs extracts only src/ keys from the ls-lint ls block', () => {
+    const yaml = ['ls:', '  src/core:', '    .ts: regex:x', '  packages/ops:', '    .ts: regex:y', ''].join('\n')
+    const locked = parseLockedDirs(yaml)
+    expect(locked.has('src/core')).toBe(true)
+    expect(locked.has('packages/ops')).toBe(false)
   })
 
   it('renderReportMd produces markdown with metrics', () => {

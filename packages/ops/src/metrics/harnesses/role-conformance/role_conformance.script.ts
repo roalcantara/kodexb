@@ -17,7 +17,8 @@ export type RoleReport = {
 export function buildReport(
   files: Array<{ path: string; source: string }>,
   dirs: { lockedDirs: number; roleDirs: number },
-  baseline?: RoleMetrics
+  baseline?: RoleMetrics,
+  gitSha: string = process.env.GIT_SHA ?? 'unknown'
 ): RoleReport {
   const rows = files.map(f => classifyUtil(f.path, f.source))
   const results = computeMetrics(rows, { locked: dirs.lockedDirs, roleDirs: dirs.roleDirs })
@@ -34,7 +35,7 @@ export function buildReport(
   }
   return {
     timestamp: new Date().toISOString(),
-    git_sha: process.env.GIT_SHA ?? 'unknown',
+    git_sha: gitSha,
     bun_version: Bun.version,
     results,
     rows,
@@ -43,12 +44,21 @@ export function buildReport(
   }
 }
 
-export function deriveDirCoverage(files: Array<{ path: string; source: string }>): {
-  lockedDirs: number
-  roleDirs: number
-} {
-  const roleDirs = new Set(files.map(f => path.dirname(f.path)).filter(d => /\/[a-z][a-z0-9_]*$/.test(d)))
-  return { lockedDirs: 0, roleDirs: roleDirs.size }
+/** ls-lint enforcement coverage: how many real `src/` dirs carry an `.ls-lint.yml` rule. */
+export function deriveDirCoverage(
+  srcDirs: ReadonlySet<string>,
+  lockedDirs: ReadonlySet<string>
+): { lockedDirs: number; roleDirs: number } {
+  let locked = 0
+  for (const dir of srcDirs) if (lockedDirs.has(dir)) locked++
+  return { lockedDirs: locked, roleDirs: srcDirs.size }
+}
+
+/** Directories explicitly pinned by an `.ls-lint.yml` `ls:` rule (src/ scope only). */
+export function parseLockedDirs(lsLintYaml: string): Set<string> {
+  const parsed = Bun.YAML.parse(lsLintYaml) as { ls?: Record<string, unknown> } | null
+  const keys = parsed && typeof parsed === 'object' && parsed.ls ? Object.keys(parsed.ls) : []
+  return new Set(keys.filter(k => k.startsWith('src/')))
 }
 
 export function renderReportMd(report: RoleReport): string {
@@ -111,9 +121,30 @@ async function loadBaseline(): Promise<RoleMetrics | undefined> {
   return (await f.exists()) ? (JSON.parse(await f.text()).results as RoleMetrics) : undefined
 }
 
+async function scanSrcDirs(): Promise<Set<string>> {
+  const glob = new Bun.Glob('src/**/*.ts')
+  const dirs = new Set<string>()
+  for await (const rel of glob.scan({ cwd: ROOT })) {
+    if (rel.endsWith('.spec.ts')) continue
+    dirs.add(path.dirname(rel))
+  }
+  return dirs
+}
+
 async function deriveDirCoverageFromFiles(): Promise<{ lockedDirs: number; roleDirs: number }> {
-  const files = await scanUtilFiles()
-  return deriveDirCoverage(files)
+  const srcDirs = await scanSrcDirs()
+  const lsLint = await Bun.file(path.join(ROOT, '.ls-lint.yml')).text()
+  return deriveDirCoverage(srcDirs, parseLockedDirs(lsLint))
+}
+
+function deriveGitSha(): string {
+  if (process.env.GIT_SHA) return process.env.GIT_SHA
+  try {
+    const sha = Bun.spawnSync(['git', 'rev-parse', '--short', 'HEAD'], { cwd: ROOT }).stdout.toString().trim()
+    return sha.length > 0 ? sha : 'unknown'
+  } catch {
+    return 'unknown'
+  }
 }
 
 if (import.meta.main) {
@@ -122,14 +153,14 @@ if (import.meta.main) {
   const files = await scanUtilFiles()
   const dirs = await deriveDirCoverageFromFiles()
   const baseline = action === 'baseline' ? undefined : await loadBaseline()
-  const report = buildReport(files, dirs, baseline)
+  const report = buildReport(files, dirs, baseline, deriveGitSha())
 
   const runDir = path.join(ROOT, 'tmp/metrics/role-conformance')
   await Bun.write(path.join(runDir, 'latest.json'), JSON.stringify(report, null, 2))
   await Bun.write(path.join(runDir, 'report.md'), renderReportMd(report))
 
   if (action === 'baseline' || process.env.usage_write_baseline === 'true') {
-    await Bun.write(BASELINE_PATH, JSON.stringify(toBaseline(report), null, 2))
+    await Bun.write(BASELINE_PATH, `${JSON.stringify(toBaseline(report), null, 2)}\n`)
   }
   console.log(
     `${report.summary} mislabeled=${report.results.mislabeledUtilCount} purity=${report.results.utilPurityRatio}`

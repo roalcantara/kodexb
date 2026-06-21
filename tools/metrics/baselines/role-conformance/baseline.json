@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-06-21T12:18:30.002Z",
-  "git_sha": "d1542568",
+  "timestamp": "2026-06-21T12:30:36.960Z",
+  "git_sha": "25e0ea28",
   "bun_version": "1.3.14",
   "results": {
     "totalUtil": 92,
     "mislabeledUtilCount": 14,
     "utilPurityRatio": 0.848,
-    "enforcedDirRatio": 0,
+    "enforcedDirRatio": 0.627,
     "suffixViolations": 14
   },
   "violations": [],
