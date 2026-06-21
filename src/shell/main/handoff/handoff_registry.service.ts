@@ -22,11 +22,11 @@ export function runEntryHandoff(
   services: HandoffServices,
   platform: NodeJS.Platform = process.platform
 ): HandoffResult {
+  let previousClipboard = ''
+  let needsClipboardRestore = false
+
   try {
     services.armGuard()
-
-    let previousClipboard = ''
-    let needsClipboardRestore = false
 
     if ((kind === 'terminal-paste' || kind === 'terminal-run') && payload.cmd) {
       previousClipboard = readSystemClipboard()
@@ -58,6 +58,9 @@ export function runEntryHandoff(
     services.disarmGuard()
     return { ok: false, error: result.error, code: kindToErrorCode(kind) }
   } catch (e) {
+    if (needsClipboardRestore) {
+      writeSystemClipboard(previousClipboard)
+    }
     services.show()
     services.disarmGuard()
     return { ok: false, error: String(e), code: kindToErrorCode(kind) }

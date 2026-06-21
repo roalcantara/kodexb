@@ -23,6 +23,10 @@ import { ListOverlayHosts } from './list_overlay_hosts.component'
 import { ListResultsBody } from './list_results_body.component'
 import { ListSearchFilterChrome } from './list_search_filter_chrome.component'
 
+const EMPTY_TAG_COUNTS: Readonly<Record<string, number>> = Object.freeze({})
+
+export { EMPTY_TAG_COUNTS }
+
 export type ListMainProps = {
   p: ListPageShell
   showSettings: boolean
@@ -252,7 +256,7 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
               syncInfo={p.data.syncInfo}
               onSync={p.data.onSync}
               emptySyncButtonRef={emptySyncButtonRef}
-              tagCounts={p.data.stats?.tags ?? {}}
+              tagCounts={p.data.stats?.tags ?? EMPTY_TAG_COUNTS}
               rows={p.data.rows}
               visibleRows={visibleRows}
               virtualWindow={virtualWindow}

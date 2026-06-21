@@ -213,7 +213,7 @@ omitted) — not `--feature` / `--feat`.
 | Validate | `mise run spec lint [feature]`, `trace`, `gate`, `ready … --key <catalog-key>`             |
 | Test     | `mise run spec test [scope] [feature]` — scopes: `unit`, `e2e`, `smoke`, `regression`      |
 | Workflow | `mise run spec workflow run [feature] [--dry-run]`, `handoff generate`, `resume`, `runs …` |
-| Audit    | `mise run spec audit feature [feature]`, `audit security`, `audit docs rogue-refs`         |
+| Audit    | `mise run spec audit feature [feature]`, `audit security`                                   |
 | Review   | `mise run spec review-handoff classify\|extract-evidence\|prepare\|scaffold-audit`         |
 
 **`mise run app gates`** (no flags) runs quality + policy gates (rule 07 — no `--all`).
@@ -357,9 +357,9 @@ Each entrypoint under `bin/*.script.ts` follows one of three patterns:
    runBinMain(() => forwardToScript('governance/registries/skill/skill_registry.script.ts', { passCmd: true, dropTokens: ['skill'] }))
    ```
 
-2. **Route table** — dispatch by subcommand via `routeByUsageCmd` (e.g. `audit.script.ts`, `hooks.script.ts`):
+2. **Route table** — dispatch by subcommand via `routeByUsageCmd` (e.g. `hooks.script.ts`):
    ```ts
-   runBinMain(() => routeByUsageCmd({ task: 'audit', routes: { 'rogue-refs': ['bun', 'packages/ops/src/governance/policies/rogue_refs.script.ts'] } }))
+   runBinMain(() => routeByUsageCmd({ task: 'hooks', routes: { 'pre-commit': ['bun', 'packages/ops/src/governance/policies/hooks/precommit.script.ts'] } }))
    ```
 
 3. **Domain dispatch** — direct call with `usage_*` helpers (e.g. `catalog.script.ts`, `test.script.ts`, `spec.script.ts`):

@@ -9,8 +9,6 @@ ignores:
   - "packages/ops/src/metrics/harnesses/e2e-quality/**"
   - "packages/ops/src/governance/specs/library_manifest.script.ts"
   - "packages/ops/src/governance/specs/library_manifest.script.spec.ts"
-  - "packages/ops/src/governance/policies/rogue_refs.script.ts"
-  - "packages/ops/src/governance/policies/rogue_refs.script.spec.ts"
   - "bin/test.script.ts"
   - "packages/ops/src/governance/policies/ast-grep/no-inbound-assets-docs-*.rule.yml"
 rule:

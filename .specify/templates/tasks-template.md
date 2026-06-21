@@ -160,7 +160,27 @@ Examples of foundational tasks (adjust based on your project):
 
 ---
 
-## Dependencies & Execution Order
+## Commit plan
+
+Author one `### C#` chunk per logical phase before implement. Incremental:
+`mise run spec ready --phase C1 --commit`. Closeout flush: `mise run spec ready --commit`.
+
+### C1 — [Phase title]
+- **Phase:** 1
+- **Tasks:** T101
+- **Paths:** `src/path/to/file.ts`
+- **Subject:** `type(scope): Imperative subject line`
+- **Body:**
+  One sentence WHAT + WHY (≥20 characters total in body).
+
+  Changes:
+  - Capability or intent this commit enables
+
+## Closeout
+
+- [ ] **T199** Run `mise run spec closeout assets/specs/[###-feature-name]`; pass `--commit` to flush remaining Commit plan — *gate:* DoD merge
+
+---
 
 ### Phase Dependencies
 
@@ -247,6 +267,6 @@ With multiple developers:
 - [Story] label maps task to specific user story for traceability
 - Each user story should be independently completable and testable
 - Verify tests fail before implementing
-- Commit after each task or logical group
+- Commit after each task or logical group via **`mise run spec ready --phase Cn --commit`** when a **Commit plan** exists in `tasks.md`
 - Stop at any checkpoint to validate story independently
 - Avoid: vague tasks, same file conflicts, cross-story dependencies that break independence

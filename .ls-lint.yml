@@ -200,6 +200,25 @@ ls:
   packages/ops/src/tmp:
     .ts: regex:^[a-z][a-z0-9_]*\.script(\.spec)?$
 
+  # ── Core knowledges: suffix contract ─────────────────────────────
+  src/core/domain/models/knowledges/detail:
+    .ts: regex:(([a-z][a-z0-9_]*\.(parser|assembler)(\.spec)?)|index)
+
+  src/core/domain/models/knowledges/tags:
+    .ts: regex:(([a-z][a-z0-9_]*\.(util|const)(\.spec)?)|index)
+
+  src/core/domain/models/knowledges/task_views:
+    .ts: regex:(([a-z][a-z0-9_]*\.(util|const)(\.spec)?)|index)
+
+  src/core/domain/models/knowledges/schemas:
+    .ts: regex:(([a-z][a-z0-9_]*\.schema(\.spec)?)|index)
+
+  src/core/domain/models/knowledges:
+    .ts: regex:(([a-z][a-z0-9_]*\.util(\.spec)?)|index)
+
+  src/core/validation:
+    .ts: regex:(([a-z][a-z0-9_]*\.helper(\.spec)?)|index)
+
 ignore:
   - .DS_Store
   - .venv

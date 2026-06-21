@@ -5,10 +5,8 @@ alwaysApply: true
 # Specify Rules
 
 <!-- SPECKIT START -->
-For additional context about technologies to be used, project structure,
-shell commands, and other important information, read the current plan
-for the active feature directory selected in `.specify/feature.json`.
-Current implementation plan: `assets/specs/014-ops-cli-kernel/plan.md`.
-For path authority and routing rules, follow
-`assets/guides/DOC_AUTHORITY.md` and `assets/guides/SDD_WORKFLOW_GUIDE.md`.
+Active feature: see `.specify/feature.json` → `feature_directory`.
+Current implementation plan: `assets/specs/017-src-cohesion-consolidation/plan.md`.
+SDD gates (deterministic): `mise run spec lint|trace|audit|conform|gate`.
+After brainstorm-first spec authoring, run `mise run spec conform` before /speckit-analyze.
 <!-- SPECKIT END -->

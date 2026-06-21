@@ -166,22 +166,41 @@ if ($cm) {
 }
 
 if (-not $PlanPath) {
-    # Discover plan.md exactly one level deep (specs/<feature>/plan.md),
-    # matching the bash glob specs/*/plan.md. Wrap in try/catch so access errors under
-    # $ErrorActionPreference = 'Stop' don't abort the script.
-    try {
-        $specsDir = Join-Path $ProjectRoot 'specs'
-        $candidate = Get-ChildItem -Path $specsDir -Directory -ErrorAction SilentlyContinue |
-            ForEach-Object { Get-Item -LiteralPath (Join-Path $_.FullName 'plan.md') -ErrorAction SilentlyContinue } |
-            Where-Object { $_ } |
-            Sort-Object LastWriteTime -Descending |
-            Select-Object -First 1
-        if ($candidate) {
-            $PlanPath = [System.IO.Path]::GetRelativePath($ProjectRoot, $candidate.FullName).Replace('\','/')
+    $featureJson = Join-Path $ProjectRoot '.specify/feature.json'
+    if (Test-Path -LiteralPath $featureJson) {
+        try {
+            $fj = Get-Content -LiteralPath $featureJson -Raw | ConvertFrom-Json
+            $fd = $fj.feature_directory
+            if ($fd -is [string] -and $fd) {
+                $candidatePlan = Join-Path $ProjectRoot ($fd -replace '\\','/') 'plan.md'
+                if (Test-Path -LiteralPath $candidatePlan) {
+                    $PlanPath = [System.IO.Path]::GetRelativePath($ProjectRoot, $candidatePlan).Replace('\','/')
+                }
+            }
+        } catch {
+            # Non-fatal: fall through to assets/specs scan.
         }
-    } catch {
-        # Non-fatal: continue without a plan path.
     }
+    if (-not $PlanPath) {
+        try {
+            $specsDir = Join-Path $ProjectRoot 'assets/specs'
+            $candidate = Get-ChildItem -Path $specsDir -Directory -ErrorAction SilentlyContinue |
+                ForEach-Object { Get-Item -LiteralPath (Join-Path $_.FullName 'plan.md') -ErrorAction SilentlyContinue } |
+                Where-Object { $_ } |
+                Sort-Object LastWriteTime -Descending |
+                Select-Object -First 1
+            if ($candidate) {
+                $PlanPath = [System.IO.Path]::GetRelativePath($ProjectRoot, $candidate.FullName).Replace('\','/')
+            }
+        } catch {
+            # Non-fatal: continue without a plan path.
+        }
+    }
+}
+
+$FeatureDir = $null
+if ($PlanPath) {
+    $FeatureDir = Split-Path -Parent $PlanPath
 }
 
 $CtxPath = Join-Path $ProjectRoot $ContextFile
@@ -191,11 +210,14 @@ if ($CtxDir -and -not (Test-Path -LiteralPath $CtxDir)) {
 }
 
 $lines = @($MarkerStart,
-           'For additional context about technologies to be used, project structure,',
-           'shell commands, and other important information, read the current plan')
-if ($PlanPath) {
-    $lines += "at $PlanPath"
+           'Active feature: see `.specify/feature.json` → `feature_directory`.')
+if ($FeatureDir) {
+    $lines += "Current implementation plan: ``$FeatureDir/plan.md``."
+} elseif ($PlanPath) {
+    $lines += "Current implementation plan: ``$PlanPath``."
 }
+$lines += 'SDD gates (deterministic): `mise run spec lint|trace|audit|conform|gate`.'
+$lines += 'After brainstorm-first spec authoring, run `mise run spec conform` before /speckit-analyze.'
 $lines += $MarkerEnd
 $Section = ($lines -join "`n") + "`n"
 

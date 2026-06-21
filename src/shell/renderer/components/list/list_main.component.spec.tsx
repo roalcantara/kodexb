@@ -3,7 +3,7 @@ import { describe, expect, it } from 'bun:test'
 import { render } from '@testing-library/react'
 
 import { defaultEntryActionPanelDeps } from '../../actions/entry_action_panel_deps.util'
-import { ListMain } from './list_main.component'
+import { EMPTY_TAG_COUNTS, ListMain } from './list_main.component'
 
 const shellStub = {
   data: {
@@ -89,6 +89,16 @@ const shellStub = {
 }
 
 describe('ListMain', () => {
+  describe('EMPTY_TAG_COUNTS', () => {
+    it('is a stable reference across calls', () => {
+      expect(Object.is(EMPTY_TAG_COUNTS, EMPTY_TAG_COUNTS)).toBe(true)
+    })
+
+    it('is frozen', () => {
+      expect(Object.isFrozen(EMPTY_TAG_COUNTS)).toBe(true)
+    })
+  })
+
   describe('when rendering list chrome', () => {
     it('does not mount quick-actions toolbar', () => {
       const { container } = render(

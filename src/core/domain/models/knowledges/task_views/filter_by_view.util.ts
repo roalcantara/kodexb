@@ -1,11 +1,20 @@
 import type { TaskView } from '@shared/rpc'
 import type { Knowledge } from '../schemas/knowledge.schema'
-import { isActionablePlaceholder } from './is_actionable.util'
-import { isOverdue } from './is_overdue.util'
 import { addDays, parseDue, startOfDay, type TaskKnowledge } from './task_date.util'
 
 /** Rolling window for `this_week` (calendar days from start of today). */
 const DAYS_SPAN_THIS_WEEK = 7
+
+function isActionablePlaceholder(k: TaskKnowledge): boolean {
+  return k.status === 'todo'
+}
+
+function isOverdue(k: TaskKnowledge, now: Date): boolean {
+  if (k.status === 'done') return false
+  const due = parseDue(k)
+  if (!due) return false
+  return due < startOfDay(now)
+}
 
 function isTask(k: Knowledge): k is TaskKnowledge {
   return k.type === 'task'

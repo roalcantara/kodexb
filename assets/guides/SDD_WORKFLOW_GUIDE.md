@@ -34,7 +34,7 @@ Normative files per in-flight feature:
 - `spec.md` — EARS requirements with **Measure** and **Evidence**
 - `plan.md` — design contract, file touch list, traceability
 - `tasks.md` — ordered work and verification
-- `handoff.md` — optional operator handoff and acceptance tracker
+- `handoff.md` — acceptance tracker (`ID | Done when | Evidence` table; part of normative quartet)
 
 Path policy reminder: command examples in this guide use the current default
 spec root (`assets/specs/`). In code and tests, do not hardcode specific
@@ -85,14 +85,65 @@ Companion scans only numbered feature folders:
 3. **Specify** — run `/speckit-specify` in Cursor (or write `spec.md` from
    `.specify/templates/spec-template.md`).
 
-4. **Clarify / plan / tasks** — `/speckit-clarify`, `/speckit-plan`, `/speckit-tasks`.
+4. **Clarify / plan / tasks** — `/speckit-clarify`, `/speckit-plan`, `/speckit-tasks` (or brainstorm-first authoring; see [Brainstorm-first path](#brainstorm-first-path) below).
 
-5. **Implement** — `/speckit-implement`; code under `src/` with co-located specs.
+5. **Normalize** — `mise run spec conform` (or `mise run spec audit --fix`) scaffolds handoff, task IDs, and analyze checklists.
 
-6. **Quality passes** (advisory) — `/speckit-checklist`, `/speckit-analyze`.
+6. **Implement** — `/speckit-implement`; code under `src/` with co-located specs.
+   After each green phase, record work with **`mise run spec ready --phase Cn --commit`**
+   (messages and pathspecs come from **`## Commit plan`** in `tasks.md`).
 
-Git auto-commit hooks are **disabled** in `.specify/extensions/git/git-config.yml`; commits
-are operator-initiated (see constitution).
+7. **Quality passes** (advisory) — `/speckit-checklist`, `/speckit-analyze`.
+
+Git auto-commit hooks are **mostly disabled** in `.specify/extensions/git/git-config.yml`;
+**`after_implement`** is **enabled** for the Spec Kit CLI but does **not** run HK
+commit-message policy or `app-quality-gate`. Use **`mise run spec ready --phase … --commit`**
+(incremental) or **`/commit-all`** (ad-hoc) for plan-driven atomic commits.
+Cursor `/speckit-implement` does not invoke Speckit hooks unless you run through the
+`specify` CLI with `auto_execute_hooks: true`.
+
+## Commit plan (tasks.md)
+
+Author **`## Commit plan`** in `tasks.md` during `/speckit-tasks` (one `### C#` chunk per
+logical phase). Each chunk lists **Paths**, **Subject**, **Body**, and optional **Tasks**
+/ **Phase** links. Mirror subjects on task lines with `*commit:* \`type(scope): Subject\``.
+
+`mise run spec conform` scaffolds an empty Commit plan when implementation tasks exist.
+
+**Incremental** (one chunk, gate + HK per chunk, no catalog promote):
+
+```bash
+mise run spec ready --phase C1 --commit
+mise run spec ready -p 1 --commit          # same chunk by index
+mise run spec ready -p A --commit          # same chunk by phase letter
+```
+
+Optional `-c` / `--commit-message` must **match** the plan entry (not a freeform override).
+
+**Closeout flush** (remaining dirty chunks, then ship gate):
+
+```bash
+mise run spec ready --commit
+mise run spec closeout assets/specs/NNN-slug --commit   # audit + evidence + flush + promote
+```
+
+**Mid-authoring checkpoint** (lint/trace only, no git):
+
+```bash
+mise run spec ready --phase 1
+```
+
+## Brainstorm-first path
+
+Use `brainstorming` / `writing-plans` when exploring alternatives before committing to a spec shape. That workflow often lands `spec.md`, `plan.md`, and `tasks.md` without Spec Kit analyze artifacts.
+
+After the quartet content is written:
+
+1. Run **`mise run spec conform`** (or **`mise run spec audit --fix`**) to scaffold `handoff.md`, renumber task IDs to **`T101+`**, and create stub `checklists/analyze-*.md`.
+2. Run **`/speckit-analyze`** twice (plan pass, then tasks pass) to replace generic checklist stubs and refine handoff “Done when” prose.
+3. Continue with implement / gate as usual.
+
+Task IDs use **`T101`, `T102`, …** (not `T001`) so audit hygiene passes without tripping the tasks-template sample-leak check.
 
 ## Deterministic gates (authoritative)
 
@@ -105,10 +156,19 @@ mise run spec lint assets/specs/NNN-slug --strict
 # Cross-file traceability (spec ↔ plan ↔ features)
 mise run spec trace assets/specs/NNN-slug --strict
 
-# Quartet + handoff + tasks readiness (post-tasks, pre-analyze)
-mise run spec audit feature assets/specs/NNN-slug --strict
+# Quartet + handoff + tasks readiness (post-tasks, pre-analyze; autodetects active feature)
+mise run spec audit --strict
+mise run spec audit assets/specs/NNN-slug --strict
 
-# lint + trace + full app quality gate
+# Brainstorm → speckit bridge (scaffold handoff, T101+ task IDs, analyze checklists)
+mise run spec conform
+mise run spec conform assets/specs/NNN-slug
+
+# Apply audit fixes only (dry-run first)
+mise run spec audit --fix --dry-run
+mise run spec audit assets/specs/NNN-slug --fix --strict
+
+# lint + trace + spec audit + full app quality gate
 mise run spec gate assets/specs/NNN-slug
 
 # deterministic security subgate (standalone or as part of spec gate)
@@ -205,6 +265,31 @@ table in this guide. For XML subtask manifests, use workflow bench or legacy
 
 Legacy names removed in 011: `spec workflow orchestrated-handoff`, `--next`,
 `--feat`, top-level `mise run audit`, `spec feature-init`, `app gates --all`.
+
+### Workflow status (`mise run spec workflow status`)
+
+Shows a six-column SDD pipeline view (Intent · Design · Breakdown · Dispatch ·
+Build · Ship), artifact debt, the **NEXT** command, and — during implement —
+the T### task checkboxes and Commit plan chunks for the active feature.
+
+```bash
+mise run spec workflow status                      # active feature, gum pretty
+mise run spec workflow status assets/specs/NNN-slug
+mise run spec workflow status --json               # stable JSON (no ANSI)
+mise run spec workflow status --raw                # plain text, no gum
+mise run spec workflow status --format mermaid     # rail-only flowchart LR
+mise run spec workflow status --format mermaid --subgraph  # columns + artifact stacks
+mise run spec workflow status -o /tmp/status.html  # self-contained HTML grid
+```
+
+- **NEXT banner** — verbatim from `detectPhase()`
+  (`packages/exec/src/orchestrated_handoff.script.ts`), the normative phase
+  detector. Files on disk do **not** advance the pipeline: a `tasks.md` that
+  exists before `checklists/analyze-plan.md` is shown as **artifact debt** (⊘),
+  not as a done stage.
+- **Dispatch column** — `skipped` (⊝) when the subtask manifest does not
+  require a `gherkin-bdd-handoff` (no operator smoke / Gherkin in plan).
+- Narrow terminals (<115 cols) render NEXT + artifact index only.
 
 ### When to use opencode worker handoff vs primary implement
 
@@ -406,10 +491,11 @@ Rules (enforced by review, not lint):
 ## Shipping
 
 1. Gherkin + unit coverage for every requirement line (`enforced_by: none` is a ship blocker).
-2. `mise run spec gate assets/specs/NNN-slug`
-3. `bash .agents/skills/app-quality-gate/scripts/gate.sh` (included in `spec gate`)
-4. `mise run catalog ship <key>` when registering a new catalog entry
-5. After merge: archive legacy SDD per [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md) § Shipping
+2. All `tasks.md` T### checkboxes `[x]` before `checklists/implement-done.md` (enforced by `tasks.incomplete` at gate).
+3. **`mise run spec closeout assets/specs/NNN-slug`** — agent-agnostic closeout: `spec audit --strict`, replay handoff Evidence commands (operator-smoke skipped unless `--include-smoke`), flush remaining **Commit plan** chunks when `--commit` is passed (before final gate), then tag/catalog/HK/gate/**`catalog promote`**. Use **`mise run spec ready --commit`** when evidence was run manually and you only need flush + ship.
+4. **`mise run spec ready assets/specs/NNN-slug`** — gate + HK + catalog promote without replaying handoff Evidence (use when evidence was run manually).
+5. `mise run catalog ship <key>` — readiness check only; **`mise run catalog promote <key>`** writes `status: shipped` after gate passes
+6. After merge: archive legacy SDD per [`DOC_AUTHORITY.md`](DOC_AUTHORITY.md) § Shipping
 
 ## Precedence on conflicts
 

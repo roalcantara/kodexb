@@ -125,7 +125,7 @@ task_source_atomicity:
 
 workflows:
   title: Agentic workflow profiles
-  status: in-progress
+  status: shipped
   specs:
     - 009-agentic-workflow-orchestrator
     - 010-workflow-packages
@@ -134,21 +134,28 @@ workflows:
 
 mise_sdd_cli:
   title: Mise SDD CLI hub
-  status: in-progress
+  status: shipped
   specs:
     - 011-mise-sdd-cli
   superseded_by: null
 
 ops_cli_dry:
   title: Ops CLI DRY refactoring
-  status: in-progress
+  status: shipped
   specs:
     - 015-ops-cli-dry
   superseded_by: null
 
 src_kernel_dry:
   title: src kernel and DRY refactoring
-  status: in-progress
+  status: shipped
   specs:
     - 016-src-kernel-dry
+  superseded_by: null
+
+src_cohesion:
+  title: src cohesion consolidation
+  status: shipped
+  specs:
+    - 017-src-cohesion-consolidation
   superseded_by: null

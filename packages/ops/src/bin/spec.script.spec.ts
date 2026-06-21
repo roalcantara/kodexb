@@ -1,3 +1,4 @@
+// @ops_cli_dry
 import { afterEach, describe, expect, it } from 'bun:test'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -107,13 +108,28 @@ describe('planSpec — every subcommand routes', () => {
   it('workflow handoff scrub routes to handoff_scrub', () => {
     expect(spawnArgv(plan('workflow', ['handoff', 'scrub'])).join(' ')).toContain('handoff_scrub.script.ts')
   })
-  it('audit docs rogue-refs routes', () => {
-    expect(spawnArgv(plan('audit', ['docs', 'rogue-refs'])).join(' ')).toContain('rogue-refs')
-  })
   it('audit feature resolves the dir', () => {
     const argv = spawnArgv(plan('audit', ['feature'], { usage_feature: FEAT, usage_strict: 'true' }))
     expect(argv.join(' ')).toContain('audit.script.ts')
     expect(argv).toContain('--strict')
+  })
+  it('flat audit autodetects active feature', () => {
+    const argv = spawnArgv(plan('audit', [], { usage_strict: 'true' }))
+    expect(argv.join(' ')).toContain('audit.script.ts')
+    expect(argv).toContain('--strict')
+  })
+  it('flat audit passes --fix flags', () => {
+    const argv = spawnArgv(
+      plan('audit', [], { usage_feature: FEAT, usage_fix: 'true', usage_dry_run: 'true', usage_force: 'true' })
+    )
+    expect(argv).toContain('--fix')
+    expect(argv).toContain('--dry-run')
+    expect(argv).toContain('--force')
+  })
+  it('conform routes to conform.script.ts', () => {
+    const argv = spawnArgv(plan('conform', [], { usage_feature: FEAT, usage_dry_run: 'true' }))
+    expect(argv.join(' ')).toContain('conform.script.ts')
+    expect(argv).toContain('--dry-run')
   })
   it('audit security routes to scan.script', () => {
     const argv = spawnArgv(plan('audit', ['security'], { usage_changed_only: 'true' }))
@@ -132,10 +148,24 @@ describe('planSpec — every subcommand routes', () => {
   it('ready resolves a runner plan', () => {
     expect(plan('ready', [], { usage_feature: FEAT }).kind).toBe('runner')
   })
-  it('ready --phase routes to phase.script', () => {
+  it('closeout resolves a spec-closeout runner plan', () => {
+    const p = plan('closeout', [], { usage_feature: FEAT })
+    expect(p.kind).toBe('runner')
+    if (p.kind === 'runner') expect(p.task).toBe('spec-closeout')
+  })
+  it('ready --phase routes to phase.script when commit is absent', () => {
     const argv = spawnArgv(plan('ready', [], { usage_feature: FEAT, usage_phase: '3' }))
     expect(argv.join(' ')).toContain('phase.script.ts')
     expect(argv).toContain('3')
+  })
+  it('ready --phase with --commit routes to runner not phase.script', () => {
+    const p = plan('ready', [], { usage_feature: FEAT, usage_phase: 'C1', usage_commit: 'true' })
+    expect(p.kind).toBe('runner')
+    if (p.kind === 'runner') expect(p.task).toBe('spec-ready')
+  })
+  it('ready --commit routes to runner', () => {
+    const p = plan('ready', [], { usage_feature: FEAT, usage_commit: 'true' })
+    expect(p.kind).toBe('runner')
   })
   it('review-handoff routes the action', () => {
     const argv = spawnArgv(plan('review-handoff', [], { usage_action: 'classify' }))

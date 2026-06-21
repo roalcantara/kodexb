@@ -5,29 +5,15 @@ import path from 'node:path'
 import {
   buildSubtaskManifest,
   detectPhase,
-  type FileSet,
   parseArgs,
   renderManifestXml,
   runLint,
   scanFeatureDir
 } from './orchestrated_handoff.script'
+import { makeFiles } from './shared_test_fileset.script'
 
 /** Generic feature-dir token for phase tests (avoids hardcoding assets/specs/*). */
 const FEAT_011 = 'features/011-mise-sdd-cli'
-
-function makeFiles(overrides: Partial<FileSet> = {}): FileSet {
-  return {
-    spec: true,
-    plan: true,
-    tasks: true,
-    handoff: true,
-    analyzePlanChecklist: true,
-    analyzeTasksChecklist: true,
-    handoffEmittedGherkin: true,
-    implementComplete: true,
-    ...overrides
-  }
-}
 
 describe('detectPhase — transition table', () => {
   describe.each([

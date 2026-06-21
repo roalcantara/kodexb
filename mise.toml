@@ -1194,7 +1194,17 @@ exec bun bin/skill.script.ts "$CMD" "$@"
     cmd "ready" {
       arg "[feature]" help="Feature dir (omitted: active feature)"
       flag "--key <key>" help="Catalog key for tag tests"
-      flag "--phase <no>" help="Phase number for focused validation"
+      flag "-p --phase <id>" help="Chunk C1, index 1, or phase letter; lint checkpoint without --commit"
+      flag "--commit" help="Apply Commit plan chunk (--phase) or flush remaining then ship"
+      flag "-c --commit-message <message>" help="Subject+body override; must match tasks.md plan"
+      flag "--dry-run" help="Print commit plan staging without git write"
+    }
+    cmd "closeout" help="Agent-agnostic ship closeout: audit, handoff evidence, spec ready, optional commit" {
+      arg "[feature]" help="Feature dir (omitted: active feature)"
+      flag "--key <key>" help="Catalog key for tag tests (overrides auto-resolve)"
+      flag "--include-smoke" help="Run operator-smoke Evidence rows (skipped by default)"
+      flag "--dry-run" help="Print handoff evidence / commit plan without executing writes"
+      flag "--commit" help="Flush remaining Commit plan chunks before final gate (requires valid plan in tasks.md)"
     }
     cmd "init" {
       flag "--id <id>" help="Three-digit id e.g. 001"
@@ -1213,6 +1223,14 @@ exec bun bin/skill.script.ts "$CMD" "$@"
         arg "[runId]" help="Run ID to resume"
         flag "--answer <kv>" help="Answer key=value for NEED_INPUT stages"
         flag "--approve <stage>" help="Approve human-gated stage"
+      }
+      cmd "status" {
+        arg "[feature]" help="Feature dir (omitted: active feature)"
+        flag "--format <format>" default="pretty" {
+          choices "pretty" "mermaid" "markdown"
+        }
+        flag "--subgraph" help="With --format mermaid: emit column subgraphs with artifact stacks"
+        flag "-o --output <path>" help="Write HTML report to path"
       }
       cmd "runs" {
         arg "<action>" help="list|show|tail|prune" {
@@ -1240,18 +1258,28 @@ exec bun bin/skill.script.ts "$CMD" "$@"
       }
     }
     cmd "audit" {
-      cmd "docs" {
-        cmd "rogue-refs" help="Inventory inbound assets/docs/ links on guides and agent entry docs" {}
-      }
+      flag "--strict" help="Exit non-zero on error-level findings"
+      flag "--fix" help="Apply deterministic audit scaffolding fixes"
+      flag "--dry-run" help="With --fix: print planned fixes without writing"
+      flag "--force" help="With --fix: overwrite existing handoff/checklist scaffolds"
+      arg "[feature]" help="Feature dir (omitted: active feature via feature.json / branch / cwd)"
       cmd "feature" {
-        flag "--strict" help="Exit non-zero on error-level findings"
-        arg "[feature]" help="Feature dir e.g. assets/specs/005-feature-demo (omitted: active feature)"
+        flag "--strict" help="Exit non-zero on error-level findings (alias)"
+        flag "--fix" help="Apply deterministic audit scaffolding fixes"
+        flag "--dry-run" help="With --fix: print planned fixes without writing"
+        flag "--force" help="With --fix: overwrite existing handoff/checklist scaffolds"
+        arg "[feature]" help="Feature dir (omitted: active feature)"
       }
       cmd "security" {
         flag "--strict" help="Fail on medium/high/critical per policy"
         flag "--changed-only" help="Restrict scan to changed-file scope"
         flag "--base <sha>" help="Diff base ref for changed-only mode"
       }
+    }
+    cmd "conform" {
+      flag "--dry-run" help="Print planned fixes without writing"
+      flag "--force" help="Overwrite existing handoff/checklist scaffolds"
+      arg "[feature]" help="Feature dir (omitted: active feature)"
     }
     cmd "worktree" {
       cmd "add" {
@@ -1321,5 +1349,13 @@ exec bun bin/skill.script.ts "$CMD" "$@"
     cmd "ship" help="Ship-gate readiness check for a catalog key" {
       flag "--json" help="Machine-readable JSON output (includes provenance)"
       arg "<key>" help="Catalog key (e.g. command_palette)"
+    }
+    cmd "register" help="Append in-progress catalog entry for active or given feature dir" {
+      arg "[feature_dir]" help="Defaults to active feature from .specify/feature.json"
+    }
+    cmd "promote" help="Set catalog status to shipped when ship gate passes" {
+      flag "--dry-run" help="Print would-be promotion without writing catalog.yaml"
+      flag "--json" help="Machine-readable JSON output"
+      arg "<key>" help="Catalog key (e.g. src_cohesion)"
     }
   ''', run = "bun bin/catalog.script.ts" }

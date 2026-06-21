@@ -114,24 +114,26 @@ project-specific situation.
 
 ## Optional Companion Matrix
 
-| Situation                                          | Optional companion skills                                                                  |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Failing tests, regressions, unclear behavior       | `systematic-debugging`                                                                     |
-| Structural search or repository rules              | `ast-grep`                                                                                 |
-| Elysia route mechanics under project RPC           | `elysia`, after `app-rpc`                                                                  |
-| Unused exports, files, or dependencies             | `knip`                                                                                     |
-| Duplication findings and extraction judgment       | `jscpd`, `dry-principle`                                                                   |
-| FCIS placement or purity questions                 | `FCIS.guide.md`, `app-context`; do not use raw `functional-core-imperative-shell` comments |
-| `mise.toml`, task wiring, tool versions            | `mise-tasks`, `mise-expert`                                                                |
-| Review preparation or review feedback              | `requesting-code-review`, `receiving-code-review`                                          |
-| Post-implement handoff verification                | `app-review-handoff` (terse AC/Evidence review; not commit gate)                           |
-| Agent tool policy, trust, or audit-trail design    | `agent-governance`, after `app-context`                                                    |
-| Agent output rubrics or evaluator-optimizer loops  | `agentic-eval`, after `app-review-handoff` or `app-quality-gate` context                   |
-| Design or prototype intake                         | `stitch-design`, only under the prototype gate                                             |
-| React component translation from a design artifact | `react:components`, adapted to the project's renderer and guide stack                      |
-| Isolated parallel development                      | `using-git-worktrees`, only when requested or approved                                     |
-| Final verification reminder                        | `verification-before-completion`; `app-quality-gate` remains executable authority          |
-| Running Electrobun app inspection                  | `agent-electrobun`, never as a replacement for tests or gates                              |
+| Situation                                          | Optional companion skills                                                                                                      |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Failing tests, regressions, unclear behavior       | `systematic-debugging`                                                                                                         |
+| Structural search or repository rules              | `ast-grep`                                                                                                                     |
+| Elysia route mechanics under project RPC           | `elysia`, after `app-rpc`                                                                                                      |
+| Unused exports, files, or dependencies             | `knip`                                                                                                                         |
+| Duplication findings and extraction judgment       | `jscpd`, `dry-principle`                                                                                                       |
+| FCIS placement or purity questions                 | `FCIS.guide.md`, `app-context`; do not use raw `functional-core-imperative-shell` comments                                     |
+| `mise.toml`, task wiring, tool versions            | `mise-tasks`, `mise-expert`                                                                                                    |
+| Review preparation or review feedback              | `requesting-code-review`, `receiving-code-review`                                                                              |
+| Post-implement handoff verification                | `app-review-handoff` (terse AC/Evidence review; not commit gate)                                                               |
+| Agent tool policy, trust, or audit-trail design    | `agent-governance`, after `app-context`                                                                                        |
+| Agent output rubrics or evaluator-optimizer loops  | `agentic-eval`, after `app-review-handoff` or `app-quality-gate` context                                                       |
+| Design or prototype intake                         | `stitch-design`, only under the prototype gate                                                                                 |
+| Brainstorm / writing-plans before speckit analyze  | After landing spec/plan/tasks, run `mise run spec conform` then `/speckit-analyze`; author **`## Commit plan`** in tasks.md    |
+| Implement + atomic commits                         | After each green phase: `mise run spec ready --phase Cn --commit`; closeout: `spec ready --commit` or `spec closeout --commit` |
+| React component translation from a design artifact | `react:components`, adapted to the project's renderer and guide stack                                                          |
+| Isolated parallel development                      | `using-git-worktrees`, only when requested or approved                                                                         |
+| Final verification reminder                        | `verification-before-completion`; `app-quality-gate` remains executable authority                                              |
+| Running Electrobun app inspection                  | `agent-electrobun`, never as a replacement for tests or gates                                                                  |
 
 ## Reference-Only Skills
 

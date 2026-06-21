@@ -7,7 +7,7 @@ describe('resolveUsageCmd', () => {
   })
 
   it('returns first argv token when usage_cmd empty', () => {
-    expect(resolveUsageCmd({}, ['rogue-refs', '--flag'])).toBe('rogue-refs')
+    expect(resolveUsageCmd({}, ['list', '--flag'])).toBe('list')
   })
 
   it('skips dropTokens', () => {

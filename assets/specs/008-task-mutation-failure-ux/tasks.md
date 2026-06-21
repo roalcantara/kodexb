@@ -192,7 +192,7 @@
 ### Tests for User Story 5
 
 - [x] T199 [P] [US5] Verify step registration health with `bun run bdd:e2e:bddgen` using bdd/e2e/steps/task_source_atomicity.steps.ts
-- [ ] T200 [P] [US5] Verify tagged e2e pass with `mise run test tag task_source_atomicity --e2e` for assets/features/e2e/task-source-atomicity.feature
+- [x] T200 [P] [US5] Verify tagged e2e pass with `mise run test tag task_source_atomicity --e2e` for assets/features/e2e/task-source-atomicity.feature
 
 ### Implementation for User Story 5
 
@@ -212,7 +212,7 @@
 - [x] T205 [P] Add `008-task-mutation-failure-ux` spec pointer under `task_source_atomicity` in assets/catalog/catalog.yaml
 - [x] T206 [P] Update 008 progress metadata and status in assets/specs/008-task-mutation-failure-ux/.spec-context.json
 - [x] T207 Run focused verification bundle from quickstart (`bun test src/shell/app src/shell/main/rpc --filter task`) via assets/specs/008-task-mutation-failure-ux/quickstart.md
-- [x] T208 Run tagged e2e verification (`mise run test tag task_source_atomicity --e2e`) via assets/specs/008-task-mutation-failure-ux/quickstart.md — DEFERRED (requires running preview server; not available in current environment)
+- [x] T208 Run tagged e2e verification (`KB_E2E_FAULT_INJECTION=1 mise run test tag task_source_atomicity --e2e`) via assets/specs/008-task-mutation-failure-ux/quickstart.md — verified 2026-06-03 (3/3 scenarios)
 - [x] T209 Run strict audit (`mise run spec audit assets/specs/008-task-mutation-failure-ux --strict`) from assets/specs/008-task-mutation-failure-ux
 - [ ] T210 Run analyze pass (`/speckit-analyze 008-task-mutation-failure-ux`) and resolve CRITICAL/HIGH findings before implement — DEFERRED (analyze subcommand not available in spec CLI)
 

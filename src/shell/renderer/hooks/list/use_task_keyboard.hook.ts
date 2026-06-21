@@ -1,5 +1,4 @@
 import type { RpcKnowledge } from '@shared/rpc'
-import { fireAndForget } from '@shared/utils'
 import { useEffect, useRef } from 'react'
 import { cyclePriority, cycleStatus, reorderTask } from '../../rpc/client'
 
@@ -21,21 +20,22 @@ function handleCreateKey(e: globalThis.KeyboardEvent, deps: TaskKeyboardDeps): b
   return false
 }
 
-function fireMutation(
+export function fireMutation(
   promise: Promise<{ ok: boolean; message: string }>,
   onMutationError: ((message: string) => void) | undefined,
   onRefresh: () => void
 ): void {
-  fireAndForget(
-    promise
-      .then(result => {
-        if (!result.ok && onMutationError) {
-          onMutationError(result.message)
-        }
-        onRefresh()
-      })
-      .catch(() => undefined)
-  )
+  promise
+    .then(result => {
+      if (!result.ok && onMutationError) {
+        onMutationError(result.message)
+      }
+      onRefresh()
+    })
+    .catch(() => {
+      if (onMutationError) onMutationError('Task mutation failed')
+      onRefresh()
+    })
 }
 
 function handleCycleKey(

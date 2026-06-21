@@ -10,13 +10,18 @@
 #
 # Usage: update-agent-context.sh [plan_path]
 #
-# When `plan_path` is omitted, the script picks the most recently modified
-# `specs/*/plan.md` if any exist, otherwise emits the section without a
-# concrete plan path.
+# When `plan_path` is omitted, resolve from `.specify/feature.json` →
+# `{feature_directory}/plan.md`, then fall back to the most recently modified
+# `assets/specs/*/plan.md`.
 
 set -euo pipefail
 
-PROJECT_ROOT="$(pwd)"
+SCRIPT_DIR="$(CDPATH="" cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=../../../../scripts/bash/common.sh
+source "$SCRIPT_DIR/../../../../scripts/bash/common.sh"
+
+PROJECT_ROOT="$(get_repo_root)"
+cd "$PROJECT_ROOT"
 EXT_CONFIG="$PROJECT_ROOT/.specify/extensions/agent-context/agent-context-config.yml"
 DEFAULT_START="<!-- SPECKIT START -->"
 DEFAULT_END="<!-- SPECKIT END -->"
@@ -121,14 +126,16 @@ unset _cf_parts _seg
 [[ -z "$MARKER_END"   ]] && MARKER_END="$DEFAULT_END"
 
 PLAN_PATH="${1:-}"
+FEATURE_DIR=""
 if [[ -z "$PLAN_PATH" ]]; then
-  # Pick the most recently modified plan.md one level deep (specs/<feature>/plan.md).
-  # Use find + sort by modification time to avoid ls/head fragility with
-  # spaces in paths or SIGPIPE from pipefail.
-  _plan_abs="$("$_python" - "$PROJECT_ROOT" <<'PY'
-import sys, os
+  FEATURE_DIR="$(read_feature_json_feature_directory "$PROJECT_ROOT" || true)"
+  if [[ -n "$FEATURE_DIR" && -f "$PROJECT_ROOT/$FEATURE_DIR/plan.md" ]]; then
+    PLAN_PATH="$FEATURE_DIR/plan.md"
+  else
+    _plan_abs="$("$_python" - "$PROJECT_ROOT" <<'PY'
+import sys
 from pathlib import Path
-specs = Path(sys.argv[1]) / "specs"
+specs = Path(sys.argv[1]) / "assets" / "specs"
 plans = sorted(
     specs.glob("*/plan.md"),
     key=lambda p: p.stat().st_mtime,
@@ -137,9 +144,14 @@ plans = sorted(
 print(plans[0] if plans else "")
 PY
 )"
-  if [[ -n "$_plan_abs" ]]; then
-    PLAN_PATH="${_plan_abs#"$PROJECT_ROOT/"}"
+    if [[ -n "$_plan_abs" ]]; then
+      PLAN_PATH="${_plan_abs#"$PROJECT_ROOT/"}"
+      FEATURE_DIR="$(dirname "$PLAN_PATH")"
+    fi
   fi
+fi
+if [[ -z "$FEATURE_DIR" && -n "$PLAN_PATH" ]]; then
+  FEATURE_DIR="$(dirname "$PLAN_PATH")"
 fi
 
 CTX_PATH="$PROJECT_ROOT/$CONTEXT_FILE"
@@ -150,11 +162,14 @@ TMP_SECTION="$(mktemp)"
 trap 'rm -f "$TMP_SECTION"' EXIT
 {
   echo "$MARKER_START"
-  echo "For additional context about technologies to be used, project structure,"
-  echo "shell commands, and other important information, read the current plan"
-  if [[ -n "$PLAN_PATH" ]]; then
-    echo "at $PLAN_PATH"
+  echo "Active feature: see \`.specify/feature.json\` → \`feature_directory\`."
+  if [[ -n "$FEATURE_DIR" ]]; then
+    echo "Current implementation plan: \`$FEATURE_DIR/plan.md\`."
+  elif [[ -n "$PLAN_PATH" ]]; then
+    echo "Current implementation plan: \`$PLAN_PATH\`."
   fi
+  echo "SDD gates (deterministic): \`mise run spec lint|trace|audit|conform|gate\`."
+  echo "After brainstorm-first spec authoring, run \`mise run spec conform\` before /speckit-analyze."
   echo "$MARKER_END"
 } > "$TMP_SECTION"
 

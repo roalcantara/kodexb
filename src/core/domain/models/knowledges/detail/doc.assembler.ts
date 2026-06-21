@@ -1,11 +1,7 @@
 import { ok, type Result } from 'neverthrow'
 
 import type { Knowledge } from '../schemas/knowledge.schema'
-import { buildBookmarkPreamble } from './doc.bookmark.parser'
-import { buildCheatPreamble } from './doc.cheat.parser'
-import { buildCommandPreamble } from './doc.command.parser'
-import { buildShortcutPreamble } from './doc.shortcut.parser'
-import { buildTaskPreamble } from './doc.task.parser'
+import { buildPreamble } from './doc.parser'
 import { parseNotes } from './notes.parser'
 
 export type AssemblyError = { message: string; fragmentIndex: number }
@@ -28,22 +24,6 @@ const renderFragment = (format: string, payload: string) => {
     return `![](${payload})`
   }
   return `\`\`\`${format}\n${payload}\n\`\`\``
-}
-
-const buildPreamble = (knowledge: Knowledge, now: Date, previewImageUrl?: string) => {
-  if (knowledge.type === 'command') {
-    return buildCommandPreamble(knowledge)
-  }
-  if (knowledge.type === 'cheat') {
-    return buildCheatPreamble(knowledge)
-  }
-  if (knowledge.type === 'bookmark') {
-    return buildBookmarkPreamble(knowledge, previewImageUrl)
-  }
-  if (knowledge.type === 'task') {
-    return buildTaskPreamble(knowledge, now)
-  }
-  return buildShortcutPreamble(knowledge)
 }
 
 function renderNoteFragments(knowledge: Knowledge): string[] {
