@@ -231,7 +231,7 @@ of the SDD pipeline state via `mise run spec workflow status --record`.
 ### File layout
 
 ```
-tmp/metrics/workflow-status/<slug>/<run_id>.status.json
+tools/metrics/workflow-status/<slug>/<run_id>.status.json
 ```
 
 Each `<run_id>` is a timestamp with monotonic counter (e.g. `1748693624321.1`),
@@ -260,9 +260,10 @@ Each file is a JSON object with:
 
 On every invocation (without `--refresh`), `workflow status` computes a content
 fingerprint from `scanFeatureDir` + tasks/plan/handoff content digests. When
-the fingerprint matches the latest snapshot, the cached report is replayed
-from `raw` — avoiding file I/O and catalog lookups. Pass `--refresh` to force
-re-derivation.
+the fingerprint matches the latest snapshot's `meta.contentFingerprint`, the
+cached report is replayed from that snapshot's on-disk `raw` field — skipping
+re-derivation and catalog enrichment. Snapshots are always read from disk for
+this path. Pass `--refresh` to force re-derivation.
 
 Implementation: `packages/ops/src/governance/specs/workflow_status_snapshot.script.ts`.
 
@@ -277,10 +278,9 @@ mise run spec workflow status --refresh            # skip cache, force re-derive
 
 ### Retention
 
-Snapshots are written to `tmp/metrics/`, which follows the same retention
-policy as `tmp/workflow-runs/`. The `tmp/` hierarchy is excluded from jscpd,
-Biome, and git hygiene — no cleanup script is needed beyond the standard
-`tmp/` lifecycle. Snapshots are not committed.
+Snapshots are written to `tools/metrics/workflow-status/`, which is excluded
+from jscpd and Biome scope like other metrics artifacts under `tools/metrics/`.
+Snapshots are not committed; prune old runs manually when disk use matters.
 
 ## What this guide deliberately does not cover
 

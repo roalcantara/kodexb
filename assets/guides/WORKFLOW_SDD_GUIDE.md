@@ -299,7 +299,7 @@ mise run spec workflow status --full               # same as --index (vertical l
 mise run spec workflow status --refresh            # force re-derive, skip snapshot cache
 mise run spec workflow status --record             # write durable snapshot
 mise run spec workflow status --list <slug>        # list recorded snapshots for a slug
-mise run spec workflow status --compare-a <a> --compare-b <b>  # diff two snapshot files
+mise run spec workflow status --compare <a> <b>    # diff two snapshot files
 ```
 
 - **Status tokens** — each node row starts with a token: `[next]` (the single
