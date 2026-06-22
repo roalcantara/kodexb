@@ -18,19 +18,19 @@ passes. Phase order: **0 → F → A → C → B → D → E → closeout**.
 
 ## Phase A — App-layer decomposition
 - [X] **T109** Split `App` into ~5 services (`app.ts` ≤160, cap tightened) + P2-7 — *gate:* ARCH-2 AC1
-- [ ] **T110** Relocate `app/lib` → domain subfolders, drop `app_` prefix — *gate:* ARCH-2 AC2
+- [X] **T110** Relocate `app/lib` → domain subfolders, drop `app_` prefix — *gate:* ARCH-2 AC2
 
 ## Phase C — RPC client split
 - [X] **T111** `client.ts` transport vs endpoint facade — *gate:* ARCH-3 AC1
 
 ## Phase B — list-page contract
-- [ ] **T112** Replace `p` bag with named contracts; break up `ListMain`; remove list suppressions — *gate:* ARCH-4 AC1/AC2
-- [ ] **T113** List page consumes `ListStats.byType` — *gate:* ARCH-4 AC3
+- [X] **T112** Replace `p` bag with named contracts; break up `ListMain`; remove list suppressions — *gate:* ARCH-4 AC1/AC2
+- [X] **T113** List page consumes `ListStats.byType` — *gate:* ARCH-4 AC3
 
 ## Phase D — renderer overlay architecture
-- [ ] **T114** Overlay coordinator — *gate:* ARCH-5 AC1
-- [ ] **T115** Shared overlay primitive (jscpd ↓) — *gate:* ARCH-5 AC2
-- [ ] **T116** Types out of `.component.tsx` — *gate:* ARCH-5 AC3
+- [X] **T114** Overlay coordinator — *gate:* ARCH-5 AC1
+- [X] **T115** Shared overlay primitive (jscpd ↓) — *gate:* ARCH-5 AC2
+- [X] **T116** Types out of `.component.tsx` — *gate:* ARCH-5 AC3
 
 ## Phase E — component & action organization (relocations last)
 - [X] **T117** Drop redundant folder-prefixes (`list_*`, `entry_action_*`) — *gate:* ARCH-6 AC1
