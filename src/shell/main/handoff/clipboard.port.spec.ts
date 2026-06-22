@@ -1,17 +1,20 @@
-import { beforeAll, describe, expect, it, mock } from 'bun:test'
+import { beforeAll, describe, expect, it } from 'bun:test'
+import { installElectrobunBunMock } from '@testing'
 
 let utilsClipboardReadText: () => string | null
 let utilsClipboardWriteText: (text: string) => void
 
-beforeAll(() => {
-  mock.module('electrobun/bun', () => ({
-    Utils: {
-      clipboardReadText: () => utilsClipboardReadText(),
-      clipboardWriteText: (text: string) => {
-        utilsClipboardWriteText(text)
-      }
+function installClipboardElectrobunMock(): void {
+  installElectrobunBunMock({
+    clipboardReadText: () => utilsClipboardReadText(),
+    clipboardWriteText: (text: string) => {
+      utilsClipboardWriteText(text)
     }
-  }))
+  })
+}
+
+beforeAll(() => {
+  installClipboardElectrobunMock()
 })
 
 describe('clipboard.port', () => {

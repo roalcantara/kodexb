@@ -28,7 +28,7 @@ export class SyncService {
     }
   }
 
-  async getSyncInfo(): Promise<{ sourcesDir: string; fileCount: number }> {
+  getSyncInfo(): Promise<{ sourcesDir: string; fileCount: number }> {
     return getSyncInfoForSourcesDir(this.lifecycle.loaded.sources.path)
   }
 }

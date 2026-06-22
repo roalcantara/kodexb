@@ -33,6 +33,10 @@ export {
   setupBunSpawnSyncMock,
   uninstallBunSpawnSyncMock
 } from './helpers/testing.bun_spawn_sync.mock'
+export {
+  type ElectrobunBunUtilsMock,
+  installElectrobunBunMock
+} from './helpers/testing.electrobun_bun.mock'
 export { createFactoryFor } from './helpers/testing.factory'
 export { configureQuietLogtape, noopLogSink } from './helpers/testing.quiet_stdio'
 export {

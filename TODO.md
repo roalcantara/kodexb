@@ -184,7 +184,7 @@ Sorted by execution order: the handoff pilot and conformant-dir locks shipped in
 - [ ] **P3-7** — THE `App` hub and `shell/app/lib/` bucket SHALL decompose into narrower modules:
   - [ ] `shell/app/lib/` SHALL not remain a catch-all for unrelated domains (list stats, sync, task source, preview, shell surface).
   - [ ] New app-side behavior SHALL land in a named service module, not ad-hoc `app_*.util.ts` growth without boundary review.
-- [ ] **P3-7** — Types SHALL NOT be imported from `.component.tsx` files (e.g. sync modal state):
+- [ ] **P3-7b** — Types SHALL NOT be imported from `.component.tsx` files (e.g. sync modal state):
   - [ ] `SyncModalModel` and similar types SHALL move to `.types.ts` or `.model.ts` modules (today imported from `sync_modal.component.tsx` in specs and siblings).
   - [ ] `rg "from '\\./.*\\.component'"` in non-spec renderer code SHALL not import types from components.
 - [ ] **P3-8** — THE renderer SHALL provide shared overlay primitives so modal chrome is not duplicated:

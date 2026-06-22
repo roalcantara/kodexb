@@ -1,7 +1,6 @@
 import type { Static } from '@sinclair/typebox'
 import type { ElectrobunRPCSchema, RPCSchema } from 'electrobun/bun'
 import type { Knowledge } from '../../core'
-import type { TaskView } from '../../core/domain/models/knowledges/task_views/task_view.types'
 import type {
   bindingRefSchema,
   configPatchSchema,

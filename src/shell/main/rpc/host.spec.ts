@@ -1,17 +1,15 @@
-import { beforeAll, describe, expect, it, mock } from 'bun:test'
+import { beforeAll, describe, expect, it } from 'bun:test'
 import { configureMainLogging, rpcErrorContract } from '@shared/logging'
+import { installElectrobunBunMock } from '@testing'
 import { Elysia, t } from 'elysia'
 
 beforeAll(() => {
   configureMainLogging()
+  installElectrobunBunMock()
 })
 
-mock.module('electrobun/bun', () => ({
-  BrowserView: {}
-}))
-
 const { testing_helpers } =
-  // import('./host') must happen after mock.module is registered above
+  // import('./host') must happen after installElectrobunBunMock
   await import('./host')
 
 const HTTP_INTERNAL_ERROR = 500

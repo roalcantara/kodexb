@@ -4,6 +4,8 @@ import { render, screen } from '@testing-library/react'
 import { SyncModal } from './sync_modal.component'
 import type { SyncModalModel } from './sync_modal.types'
 
+const READING_SOURCE = /Reading source folder/
+
 const baseModel: SyncModalModel = {
   open: false,
   phase: 'preparing',
@@ -34,7 +36,7 @@ describe('SyncModal', () => {
   describe('when phase is preparing', () => {
     it('shows preparing copy', () => {
       renderSyncModal({ ...baseModel, open: true, phase: 'preparing' })
-      expect(screen.getByText('Reading source folder…')).toBeTruthy()
+      expect(screen.getByText(READING_SOURCE)).toBeTruthy()
     })
   })
 

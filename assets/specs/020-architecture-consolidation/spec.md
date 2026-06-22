@@ -218,7 +218,7 @@ chrome instead of scattered booleans and duplicated layout.
 
 ---
 
-## Success Criteria (measurable, ratcheted)
+## Measurable outcomes
 
 | Metric | Baseline | Target |
 | ------ | -------: | -----: |

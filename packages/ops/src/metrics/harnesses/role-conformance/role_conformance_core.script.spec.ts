@@ -1,4 +1,4 @@
-// @arch_role_taxonomy @role_suffix_migration
+// @arch_role_taxonomy @role_suffix_migration @architecture_consolidation
 import { describe, expect, it } from 'bun:test'
 import {
   classifyUtil,

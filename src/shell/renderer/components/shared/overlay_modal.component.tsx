@@ -8,6 +8,8 @@ export type OverlayModalProps = {
   widthPx?: number
   className?: string
   labelledBy?: string
+  /** When false, backdrop aligns shell to top (command palette). Default true. */
+  centered?: boolean
 }
 
 export function OverlayModal({
@@ -16,13 +18,15 @@ export function OverlayModal({
   title,
   widthPx = OVERLAY_SHELL_WIDTH_PX,
   className = '',
-  labelledBy
+  labelledBy,
+  centered = true
 }: OverlayModalProps) {
   const shellStyle = { '--overlay-shell-width': `${widthPx}px` } as CSSProperties
+  const backdropClass = centered ? 'cmp-overlay-backdrop cmp-overlay-backdrop--centered' : 'cmp-overlay-backdrop'
 
   return (
     <div
-      className="cmp-overlay-backdrop cmp-overlay-backdrop--centered"
+      className={backdropClass}
       role="dialog"
       aria-modal="true"
       aria-label={title}

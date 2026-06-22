@@ -46,7 +46,7 @@ function truncateLabel(label: string, max: number): string {
     if (taskEnd <= max) {
       return `${label.slice(0, max - 2)}..`
     }
-    return label.slice(0, max - 2) + '..'
+    return `${label.slice(0, max - 2)}..`
   }
   return `${label.slice(0, max - 2)}..`
 }

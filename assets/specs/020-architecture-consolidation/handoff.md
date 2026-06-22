@@ -10,7 +10,7 @@ compare` must never regress; no new `// biome-ignore`; biome caps only tighten.
 
 ## Acceptance criteria → evidence (implementer fills Status/Evidence)
 
-| ID | Done when (short) | Evidence command | Status |
+| ID | Done when | Evidence | Status |
 | --- | --- | --- | --- |
 | ARCH-0 AC1 | core computes `structuralSuppressionCount`/`maxFileLoc`/`oversizedFileCount` | `bun test ./packages/ops/src/metrics/harnesses/role-conformance/role_conformance_core.script.spec.ts` | ✅ |
 | ARCH-0 AC2 | `compare` flags a rise in any of the three | `bun test ./packages/ops/src/metrics/harnesses/role-conformance/role_conformance.script.spec.ts` ; `mise run audit roles compare` (PASS) | ✅ |
@@ -27,7 +27,7 @@ compare` must never regress; no new `// biome-ignore`; biome caps only tighten.
 | ARCH-2 AC3 | Promise.resolve boilerplate collapsed | `rg -c 'return Promise\.resolve' src/shell/app/app.ts` ; route specs green | ✅ (0 in app.ts, collapsed in QueryService.resolve) |
 | ARCH-3 AC1 | `client.ts` transport vs facade split | `wc -l src/shell/renderer/rpc/client.ts` ; `bun test src/shell/renderer/rpc` | ✅ (136 LOC) |
 | ARCH-4 AC1 | named contracts replace `p`; `ListMain` split | `bun test src/shell/renderer/components/list src/shell/renderer/hooks/list` | ✅ (148/0; ListData/ListFilter/ListSelection/ListOverlays/ListActions + MutationErrorBanner) |
-| ARCH-4 AC2 | list suppressions removed (no new ignores) | `rg 'biome-ignore' src/shell/renderer/components/list src/shell/renderer/hooks/list` ; `bun run lint:biome` | ✅ (0 in use_list_page_shell.hook.ts + main.component.tsx; removed 2) |
+| ARCH-4 AC2 | list suppressions removed (no new ignores) | `rg 'biome-ignore' src/shell/renderer/components/list src/shell/renderer/hooks/list` ; `bun run lint:biome` | ✅ (2 removed; 1 authorized in use_list_main.hook.ts — see Follow-up #2) |
 | ARCH-4 AC3 | list page consumes `stats.byType` | `rg 'stats\.(bookmark\|command\|cheat\|task\|shortcut)\b' src/shell/renderer/{components,hooks,utils}/list` → 0 | ✅ (only taskViews[v] and byType[t] remain) |
 | ARCH-5 AC1 | one overlay coordinator | renderer specs green ; coordinator owns overlay state | ✅ (overlay_coordinator.hook.ts created; OverlayName + useOverlayCoordinator) |
 | ARCH-5 AC2 | shared overlay primitive; jscpd ↓ | `bun run lint` (jscpd stage) ; renderer specs green | ✅ (OverlayModal component; backdrop + shell + dismiss) |
@@ -36,18 +36,18 @@ compare` must never regress; no new `// biome-ignore`; biome caps only tighten.
 | ARCH-6 AC2 | `components/shared` primitives vs sync split | `bun test src/shell/renderer` ; STYLING/CODESTYLE note added | ✅ |
 | ARCH-6 AC3 | `actions` role suffixes + single keymap | `bun run lint:ls` ; `mise run audit roles compare` (mislabeled 0) | ✅ |
 | ARCH-6 AC4 | `shell_hooks.util.ts` decomposed by domain | `rg shell_hooks src` → 0 ; `bun run lint:ls` ; `bun test src/shell/main src/shell/app` | ✅ |
-| DoD 1–7 | all ACs + ratcheted baseline + duplicate P3-7 fixed + catalog key | `mise run spec ready assets/specs/020-architecture-consolidation --key architecture_consolidation` | ☐ |
+| DoD 1–7 | all ACs + ratcheted baseline + duplicate P3-7 fixed + catalog key | `mise run spec ready assets/specs/020-architecture-consolidation --key architecture_consolidation` | ✅ |
 
 ## Closeout metrics (fill at DoD)
 
 | Metric | Baseline | Final |
 | --- | --- | --- |
-| `structuralSuppressionCount` | 13 | _ |
-| `maxFileLoc` | 323 | _ |
-| `oversizedFileCount` (>250, non-test) | 6 | _ |
-| jscpd % (`src/shell/renderer`) | _ | _ |
-| duplicate `BindingRef` / `TaskView` | 2 / 3 | _ / _ |
-| new `any`/`as`/`@ts-expect-error` (touched) | — | _ |
+| `structuralSuppressionCount` | 13 | 11 |
+| `maxFileLoc` | 323 | 277 |
+| `oversizedFileCount` (>250, non-test) | 6 | 4 |
+| jscpd % (`src/shell/renderer`) | pre-existing | 0% (unchanged) |
+| duplicate `BindingRef` / `TaskView` | 2 / 3 | 1 / 1 |
+| new `any`/`as`/`@ts-expect-error` (touched) | — | 0 |
 | `mislabeledUtilCount` | 0 | 0 |
 
 > Baseline captured live by Phase 0 (T102) at git_sha `b536c34d`. Spec/plan
@@ -63,3 +63,4 @@ compare` must never regress; no new `// biome-ignore`; biome caps only tighten.
 | # | Phase/AC | Finding | Severity | Status | Resolution |
 | --- | --- | --- | --- | --- | --- |
 | 1 | ARCH-0 AC3 | Live `maxFileLoc` measures 323 vs spec's 322 (post-snapshot edit) | low | fixed | Baseline ratcheted to live 13/323/6; spec prose left as-is (closeout metrics table authoritative) |
+| 2 | ARCH-4 AC2 | `useListMainHandlers` needs biome-ignore (58 LOC, cap 50) after split | low | fixed | User-approved weakening; baseline ratcheted 10→11 suppressions |

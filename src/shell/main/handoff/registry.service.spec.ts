@@ -1,8 +1,9 @@
 // @entry_action_handoff
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'bun:test'
 import {
   installBunDollarMock,
   installBunSpawnSyncMock,
+  installElectrobunBunMock,
   resetBunDollarMock,
   setBunDollarThrow,
   setBunSpawnSyncResult,
@@ -16,22 +17,20 @@ let openPathResult: boolean | 'throw' = false
 let openExternalResult: boolean | 'throw' = false
 
 function installHandoffRegistrySpecMocks(): void {
-  mock.module('electrobun/bun', () => ({
-    Utils: {
-      openExternal: () => {
-        if (openExternalResult === 'throw') throw new Error('openExternal failed')
-        return openExternalResult
-      },
-      openPath: () => {
-        if (openPathResult === 'throw') throw new Error('openPath failed')
-        return openPathResult
-      },
-      clipboardReadText: () => clipboardContent,
-      clipboardWriteText: (text: string) => {
-        clipboardContent = text
-      }
+  installElectrobunBunMock({
+    openExternal: () => {
+      if (openExternalResult === 'throw') throw new Error('openExternal failed')
+      return openExternalResult
+    },
+    openPath: () => {
+      if (openPathResult === 'throw') throw new Error('openPath failed')
+      return openPathResult
+    },
+    clipboardReadText: () => clipboardContent,
+    clipboardWriteText: (text: string) => {
+      clipboardContent = text
     }
-  }))
+  })
 }
 
 beforeAll(() => installBunDollarMock())
@@ -49,7 +48,7 @@ afterEach(() => {
   uninstallBunSpawnSyncMock()
 })
 afterAll(() => {
-  mock.restore()
+  installElectrobunBunMock()
   uninstallBunDollarMock()
 })
 

@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { OverlayModal } from '../shared/overlay_modal.component'
 import type { CommandPaletteAction, CommandPaletteProps } from './command_palette.types'
 import { COMMAND_PALETTE_SECTION_LABEL } from './command_palette.types'
 
@@ -21,92 +22,80 @@ function PaletteContent({
   onClose: () => void
 }) {
   return (
-    <div
-      className="cmp-overlay-backdrop"
-      role="dialog"
-      aria-modal="true"
-      onClick={e => {
-        if (e.target === e.currentTarget) onClose()
-      }}
-      onKeyDown={e => {
-        if (e.key === 'Escape') onClose()
-      }}
-    >
-      <div className="cmp-overlay-shell cmp-command-palette">
-        <input
-          ref={inputRef}
-          className="cmp-command-palette-search"
-          type="text"
-          placeholder="Type an action..."
-          value={search}
-          onChange={e => onSearchChange(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Escape') {
-              e.stopPropagation()
+    <OverlayModal onClose={onClose} className="cmp-command-palette" centered={false}>
+      <input
+        ref={inputRef}
+        className="cmp-command-palette-search"
+        type="text"
+        placeholder="Type an action..."
+        value={search}
+        onChange={e => onSearchChange(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Escape') {
+            e.stopPropagation()
+            onClose()
+            return
+          }
+          if (e.key === 'ArrowDown') {
+            e.preventDefault()
+            onSelectedIndexChange(Math.min(selectedIndex + 1, filtered.length - 1))
+            return
+          }
+          if (e.key === 'ArrowUp') {
+            e.preventDefault()
+            onSelectedIndexChange(Math.max(selectedIndex - 1, 0))
+            return
+          }
+          if (e.key === 'Enter') {
+            e.preventDefault()
+            const action = filtered[selectedIndex]
+            if (action) {
+              action.handler()
               onClose()
-              return
             }
-            if (e.key === 'ArrowDown') {
-              e.preventDefault()
-              onSelectedIndexChange(Math.min(selectedIndex + 1, filtered.length - 1))
-              return
-            }
-            if (e.key === 'ArrowUp') {
-              e.preventDefault()
-              onSelectedIndexChange(Math.max(selectedIndex - 1, 0))
-              return
-            }
-            if (e.key === 'Enter') {
-              e.preventDefault()
-              const action = filtered[selectedIndex]
-              if (action) {
-                action.handler()
-                onClose()
-              }
-            }
-          }}
-        />
-        <div className="cmp-command-palette-list" role="listbox" aria-label="Command palette actions">
-          {filtered.length === 0 ? (
-            <div className="cmp-command-palette-empty">No matching actions</div>
-          ) : (
-            filtered.map((action, i) => {
-              const prev = i > 0 ? filtered[i - 1] : undefined
-              const showHeader = i === 0 || action.section !== prev?.section
-              return (
-                <Fragment key={action.id}>
-                  {showHeader ? (
-                    <div className="cmp-command-palette-section" role="presentation">
-                      {COMMAND_PALETTE_SECTION_LABEL[action.section]}
-                    </div>
-                  ) : null}
-                  <div
-                    role="option"
-                    aria-selected={i === selectedIndex}
-                    tabIndex={-1}
-                    className={`cmp-command-palette-action${i === selectedIndex ? ' cmp-command-palette-action--selected' : ''}`}
-                    onClick={() => {
+          }
+        }}
+      />
+      <div className="cmp-command-palette-list" role="listbox" aria-label="Command palette actions">
+        {filtered.length === 0 ? (
+          <div className="cmp-command-palette-empty">No matching actions</div>
+        ) : (
+          filtered.map((action, i) => {
+            const prev = i > 0 ? filtered[i - 1] : undefined
+            const showHeader = i === 0 || action.section !== prev?.section
+            return (
+              <Fragment key={action.id}>
+                {showHeader ? (
+                  <div className="cmp-command-palette-section" role="presentation">
+                    {COMMAND_PALETTE_SECTION_LABEL[action.section]}
+                  </div>
+                ) : null}
+                <div
+                  role="option"
+                  aria-selected={i === selectedIndex}
+                  tabIndex={-1}
+                  className={`cmp-command-palette-action${i === selectedIndex ? ' cmp-command-palette-action--selected' : ''}`}
+                  onClick={() => {
+                    action.handler()
+                    onClose()
+                  }}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
                       action.handler()
                       onClose()
-                    }}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        action.handler()
-                        onClose()
-                      }
-                    }}
-                  >
-                    <span>{action.label}</span>
-                    {action.shortcut ? <span className="cmp-command-palette-shortcut">{action.shortcut}</span> : null}
-                  </div>
-                </Fragment>
-              )
-            })
-          )}
-        </div>
+                    }
+                  }}
+                >
+                  <span>{action.label}</span>
+                  {action.shortcut ? <span className="cmp-command-palette-shortcut">{action.shortcut}</span> : null}
+                </div>
+              </Fragment>
+            )
+          })
+        )}
       </div>
-    </div>
+    </OverlayModal>
   )
 }
 
