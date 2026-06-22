@@ -1,6 +1,6 @@
-import type { TaskView } from '@shared/rpc'
 import type { Knowledge } from '../schemas/knowledge.schema'
 import { addDays, parseDue, startOfDay, type TaskKnowledge } from './task_date.util'
+import type { TaskView } from './task_view.types'
 
 /** Rolling window for `this_week` (calendar days from start of today). */
 const DAYS_SPAN_THIS_WEEK = 7

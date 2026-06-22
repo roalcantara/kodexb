@@ -125,7 +125,7 @@ function FilterDropdownPanel({ stats, types, tags, taskView, tagQ, setTagQ, onCh
             className={types.includes(t) ? 'cmp-filter-row cmp-filter-row--on' : 'cmp-filter-row'}
             onClick={() => pickType(t)}
           >
-            {TYPE_FILTER_LABEL[t]} ({stats[t]})
+            {TYPE_FILTER_LABEL[t]} ({stats.byType[t]})
           </button>
         ))}
       </section>

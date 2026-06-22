@@ -5,7 +5,7 @@ import { describe, expect, it, mock } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'
 import { act, renderHook } from '@testing-library/react'
-import type { EntryActionPanelDeps } from '../../actions/entry_action_panel_deps.util'
+import type { EntryActionPanelDeps } from '../../actions/panel/deps.service'
 import { useCommandPalette } from './use_command_palette.hook'
 
 const testEntryPanelDeps: EntryActionPanelDeps = {

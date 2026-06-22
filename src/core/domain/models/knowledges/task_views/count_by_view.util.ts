@@ -1,6 +1,6 @@
-import type { TaskView } from '@shared/rpc'
 import type { Knowledge } from '../schemas/knowledge.schema'
 import { taskMatchesView } from './filter_by_view.util'
+import type { TaskView } from './task_view.types'
 import { TASK_VIEW_ORDER } from './task_view_order.const'
 
 type TaskKnowledge = Extract<Knowledge, { type: 'task' }>

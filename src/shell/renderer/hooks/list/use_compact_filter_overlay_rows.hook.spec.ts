@@ -7,11 +7,6 @@ import { useCompactFilterOverlayRows } from './use_compact_filter_overlay_rows.h
 describe('useCompactFilterOverlayRows', () => {
   const stats: ListStats = {
     total: 2,
-    bookmark: 1,
-    command: 0,
-    cheat: 0,
-    task: 1,
-    shortcut: 0,
     taskViews: {
       actionable: 0,
       today: 0,
@@ -21,7 +16,7 @@ describe('useCompactFilterOverlayRows', () => {
       all_doing: 0
     },
     tags: { brew: 1 },
-    byType: { bookmark: 1, command: 0, cheat: 0, task: 1 }
+    byType: { bookmark: 1, command: 0, cheat: 0, task: 1, shortcut: 0 }
   }
 
   describe('with stats and unselected filters', () => {

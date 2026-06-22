@@ -1,11 +1,13 @@
 import type { Display } from 'electrobun/bun'
+import { appendLauncherProbe, isLauncherProbeEnabled } from './launcher_frame_probe.adapter'
 import {
   computeInitialFrameFromDisplay,
-  MAIN_WINDOW_DEFAULT_SIZE,
-  type MainWindowLike
-} from '../utils/shell_hooks.util'
-import { appendLauncherProbe, isLauncherProbeEnabled } from './launcher_frame_probe.adapter'
-import { ensureWindowFrame, resolveDisplayAtCursor, resolveDisplayForPlacement } from './placement.util'
+  ensureWindowFrame,
+  resolveDisplayAtCursor,
+  resolveDisplayForPlacement
+} from './placement.util'
+import { MAIN_WINDOW_DEFAULT_SIZE } from './window.const'
+import type { MainWindowLike } from './window.types'
 
 /** LogTape string + props logger (also satisfied by test mocks). */
 export type LauncherPresentLog = {

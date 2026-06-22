@@ -1,5 +1,5 @@
 import type { RpcKnowledge, TaskCreateInput, TaskMutationOutcome, TaskUpdateInput } from '@shared/rpc'
-import { call, rpc } from './client'
+import { call, rpc } from './transport'
 
 export function createTask(input: TaskCreateInput): Promise<TaskMutationOutcome<RpcKnowledge>> {
   return call<TaskMutationOutcome<RpcKnowledge>>(rpc.api.createTask.post(input))

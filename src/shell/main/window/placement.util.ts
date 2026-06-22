@@ -5,6 +5,7 @@
 /** biome-ignore-all lint/style/noMagicNumbers: magic numbers are allowed for window placement */
 import type { Display, Rectangle } from 'electrobun/bun'
 import { findDisplayAtPoint } from './display_at_cursor.util'
+import { MAIN_WINDOW_DEFAULT_SIZE } from './window.const'
 
 export type Size = { width: number; height: number }
 export type WindowFrame = Rectangle
@@ -229,4 +230,15 @@ export function resolveInitialFrame(display: Display | null, size: Size): Window
     width: Math.max(1, Math.floor(size.width)),
     height: Math.max(1, Math.floor(size.height))
   }
+}
+
+export function computeInitialFrameFromDisplay(
+  primary: Display | null | undefined,
+  log: { debug: (message: string, properties?: Record<string, unknown>) => void },
+  size: Size = MAIN_WINDOW_DEFAULT_SIZE
+): WindowFrame {
+  if (!isUsableWorkArea(primary?.workArea)) {
+    log.debug('window placement: primary display work area unavailable; using safe fallback (100,100)')
+  }
+  return resolveInitialFrame(primary ?? null, size)
 }

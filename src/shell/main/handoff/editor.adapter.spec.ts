@@ -1,16 +1,18 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test'
-import { installBunDollarMock, uninstallBunDollarMock } from '@testing'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'bun:test'
+import { installBunDollarMock, installElectrobunBunMock, uninstallBunDollarMock } from '@testing'
 
 let openPathResult: boolean | 'throw' = true
 
-mock.module('electrobun/bun', () => ({
-  Utils: {
+function installEditorAdapterElectrobunMock(): void {
+  installElectrobunBunMock({
     openPath: () => {
       if (openPathResult === 'throw') throw new Error('bridge error')
       return openPathResult
     }
-  }
-}))
+  })
+}
+
+installEditorAdapterElectrobunMock()
 
 beforeAll(() => installBunDollarMock())
 afterAll(() => uninstallBunDollarMock())

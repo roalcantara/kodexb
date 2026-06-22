@@ -1,3 +1,5 @@
+import { TASK_PRIORITY_VALUES } from '@core/domain/constants/entry.const'
+import { TASK_VIEW_ORDER } from '@core/domain/models/knowledges/task_views/task_view_order.const'
 import { ENTRY_TYPE_VALUES } from '@shared/constants/entry_type.const'
 import { literalUnion, strictObject } from '@shared/typebox'
 import { Type } from '@sinclair/typebox'
@@ -11,8 +13,7 @@ const pageSizePatchSchema = literalUnion([PAGE_SIZE_SMALL, PAGE_SIZE_MEDIUM, PAG
 /** Upper bound for `list` pagination (guards pathological RPC payloads). */
 export const RPC_LIST_LIMIT_MAX = 10_000
 
-const taskViewValues = ['actionable', 'today', 'overdue', 'this_week', 'all_pending', 'all_doing'] as const
-const taskViewSchema = literalUnion(taskViewValues)
+const taskViewSchema = literalUnion(TASK_VIEW_ORDER)
 const entryTypeSchema = literalUnion(ENTRY_TYPE_VALUES)
 
 const listFilterFields = {
@@ -31,6 +32,14 @@ export const listOptsSchema = strictObject({
 /** Body for `getListStats` when computing contextual facet counts (no pagination keys). */
 export const listStatsFilterSchema = strictObject(listFilterFields)
 
+/** ARCH-1 AC6/AC7 — canonical ListStats schema. */
+export const listStatsSchema = strictObject({
+  total: Type.Integer(),
+  taskViews: Type.Record(taskViewSchema, Type.Integer()),
+  tags: Type.Record(Type.String(), Type.Integer()),
+  byType: Type.Record(entryTypeSchema, Type.Integer())
+})
+
 export const getEntryParams = strictObject({ id: Type.Integer() })
 
 export const configPatchSchema = strictObject({
@@ -43,7 +52,7 @@ export const configPatchSchema = strictObject({
   advisories: Type.Optional(Type.Boolean())
 })
 
-const priorityUnionSchema = literalUnion(['low', 'mid', 'high', 'urgent'] as const)
+const priorityUnionSchema = literalUnion(TASK_PRIORITY_VALUES)
 const sourceVersionSchema = Type.Integer({ minimum: 0 })
 
 export const taskCreateSchema = strictObject({
@@ -97,4 +106,23 @@ export const showOpenDialogSchema = strictObject({
       properties: Type.Optional(Type.Array(literalUnion(['openFile', 'openDirectory'] as const)))
     })
   )
+})
+
+/**
+ * ARCH-1 AC2/AC6 — canonical binding-row schema. The RPC wire type, the core
+ * collision detector, and the shell repository mapper all derive their
+ * `BindingRef` from this single definition via `Static<typeof>`.
+ */
+const bindingPlatformSchema = literalUnion(['macos', 'linux', 'windows', 'any'] as const)
+const bindingScopeSchema = literalUnion(['global', 'local'] as const)
+
+export const bindingRefSchema = strictObject({
+  bindingId: Type.String(),
+  entryKey: Type.String(),
+  app: Type.String(),
+  platform: bindingPlatformSchema,
+  scope: bindingScopeSchema,
+  chordHash: Type.String(),
+  chordPrefix: Type.Union([Type.String(), Type.Null()]),
+  action: Type.String()
 })

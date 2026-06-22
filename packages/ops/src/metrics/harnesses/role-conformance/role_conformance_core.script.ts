@@ -6,6 +6,42 @@ export type RoleMetrics = {
   utilPurityRatio: number
   enforcedDirRatio: number
   suffixViolations: number
+  structuralSuppressionCount: number
+  maxFileLoc: number
+  oversizedFileCount: number
+}
+
+export type ArchMetrics = {
+  structuralSuppressionCount: number
+  maxFileLoc: number
+  oversizedFileCount: number
+}
+
+export const ZERO_ARCH: ArchMetrics = { structuralSuppressionCount: 0, maxFileLoc: 0, oversizedFileCount: 0 }
+
+/**
+ * ARCH-0 — counts the team's own admissions of structural debt:
+ * `biome-ignore lint/complexity/*` and `lint/style/noExcessiveLinesPerFile`.
+ * Other biome-ignore kinds (suspicious, correctness, style/…) are NOT structural.
+ */
+const STRUCTURAL_SUPPRESSION_RE = /biome-ignore\s+lint\/(?:complexity\/|style\/noExcessiveLinesPerFile)/g
+
+export function countStructuralSuppressions(source: string): number {
+  return (source.match(STRUCTURAL_SUPPRESSION_RE) ?? []).length
+}
+
+const OVERSIZED_LOC = 250
+
+export function computeArchMetrics(files: Array<{ path: string; loc: number; source: string }>): ArchMetrics {
+  let structuralSuppressionCount = 0
+  let maxFileLoc = 0
+  let oversizedFileCount = 0
+  for (const f of files) {
+    structuralSuppressionCount += countStructuralSuppressions(f.source)
+    if (f.loc > maxFileLoc) maxFileLoc = f.loc
+    if (f.loc > OVERSIZED_LOC) oversizedFileCount++
+  }
+  return { structuralSuppressionCount, maxFileLoc, oversizedFileCount }
 }
 
 /**
@@ -52,7 +88,11 @@ export function classifyUtil(path: string, source: string): UtilRow {
   return { path, importsIO: true, verdict: 'rename', suggestedSuffix: '.adapter' }
 }
 
-export function computeMetrics(rows: UtilRow[], enforced: { locked: number; roleDirs: number }): RoleMetrics {
+export function computeMetrics(
+  rows: UtilRow[],
+  enforced: { locked: number; roleDirs: number },
+  arch: ArchMetrics = ZERO_ARCH
+): RoleMetrics {
   const totalUtil = rows.length
   const mislabeledUtilCount = rows.filter(r => r.verdict !== 'keep-util').length
   const ratio = (n: number, d: number) => (d === 0 ? 1 : +(n / d).toFixed(3))
@@ -61,6 +101,7 @@ export function computeMetrics(rows: UtilRow[], enforced: { locked: number; role
     mislabeledUtilCount,
     utilPurityRatio: ratio(totalUtil - mislabeledUtilCount, totalUtil),
     enforcedDirRatio: ratio(enforced.locked, enforced.roleDirs),
-    suffixViolations: mislabeledUtilCount
+    suffixViolations: mislabeledUtilCount,
+    ...arch
   }
 }

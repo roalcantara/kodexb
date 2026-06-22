@@ -1,5 +1,9 @@
 import type { Database } from 'bun:sqlite'
+import type { BindingRef } from '@shared/rpc'
 import type { BindingRow } from './schema'
+
+// Re-export for backward compatibility (ARCH-1 AC2/AC6).
+export type { BindingRef }
 
 function toBindingRef(row: BindingRow): BindingRef {
   return {
@@ -87,15 +91,4 @@ export function listBindingsByChord(db: Database, hash: string): BindingRef[] {
 
 export function listBindingsForApp(db: Database, app: string, platform: string): BindingRef[] {
   return db.query<BindingRow, [string, string]>(SELECT_BY_APP).all(app, platform).map(toBindingRef)
-}
-
-export type BindingRef = {
-  bindingId: string
-  entryKey: string
-  app: string
-  platform: 'macos' | 'linux' | 'windows' | 'any'
-  scope: 'global' | 'local'
-  chordHash: string
-  chordPrefix: string | null
-  action: string
 }

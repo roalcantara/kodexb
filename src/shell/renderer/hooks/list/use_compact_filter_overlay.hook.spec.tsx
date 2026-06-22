@@ -8,11 +8,6 @@ import { type CompactFilterOverlayHookProps, useCompactFilterOverlay } from './u
 describe('useCompactFilterOverlay', () => {
   const stats: ListStats = {
     total: 1,
-    bookmark: 1,
-    command: 0,
-    cheat: 0,
-    task: 0,
-    shortcut: 0,
     taskViews: {
       actionable: 0,
       today: 0,
@@ -22,7 +17,7 @@ describe('useCompactFilterOverlay', () => {
       all_doing: 0
     },
     tags: {},
-    byType: { bookmark: 1, command: 0, cheat: 0, task: 0 }
+    byType: { bookmark: 1, command: 0, cheat: 0, task: 0, shortcut: 0 }
   }
 
   describe('when hook is rendered', () => {

@@ -1,6 +1,12 @@
-// @arch_role_taxonomy @role_suffix_migration
+// @arch_role_taxonomy @role_suffix_migration @architecture_consolidation
 import { describe, expect, it } from 'bun:test'
-import { classifyUtil, computeMetrics, isPureUtil } from './role_conformance_core.script'
+import {
+  classifyUtil,
+  computeArchMetrics,
+  computeMetrics,
+  countStructuralSuppressions,
+  isPureUtil
+} from './role_conformance_core.script'
 
 describe('role_conformance_core', () => {
   it('flags a util importing node: as not pure', () => {
@@ -21,13 +27,64 @@ describe('role_conformance_core', () => {
   })
   it('computeMetrics derives ratios', () => {
     const rows = [classifyUtil('a.util.ts', 'export const a=1'), classifyUtil('b.util.ts', "import 'node:os'")]
-    const m = computeMetrics(rows, { locked: 1, roleDirs: 4 })
+    const m = computeMetrics(
+      rows,
+      { locked: 1, roleDirs: 4 },
+      {
+        structuralSuppressionCount: 0,
+        maxFileLoc: 0,
+        oversizedFileCount: 0
+      }
+    )
     expect(m).toEqual({
       totalUtil: 2,
       mislabeledUtilCount: 1,
       utilPurityRatio: 0.5,
       enforcedDirRatio: 0.25,
-      suffixViolations: 1
+      suffixViolations: 1,
+      structuralSuppressionCount: 0,
+      maxFileLoc: 0,
+      oversizedFileCount: 0
+    })
+  })
+
+  // ── ARCH-0: architecture-health metrics ─────────────────────────────────
+  describe('arch metrics', () => {
+    it('counts complexity + file-size suppressions', () => {
+      const src = [
+        '// biome-ignore lint/complexity/noExcessiveLinesPerFunction: x',
+        '// biome-ignore lint/style/noExcessiveLinesPerFile: y',
+        'const a=1'
+      ].join('\n')
+      expect(countStructuralSuppressions(src)).toBe(2)
+    })
+    it('ignores non-structural suppressions', () => {
+      expect(countStructuralSuppressions('// biome-ignore lint/suspicious/noExplicitAny: x')).toBe(0)
+    })
+    it('computes maxFileLoc + oversizedFileCount over the 250 threshold', () => {
+      const files = [
+        { path: 'src/a.ts', loc: 300, source: '' },
+        { path: 'src/b.ts', loc: 100, source: '// biome-ignore lint/complexity/noExcessiveLinesPerFunction: x' }
+      ]
+      expect(computeArchMetrics(files)).toEqual({
+        structuralSuppressionCount: 1,
+        maxFileLoc: 300,
+        oversizedFileCount: 1
+      })
+    })
+    it('oversized threshold excludes files <= 250 LOC', () => {
+      const files = [
+        { path: 'src/a.ts', loc: 250, source: '' },
+        { path: 'src/b.ts', loc: 251, source: '' }
+      ]
+      expect(computeArchMetrics(files).oversizedFileCount).toBe(1)
+    })
+    it('returns zeros for an empty file set', () => {
+      expect(computeArchMetrics([])).toEqual({
+        structuralSuppressionCount: 0,
+        maxFileLoc: 0,
+        oversizedFileCount: 0
+      })
     })
   })
 

@@ -1,16 +1,20 @@
 import type { Knowledge } from '@core'
+import type { TaskKnowledge } from '@core/domain/models/knowledges/task_views/task_date.util'
+import {
+  taskIsBlocked as coreIsBlocked,
+  taskIsOverdue as coreIsOverdue
+} from '@core/domain/models/knowledges/task_views/task_state.predicates.util'
 
-export type TaskKnowledge = Extract<Knowledge, { type: 'task' }>
-
-export function isTaskKnowledge(k: Knowledge): k is TaskKnowledge {
-  return k.type === 'task'
-}
+export type { TaskKnowledge }
 
 export function taskIsOverdue(task: TaskKnowledge): boolean {
-  if (!task.dueDate) return false
-  return task.dueDate < Date.now()
+  return coreIsOverdue(task)
 }
 
 export function taskIsBlocked(task: TaskKnowledge): boolean {
-  return (task.dependsOn?.length ?? 0) > 0
+  return coreIsBlocked(task)
+}
+
+export function isTaskKnowledge(k: Knowledge): k is TaskKnowledge {
+  return k.type === 'task'
 }

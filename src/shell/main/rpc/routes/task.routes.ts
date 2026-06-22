@@ -3,8 +3,8 @@ import type { TaskMutationOperation, TaskMutationOutcome } from '@shared/rpc'
 import { Elysia } from 'elysia'
 
 import type { App } from '../../../app/app'
-import { isTaskConflictError, isTaskSourceWriteError } from '../../../app/lib/app_task_source.service'
-import { buildTaskMutationFailureMessage } from '../../../app/lib/task_mutation_failure_message.util'
+import { buildTaskMutationFailureMessage } from '../../../app/lib/task/mutation_failure_message.util'
+import { isTaskConflictError, isTaskSourceWriteError } from '../../../app/lib/task/source.service'
 import {
   e2eFaultModeSchema,
   idWithDirSchema,
@@ -133,7 +133,7 @@ async function conflictFailureOutcome(
 async function runTaskMutation<Titem>(
   app: App,
   operation: TaskMutationOperation,
-  run: (context: import('../../../app/lib/app_task_source.service').TaskMutationLogContext) => Promise<Titem>,
+  run: (context: import('../../../app/lib/task/source.service').TaskMutationLogContext) => Promise<Titem>,
   options: { taskId?: number; sourceVersion?: number }
 ): Promise<TaskMutationOutcome<Titem>> {
   const correlationId = globalThis.crypto.randomUUID()

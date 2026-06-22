@@ -173,3 +173,10 @@ role_suffix_migration:
   specs:
     - 019-role-suffix-migration
   superseded_by: null
+
+architecture_consolidation:
+  title: Architecture consolidation
+  status: shipped
+  specs:
+    - 020-architecture-consolidation
+  superseded_by: null

@@ -1,21 +1,24 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, mock } from 'bun:test'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'bun:test'
 import {
   installBunDollarMock,
   installBunSpawnSyncMock,
+  installElectrobunBunMock,
   uninstallBunDollarMock,
   uninstallBunSpawnSyncMock
 } from '@testing'
 
 let openExternalResult: boolean | 'throw' = true
 
-mock.module('electrobun/bun', () => ({
-  Utils: {
+function installBrowserAdapterElectrobunMock(): void {
+  installElectrobunBunMock({
     openExternal: () => {
       if (openExternalResult === 'throw') throw new Error('bridge error')
       return openExternalResult
     }
-  }
-}))
+  })
+}
+
+installBrowserAdapterElectrobunMock()
 
 beforeAll(() => installBunDollarMock())
 afterAll(() => uninstallBunDollarMock())

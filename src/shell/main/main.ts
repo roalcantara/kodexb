@@ -2,19 +2,13 @@ import { configureMainLogging, getLogger, parseLogVerbosity } from '@shared/logg
 import Electrobun, { BrowserWindow, GlobalShortcut, Screen, Utils } from 'electrobun/bun'
 import { App } from '../app/app'
 import { loadConfig } from '../app/config/config.loader'
+import { createDeferredSyncEmit } from '../app/lib/sync/deferred_emit.service'
 import type { HandoffServices } from './handoff/registry.service'
 import { runEntryHandoff } from './handoff/registry.service'
 import { reportConfigLoadErrorAndExit } from './helpers/error.helper'
 import { createSyncEmitter, createWebviewRpc } from './rpc/host'
 import { createRpcServer } from './rpc/server'
 import { registerBeforeQuitShortcutTeardown } from './utils/register_before_quit_shortcuts.util'
-import {
-  buildBrowserWindowCreateOptions,
-  computeInitialFrameFromDisplay,
-  createDeferredSyncEmit,
-  createShellHooks,
-  MAIN_WINDOW_DEFAULT_SIZE
-} from './utils/shell_hooks.util'
 import { createExternalFocusHandoff } from './window/external_focus_handoff.util'
 import {
   dismissLauncherWindow,
@@ -25,11 +19,14 @@ import {
   toggleLauncherWindow
 } from './window/launcher_window.util'
 import {
+  computeInitialFrameFromDisplay,
   ensureWindowFrame,
   normalizeDisplay,
   resolveDisplayAtCursor,
   resolveDisplayForPlacement
 } from './window/placement.util'
+import { createShellHooks } from './window/shell_hooks.service'
+import { buildBrowserWindowCreateOptions, MAIN_WINDOW_DEFAULT_SIZE } from './window/window.const'
 
 type WebviewRpc = ReturnType<typeof createWebviewRpc>
 

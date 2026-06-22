@@ -1,7 +1,7 @@
 import { Database } from 'bun:sqlite'
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import type { BindingRef } from '@shared/rpc'
 import {
-  type BindingRef,
   deleteBindings,
   listAllBindings,
   listBindingsByChord,

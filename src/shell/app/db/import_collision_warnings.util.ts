@@ -1,8 +1,5 @@
-import {
-  type BindingRef as CoreBindingRef,
-  classifyAll
-} from '../../../core/domain/models/entries/collisions/collision.detector'
-import type { BindingRef } from './binding.repository'
+import type { BindingRef } from '@shared/rpc'
+import { classifyAll } from '../../../core/domain/models/entries/collisions/collision.detector'
 
 export type HardCollisionWarning = {
   kind: 'hard'
@@ -11,23 +8,9 @@ export type HardCollisionWarning = {
   actions: [string, string]
 }
 
-function toCoreBindingRef(ref: BindingRef): CoreBindingRef {
-  return {
-    bindingId: ref.bindingId,
-    entryKey: ref.entryKey,
-    app: ref.app,
-    scope: ref.scope,
-    chordHash: ref.chordHash,
-    chordPrefix: ref.chordPrefix,
-    platform: ref.platform,
-    action: ref.action
-  }
-}
-
 export function collectHardCollisionWarnings(bindings: BindingRef[]): HardCollisionWarning[] {
-  const coreBindings = bindings.map(toCoreBindingRef)
-  const byId = new Map(coreBindings.map(binding => [binding.bindingId, binding]))
-  const collisionMap = classifyAll(coreBindings)
+  const byId = new Map(bindings.map(binding => [binding.bindingId, binding]))
+  const collisionMap = classifyAll(bindings)
   const seen = new Set<string>()
   const warnings: HardCollisionWarning[] = []
 

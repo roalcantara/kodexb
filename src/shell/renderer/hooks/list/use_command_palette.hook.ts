@@ -1,10 +1,10 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { buildEntryActionPanel } from '../../actions/build_entry_action_panel.util'
-import type { EntryActionContext } from '../../actions/entry_action_panel.types'
-import type { EntryActionPanelDeps } from '../../actions/entry_action_panel_deps.util'
-import { mapEntryActionsToPalette } from '../../actions/map_entry_actions_to_palette.util'
-import type { CommandPaletteAction } from '../../components/actions/command_palette.component'
+import { buildEntryActionPanel } from '../../actions/panel/action_builder.service'
+import type { EntryActionPanelDeps } from '../../actions/panel/deps.service'
+import type { EntryActionContext } from '../../actions/panel/panel.types'
+import { mapEntryActionsToPalette } from '../../actions/to_palette.util'
+import type { CommandPaletteAction } from '../../components/actions/command_palette.types'
 
 type CommandPaletteDeps = {
   selectedId: number | null

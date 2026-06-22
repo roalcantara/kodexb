@@ -2,12 +2,18 @@ import type { Static } from '@sinclair/typebox'
 import type { ElectrobunRPCSchema, RPCSchema } from 'electrobun/bun'
 import type { Knowledge } from '../../core'
 import type {
+  bindingRefSchema,
   configPatchSchema,
   listOptsSchema,
+  listStatsSchema,
   showOpenDialogSchema,
   taskCreateSchema,
   taskUpdateSchema
 } from './payload_schemas'
+
+// ARCH-1 AC1: `TaskView` is owned by core; re-exported here for backward
+// compatibility only. New consumers should import from `@core` directly.
+export type { TaskView } from '../../core/domain/models/knowledges/task_views/task_view.types'
 
 /** Stable id + source row shape returned from SQLite (discriminated `Knowledge`). */
 export type RpcKnowledge = Knowledge
@@ -80,22 +86,9 @@ export type RpcSyncProgressPayload = {
   recentFile?: RpcSyncFileResult
 }
 
-export type TaskView = ListOpts['taskView'] & string
-
 export type ListOpts = Static<typeof listOptsSchema>
 
-export type ListStats = {
-  total: number
-  bookmark: number
-  command: number
-  cheat: number
-  shortcut: number
-  task: number
-  taskViews: Record<TaskView, number>
-  /** Occurrence count per normalized tag (for filter dropdown). */
-  tags: Record<string, number>
-  byType: Record<string, number>
-}
+export type ListStats = Static<typeof listStatsSchema>
 
 export type ConfigPatch = Static<typeof configPatchSchema>
 
@@ -107,16 +100,7 @@ export type PreviewImageResult = {
 }
 
 /** A single flattened binding row returned by the RPC. */
-export type BindingRef = {
-  bindingId: string
-  entryKey: string
-  app: string
-  platform: 'macos' | 'linux' | 'windows' | 'any'
-  scope: 'global' | 'local'
-  chordHash: string
-  chordPrefix: string | null
-  action: string
-}
+export type BindingRef = Static<typeof bindingRefSchema>
 
 /** Task mutation payloads (full CRUD in App layer). */
 export type TaskCreateInput = Static<typeof taskCreateSchema>

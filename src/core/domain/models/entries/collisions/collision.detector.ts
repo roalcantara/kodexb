@@ -1,15 +1,8 @@
 // pattern: Functional Core
 
-export type BindingRef = {
-  bindingId: string
-  entryKey: string
-  app: string
-  scope: 'global' | 'local'
-  chordHash: string
-  chordPrefix: string | null
-  platform: 'macos' | 'linux' | 'windows' | 'any'
-  action: string
-}
+import type { BindingRef } from '@shared/rpc'
+
+export type { BindingRef }
 
 export type CollisionKind = 'hard' | 'soft'
 

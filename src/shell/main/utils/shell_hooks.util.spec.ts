@@ -1,15 +1,14 @@
 import { afterEach, beforeAll, describe, expect, it, mock } from 'bun:test'
 
 import { factoryFor } from '@testing'
-import { SAFE_FALLBACK_X, SAFE_FALLBACK_Y } from '../window/placement.util'
+import { createDeferredSyncEmit } from '../../../shell/app/lib/sync/deferred_emit.service'
+import { computeInitialFrameFromDisplay, SAFE_FALLBACK_X, SAFE_FALLBACK_Y } from '../window/placement.util'
 import {
   buildBrowserWindowCreateOptions,
-  computeInitialFrameFromDisplay,
-  createDeferredSyncEmit,
   MAIN_WINDOW_DEFAULT_SIZE,
-  MAIN_WINDOW_RENDERER_URL,
-  type RunEntryHandoff
-} from './shell_hooks.util'
+  MAIN_WINDOW_RENDERER_URL
+} from '../window/window.const'
+import type { RunEntryHandoff } from '../window/window.types'
 
 const mockRunEntryHandoffCalls: unknown[][] = []
 
@@ -99,10 +98,10 @@ describe('createDeferredSyncEmit', () => {
 })
 
 describe('createShellHooks', () => {
-  let createShellHooks: typeof import('./shell_hooks.util').createShellHooks
+  let createShellHooksFn: typeof import('../window/shell_hooks.service').createShellHooks
 
   beforeAll(async () => {
-    ;({ createShellHooks } = await import('./shell_hooks.util'))
+    ;({ createShellHooks: createShellHooksFn } = await import('../window/shell_hooks.service'))
   })
 
   function makeWin(position = { x: 0, y: 0 }) {
@@ -140,7 +139,7 @@ describe('createShellHooks', () => {
   describe('when window is present', () => {
     it('resizes and minimizes the window', () => {
       const win = makeWin()
-      const hooks = createShellHooks(() => win, makeUtils())
+      const hooks = createShellHooksFn(() => win, makeUtils())
       hooks.resizeWindow?.(800, 600)
       hooks.hideWindow?.()
       expect(win.setSize).toHaveBeenCalledWith(800, 600)
@@ -152,14 +151,14 @@ describe('createShellHooks', () => {
     describe('when the window is present', () => {
       it('reads the native window position', () => {
         const win = makeWin({ x: 120, y: 240 })
-        const hooks = createShellHooks(() => win, makeUtils())
+        const hooks = createShellHooksFn(() => win, makeUtils())
         expect(hooks.getWindowPosition?.()).toEqual({ x: 120, y: 240 })
         expect(win.getPosition).toHaveBeenCalledTimes(1)
       })
 
       it('forwards setWindowPosition to the native window', () => {
         const win = makeWin()
-        const hooks = createShellHooks(() => win, makeUtils())
+        const hooks = createShellHooksFn(() => win, makeUtils())
         hooks.setWindowPosition?.(300, 450)
         expect(win.setPosition).toHaveBeenCalledWith(300, 450)
       })
@@ -167,14 +166,14 @@ describe('createShellHooks', () => {
 
     describe('when no native window is available', () => {
       it('returns null', () => {
-        const hooks = createShellHooks(() => null, makeUtils())
+        const hooks = createShellHooksFn(() => null, makeUtils())
         expect(hooks.getWindowPosition?.()).toBeNull()
       })
     })
 
     describe('when the window is gone', () => {
       it('silently no-ops setWindowPosition', () => {
-        const hooks = createShellHooks(() => null, makeUtils())
+        const hooks = createShellHooksFn(() => null, makeUtils())
         expect(() => hooks.setWindowPosition?.(10, 20)).not.toThrow()
       })
     })
@@ -182,7 +181,7 @@ describe('createShellHooks', () => {
 
   it('maps showOpenDialog to Utils.openFileDialog shape', async () => {
     const openFileDialog = mock(async () => ['/picked/file.md'])
-    const hooks = createShellHooks(() => null, { ...makeUtils(), openFileDialog })
+    const hooks = createShellHooksFn(() => null, { ...makeUtils(), openFileDialog })
     const path = await hooks.showOpenDialog?.({
       defaultPath: '/tmp',
       properties: ['openFile']
@@ -198,14 +197,14 @@ describe('createShellHooks', () => {
 
   it('opens absolute file paths via openPath', () => {
     const utils = makeUtils()
-    const hooks = createShellHooks(() => null, utils)
+    const hooks = createShellHooksFn(() => null, utils)
     hooks.openInEditor?.('/tmp/note.md')
     expect(utils.openPath).toHaveBeenCalledWith('/tmp/note.md')
   })
 
   describe('handoff failure propagation', () => {
     function makeHandoffHooks() {
-      return createShellHooks(() => null, makeUtils(), makeHandoffServices())
+      return createShellHooksFn(() => null, makeUtils(), makeHandoffServices())
     }
 
     it('throws when openExternal receives an empty URL', () => {
@@ -218,33 +217,33 @@ describe('createShellHooks', () => {
 
     it('falls back to openExternal when handoffServices is not provided', () => {
       const utils = makeUtils()
-      const hooks = createShellHooks(() => null, utils)
+      const hooks = createShellHooksFn(() => null, utils)
       hooks.openExternal?.('https://example.com')
       expect(utils.openExternal).toHaveBeenCalledWith('https://example.com')
     })
 
     it('falls back to openExternal for pasteInTerminal when handoffServices is not provided', () => {
       const utils = makeUtils()
-      const hooks = createShellHooks(() => null, utils)
+      const hooks = createShellHooksFn(() => null, utils)
       hooks.pasteInTerminal?.('echo hi', 'Terminal')
       expect(utils.openExternal).toHaveBeenCalledWith('Terminal')
     })
 
     it('falls back to openExternal for runInTerminal when handoffServices is not provided', () => {
       const utils = makeUtils()
-      const hooks = createShellHooks(() => null, utils)
+      const hooks = createShellHooksFn(() => null, utils)
       hooks.runInTerminal?.('ls -la', 'iTerm2')
       expect(utils.openExternal).toHaveBeenCalledWith('iTerm2')
     })
 
     it('silently no-ops pasteDoc when handoffServices is not provided', () => {
-      const hooks = createShellHooks(() => null, makeUtils())
+      const hooks = createShellHooksFn(() => null, makeUtils())
       expect(() => hooks.pasteDoc?.('docs-content')).not.toThrow()
     })
 
     it('no-ops pasteInTerminal without terminalApp when handoffServices is not provided', () => {
       const utils = makeUtils()
-      const hooks = createShellHooks(() => null, utils)
+      const hooks = createShellHooksFn(() => null, utils)
       expect(() => hooks.pasteInTerminal?.('echo hi')).not.toThrow()
       expect(utils.openExternal).not.toHaveBeenCalled()
     })
@@ -260,29 +259,29 @@ describe('createShellHooks', () => {
     }
 
     it('throws when openExternal fallback returns false', () => {
-      const hooks = createShellHooks(() => null, makeFailingUtils())
+      const hooks = createShellHooksFn(() => null, makeFailingUtils())
       expect(() => hooks.openExternal?.('https://example.com')).toThrow('openExternal failed for URL')
     })
 
     it('throws when openInEditor fallback returns false', () => {
-      const hooks = createShellHooks(() => null, makeFailingUtils())
+      const hooks = createShellHooksFn(() => null, makeFailingUtils())
       expect(() => hooks.openInEditor?.('/tmp/note.md')).toThrow('openInEditor failed for path')
     })
 
     it('throws when editorApp provided without handoffServices', () => {
-      const hooks = createShellHooks(() => null, makeUtils())
+      const hooks = createShellHooksFn(() => null, makeUtils())
       expect(() => hooks.openInEditor?.('/tmp/note.md', 'Code')).toThrow('editorApp provided without handoffServices')
     })
 
     it('throws when pasteInTerminal fallback returns false', () => {
-      const hooks = createShellHooks(() => null, makeFailingUtils())
+      const hooks = createShellHooksFn(() => null, makeFailingUtils())
       expect(() => hooks.pasteInTerminal?.('echo hi', 'Terminal')).toThrow('terminal-paste failed for terminal')
     })
   })
 
   describe('runInTerminal and pasteDoc delegation', () => {
     it('runInTerminal delegates to runEntryHandoff with terminal-run kind', () => {
-      const hooks = createShellHooks(() => null, makeUtils(), makeHandoffServices(), makeStubRunHandoff())
+      const hooks = createShellHooksFn(() => null, makeUtils(), makeHandoffServices(), makeStubRunHandoff())
       hooks.runInTerminal?.('npm test', 'Terminal')
 
       const call = mockRunEntryHandoffCalls.find(c => c[0] === 'terminal-run')
@@ -291,7 +290,7 @@ describe('createShellHooks', () => {
     })
 
     it('pasteDoc delegates to runEntryHandoff with paste-frontmost kind', () => {
-      const hooks = createShellHooks(() => null, makeUtils(), makeHandoffServices(), makeStubRunHandoff())
+      const hooks = createShellHooksFn(() => null, makeUtils(), makeHandoffServices(), makeStubRunHandoff())
       hooks.pasteDoc?.('docs-content')
 
       const call = mockRunEntryHandoffCalls.find(c => c[0] === 'paste-frontmost')

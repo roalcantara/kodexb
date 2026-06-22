@@ -411,8 +411,15 @@ applied to all renderer concerns — not just views.
 pages/list/        components/list/        hooks/list/        utils/list/
 pages/detail/      components/detail/      hooks/detail/      utils/detail/
 pages/settings/    components/settings/    hooks/settings/    utils/shared/
-                   components/shared/      hooks/shared/
+                    components/shared/      hooks/shared/
 ```
+
+Within `components/shared/`, the code is split into two subdirectories:
+- **`primitives/`** — Generic UI building blocks (badges, icons, markdown, overlays,
+  toasts) with no feature-specific logic.
+- **`sync/`** — Sync-feature components and hooks (`sync_modal*`, `sync_progress`,
+  `sync_toast`). These live in `components/` because they are renderer-only; their
+  state is managed by hooks in `hooks/list/`.
 
 A file belongs to the feature sub-folder of the page that owns it. If it is used by
 two or more pages, it moves to `shared/`. New pages always get a new sub-folder — never
