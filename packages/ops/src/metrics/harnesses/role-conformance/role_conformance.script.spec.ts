@@ -39,7 +39,11 @@ describe('role_conformance runner', () => {
 
   // ── ARCH-0 AC2: regressions in arch metrics are flagged ─────────────────
   const sampleArchFiles = () => [{ path: 'src/a.util.ts', source: 'export const a=1' }]
-  const cleanBaseline = (arch: { structuralSuppressionCount: number; maxFileLoc: number; oversizedFileCount: number }) => ({
+  const cleanBaseline = (arch: {
+    structuralSuppressionCount: number
+    maxFileLoc: number
+    oversizedFileCount: number
+  }) => ({
     totalUtil: 1,
     mislabeledUtilCount: 0,
     utilPurityRatio: 1,

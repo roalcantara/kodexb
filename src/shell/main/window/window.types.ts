@@ -1,8 +1,8 @@
 import type { Display } from 'electrobun/bun'
-import {
+import type {
   runEntryHandoff as defaultRunEntryHandoff,
-  type HandoffResult,
-  type HandoffServices
+  HandoffResult,
+  HandoffServices
 } from '../handoff/registry.service'
 
 export type RunEntryHandoff = (

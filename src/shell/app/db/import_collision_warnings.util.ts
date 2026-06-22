@@ -1,5 +1,5 @@
-import { classifyAll } from '../../../core/domain/models/entries/collisions/collision.detector'
 import type { BindingRef } from '@shared/rpc'
+import { classifyAll } from '../../../core/domain/models/entries/collisions/collision.detector'
 
 export type HardCollisionWarning = {
   kind: 'hard'

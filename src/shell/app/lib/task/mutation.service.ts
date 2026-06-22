@@ -1,11 +1,19 @@
 import type { Entry, Knowledge, TaskEntry } from '@core'
 import { toKnowledge } from '@core'
-import type { TaskCreateInput, TaskUpdateInput } from '@shared/rpc'
 import { resolveCreateTaskTags } from '@core/domain/models/entries/parsers/tags.parser'
+import type { TaskCreateInput, TaskUpdateInput } from '@shared/rpc'
 import type { LoadedConfig } from '../../config/config.loader'
 import { deleteById, findById, upsert } from '../../db/entry.repository'
 import { maxTaskOrder, updateTaskOrder } from '../../db/task.repository'
-import { isTaskSourceWriteError, readSourceDoc, removeTaskFromSource, type TaskMutationLogContext, writeSourceDoc, writeTasksToSource, writeTaskToSource } from './source.service'
+import {
+  isTaskSourceWriteError,
+  readSourceDoc,
+  removeTaskFromSource,
+  type TaskMutationLogContext,
+  writeSourceDoc,
+  writeTasksToSource,
+  writeTaskToSource
+} from './source.service'
 
 type AppLike = {
   getLog: () => ReturnType<typeof import('../../../../shared/logging').getLogger>

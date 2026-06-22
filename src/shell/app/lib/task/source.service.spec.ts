@@ -4,12 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { factoryFor } from '@testing'
 import type { Knowledge } from '../../../../core'
-import {
-  isTaskSourceWriteError,
-  removeTaskFromSource,
-  taskToSourceRecord,
-  writeTaskToSource
-} from './source.service'
+import { isTaskSourceWriteError, removeTaskFromSource, taskToSourceRecord, writeTaskToSource } from './source.service'
 
 let tmpDir = ''
 let sourcePath = ''

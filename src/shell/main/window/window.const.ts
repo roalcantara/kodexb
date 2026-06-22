@@ -1,4 +1,4 @@
-import { type Size, type WindowFrame } from './placement.util'
+import type { Size, WindowFrame } from './placement.util'
 
 export const MAIN_WINDOW_DEFAULT_SIZE = { width: 748, height: 600 } as const satisfies Size
 export const MAIN_WINDOW_RENDERER_URL = 'views://shell/index.html' as const

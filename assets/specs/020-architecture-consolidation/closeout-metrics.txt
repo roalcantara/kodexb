@@ -1,0 +1,19 @@
+# Architecture consolidation — Closeout metrics
+
+| Metric | Baseline | Final |
+|--------|--------:|-----:|
+| structuralSuppressionCount | 13 | 11 |
+| maxFileLoc | 323 | 277 |
+| oversizedFileCount (>250, non-test) | 6 | 4 |
+| duplicate BindingRef / TaskView | 2 / 3 | 1 / 1 |
+| new any/as/@ts-expect-error (touched) | — | 0 |
+| mislabeledUtilCount | 0 | 0 |
+
+## Notes
+
+- structuralSuppressionCount 13→11: 2 complexity suppressions removed from
+  list shell; 1 authorized ignore added in use_list_main.hook.ts (Follow-up #2).
+- maxFileLoc 323→277: app.ts and list decomposition reduced largest file LOC.
+- oversizedFileCount 6→4: app.ts, list_main gone below 250; entry.repository.ts
+  (260), task.routes.ts (256), main.component.tsx (343),
+  use_view_navigation.hook.ts (276) remain as follow-up targets.

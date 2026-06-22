@@ -1,6 +1,6 @@
 import type { Database } from 'bun:sqlite'
-import { repositoryStmts } from '@shared/logging'
 import { wouldCreateCycle as wouldCreateCycleCore } from '@core/domain/models/knowledges/task_views/task_cycle_policy.util'
+import { repositoryStmts } from '@shared/logging'
 import type { Knowledge } from '../../../core'
 import { rowToKnowledge } from './entry.repository'
 import type { KnowledgeRow } from './schema'

@@ -3,8 +3,8 @@ import { describe, expect, it, mock } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'
 import { buildEntryActionPanel } from './action_builder.service'
-import type { EntryAction, EntryActionContext } from './panel.types'
 import type { EntryActionPanelDeps } from './deps.service'
+import type { EntryAction, EntryActionContext } from './panel.types'
 import { actionById, primaryAction, secondaryAction } from './resolve.resolver'
 
 const noopDeps: EntryActionPanelDeps = {

@@ -1,8 +1,5 @@
 import type { AppShellHooks } from '../../app/lib/shell/shell_hooks.types'
-import {
-  runEntryHandoff as defaultRunEntryHandoff,
-  type HandoffServices
-} from '../handoff/registry.service'
+import { runEntryHandoff as defaultRunEntryHandoff, type HandoffServices } from '../handoff/registry.service'
 import { adaptPositionForNativeWindow, adaptPositionFromNativeWindow } from './darwin_window_frame.util'
 import type { MainWindowLike, RunEntryHandoff, ShellHooksUtils, WindowPositionAdapter } from './window.types'
 

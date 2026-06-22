@@ -1,6 +1,12 @@
 import { treaty } from '@elysiajs/eden'
 import { getLogger, RPC_LOG_PREVIEW_MAX_LEN } from '@shared/logging'
-import type { DesktopRpcSchema, RpcCallParams, RpcCallResponse, RpcImportResult, RpcSyncProgressPayload } from '@shared/rpc'
+import type {
+  DesktopRpcSchema,
+  RpcCallParams,
+  RpcCallResponse,
+  RpcImportResult,
+  RpcSyncProgressPayload
+} from '@shared/rpc'
 import { Electroview } from 'electrobun/view'
 import { notifyAfterSyncComplete, onAfterSyncComplete } from './client_sync_complete.util'
 import type { RpcApp } from './rpc_app.types'

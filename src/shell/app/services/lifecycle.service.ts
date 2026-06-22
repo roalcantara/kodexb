@@ -2,7 +2,7 @@ import type { Database } from 'bun:sqlite'
 import { getLogger } from '@shared/logging'
 import type { RpcImportResult, RpcListEntry, RpcSyncProgressPayload } from '@shared/rpc'
 import type { LoadedConfig } from '../config/config.loader'
-import { openDatabase, type DbHandle } from '../db/client'
+import { type DbHandle, openDatabase } from '../db/client'
 import { SyncDatabaseBusyError } from '../lib/sync/database_busy.error'
 
 export type SyncEmitter = {

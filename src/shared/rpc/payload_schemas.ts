@@ -1,7 +1,7 @@
-import { ENTRY_TYPE_VALUES } from '@shared/constants/entry_type.const'
-import { literalUnion, strictObject } from '@shared/typebox'
 import { TASK_PRIORITY_VALUES } from '@core/domain/constants/entry.const'
 import { TASK_VIEW_ORDER } from '@core/domain/models/knowledges/task_views/task_view_order.const'
+import { ENTRY_TYPE_VALUES } from '@shared/constants/entry_type.const'
+import { literalUnion, strictObject } from '@shared/typebox'
 import { Type } from '@sinclair/typebox'
 
 const PAGE_SIZE_SMALL = 25

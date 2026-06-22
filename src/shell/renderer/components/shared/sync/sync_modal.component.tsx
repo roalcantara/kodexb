@@ -1,9 +1,9 @@
 import type { RpcImportResult, RpcSyncFileResult } from '@shared/rpc'
 import type { CSSProperties, RefObject } from 'react'
 import { OVERLAY_SHELL_WIDTH_PX } from '../primitives/overlay_shell_layout.const'
+import type { SyncModalModel, SyncModalProps } from './sync_modal.types'
 import { buildFileLogViews, type FileLogRowView } from './sync_modal_errors.util'
 import { useSyncModalExpansion } from './use_sync_modal_expansion.hook'
-import type { SyncModalModel, SyncModalProps } from './sync_modal.types'
 
 function fileSummary(f: RpcSyncFileResult): string {
   if (!f.ok) return 'Failed'
@@ -171,7 +171,7 @@ function SyncModalDialogBody({
       {showFileLog ? (
         <SyncModalFileLog
           fileLog={model.fileLog}
-          summaryErrors={model.summary?.errors ?? []}
+          summaryErrors={model.summary ? model.summary.errors : []}
           expandedPath={expandedPath}
           setExpandedPath={setExpandedPath}
           logEndRef={logEndRef}

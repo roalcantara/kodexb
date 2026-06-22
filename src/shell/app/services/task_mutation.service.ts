@@ -1,6 +1,6 @@
 import type { Knowledge } from '@core'
 import type { TaskCreateInput, TaskUpdateInput } from '@shared/rpc'
-import type { LifecycleService } from './lifecycle.service'
+import type { LoadedConfig } from '../config/config.loader'
 import {
   createTask as createTaskMutation,
   cyclePriority as cyclePriorityMutation,
@@ -10,8 +10,8 @@ import {
   updateTask as updateTaskMutation
 } from '../lib/task/mutation.service'
 import type { TaskMutationLogContext } from '../lib/task/source.service'
+import type { LifecycleService } from './lifecycle.service'
 import type { QueryService } from './query.service'
-import type { LoadedConfig } from '../config/config.loader'
 
 export class TaskMutationService {
   constructor(
