@@ -1,7 +1,7 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import type { RefObject } from 'react'
 import { type KeyboardEvent as ReactKeyboardEvent, useState } from 'react'
-import type { EntryActionContext } from '../../actions/panel.types'
+import type { EntryActionContext } from '../../actions/panel/panel.types'
 import { useViewNavigation } from './use_view_navigation.hook'
 
 const REPEAT_MOVE_STEP = 5

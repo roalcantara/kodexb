@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'bun:test'
 import { render } from '@testing-library/react'
 
-import { defaultEntryActionPanelDeps } from '../../actions/panel_deps.util'
+import { defaultEntryActionPanelDeps } from '../../actions/panel/deps.service'
 import { EMPTY_TAG_COUNTS, ListMain } from './main.component'
 
 const shellStub = {

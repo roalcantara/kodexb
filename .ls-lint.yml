@@ -158,7 +158,10 @@ ls:
     .ts: regex:([a-z][a-z0-9_]*\.const|index)
 
   src/shell/renderer/actions:
-    .ts: regex:([a-z][a-z0-9_]*\.(util|types)(\.spec)?|index)
+    .ts: regex:([a-z][a-z0-9_]*\.(util|executor|service)(\.spec)?|index)
+
+  src/shell/renderer/actions/panel:
+    .ts: regex:([a-z][a-z0-9_]+\.(service|resolver|types)(\.spec)?)
 
   src/shell/renderer/components/list:
     .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?

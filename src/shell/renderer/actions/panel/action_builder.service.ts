@@ -2,8 +2,8 @@ import { copyTextForEntry } from '@core'
 import type { EntryActionId } from '@core/helpers/entry_action/entry_action_ids.const'
 import type { RpcKnowledge } from '@shared/rpc'
 import type { EntryAction, EntryActionContext } from './panel.types'
-import type { EntryActionPanelDeps } from './panel_deps.util'
-import { actionRankForEntry } from './panel_resolve.util'
+import type { EntryActionPanelDeps } from './deps.service'
+import { actionRankForEntry } from './resolve.resolver'
 
 function action(
   entry: RpcKnowledge,

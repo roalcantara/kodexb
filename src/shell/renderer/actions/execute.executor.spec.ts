@@ -22,7 +22,7 @@ let recordEntryVisitFireAndForget: ReturnType<typeof installRecordEntryVisitMock
 describe('executeEntryAction()', () => {
   beforeAll(async () => {
     recordEntryVisitFireAndForget = installRecordEntryVisitMock()
-    const mod = await import('./execute_entry_action.util')
+    const mod = await import('./execute.executor')
     executeEntryAction = mod.executeEntryAction
   })
 

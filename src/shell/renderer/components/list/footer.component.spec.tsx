@@ -3,7 +3,7 @@ import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'
 import { render, screen } from '@testing-library/react'
 
-import { defaultEntryActionPanelDeps } from '../../actions/panel_deps.util'
+import { defaultEntryActionPanelDeps } from '../../actions/panel/deps.service'
 import { ListFooter } from './footer.component'
 
 const commandEntry = factoryFor('command', {

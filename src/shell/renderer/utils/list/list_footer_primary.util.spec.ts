@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'
 
-import { defaultEntryActionPanelDeps } from '../../actions/panel_deps.util'
+import { defaultEntryActionPanelDeps } from '../../actions/panel/deps.service'
 import { resolveListFooterPrimary } from './list_footer_primary.util'
 
 describe('list_footer_primary.util', () => {

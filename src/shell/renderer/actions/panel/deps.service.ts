@@ -7,7 +7,7 @@ import {
   pasteInTerminal,
   quitApp,
   runInTerminal
-} from '../rpc/client'
+} from '../../rpc/client'
 
 export type EntryActionPanelDeps = {
   openExternal: (url: string) => Promise<unknown>

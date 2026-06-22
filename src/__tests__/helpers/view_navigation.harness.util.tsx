@@ -2,7 +2,7 @@ import type { Knowledge } from '@core'
 import { render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { useCallback, useRef, useState } from 'react'
-import type { EntryActionContext } from '../../shell/renderer/actions/panel.types'
+import type { EntryActionContext } from '../../shell/renderer/actions/panel/panel.types'
 import { useRecordDetailVisit } from '../../shell/renderer/hooks/list/use_record_detail_visit.hook'
 import {
   useViewNavigation,

@@ -1,5 +1,5 @@
 import { mock } from 'bun:test'
-import type { EntryActionPanelDeps } from '../../shell/renderer/actions/panel_deps.util'
+import type { EntryActionPanelDeps } from '../../shell/renderer/actions/panel/deps.service'
 
 /** Avoid importing `rpc/client` before `client.spec.tsx` initializes Electrobun. */
 export function installEntryActionPanelDepsMock(): EntryActionPanelDeps {
@@ -14,7 +14,7 @@ export function installEntryActionPanelDepsMock(): EntryActionPanelDeps {
     pasteDoc: noop,
     quitApp: noop
   }
-  mock.module('../../shell/renderer/actions/panel_deps.util', () => ({
+  mock.module('../../shell/renderer/actions/panel/deps.service', () => ({
     defaultEntryActionPanelDeps: () => deps
   }))
   return deps

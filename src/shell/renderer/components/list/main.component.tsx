@@ -2,7 +2,7 @@ import { resolveCurrentEntry } from '@core/helpers/entry_action/resolve_current_
 import { fireAndForget } from '@shared/utils'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
-import { executeEntryAction } from '../../actions/execute_entry_action.util'
+import { executeEntryAction } from '../../actions/execute.executor'
 import { useFilterDropdownStats } from '../../hooks/list/use_filter_dropdown_stats.hook'
 import { useListMainEntryKeys } from '../../hooks/list/use_list_main_entry_keys.hook'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
