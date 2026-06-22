@@ -65,7 +65,11 @@ local hygieneSteps = new Mapping<String, Step> {
     }
     ["check_merge_conflict"] = Builtins.check_merge_conflict
     ["detect_private_key"] = Builtins.detect_private_key
-    ["gitleaks"] = Builtins.gitleaks
+    // Builtins.gitleaks runs `gitleaks dir {{ files }}`; with 2+ paths gitleaks 8.30.x
+    // scans the whole checkout (~1.28 GB). protect --staged scans only the index diff.
+    ["gitleaks"] {
+        check = "gitleaks protect --staged --redact --verbose --no-banner"
+    }
     ["check_case_conflict"] = Builtins.check_case_conflict
     ["check_added_large_files"] = largeFilesCheck
 }
@@ -303,14 +307,6 @@ local preCommitSteps = (hygieneSteps) {
         glob = List("assets/docs/archive/**")
         check = "mise run spec library-manifest --verify"
     }
-    ["code-review-graph-risk-summary"] {
-        check = """
-          if command -v code-review-graph >/dev/null 2>&1; then
-            code-review-graph update --skip-flows || true
-            code-review-graph detect-changes --brief || true
-          fi
-          """
-    }
 }
 
 local checkSteps = (hygieneSteps) {
@@ -335,9 +331,17 @@ local prePushSteps = new Mapping<String, Step> {
     }
 }
 
+local postCommitSteps = new Mapping<String, Step> {
+    // Dev-only background CRG refresh (non-blocking; skipped in CI).
+    ["schedule-crg-risk-summary"] {
+        check = "bun packages/ops/src/governance/policies/hooks/schedule_crg_refresh.script.ts"
+    }
+}
+
 hooks {
     ["pre-commit"] { fix = true; stash = "git"; steps = preCommitSteps }
     ["commit-msg"] { steps = commitMsgSteps }
+    ["post-commit"] { steps = postCommitSteps }
     ["pre-push"] { steps = prePushSteps }
     ["check"] { steps = checkSteps }
 }

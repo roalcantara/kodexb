@@ -13,7 +13,8 @@ Use the local code-review-graph (CRG) MCP tools before broad codebase scans:
 4. Fall back to `rg` and direct file reads when graph coverage is insufficient.
 5. Run `code-review-graph update --skip-flows` if the graph appears stale.
 
-The CRG daemon is the shared freshness owner. HK runs an additional
-non-blocking update and risk summary before commits. Do not install redundant
+The CRG daemon is the shared freshness owner. Local dev `post-commit` schedules a
+background refresh (`schedule_crg_refresh.script.ts`; skipped in CI). Prefer
+`mise run graph watch` or the CRG daemon. Do not install redundant
 per-agent edit hooks. Preserve `.cursor/hooks.json`; its Electrobun
 `sessionStart` hook remains active.

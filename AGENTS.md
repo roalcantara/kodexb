@@ -178,7 +178,9 @@ Use the local code-review-graph (CRG) MCP tools before broad codebase scans:
 4. Fall back to `rg` and direct file reads when graph coverage is insufficient.
 5. Run `code-review-graph update --skip-flows` if the graph appears stale.
 
-The CRG daemon is the shared freshness owner. HK runs an additional
-non-blocking update and risk summary before commits. Do not install redundant
+The CRG daemon is the shared freshness owner. In local dev, `post-commit` schedules a
+non-blocking background refresh via `schedule_crg_refresh.script.ts` (skipped when
+`CI` is set). Prefer `mise run graph watch` or the CRG daemon for continuous
+updates. Do not install redundant
 per-agent edit hooks. Antigravity uses this file plus its user-level MCP config
 at `~/.gemini/antigravity/mcp_config.json`.

@@ -53,6 +53,10 @@ BLOCK_ON_THREAT="true"
           hk install --mise
           uv tool install --upgrade code-review-graph
           uv tool install --upgrade git+https://github.com/github/spec-kit.git
+          current_push_alias="$(git config --local --get alias.push 2>/dev/null || true)"
+          if [[ "$current_push_alias" == *post_push_crg* ]]; then
+            git config --local --unset alias.push
+          fi
         fi
         ;;
       clean)
