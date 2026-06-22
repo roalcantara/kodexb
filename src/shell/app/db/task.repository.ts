@@ -1,5 +1,6 @@
 import type { Database } from 'bun:sqlite'
 import { repositoryStmts } from '@shared/logging'
+import { wouldCreateCycle as wouldCreateCycleCore } from '@core/domain/models/knowledges/task_views/task_cycle_policy.util'
 import type { Knowledge } from '../../../core'
 import { rowToKnowledge } from './entry.repository'
 import type { KnowledgeRow } from './schema'
@@ -54,22 +55,7 @@ function readTaskDependencyIds(db: Database, taskRowId: number): number[] {
 }
 
 export function wouldCreateCycle(db: Database, taskId: number, newDepId: number, maxDepth: number = 3): boolean {
-  if (taskId === newDepId) return true
-  const visited = new Set<number>([taskId])
-  const queue: Array<{ id: number; depth: number }> = [{ id: newDepId, depth: 0 }]
-
-  while (queue.length > 0) {
-    const current = queue.shift()
-    if (!current || current.depth >= maxDepth) continue
-    if (visited.has(current.id)) continue
-    visited.add(current.id)
-
-    for (const depId of readTaskDependencyIds(db, current.id)) {
-      if (depId === taskId) return true
-      queue.push({ id: depId, depth: current.depth + 1 })
-    }
-  }
-  return false
+  return wouldCreateCycleCore(taskId, newDepId, id => readTaskDependencyIds(db, id), maxDepth)
 }
 
 export function updateTaskOrder(

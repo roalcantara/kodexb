@@ -154,11 +154,3 @@ export function taskToSourceRecord(task: Knowledge): Record<string, unknown> {
   }
   return shape
 }
-
-/** Domain tags require at least one valid tag; UI may submit none on create. */
-export function resolveCreateTaskTags(tags: string[] | undefined): string[] {
-  const normalized = (tags ?? [])
-    .map(tag => tag.trim().toLowerCase().replaceAll('-', '_'))
-    .filter(tag => tag.length > 0)
-  return normalized.length > 0 ? normalized : ['task']
-}

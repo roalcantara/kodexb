@@ -76,3 +76,14 @@ export function parseTagsFromSource(raw: JsonValue | undefined): string[] {
 
   return result.data
 }
+
+/**
+ * ARCH-1 AC3: create-task tag normalization.
+ * Normalizes and deduplicates tags using `normalizeKnowledgeTag`; falls back
+ * to a single `task` tag when input is empty. The shell calls this before
+ * writing to the database.
+ */
+export function resolveCreateTaskTags(tags: string[] | undefined): string[] {
+  const normalized = (tags ?? []).map(normalizeKnowledgeTag).filter(tag => tag.length > 0)
+  return normalized.length > 0 ? normalized : ['task']
+}

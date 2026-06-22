@@ -11,7 +11,7 @@ passes. Phase order: **0 → F → A → C → B → D → E → closeout**.
 ## Phase F — FCIS domain moves
 - [X] **T103** `TaskView` → core (0 core→`@shared/rpc`) — *gate:* ARCH-1 AC1
 - [X] **T104** `BindingRef` one def in `@shared/rpc`; 0 `shared→core` — *gate:* ARCH-1 AC2/AC6
-- [ ] **T105** Task policy (`wouldCreateCycle`, tag norm) → core — *gate:* ARCH-1 AC3
+- [X] **T105** Task policy (`wouldCreateCycle`, tag norm) → core — *gate:* ARCH-1 AC3
 - [ ] **T106** Overdue/blocked rules → core predicates — *gate:* ARCH-1 AC4
 - [ ] **T107** `literalUnion()` derivation in `payload_schemas.ts` — *gate:* ARCH-1 AC5
 - [ ] **T108** Response-type schemas + `ListStats.byType` (producer+consumers lockstep) — *gate:* ARCH-1 AC6/AC7
