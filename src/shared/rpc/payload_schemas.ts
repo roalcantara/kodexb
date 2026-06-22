@@ -98,3 +98,22 @@ export const showOpenDialogSchema = strictObject({
     })
   )
 })
+
+/**
+ * ARCH-1 AC2/AC6 — canonical binding-row schema. The RPC wire type, the core
+ * collision detector, and the shell repository mapper all derive their
+ * `BindingRef` from this single definition via `Static<typeof>`.
+ */
+const bindingPlatformSchema = literalUnion(['macos', 'linux', 'windows', 'any'] as const)
+const bindingScopeSchema = literalUnion(['global', 'local'] as const)
+
+export const bindingRefSchema = strictObject({
+  bindingId: Type.String(),
+  entryKey: Type.String(),
+  app: Type.String(),
+  platform: bindingPlatformSchema,
+  scope: bindingScopeSchema,
+  chordHash: Type.String(),
+  chordPrefix: Type.Union([Type.String(), Type.Null()]),
+  action: Type.String()
+})

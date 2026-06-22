@@ -3,6 +3,7 @@ import type { ElectrobunRPCSchema, RPCSchema } from 'electrobun/bun'
 import type { Knowledge } from '../../core'
 import type { TaskView } from '../../core/domain/models/knowledges/task_views/task_view.types'
 import type {
+  bindingRefSchema,
   configPatchSchema,
   listOptsSchema,
   showOpenDialogSchema,
@@ -110,16 +111,7 @@ export type PreviewImageResult = {
 }
 
 /** A single flattened binding row returned by the RPC. */
-export type BindingRef = {
-  bindingId: string
-  entryKey: string
-  app: string
-  platform: 'macos' | 'linux' | 'windows' | 'any'
-  scope: 'global' | 'local'
-  chordHash: string
-  chordPrefix: string | null
-  action: string
-}
+export type BindingRef = Static<typeof bindingRefSchema>
 
 /** Task mutation payloads (full CRUD in App layer). */
 export type TaskCreateInput = Static<typeof taskCreateSchema>

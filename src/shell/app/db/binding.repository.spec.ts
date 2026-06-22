@@ -1,13 +1,7 @@
 import { Database } from 'bun:sqlite'
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
-import {
-  type BindingRef,
-  deleteBindings,
-  listAllBindings,
-  listBindingsByChord,
-  listBindingsForApp,
-  upsertBindings
-} from './binding.repository'
+import type { BindingRef } from '@shared/rpc'
+import { deleteBindings, listAllBindings, listBindingsByChord, listBindingsForApp, upsertBindings } from './binding.repository'
 import {
   CREATE_BINDING_FRECENCY_INDEXES_SQL,
   CREATE_BINDING_FRECENCY_SQL,

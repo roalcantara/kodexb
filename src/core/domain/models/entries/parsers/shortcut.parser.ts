@@ -1,20 +1,12 @@
 // pattern: Functional Core
 
 import type { KeyAlias, KeyModifier } from '@core/domain/constants/key.const'
+import type { BindingRef } from '@shared/rpc'
 import type { Platform, Scope } from '../schemas/shortcut.schema'
 import { type AuthoringChordStep, type ChordStep, type ChordStringSpec, parseChord } from './chord.parser'
 import { chordPrefix, hashChord } from './chord_hash.util'
 
-export type BindingRef = {
-  bindingId: string
-  entryKey: string
-  app: string
-  scope: Scope
-  chordHash: string
-  chordPrefix: string | null
-  platform: Platform
-  action: string
-}
+export type { BindingRef }
 
 export function slugify(text: string): string {
   return text

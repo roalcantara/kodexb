@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { factoryFor } from '@testing'
-import type { BindingRef } from './binding.repository'
+import type { BindingRef } from '@shared/rpc'
 import {
   collectHardCollisionWarnings,
   formatHardCollisionWarning,
