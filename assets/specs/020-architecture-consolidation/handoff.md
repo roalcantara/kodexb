@@ -18,7 +18,7 @@ compare` must never regress; no new `// biome-ignore`; biome caps only tighten.
 | ARCH-1 AC1 | `TaskView` core-owned | `rg "@shared/rpc" src/core \| rg TaskView` → 0 ; `bun test src/core` | ✅ |
 | ARCH-1 AC2 | one `BindingRef` def | `rg 'type BindingRef\|interface BindingRef' src` → 1 ; `bun test src/shell/app/db` | ✅ |
 | ARCH-1 AC3 | task policy in core | `bun test src/shell/app/db/task.repository.spec.ts` | ✅ |
-| ARCH-1 AC4 | overdue/blocked in core | `rg taskIsOverdue src/shell/renderer` (core import) ; `bun test src/shell/renderer` | ☐ |
+| ARCH-1 AC4 | overdue/blocked in core | `rg taskIsOverdue src/shell/renderer` (core import) ; `bun test src/shell/renderer` | ✅ |
 | ARCH-1 AC5 | literalUnion derivation | `bun test src/shared/rpc` ; `bun run typecheck` | ☐ |
 | ARCH-1 AC6 | response types schema-derived; 0 shared→core | `bun run lint:depcruise` ; `bun test src/shared/rpc` | ✅ (BindingRef schema-derived; depcruise 0 violations) |
 | ARCH-1 AC7 | `ListStats.byType` (producer+consumers) | `rg 'stats\.(bookmark\|command\|cheat\|task\|shortcut)\b' src/shell/renderer` → 0 ; `bun test src/shell/app src/shell/renderer` | ☐ |
