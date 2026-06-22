@@ -17,7 +17,7 @@ passes. Phase order: **0 → F → A → C → B → D → E → closeout**.
 - [X] **T108** Response-type schemas + `ListStats.byType` (producer+consumers lockstep) — *gate:* ARCH-1 AC6/AC7
 
 ## Phase A — App-layer decomposition
-- [ ] **T109** Split `App` into ~5 services (`app.ts` ≤160, cap tightened) + P2-7 — *gate:* ARCH-2 AC1
+- [X] **T109** Split `App` into ~5 services (`app.ts` ≤160, cap tightened) + P2-7 — *gate:* ARCH-2 AC1
 - [ ] **T110** Relocate `app/lib` → domain subfolders, drop `app_` prefix — *gate:* ARCH-2 AC2
 
 ## Phase C — RPC client split

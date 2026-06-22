@@ -22,9 +22,9 @@ compare` must never regress; no new `// biome-ignore`; biome caps only tighten.
 | ARCH-1 AC5 | literalUnion derivation | `bun test src/shared/rpc` ; `bun run typecheck` | ✅ |
 | ARCH-1 AC6 | response types schema-derived; 0 shared→core | `bun run lint:depcruise` ; `bun test src/shared/rpc` | ✅ (ListStats schema-derived + BindingRef; depcruise 0) |
 | ARCH-1 AC7 | `ListStats.byType` (producer+consumers) | `rg 'stats\.(bookmark\|command\|cheat\|task\|shortcut)\b' src/shell/renderer` → 0 ; `bun test src/shell/app src/shell/renderer` | ✅ |
-| ARCH-2 AC1 | `App` ≤160 facade + cap tightened | `wc -l src/shell/app/app.ts` ; `bun test src/shell/app src/shell/main/rpc` | ☐ |
+| ARCH-2 AC1 | `App` ≤160 facade + cap tightened | `wc -l src/shell/app/app.ts` ; `bun test src/shell/app src/shell/main/rpc` | ✅ (78 LOC, cap at 85) |
 | ARCH-2 AC2 | `app/lib` domain subfolders, no `app_` | `find src/shell/app/lib -maxdepth 1 -name 'app_*'` → 0 ; `bun run lint:ls` | ☐ |
-| ARCH-2 AC3 | Promise.resolve boilerplate collapsed | `rg -c 'return Promise\.resolve' src/shell/app/app.ts` ; route specs green | ☐ |
+| ARCH-2 AC3 | Promise.resolve boilerplate collapsed | `rg -c 'return Promise\.resolve' src/shell/app/app.ts` ; route specs green | ✅ (0 in app.ts, collapsed in QueryService.resolve) |
 | ARCH-3 AC1 | `client.ts` transport vs facade split | `wc -l src/shell/renderer/rpc/client.ts` ; `bun test src/shell/renderer/rpc` | ✅ (136 LOC) |
 | ARCH-4 AC1 | named contracts replace `p`; `ListMain` split | `bun test src/shell/renderer/components/list src/shell/renderer/hooks/list` | ☐ |
 | ARCH-4 AC2 | list suppressions removed (no new ignores) | `rg 'biome-ignore' src/shell/renderer/components/list src/shell/renderer/hooks/list` ; `bun run lint:biome` | ☐ |
