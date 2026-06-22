@@ -1,6 +1,6 @@
 import { describe, expect, it, mock } from 'bun:test'
-import type { AppShellHooks } from './app_shell_hooks.types'
-import { openExternalUrl, openInEditorFor, pasteDocFor } from './app_shell_surface.util'
+import type { AppShellHooks } from './shell_hooks.types'
+import { openExternalUrl, openInEditorFor, pasteDocFor } from './surface.util'
 
 function makeHooks(): AppShellHooks {
   return {

@@ -1,11 +1,11 @@
 import type { Database } from 'bun:sqlite'
 import fs from 'node:fs/promises'
 import type { RpcImportResult, RpcSyncProgressPayload } from '@shared/rpc'
-import { openDatabase } from '../db/client'
-import { ImportService } from '../db/import.service'
+import { openDatabase } from '../../db/client'
+import { ImportService } from '../../db/import.service'
 import { exportLearnedSnapshot, restoreLearnedSnapshot } from './frecency_snapshot.repository'
 
-type AppLog = ReturnType<typeof import('../../../shared/logging').getLogger>
+type AppLog = ReturnType<typeof import('../../../../shared/logging').getLogger>
 
 export type SyncEmitHandlers = {
   syncProgress?: (payload: RpcSyncProgressPayload) => void

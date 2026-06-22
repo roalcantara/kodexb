@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test'
-import { fetchPreviewImageFromUrl } from './app_preview_fetch.client'
+import { fetchPreviewImageFromUrl } from './fetch.client'
 
 const originalFetch = globalThis.fetch
 

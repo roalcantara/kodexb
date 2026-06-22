@@ -1,11 +1,11 @@
 // @sync_frecency_preserve
 import { describe, expect, it } from 'bun:test'
 import { factoryFor } from '@testing'
-import { upsertBindings } from '../db/binding.repository'
-import { recordBindingVisit } from '../db/binding_frecency.repository'
-import { openDatabase } from '../db/client'
-import { upsert } from '../db/entry.repository'
-import { recordEntryVisit } from '../db/frecency.repository'
+import { upsertBindings } from '../../db/binding.repository'
+import { recordBindingVisit } from '../../db/binding_frecency.repository'
+import { openDatabase } from '../../db/client'
+import { upsert } from '../../db/entry.repository'
+import { recordEntryVisit } from '../../db/frecency.repository'
 import { exportLearnedSnapshot, restoreLearnedSnapshot } from './frecency_snapshot.repository'
 
 describe('exportLearnedSnapshot()', () => {

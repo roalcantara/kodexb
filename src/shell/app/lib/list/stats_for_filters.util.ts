@@ -2,10 +2,10 @@ import { ENTRY_TYPE_VALUES } from '@core/domain/constants/entry.const'
 import { TASK_VIEW_ORDER } from '@core/domain/models/knowledges/task_views/task_view_order.const'
 import type { EntryType } from '@core/domain/types/entry.types'
 import type { ListOpts, ListStats, TaskView } from '@shared/rpc'
-import type { LoadedConfig } from '../config/config.loader'
-import type { openDatabase } from '../db/client'
-import { countKnowledgeForOpts } from './app_list_query.util'
-import { buildTagFacetCounts } from './list_stats_tag_facets.util'
+import type { LoadedConfig } from '../../config/config.loader'
+import type { openDatabase } from '../../db/client'
+import { countKnowledgeForOpts } from './query.util'
+import { buildTagFacetCounts } from './stats_tag_facets.util'
 
 type DbRaw = ReturnType<typeof openDatabase>['raw']
 

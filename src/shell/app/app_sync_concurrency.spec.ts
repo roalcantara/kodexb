@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { factoryFor, syncFixtureDir } from '@testing'
 import { App } from './app'
-import { SyncDatabaseBusyError } from './lib/sync_database_busy.error'
+import { SyncDatabaseBusyError } from './lib/sync/database_busy.error'
 
 let workDir: string
 let dbPath: string

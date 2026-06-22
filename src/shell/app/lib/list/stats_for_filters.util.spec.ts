@@ -3,7 +3,7 @@ import { openDatabase } from '@shell/app/db/client'
 import { rebuildFts, upsert } from '@shell/app/db/entry.repository'
 import { factoryFor } from '@testing'
 
-import { buildListStatsForFilters } from './app_list_stats_for_filters.util'
+import { buildListStatsForFilters } from './stats_for_filters.util'
 
 describe('buildListStatsForFilters', () => {
   it('scopes tag counts to selected types', () => {

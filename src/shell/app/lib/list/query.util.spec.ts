@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { createSeededMemoryDb, factoryFor } from '@testing'
-import { countKnowledgeForOpts, listKnowledgeForOpts } from './app_list_query.util'
+import { countKnowledgeForOpts, listKnowledgeForOpts } from './query.util'
 
 describe('countKnowledgeForOpts', () => {
   it('matches list length for same filters', async () => {

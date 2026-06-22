@@ -8,9 +8,9 @@ import { listAllBindings, listBindingsByChord } from '../db/binding.repository'
 import { recordBindingVisit as persistBindingVisit } from '../db/binding_frecency.repository'
 import { findAll, findById, getDbStats } from '../db/entry.repository'
 import { recordEntryVisit as persistEntryVisit } from '../db/frecency.repository'
-import { countKnowledgeForOpts, listKnowledgeForOpts } from '../lib/app_list_query.util'
-import { buildListStats } from '../lib/app_list_stats.util'
-import { buildListStatsForFilters } from '../lib/app_list_stats_for_filters.util'
+import { countKnowledgeForOpts, listKnowledgeForOpts } from '../lib/list/query.util'
+import { buildListStats } from '../lib/list/stats.util'
+import { buildListStatsForFilters } from '../lib/list/stats_for_filters.util'
 import type { LifecycleService } from './lifecycle.service'
 
 export class QueryService {

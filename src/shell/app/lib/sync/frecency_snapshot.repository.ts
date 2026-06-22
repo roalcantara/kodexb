@@ -1,5 +1,5 @@
 import type { Database } from 'bun:sqlite'
-import type { BindingFrecencyRow, EntryFrecencyRow } from '../db/schema'
+import type { BindingFrecencyRow, EntryFrecencyRow } from '../../db/schema'
 
 export type LearnedSnapshot = {
   entries: EntryFrecencyRow[]

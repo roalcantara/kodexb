@@ -3,19 +3,19 @@ import fs, { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { factoryFor } from '@testing'
-import type { Knowledge } from '../../../core'
+import type { Knowledge } from '../../../../core'
 import {
   isTaskSourceWriteError,
   removeTaskFromSource,
   taskToSourceRecord,
   writeTaskToSource
-} from './app_task_source.service'
+} from './source.service'
 
 let tmpDir = ''
 let sourcePath = ''
 
 function stubLog() {
-  return { error: () => undefined } as unknown as ReturnType<typeof import('../../../shared/logging').getLogger>
+  return { error: () => undefined } as unknown as ReturnType<typeof import('../../../../shared/logging').getLogger>
 }
 
 function captureLog(records: Array<{ message: string; fields: Record<string, unknown> }>) {
@@ -23,7 +23,7 @@ function captureLog(records: Array<{ message: string; fields: Record<string, unk
     error: (message: string, fields: Record<string, unknown>) => {
       records.push({ message, fields })
     }
-  } as unknown as ReturnType<typeof import('../../../shared/logging').getLogger>
+  } as unknown as ReturnType<typeof import('../../../../shared/logging').getLogger>
 }
 
 const sampleTask = (overrides: Record<string, unknown> = {}): Knowledge =>

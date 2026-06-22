@@ -6,7 +6,7 @@ import { factoryFor, testingPaths } from '@testing'
 import { App } from './app'
 import type { LoadedConfig } from './config/config.loader'
 import { ImportService } from './db/import.service'
-import { isTaskSourceWriteError } from './lib/app_task_source.service'
+import { isTaskSourceWriteError } from './lib/task/source.service'
 
 const NOT_IMPLEMENTED_RE = /Not implemented/
 

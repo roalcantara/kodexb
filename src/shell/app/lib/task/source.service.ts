@@ -1,9 +1,9 @@
 import fs from 'node:fs/promises'
 import type { TaskMutationOperation } from '@shared/rpc'
-import type { Knowledge } from '../../../core'
-import { withContext } from '../../../shared/logging'
+import type { Knowledge } from '../../../../core'
+import { withContext } from '../../../../shared/logging'
 
-type AppLog = ReturnType<typeof import('../../../shared/logging').getLogger>
+type AppLog = ReturnType<typeof import('../../../../shared/logging').getLogger>
 
 const TASK_SOURCE_WRITE_ERROR_NAME = 'TaskSourceWriteError'
 const TASK_CONFLICT_ERROR_NAME = 'TaskConflictError'

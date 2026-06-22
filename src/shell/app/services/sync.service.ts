@@ -1,6 +1,6 @@
 import type { RpcImportResult } from '@shared/rpc'
-import { getSyncInfoForSourcesDir } from '../lib/app_sync_info.util'
-import { type RunSourceImportSyncTestHooks, runSourceImportSync } from '../lib/app_sync.service'
+import { getSyncInfoForSourcesDir } from '../lib/sync/info.util'
+import { type RunSourceImportSyncTestHooks, runSourceImportSync } from '../lib/sync/sync.service'
 import type { LifecycleService } from './lifecycle.service'
 
 export class SyncService {

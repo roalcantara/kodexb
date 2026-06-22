@@ -1,8 +1,8 @@
 import type { ConfigPatch, OpenDialogOpts, PreviewImageResult, RpcGetConfigPayload } from '@shared/rpc'
 import { saveConfig } from '../config/config.loader'
-import { fetchPreviewImageFromUrl } from '../lib/app_preview_fetch.client'
-import type { AppShellHooks } from '../lib/app_shell_hooks.types'
-import { createAppShellDelegates } from '../lib/app_shell_surface.util'
+import { fetchPreviewImageFromUrl } from '../lib/preview/fetch.client'
+import type { AppShellHooks } from '../lib/shell/shell_hooks.types'
+import { createAppShellDelegates } from '../lib/shell/surface.util'
 import type { LifecycleService } from './lifecycle.service'
 
 export class ConfigService {

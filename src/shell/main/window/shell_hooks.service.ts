@@ -1,4 +1,4 @@
-import type { AppShellHooks } from '../../app/lib/app_shell_hooks.types'
+import type { AppShellHooks } from '../../app/lib/shell/shell_hooks.types'
 import {
   runEntryHandoff as defaultRunEntryHandoff,
   type HandoffServices

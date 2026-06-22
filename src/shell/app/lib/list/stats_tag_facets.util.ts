@@ -1,9 +1,9 @@
 import type { EntryType } from '@core/domain/types/entry.types'
 import type { TaskView } from '@shared/rpc'
-import type { LoadedConfig } from '../config/config.loader'
-import type { openDatabase } from '../db/client'
-import { getTagCounts } from '../db/entry.repository'
-import { countKnowledgeForOpts } from './app_list_query.util'
+import type { LoadedConfig } from '../../config/config.loader'
+import type { openDatabase } from '../../db/client'
+import { getTagCounts } from '../../db/entry.repository'
+import { countKnowledgeForOpts } from './query.util'
 
 type DbRaw = ReturnType<typeof openDatabase>['raw']
 

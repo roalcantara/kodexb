@@ -1,6 +1,6 @@
 import type { OpenDialogOpts } from '@shared/rpc'
-import type { LoadedConfig } from '../config/config.loader'
-import type { AppShellHooks, WindowPosition } from './app_shell_hooks.types'
+import type { LoadedConfig } from '../../config/config.loader'
+import type { AppShellHooks, WindowPosition } from './shell_hooks.types'
 
 export function rejectShellNotImplemented(method: string): Promise<never> {
   return Promise.reject(new Error(`Not implemented: ${method}`))

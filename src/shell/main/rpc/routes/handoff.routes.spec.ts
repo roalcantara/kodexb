@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'bun:test'
 import { mountRouteModule, rpcSpecPostJson, setupRpcRouteSpecSuite } from '@testing'
 import { runRoute } from '@testing/helpers/run_route.util'
-import type { AppShellHooks } from '../../../app/lib/app_shell_hooks.types'
+import type { AppShellHooks } from '../../../app/lib/shell/shell_hooks.types'
 import { handoffRoutes } from './handoff.routes'
 
 describe('handoffRoutes', () => {

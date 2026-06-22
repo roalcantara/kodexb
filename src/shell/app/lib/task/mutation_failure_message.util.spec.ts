@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { buildTaskMutationFailureMessage } from './task_mutation_failure_message.util'
+import { buildTaskMutationFailureMessage } from './mutation_failure_message.util'
 
 describe('buildTaskMutationFailureMessage', () => {
   it('formats source write failures', () => {

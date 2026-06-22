@@ -3,7 +3,7 @@ import { getLogger } from '@shared/logging'
 import type { RpcImportResult, RpcListEntry, RpcSyncProgressPayload } from '@shared/rpc'
 import type { LoadedConfig } from '../config/config.loader'
 import { openDatabase, type DbHandle } from '../db/client'
-import { SyncDatabaseBusyError } from '../lib/sync_database_busy.error'
+import { SyncDatabaseBusyError } from '../lib/sync/database_busy.error'
 
 export type SyncEmitter = {
   syncProgress?: (payload: RpcSyncProgressPayload) => void

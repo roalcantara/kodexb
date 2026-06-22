@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'bun:test'
 import { testingPaths } from '@testing'
-import { getSyncInfoForSourcesDir } from './app_sync_info.util'
+import { getSyncInfoForSourcesDir } from './info.util'
 
 describe('getSyncInfoForSourcesDir', () => {
   it('counts yaml sources under the directory', async () => {

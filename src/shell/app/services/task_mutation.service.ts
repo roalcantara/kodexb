@@ -8,8 +8,8 @@ import {
   deleteTask as deleteTaskMutation,
   reorderTask as reorderTaskMutation,
   updateTask as updateTaskMutation
-} from '../lib/app_task_mutation.service'
-import type { TaskMutationLogContext } from '../lib/app_task_source.service'
+} from '../lib/task/mutation.service'
+import type { TaskMutationLogContext } from '../lib/task/source.service'
 import type { QueryService } from './query.service'
 import type { LoadedConfig } from '../config/config.loader'
 
