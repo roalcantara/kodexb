@@ -1,4 +1,4 @@
-import type { AppShellHooks } from '../../shell/app/lib/shell/shell_hooks.types'
+import type { AppShellHooks } from '../../shell/app/lib/app_shell_hooks.types'
 
 export type TerminalShellHookName = 'pasteInTerminal' | 'runInTerminal'
 
