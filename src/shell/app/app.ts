@@ -27,7 +27,7 @@ import { countKnowledgeForOpts, listKnowledgeForOpts } from './lib/app_list_quer
 import { buildListStats } from './lib/app_list_stats.util'
 import { buildListStatsForFilters } from './lib/app_list_stats_for_filters.util'
 import { fetchPreviewImageFromUrl } from './lib/app_preview_fetch.client'
-import type { AppShellHooks } from './lib/app_shell_hooks.types'
+import type { AppShellHooks } from './lib/shell/shell_hooks.types'
 import { createAppShellDelegates } from './lib/app_shell_surface.util'
 import { type RunSourceImportSyncTestHooks, runSourceImportSync } from './lib/app_sync.service'
 import { getSyncInfoForSourcesDir } from './lib/app_sync_info.util'

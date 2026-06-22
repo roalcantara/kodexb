@@ -1,9 +1,7 @@
 import type { Display } from 'electrobun/bun'
-import {
-  computeInitialFrameFromDisplay,
-  MAIN_WINDOW_DEFAULT_SIZE,
-  type MainWindowLike
-} from '../utils/shell_hooks.util'
+import { MAIN_WINDOW_DEFAULT_SIZE } from './window.const'
+import { computeInitialFrameFromDisplay } from './placement.util'
+import type { MainWindowLike } from './window.types'
 import { appendLauncherProbe, isLauncherProbeEnabled } from './launcher_frame_probe.adapter'
 import { ensureWindowFrame, resolveDisplayAtCursor, resolveDisplayForPlacement } from './placement.util'
 

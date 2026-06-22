@@ -8,13 +8,13 @@ import { reportConfigLoadErrorAndExit } from './helpers/error.helper'
 import { createSyncEmitter, createWebviewRpc } from './rpc/host'
 import { createRpcServer } from './rpc/server'
 import { registerBeforeQuitShortcutTeardown } from './utils/register_before_quit_shortcuts.util'
+import { createDeferredSyncEmit } from '../app/lib/sync/deferred_emit.service'
 import {
   buildBrowserWindowCreateOptions,
-  computeInitialFrameFromDisplay,
-  createDeferredSyncEmit,
-  createShellHooks,
   MAIN_WINDOW_DEFAULT_SIZE
-} from './utils/shell_hooks.util'
+} from './window/window.const'
+import { computeInitialFrameFromDisplay } from './window/placement.util'
+import { createShellHooks } from './window/shell_hooks.service'
 import { createExternalFocusHandoff } from './window/external_focus_handoff.util'
 import {
   dismissLauncherWindow,

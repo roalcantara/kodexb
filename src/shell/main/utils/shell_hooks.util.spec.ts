@@ -1,15 +1,11 @@
 import { afterEach, beforeAll, describe, expect, it, mock } from 'bun:test'
 
 import { factoryFor } from '@testing'
-import { SAFE_FALLBACK_X, SAFE_FALLBACK_Y } from '../window/placement.util'
-import {
-  buildBrowserWindowCreateOptions,
-  computeInitialFrameFromDisplay,
-  createDeferredSyncEmit,
-  MAIN_WINDOW_DEFAULT_SIZE,
-  MAIN_WINDOW_RENDERER_URL,
-  type RunEntryHandoff
-} from './shell_hooks.util'
+import { SAFE_FALLBACK_X, SAFE_FALLBACK_Y, computeInitialFrameFromDisplay } from '../window/placement.util'
+import { buildBrowserWindowCreateOptions, MAIN_WINDOW_DEFAULT_SIZE, MAIN_WINDOW_RENDERER_URL } from '../window/window.const'
+import { createDeferredSyncEmit } from '../../../shell/app/lib/sync/deferred_emit.service'
+import type { RunEntryHandoff } from '../window/window.types'
+import { createShellHooks } from '../window/shell_hooks.service'
 
 const mockRunEntryHandoffCalls: unknown[][] = []
 
@@ -99,10 +95,10 @@ describe('createDeferredSyncEmit', () => {
 })
 
 describe('createShellHooks', () => {
-  let createShellHooks: typeof import('./shell_hooks.util').createShellHooks
+  let createShellHooks: typeof import('../window/shell_hooks.service').createShellHooks
 
   beforeAll(async () => {
-    ;({ createShellHooks } = await import('./shell_hooks.util'))
+    ;({ createShellHooks } = await import('../window/shell_hooks.service'))
   })
 
   function makeWin(position = { x: 0, y: 0 }) {

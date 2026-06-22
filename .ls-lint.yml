@@ -75,7 +75,7 @@ ls:
     .ts: regex:^[a-z][a-z0-9_]*\.util(\.spec)?$
 
   src/shell/main/window:
-    .ts: regex:^(state|[a-z][a-z0-9_]*\.(util|adapter))(\.spec)?$
+    .ts: regex:^(state|[a-z][a-z0-9_]*\.(util|adapter|const|types|service))(\.spec)?$
 
   src/shell/main/utils:
     .ts: regex:^[a-z][a-z0-9_]*\.(util|types)(\.spec)?$
