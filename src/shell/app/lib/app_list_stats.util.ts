@@ -7,11 +7,6 @@ type TaskKnowledgeRow = Extract<KnowledgeWithFrecency, { type: 'task' }>
 
 type DbRaw = ReturnType<typeof openDatabase>['raw']
 
-function typeCount(byType: Record<string, number>, type: string): number {
-  const count = Reflect.get(byType, type)
-  return typeof count === 'number' ? count : 0
-}
-
 export function buildListStats(raw: DbRaw): ListStats {
   const stats = getDbStats(raw)
   const tags = getTagCounts(raw)
@@ -21,13 +16,8 @@ export function buildListStats(raw: DbRaw): ListStats {
   const taskViews = countTasksByView(tasks)
   return {
     total: stats.total,
-    bookmark: typeCount(stats.byType, 'bookmark'),
-    command: typeCount(stats.byType, 'command'),
-    cheat: typeCount(stats.byType, 'cheat'),
-    task: typeCount(stats.byType, 'task'),
-    shortcut: typeCount(stats.byType, 'shortcut'),
     taskViews,
     tags,
-    byType: stats.byType
+    byType: stats.byType as ListStats['byType']
   }
 }

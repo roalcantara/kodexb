@@ -32,6 +32,14 @@ export const listOptsSchema = strictObject({
 /** Body for `getListStats` when computing contextual facet counts (no pagination keys). */
 export const listStatsFilterSchema = strictObject(listFilterFields)
 
+/** ARCH-1 AC6/AC7 — canonical ListStats schema. */
+export const listStatsSchema = strictObject({
+  total: Type.Integer(),
+  taskViews: Type.Record(taskViewSchema, Type.Integer()),
+  tags: Type.Record(Type.String(), Type.Integer()),
+  byType: Type.Record(entryTypeSchema, Type.Integer())
+})
+
 export const getEntryParams = strictObject({ id: Type.Integer() })
 
 export const configPatchSchema = strictObject({

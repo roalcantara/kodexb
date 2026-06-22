@@ -7,6 +7,6 @@ describe('sampleListStats', () => {
     const stats = sampleListStats({ total: 9, tags: { ai: 1 } })
     expect(stats.total).toBe(9)
     expect(stats.tags).toEqual({ ai: 1 })
-    expect(stats.bookmark).toBe(1)
+    expect(stats.byType.bookmark).toBe(1)
   })
 })

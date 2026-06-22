@@ -6,6 +6,7 @@ import type {
   bindingRefSchema,
   configPatchSchema,
   listOptsSchema,
+  listStatsSchema,
   showOpenDialogSchema,
   taskCreateSchema,
   taskUpdateSchema
@@ -88,18 +89,7 @@ export type RpcSyncProgressPayload = {
 
 export type ListOpts = Static<typeof listOptsSchema>
 
-export type ListStats = {
-  total: number
-  bookmark: number
-  command: number
-  cheat: number
-  shortcut: number
-  task: number
-  taskViews: Record<TaskView, number>
-  /** Occurrence count per normalized tag (for filter dropdown). */
-  tags: Record<string, number>
-  byType: Record<string, number>
-}
+export type ListStats = Static<typeof listStatsSchema>
 
 export type ConfigPatch = Static<typeof configPatchSchema>
 

@@ -50,7 +50,7 @@ function appendTypeFacetRows(rows: FilterRow[], stats: ListStats, types: EntryTy
     const label = TYPE_FILTER_LABEL[t]
     if (!matchesSearch(label, q)) continue
     const isOn = types.includes(t)
-    const count = stats[t]
+    const count = stats.byType[t]
     if (!includeFacetRow(count, isOn)) continue
     rows.push({ id: `type__${t}`, label, count, kind: 'type', isOn })
   }

@@ -13,11 +13,6 @@ afterEach(() => {
 const emptyTaskViews = { actionable: 0, today: 0, overdue: 0, this_week: 0, all_pending: 0, all_doing: 0 }
 const stats: ListStats = {
   total: 1,
-  bookmark: 1,
-  command: 0,
-  cheat: 0,
-  task: 0,
-  shortcut: 0,
   taskViews: emptyTaskViews,
   tags: {},
   byType: { bookmark: 1, command: 0, cheat: 0, task: 0, shortcut: 0 }

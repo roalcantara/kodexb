@@ -26,11 +26,6 @@ const { useListPageStatsSync } = await import('./use_list_page_stats_sync.hook')
 describe('useListPageStatsSync', () => {
   const listStats: ListStats = {
     total: 4,
-    bookmark: 1,
-    command: 1,
-    cheat: 1,
-    task: 1,
-    shortcut: 0,
     taskViews: {
       actionable: 1,
       today: 0,
@@ -40,7 +35,7 @@ describe('useListPageStatsSync', () => {
       all_doing: 0
     },
     tags: { git: 2 },
-    byType: { bookmark: 1, command: 1, cheat: 1, task: 1 }
+    byType: { bookmark: 1, command: 1, cheat: 1, task: 1, shortcut: 0 }
   }
 
   function Harness() {

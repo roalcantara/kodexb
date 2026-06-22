@@ -12,11 +12,6 @@ const noop = () => undefined
 
 const stats: ListStats = {
   total: 10,
-  bookmark: 1,
-  command: 1,
-  cheat: 1,
-  task: 6,
-  shortcut: 0,
   taskViews: {
     actionable: 1,
     today: 0,
@@ -26,7 +21,7 @@ const stats: ListStats = {
     all_doing: 0
   },
   tags: { git: 2 },
-  byType: { bookmark: 1, command: 1, cheat: 1, task: 6 }
+  byType: { bookmark: 1, command: 1, cheat: 1, task: 6, shortcut: 0 }
 }
 
 describe('FilterDropdown', () => {

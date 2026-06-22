@@ -61,11 +61,6 @@ export function buildListStatsForFilters(raw: DbRaw, loaded: LoadedConfig, filte
 
   return {
     total,
-    bookmark: typeCounts.bookmark,
-    command: typeCounts.command,
-    cheat: typeCounts.cheat,
-    shortcut: typeCounts.shortcut,
-    task: typeCounts.task,
     taskViews,
     tags: tagsOut,
     byType: {
