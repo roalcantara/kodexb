@@ -1,6 +1,6 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import { useEffect, useState } from 'react'
-import type { ShortcutDetailBody } from '../../pages/detail/detail_shortcut_body.component'
+import type { ShortcutDetailBody } from '../../pages/detail/detail_shortcut_body.types'
 
 type UseDetailEntryLoaderOptions = {
   entryId: number

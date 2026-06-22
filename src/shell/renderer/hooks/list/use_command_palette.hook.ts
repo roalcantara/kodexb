@@ -4,7 +4,7 @@ import { buildEntryActionPanel } from '../../actions/panel/action_builder.servic
 import type { EntryActionContext } from '../../actions/panel/panel.types'
 import type { EntryActionPanelDeps } from '../../actions/panel/deps.service'
 import { mapEntryActionsToPalette } from '../../actions/to_palette.util'
-import type { CommandPaletteAction } from '../../components/actions/command_palette.component'
+import type { CommandPaletteAction } from '../../components/actions/command_palette.types'
 
 type CommandPaletteDeps = {
   selectedId: number | null

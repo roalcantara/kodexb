@@ -5,7 +5,13 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { executeEntryAction } from '../../actions/execute.executor'
 import { useFilterDropdownStats } from '../../hooks/list/use_filter_dropdown_stats.hook'
 import { useListMainEntryKeys } from '../../hooks/list/use_list_main_entry_keys.hook'
-import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
+import type {
+  ListActions,
+  ListData,
+  ListFilter,
+  ListOverlays,
+  ListSelection
+} from '../../hooks/list/use_list_page_shell.hook'
 import { useListPointerSelection } from '../../hooks/list/use_list_pointer_selection.hook'
 import { useListSurfaceScrollRestore } from '../../hooks/list/use_list_surface_scroll_restore.hook'
 import { useVirtualListWindow } from '../../hooks/list/use_virtual_list_window.hook'
@@ -28,57 +34,85 @@ const EMPTY_TAG_COUNTS: Readonly<Record<string, number>> = Object.freeze({})
 export { EMPTY_TAG_COUNTS }
 
 export type ListMainProps = {
-  p: ListPageShell
+  listData: ListData
+  listFilter: ListFilter
+  listSelection: ListSelection
+  listOverlays: ListOverlays
+  listActions: ListActions
   showSettings: boolean
   setShowSettings: (value: boolean | ((prev: boolean) => boolean)) => void
 }
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: shell composition remains tracked in codebase-quality-audit
-// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: shell composition remains tracked in codebase-quality-audit
-export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
-  const maxFrecencyScore = useMemo(() => Math.max(0, ...p.data.rows.map(row => row.frecencyScore)), [p.data.rows])
+const MUTATION_ERROR_DURATION_MS = 5000
+
+function MutationErrorBanner({ error, onClear }: { error: string | null; onClear: () => void }) {
+  useEffect(() => {
+    if (!error) return
+    const timer = setTimeout(onClear, MUTATION_ERROR_DURATION_MS)
+    return () => clearTimeout(timer)
+  }, [error, onClear])
+
+  if (!error) return null
+
+  return (
+    <div className="cmp-list-mutation-error" role="alert">
+      {error}
+    </div>
+  )
+}
+
+export function ListMain({
+  listData,
+  listFilter,
+  listSelection,
+  listOverlays,
+  listActions,
+  showSettings,
+  setShowSettings
+}: ListMainProps) {
+  const maxFrecencyScore = useMemo(() => Math.max(0, ...listData.rows.map(row => row.frecencyScore)), [listData.rows])
   const emptySyncButtonRef = useRef<HTMLButtonElement>(null)
   const detailScrollRef = useRef<HTMLDivElement>(null)
   const filterDropdownStats = useFilterDropdownStats(getListStats, {
-    filterOpen: p.filter.filterOpen,
-    baseStats: p.data.stats,
-    debouncedSearch: p.data.debouncedSearch,
-    types: p.data.types,
-    tags: p.data.tags,
-    taskView: p.data.taskView
+    filterOpen: listFilter.filterOpen,
+    baseStats: listData.stats,
+    debouncedSearch: listData.debouncedSearch,
+    types: listData.types,
+    tags: listData.tags,
+    taskView: listData.taskView
   })
 
   useLayoutEffect(() => {
-    if (p.flags.emptyDb) {
+    if (listActions.flags.emptyDb) {
       emptySyncButtonRef.current?.focus()
     }
-  }, [p.flags.emptyDb])
+  }, [listActions.flags.emptyDb])
 
   const handleCycleStatus = (id: number) => {
-    fireAndForget(cycleStatus(id, 'forward').then(() => p.data.refreshList(false)))
+    fireAndForget(cycleStatus(id, 'forward').then(() => listData.refreshList(false)))
   }
 
   const handleCyclePriority = (id: number) => {
-    fireAndForget(cyclePriority(id, 'forward').then(() => p.data.refreshList(false)))
+    fireAndForget(cyclePriority(id, 'forward').then(() => listData.refreshList(false)))
   }
-  const { detailEntry, viewState } = p.sel
+  const { detailEntry, viewState } = listSelection
 
   const handleEntryReturn = useListMainEntryKeys({
-    disabled: showSettings || p.taskSheetVisible || p.palette.open,
+    disabled: showSettings || listOverlays.taskSheet.taskSheetVisible || listOverlays.palette.open,
     viewState,
-    rows: p.data.rows,
-    selectedId: p.sel.selectedId,
+    rows: listData.rows,
+    selectedId: listSelection.selectedId,
     detailEntry,
     detailScrollRef,
-    actionCtx: p.actionCtx,
-    entryPanelDeps: p.entryPanelDeps
+    actionCtx: listActions.actionCtx,
+    entryPanelDeps: listActions.entryPanelDeps
   })
 
   const footerStatus = formatListFooterStatus({
-    matchTotal: p.data.matchTotal,
-    showing: p.data.rows.length,
-    pageSize: p.data.pageSize,
-    loading: p.data.loading
+    matchTotal: listData.matchTotal,
+    showing: listData.rows.length,
+    pageSize: listData.pageSize,
+    loading: listData.loading
   })
 
   const listPanelClass =
@@ -90,110 +124,106 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   const detailPanelClass =
     detailEntry === null ? '' : viewState === 'detail' ? 'cmp-detail cmp-detail--full' : 'cmp-detail'
 
-  useListSurfaceScrollRestore(p.listSurfaceRef, detailEntry)
+  useListSurfaceScrollRestore(listActions.refs.listSurfaceRef, detailEntry)
 
   useEffect(() => {
-    if (detailEntry !== null && viewState === 'detail' && p.filter.filterOpen) {
-      p.filter.setFilterOpen(false)
+    if (detailEntry !== null && viewState === 'detail' && listFilter.filterOpen) {
+      listFilter.setFilterOpen(false)
     }
-  }, [detailEntry, viewState, p.filter.filterOpen, p.filter.setFilterOpen])
+  }, [detailEntry, viewState, listFilter.filterOpen, listFilter.setFilterOpen])
 
-  // Restore focus to list surface after detail closes so arrow keys work
   useEffect(() => {
     if (detailEntry) return
     let attempts = 0
     const tryFocus = () => {
-      const surface = p.listSurfaceRef?.current
+      const surface = listActions.refs.listSurfaceRef?.current
       if (!surface) return
       surface.focus({ preventScroll: true })
       if (document.activeElement === surface) return
       if (++attempts < 2) scheduleDoubleRaf(tryFocus)
     }
     scheduleDoubleRaf(tryFocus)
-  }, [detailEntry, p.listSurfaceRef])
+  }, [detailEntry, listActions.refs.listSurfaceRef])
 
   const onSelectEntry = useCallback(
     (id: number) => {
-      p.sel.setSelectedId(id)
-      focusListSurface(p.listSurfaceRef)
+      listSelection.setSelectedId(id)
+      focusListSurface(listActions.refs.listSurfaceRef)
     },
-    [p.listSurfaceRef, p.sel.setSelectedId]
+    [listActions.refs.listSurfaceRef, listSelection.setSelectedId]
   )
 
   const onHoverEntry = useCallback(
     (id: number) => {
-      p.sel.setSelectedId(id)
+      listSelection.setSelectedId(id)
     },
-    [p.sel.setSelectedId]
+    [listSelection.setSelectedId]
   )
 
   const listPointerSelectionActive =
-    !showSettings && !p.taskSheetVisible && !p.palette.open && detailEntry === null && p.data.rows.length > 0
+    !showSettings &&
+    !listOverlays.taskSheet.taskSheetVisible &&
+    !listOverlays.palette.open &&
+    detailEntry === null &&
+    listData.rows.length > 0
   useListPointerSelection({
-    scrollRootRef: p.listSurfaceRef,
+    scrollRootRef: listActions.refs.listSurfaceRef,
     active: listPointerSelectionActive,
     onHoverEntry
   })
 
-  const selectedIndex = p.data.rows.findIndex(e => e.id === p.sel.selectedId)
+  const selectedIndex = listData.rows.findIndex(e => e.id === listSelection.selectedId)
   const { window: virtualWindow, rowHeight } = useVirtualListWindow(
-    p.data.rows.length,
-    p.listSurfaceRef,
+    listData.rows.length,
+    listActions.refs.listSurfaceRef,
     selectedIndex,
-    p.sel.selectedId
+    listSelection.selectedId
   )
-  const visibleRows = p.data.rows.slice(virtualWindow.startIndex, virtualWindow.endIndex)
-  const sentinelSpacers =
-    p.data.hasMore && p.data.rows.length > 0
-      ? listSentinelSpacers({ totalRows: p.data.rows.length, rowHeight, virtualWindow })
+  const visibleRows = listData.rows.slice(virtualWindow.startIndex, virtualWindow.endIndex)
+  const sentinelSpacersRes =
+    listData.hasMore && listData.rows.length > 0
+      ? listSentinelSpacers({ totalRows: listData.rows.length, rowHeight, virtualWindow })
       : null
 
-  const filterSummary = listFilterSummary(p.data.types, p.data.tags, p.data.taskView)
-  const filterActive = p.data.taskView !== undefined || p.data.types.length > 0 || p.data.tags.length > 0
+  const filterSummary = listFilterSummary(listData.types, listData.tags, listData.taskView)
+  const filterActive = listData.taskView !== undefined || listData.types.length > 0 || listData.tags.length > 0
   const filterChipCls = `cmp-filter-chip${filterActive ? ' cmp-filter-chip--active' : ''}`
 
-  const MUTATION_ERROR_DURATION_MS = 5000
-  useEffect(() => {
-    if (!p.mutationError) return
-    const timer = setTimeout(p.clearMutationError, MUTATION_ERROR_DURATION_MS)
-    return () => clearTimeout(timer)
-  }, [p.mutationError, p.clearMutationError])
-
   const toggleFilter = () => {
-    if (p.filter.filterOpen) {
-      p.filter.setFilterOpen(false)
+    if (listFilter.filterOpen) {
+      listFilter.setFilterOpen(false)
     } else {
-      p.filter.openFilter()
+      listFilter.openFilter()
     }
   }
 
   const focusMainSearch = useCallback(() => {
-    scheduleDoubleRaf(() => p.searchInputRef.current?.focus({ preventScroll: true }))
-  }, [p.searchInputRef])
+    scheduleDoubleRaf(() => listActions.refs.searchInputRef.current?.focus({ preventScroll: true }))
+  }, [listActions.refs.searchInputRef])
 
   const handleGlobalShortcut = useCallback(
     (action: 'open-editor' | 'copy-desc') => {
       const entry = resolveCurrentEntry({
         viewState,
-        selectedId: p.sel.selectedId,
+        selectedId: listSelection.selectedId,
         detailEntry,
-        rows: p.data.rows,
+        rows: listData.rows,
         detailPanelHasFocus: false
       })
       if (!entry) return
-      fireAndForget(executeEntryAction(entry, action, { ...p.actionCtx, entry }))
+      fireAndForget(executeEntryAction(entry, action, { ...listActions.actionCtx, entry }))
     },
-    [viewState, p.sel.selectedId, detailEntry, p.data.rows, p.actionCtx]
+    [viewState, listSelection.selectedId, detailEntry, listData.rows, listActions.actionCtx]
   )
 
-  const viewNavKeysDisabled = showSettings || p.taskSheetVisible || p.palette.open
+  const viewNavKeysDisabled = showSettings || listOverlays.taskSheet.taskSheetVisible || listOverlays.palette.open
   useWindowViewNavKeys({
     disabled: viewNavKeysDisabled,
-    skipEscapeCapture: p.filter.filterOpen,
-    handleKey: p.sel.handleKey,
-    handleModL: p.handleWindowModL,
+    skipEscapeCapture: listFilter.filterOpen,
+    handleKey: listSelection.handleKey,
+    handleModL: listActions.handlers.handleWindowModL,
     handleListArrows: e => {
-      p.onListKeyDown(e as unknown as ReactKeyboardEvent<HTMLDivElement>)
+      listSelection.onListKeyDown(e as unknown as ReactKeyboardEvent<HTMLDivElement>)
     },
     handleEntryReturn,
     handleGlobalShortcut,
@@ -206,9 +236,9 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
   const { onMouseDown: onDragStripeMouseDown } = useWindowDrag()
 
   const closeDetailToList = useCallback(() => {
-    p.sel.closeToList()
-    focusListSurface(p.listSurfaceRef)
-  }, [p.listSurfaceRef, p.sel.closeToList])
+    listSelection.closeToList()
+    focusListSurface(listActions.refs.listSurfaceRef)
+  }, [listActions.refs.listSurfaceRef, listSelection.closeToList])
 
   const isFullDetail = detailEntry !== null && viewState === 'detail'
   const showBackWithSearch = detailEntry !== null && viewState === 'split'
@@ -221,51 +251,51 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
           isFullDetail={isFullDetail}
           showBackWithSearch={showBackWithSearch}
           closeDetailToList={closeDetailToList}
-          searchInputRef={p.searchInputRef}
-          search={p.data.search}
-          onSearchChange={p.data.setSearch}
-          onSearchArrowDown={p.onSearchArrowDown}
-          filterButtonRef={p.filter.filterButtonRef}
+          searchInputRef={listActions.refs.searchInputRef}
+          search={listData.search}
+          onSearchChange={listData.setSearch}
+          onSearchArrowDown={listActions.handlers.onSearchArrowDown}
+          filterButtonRef={listFilter.filterButtonRef}
           filterChipCls={filterChipCls}
           filterSummary={filterSummary}
           onToggleFilter={toggleFilter}
-          filterOpen={p.filter.filterOpen}
-          stats={filterDropdownStats ?? p.data.stats}
-          types={p.data.types}
-          tags={p.data.tags}
-          taskView={p.data.taskView}
-          onFilterChange={p.onFilterChange}
+          filterOpen={listFilter.filterOpen}
+          stats={filterDropdownStats ?? listData.stats}
+          types={listData.types}
+          tags={listData.tags}
+          taskView={listData.taskView}
+          onFilterChange={listActions.handlers.onFilterChange}
           onFilterClose={() => {
-            p.filter.setFilterOpen(false)
+            listFilter.setFilterOpen(false)
             focusMainSearch()
           }}
-          pushToast={p.pushToast}
-          anchorRect={p.filter.anchorRect}
+          pushToast={listActions.pushToast}
+          anchorRect={listFilter.anchorRect}
         />
 
         <div className="cmp-main">
           <div className={listPanelClass}>
             <ListResultsBody
-              listSurfaceRef={p.listSurfaceRef}
-              listSentinelRef={p.listSentinelRef}
-              selectedId={p.sel.selectedId}
-              onKeyDown={p.onListSurfaceKeyDown}
-              emptyDb={p.flags.emptyDb}
-              noResults={p.flags.noResults}
-              emptyList={p.flags.emptyList}
-              syncInfo={p.data.syncInfo}
-              onSync={p.data.onSync}
+              listSurfaceRef={listActions.refs.listSurfaceRef}
+              listSentinelRef={listActions.refs.listSentinelRef}
+              selectedId={listSelection.selectedId}
+              onKeyDown={listActions.handlers.onListSurfaceKeyDown}
+              emptyDb={listActions.flags.emptyDb}
+              noResults={listActions.flags.noResults}
+              emptyList={listActions.flags.emptyList}
+              syncInfo={listData.syncInfo}
+              onSync={listData.onSync}
               emptySyncButtonRef={emptySyncButtonRef}
-              tagCounts={p.data.stats?.tags ?? EMPTY_TAG_COUNTS}
-              rows={p.data.rows}
+              tagCounts={listData.stats?.tags ?? EMPTY_TAG_COUNTS}
+              rows={listData.rows}
               visibleRows={visibleRows}
               virtualWindow={virtualWindow}
-              sentinelSpacers={sentinelSpacers}
-              hasMore={p.data.hasMore}
+              sentinelSpacers={sentinelSpacersRes}
+              hasMore={listData.hasMore}
               maxFrecencyScore={maxFrecencyScore}
               onSelectEntry={onSelectEntry}
               onHoverEntry={onHoverEntry}
-              dragDrop={p.dragDrop}
+              dragDrop={listActions.dragDrop}
               onCycleStatus={handleCycleStatus}
               onCyclePriority={handleCyclePriority}
             />
@@ -275,37 +305,35 @@ export function ListMain({ p, showSettings, setShowSettings }: ListMainProps) {
             <div ref={detailScrollRef} className={detailPanelClass}>
               <DetailPage
                 entryId={detailEntry.id}
-                allEntries={p.data.rows}
+                allEntries={listData.rows}
                 onClose={closeDetailToList}
                 onSelectEntry={id => {
-                  p.sel.selectDetailEntry(id)
+                  listSelection.selectDetailEntry(id)
                 }}
               />
             </div>
           ) : null}
         </div>
 
-        {p.mutationError ? (
-          <div className="cmp-list-mutation-error" role="alert">
-            {p.mutationError}
-          </div>
-        ) : null}
+        <MutationErrorBanner error={listActions.mutationError} onClear={listActions.clearMutationError} />
         <ListFooter
           footerStatus={footerStatus}
           isFullDetail={isFullDetail}
           detailEntry={detailEntry}
           closeDetailToList={closeDetailToList}
           viewState={viewState}
-          selectedId={p.sel.selectedId}
-          rows={p.data.rows}
-          actionCtx={p.actionCtx}
-          entryPanelDeps={p.entryPanelDeps}
-          onOpenPalette={p.palette.openPalette}
+          selectedId={listSelection.selectedId}
+          rows={listData.rows}
+          actionCtx={listActions.actionCtx}
+          entryPanelDeps={listActions.entryPanelDeps}
+          onOpenPalette={listOverlays.palette.openPalette}
         />
       </div>
 
       <ListOverlayHosts
-        p={p}
+        listData={listData}
+        listOverlays={listOverlays}
+        listActions={listActions}
         showSettings={showSettings}
         setShowSettings={setShowSettings}
         focusMainSearch={focusMainSearch}

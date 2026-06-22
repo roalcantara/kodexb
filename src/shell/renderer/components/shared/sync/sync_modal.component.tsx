@@ -3,24 +3,7 @@ import type { CSSProperties, RefObject } from 'react'
 import { OVERLAY_SHELL_WIDTH_PX } from '../primitives/overlay_shell_layout.const'
 import { buildFileLogViews, type FileLogRowView } from './sync_modal_errors.util'
 import { useSyncModalExpansion } from './use_sync_modal_expansion.hook'
-
-export type SyncModalPhase = 'preparing' | 'active' | 'done' | 'failed'
-
-export type SyncModalModel = {
-  open: boolean
-  phase: SyncModalPhase
-  sourcesDir: string
-  totalFiles: number
-  processed: number
-  fileLog: RpcSyncFileResult[]
-  summary: RpcImportResult | null
-  failMessage: string | null
-}
-
-export type SyncModalProps = {
-  model: SyncModalModel
-  onDismiss: () => void
-}
+import type { SyncModalModel, SyncModalProps } from './sync_modal.types'
 
 function fileSummary(f: RpcSyncFileResult): string {
   if (!f.ok) return 'Failed'
@@ -132,14 +115,14 @@ function SyncModalSummary({ summary, fileLogViews }: { summary: RpcImportResult;
 
 function SyncModalSourceHeader({ model }: { model: SyncModalModel }) {
   if (model.phase === 'preparing') {
-    return <p className="cmp-sync-modal-muted">Reading source folder…</p>
+    return <p className="cmp-sync-modal-muted">Reading source folder...</p>
   }
 
   return (
     <>
       <div className="cmp-sync-modal-path-block">
         <span className="cmp-sync-modal-label">Folder</span>
-        <code className="cmp-sync-modal-path">{model.sourcesDir || '—'}</code>
+        <code className="cmp-sync-modal-path">{model.sourcesDir || '---'}</code>
       </div>
       <p className="cmp-sync-modal-count">
         <strong>{model.totalFiles}</strong> source file{model.totalFiles === 1 ? '' : 's'} to process

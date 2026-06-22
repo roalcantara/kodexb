@@ -58,21 +58,6 @@ const shellStub = {
     handleKey: () => undefined,
     onListKeyDown: () => undefined
   },
-  onListKeyDown: () => undefined,
-  handleWindowModL: () => undefined,
-  flags: { emptyDb: false, noResults: false, emptyList: false },
-  listSurfaceRef: { current: null },
-  listSentinelRef: { current: null },
-  searchInputRef: { current: null },
-  onSearchArrowDown: () => undefined,
-  onListSurfaceKeyDown: () => undefined,
-  onFilterChange: () => undefined,
-  taskSheetVisible: false,
-  taskSheetEntry: null,
-  onNewTask: () => undefined,
-  onEditTask: () => undefined,
-  onCloseTaskSheet: () => undefined,
-  dragDrop: undefined,
   palette: { open: false, actions: [], openPalette: () => undefined, closePalette: () => undefined, actionCtx: {} },
   quickLookup: { open: false, search: '', setSearch: () => undefined, closeOverlay: () => undefined },
   actionCtx: {
@@ -82,10 +67,7 @@ const shellStub = {
     onNewTask: () => undefined,
     onSync: () => undefined
   },
-  entryPanelDeps: defaultEntryActionPanelDeps(),
-  actionToasts: [],
-  dismissActionToast: () => undefined,
-  pushToast: () => undefined
+  entryPanelDeps: defaultEntryActionPanelDeps()
 }
 
 describe('ListMain', () => {
@@ -102,7 +84,47 @@ describe('ListMain', () => {
   describe('when rendering list chrome', () => {
     it('does not mount quick-actions toolbar', () => {
       const { container } = render(
-        <ListMain p={shellStub as never} showSettings={false} setShowSettings={() => undefined} />
+        <ListMain
+          listData={shellStub.data as never}
+          listFilter={shellStub.filter as never}
+          listSelection={shellStub.sel as never}
+          listOverlays={
+            {
+              taskSheet: { taskSheetVisible: false, taskSheetEntry: null, onCloseTaskSheet: () => undefined },
+              palette: shellStub.palette,
+              quickLookup: shellStub.quickLookup
+            } as never
+          }
+          listActions={
+            {
+              handlers: {
+                onListKeyDown: () => undefined,
+                handleWindowModL: () => undefined,
+                onSearchArrowDown: () => undefined,
+                onListSurfaceKeyDown: () => undefined,
+                onFilterChange: () => undefined,
+                onNewTask: () => undefined,
+                onEditTask: () => undefined
+              },
+              refs: {
+                searchInputRef: { current: null },
+                listSurfaceRef: { current: null },
+                listSentinelRef: { current: null }
+              },
+              flags: { emptyDb: false, noResults: false, emptyList: false },
+              dragDrop: undefined,
+              actionCtx: shellStub.actionCtx,
+              entryPanelDeps: shellStub.entryPanelDeps,
+              actionToasts: [],
+              dismissActionToast: () => undefined,
+              pushToast: () => undefined,
+              mutationError: null,
+              clearMutationError: () => undefined
+            } as never
+          }
+          showSettings={false}
+          setShowSettings={() => undefined}
+        />
       )
       expect(container.querySelector('.cmp-toolbar--quick-actions')).toBeNull()
     })

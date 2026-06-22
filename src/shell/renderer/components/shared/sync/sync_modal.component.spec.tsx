@@ -1,7 +1,8 @@
 // @sync_ui
 import { describe, expect, it } from 'bun:test'
 import { render, screen } from '@testing-library/react'
-import { SyncModal, type SyncModalModel } from './sync_modal.component'
+import { SyncModal } from './sync_modal.component'
+import type { SyncModalModel } from './sync_modal.types'
 
 const baseModel: SyncModalModel = {
   open: false,

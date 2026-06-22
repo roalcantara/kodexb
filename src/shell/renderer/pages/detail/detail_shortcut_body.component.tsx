@@ -8,19 +8,7 @@ import { ChordDetail } from '../../components/shortcuts/chord_detail.component'
 import { ShortcutKeymap } from '../../components/shortcuts/shortcut_keymap.component'
 import { useBindings } from '../../hooks/shortcuts/use_bindings_cache.hook'
 import { recordBindingVisit } from '../../rpc/client'
-
-export type ShortcutDetailBody =
-  | { mode: 'keymap'; restoreBindingId: string | null }
-  | { mode: 'chord'; chordHash: string; restoreBindingId: string }
-
-export type DetailShortcutBodyProps = {
-  entry: RpcKnowledge
-  entryId: number
-  body: ShortcutDetailBody
-  displayAdvisories: boolean
-  onChordDetailNavigate: (chordHash: string, bindingId: string) => void
-  onBack: () => void
-}
+import type { ShortcutDetailBody, DetailShortcutBodyProps } from './detail_shortcut_body.types'
 
 export function DetailShortcutBody({
   entry,

@@ -2,8 +2,8 @@ import type { EntryType } from '@core/domain/types/entry.types'
 import type { RpcKnowledge, TaskView } from '@shared/rpc'
 import { fireAndForget } from '@shared/utils'
 import { useCallback, useMemo, useRef, useState } from 'react'
-import type { EntryActionContext } from '../../actions/panel/panel.types'
 import { defaultEntryActionPanelDeps } from '../../actions/panel/deps.service'
+import type { EntryActionContext } from '../../actions/panel/panel.types'
 import { useQuickLookupState } from '../../hooks/shortcuts/use_quick_lookup_state.hook'
 import { deleteTask, hideWindow, reorderTask } from '../../rpc/client'
 import { focusListSurface } from '../../utils/list/list_keyboard.util'
@@ -21,7 +21,6 @@ import { useMutationError } from './use_mutation_error.hook'
 import { useTaskDragDrop } from './use_task_drag_drop.hook'
 import { useTaskKeyboard } from './use_task_keyboard.hook'
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: shell composes list, palette, task sheet, toasts
 export function useListPageShell({
   showSettings,
   onOpenSettings
@@ -188,31 +187,35 @@ export function useListPageShell({
     data,
     filter,
     sel,
-    onListKeyDown: sel.onListKeyDown,
-    handleWindowModL,
-    flags,
-    listSurfaceRef,
-    listSentinelRef,
-    searchInputRef,
-    onSearchArrowDown,
-    onListSurfaceKeyDown,
-    onFilterChange,
-    taskSheetVisible,
-    taskSheetEntry,
-    onNewTask: handleNewTask,
-    onEditTask: handleEditTask,
-    onCloseTaskSheet: handleCloseTaskSheet,
-    dragDrop,
+    taskSheet: { taskSheetVisible, taskSheetEntry, onCloseTaskSheet: handleCloseTaskSheet },
     palette,
     quickLookup,
+    handlers: {
+      onListKeyDown: sel.onListKeyDown,
+      handleWindowModL,
+      onSearchArrowDown,
+      onListSurfaceKeyDown,
+      onFilterChange,
+      onNewTask: handleNewTask,
+      onEditTask: handleEditTask
+    },
+    refs: { searchInputRef, listSurfaceRef, listSentinelRef },
+    dragDrop,
     actionCtx,
     entryPanelDeps,
     actionToasts,
     dismissActionToast,
     pushToast,
+    flags,
     mutationError,
     clearMutationError
   }
 }
 
 export type ListPageShell = ReturnType<typeof useListPageShell>
+
+export type ListData = ListPageShell['data']
+export type ListFilter = ListPageShell['filter']
+export type ListSelection = ListPageShell['sel']
+export type ListActions = Omit<ListPageShell, 'data' | 'filter' | 'sel' | 'taskSheet' | 'palette' | 'quickLookup'>
+export type ListOverlays = Pick<ListPageShell, 'taskSheet' | 'palette' | 'quickLookup'>

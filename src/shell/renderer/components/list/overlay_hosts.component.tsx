@@ -1,5 +1,5 @@
 import { fireAndForget } from '@shared/utils'
-import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
+import type { ListActions, ListData, ListOverlays } from '../../hooks/list/use_list_page_shell.hook'
 import { SettingsPage } from '../../pages/settings/settings.page'
 import { CommandPalette } from '../actions/command_palette.component'
 import { ActionToastHost } from '../shared/primitives/action_toast_host.component'
@@ -8,17 +8,30 @@ import { QuickLookupOverlay } from '../shortcuts/quick_lookup_overlay.component'
 import { TaskSheet } from '../task/task_sheet.component'
 
 export type ListOverlayHostsProps = {
-  p: ListPageShell
+  listData: ListData
+  listOverlays: ListOverlays
+  listActions: ListActions
   showSettings: boolean
   setShowSettings: (value: boolean | ((prev: boolean) => boolean)) => void
   focusMainSearch: () => void
 }
 
-export function ListOverlayHosts({ p, showSettings, setShowSettings, focusMainSearch }: ListOverlayHostsProps) {
+export function ListOverlayHosts({
+  listData,
+  listOverlays,
+  listActions,
+  showSettings,
+  setShowSettings,
+  focusMainSearch
+}: ListOverlayHostsProps) {
   return (
     <>
-      {p.taskSheetVisible ? (
-        <TaskSheet key={p.taskSheetEntry?.id ?? 'new'} entry={p.taskSheetEntry} onClose={p.onCloseTaskSheet} />
+      {listOverlays.taskSheet.taskSheetVisible ? (
+        <TaskSheet
+          key={listOverlays.taskSheet.taskSheetEntry?.id ?? 'new'}
+          entry={listOverlays.taskSheet.taskSheetEntry}
+          onClose={listOverlays.taskSheet.onCloseTaskSheet}
+        />
       ) : null}
       {showSettings ? (
         <div className="cmp-settings-host">
@@ -26,29 +39,29 @@ export function ListOverlayHosts({ p, showSettings, setShowSettings, focusMainSe
             onCloseRequest={() => setShowSettings(false)}
             onConfigSaved={cfg => {
               const ps = Number.parseInt(cfg.display.pageSize, 10)
-              if (Number.isFinite(ps) && ps > 0) p.data.setPageSize(ps)
-              fireAndForget(p.data.refreshList(false))
+              if (Number.isFinite(ps) && ps > 0) listData.setPageSize(ps)
+              fireAndForget(listData.refreshList(false))
             }}
           />
         </div>
       ) : null}
-      {p.palette.open && (
+      {listOverlays.palette.open && (
         <CommandPalette
-          open={p.palette.open}
-          actions={p.palette.actions}
+          open={listOverlays.palette.open}
+          actions={listOverlays.palette.actions}
           onClose={() => {
-            p.palette.closePalette()
+            listOverlays.palette.closePalette()
             focusMainSearch()
           }}
         />
       )}
-      <SyncModal model={p.data.syncUi} onDismiss={p.data.dismissSyncModal} />
-      <ActionToastHost toasts={p.actionToasts} onDismiss={p.dismissActionToast} />
+      <SyncModal model={listData.syncUi} onDismiss={listData.dismissSyncModal} />
+      <ActionToastHost toasts={listActions.actionToasts} onDismiss={listActions.dismissActionToast} />
       <QuickLookupOverlay
-        open={p.quickLookup.open}
-        search={p.quickLookup.search}
-        onSearchChange={p.quickLookup.setSearch}
-        onClose={p.quickLookup.closeOverlay}
+        open={listOverlays.quickLookup.open}
+        search={listOverlays.quickLookup.search}
+        onSearchChange={listOverlays.quickLookup.setSearch}
+        onClose={listOverlays.quickLookup.closeOverlay}
       />
     </>
   )

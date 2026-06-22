@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'bun:test'
 import { fireEvent, render } from '@testing-library/react'
-import { SyncModal, type SyncModalModel } from './sync_modal.component'
+import { SyncModal } from './sync_modal.component'
+import type { SyncModalModel } from './sync_modal.types'
 import { SYNC_MODAL_WIDTH_PX } from './sync_modal_layout.const'
 
 const baseModel: SyncModalModel = {

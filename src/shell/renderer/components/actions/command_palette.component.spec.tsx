@@ -2,7 +2,8 @@
 import { describe, expect, it, mock } from 'bun:test'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { CommandPalette, type CommandPaletteAction } from './command_palette.component'
+import { CommandPalette } from './command_palette.component'
+import type { CommandPaletteAction } from './command_palette.types'
 
 const noop = () => undefined
 
