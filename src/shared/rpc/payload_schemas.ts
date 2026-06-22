@@ -1,5 +1,7 @@
 import { ENTRY_TYPE_VALUES } from '@shared/constants/entry_type.const'
 import { literalUnion, strictObject } from '@shared/typebox'
+import { TASK_PRIORITY_VALUES } from '@core/domain/constants/entry.const'
+import { TASK_VIEW_ORDER } from '@core/domain/models/knowledges/task_views/task_view_order.const'
 import { Type } from '@sinclair/typebox'
 
 const PAGE_SIZE_SMALL = 25
@@ -11,8 +13,7 @@ const pageSizePatchSchema = literalUnion([PAGE_SIZE_SMALL, PAGE_SIZE_MEDIUM, PAG
 /** Upper bound for `list` pagination (guards pathological RPC payloads). */
 export const RPC_LIST_LIMIT_MAX = 10_000
 
-const taskViewValues = ['actionable', 'today', 'overdue', 'this_week', 'all_pending', 'all_doing'] as const
-const taskViewSchema = literalUnion(taskViewValues)
+const taskViewSchema = literalUnion(TASK_VIEW_ORDER)
 const entryTypeSchema = literalUnion(ENTRY_TYPE_VALUES)
 
 const listFilterFields = {
@@ -43,7 +44,7 @@ export const configPatchSchema = strictObject({
   advisories: Type.Optional(Type.Boolean())
 })
 
-const priorityUnionSchema = literalUnion(['low', 'mid', 'high', 'urgent'] as const)
+const priorityUnionSchema = literalUnion(TASK_PRIORITY_VALUES)
 const sourceVersionSchema = Type.Integer({ minimum: 0 })
 
 export const taskCreateSchema = strictObject({
