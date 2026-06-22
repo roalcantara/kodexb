@@ -18,10 +18,10 @@ import { formatListFooterStatus } from '../../utils/list/list_formatters.util'
 import { focusListSurface } from '../../utils/list/list_keyboard.util'
 import { scheduleDoubleRaf } from '../../utils/list/list_scroll.util'
 import { listSentinelSpacers } from '../../utils/list/virtual_list.util'
-import { ListFooter } from './list_footer.component'
-import { ListOverlayHosts } from './list_overlay_hosts.component'
-import { ListResultsBody } from './list_results_body.component'
-import { ListSearchFilterChrome } from './list_search_filter_chrome.component'
+import { ListFooter } from './footer.component'
+import { ListOverlayHosts } from './overlay_hosts.component'
+import { ListResultsBody } from './results_body.component'
+import { ListSearchFilterChrome } from './search_filter_chrome.component'
 
 const EMPTY_TAG_COUNTS: Readonly<Record<string, number>> = Object.freeze({})
 

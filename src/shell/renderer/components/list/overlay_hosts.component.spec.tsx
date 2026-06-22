@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'bun:test'
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ListPageShell } from '../../hooks/list/use_list_page_shell.hook'
-import { ListOverlayHosts } from './list_overlay_hosts.component'
+import { ListOverlayHosts } from './overlay_hosts.component'
 
 afterEach(() => {
   cleanup()

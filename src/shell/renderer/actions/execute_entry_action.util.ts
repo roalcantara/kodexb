@@ -2,8 +2,8 @@ import { entryActionRecordsVisit } from '@core/helpers/entry_action/entry_action
 import type { RpcKnowledge } from '@shared/rpc'
 import { recordEntryVisitFireAndForget } from '../utils/list/list_frecency.util'
 import { buildEntryActionPanel } from './build_entry_action_panel.util'
-import type { EntryAction, EntryActionContext } from './entry_action_panel.types'
-import { actionById } from './entry_action_panel_resolve.util'
+import type { EntryAction, EntryActionContext } from './panel.types'
+import { actionById } from './panel_resolve.util'
 
 export async function executePanelAction(
   action: EntryAction,
@@ -21,7 +21,7 @@ export async function executeEntryAction(
   actionId: string,
   ctx: EntryActionContext
 ): Promise<void> {
-  const { defaultEntryActionPanelDeps } = await import('./entry_action_panel_deps.util')
+  const { defaultEntryActionPanelDeps } = await import('./panel_deps.util')
   const panel = buildEntryActionPanel({ ...ctx, entry }, defaultEntryActionPanelDeps())
   const action = actionById(panel, actionId)
   if (!action) return

@@ -4,7 +4,7 @@ import { factoryFor } from '@testing'
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createRef } from 'react'
-import { ListResultsBody } from './list_results_body.component'
+import { ListResultsBody } from './results_body.component'
 
 const EXAMPLE_URL_RE = /https:\/\/example.com/
 const SYNC_SOURCES_RE = /Sync sources/i

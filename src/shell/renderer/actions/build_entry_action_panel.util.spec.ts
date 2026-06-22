@@ -3,9 +3,9 @@ import { describe, expect, it, mock } from 'bun:test'
 import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'
 import { buildEntryActionPanel } from './build_entry_action_panel.util'
-import type { EntryAction, EntryActionContext } from './entry_action_panel.types'
-import type { EntryActionPanelDeps } from './entry_action_panel_deps.util'
-import { actionById, primaryAction, secondaryAction } from './entry_action_panel_resolve.util'
+import type { EntryAction, EntryActionContext } from './panel.types'
+import type { EntryActionPanelDeps } from './panel_deps.util'
+import { actionById, primaryAction, secondaryAction } from './panel_resolve.util'
 
 const noopDeps: EntryActionPanelDeps = {
   openExternal: mock(() => Promise.resolve()),

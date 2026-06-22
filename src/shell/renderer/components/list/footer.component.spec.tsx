@@ -3,8 +3,8 @@ import type { RpcKnowledge } from '@shared/rpc'
 import { factoryFor } from '@testing'
 import { render, screen } from '@testing-library/react'
 
-import { defaultEntryActionPanelDeps } from '../../actions/entry_action_panel_deps.util'
-import { ListFooter } from './list_footer.component'
+import { defaultEntryActionPanelDeps } from '../../actions/panel_deps.util'
+import { ListFooter } from './footer.component'
 
 const commandEntry = factoryFor('command', {
   overrides: { id: 1, key: 'brew install mise', desc: 'Install mise', tags: ['brew'] }

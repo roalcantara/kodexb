@@ -4,7 +4,7 @@ import {
   secondaryActionIdForEntryType
 } from '@core/helpers/entry_action/entry_action_primary_secondary.util'
 import type { RpcKnowledge } from '@shared/rpc'
-import type { EntryAction, EntryActionRank } from './entry_action_panel.types'
+import type { EntryAction, EntryActionRank } from './panel.types'
 
 export function actionRankForEntry(entry: RpcKnowledge, actionId: EntryActionId): EntryActionRank | undefined {
   if (primaryActionIdForEntryType(entry.type) === actionId) return 'primary'

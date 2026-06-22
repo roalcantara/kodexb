@@ -2,9 +2,9 @@ import { resolveCurrentEntry } from '@core/helpers/entry_action/resolve_current_
 import type { RpcKnowledge } from '@shared/rpc'
 import { fireAndForget } from '@shared/utils'
 import { buildEntryActionPanel } from '../../actions/build_entry_action_panel.util'
-import type { EntryAction, EntryActionContext } from '../../actions/entry_action_panel.types'
-import type { EntryActionPanelDeps } from '../../actions/entry_action_panel_deps.util'
-import { primaryAction, secondaryAction } from '../../actions/entry_action_panel_resolve.util'
+import type { EntryAction, EntryActionContext } from '../../actions/panel.types'
+import type { EntryActionPanelDeps } from '../../actions/panel_deps.util'
+import { primaryAction, secondaryAction } from '../../actions/panel_resolve.util'
 import { executePanelAction } from '../../actions/execute_entry_action.util'
 import type { ViewState } from '../../utils/list/list_page_state.util'
 

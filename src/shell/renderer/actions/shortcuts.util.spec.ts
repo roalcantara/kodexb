@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { entryActionKindFromKeyboardEvent, entryActionShortcutsAllowed } from './entry_action_shortcuts.util'
+import { entryActionKindFromKeyboardEvent, entryActionShortcutsAllowed } from './shortcuts.util'
 
 describe('entryActionShortcutsAllowed()', () => {
   describe('when not blocked', () => {

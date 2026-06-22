@@ -4,7 +4,7 @@ import type { ListStats } from '@shared/rpc'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createRef } from 'react'
-import { ListSearchFilterChrome } from './list_search_filter_chrome.component'
+import { ListSearchFilterChrome } from './search_filter_chrome.component'
 
 afterEach(() => {
   cleanup()

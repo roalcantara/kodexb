@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { ListMain } from '../../components/list/list_main.component'
+import { ListMain } from '../../components/list/main.component'
 import { useListPageFocusRing } from '../../hooks/list/use_list_page_focus_ring.hook'
 import { useListPageShell } from '../../hooks/list/use_list_page_shell.hook'
 

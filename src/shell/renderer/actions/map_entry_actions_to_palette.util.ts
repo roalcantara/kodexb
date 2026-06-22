@@ -1,7 +1,7 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import { fireAndForget } from '@shared/utils'
 import type { CommandPaletteAction } from '../components/actions/command_palette.component'
-import type { EntryAction, EntryActionContext } from './entry_action_panel.types'
+import type { EntryAction, EntryActionContext } from './panel.types'
 import { executePanelAction } from './execute_entry_action.util'
 
 export function mapEntryActionsToPalette(
