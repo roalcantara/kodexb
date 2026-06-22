@@ -80,7 +80,7 @@ ls:
 
   # RPC client — renderer side of the main↔renderer bridge.
   src/shell/renderer/rpc:
-    .ts: regex:^(client|rpc_app\.types)(\.spec)?$
+    .ts: regex:^(client|transport|rpc_app\.types)(\.spec)?$
     .tsx: regex:^client\.spec$
 
   src/shell/renderer/pages/list:
