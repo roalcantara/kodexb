@@ -11,7 +11,7 @@ describe('overlay_shell_layout.const', () => {
   })
 
   it('CSS partial defines cmp-overlay-shell', () => {
-    const cssPath = path.join(import.meta.dirname, '../../styles/components/overlay_shell.css')
+    const cssPath = path.join(import.meta.dirname, '../../../styles/components/overlay_shell.css')
     const css = readFileSync(cssPath, 'utf-8')
     expect(css).toContain('.cmp-overlay-shell')
     expect(css).toContain('--overlay-shell-width')

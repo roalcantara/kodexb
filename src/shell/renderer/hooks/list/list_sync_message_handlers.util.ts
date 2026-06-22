@@ -1,7 +1,7 @@
 import type { RpcImportResult, RpcSyncProgressPayload } from '@shared/rpc'
 import { fireAndForget } from '@shared/utils'
 import type { Dispatch, RefObject, SetStateAction } from 'react'
-import type { SyncModalModel } from '../../components/shared/sync_modal.component'
+import type { SyncModalModel } from '../../components/shared/sync/sync_modal.component'
 import { syncCompleteToastForResult } from './list_sync_complete_toast.util'
 
 export type ListSyncMessageHandlerDeps = {

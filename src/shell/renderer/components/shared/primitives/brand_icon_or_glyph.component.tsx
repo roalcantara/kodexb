@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { brandSvgAssetUrl } from '../../utils/shared/brand_icon_url.util'
+import { brandSvgAssetUrl } from '../../../utils/shared/brand_icon_url.util'
 
 export type BrandIconOrGlyphProps = {
   basename: string

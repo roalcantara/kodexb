@@ -1,10 +1,10 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import { useMemo, useState } from 'react'
 
-import { TAG_BRAND_GLYPHS } from '../../constants/icons.const'
-import { TAG_BRAND_SVG_BASENAME } from '../../constants/tag_brand_svg_map.const'
-import { brandBasenameForBookmarkHost } from '../../utils/shared/bookmark_host_brand_basename.util'
-import { faviconUrlForBookmarkKey } from '../../utils/shared/favicon_url_for_bookmark.util'
+import { TAG_BRAND_GLYPHS } from '../../../constants/icons.const'
+import { TAG_BRAND_SVG_BASENAME } from '../../../constants/tag_brand_svg_map.const'
+import { brandBasenameForBookmarkHost } from '../../../utils/shared/bookmark_host_brand_basename.util'
+import { faviconUrlForBookmarkKey } from '../../../utils/shared/favicon_url_for_bookmark.util'
 import { BrandIconOrGlyph } from './brand_icon_or_glyph.component'
 
 export type BookmarkEntryIconProps = {

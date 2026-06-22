@@ -8,7 +8,7 @@ import {
   entryTitleText
 } from '../../utils/list/entry_row_display.util'
 import { getIcon } from '../../utils/shared/get_icon.util'
-import { BadgeAccessory } from '../shared/badge_accessory.component'
+import { BadgeAccessory } from '../shared/primitives/badge_accessory.component'
 import { EntryRowFrecencyIndicator } from './entry_row_frecency_indicator.component'
 
 const EMPTY_TAG_COUNTS: Readonly<Record<string, number>> = Object.freeze({})

@@ -1,7 +1,7 @@
 import type { ListStats, RpcDbStats } from '@shared/rpc'
 import { fireAndForget } from '@shared/utils'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { SyncModalModel } from '../../components/shared/sync_modal.component'
+import type { SyncModalModel } from '../../components/shared/sync/sync_modal.component'
 import { getListStats, getStats, getSyncInfo, setSyncMessageHandlers, syncRpc } from '../../rpc/client'
 import { listSyncMessageHandlers } from './list_sync_message_handlers.util'
 

@@ -1,6 +1,6 @@
 import type { RpcKnowledge } from '@shared/rpc'
 
-import { BadgeAccessory } from '../shared/badge_accessory.component'
+import { BadgeAccessory } from '../shared/primitives/badge_accessory.component'
 
 function dependencyKeys(entry: RpcKnowledge): number[] {
   if (entry.type !== 'task') return []

@@ -1,7 +1,7 @@
 import { describe, expect, it, mock } from 'bun:test'
 import type { RpcImportResult } from '@shared/rpc'
 import type { Dispatch, SetStateAction } from 'react'
-import type { SyncModalModel } from '../../components/shared/sync_modal.component'
+import type { SyncModalModel } from '../../components/shared/sync/sync_modal.component'
 import { type ListSyncMessageHandlerDeps, listSyncMessageHandlers } from './list_sync_message_handlers.util'
 
 const closedModal: SyncModalModel = {

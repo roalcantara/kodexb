@@ -1,4 +1,4 @@
-import type { ActionToast } from '../../hooks/shared/use_action_toast.hook'
+import type { ActionToast } from '../../../hooks/shared/use_action_toast.hook'
 
 export type ActionToastHostProps = {
   toasts: ActionToast[]

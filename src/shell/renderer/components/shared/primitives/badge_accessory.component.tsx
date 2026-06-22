@@ -1,8 +1,8 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import { memo } from 'react'
 
-import { formatEnGbDate } from '../../utils/shared/format_en_gb_date.util'
-import { isTaskKnowledge, taskIsBlocked, taskIsOverdue } from '../../utils/shared/task_state.util'
+import { formatEnGbDate } from '../../../utils/shared/format_en_gb_date.util'
+import { isTaskKnowledge, taskIsBlocked, taskIsOverdue } from '../../../utils/shared/task_state.util'
 
 export type BadgeAccessoryProps = {
   entry: RpcKnowledge

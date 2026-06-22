@@ -1,6 +1,6 @@
 import type { RpcImportResult, RpcSyncFileResult } from '@shared/rpc'
 import type { CSSProperties, RefObject } from 'react'
-import { OVERLAY_SHELL_WIDTH_PX } from './overlay_shell_layout.const'
+import { OVERLAY_SHELL_WIDTH_PX } from '../primitives/overlay_shell_layout.const'
 import { buildFileLogViews, type FileLogRowView } from './sync_modal_errors.util'
 import { useSyncModalExpansion } from './use_sync_modal_expansion.hook'
 

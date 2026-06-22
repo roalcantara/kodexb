@@ -17,11 +17,11 @@ export type PreviewImageProps = {
 }
 
 function defaultFetchImage(url: string): Promise<PreviewImageResult | null> {
-  return import('../../rpc/client').then(m => m.fetchPreviewImage(url))
+  return import('../../../rpc/client').then(m => m.fetchPreviewImage(url))
 }
 
 function defaultOpenUrl(url: string): Promise<void> {
-  return import('../../rpc/client').then(m => m.openExternal(url))
+  return import('../../../rpc/client').then(m => m.openExternal(url))
 }
 
 function PreviewImageFigure({

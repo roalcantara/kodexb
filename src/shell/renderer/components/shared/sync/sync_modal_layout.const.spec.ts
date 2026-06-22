@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { SYNC_MODAL_WIDTH_PX } from './sync_modal_layout.const'
 
-const syncCssPath = path.join(import.meta.dirname, '../../styles/components/sync.css')
+const syncCssPath = path.join(import.meta.dirname, '../../../styles/components/sync.css')
 
 describe('sync_modal_layout.const', () => {
   it('exports the fixed modal width used by sync.css', () => {

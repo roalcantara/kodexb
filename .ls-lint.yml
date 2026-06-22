@@ -24,8 +24,29 @@ ls:
   src/shell/app:
     .ts: regex:^(app|index)(\.spec)?$
 
+  src/shell/app/config:
+    .ts: regex:^([a-z][a-z0-9_]*\.(loader|schema)(\.spec)?)$
+
   src/shell/app/db:
     .ts: regex:^([a-z][a-z0-9_]*\.(repository|service)|[a-z][a-z0-9_]+\.(util|const)|client|schema|index)(\.spec)?$
+
+  src/shell/app/services:
+    .ts: regex:^[a-z][a-z0-9_]*\.service(\.spec)?$
+
+  src/shell/app/lib/list:
+    .ts: regex:^([a-z][a-z0-9_]*(\.[a-z][a-z0-9_]+)*\.(util)(\.spec)?)$
+
+  src/shell/app/lib/sync:
+    .ts: regex:^([a-z][a-z0-9_]*(\.[a-z][a-z0-9_]+)*\.(util|service|repository|error)(\.spec)?)$
+
+  src/shell/app/lib/task:
+    .ts: regex:^([a-z][a-z0-9_]*(\.[a-z][a-z0-9_]+)*\.(util|service)(\.spec)?)$
+
+  src/shell/app/lib/preview:
+    .ts: regex:^([a-z][a-z0-9_]*(\.[a-z][a-z0-9_]+)*\.(util|client)(\.spec)?)$
+
+  src/shell/app/lib/shell:
+    .ts: regex:^([a-z][a-z0-9_]*(\.[a-z][a-z0-9_]+)*\.(util|types)(\.spec)?)$
 
   src/shell/app/lib:
     .ts: regex:^([a-z][a-z0-9_]*(\.[a-z][a-z0-9_]+)*\.(util|service|repository|client|types|error)(\.spec)?)$
@@ -108,6 +129,9 @@ ls:
 
   # Anchor hook rules because ls-lint regexes match substrings. The .ts rules
   # intentionally allow future .hook.spec.ts tests in shortcuts folder.
+  src/shell/renderer/hooks/detail:
+    .ts: regex:^use_[a-z][a-z0-9_]*\.hook(\.spec)?$
+
   src/shell/renderer/hooks/shortcuts:
     .ts: regex:^use_[a-z][a-z0-9_]*\.hook(\.spec)?$
     .tsx: regex:^use_[a-z][a-z0-9_]*\.hook\.spec$
@@ -142,7 +166,18 @@ ls:
   src/shell/renderer/components/detail:
     .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
 
-  src/shell/renderer/components/shared:
+  src/shell/renderer/components/shared/primitives:
+    .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
+    .ts: regex:[a-z][a-z0-9_]*\.(const)(\.spec)?
+
+  src/shell/renderer/components/shared/sync:
+    .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
+    .ts: regex:[a-z][a-z0-9_]*\.(const|hook|util)(\.spec)?
+
+  src/shell/renderer/components/actions:
+    .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
+
+  src/shell/renderer/components/task:
     .tsx: regex:[a-z][a-z0-9_]*\.component(\.spec)?
 
   src/shell/renderer/components/shortcuts:
