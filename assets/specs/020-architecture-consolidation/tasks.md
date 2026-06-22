@@ -34,9 +34,9 @@ passes. Phase order: **0 → F → A → C → B → D → E → closeout**.
 
 ## Phase E — component & action organization (relocations last)
 - [ ] **T117** Drop redundant folder-prefixes (`list_*`, `entry_action_*`) — *gate:* ARCH-6 AC1
-- [ ] **T118** Split `components/shared` (primitives vs sync) + doc — *gate:* ARCH-6 AC2
-- [ ] **T119** Reorganize `actions` + single-source keymap — *gate:* ARCH-6 AC3
-- [ ] **T120** Decompose `shell_hooks.util.ts` by domain — *gate:* ARCH-6 AC4
+- [X] **T118** Split `components/shared` (primitives vs sync) + doc — *gate:* ARCH-6 AC2
+- [X] **T119** Reorganize `actions` + single-source keymap — *gate:* ARCH-6 AC3
+- [X] **T120** Decompose `shell_hooks.util.ts` by domain — *gate:* ARCH-6 AC4
 
 ## Commit plan
 

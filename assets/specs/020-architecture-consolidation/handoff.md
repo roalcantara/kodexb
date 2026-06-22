@@ -33,9 +33,9 @@ compare` must never regress; no new `// biome-ignore`; biome caps only tighten.
 | ARCH-5 AC2 | shared overlay primitive; jscpd ↓ | `bun run lint` (jscpd stage) ; renderer specs green | ☐ |
 | ARCH-5 AC3 | no type imports from `.component.tsx` | `rg "from '\\./.*\\.component'" src/shell/renderer --glob '!*.spec.*'` ; `bun run typecheck` | ☐ |
 | ARCH-6 AC1 | redundant folder-prefixes dropped | `find …/components/list -name 'list_*'` & `find …/actions -name 'entry_action_*'` → 0 ; `bun run lint:ls` | ☐ |
-| ARCH-6 AC2 | `components/shared` primitives vs sync split | `bun test src/shell/renderer` ; STYLING/CODESTYLE note added | ☐ |
-| ARCH-6 AC3 | `actions` role suffixes + single keymap | `bun run lint:ls` ; `mise run audit roles compare` (mislabeled 0) | ☐ |
-| ARCH-6 AC4 | `shell_hooks.util.ts` decomposed by domain | `rg shell_hooks src` → 0 ; `bun run lint:ls` ; `bun test src/shell/main src/shell/app` | ☐ |
+| ARCH-6 AC2 | `components/shared` primitives vs sync split | `bun test src/shell/renderer` ; STYLING/CODESTYLE note added | ✅ |
+| ARCH-6 AC3 | `actions` role suffixes + single keymap | `bun run lint:ls` ; `mise run audit roles compare` (mislabeled 0) | ✅ |
+| ARCH-6 AC4 | `shell_hooks.util.ts` decomposed by domain | `rg shell_hooks src` → 0 ; `bun run lint:ls` ; `bun test src/shell/main src/shell/app` | ✅ |
 | DoD 1–7 | all ACs + ratcheted baseline + duplicate P3-7 fixed + catalog key | `mise run spec ready assets/specs/020-architecture-consolidation --key architecture_consolidation` | ☐ |
 
 ## Closeout metrics (fill at DoD)
