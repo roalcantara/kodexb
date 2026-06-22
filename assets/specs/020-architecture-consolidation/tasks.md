@@ -21,7 +21,7 @@ passes. Phase order: **0 → F → A → C → B → D → E → closeout**.
 - [ ] **T110** Relocate `app/lib` → domain subfolders, drop `app_` prefix — *gate:* ARCH-2 AC2
 
 ## Phase C — RPC client split
-- [ ] **T111** `client.ts` transport vs endpoint facade — *gate:* ARCH-3 AC1
+- [X] **T111** `client.ts` transport vs endpoint facade — *gate:* ARCH-3 AC1
 
 ## Phase B — list-page contract
 - [ ] **T112** Replace `p` bag with named contracts; break up `ListMain`; remove list suppressions — *gate:* ARCH-4 AC1/AC2
@@ -33,7 +33,7 @@ passes. Phase order: **0 → F → A → C → B → D → E → closeout**.
 - [ ] **T116** Types out of `.component.tsx` — *gate:* ARCH-5 AC3
 
 ## Phase E — component & action organization (relocations last)
-- [ ] **T117** Drop redundant folder-prefixes (`list_*`, `entry_action_*`) — *gate:* ARCH-6 AC1
+- [X] **T117** Drop redundant folder-prefixes (`list_*`, `entry_action_*`) — *gate:* ARCH-6 AC1
 - [X] **T118** Split `components/shared` (primitives vs sync) + doc — *gate:* ARCH-6 AC2
 - [X] **T119** Reorganize `actions` + single-source keymap — *gate:* ARCH-6 AC3
 - [X] **T120** Decompose `shell_hooks.util.ts` by domain — *gate:* ARCH-6 AC4

@@ -25,14 +25,14 @@ compare` must never regress; no new `// biome-ignore`; biome caps only tighten.
 | ARCH-2 AC1 | `App` ≤160 facade + cap tightened | `wc -l src/shell/app/app.ts` ; `bun test src/shell/app src/shell/main/rpc` | ☐ |
 | ARCH-2 AC2 | `app/lib` domain subfolders, no `app_` | `find src/shell/app/lib -maxdepth 1 -name 'app_*'` → 0 ; `bun run lint:ls` | ☐ |
 | ARCH-2 AC3 | Promise.resolve boilerplate collapsed | `rg -c 'return Promise\.resolve' src/shell/app/app.ts` ; route specs green | ☐ |
-| ARCH-3 AC1 | `client.ts` transport vs facade split | `wc -l src/shell/renderer/rpc/client.ts` ; `bun test src/shell/renderer/rpc` | ☐ |
+| ARCH-3 AC1 | `client.ts` transport vs facade split | `wc -l src/shell/renderer/rpc/client.ts` ; `bun test src/shell/renderer/rpc` | ✅ (136 LOC) |
 | ARCH-4 AC1 | named contracts replace `p`; `ListMain` split | `bun test src/shell/renderer/components/list src/shell/renderer/hooks/list` | ☐ |
 | ARCH-4 AC2 | list suppressions removed (no new ignores) | `rg 'biome-ignore' src/shell/renderer/components/list src/shell/renderer/hooks/list` ; `bun run lint:biome` | ☐ |
 | ARCH-4 AC3 | list page consumes `stats.byType` | `rg 'stats\.(bookmark\|command\|cheat\|task\|shortcut)\b' src/shell/renderer/{components,hooks,utils}/list` → 0 | ☐ |
 | ARCH-5 AC1 | one overlay coordinator | renderer specs green ; coordinator owns overlay state | ☐ |
 | ARCH-5 AC2 | shared overlay primitive; jscpd ↓ | `bun run lint` (jscpd stage) ; renderer specs green | ☐ |
 | ARCH-5 AC3 | no type imports from `.component.tsx` | `rg "from '\\./.*\\.component'" src/shell/renderer --glob '!*.spec.*'` ; `bun run typecheck` | ☐ |
-| ARCH-6 AC1 | redundant folder-prefixes dropped | `find …/components/list -name 'list_*'` & `find …/actions -name 'entry_action_*'` → 0 ; `bun run lint:ls` | ☐ |
+| ARCH-6 AC1 | redundant folder-prefixes dropped | `find …/components/list -name 'list_*'` & `find …/actions -name 'entry_action_*'` → 0 ; `bun run lint:ls` | ✅ |
 | ARCH-6 AC2 | `components/shared` primitives vs sync split | `bun test src/shell/renderer` ; STYLING/CODESTYLE note added | ✅ |
 | ARCH-6 AC3 | `actions` role suffixes + single keymap | `bun run lint:ls` ; `mise run audit roles compare` (mislabeled 0) | ✅ |
 | ARCH-6 AC4 | `shell_hooks.util.ts` decomposed by domain | `rg shell_hooks src` → 0 ; `bun run lint:ls` ; `bun test src/shell/main src/shell/app` | ✅ |
