@@ -21,7 +21,7 @@ const noop = (): undefined => undefined
 /**
  * Window-drag hook for the chromeless desktop shell. The native NSWindow drag
  * region is unavailable when `titleBarStyle: 'hidden'` (see
- * `src/shell/main/shell_hooks.util.ts`), so the renderer drives drag itself
+ * `src/shell/main/window/shell_hooks.service.ts`), so the renderer drives drag itself
  * over RPC: capture screen-cursor delta on mousedown, coalesce mousemove to
  * `requestAnimationFrame`, fire-and-forget `setWindowPosition` per frame.
  *

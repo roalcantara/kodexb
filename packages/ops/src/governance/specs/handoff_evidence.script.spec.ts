@@ -17,6 +17,18 @@ describe('collectHandoffEvidenceRuns', () => {
     expect(runs.every(r => !r.operatorSmoke)).toBe(true)
   })
 
+  it('preserves .script.spec.ts paths for closeout evidence', () => {
+    const md = [
+      '| ID | Done when | Evidence |',
+      '| --- | --- | --- |',
+      '| AC1 | passes | `bun test ./packages/ops/src/metrics/harnesses/role-conformance/role_conformance_core.script.spec.ts` |'
+    ].join('\n')
+    const runs = collectHandoffEvidenceRuns(md)
+    expect(runs[0]?.command).toBe(
+      'bun test ./packages/ops/src/metrics/harnesses/role-conformance/role_conformance_core.script.spec.ts'
+    )
+  })
+
   it('includes operator smoke when requested', () => {
     const runs = collectHandoffEvidenceRuns(HANDOFF, { includeOperatorSmoke: true })
     expect(runs).toHaveLength(2)

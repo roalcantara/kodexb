@@ -151,7 +151,7 @@ const BACKTICK_CMD = /`([^`]+)`/g
 export function commandsFromEvidenceText(evidence: string): string[] {
   const out: string[] = []
   for (const m of evidence.matchAll(BACKTICK_CMD)) {
-    const cmd = m[1]?.trim().replace(/\.ts$/, '')
+    const cmd = m[1]?.trim()
     if (cmd && !/^see\b/i.test(cmd) && !/^same spec/i.test(cmd)) out.push(cmd)
   }
   return out

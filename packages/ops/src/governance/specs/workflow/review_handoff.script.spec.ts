@@ -53,8 +53,19 @@ describe('routeReviewSkills', () => {
 
 describe('commandsFromEvidenceText', () => {
   it('extracts backtick commands and skips prose references', () => {
-    expect(commandsFromEvidenceText('`bun test foo.spec.ts` (round-trip)')).toEqual(['bun test foo.spec'])
+    expect(commandsFromEvidenceText('`bun test foo.spec.ts` (round-trip)')).toEqual(['bun test foo.spec.ts'])
     expect(commandsFromEvidenceText('Same spec; see handoff')).toEqual([])
+  })
+
+  it('preserves .ts for repo script.spec and repository.spec paths', () => {
+    expect(
+      commandsFromEvidenceText(
+        '`bun test ./packages/ops/src/metrics/harnesses/role-conformance/role_conformance_core.script.spec.ts`'
+      )
+    ).toEqual(['bun test ./packages/ops/src/metrics/harnesses/role-conformance/role_conformance_core.script.spec.ts'])
+    expect(commandsFromEvidenceText('`bun test src/shell/app/db/task.repository.spec.ts`')).toEqual([
+      'bun test src/shell/app/db/task.repository.spec.ts'
+    ])
   })
 })
 
@@ -68,7 +79,7 @@ describe('extractEvidenceCommands', () => {
     const rows = extractEvidenceCommands(md)
     expect(rows).toHaveLength(1)
     expect(rows[0]?.acId).toBe('WOBS-1 AC1')
-    expect(rows[0]?.commands).toEqual(['bun test workflow_run.script.spec'])
+    expect(rows[0]?.commands).toEqual(['bun test workflow_run.script.spec.ts'])
   })
 })
 
@@ -134,7 +145,7 @@ describe('buildAuditScaffoldMarkdown', () => {
     })
     expect(content).toContain('| --- | --- | --- |')
     expect(content).toContain('WOBS-1 AC1')
-    expect(content).toContain('bun test workflow_run.script.spec')
+    expect(content).toContain('bun test workflow_run.script.spec.ts')
     expect(content).toContain('## Before done commands')
     expect(content).toContain('packages/ops/src/governance/specs/workflow/foo.script')
   })

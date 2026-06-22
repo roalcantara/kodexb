@@ -129,7 +129,25 @@ export function useListMainEffects(
   }, [detailEntry, listActions.refs.listSurfaceRef])
 }
 
-// biome-ignore lint/complexity/noExcessiveLinesPerFunction: 020 ARCH-4 handler bundle; 58 lines after split — further extraction regresses traceability
+function useGlobalShortcut(props: ListMainProps, derived: ReturnType<typeof useListMainDerived>) {
+  const { listData, listSelection, listActions } = props
+  const { detailEntry, viewState } = derived
+  return useCallback(
+    (action: 'open-editor' | 'copy-desc') => {
+      const entry = resolveCurrentEntry({
+        viewState,
+        selectedId: listSelection.selectedId,
+        detailEntry,
+        rows: listData.rows,
+        detailPanelHasFocus: false
+      })
+      if (!entry) return
+      fireAndForget(executeEntryAction(entry, action, { ...listActions.actionCtx, entry }))
+    },
+    [viewState, listSelection.selectedId, detailEntry, listData.rows, listActions.actionCtx]
+  )
+}
+
 export function useListMainHandlers(props: ListMainProps, derived: ReturnType<typeof useListMainDerived>) {
   const { listData, listSelection, listOverlays, listActions, listFilter, showSettings } = props
   const { detailEntry, viewState } = derived
@@ -172,20 +190,7 @@ export function useListMainHandlers(props: ListMainProps, derived: ReturnType<ty
     scheduleDoubleRaf(() => listActions.refs.searchInputRef.current?.focus({ preventScroll: true }))
   }, [listActions.refs.searchInputRef])
 
-  const handleGlobalShortcut = useCallback(
-    (action: 'open-editor' | 'copy-desc') => {
-      const entry = resolveCurrentEntry({
-        viewState,
-        selectedId: listSelection.selectedId,
-        detailEntry,
-        rows: listData.rows,
-        detailPanelHasFocus: false
-      })
-      if (!entry) return
-      fireAndForget(executeEntryAction(entry, action, { ...listActions.actionCtx, entry }))
-    },
-    [viewState, listSelection.selectedId, detailEntry, listData.rows, listActions.actionCtx]
-  )
+  const handleGlobalShortcut = useGlobalShortcut(props, derived)
 
   const closeDetailToList = useCallback(() => {
     listSelection.closeToList()
