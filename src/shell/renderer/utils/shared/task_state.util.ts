@@ -1,6 +1,9 @@
 import type { Knowledge } from '@core'
-import { taskIsBlocked as coreIsBlocked, taskIsOverdue as coreIsOverdue } from '@core/domain/models/knowledges/task_views/task_state.predicates.util'
 import type { TaskKnowledge } from '@core/domain/models/knowledges/task_views/task_date.util'
+import {
+  taskIsBlocked as coreIsBlocked,
+  taskIsOverdue as coreIsOverdue
+} from '@core/domain/models/knowledges/task_views/task_state.predicates.util'
 
 export type { TaskKnowledge }
 

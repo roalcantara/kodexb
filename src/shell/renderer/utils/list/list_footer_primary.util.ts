@@ -1,11 +1,11 @@
 import { resolveCurrentEntry } from '@core/helpers/entry_action/resolve_current_entry.util'
 import type { RpcKnowledge } from '@shared/rpc'
 import { fireAndForget } from '@shared/utils'
-import { buildEntryActionPanel } from '../../actions/panel/action_builder.service'
-import type { EntryAction, EntryActionContext } from '../../actions/panel/panel.types'
-import type { EntryActionPanelDeps } from '../../actions/panel/deps.service'
-import { primaryAction, secondaryAction } from '../../actions/panel/resolve.resolver'
 import { executePanelAction } from '../../actions/execute.executor'
+import { buildEntryActionPanel } from '../../actions/panel/action_builder.service'
+import type { EntryActionPanelDeps } from '../../actions/panel/deps.service'
+import type { EntryAction, EntryActionContext } from '../../actions/panel/panel.types'
+import { primaryAction, secondaryAction } from '../../actions/panel/resolve.resolver'
 import type { ViewState } from '../../utils/list/list_page_state.util'
 
 export type ListFooterActionContext = {

@@ -1,8 +1,8 @@
 import type { RpcKnowledge } from '@shared/rpc'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { buildEntryActionPanel } from '../../actions/panel/action_builder.service'
-import type { EntryActionContext } from '../../actions/panel/panel.types'
 import type { EntryActionPanelDeps } from '../../actions/panel/deps.service'
+import type { EntryActionContext } from '../../actions/panel/panel.types'
 import { mapEntryActionsToPalette } from '../../actions/to_palette.util'
 import type { CommandPaletteAction } from '../../components/actions/command_palette.types'
 
