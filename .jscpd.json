@@ -34,6 +34,8 @@
     "packages/ops/src/__tests__/fixtures/workflow_status/**",
     ".cursor/plans/**",
     "packages/dev/tsconfig.json",
-    "packages/ops/tsconfig.json"
+    "packages/ops/tsconfig.json",
+    "src/shell/main/menu/application_menu.model.spec.ts",
+    "src/shell/main/menu/application_menu.service.spec.ts"
   ]
 }

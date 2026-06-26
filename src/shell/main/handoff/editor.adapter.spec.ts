@@ -93,3 +93,29 @@ describe('openInEditor()', () => {
     })
   })
 })
+
+describe('openInPreferredEditor()', () => {
+  it('prefers editorApp over EDITOR', async () => {
+    const { openInPreferredEditor } = await import('./editor.adapter')
+    expect(openInPreferredEditor('/tmp/test.md', { editorApp: 'Code', editorFromEnv: 'vim' }, 'darwin')).toEqual({
+      ok: true
+    })
+  })
+
+  it('spawns EDITOR when editorApp is unset', async () => {
+    const spawnCalls: string[][] = []
+    const savedSpawn = Bun.spawn
+    Bun.spawn = ((args: string[]) => {
+      spawnCalls.push(args)
+      return { detached: true, unref: () => undefined } as unknown as ReturnType<typeof Bun.spawn>
+    }) as typeof Bun.spawn
+
+    try {
+      const { openInPreferredEditor } = await import('./editor.adapter')
+      expect(openInPreferredEditor('/tmp/cfg.yaml', { editorFromEnv: 'code --wait' })).toEqual({ ok: true })
+      expect(spawnCalls[0]).toEqual(['code', '--wait', '/tmp/cfg.yaml'])
+    } finally {
+      Bun.spawn = savedSpawn
+    }
+  })
+})

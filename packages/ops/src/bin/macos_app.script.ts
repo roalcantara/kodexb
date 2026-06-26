@@ -100,23 +100,20 @@ export function runMacosAction(action: 'install' | 'uninstall' | 'login-item', m
 
 if (import.meta.main || (process.argv[1] && !process.argv[1].includes('.spec.'))) {
   const env = process.env as Record<string, string | undefined>
-  const command: string = usageCmd(env, 'help')
+  const command = usageCmd(env, process.argv[2])
   const strings = usageStrings(env, ['mode'])
+  const loginItemMode = (strings.mode ?? process.argv[3]) as 'enable' | 'disable' | undefined
 
-  switch (command) {
-    case 'install':
-      runMacosAction('install')
-      break
-    case 'uninstall':
-      runMacosAction('uninstall')
-      break
-    case 'login-item':
-      runMacosAction('login-item', strings.mode as 'enable' | 'disable')
-      break
-    default:
-      log.info(
-        'Usage: bun packages/ops/src/bin/macos_app.script.ts [install|uninstall|login-item enable|login-item disable]'
-      )
-      process.exitCode = 1
+  if (command === 'install') {
+    runMacosAction('install')
+  } else if (command === 'uninstall') {
+    runMacosAction('uninstall')
+  } else if (command === 'login-item') {
+    runMacosAction('login-item', loginItemMode)
+  } else {
+    log.info(
+      'Usage: bun packages/ops/src/bin/macos_app.script.ts [install|uninstall|login-item enable|login-item disable]'
+    )
+    process.exitCode = 1
   }
 }

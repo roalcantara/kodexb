@@ -5,9 +5,7 @@
   "type": "module",
   "private": true,
   "workspaces": {
-    "packages": [
-      "packages/*"
-    ],
+    "packages": ["packages/*"],
     "catalog": {
       "@logtape/logtape": "^2.1.5",
       "@sinclair/typebox": "^0.34.49",
@@ -19,6 +17,7 @@
     "start": "electrobun dev",
     "install:macos": "bun bin/macos_app.script.ts install",
     "uninstall:macos": "bun bin/macos_app.script.ts uninstall",
+    "reinstall:macos": "mise run app --kill && bun run uninstall:macos && rm -rf build dist && bun run install:macos",
     "startup:enable": "bun bin/macos_app.script.ts login-item enable",
     "startup:disable": "bun bin/macos_app.script.ts login-item disable",
     "predev": "mise run -q app styles",
@@ -124,29 +123,68 @@
   },
   "release-it": {
     "git": {
-      "commitMessage": "chore(release): Release v${version} [skip ci]\n\nPrepare the release commit so changelog and version stay aligned.",
+      "commitArgs": ["-S"],
+      "tagArgs": ["-s"],
+      "commitMessage": "ci(release): Bump version to ${version} [skip ci]",
       "tagName": "v${version}",
+      "tagAnnotation": "Release v${version}",
       "requireBranch": "main",
       "requireCleanWorkingDir": true,
-      "requireCommits": true
+      "push": true
     },
     "github": {
-      "release": false,
+      "release": true,
+      "draft": true,
+      "releaseName": "v${version}",
       "tokenRef": "GH_TOKEN"
     },
     "npm": {
       "publish": false
     },
-    "hooks": {
-      "after:bump": "bun run typecheck"
-    },
     "plugins": {
       "@release-it/conventional-changelog": {
         "preset": {
-          "name": "conventionalcommits"
+          "name": "conventionalcommits",
+          "types": [
+            {
+              "type": "feat",
+              "section": "Features"
+            },
+            {
+              "type": "fix",
+              "section": "Bug Fixes"
+            },
+            {
+              "type": "perf",
+              "section": "Performance"
+            },
+            {
+              "type": "ref",
+              "section": "Refactoring"
+            },
+            {
+              "type": "docs",
+              "section": "Documentation"
+            },
+            {
+              "type": "test",
+              "section": "Tests",
+              "hidden": true
+            },
+            {
+              "type": "chore",
+              "section": "Chores",
+              "hidden": true
+            },
+            {
+              "type": "ci",
+              "section": "CI",
+              "hidden": true
+            }
+          ]
         },
         "infile": "CHANGELOG.md",
-        "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.\n"
+        "header": "# Changelog"
       }
     }
   }

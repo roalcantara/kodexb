@@ -1,4 +1,26 @@
-# .github/workflows/release.yml
+# Triggered on every push to main (i.e. every merged PR).
+# Uses release-it (with @release-it/conventional-changelog) to:
+#   - analyse commits since the last tag
+#   - decide whether a release is warranted
+#   - bump version, update CHANGELOG.md, commit, tag, push
+#   - create a GitHub Release
+# If no releasable commits are found, release-it exits 0 with no side effects.
+#
+# Required merge strategy: SQUASH AND MERGE only.
+#
+#   ✓ Squash and merge  — one conventional commit per PR; clean linear history;
+#                         one accurate changelog entry per PR.
+#
+#   ✗ Create a merge commit — the merge commit ('Merge pull request #N …') is
+#                         non-conventional and ignored by release-it, but ALL
+#                         individual branch commits land on main separately,
+#                         creating multiple changelog entries per PR (including
+#                         any work-in-progress commits).
+#
+#   ✗ Rebase and merge  — same multi-entry changelog problem as merge commits;
+#                         additionally GitHub rewrites commit SHAs during rebase,
+#                         invalidating the original SSH commit signatures and
+#                         violating the signed-commit branch ruleset.
 name: Release
 
 on:
@@ -9,9 +31,14 @@ concurrency:
   group: app-release
   cancel-in-progress: false
 
+env:
+  CI: true
+  # https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       issues: write
@@ -23,7 +50,6 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
-
       - name: Validate squash-and-merge strategy
         env:
           BEFORE: ${{ github.event.before }}
@@ -41,67 +67,131 @@ jobs:
 
       - name: Configure git signing & identity
         env:
-          PUB: ${{ vars.RELEASE_SIGNING_SIGNER_PUB }}
+          # Ensures that bash assignments read from environment variables, not expression syntax.
+          # This keeps behavior correct and makes fallback logic explicit and reliable in shell (-z checks now operate on plain env values, not expression syntax).
+          RELEASE_SIGNING_SIGNER_PUB: ${{ vars.RELEASE_SIGNING_SIGNER_PUB }}
           GIT_USER_NAME: ${{ vars.RELEASE_GIT_USER_NAME }}
           GIT_USER_EMAIL: ${{ vars.RELEASE_GIT_USER_EMAIL }}
         run: |
-          set -euo pipefail
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          if [[ -n "${PUB:-}" ]]; then
-            printf '%s\n' "$PUB" > ~/.ssh/release_signing_key.pub
+          git config --global gpg.format ssh
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          # Prefer a pre-provided public key (best), otherwise derive from agent
+          if [ -n "$RELEASE_SIGNING_SIGNER_PUB" ]; then
+            signing_pub="$RELEASE_SIGNING_SIGNER_PUB"
           else
-            ssh-add -L | head -n 1 > ~/.ssh/release_signing_key.pub
+            # Use the pubkey from the agent (first key), with validation
+            first_key="$(ssh-add -L 2>/dev/null | head -n 1 || true)"
+            if [ -z "$first_key" ]; then
+              echo "ERROR: No SSH public key found in ssh-agent. Ensure RELEASE_SIGNING_SSH_KEY is configured, or set RELEASE_SIGNING_SIGNER_PUB to a valid public key." >&2
+              exit 1
+            fi
+            signing_pub="$first_key"
           fi
-          chmod 600 ~/.ssh/release_signing_key.pub
-          git config gpg.format ssh
-          git config user.signingkey ~/.ssh/release_signing_key.pub
-          git config commit.gpgsign true
-          git config tag.gpgsign true
-          git config user.name  "${GIT_USER_NAME:-github-actions[bot]}"
-          git config user.email "${GIT_USER_EMAIL:-41898282+github-actions[bot]@users.noreply.github.com}"
+          printf '%s\n' "$signing_pub" > ~/.ssh/release_signing_key.pub
+          chmod 644 ~/.ssh/release_signing_key.pub
+          git config --global user.signingkey ~/.ssh/release_signing_key.pub
+          git config --global commit.gpgsign true
+          git config --global tag.gpgsign true
+
+          # Fallback to github-actions[bot] identity if not set
+          GIT_USER_NAME="${RELEASE_GIT_USER_NAME}"
+          GIT_USER_EMAIL="${RELEASE_GIT_USER_EMAIL}"
+          if [ -z "$GIT_USER_NAME" ] || [ -z "$GIT_USER_EMAIL" ]; then
+            echo "RELEASE_GIT_USER_NAME / RELEASE_GIT_USER_EMAIL not set; falling back to github-actions[bot] identity."
+            GIT_USER_NAME="github-actions[bot]"
+            GIT_USER_EMAIL="41898282+github-actions[bot]@users.noreply.github.com"
+          fi
+          git config --global user.name  "$GIT_USER_NAME"
+          git config --global user.email "$GIT_USER_EMAIL"
 
       - name: Verify signing works (commit + tag)
         run: |
-          set -euo pipefail
-          tmp="$(mktemp -d)"
-          tag="signing-test-tag-$$"
-          trap 'rm -rf "$tmp"' EXIT
-          (
-            cd "$tmp"
-            git init -q
-            git config user.name  "$(git -C "$GITHUB_WORKSPACE" config user.name)"
-            git config user.email "$(git -C "$GITHUB_WORKSPACE" config user.email)"
-            git config gpg.format ssh
-            git config user.signingkey ~/.ssh/release_signing_key.pub
-            git config commit.gpgsign true
-            git config tag.gpgsign true
-            echo test > f.txt
-            git add f.txt
-            git commit -q -m "test: signing"
-            git cat-file -p HEAD | grep -q '^gpgsig' \
-              || { echo '::error::Signed commit missing gpgsig header'; exit 1; }
-            git tag -s "$tag" -m signing
-            git cat-file -p "$tag" \
-              | grep -qE 'BEGIN (PGP|SSH) SIGNATURE' \
-              || { echo '::error::Signed tag missing signature block'; exit 1; }
-          )
+          # Saves the original HEAD SHA to reset to after the test
+          # This avoids failures when HEAD has no parent (e.g. initial commit) and is more robust in any edge case where HEAD~1 is invalid
+          original_head_sha="$(git rev-parse HEAD)"
+          git_status=$(git status --porcelain)
+          if [ -n "$git_status" ]; then
+            echo "ERROR: Git working directory is not clean before signing test commit:"
+            echo "$git_status"
+            exit 1
+          fi
+          echo "test" > .signing-test
+          git add .signing-test
+          git commit -m "test: signing" -S
+          # Assert that the commit object contains a signature header, without requiring trust configuration.
+          if git cat-file -p HEAD | grep -q '^gpgsig '; then
+            echo "Verified: commit contains a gpgsig header (signature present)."
+          else
+            echo "ERROR: Commit was not signed (no gpgsig header found)."
+            git reset --hard "$original_head_sha"
+            rm -f .signing-test
+            exit 1
+          fi
 
-      - name: Pull latest changes (defensive against push races)
+          # Also verify that creating a signed tag works, to catch tag-signing issues early.
+          temp_tag="signing-test-tag-$$"
+          git tag -s "$temp_tag" -m "test: signing tag"
+
+          # Annotated signed tags embed a block: OpenPGP uses BEGIN PGP SIGNATURE;
+          # SSH signing (gpg.format ssh) uses BEGIN SSH SIGNATURE.
+          if git cat-file -p "refs/tags/$temp_tag" | grep -qE '^-----BEGIN (PGP SIGNATURE|SSH SIGNATURE)-----'; then
+            echo "Verified: tag object contains an embedded signature block (PGP or SSH)."
+          else
+            echo "ERROR: Signed tag does not contain an embedded PGP or SSH signature block (no signature found)."
+            # Clean up before failing to avoid leaving temporary state behind.
+            git tag -d "$temp_tag" || true
+            git reset --hard "$original_head_sha"
+            rm -f .signing-test
+            exit 1
+          fi
+
+          # Clean up before exiting to avoid leaving temporary state behind.
+          git tag -d "$temp_tag" || true
+          git reset --hard "$original_head_sha"
+          rm -f .signing-test
+          echo "All signing tests passed successfully."
+
+
+      - name: Rebase onto latest main
         run: git pull --rebase origin main
 
-      - name: Run release-it
+      - name: Save current draft tag
+        id: save-draft
+        run: |
+          EXISTING=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 1 \
+            --json tagName,isDraft \
+            --jq 'if .[0].isDraft then .[0].tagName else "" end')
+          echo "existing_draft=$EXISTING" >> "$GITHUB_OUTPUT"
         env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Create Release
+        env:
+          # GH_TOKEN (personal) is required when branch protection is enabled on main,
+          # because the built-in GITHUB_TOKEN cannot bypass required status checks.
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: bunx release-it --ci
 
-      - name: Create draft GitHub release
+      - name: Verify draft release was created
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          EXISTING_DRAFT: ${{ steps.save-draft.outputs.existing_draft }}
         run: |
-          set -euo pipefail
-          tag="$(git describe --tags --abbrev=0)"
-          echo "Creating draft release for tag: $tag"
-          gh release create "$tag" \
-            --draft \
-            --title "$tag" \
-            --notes-file CHANGELOG.md
+          # Polls until a new draft release (different from any pre-existing draft)
+          # is visible in the GitHub API.
+          for i in {1..10}; do
+            TAG=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 1 \
+              --json tagName,isDraft \
+              --jq 'if .[0].isDraft then .[0].tagName else "" end')
+            if [ -n "$TAG" ] && [ "$TAG" != "$EXISTING_DRAFT" ]; then
+              echo "✓ New draft release found: $TAG"
+              exit 0
+            fi
+            if [ -n "$TAG" ] && [ "$TAG" = "$EXISTING_DRAFT" ]; then
+              echo "Draft $TAG is the same pre-existing draft; waiting for a new one (attempt $i/10)..." >&2
+            else
+              echo "No draft release found yet (attempt $i/10); waiting 5s..."
+            fi
+            sleep 5
+          done
+          echo "No new draft release was created (possibly no releasable commits found)."

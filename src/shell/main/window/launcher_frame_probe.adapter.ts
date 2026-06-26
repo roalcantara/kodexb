@@ -21,7 +21,9 @@ export type LauncherProbePayload = {
 }
 
 export function isLauncherProbeEnabled(): boolean {
-  return process.env.KB_WINDOW_PROBE === '1' || process.env.LOG_LEVEL === 'debug'
+  return (
+    process.env.KB_WINDOW_PROBE === '1' || process.env.KB_PLACEMENT_PROBE === '1' || process.env.LOG_LEVEL === 'debug'
+  )
 }
 
 export function clearLauncherProbeFile(path = LAUNCHER_PROBE_PATH): void {

@@ -24,6 +24,10 @@ export function installElectrobunBunMock(overrides: ElectrobunBunUtilsMock = {})
   utilsMock = overrides
   mock.module('electrobun/bun', () => ({
     BrowserView: browserViewStub,
+    ApplicationMenu: {
+      setApplicationMenu: () => undefined,
+      on: () => undefined
+    },
     Utils: {
       openExternal: () => {
         const result = utilsMock.openExternal?.()
@@ -37,6 +41,11 @@ export function installElectrobunBunMock(overrides: ElectrobunBunUtilsMock = {})
       clipboardReadText: () => utilsMock.clipboardReadText?.() ?? null,
       clipboardWriteText: (text: string) => {
         utilsMock.clipboardWriteText?.(text)
+      }
+    },
+    default: {
+      events: {
+        on: () => undefined
       }
     }
   }))
