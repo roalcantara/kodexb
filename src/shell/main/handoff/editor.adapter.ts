@@ -36,8 +36,12 @@ function spawnEditorFromEnv(filePath: string, editor: string): EditorHandoffResu
     if (parts.length === 0) {
       return { ok: false, error: 'EDITOR is empty' }
     }
-    const [cmd, ...extraArgs] = parts
-    Bun.spawn([cmd, ...extraArgs, filePath], { detached: true, stdio: 'ignore' })
+    const cmd = parts[0]
+    if (!cmd) {
+      return { ok: false, error: 'EDITOR is empty' }
+    }
+    const extraArgs = parts.slice(1)
+    Bun.spawn([cmd, ...extraArgs, filePath], { detached: true, stdio: ['ignore', 'ignore', 'ignore'] })
     return { ok: true }
   } catch (e) {
     log.debug('editor ($EDITOR) failed', { error: String(e) })

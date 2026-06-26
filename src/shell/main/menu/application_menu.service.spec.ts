@@ -1,10 +1,19 @@
 import { describe, expect, it, mock } from 'bun:test'
+import type { ApplicationMenuItemConfig } from 'electrobun/bun'
 import { type ApplicationMenuDeps, buildApplicationMenu, handleApplicationMenuAction } from './application_menu.model'
 import { registerApplicationMenu } from './application_menu.service'
 
-function appSubmenu() {
-  const menu = buildApplicationMenu()
-  return menu[0]?.submenu ?? []
+function isDivider(item: ApplicationMenuItemConfig): boolean {
+  return item.type === 'divider' || item.type === 'separator'
+}
+
+function submenuOf(item: ApplicationMenuItemConfig | undefined): ApplicationMenuItemConfig[] {
+  if (!item || isDivider(item) || !('submenu' in item)) return []
+  return item.submenu ?? []
+}
+
+function appSubmenu(): ApplicationMenuItemConfig[] {
+  return submenuOf(buildApplicationMenu()[0])
 }
 
 function deps(overrides: Partial<ApplicationMenuDeps> = {}): ApplicationMenuDeps {
@@ -32,7 +41,7 @@ describe('buildApplicationMenu', () => {
   it('uses roles for hide and quit shortcuts (not inline labels)', () => {
     const items = appSubmenu()
     for (const item of items) {
-      if (item.role) {
+      if (!isDivider(item) && 'role' in item && item.role) {
         expect(item.label).toBeUndefined()
         expect(item.accelerator).toBeUndefined()
       }
@@ -41,10 +50,14 @@ describe('buildApplicationMenu', () => {
 
   it('includes Edit and Window menus with standard roles', () => {
     const menu = buildApplicationMenu()
-    expect(menu[1]?.label).toBe('Edit')
-    expect(menu[1]?.submenu?.some(item => item.role === 'copy')).toBe(true)
-    expect(menu[2]?.label).toBe('Window')
-    expect(menu[2]?.submenu?.some(item => item.role === 'minimize')).toBe(true)
+    const editMenu = menu[1]
+    const windowMenu = menu[2]
+    expect(editMenu && !isDivider(editMenu) && 'label' in editMenu ? editMenu.label : undefined).toBe('Edit')
+    expect(submenuOf(editMenu).some(item => !isDivider(item) && 'role' in item && item.role === 'copy')).toBe(true)
+    expect(windowMenu && !isDivider(windowMenu) && 'label' in windowMenu ? windowMenu.label : undefined).toBe('Window')
+    expect(submenuOf(windowMenu).some(item => !isDivider(item) && 'role' in item && item.role === 'minimize')).toBe(
+      true
+    )
   })
 })
 

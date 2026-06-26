@@ -1,13 +1,6 @@
-import type { MessageBoxOptions, MessageBoxResponse } from 'electrobun/bun'
+import type { ApplicationMenuItemConfig, MessageBoxOptions, MessageBoxResponse } from 'electrobun/bun'
 
-export type ApplicationMenuItem = {
-  label?: string
-  action?: string
-  role?: string
-  type?: 'separator' | 'divider'
-  accelerator?: string
-  submenu?: ApplicationMenuItem[]
-}
+export type ApplicationMenuItem = ApplicationMenuItemConfig
 
 export type ApplicationMenuDeps = {
   version: string
@@ -17,7 +10,7 @@ export type ApplicationMenuDeps = {
 }
 
 /** macOS app menu + Edit + Window (Linux application menus are unsupported upstream). */
-export function buildApplicationMenu(): ApplicationMenuItem[] {
+export function buildApplicationMenu(): ApplicationMenuItemConfig[] {
   return [
     {
       submenu: [

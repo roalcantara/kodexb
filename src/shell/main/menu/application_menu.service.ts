@@ -1,16 +1,11 @@
-import Electrobun, { ApplicationMenu } from 'electrobun/bun'
-import {
-  type ApplicationMenuDeps,
-  type ApplicationMenuItem,
-  buildApplicationMenu,
-  handleApplicationMenuAction
-} from './application_menu.model'
+import Electrobun, { ApplicationMenu, type ApplicationMenuItemConfig } from 'electrobun/bun'
+import { type ApplicationMenuDeps, buildApplicationMenu, handleApplicationMenuAction } from './application_menu.model'
 
 export type { ApplicationMenuDeps, ApplicationMenuItem } from './application_menu.model'
 export { buildApplicationMenu, handleApplicationMenuAction } from './application_menu.model'
 
 type ApplicationMenuRuntime = {
-  setApplicationMenu: (menu: ApplicationMenuItem[]) => void
+  setApplicationMenu: (menu: ApplicationMenuItemConfig[]) => void
   onMenuClicked: (event: 'application-menu-clicked', handler: (event: { data: { action?: string } }) => void) => void
 }
 
