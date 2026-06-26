@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.15.15](https://github.com/roalcantara/kodexb/compare/v0.15.14...v0.15.15) (2026-06-26)
+
 All notable changes to this project will be documented in this file.
 
 
