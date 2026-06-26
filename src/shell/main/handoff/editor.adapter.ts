@@ -3,6 +3,8 @@ import { Utils } from 'electrobun/bun'
 
 const log = getLogger(['kb', 'main', 'handoff', 'editor'])
 
+const EDITOR_COMMAND_SPLIT = /\s+/
+
 export type EditorHandoffResult = { ok: true } | { ok: false; error: string }
 
 function darwinOpenInEditor(filePath: string, editorApp: string): EditorHandoffResult {
@@ -26,6 +28,46 @@ function linuxOpenInEditor(filePath: string, editorApp: string): EditorHandoffRe
     log.debug('editor (linux) exception', { error: String(e) })
     return { ok: false, error: String(e) }
   }
+}
+
+function spawnEditorFromEnv(filePath: string, editor: string): EditorHandoffResult {
+  try {
+    const parts = editor.split(EDITOR_COMMAND_SPLIT).filter(Boolean)
+    if (parts.length === 0) {
+      return { ok: false, error: 'EDITOR is empty' }
+    }
+    const [cmd, ...extraArgs] = parts
+    Bun.spawn([cmd, ...extraArgs, filePath], { detached: true, stdio: 'ignore' })
+    return { ok: true }
+  } catch (e) {
+    log.debug('editor ($EDITOR) failed', { error: String(e) })
+    return { ok: false, error: String(e) }
+  }
+}
+
+export type PreferredEditorOptions = {
+  editorApp?: string
+  editorFromEnv?: string
+}
+
+/**
+ * Open a file in the configured editor app, `$EDITOR`, or the system default.
+ */
+export function openInPreferredEditor(
+  filePath: string,
+  preferred: PreferredEditorOptions,
+  platform: NodeJS.Platform = process.platform
+): EditorHandoffResult {
+  if (preferred.editorApp) {
+    return openInEditor(filePath, preferred.editorApp, platform)
+  }
+
+  const fromEnv = preferred.editorFromEnv?.trim()
+  if (fromEnv) {
+    return spawnEditorFromEnv(filePath, fromEnv)
+  }
+
+  return openInEditor(filePath, undefined, platform)
 }
 
 export function openInEditor(

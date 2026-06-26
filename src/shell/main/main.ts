@@ -1,11 +1,14 @@
+import { APP_VERSION } from '@core/constants/app.const'
 import { configureMainLogging, getLogger, parseLogVerbosity } from '@shared/logging'
 import Electrobun, { BrowserWindow, GlobalShortcut, Screen, Utils } from 'electrobun/bun'
 import { App } from '../app/app'
 import { loadConfig } from '../app/config/config.loader'
 import { createDeferredSyncEmit } from '../app/lib/sync/deferred_emit.service'
+import { openInPreferredEditor } from './handoff/editor.adapter'
 import type { HandoffServices } from './handoff/registry.service'
 import { runEntryHandoff } from './handoff/registry.service'
 import { reportConfigLoadErrorAndExit } from './helpers/error.helper'
+import { registerApplicationMenu } from './menu/application_menu.service'
 import { createSyncEmitter, createWebviewRpc } from './rpc/host'
 import { createRpcServer } from './rpc/server'
 import { registerBeforeQuitShortcutTeardown } from './utils/register_before_quit_shortcuts.util'
@@ -141,6 +144,21 @@ async function bootstrap() {
 
   const mainWin = new BrowserWindow(buildBrowserWindowCreateOptions(initialScreenFrame, webviewRpc, process.platform))
   win = mainWin
+
+  if (process.platform === 'darwin') {
+    registerApplicationMenu({
+      version: APP_VERSION,
+      configPath: config.configPath,
+      showMessageBox: Utils.showMessageBox,
+      openConfigInEditor: path => {
+        const result = openInPreferredEditor(path, {
+          editorApp: config.display.editorApp,
+          editorFromEnv: process.env.EDITOR
+        })
+        if (!result.ok) logger.warn('settings menu: open config failed', { error: result.error })
+      }
+    })
+  }
 
   if (pendingSummon) {
     focusHandoff.armGuard()

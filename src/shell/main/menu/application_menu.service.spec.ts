@@ -1,0 +1,89 @@
+import { describe, expect, it, mock } from 'bun:test'
+import { type ApplicationMenuDeps, buildApplicationMenu, handleApplicationMenuAction } from './application_menu.model'
+import { registerApplicationMenu } from './application_menu.service'
+
+function appSubmenu() {
+  const menu = buildApplicationMenu()
+  return menu[0]?.submenu ?? []
+}
+
+function deps(overrides: Partial<ApplicationMenuDeps> = {}): ApplicationMenuDeps {
+  return {
+    version: '1.2.3',
+    configPath: '/home/user/.config/kb/config.yaml',
+    showMessageBox: mock(() => Promise.resolve({ response: 0 })),
+    openConfigInEditor: mock(() => undefined),
+    ...overrides
+  }
+}
+
+describe('buildApplicationMenu', () => {
+  it('orders app items with separator after About', () => {
+    const items = appSubmenu()
+    expect(items[0]).toMatchObject({ label: 'About kb', action: 'about' })
+    expect(items[1]).toEqual({ type: 'separator' })
+    expect(items[2]).toMatchObject({ label: 'Settings…', action: 'open-settings', accelerator: ',' })
+    expect(items[3]).toEqual({ type: 'separator' })
+    expect(items[4]).toMatchObject({ role: 'hide' })
+    expect(items[7]).toEqual({ type: 'separator' })
+    expect(items[8]).toMatchObject({ role: 'quit' })
+  })
+
+  it('uses roles for hide and quit shortcuts (not inline labels)', () => {
+    const items = appSubmenu()
+    for (const item of items) {
+      if (item.role) {
+        expect(item.label).toBeUndefined()
+        expect(item.accelerator).toBeUndefined()
+      }
+    }
+  })
+
+  it('includes Edit and Window menus with standard roles', () => {
+    const menu = buildApplicationMenu()
+    expect(menu[1]?.label).toBe('Edit')
+    expect(menu[1]?.submenu?.some(item => item.role === 'copy')).toBe(true)
+    expect(menu[2]?.label).toBe('Window')
+    expect(menu[2]?.submenu?.some(item => item.role === 'minimize')).toBe(true)
+  })
+})
+
+describe('handleApplicationMenuAction', () => {
+  it('shows About dialog with version', async () => {
+    const showMessageBox = mock(() => Promise.resolve({ response: 0 }))
+    await handleApplicationMenuAction('about', deps({ version: '9.9.9', showMessageBox }))
+
+    expect(showMessageBox).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'info',
+        title: 'About kb',
+        message: 'Version 9.9.9'
+      })
+    )
+  })
+
+  it('opens config path for Settings', async () => {
+    const openConfigInEditor = mock(() => undefined)
+    const configPath = '/tmp/config.yaml'
+    await handleApplicationMenuAction('open-settings', deps({ configPath, openConfigInEditor }))
+
+    expect(openConfigInEditor).toHaveBeenCalledWith(configPath)
+  })
+})
+
+describe('registerApplicationMenu', () => {
+  it('is a no-op on linux', () => {
+    const setApplicationMenu = mock(() => undefined)
+    registerApplicationMenu(deps(), 'linux', { setApplicationMenu, onMenuClicked: mock(() => undefined) })
+    expect(setApplicationMenu).not.toHaveBeenCalled()
+  })
+
+  it('registers menu on darwin', () => {
+    const setApplicationMenu = mock(() => undefined)
+    const onMenuClicked = mock(() => undefined)
+    registerApplicationMenu(deps(), 'darwin', { setApplicationMenu, onMenuClicked })
+
+    expect(setApplicationMenu).toHaveBeenCalledTimes(1)
+    expect(onMenuClicked).toHaveBeenCalledWith('application-menu-clicked', expect.any(Function))
+  })
+})
