@@ -17,6 +17,7 @@
     "start": "electrobun dev",
     "install:macos": "bun bin/macos_app.script.ts install",
     "uninstall:macos": "bun bin/macos_app.script.ts uninstall",
+    "reinstall:macos": "bun run uninstall:macos && rm -rf build dist && bun run build && bun run install:macos",
     "startup:enable": "bun bin/macos_app.script.ts login-item enable",
     "startup:disable": "bun bin/macos_app.script.ts login-item disable",
     "predev": "mise run -q app styles",

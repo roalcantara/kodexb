@@ -100,8 +100,9 @@ export function runMacosAction(action: 'install' | 'uninstall' | 'login-item', m
 
 if (import.meta.main || (process.argv[1] && !process.argv[1].includes('.spec.'))) {
   const env = process.env as Record<string, string | undefined>
-  const command: string = usageCmd(env, 'help')
+  const command = usageCmd(env, process.argv[2])
   const strings = usageStrings(env, ['mode'])
+  const loginItemMode = (strings.mode ?? process.argv[3]) as 'enable' | 'disable' | undefined
 
   switch (command) {
     case 'install':
@@ -111,7 +112,7 @@ if (import.meta.main || (process.argv[1] && !process.argv[1].includes('.spec.'))
       runMacosAction('uninstall')
       break
     case 'login-item':
-      runMacosAction('login-item', strings.mode as 'enable' | 'disable')
+      runMacosAction('login-item', loginItemMode)
       break
     default:
       log.info(
