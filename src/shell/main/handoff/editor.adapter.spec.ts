@@ -107,7 +107,7 @@ describe('openInPreferredEditor()', () => {
     const savedSpawn = Bun.spawn
     Bun.spawn = ((args: string[]) => {
       spawnCalls.push(args)
-      return { detached: true } as unknown as ReturnType<typeof Bun.spawn>
+      return { detached: true, unref: () => undefined } as unknown as ReturnType<typeof Bun.spawn>
     }) as typeof Bun.spawn
 
     try {

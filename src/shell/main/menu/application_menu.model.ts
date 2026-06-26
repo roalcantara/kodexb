@@ -16,7 +16,7 @@ export function buildApplicationMenu(): ApplicationMenuItemConfig[] {
       submenu: [
         { label: 'About kb', action: 'about' },
         { type: 'separator' },
-        { label: 'Settings…', action: 'open-settings', accelerator: ',' },
+        { label: 'Settings…', action: 'open-settings', accelerator: 'CmdOrCtrl+,' },
         { type: 'separator' },
         { role: 'hide' },
         { role: 'hideOthers' },

@@ -1,5 +1,8 @@
+import { getLogger } from '@shared/logging'
 import Electrobun, { ApplicationMenu, type ApplicationMenuItemConfig } from 'electrobun/bun'
 import { type ApplicationMenuDeps, buildApplicationMenu, handleApplicationMenuAction } from './application_menu.model'
+
+const log = getLogger(['kb', 'main', 'menu', 'service'])
 
 export type { ApplicationMenuDeps, ApplicationMenuItem } from './application_menu.model'
 export { buildApplicationMenu, handleApplicationMenuAction } from './application_menu.model'
@@ -26,6 +29,8 @@ export function registerApplicationMenu(
   runtime.onMenuClicked('application-menu-clicked', event => {
     const action = event.data.action
     if (!action) return
-    handleApplicationMenuAction(action, deps).catch(() => undefined)
+    handleApplicationMenuAction(action, deps).catch((err: unknown) => {
+      log.error('menu action failed', { action, error: String(err) })
+    })
   })
 }

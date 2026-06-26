@@ -3,8 +3,38 @@ import { Utils } from 'electrobun/bun'
 
 const log = getLogger(['kb', 'main', 'handoff', 'editor'])
 
-const EDITOR_COMMAND_SPLIT = /\s+/
+const WHITESPACE_RE = /\s/
 
+/** Split $EDITOR-style command string respecting single and double quotes. */
+function splitShellCommand(cmd: string): string[] {
+  const parts: string[] = []
+  let current = ''
+  let inQuote: string | null = null
+  for (const ch of cmd) {
+    if (inQuote) {
+      if (ch === inQuote) {
+        inQuote = null
+      } else {
+        current += ch
+      }
+      continue
+    }
+    if (ch === '"' || ch === "'") {
+      inQuote = ch
+      continue
+    }
+    if (WHITESPACE_RE.test(ch)) {
+      if (current) {
+        parts.push(current)
+        current = ''
+      }
+      continue
+    }
+    current += ch
+  }
+  if (current) parts.push(current)
+  return parts
+}
 export type EditorHandoffResult = { ok: true } | { ok: false; error: string }
 
 function darwinOpenInEditor(filePath: string, editorApp: string): EditorHandoffResult {
@@ -32,7 +62,7 @@ function linuxOpenInEditor(filePath: string, editorApp: string): EditorHandoffRe
 
 function spawnEditorFromEnv(filePath: string, editor: string): EditorHandoffResult {
   try {
-    const parts = editor.split(EDITOR_COMMAND_SPLIT).filter(Boolean)
+    const parts = splitShellCommand(editor)
     if (parts.length === 0) {
       return { ok: false, error: 'EDITOR is empty' }
     }
@@ -41,7 +71,8 @@ function spawnEditorFromEnv(filePath: string, editor: string): EditorHandoffResu
       return { ok: false, error: 'EDITOR is empty' }
     }
     const extraArgs = parts.slice(1)
-    Bun.spawn([cmd, ...extraArgs, filePath], { detached: true, stdio: ['ignore', 'ignore', 'ignore'] })
+    const proc = Bun.spawn([cmd, ...extraArgs, filePath], { detached: true, stdio: ['ignore', 'ignore', 'ignore'] })
+    proc.unref()
     return { ok: true }
   } catch (e) {
     log.debug('editor ($EDITOR) failed', { error: String(e) })
