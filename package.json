@@ -17,7 +17,7 @@
     "start": "electrobun dev",
     "install:macos": "bun bin/macos_app.script.ts install",
     "uninstall:macos": "bun bin/macos_app.script.ts uninstall",
-    "reinstall:macos": "bun run uninstall:macos && rm -rf build dist && bun run build && bun run install:macos",
+    "reinstall:macos": "mise run app --kill && bun run uninstall:macos && rm -rf build dist && bun run install:macos",
     "startup:enable": "bun bin/macos_app.script.ts login-item enable",
     "startup:disable": "bun bin/macos_app.script.ts login-item disable",
     "predev": "mise run -q app styles",
@@ -146,14 +146,41 @@
         "preset": {
           "name": "conventionalcommits",
           "types": [
-            { "type": "feat", "section": "Features" },
-            { "type": "fix", "section": "Bug Fixes" },
-            { "type": "perf", "section": "Performance" },
-            { "type": "ref", "section": "Refactoring" },
-            { "type": "docs", "section": "Documentation" },
-            { "type": "test", "section": "Tests", "hidden": true },
-            { "type": "chore", "section": "Chores", "hidden": true },
-            { "type": "ci", "section": "CI", "hidden": true }
+            {
+              "type": "feat",
+              "section": "Features"
+            },
+            {
+              "type": "fix",
+              "section": "Bug Fixes"
+            },
+            {
+              "type": "perf",
+              "section": "Performance"
+            },
+            {
+              "type": "ref",
+              "section": "Refactoring"
+            },
+            {
+              "type": "docs",
+              "section": "Documentation"
+            },
+            {
+              "type": "test",
+              "section": "Tests",
+              "hidden": true
+            },
+            {
+              "type": "chore",
+              "section": "Chores",
+              "hidden": true
+            },
+            {
+              "type": "ci",
+              "section": "CI",
+              "hidden": true
+            }
           ]
         },
         "infile": "CHANGELOG.md",

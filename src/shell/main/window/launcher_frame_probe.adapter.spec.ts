@@ -55,17 +55,22 @@ describe('isLauncherProbeEnabled()', () => {
   })
 
   it('returns true when KB_WINDOW_PROBE is set', () => {
-    process.env = { ...env, KB_WINDOW_PROBE: '1', LOG_LEVEL: undefined }
+    process.env = { ...env, KB_WINDOW_PROBE: '1', KB_PLACEMENT_PROBE: undefined, LOG_LEVEL: undefined }
+    expect(isLauncherProbeEnabled()).toBe(true)
+  })
+
+  it('returns true when KB_PLACEMENT_PROBE is set', () => {
+    process.env = { ...env, KB_WINDOW_PROBE: undefined, KB_PLACEMENT_PROBE: '1', LOG_LEVEL: undefined }
     expect(isLauncherProbeEnabled()).toBe(true)
   })
 
   it('returns true when LOG_LEVEL is debug', () => {
-    process.env = { ...env, KB_WINDOW_PROBE: undefined, LOG_LEVEL: 'debug' }
+    process.env = { ...env, KB_WINDOW_PROBE: undefined, KB_PLACEMENT_PROBE: undefined, LOG_LEVEL: 'debug' }
     expect(isLauncherProbeEnabled()).toBe(true)
   })
 
   it('returns false when neither flag is set', () => {
-    process.env = { ...env, KB_WINDOW_PROBE: undefined, LOG_LEVEL: 'info' }
+    process.env = { ...env, KB_WINDOW_PROBE: undefined, KB_PLACEMENT_PROBE: undefined, LOG_LEVEL: 'info' }
     expect(isLauncherProbeEnabled()).toBe(false)
   })
 })
@@ -89,7 +94,12 @@ describe('appendLauncherProbe()', () => {
 
   it('no-ops when probe is disabled', () => {
     const path = createProbeDir()
-    process.env = { ...saved, KB_WINDOW_PROBE: undefined, LOG_LEVEL: 'info' }
+    process.env = {
+      ...saved,
+      KB_WINDOW_PROBE: undefined,
+      KB_PLACEMENT_PROBE: undefined,
+      LOG_LEVEL: 'info'
+    }
 
     appendLauncherProbe(basePayload(), path)
 

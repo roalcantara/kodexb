@@ -104,20 +104,16 @@ if (import.meta.main || (process.argv[1] && !process.argv[1].includes('.spec.'))
   const strings = usageStrings(env, ['mode'])
   const loginItemMode = (strings.mode ?? process.argv[3]) as 'enable' | 'disable' | undefined
 
-  switch (command) {
-    case 'install':
-      runMacosAction('install')
-      break
-    case 'uninstall':
-      runMacosAction('uninstall')
-      break
-    case 'login-item':
-      runMacosAction('login-item', loginItemMode)
-      break
-    default:
-      log.info(
-        'Usage: bun packages/ops/src/bin/macos_app.script.ts [install|uninstall|login-item enable|login-item disable]'
-      )
-      process.exitCode = 1
+  if (command === 'install') {
+    runMacosAction('install')
+  } else if (command === 'uninstall') {
+    runMacosAction('uninstall')
+  } else if (command === 'login-item') {
+    runMacosAction('login-item', loginItemMode)
+  } else {
+    log.info(
+      'Usage: bun packages/ops/src/bin/macos_app.script.ts [install|uninstall|login-item enable|login-item disable]'
+    )
+    process.exitCode = 1
   }
 }
